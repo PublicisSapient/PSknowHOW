@@ -27,9 +27,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents Commit count.
- */
+/** Represents Commit count. */
 @Data
 @Builder
 @Getter
@@ -39,5 +37,4 @@ import lombok.Setter;
 public class BranchCommitCount {
 	private String branchName;
 	private List<CommitCount> datewiseData;
-
 }

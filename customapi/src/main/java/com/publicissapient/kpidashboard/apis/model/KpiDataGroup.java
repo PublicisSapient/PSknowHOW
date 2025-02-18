@@ -18,10 +18,10 @@
 
 package com.publicissapient.kpidashboard.apis.model;
 
-import lombok.*;
-
 import java.util.List;
 import java.util.Map;
+
+import lombok.*;
 
 @Getter
 @Setter

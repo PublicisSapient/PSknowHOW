@@ -18,12 +18,10 @@ package com.publicissapient.kpidashboard.apis.jira.model;
 import lombok.Data;
 
 /**
- *
  * This class is for maintaining closed release details for burn up KPI
  *
  * @author aksshriv1
  */
-
 @Data
 public class ReleaseSpecification {
 
@@ -32,5 +30,4 @@ public class ReleaseSpecification {
 	private int releaseIssueCount;
 	private double releaseStoryPoint;
 	private double releaseStoryPointVelocity;
-
 }

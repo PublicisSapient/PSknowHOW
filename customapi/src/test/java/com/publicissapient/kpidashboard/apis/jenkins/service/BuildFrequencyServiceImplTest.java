@@ -18,6 +18,30 @@
 
 package com.publicissapient.kpidashboard.apis.jenkins.service;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.when;
+
+import java.time.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.bson.types.ObjectId;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
@@ -39,30 +63,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
-import org.bson.types.ObjectId;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import java.time.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BuildFrequencyServiceImplTest {
@@ -173,7 +173,6 @@ public class BuildFrequencyServiceImplTest {
 			assertThat("Build Frequency :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
 		} catch (Exception enfe) {
 		}
-
 	}
 
 	@Test
@@ -200,7 +199,6 @@ public class BuildFrequencyServiceImplTest {
 		} catch (Exception enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -229,7 +227,6 @@ public class BuildFrequencyServiceImplTest {
 			assertThat("Build Frequency :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(0));
 		} catch (Exception enfe) {
 		}
-
 	}
 
 	@Test
@@ -243,14 +240,12 @@ public class BuildFrequencyServiceImplTest {
 		Map<ObjectId, List<Build>> buildList = new HashMap<ObjectId, List<Build>>();
 		Map<String, Object> subCategoryMap = new HashMap<>();
 		Long count = buildFrequencyServiceImpl.calculateKPIMetrics(buildList);
-
 	}
 
 	@Test
 	public void getQualifierType() {
 		Map<String, Object> subCategoryMap = new HashMap<>();
 		String qualifierType = buildFrequencyServiceImpl.getQualifierType();
-
 	}
 
 	@Test
@@ -286,8 +281,5 @@ public class BuildFrequencyServiceImplTest {
 			assertThat("Build Frequency :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
 		} catch (Exception enfe) {
 		}
-
 	}
-
-
 }

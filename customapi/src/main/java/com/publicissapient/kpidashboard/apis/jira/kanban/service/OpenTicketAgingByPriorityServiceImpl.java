@@ -54,7 +54,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * open tickets till now from past 15 months count based on x Axis values and
  * did not Works any date filters on kanban
- * 
+ *
  * @author Hiren Babariya
  */
 @Slf4j
@@ -120,11 +120,10 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 						CommonUtils.convertToPatternList(closedStatusList));
 			}
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-
 		});
-		/** additional filter **/
-		String subGroupCategory = KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.KANBAN,
-				DEV, flterHelperService);
+		/** additional filter * */
+		String subGroupCategory = KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.KANBAN, DEV,
+				flterHelperService);
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				projectList.stream().distinct().collect(Collectors.toList()));
 
@@ -151,8 +150,8 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		log.info("OPEN-TICKET-COUNT-BY-PRIORITY {}", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
@@ -247,15 +246,13 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 				});
 
 				rangeWisePriorityCountMap
-						.forEach((rangeMonth, priorityCountMap) -> populateProjectFilterWiseDataMap(priorityCountMap,
-								priorityList, trendValueMap, node.getProjectFilter().getName(), rangeMonth));
+						.forEach((rangeMonth, priorityCountMap) -> populateProjectFilterWiseDataMap(priorityCountMap, priorityList,
+								trendValueMap, node.getProjectFilter().getName(), rangeMonth));
 
 				// Populates data in Excel for validation for tickets created before
-				populateExcelDataObject(requestTrackerId, node.getProjectFilter().getId(), excelData,
-						projectWiseJiraIssueList);
+				populateExcelDataObject(requestTrackerId, node.getProjectFilter().getId(), excelData, projectWiseJiraIssueList);
 			}
 			mapTmp.get(node.getId()).setValue(trendValueMap);
-
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.OPEN_TICKET_AGING_BY_PRIORITY.getColumns());
@@ -323,7 +320,6 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 			DataCount dcObj = getDataCountObject(value, projectName, rangeMonth, priority, hoverValueMap);
 			trendValueMap.computeIfAbsent(priority, k -> new ArrayList<>()).add(dcObj);
 		});
-
 	}
 
 	/**
@@ -386,8 +382,7 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 		});
 	}
 
-	private Map<String, List<DataCount>> sortTrendValueMap(Map<String, List<DataCount>> trendMap,
-			List<String> keyOrder) {
+	private Map<String, List<DataCount>> sortTrendValueMap(Map<String, List<DataCount>> trendMap, List<String> keyOrder) {
 		Map<String, List<DataCount>> sortedMap = new LinkedHashMap<>();
 		keyOrder.forEach(order -> {
 			if (null != trendMap.get(order)) {
@@ -399,8 +394,7 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 
 	private List<String> priorityTypes(boolean addOverall) {
 		if (addOverall) {
-			return Arrays.asList(CommonConstant.OVERALL, Constant.P1, Constant.P2, Constant.P3, Constant.P4,
-					Constant.MISC);
+			return Arrays.asList(CommonConstant.OVERALL, Constant.P1, Constant.P2, Constant.P3, Constant.P4, Constant.MISC);
 		} else {
 			return Arrays.asList(Constant.P1, Constant.P2, Constant.P3, Constant.P4, Constant.MISC);
 		}
@@ -411,5 +405,4 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI997(),
 				KPICode.OPEN_TICKET_AGING_BY_PRIORITY.getKpiId());
 	}
-
 }

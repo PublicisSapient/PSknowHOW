@@ -31,10 +31,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Provides Processor
- *
- */
+/** Provides Processor */
 @Document(collection = "processor")
 @Getter
 @Setter
@@ -60,5 +57,4 @@ public class Processor extends BasicModel {
 		this.updatedTime = updatedTime;
 		this.isLastSuccess = isLastSuccess;
 	}
-
 }

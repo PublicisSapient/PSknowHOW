@@ -18,7 +18,6 @@
 package com.publicissapient.kpidashboard.apis.pushdata.model.dto;
 
 import java.util.Objects;
-
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -39,6 +38,7 @@ public class BuildDeployFields {
 	@NotNull(message = "The jobName must not be null.")
 	@JsonProperty("jobName")
 	private String jobName;
+
 	@NotNull(message = "The number must not be null.")
 	@JsonProperty("number")
 	private String number;
@@ -72,5 +72,4 @@ public class BuildDeployFields {
 	public int hashCode() {
 		return Objects.hash(jobName, number);
 	}
-
 }

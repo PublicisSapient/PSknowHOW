@@ -64,13 +64,17 @@ public class PushDataTraceLogServiceImplTest {
 	@Test
 	public void getByProjectConfigId() {
 		when(pushDataTraceLogRepository.findByBasicProjectConfigId(any())).thenReturn(pushBuildDeploy);
-		Assert.assertNotNull(pushDataTraceLogService.getByProjectConfigId(new ObjectId("6360fefc3fa9e175755f0728")));
+		Assert.assertNotNull(
+				pushDataTraceLogService.getByProjectConfigId(new ObjectId("6360fefc3fa9e175755f0728")));
 	}
 
 	@Test
 	public void getByProjectConfigIdNull() {
-		when(pushDataTraceLogRepository.findByBasicProjectConfigId(any())).thenReturn(new ArrayList<>());
-		Assert.assertEquals(pushDataTraceLogService.getByProjectConfigId(new ObjectId("6360fefc3fa9e175755f0728")),new ArrayList<>());
+		when(pushDataTraceLogRepository.findByBasicProjectConfigId(any()))
+				.thenReturn(new ArrayList<>());
+		Assert.assertEquals(
+				pushDataTraceLogService.getByProjectConfigId(new ObjectId("6360fefc3fa9e175755f0728")),
+				new ArrayList<>());
 	}
 
 	@Test
@@ -87,5 +91,4 @@ public class PushDataTraceLogServiceImplTest {
 			pushDataTraceLogService.setExceptionTraceLog("", new PushDataResponse());
 		});
 	}
-
 }

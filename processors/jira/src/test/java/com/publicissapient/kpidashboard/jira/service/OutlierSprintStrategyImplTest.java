@@ -109,7 +109,6 @@ public class OutlierSprintStrategyImplTest {
 		outlierSprintChecker.execute(basicProjectConfigId);
 
 		verify(sprintDetailsRepository).findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId);
-
 	}
 
 	@Test

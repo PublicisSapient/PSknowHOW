@@ -34,9 +34,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents a unique processor item in an external tool.
- */
+/** Represents a unique processor item in an external tool. */
 @Data
 @Getter
 @Setter
@@ -57,5 +55,4 @@ public class ProcessorItem extends BasicModel {
 
 	@Transient
 	private Processor processor;
-
 }

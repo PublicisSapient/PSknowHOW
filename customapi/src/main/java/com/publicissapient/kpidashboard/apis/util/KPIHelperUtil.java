@@ -73,8 +73,8 @@ public final class KPIHelperUtil {
 	 *
 	 * @param aggregationTreeNodeList
 	 */
-	private static List<Node> setRootFilterAndLimitHierarchy(List<Node> aggregationTreeNodeList,
-			String firstLevel, int level) {
+	private static List<Node> setRootFilterAndLimitHierarchy(List<Node> aggregationTreeNodeList, String firstLevel,
+			int level) {
 		List<Node> filteredNode = new ArrayList<>();
 		String rootId = Constant.SPEEDY_ROOT;
 		aggregationTreeNodeList.add(new Node(0, rootId, rootId, null, Filters.ROOT.name(), new ProjectHierarchy()));
@@ -82,8 +82,7 @@ public final class KPIHelperUtil {
 		aggregationTreeNodeList.stream().filter(node -> node.getGroupName().equalsIgnoreCase(firstLevel))
 				.forEach(node -> node.setParentId(rootId));
 		if (level > 0) {
-			filteredNode = aggregationTreeNodeList.stream().filter(node -> node.getLevel() <= level)
-					.toList();
+			filteredNode = aggregationTreeNodeList.stream().filter(node -> node.getLevel() <= level).toList();
 		}
 		return filteredNode;
 	}
@@ -92,12 +91,11 @@ public final class KPIHelperUtil {
 	 * Create a n-ary tree from the list of filtered nodes.
 	 *
 	 * @param nodes
-	 *            of filtered nodes as per UI filter
+	 *          of filtered nodes as per UI filter
 	 * @param mapTmp
-	 *            is a temporary map which holds value (Node) of child nodes.
+	 *          is a temporary map which holds value (Node) of child nodes.
 	 * @return root of the tree
 	 */
-
 	public static Node createTree(List<Node> nodes, Map<String, Node> mapTmp) {
 		// Save all nodes to a map
 		Node root = nodes.parallelStream().filter(node -> node.getId().equalsIgnoreCase(Constant.SPEEDY_ROOT)).findAny()
@@ -109,8 +107,8 @@ public final class KPIHelperUtil {
 
 			while (!nodeQueue.isEmpty()) {
 				Node currentNode = nodeQueue.poll();
-				Set<Node> nodesList = nodes.parallelStream().filter(
-						node -> node.getParentId() != null && node.getParentId().equalsIgnoreCase(currentNode.getId()))
+				Set<Node> nodesList = nodes.parallelStream()
+						.filter(node -> node.getParentId() != null && node.getParentId().equalsIgnoreCase(currentNode.getId()))
 						.collect(Collectors.toSet());
 				List<Node> list = new ArrayList<>(nodesList);
 				currentNode.setChildren(list);
@@ -123,23 +121,22 @@ public final class KPIHelperUtil {
 			}
 		}
 		return root;
-
 	}
 
 	private static void addProjectFilter(Node node) {
 		if (node.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
-			node.setProjectFilter(new ProjectFilter(node.getId(), node.getName(),
-					node.getProjectHierarchy().getBasicProjectConfigId()));
+			node.setProjectFilter(
+					new ProjectFilter(node.getId(), node.getName(), node.getProjectHierarchy().getBasicProjectConfigId()));
 		} else if (node.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) {
 			node.setProjectFilter(new ProjectFilter(node.getParent().getId(), node.getParent().getName(),
 					node.getProjectHierarchy().getBasicProjectConfigId()));
-			node.setSprintFilter(new SprintFilter(node.getId(), node.getName(),
-					node.getProjectHierarchy().getBeginDate(), node.getProjectHierarchy().getEndDate()));
+			node.setSprintFilter(new SprintFilter(node.getId(), node.getName(), node.getProjectHierarchy().getBeginDate(),
+					node.getProjectHierarchy().getEndDate()));
 		} else if (node.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)) {
 			node.setProjectFilter(new ProjectFilter(node.getParent().getId(), node.getParent().getName(),
 					node.getProjectHierarchy().getBasicProjectConfigId()));
-			node.setReleaseFilter(new ReleaseFilter(node.getId(), node.getName(),
-					node.getProjectHierarchy().getBeginDate(), node.getProjectHierarchy().getEndDate()));
+			node.setReleaseFilter(new ReleaseFilter(node.getId(), node.getName(), node.getProjectHierarchy().getBeginDate(),
+					node.getProjectHierarchy().getEndDate()));
 		}
 	}
 
@@ -147,12 +144,12 @@ public final class KPIHelperUtil {
 	 * Returns the list of leaf nodes for which KPI value has to be calculated.
 	 *
 	 * @param node
-	 *            the node
+	 *          the node
 	 * @param leafNodeList
-	 *            list of leaf nodes in the created tree
+	 *          list of leaf nodes in the created tree
 	 * @return leaf nodes
 	 */
-	public static List<Node> getLeafNodes(Node node, List<Node> leafNodeList , boolean isKanban) {
+	public static List<Node> getLeafNodes(Node node, List<Node> leafNodeList, boolean isKanban) {
 
 		if (null == node) {
 			return Collections.emptyList();
@@ -162,12 +159,11 @@ public final class KPIHelperUtil {
 
 			Node newNode;
 			if (!isKanban) {
-				newNode = new Node(node.getValue(), node.getId(), node.getName(), node.getParentId(),
-						node.getGroupName(), node.getProjectHierarchy(), node.getProjectFilter(),
-						node.getSprintFilter(), node.getReleaseFilter());
+				newNode = new Node(node.getValue(), node.getId(), node.getName(), node.getParentId(), node.getGroupName(),
+						node.getProjectHierarchy(), node.getProjectFilter(), node.getSprintFilter(), node.getReleaseFilter());
 			} else {
-				newNode = new Node(node.getValue(), node.getId(), node.getName(), node.getParentId(),
-						node.getGroupName(), node.getProjectHierarchy(), node.getProjectFilter());
+				newNode = new Node(node.getValue(), node.getId(), node.getName(), node.getParentId(), node.getGroupName(),
+						node.getProjectHierarchy(), node.getProjectFilter());
 			}
 			leafNodeList.add(newNode);
 		}
@@ -191,31 +187,29 @@ public final class KPIHelperUtil {
 					});
 					child.setChildren(sortedChildNodes);
 				}
-				getLeafNodes(child, leafNodeList , isKanban);
+				getLeafNodes(child, leafNodeList, isKanban);
 			}
 		}
 
 		return leafNodeList;
-
 	}
 
 	/**
 	 * Returns the leaf node grouped by filters and the root of created tree.
 	 *
 	 * @param kpiRequest
-	 *            the kpi request
+	 *          the kpi request
 	 * @param filteredAccountDataList
-	 *            the filtered account data list
+	 *          the filtered account data list
 	 * @param filteredAccountDataKanban
-	 *            the filtered account data kanban
+	 *          the filtered account data kanban
 	 * @return tree leaf nodes grouped by filter
 	 * @throws ApplicationException
-	 *             the application exception
+	 *           the application exception
 	 */
 	public static TreeAggregatorDetail getTreeLeafNodesGroupedByFilter(KpiRequest kpiRequest,
-			List<AccountHierarchyData> filteredAccountDataList,
-			List<AccountHierarchyDataKanban> filteredAccountDataKanban, String firstLevel, int leafNodeLevel)
-			throws ApplicationException {
+			List<AccountHierarchyData> filteredAccountDataList, List<AccountHierarchyDataKanban> filteredAccountDataKanban,
+			String firstLevel, int leafNodeLevel) throws ApplicationException {
 
 		Map<String, Node> mapTmp = new HashMap<>();
 		List<Node> aggregatedTreeNodeList = new ArrayList<>();
@@ -243,8 +237,8 @@ public final class KPIHelperUtil {
 
 		List<Node> leafNodeList = new ArrayList<>();
 		List<Node> projectNodeList = new ArrayList<>();
-		getLeafNodes(root, leafNodeList , isKanban);
-		getProjectNodes(root, projectNodeList , isKanban);
+		getLeafNodes(root, leafNodeList, isKanban);
+		getProjectNodes(root, projectNodeList, isKanban);
 
 		log.debug("[LEAF_NODES][{}]. Leaf nodes of the tree {}", kpiRequest.getRequestTrackerId(), leafNodeList);
 
@@ -266,9 +260,9 @@ public final class KPIHelperUtil {
 	 * Distinct by key predicate.
 	 *
 	 * @param <T>
-	 *            the type parameter
+	 *          the type parameter
 	 * @param keyExtractor
-	 *            the key extractor
+	 *          the key extractor
 	 * @return predicate
 	 */
 	public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
@@ -280,12 +274,12 @@ public final class KPIHelperUtil {
 	 * Returns the list of project nodes for which KPI value has to be calculated.
 	 *
 	 * @param node
-	 *            the node
+	 *          the node
 	 * @param projectNodeList
-	 *            list of leaf nodes in the created tree
+	 *          list of leaf nodes in the created tree
 	 * @return project nodes
 	 */
-	public static List<Node> getProjectNodes(Node node, List<Node> projectNodeList , boolean isKanban) {
+	public static List<Node> getProjectNodes(Node node, List<Node> projectNodeList, boolean isKanban) {
 
 		if (null == node) {
 			return Collections.emptyList();
@@ -294,13 +288,12 @@ public final class KPIHelperUtil {
 		if (Constant.PROJECT.equalsIgnoreCase(node.getGroupName())) {
 
 			if (!isKanban) {
-				Node newNode = new Node(node.getValue(), node.getId(), node.getName(), node.getParentId(),
-						node.getGroupName(), node.getProjectHierarchy(), node.getProjectFilter(),
-						node.getSprintFilter());
+				Node newNode = new Node(node.getValue(), node.getId(), node.getName(), node.getParentId(), node.getGroupName(),
+						node.getProjectHierarchy(), node.getProjectFilter(), node.getSprintFilter());
 				projectNodeList.add(newNode);
-			} else  {
-				Node newNode = new Node(node.getValue(), node.getId(), node.getName(), node.getParentId(),
-						node.getGroupName(), node.getProjectHierarchy(), node.getProjectFilter());
+			} else {
+				Node newNode = new Node(node.getValue(), node.getId(), node.getName(), node.getParentId(), node.getGroupName(),
+						node.getProjectHierarchy(), node.getProjectFilter());
 				projectNodeList.add(newNode);
 			}
 		}
@@ -308,12 +301,11 @@ public final class KPIHelperUtil {
 		List<Node> children = node.getChildren();
 		for (Node child : children) {
 			if (child.getChildren() != null) {
-				getProjectNodes(child, projectNodeList , isKanban);
+				getProjectNodes(child, projectNodeList, isKanban);
 			}
 		}
 
 		return projectNodeList;
-
 	}
 
 	public static Map<String, Long> setpriorityScrum(List<JiraIssue> sprintWiseDefectDataList,
@@ -331,8 +323,7 @@ public final class KPIHelperUtil {
 				p5Count++;
 				priorityCountMap.put(Constant.MISC, p5Count);
 			} else {
-				if (StringUtils.containsIgnoreCase(
-						customApiConfig.getpriorityP1().replaceAll(Constant.WHITESPACE, "").trim(),
+				if (StringUtils.containsIgnoreCase(customApiConfig.getpriorityP1().replaceAll(Constant.WHITESPACE, "").trim(),
 						issue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
 					p1Count++;
 					priorityCountMap.put(Constant.P1, p1Count);
@@ -459,5 +450,4 @@ public final class KPIHelperUtil {
 			return Constant.MISC;
 		}
 	}
-
 }

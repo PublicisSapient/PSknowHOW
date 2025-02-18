@@ -40,7 +40,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author anisingh4
  */
-
 @Slf4j
 public class JiraIssueDataFactory {
 	private static final String FILE_PATH_JIRA_ISSUES = "/json/default/jira_issues.json";
@@ -94,8 +93,7 @@ public class JiraIssueDataFactory {
 	}
 
 	public List<JiraIssue> getBugs() {
-		return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getTypeName().equals("Bug"))
-				.collect(Collectors.toList());
+		return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getTypeName().equals("Bug")).collect(Collectors.toList());
 	}
 
 	public List<JiraIssue> getStories() {
@@ -114,18 +112,15 @@ public class JiraIssueDataFactory {
 	}
 
 	public JiraIssue findIssueById(String id) {
-		return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getId().toHexString().equals(id)).findFirst()
-				.orElse(null);
+		return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getId().toHexString().equals(id)).findFirst().orElse(null);
 	}
 
 	public List<JiraIssue> findIssueByStatus(String status) {
-		return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getStatus().equals(status))
-				.collect(Collectors.toList());
+		return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getStatus().equals(status)).collect(Collectors.toList());
 	}
 
 	public List<JiraIssue> findIssueByNumberList(List<String> ids) {
-		return jiraIssues.stream().filter(jiraIssue -> ids.contains(jiraIssue.getNumber()))
-				.collect(Collectors.toList());
+		return jiraIssues.stream().filter(jiraIssue -> ids.contains(jiraIssue.getNumber())).collect(Collectors.toList());
 	}
 
 	public List<JiraIssue> findIssueByStatusInTypeNames(String status, List<String> typeName) {
@@ -161,19 +156,16 @@ public class JiraIssueDataFactory {
 		sprintWiseIssuesMap.forEach((sprintId, sprintStories) -> {
 			SprintWiseStory sprintWiseStory = new SprintWiseStory();
 			sprintWiseStory.setSprint(sprintId);
-			List<String> storiesIdsOfSprint = sprintStories.stream().map(JiraIssue::getSprintID)
-					.collect(Collectors.toList());
+			List<String> storiesIdsOfSprint = sprintStories.stream().map(JiraIssue::getSprintID).collect(Collectors.toList());
 			sprintWiseStory.setStoryList(storiesIdsOfSprint);
 			JiraIssue firstIssue = sprintStories.size() > 0 ? sprintStories.get(0) : null;
 			if (firstIssue != null) {
 				sprintWiseStory.setSprintName(firstIssue.getSprintName());
 				sprintWiseStory.setSSprintBeginDate(firstIssue.getSprintBeginDate());
-
 			}
 			sprintWiseStories.add(sprintWiseStory);
 		});
 
 		return sprintWiseStories;
 	}
-
 }

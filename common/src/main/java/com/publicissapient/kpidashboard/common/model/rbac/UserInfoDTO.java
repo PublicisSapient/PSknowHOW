@@ -32,9 +32,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The User info dto.
- */
+/** The User info dto. */
 @Data
 @Builder
 @Getter
@@ -53,5 +51,5 @@ public class UserInfoDTO {
 	private String createdOn;
 	private String emailAddress;
 	private List<ProjectsAccessDTO> projectsAccess;
-	private Map<String , Boolean> notificationEmail;
+	private Map<String, Boolean> notificationEmail;
 }

@@ -30,9 +30,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class KpiRequest {
 
-    @NotNull(message = "KPI ID cannot be null")
-    @NotEmpty(message = "KPI ID cannot be empty")
-    private String id;
-    private String chartData;
-    private Object metadata;
+	@NotNull(message = "KPI ID cannot be null")
+	@NotEmpty(message = "KPI ID cannot be empty")
+	private String id;
+
+	private String chartData;
+	private Object metadata;
 }

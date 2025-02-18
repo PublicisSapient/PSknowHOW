@@ -22,7 +22,8 @@ import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 
 public interface SprintTraceLogService {
 	/**
-	 *  return the latest fetch status of sprintId
+	 * return the latest fetch status of sprintId
+	 *
 	 * @param sprintId
 	 * @return
 	 */

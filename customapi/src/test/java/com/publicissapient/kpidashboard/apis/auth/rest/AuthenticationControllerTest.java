@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +57,8 @@ import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupManager;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthenticationControllerTest {
@@ -140,10 +141,7 @@ public class AuthenticationControllerTest {
 		when(userInfoService.save(any())).thenReturn(userInfo);
 		signupManager.sendUserPreApprovalRequestEmailToAdmin(anyString(), anyString());
 		mockMvc.perform(post("/registerUser").accept(MediaType.APPLICATION_JSON).content(request)
-				.contentType(MediaType.APPLICATION_JSON)
-
-		).andExpect(status().isAccepted());
-
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isAccepted());
 	}
 
 	@Test
@@ -152,11 +150,10 @@ public class AuthenticationControllerTest {
 		String request = "{\"username\":\"test\",\"password\":\"Test@123\",\"email\":\"test@gmail.com\"}";
 
 		when(authenticationService.isEmailExist(anyString())).thenReturn(true);
-		mockMvc.perform(post("/registerUser").accept(MediaType.APPLICATION_JSON).content(request)
-				.contentType(MediaType.APPLICATION_JSON)
-
-		).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON));
-
+		mockMvc
+				.perform(post("/registerUser").accept(MediaType.APPLICATION_JSON).content(request)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON));
 	}
 
 	@Test
@@ -165,11 +162,10 @@ public class AuthenticationControllerTest {
 		String request = "{\"username\":\"test\",\"password\":\"12345\",\"email\":\"test@gmail.com\"}";
 
 		when(authenticationService.isEmailExist(anyString())).thenReturn(false);
-		mockMvc.perform(post("/registerUser").accept(MediaType.APPLICATION_JSON).content(request)
-				.contentType(MediaType.APPLICATION_JSON)
-
-		).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON));
-
+		mockMvc
+				.perform(post("/registerUser").accept(MediaType.APPLICATION_JSON).content(request)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON));
 	}
 
 	@Test
@@ -182,11 +178,10 @@ public class AuthenticationControllerTest {
 		doThrow(DuplicateKeyException.class).when(authenticationResponseService).handle(any(HttpServletResponse.class),
 				any(Authentication.class));
 
-		mockMvc.perform(post("/registerUser").accept(MediaType.APPLICATION_JSON).content(request)
-				.contentType(MediaType.APPLICATION_JSON)
-
-		).andExpect(status().isUnprocessableEntity()).andExpect(content().contentType(MediaType.APPLICATION_JSON));
-
+		mockMvc
+				.perform(post("/registerUser").accept(MediaType.APPLICATION_JSON).content(request)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isUnprocessableEntity()).andExpect(content().contentType(MediaType.APPLICATION_JSON));
 	}
 
 	@Test
@@ -196,11 +191,9 @@ public class AuthenticationControllerTest {
 
 		when(authenticationService.update(anyString(), anyString())).thenReturn("User is updated");
 
-		mockMvc.perform(post("/updateUser").accept(MediaType.APPLICATION_JSON).content(request)
-				.contentType(MediaType.APPLICATION_JSON)
-
-		).andExpect(status().isOk());
-
+		mockMvc.perform(
+				post("/updateUser").accept(MediaType.APPLICATION_JSON).content(request).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
 	}
 
 	@Test
@@ -224,9 +217,10 @@ public class AuthenticationControllerTest {
 		Principal principal = Mockito.mock(Principal.class);
 		when(principal.getName()).thenReturn("SUPERADMIN");
 
-		mockMvc.perform(get("/users/SUPERADMIN").accept(MediaType.APPLICATION_JSON)
-				.contentType(MediaType.APPLICATION_JSON).principal(principal)).andExpect(status().isOk())
-				.andExpect(MockMvcResultMatchers.content().json(expectedResponse));
+		mockMvc
+				.perform(get("/users/SUPERADMIN").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+						.principal(principal))
+				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().json(expectedResponse));
 	}
 
 	@Test
@@ -237,9 +231,10 @@ public class AuthenticationControllerTest {
 		Principal principal = Mockito.mock(Principal.class);
 		when(principal.getName()).thenReturn("SUPERADMIN");
 
-		mockMvc.perform(get("/users/testUser").accept(MediaType.APPLICATION_JSON)
-				.contentType(MediaType.APPLICATION_JSON).principal(principal)).andExpect(status().isOk())
-				.andExpect(MockMvcResultMatchers.content().json(expectedResponse));
+		mockMvc
+				.perform(get("/users/testUser").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+						.principal(principal))
+				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().json(expectedResponse));
 	}
 
 	@Test
@@ -261,9 +256,10 @@ public class AuthenticationControllerTest {
 		Principal principal = Mockito.mock(Principal.class);
 		when(principal.getName()).thenReturn("anotherUser");
 
-		mockMvc.perform(get("/users/testUser").accept(MediaType.APPLICATION_JSON)
-				.contentType(MediaType.APPLICATION_JSON).principal(principal)).andExpect(status().isOk())
-				.andExpect(MockMvcResultMatchers.content().json(expectedResponse));
+		mockMvc
+				.perform(get("/users/testUser").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+						.principal(principal))
+				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().json(expectedResponse));
 	}
 
 	private UserInfo createUserInfo(String username, String role, String email) {
@@ -283,5 +279,4 @@ public class AuthenticationControllerTest {
 	private UserInfo createUserInfo(String username, String role) {
 		return createUserInfo(username, role, null);
 	}
-
 }

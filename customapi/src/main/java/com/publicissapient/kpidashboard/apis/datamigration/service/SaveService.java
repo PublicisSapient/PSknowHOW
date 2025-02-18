@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.datamigration.service;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.model.comments.KpiCommentsHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +31,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectHierarch
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
 import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
+import com.publicissapient.kpidashboard.common.model.comments.KpiCommentsHistory;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
@@ -51,7 +51,6 @@ public class SaveService {
 
 	@Autowired
 	BulkUpdateRepository bulkUpdateRepository;
-
 
 	public void saveToDatabase(Map<String, Object> dataToSave) {
 		log.info("Start--Migration Data Saving");
@@ -73,7 +72,5 @@ public class SaveService {
 				(List<AccessRequest>) dataToSave.get("ACCESS_REQUEST"));
 		bulkUpdateRepository.bulkUpdateComments((List<KPIComments>) dataToSave.get("KPI_COMMENT"));
 		bulkUpdateRepository.bulkUpdateCommentsHistory((List<KpiCommentsHistory>) dataToSave.get("KPI_COMMENT_HISTORY"));
-
 	}
-
 }

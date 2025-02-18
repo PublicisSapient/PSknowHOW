@@ -28,14 +28,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -139,7 +137,6 @@ public class CommonServiceImplTest {
 		list.add("20-40-20");
 
 		Assert.assertEquals("4", commonService.getMaturityLevel(list, Constant.AUTOMATED_PERCENTAGE, "90"));
-
 	}
 
 	@Test
@@ -166,7 +163,6 @@ public class CommonServiceImplTest {
 		list.add("80-60");
 		list.add("80-");
 		Assert.assertEquals("0", commonService.getMaturityLevel(list, "kpi28", "90"));
-
 	}
 
 	@Test
@@ -179,7 +175,6 @@ public class CommonServiceImplTest {
 		list.add("20-40-20");
 
 		Assert.assertEquals("4", commonService.getMaturityLevel(list, KPICode.CODE_COMMIT.getKpiId(), "90"));
-
 	}
 
 	@Test
@@ -217,7 +212,6 @@ public class CommonServiceImplTest {
 		when(userInfoRepository.findByAuthoritiesIn(Arrays.asList("ROLE_SUPERADMIN"))).thenReturn(users);
 		when(authenticationRepository.findByUsernameIn(Arrays.asList(username))).thenReturn(authentications);
 		commonService.getEmailAddressBasedOnRoles(Arrays.asList("ROLE_SUPERADMIN"));
-
 	}
 
 	@Test
@@ -254,7 +248,6 @@ public class CommonServiceImplTest {
 
 		when(userInfoRepository.findByAuthoritiesIn(Arrays.asList("ROLE_SUPERADMIN"))).thenReturn(null);
 		commonService.getEmailAddressBasedOnRoles(Arrays.asList("ROLE_SUPERADMIN"));
-
 	}
 
 	@Test
@@ -292,7 +285,6 @@ public class CommonServiceImplTest {
 		when(userInfoRepository.findByAuthoritiesIn(Arrays.asList("ROLE_SUPERADMIN"))).thenReturn(users);
 		when(authenticationRepository.findByUsernameIn(Arrays.asList(username))).thenReturn(null);
 		commonService.getEmailAddressBasedOnRoles(Arrays.asList("ROLE_SUPERADMIN"));
-
 	}
 
 	@Test
@@ -301,7 +293,6 @@ public class CommonServiceImplTest {
 		when(customApiConfig.getUiPort()).thenReturn("9999");
 		when(request.getScheme()).thenReturn("http://");
 		commonService.getApiHost();
-
 	}
 
 	@Test
@@ -312,7 +303,6 @@ public class CommonServiceImplTest {
 		} catch (UnknownHostException e) {
 
 		}
-
 	}
 
 	@Test
@@ -325,7 +315,6 @@ public class CommonServiceImplTest {
 		} catch (UnknownHostException e) {
 
 		}
-
 	}
 
 	@Test
@@ -419,7 +408,6 @@ public class CommonServiceImplTest {
 
 		when(userInfoRepository.findByAuthoritiesIn(Arrays.asList(Constant.ROLE_PROJECT_ADMIN))).thenReturn(users);
 		commonService.getProjectAdminEmailAddressBasedProjectId("5ddf69f6a592816aa30c4fbe");
-
 	}
 
 	ProjectBasicConfig projectBasicConfigObj() {

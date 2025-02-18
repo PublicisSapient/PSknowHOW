@@ -25,18 +25,16 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.constant.ProcessorType;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
 
-/**
- * The Sonar Processor which extends processor.
- */
+/** The Sonar Processor which extends processor. */
 public class SonarProcessor extends Processor {
 
 	private List<String> sonarKpiMetrics = new ArrayList<>();
 
 	/**
 	 * Provides instance of Sonar Processor.
-	 * 
+	 *
 	 * @param metrics
-	 *            the list of metrics
+	 *          the list of metrics
 	 * @return SonarProcessor
 	 */
 	public static SonarProcessor getSonarConfig(List<String> metrics) {
@@ -52,11 +50,10 @@ public class SonarProcessor extends Processor {
 
 	/**
 	 * Provides Sonar Metrics.
-	 * 
+	 *
 	 * @return the list of Sonar KPI Metrics
 	 */
 	public List<String> getSonarKpiMetrics() {
 		return sonarKpiMetrics;
 	}
-
 }

@@ -20,8 +20,9 @@ package com.publicissapient.kpidashboard.common.model.application.dto;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.bson.types.ObjectId;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,7 +33,6 @@ import lombok.Setter;
 
 /**
  * @author narsingh9
- *
  */
 @Data
 @Builder
@@ -62,7 +62,6 @@ public class ProjectBasicConfigDTO {
 	private boolean projectOnHold;
 	private ObjectId clonedFrom;
 
-
 	/**
 	 * @return isKanban value
 	 */
@@ -74,7 +73,7 @@ public class ProjectBasicConfigDTO {
 	 * set isKanban value
 	 *
 	 * @param isKanban
-	 *            boolean value
+	 *          boolean value
 	 */
 	public void setIsKanban(boolean isKanban) {
 		this.kanban = isKanban;

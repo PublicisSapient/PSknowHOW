@@ -34,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author anisingh4
  */
-
 @Slf4j
 public class KanbanTestExecutionDataFactory {
 	private static final String FILE_PATH_TEST_CASE_DETAILS = "/json/default/kanban_test_execution.json";

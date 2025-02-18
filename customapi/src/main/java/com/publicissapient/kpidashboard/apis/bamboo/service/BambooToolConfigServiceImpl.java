@@ -67,7 +67,8 @@ public class BambooToolConfigServiceImpl {
 			Connection connection = optConnection.get();
 			String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
 			String username = connection.getUsername() == null ? null : connection.getUsername().trim();
-			String password = connection.getPassword() == null ? null
+			String password = connection.getPassword() == null
+					? null
 					: restAPIUtils.decryptPassword(connection.getPassword());
 
 			String url = baseUrl + JOBS_URL_SUFFIX;
@@ -108,11 +109,11 @@ public class BambooToolConfigServiceImpl {
 			Connection connection = optConnection.get();
 			String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
 			String username = connection.getUsername() == null ? null : connection.getUsername().trim();
-			String password = connection.getPassword() == null ? null
+			String password = connection.getPassword() == null
+					? null
 					: restAPIUtils.decryptPassword(connection.getPassword());
 
-			String url = String.format(new StringBuilder(baseUrl).append(RESOURCE_BRANCH_ENDPOINT).toString(),
-					jobNameKey);
+			String url = String.format(new StringBuilder(baseUrl).append(RESOURCE_BRANCH_ENDPOINT).toString(), jobNameKey);
 
 			HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
 			try {
@@ -133,35 +134,36 @@ public class BambooToolConfigServiceImpl {
 
 	/**
 	 * this method is used to call the api to get branches
+	 *
 	 * @param responseDTOList
 	 * @param url
 	 * @param httpEntity
 	 * @throws ParseException
 	 */
-	private void apiCallToGetBranches(List<BambooBranchesResponseDTO> responseDTOList, String url, HttpEntity<?> httpEntity) throws ParseException {
+	private void apiCallToGetBranches(List<BambooBranchesResponseDTO> responseDTOList, String url,
+			HttpEntity<?> httpEntity) throws ParseException {
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
 		if (response.getStatusCode() == HttpStatus.OK) {
 			parseBranchesResponse(responseDTOList, response);
 		} else {
 			String statusCode = response.getStatusCode().toString();
-			log.error("Error while fetching BambooBranchesNameAndKeys from {}. with status {}", url,
-					statusCode);
+			log.error("Error while fetching BambooBranchesNameAndKeys from {}. with status {}", url, statusCode);
 		}
 	}
 
 	/**
 	 * this method check for the client exception
-	 * 
+	 *
 	 * @param connection
-	 *            connection
+	 *          connection
 	 * @param exception
-	 *            exception
+	 *          exception
 	 */
 	private void isClientException(Connection connection, Exception exception) {
-		if (exception instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ClientErrorMessageEnum
-					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+		if (exception instanceof HttpClientErrorException &&
+				((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) exception).getStatusCode().value())
+					.getReasonPhrase();
 			connectionService.updateBreakingConnection(connection, errMsg);
 		}
 	}
@@ -186,7 +188,7 @@ public class BambooToolConfigServiceImpl {
 
 	/**
 	 * fetch deployment project list
-	 * 
+	 *
 	 * @param connectionId
 	 * @return
 	 */
@@ -197,7 +199,8 @@ public class BambooToolConfigServiceImpl {
 			Connection connection = optConnection.get();
 			String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
 			String username = connection.getUsername() == null ? null : connection.getUsername().trim();
-			String password = connection.getPassword() == null ? null
+			String password = connection.getPassword() == null
+					? null
 					: restAPIUtils.decryptPassword(connection.getPassword());
 
 			String url = baseUrl + DEPLOYMENTPROJECT_URL_SUFFIX;
@@ -207,16 +210,15 @@ public class BambooToolConfigServiceImpl {
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
 				if (response.getStatusCode() == HttpStatus.OK) {
 					JSONParser respParser = new JSONParser();
-					JSONArray searchResults = (JSONArray) ((JSONObject) respParser.parse(response.getBody()))
-							.get(SEARCHKEY);
+					JSONArray searchResults = (JSONArray) ((JSONObject) respParser.parse(response.getBody())).get(SEARCHKEY);
 
 					for (Object job : searchResults) {
 						BambooDeploymentProjectsResponseDTO bambooPlansResponseDTO = new BambooDeploymentProjectsResponseDTO();
 						Object searchEntity = ((JSONObject) job).get(SEARCHLIST);
 						final String deploymentProjectName = restAPIUtils
 								.convertToString((JSONObject) searchEntity, DEPLOYMENT_PROJECT).trim();
-						final String deploymentProjectId = restAPIUtils
-								.convertToString((JSONObject) searchEntity, PROJECT_ID).trim();
+						final String deploymentProjectId = restAPIUtils.convertToString((JSONObject) searchEntity, PROJECT_ID)
+								.trim();
 						bambooPlansResponseDTO.setDeploymentProjectName(deploymentProjectName);
 						bambooPlansResponseDTO.setDeploymentProjectId(deploymentProjectId);
 						responseDTOList.add(bambooPlansResponseDTO);

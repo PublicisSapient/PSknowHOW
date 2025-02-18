@@ -67,5 +67,4 @@ public class VersionMetadataServiceImpl implements VersionMetadataService {
 	public RestTemplate getRestContext() {
 		return new RestTemplate();
 	}
-
 }

@@ -49,7 +49,7 @@ public final class AzureProcessorUtil {
 	 * This method return UTF-8 decoded string response
 	 *
 	 * @param azureResponse
-	 *            Object of the Azure Response
+	 *          Object of the Azure Response
 	 * @return Decoded String
 	 */
 	public static String deodeUTF8String(Object azureResponse) {
@@ -76,7 +76,7 @@ public final class AzureProcessorUtil {
 	 * Formats Input date using ISODateTimeFormatter
 	 *
 	 * @param date
-	 *            date to be formatted
+	 *          date to be formatted
 	 * @return formatted Date String
 	 */
 	public static String getFormattedDate(String date) {
@@ -96,7 +96,7 @@ public final class AzureProcessorUtil {
 	 * Gets Formatted date time Object
 	 *
 	 * @param dateString
-	 *            DateString
+	 *          DateString
 	 * @return Formatted Date object
 	 */
 	public static Date getFormattedDateTime(String dateString) {
@@ -121,11 +121,11 @@ public final class AzureProcessorUtil {
 	 * Adds parameter to the given url
 	 *
 	 * @param url
-	 *            the url
+	 *          the url
 	 * @param key
-	 *            the parameter name
+	 *          the parameter name
 	 * @param value
-	 *            the parameter value
+	 *          the parameter value
 	 * @return the updated url as StringBuilder
 	 */
 	public static StringBuilder addParam(StringBuilder url, String key, String value) {
@@ -142,9 +142,9 @@ public final class AzureProcessorUtil {
 	 * Join URL.
 	 *
 	 * @param base
-	 *            the base
+	 *          the base
 	 * @param paths
-	 *            the path
+	 *          the path
 	 * @return the join URL
 	 */
 	public static String joinURL(String base, String... paths) {

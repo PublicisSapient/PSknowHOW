@@ -50,5 +50,4 @@ public class BoardConfigChangeUnit {
 	public void rollback() {
 		// doesn't require rollback
 	}
-
 }

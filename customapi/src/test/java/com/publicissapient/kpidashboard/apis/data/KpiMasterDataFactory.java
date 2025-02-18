@@ -78,7 +78,6 @@ public class KpiMasterDataFactory {
 			mapper.registerModule(new JavaTimeModule());
 			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
 		}
 	}
 
@@ -89,5 +88,4 @@ public class KpiMasterDataFactory {
 	public List<KpiMaster> getSpecificKpis(List<String> kpis) {
 		return kpiList.stream().filter(master -> kpis.contains(master.getKpiId())).collect(Collectors.toList());
 	}
-
 }

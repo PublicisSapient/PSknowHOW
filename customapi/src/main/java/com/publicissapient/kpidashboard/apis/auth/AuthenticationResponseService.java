@@ -22,17 +22,14 @@ import org.springframework.security.core.Authentication;
 
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- * Interface to handle authentication service response.
- */
+/** Interface to handle authentication service response. */
 public interface AuthenticationResponseService {
 
 	/**
 	 * handle authentication response.
-	 * 
+	 *
 	 * @param response
 	 * @param authentication
 	 */
 	void handle(HttpServletResponse response, Authentication authentication);
-
 }

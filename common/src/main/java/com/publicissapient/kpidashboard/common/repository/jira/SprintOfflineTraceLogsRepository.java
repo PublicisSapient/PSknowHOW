@@ -25,9 +25,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintOfflineFileTrace
 
 /**
  * @author yasbano
- *
  */
-
 @Repository
 public interface SprintOfflineTraceLogsRepository extends MongoRepository<SprintOfflineFileTraceLogs, ObjectId> {
 

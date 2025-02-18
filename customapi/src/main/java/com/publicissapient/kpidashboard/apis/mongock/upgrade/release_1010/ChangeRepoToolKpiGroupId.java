@@ -17,12 +17,14 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1010;
 
+import org.bson.Document;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
 import com.mongodb.client.MongoCollection;
+
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
-import org.bson.Document;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 @ChangeUnit(id = "change_repo_tool_kpi_group_id", order = "101012", author = "kunkambl", systemVersion = "10.1.0")
 public class ChangeRepoToolKpiGroupId {
@@ -37,8 +39,8 @@ public class ChangeRepoToolKpiGroupId {
 	public void execution() {
 		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
 		// Update documents
-		updateDocument(kpiMaster, "kpi84", 2);//mean time to merge kpi
-		updateDocument(kpiMaster, "kpi11", 2);//code commit kpi
+		updateDocument(kpiMaster, "kpi84", 2); // mean time to merge kpi
+		updateDocument(kpiMaster, "kpi11", 2); // code commit kpi
 	}
 
 	private void updateDocument(MongoCollection<Document> kpiCategoryMapping, String kpiId, int groupId) {
@@ -54,8 +56,7 @@ public class ChangeRepoToolKpiGroupId {
 	public void rollback() {
 		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
 		// Update documents
-		updateDocument(kpiMaster, "kpi84", 1);//mean time to merge kpi
-		updateDocument(kpiMaster, "kpi11", 1);//code commit kpi
+		updateDocument(kpiMaster, "kpi84", 1); // mean time to merge kpi
+		updateDocument(kpiMaster, "kpi11", 1); // code commit kpi
 	}
-
 }

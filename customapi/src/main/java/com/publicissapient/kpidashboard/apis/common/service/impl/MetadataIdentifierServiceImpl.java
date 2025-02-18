@@ -43,8 +43,7 @@ public class MetadataIdentifierServiceImpl implements MetaDataIdentifierService 
 	}
 
 	private List<MetadataIdentifier> getNonCustomList() {
-		return getMetaDataList().stream()
-				.filter(template -> StringUtils.isEmpty(template.getTemplateName()) || !template.getTemplateName().equalsIgnoreCase(CUSTOM_TEMPLATE)).toList();
+		return getMetaDataList().stream().filter(template -> StringUtils.isEmpty(template.getTemplateName()) ||
+				!template.getTemplateName().equalsIgnoreCase(CUSTOM_TEMPLATE)).toList();
 	}
-
 }

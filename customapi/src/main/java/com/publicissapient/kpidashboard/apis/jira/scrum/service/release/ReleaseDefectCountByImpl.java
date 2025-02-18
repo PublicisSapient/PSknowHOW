@@ -77,11 +77,11 @@ public class ReleaseDefectCountByImpl extends JiraReleaseKPIService {
 
 	/**
 	 * @param latestRelease
-	 *            latestRelease
+	 *          latestRelease
 	 * @param kpiElement
-	 *            kpiElement
+	 *          kpiElement
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 */
 	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement, KpiRequest kpiRequest) {
 		if (latestRelease != null) {
@@ -94,8 +94,7 @@ public class ReleaseDefectCountByImpl extends JiraReleaseKPIService {
 				Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 				Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper.createMapOfIssueModal(totalDefects);
-				totalDefects.forEach(
-						defect -> KPIExcelUtility.populateIssueModal(defect, fieldMapping, issueKpiModalObject));
+				totalDefects.forEach(defect -> KPIExcelUtility.populateIssueModal(defect, fieldMapping, issueKpiModalObject));
 
 				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 					KPIExcelUtility.populateReleaseDefectRelatedExcelData(totalDefects, excelData, fieldMapping);
@@ -108,10 +107,8 @@ public class ReleaseDefectCountByImpl extends JiraReleaseKPIService {
 				kpiElement.setExcelData(excelData);
 				kpiElement.setIssueData(new HashSet<>(issueKpiModalObject.values()));
 				kpiElement.setFilterGroup(createFilterGroup());
-
 			}
 		}
-
 	}
 
 	@Override

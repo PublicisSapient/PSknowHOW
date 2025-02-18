@@ -33,13 +33,12 @@ public interface ProcessorExecutionTraceLogService {
 	List<ProcessorExecutionTraceLog> getTraceLogs(String processorName, String basicProjectConfigId);
 
 	/**
-	 * 
 	 * Get Project TraceLogDTOs
-	 * 
+	 *
 	 * @param processorName
-	 *            processorName
+	 *          processorName
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return List<ProcessorExecutionTraceLogDTO>
 	 */
 	List<ProcessorExecutionTraceLogDTO> getTraceLogDTOs(String processorName, String basicProjectConfigId);

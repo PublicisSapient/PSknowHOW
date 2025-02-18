@@ -33,9 +33,7 @@ import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- * aksshriv1
- */
+/** aksshriv1 */
 @RestController
 public class TokenAuthenticationController {
 	@Autowired
@@ -47,7 +45,7 @@ public class TokenAuthenticationController {
 	 * Fetch user details from the Central Auth on the first login and save them
 	 * into the KnowHow database. For subsequent logins, retrieve user details from
 	 * the KnowHow database
-	 * 
+	 *
 	 * @param httpServletRequest
 	 * @param httpServletResponse
 	 * @return
@@ -69,5 +67,4 @@ public class TokenAuthenticationController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(serviceResponse);
 		}
 	}
-
 }

@@ -38,8 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
-import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccessDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,11 +61,13 @@ import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionServi
 import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardConfigService;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
+import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccessDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
@@ -143,7 +143,6 @@ public class UserInfoServiceImplTest {
 		service.demoteFromAdmin(username, authType);
 
 		fail("Should have thrown an exception");
-
 	}
 
 	@Test(expected = UserNotFoundException.class)
@@ -179,14 +178,11 @@ public class UserInfoServiceImplTest {
 		assertNotNull(result);
 		assertFalse(result.getAuthorities().contains("ROLE_SUPERADMIN"));
 		verify(userInfoRepository).save(user);
-
 	}
 
 	/**
 	 * 1. if username present in the db then update it with new one else return null
-	 *
 	 */
-
 	@Test
 	public void updateUserTest() {
 
@@ -198,7 +194,6 @@ public class UserInfoServiceImplTest {
 
 		UserInfo savedUser = service.updateUserInfo(updatedUser);
 		assertEquals(savedUser, updatedUser);
-
 	}
 
 	@Test
@@ -305,8 +300,7 @@ public class UserInfoServiceImplTest {
 		userInfoDTO.setProjectsAccess(paList);
 
 		when(userInfoRepository.findByUsername("User")).thenReturn(testUser);
-		when(projectAccessManager.updateAccessOfUserInfo(any(UserInfo.class), any(UserInfo.class)))
-				.thenReturn(testUser);
+		when(projectAccessManager.updateAccessOfUserInfo(any(UserInfo.class), any(UserInfo.class))).thenReturn(testUser);
 		ServiceResponse result = service.updateUserRole("User", userInfoDTO);
 		assertTrue(result.getSuccess());
 	}
@@ -335,8 +329,7 @@ public class UserInfoServiceImplTest {
 		u.setProjectsAccess(paList);
 
 		when(userInfoRepository.findByUsername("User")).thenReturn(testUser);
-		when(projectAccessManager.updateAccessOfUserInfo(any(UserInfo.class), any(UserInfo.class)))
-				.thenReturn(testUser);
+		when(projectAccessManager.updateAccessOfUserInfo(any(UserInfo.class), any(UserInfo.class))).thenReturn(testUser);
 		ServiceResponse result = service.updateUserRole("User", u);
 		assertTrue(result.getSuccess());
 	}
@@ -363,20 +356,20 @@ public class UserInfoServiceImplTest {
 		u.setEmailAddress("testEmail@test.com");
 		when(userInfoRepository.findByUsername("User")).thenReturn(null);
 		when(userInfoRepository.save(any())).thenReturn(testUser);
-		when(projectAccessManager.updateAccessOfUserInfo(any(UserInfo.class), any(UserInfo.class)))
-				.thenReturn(testUser);
+		when(projectAccessManager.updateAccessOfUserInfo(any(UserInfo.class), any(UserInfo.class))).thenReturn(testUser);
 		ServiceResponse result = service.updateUserRole("User", u);
 		assertTrue(result.getSuccess());
 	}
 
 	/**
 	 * method to test deleteUser() ;
+	 *
 	 * <p>
 	 * Delete User
 	 */
 	@Test
 	public void deleteUserTest() {
-		ServiceResponse result = service.deleteUser("testuser" , false);
+		ServiceResponse result = service.deleteUser("testuser", false);
 		assertTrue(result.getSuccess());
 	}
 
@@ -390,8 +383,8 @@ public class UserInfoServiceImplTest {
 	@Test
 	public void getUserDetailsByToken() {
 		UserInfo user = new UserInfo();
-		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
-				new Cookie("authCookie", AuthenticationFixture.getJwtToken("dummyUser", "dummyData", 100000L)));
+		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class)))
+				.thenReturn(new Cookie("authCookie", AuthenticationFixture.getJwtToken("dummyUser", "dummyData", 100000L)));
 		when(userTokenReopository.findByUserToken(anyString()))
 				.thenReturn(new UserTokenData("dummyUser", "dummyToken", null));
 		when(authenticationRepository.findByUsername(anyString())).thenReturn(new Authentication());
@@ -443,8 +436,8 @@ public class UserInfoServiceImplTest {
 	@Test
 	public void updateNotificationEmailTest() {
 		Map<String, Boolean> notificationEmail = new HashMap<>();
-		notificationEmail.put("accessAlertNotification" , true);
-		notificationEmail.put("errorAlertNotification" , false);
+		notificationEmail.put("accessAlertNotification", true);
+		notificationEmail.put("errorAlertNotification", false);
 		UserInfo user = new UserInfo();
 		user.setUsername("testUser");
 		user.setAuthType(AuthType.STANDARD);

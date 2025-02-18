@@ -93,7 +93,7 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 	 * onlinemode
 	 *
 	 * @param projectConfigList
-	 *            List of all configured projects
+	 *          List of all configured projects
 	 */
 	@Override
 	public Map<String, Integer> validateAndCollectIssues(List<ProjectBasicConfig> projectConfigList) {
@@ -114,12 +114,11 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 
 				// Placeholder for Oauth Client implementation.
 				AzureServer azureServer = prepareAzureServer(entry.getValue());
-				AzureAdapter azureAdapter = new OnlineAdapter(azureProcessorConfig, processorAzureRestClient,
-						azureServer, processorToolConnectionService);
+				AzureAdapter azureAdapter = new OnlineAdapter(azureProcessorConfig, processorAzureRestClient, azureServer,
+						processorToolConnectionService);
 				Runnable worker = new AzureOnlineRunnable(latch, azureAdapter, entry.getValue(),
-						entry.getValue().getProjectKey(), azureIssueClientFactory, azureProcessorConfig,
-						boardMetadataRepository, metadataIdentifierRepository, fieldMappingRepository,
-						azureRestClientFactory, azureStateCategoryRepository);// NOPMD
+						entry.getValue().getProjectKey(), azureIssueClientFactory, azureProcessorConfig, boardMetadataRepository,
+						metadataIdentifierRepository, fieldMappingRepository, azureRestClientFactory, azureStateCategoryRepository); // NOPMD
 				executor.execute(worker);
 			}
 
@@ -127,8 +126,8 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 
 			Integer scrumIssueCount = onlineLineprojectConfigMap.values().stream().filter(x -> !x.isKanban())
 					.mapToInt(ProjectConfFieldMapping::getIssueCount).sum();
-			Integer kanbanIssueCount = onlineLineprojectConfigMap.values().stream()
-					.filter(ProjectConfFieldMapping::isKanban).mapToInt(ProjectConfFieldMapping::getIssueCount).sum();
+			Integer kanbanIssueCount = onlineLineprojectConfigMap.values().stream().filter(ProjectConfFieldMapping::isKanban)
+					.mapToInt(ProjectConfFieldMapping::getIssueCount).sum();
 			issueCountMap.put(AzureConstants.SCRUM_DATA, scrumIssueCount);
 			issueCountMap.put(AzureConstants.KANBAN_DATA, kanbanIssueCount);
 		} catch (InterruptedException ex) {
@@ -152,8 +151,7 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 	}
 
 	private String decryptKey(String encryptedKey) {
-		return Optional
-				.ofNullable(aesEncryptionService.decrypt(encryptedKey, azureProcessorConfig.getAesEncryptionKey()))
+		return Optional.ofNullable(aesEncryptionService.decrypt(encryptedKey, azureProcessorConfig.getAesEncryptionKey()))
 				.orElse(encryptedKey);
 	}
 
@@ -164,8 +162,7 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 			List<ProjectToolConfig> azureBoardsDetails = toolRepository
 					.findByToolNameAndBasicProjectConfigId(ProcessorConstants.AZURE, config.getId());
 			if (CollectionUtils.isNotEmpty(azureBoardsDetails) && null != azureBoardsDetails.get(0).getConnectionId()) {
-				Optional<Connection> azureConn = connectionRepository
-						.findById(azureBoardsDetails.get(0).getConnectionId());
+				Optional<Connection> azureConn = connectionRepository.findById(azureBoardsDetails.get(0).getConnectionId());
 				if (azureConn.isPresent() && !azureConn.get().isOffline()) {
 					onlineAzureProjects.add(config);
 				}

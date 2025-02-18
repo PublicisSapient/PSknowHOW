@@ -40,5 +40,4 @@ public class TaskSchedulerConfiguration {
 		threadPoolTaskScheduler.setErrorHandler(processorErrorHandler);
 		return threadPoolTaskScheduler;
 	}
-
 }

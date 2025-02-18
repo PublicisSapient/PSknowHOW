@@ -28,19 +28,20 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 
-/**
- * The interface Kanban capacity repository.
- */
-public interface KanbanCapacityRepository extends CrudRepository<KanbanCapacity, ObjectId>,
-		QuerydslPredicateExecutor<KanbanCapacity>, KanbanCapacityRepoCustom {
+/** The interface Kanban capacity repository. */
+public interface KanbanCapacityRepository
+		extends
+			CrudRepository<KanbanCapacity, ObjectId>,
+			QuerydslPredicateExecutor<KanbanCapacity>,
+			KanbanCapacityRepoCustom {
 
 	List<KanbanCapacity> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
 	/**
 	 * delete capacity projectwise
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 */
 	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
 

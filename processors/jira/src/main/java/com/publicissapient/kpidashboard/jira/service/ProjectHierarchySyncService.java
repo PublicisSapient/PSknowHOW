@@ -19,11 +19,9 @@ package com.publicissapient.kpidashboard.jira.service;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import org.bson.types.ObjectId;
 
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 
 /**
  * Service interface for synchronizing project hierarchies.
@@ -35,7 +33,7 @@ public interface ProjectHierarchySyncService {
 	 * Synchronizes the hierarchy for Scrum sprints.
 	 *
 	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
+	 *          the ID of the basic project configuration
 	 */
 	void syncScrumSprintHierarchy(ObjectId basicProjectConfigId);
 
@@ -43,9 +41,9 @@ public interface ProjectHierarchySyncService {
 	 * Synchronizes the hierarchy for releases.
 	 *
 	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
+	 *          the ID of the basic project configuration
 	 * @param fetchedReleasedHierarchy
-	 *            the list of fetched release hierarchies
+	 *          the list of fetched release hierarchies
 	 */
 	void syncReleaseHierarchy(ObjectId basicProjectConfigId, List<ProjectHierarchy> fetchedReleasedHierarchy);
 
@@ -53,11 +51,11 @@ public interface ProjectHierarchySyncService {
 	 * Deletes entries that do not match the given criteria.
 	 *
 	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
+	 *          the ID of the basic project configuration
 	 * @param distinctReleaseNodeIds
-	 *            the list of distinct release node IDs
+	 *          the list of distinct release node IDs
 	 * @param hierarchyLevelId
-	 *            the ID of the hierarchy level
+	 *          the ID of the hierarchy level
 	 */
 	void deleteNonMatchingEntries(ObjectId basicProjectConfigId, List<String> distinctReleaseNodeIds,
 			String hierarchyLevelId);

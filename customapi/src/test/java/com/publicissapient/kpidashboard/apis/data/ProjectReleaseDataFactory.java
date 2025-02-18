@@ -36,7 +36,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author anisingh4
  */
-
 @Slf4j
 public class ProjectReleaseDataFactory {
 
@@ -49,7 +48,6 @@ public class ProjectReleaseDataFactory {
 	private List<ProjectVersion> projectVersion;
 
 	private ProjectReleaseDataFactory() {
-
 	}
 
 	public static ProjectReleaseDataFactory newInstance(String filePath, String versionFilePath) {
@@ -104,8 +102,8 @@ public class ProjectReleaseDataFactory {
 
 	public List<ProjectRelease> findByBasicProjectConfigId(String projectConfigId) {
 
-		ProjectRelease projectRelease = this.projectRelease.stream().filter(
-				projectRelease1 -> projectRelease1.getConfigId().toHexString().equalsIgnoreCase(projectConfigId))
+		ProjectRelease projectRelease = this.projectRelease.stream()
+				.filter(projectRelease1 -> projectRelease1.getConfigId().toHexString().equalsIgnoreCase(projectConfigId))
 				.findFirst().orElse(null);
 		if (projectRelease != null) {
 			projectRelease.setListProjectVersion(projectVersion);
@@ -115,5 +113,4 @@ public class ProjectReleaseDataFactory {
 
 		return list;
 	}
-
 }

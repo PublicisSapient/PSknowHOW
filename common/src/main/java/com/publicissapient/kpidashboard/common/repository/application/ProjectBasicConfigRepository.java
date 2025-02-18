@@ -39,7 +39,7 @@ public interface ProjectBasicConfigRepository extends MongoRepository<ProjectBas
 	 * Returns ProjectBasicConfig from persistence store by id
 	 *
 	 * @param id
-	 *            id
+	 *          id
 	 * @return {@link ProjectBasicConfig} object if exist
 	 */
 	Optional<ProjectBasicConfig> findById(ObjectId id);
@@ -48,7 +48,7 @@ public interface ProjectBasicConfigRepository extends MongoRepository<ProjectBas
 	 * Returns ProjectBasicConfig from persistence store by project name
 	 *
 	 * @param projectName
-	 *            ProjectName
+	 *          ProjectName
 	 * @return {@link ProjectBasicConfig} object if exist
 	 */
 	ProjectBasicConfig findByProjectName(String projectName);
@@ -57,18 +57,17 @@ public interface ProjectBasicConfigRepository extends MongoRepository<ProjectBas
 	 * Returns ProjectBasicConfig from persistence store by projectNodeId
 	 *
 	 * @param projectNodeId
-	 *            ProjectName
+	 *          ProjectName
 	 * @return {@link ProjectBasicConfig} object if exist
 	 */
 	ProjectBasicConfig findByProjectNodeId(String projectNodeId);
-
 
 	/**
 	 * Returns ProjectBasicConfig from persistence store by project name with
 	 * different id than provided
 	 *
 	 * @param projectName
-	 *            ProjectName
+	 *          ProjectName
 	 * @return {@link ProjectBasicConfig} object if exist
 	 */
 	ProjectBasicConfig findByProjectNameAndIdNot(String projectName, ObjectId id);

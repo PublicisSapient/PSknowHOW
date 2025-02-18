@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.IssueKpiModalValue;
 import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -34,12 +33,11 @@ import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
+import com.publicissapient.kpidashboard.apis.model.IssueKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 
@@ -77,8 +75,7 @@ public class ReleaseDefectCountByImplTest {
 
 	@Test
 	public void getQualifierType() {
-		assertThat(defectCountBy.getQualifierType(),
-				equalTo(KPICode.DEFECT_COUNT_BY.name()));
+		assertThat(defectCountBy.getQualifierType(), equalTo(KPICode.DEFECT_COUNT_BY.name()));
 	}
 
 	@Test

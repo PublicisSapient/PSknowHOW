@@ -1,79 +1,79 @@
 package com.publicissapient.kpidashboard.github.util;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 
 @ExtendWith(SpringExtension.class)
 public class GitHubURIBuilderTest {
 
-    ProcessorToolConnection connection;
+	ProcessorToolConnection connection;
 
-    @BeforeEach
-    public void setup() {
-        connection = new ProcessorToolConnection();
-        connection.setUrl("http://github.api.com");
-        connection.setBranch("feature-branch");
-        connection.setRepositoryName("repo");
-    }
-    @Test
-    public void build_shouldReturnValidCommitPath() throws Exception {
-        // Arrange
-        GitHubURIBuilder uriBuilder = new GitHubURIBuilder(connection);
+	@BeforeEach
+	public void setup() {
+		connection = new ProcessorToolConnection();
+		connection.setUrl("http://github.api.com");
+		connection.setBranch("feature-branch");
+		connection.setRepositoryName("repo");
+	}
 
-        // Act
-        String result = uriBuilder.build();
+	@Test
+	public void build_shouldReturnValidCommitPath() throws Exception {
+		// Arrange
+		GitHubURIBuilder uriBuilder = new GitHubURIBuilder(connection);
 
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.contains("/repos/"));
-        assertTrue(result.contains("/commits"));
-    }
+		// Act
+		String result = uriBuilder.build();
 
-    @Test
-    public void mergeRequestUrlbuild_shouldReturnValidMRPath() throws Exception {
-        // Arrange
-        GitHubURIBuilder uriBuilder = new GitHubURIBuilder(connection);
-        // Act
-        String result = uriBuilder.mergeRequestUrlbuild();
+		// Assert
+		assertNotNull(result);
+		assertTrue(result.contains("/repos/"));
+		assertTrue(result.contains("/commits"));
+	}
 
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.contains("/repos/"));
-        assertTrue(result.contains("/pulls"));
-    }
+	@Test
+	public void mergeRequestUrlbuild_shouldReturnValidMRPath() throws Exception {
+		// Arrange
+		GitHubURIBuilder uriBuilder = new GitHubURIBuilder(connection);
+		// Act
+		String result = uriBuilder.mergeRequestUrlbuild();
 
-    @Test
-    public void build_withCustomBranch_shouldIncludeBranchInPath() throws Exception {
-        // Arrange
-        GitHubURIBuilder uriBuilder = new GitHubURIBuilder(connection);
+		// Assert
+		assertNotNull(result);
+		assertTrue(result.contains("/repos/"));
+		assertTrue(result.contains("/pulls"));
+	}
 
-        // Act
-        String result = uriBuilder.build();
+	@Test
+	public void build_withCustomBranch_shouldIncludeBranchInPath() throws Exception {
+		// Arrange
+		GitHubURIBuilder uriBuilder = new GitHubURIBuilder(connection);
 
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.contains("/repo/commits"));
-    }
+		// Act
+		String result = uriBuilder.build();
 
-    @Test
-    public void build_withNullBranch_shouldUseDefaultMasterBranch() throws Exception {
-        // Arrange
-        connection.setBranch(null);
-        GitHubURIBuilder uriBuilder = new GitHubURIBuilder(connection);
+		// Assert
+		assertNotNull(result);
+		assertTrue(result.contains("/repo/commits"));
+	}
 
-        // Act
-        String result = uriBuilder.build();
+	@Test
+	public void build_withNullBranch_shouldUseDefaultMasterBranch() throws Exception {
+		// Arrange
+		connection.setBranch(null);
+		GitHubURIBuilder uriBuilder = new GitHubURIBuilder(connection);
 
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.contains("sha=master"));
-    }
+		// Act
+		String result = uriBuilder.build();
 
-
+		// Assert
+		assertNotNull(result);
+		assertTrue(result.contains("sha=master"));
+	}
 }

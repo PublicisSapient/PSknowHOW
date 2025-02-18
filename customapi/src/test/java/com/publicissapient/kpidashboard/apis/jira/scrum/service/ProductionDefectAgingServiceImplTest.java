@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -132,11 +131,10 @@ public class ProductionDefectAgingServiceImplTest {
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		totalIssueBacklogList = JiraIssueDataFactory.newInstance().getJiraIssues();
-		when(jiraIssueRepository.findIssuesByDateAndTypeAndStatus(anyMap(), anyMap(), anyString(), anyString(),
-				anyString(), anyString(), anyBoolean())).thenReturn(totalIssueBacklogList);
+		when(jiraIssueRepository.findIssuesByDateAndTypeAndStatus(anyMap(), anyMap(), anyString(), anyString(), anyString(),
+				anyString(), anyBoolean())).thenReturn(totalIssueBacklogList);
 
 		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
-
 	}
 
 	@Test
@@ -159,33 +157,30 @@ public class ProductionDefectAgingServiceImplTest {
 
 		try {
 			KpiElement kpiElement = productionIssuesByPriorityAndAgingService.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
+					kpiRequest.getKpiList().get(0), treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(dc -> {
-
 				String priority = dc.getFilter();
 				switch (priority) {
-				case "P1":
-					assertThat("Production Defect Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "P2":
-					assertThat("Production Defect  Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "P3":
-					assertThat("Production Defect  Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "P4":
-					assertThat("Production Defect  Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "MISC":
-					assertThat("Production Defect  Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
+					case "P1" :
+						assertThat("Production Defect Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "P2" :
+						assertThat("Production Defect  Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "P3" :
+						assertThat("Production Defect  Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "P4" :
+						assertThat("Production Defect  Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "MISC" :
+						assertThat("Production Defect  Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
 
-				default:
-					break;
+					default :
+						break;
 				}
-
 			});
 
 		} catch (ApplicationException applicationException) {
@@ -241,5 +236,4 @@ public class ProductionDefectAgingServiceImplTest {
 		dataCount.setValue(value);
 		return dataCount;
 	}
-
 }

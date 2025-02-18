@@ -18,13 +18,6 @@
 
 package com.publicissapient.kpidashboard.jira.tasklet;
 
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
-import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.service.CreateJiraIssueReleaseStatus;
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -35,6 +28,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.service.CreateJiraIssueReleaseStatus;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
+
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author kunkambl
  */
@@ -43,37 +45,37 @@ import org.springframework.stereotype.Component;
 @StepScope
 public class KanbanJiraIssueReleaseStatusTasklet implements Tasklet {
 
-    @Autowired
-    FetchProjectConfiguration fetchProjectConfiguration;
+	@Autowired
+	FetchProjectConfiguration fetchProjectConfiguration;
 
-    @Autowired
-    @Qualifier("createKanbanJiraIssueReleaseStatusImpl")
-    CreateJiraIssueReleaseStatus createJiraIssueReleaseStatus;
+	@Autowired
+	@Qualifier("createKanbanJiraIssueReleaseStatusImpl")
+	CreateJiraIssueReleaseStatus createJiraIssueReleaseStatus;
 
-    @Autowired
-    JiraProcessorConfig jiraProcessorConfig;
+	@Autowired
+	JiraProcessorConfig jiraProcessorConfig;
 
-    @Autowired
-    JiraClientService jiraClientService;
+	@Autowired
+	JiraClientService jiraClientService;
 
-    @Value("#{jobParameters['projectId']}")
-    private String projectId;
+	@Value("#{jobParameters['projectId']}")
+	private String projectId;
 
-    /**
-     * @param sc
-     *            StepContribution
-     * @param cc
-     *            ChunkContext
-     * @return RepeatStatus
-     * @throws Exception
-     *             Exception
-     */
-    @Override
-    public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
-        ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-        ProcessorJiraRestClient client = jiraClientService.getRestClientMap(projectId);
-        log.info("Fetching release statuses for the project : {}", projConfFieldMapping.getProjectName());
-        createJiraIssueReleaseStatus.processAndSaveProjectStatusCategory(client, projectId);
-        return RepeatStatus.FINISHED;
-    }
+	/**
+	 * @param sc
+	 *          StepContribution
+	 * @param cc
+	 *          ChunkContext
+	 * @return RepeatStatus
+	 * @throws Exception
+	 *           Exception
+	 */
+	@Override
+	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
+		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+		ProcessorJiraRestClient client = jiraClientService.getRestClientMap(projectId);
+		log.info("Fetching release statuses for the project : {}", projConfFieldMapping.getProjectName());
+		createJiraIssueReleaseStatus.processAndSaveProjectStatusCategory(client, projectId);
+		return RepeatStatus.FINISHED;
+	}
 }

@@ -35,9 +35,7 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import com.publicissapient.kpidashboard.common.model.application.Build;
 
-/**
- * An implementation of {@link BuildRepositoryCustom}
- */
+/** An implementation of {@link BuildRepositoryCustom} */
 public class BuildRepositoryImpl implements BuildRepositoryCustom {
 
 	@Autowired
@@ -76,5 +74,4 @@ public class BuildRepositoryImpl implements BuildRepositoryCustom {
 		}
 		return theCriteria;
 	}
-
 }

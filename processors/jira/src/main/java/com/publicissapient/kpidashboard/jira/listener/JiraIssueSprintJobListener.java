@@ -77,10 +77,8 @@ public class JiraIssueSprintJobListener implements JobExecutionListener {
 			sprintTrace.setFetchSuccessful(true);
 			// clearing cache
 			processorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
-			processorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
-					CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
-			processorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
-					CommonConstant.CACHE_PROJECT_KPI_DATA);
+			processorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
+			processorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.CACHE_PROJECT_KPI_DATA);
 
 		} else {
 			sprintTrace.setErrorInFetch(true);
@@ -92,11 +90,10 @@ public class JiraIssueSprintJobListener implements JobExecutionListener {
 			try {
 				jiraClientService.getRestClientMap(sprintId).close();
 			} catch (IOException e) {
-				throw new RuntimeException("Failed to close rest client", e);// NOSONAR
+				throw new RuntimeException("Failed to close rest client", e); // NOSONAR
 			}
 			jiraClientService.removeRestClientMapClientForKey(sprintId);
 			jiraClientService.removeKerberosClientMapClientForKey(sprintId);
 		}
-
 	}
 }

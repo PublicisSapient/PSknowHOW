@@ -6,15 +6,13 @@ import com.publicissapient.kpidashboard.apis.model.FeedbackSubmitDTO;
 
 /**
  * @author sanbhand1
- *
  */
 public interface FeedbackService {
 
 	/**
 	 * Create an method to submit feedback.
-	 * 
-	 * @param feedback
 	 *
+	 * @param feedback
 	 * @return responseEntity with message and status
 	 */
 	boolean submitFeedback(FeedbackSubmitDTO feedback, String loggedUserName);
@@ -23,5 +21,4 @@ public interface FeedbackService {
 	 * @return categories
 	 */
 	List<String> getFeedBackCategories();
-
 }

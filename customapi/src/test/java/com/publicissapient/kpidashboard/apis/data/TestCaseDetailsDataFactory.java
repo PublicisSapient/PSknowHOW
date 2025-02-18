@@ -35,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author anisingh4
  */
-
 @Slf4j
 public class TestCaseDetailsDataFactory {
 	private static final String FILE_PATH_TEST_CASE_DETAILS = "/json/default/test_case_details.json";
@@ -82,8 +81,7 @@ public class TestCaseDetailsDataFactory {
 	}
 
 	public List<TestCaseDetails> findAutomatedTestCases() {
-		return testCaseDetailsList.stream()
-				.filter(testCaseDetails -> testCaseDetails.getIsTestAutomated().equals("Yes"))
+		return testCaseDetailsList.stream().filter(testCaseDetails -> testCaseDetails.getIsTestAutomated().equals("Yes"))
 				.collect(Collectors.toList());
 	}
 }

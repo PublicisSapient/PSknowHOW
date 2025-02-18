@@ -42,5 +42,4 @@ public class ExposeAPITokenRequestDTO {
 
 	@NotNull
 	private String userName;
-
 }

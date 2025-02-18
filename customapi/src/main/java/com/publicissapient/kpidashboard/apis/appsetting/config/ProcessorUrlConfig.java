@@ -60,40 +60,40 @@ public class ProcessorUrlConfig {
 
 	public String getProcessorUrl(String processor) {
 		switch (processor) {
-		case ProcessorConstants.ZEPHYR:
-			return getZephyr();
-		case ProcessorConstants.SONAR:
-			return getSonar();
-		case ProcessorConstants.BITBUCKET:
-			return getBitbucket();
-		case ProcessorConstants.GITLAB:
-			return getGitlab();
-		case ProcessorConstants.GITHUB:
-			return getGithub();
-		case ProcessorConstants.GITHUBACTION:
-			return getGithubAction();
-		case ProcessorConstants.EXCEL:
-			return getExcel();
-		case ProcessorConstants.BAMBOO:
-			return getBamboo();
-		case ProcessorConstants.JENKINS:
-			return getJenkins();
-		case ProcessorConstants.JIRA:
-			return getJira();
-		case ProcessorConstants.JIRA_TEST:
-			return getJiraTest();
-		case ProcessorConstants.AZURE:
-			return getAzure();
-		case ProcessorConstants.AZUREPIPELINE:
-			return getAzurepipeline();
-		case ProcessorConstants.AZUREREPO:
-			return getAzurerepository();
-		case ProcessorConstants.TEAMCITY:
-			return getTeamcity();
-		case ProcessorConstants.ARGOCD:
-			return getArgocd();
-		default:
-			return StringUtils.EMPTY;
+			case ProcessorConstants.ZEPHYR :
+				return getZephyr();
+			case ProcessorConstants.SONAR :
+				return getSonar();
+			case ProcessorConstants.BITBUCKET :
+				return getBitbucket();
+			case ProcessorConstants.GITLAB :
+				return getGitlab();
+			case ProcessorConstants.GITHUB :
+				return getGithub();
+			case ProcessorConstants.GITHUBACTION :
+				return getGithubAction();
+			case ProcessorConstants.EXCEL :
+				return getExcel();
+			case ProcessorConstants.BAMBOO :
+				return getBamboo();
+			case ProcessorConstants.JENKINS :
+				return getJenkins();
+			case ProcessorConstants.JIRA :
+				return getJira();
+			case ProcessorConstants.JIRA_TEST :
+				return getJiraTest();
+			case ProcessorConstants.AZURE :
+				return getAzure();
+			case ProcessorConstants.AZUREPIPELINE :
+				return getAzurepipeline();
+			case ProcessorConstants.AZUREREPO :
+				return getAzurerepository();
+			case ProcessorConstants.TEAMCITY :
+				return getTeamcity();
+			case ProcessorConstants.ARGOCD :
+				return getArgocd();
+			default :
+				return StringUtils.EMPTY;
 		}
 	}
 }

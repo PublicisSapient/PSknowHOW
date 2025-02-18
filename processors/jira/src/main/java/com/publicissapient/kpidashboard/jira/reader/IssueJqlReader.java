@@ -84,21 +84,21 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 	private Iterator<Issue> issueIterator;
 	ProjectConfFieldMapping projectConfFieldMapping;
 	private ReaderRetryHelper retryHelper;
-    ProcessorJiraRestClient client;
+	ProcessorJiraRestClient client;
 
-    @Value("#{jobParameters['projectId']}")
+	@Value("#{jobParameters['projectId']}")
 	private String projectId;
 
 	@Value("#{jobParameters['processorId']}")
 	private String processorId;
 
-    public void initializeReader(String projectId) {
-        log.info("**** Jira Issue fetch started * * *");
-        pageSize = jiraProcessorConfig.getPageSize();
-        projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+	public void initializeReader(String projectId) {
+		log.info("**** Jira Issue fetch started * * *");
+		pageSize = jiraProcessorConfig.getPageSize();
+		projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
 		retryHelper = new ReaderRetryHelper();
 		client = jiraClientService.getRestClientMap(projectId);
-    }
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -109,8 +109,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 	public ReadData read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
 
 		if (null == projectConfFieldMapping) {
-			log.info("Gathering data for batch - Scrum projects with JQL configuration for the project : {} ",
-					projectId);
+			log.info("Gathering data for batch - Scrum projects with JQL configuration for the project : {} ", projectId);
 			initializeReader(projectId);
 		}
 		ReadData readData = null;
@@ -172,10 +171,9 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 		String deltaDate = DateUtil.dateTimeFormatter(
 				LocalDateTime.now().minusMonths(jiraProcessorConfig.getPrevMonthCountToFetchData()),
 				JiraConstants.QUERYDATEFORMAT);
-		if (MapUtils.isEmpty(projectWiseDeltaDate) || StringUtils
-				.isBlank(projectWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
-			log.info("fetching project status from trace log for project: {}",
-					projectConfFieldMapping.getProjectName());
+		if (MapUtils.isEmpty(projectWiseDeltaDate) ||
+				StringUtils.isBlank(projectWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
+			log.info("fetching project status from trace log for project: {}", projectConfFieldMapping.getProjectName());
 			List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
 					.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(JiraConstants.JIRA,
 							projectConfFieldMapping.getBasicProjectConfigId().toString());
@@ -187,8 +185,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 				log.info("project: {}  found in trace log. Data will be fetched from one day before {}",
 						projectConfFieldMapping.getProjectName(), lastSuccessfulRun);
 				projectWiseDeltaDate = new HashMap<>();
-				projectWiseDeltaDate.put(projectConfFieldMapping.getBasicProjectConfigId().toString(),
-						lastSuccessfulRun);
+				projectWiseDeltaDate.put(projectConfFieldMapping.getBasicProjectConfigId().toString(), lastSuccessfulRun);
 			} else {
 				log.info("project: {} not found in trace log so data will be fetched from beginning",
 						projectConfFieldMapping.getProjectName());
@@ -196,8 +193,8 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 				projectWiseDeltaDate.put(projectConfFieldMapping.getBasicProjectConfigId().toString(), deltaDate);
 			}
 		}
-		if (MapUtils.isNotEmpty(projectWiseDeltaDate) && !StringUtils
-				.isBlank(projectWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
+		if (MapUtils.isNotEmpty(projectWiseDeltaDate) &&
+				!StringUtils.isBlank(projectWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
 			deltaDate = projectWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString());
 		}
 

@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
+package com.publicissapient.kpidashboard.common.model.application.dto; // NOPMD
 
 import java.util.List;
 import java.util.Map;
@@ -32,9 +32,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * The type Field mapping. Represents Jira field mapping values
- */
+/** The type Field mapping. Represents Jira field mapping values */
 @SuppressWarnings("PMD.TooManyFields")
 @Getter
 @Setter
@@ -483,9 +481,9 @@ public class FieldMappingDTO extends FieldMappingHistory {
 	private String thresholdValueKPI185;
 	private String thresholdValueKPI186;
 
-	/** kanban kpis threshold fields starts **/
-
+	/** kanban kpis threshold fields starts * */
 	private String thresholdValueKPI51;
+
 	private String thresholdValueKPI55;
 	private String thresholdValueKPI54;
 	private String thresholdValueKPI50;
@@ -507,9 +505,9 @@ public class FieldMappingDTO extends FieldMappingHistory {
 	private String thresholdValueKPI184;
 	private String thresholdValueKPI183;
 
-	/** kanban kpi threshold fields ends  **/
-
+	/** kanban kpi threshold fields ends * */
 	private String jiraProductionIncidentIdentification;
+
 	private String jiraProdIncidentRaisedByCustomField;
 	private List<String> jiraProdIncidentRaisedByValue;
 
@@ -544,11 +542,12 @@ public class FieldMappingDTO extends FieldMappingHistory {
 
 	private List<String> jiraIssueTypeExcludeKPI124;
 	private List<String> jiraIssueTypeExcludeKPI75;
-	//production defect ageing status to consider
+	// production defect ageing status to consider
 	private List<String> jiraStatusToConsiderKPI127;
 
 	private List<String> issueTypesToConsiderKpi113;
 	private List<String> closedIssueStatusToConsiderKpi113;
+
 	/**
 	 * Get jira issue type names string [ ].
 	 *
@@ -562,7 +561,7 @@ public class FieldMappingDTO extends FieldMappingHistory {
 	 * Sets jira issue type names.
 	 *
 	 * @param jiraIssueTypeNames
-	 *            the jira issue type names
+	 *          the jira issue type names
 	 */
 	public void setJiraIssueTypeNames(String[] jiraIssueTypeNames) {
 		this.jiraIssueTypeNames = jiraIssueTypeNames == null ? null : jiraIssueTypeNames.clone();
@@ -581,7 +580,7 @@ public class FieldMappingDTO extends FieldMappingHistory {
 	 * Sets link defect to story field.
 	 *
 	 * @param linkDefectToStoryField
-	 *            the link defect to story field
+	 *          the link defect to story field
 	 */
 	public void setLinkDefectToStoryField(String[] linkDefectToStoryField) {
 		this.linkDefectToStoryField = linkDefectToStoryField == null ? null : linkDefectToStoryField.clone();
@@ -590,5 +589,4 @@ public class FieldMappingDTO extends FieldMappingHistory {
 	public boolean getNotificationEnabler() {
 		return notificationEnabler;
 	}
-
 }

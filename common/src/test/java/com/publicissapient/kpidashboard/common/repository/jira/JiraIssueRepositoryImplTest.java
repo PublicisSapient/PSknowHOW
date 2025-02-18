@@ -40,24 +40,21 @@ import java.util.regex.Pattern;
 
 import org.bson.types.ObjectId;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.mongodb.client.result.UpdateResult;
 import com.publicissapient.kpidashboard.common.model.jira.IssueHistoryMappedData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 public class JiraIssueRepositoryImplTest {
@@ -469,7 +466,6 @@ public class JiraIssueRepositoryImplTest {
 		mockJiraJiraIssue6.setEstimateTime(1500);
 		mockJiraJiraIssue6.setSprintName("");
 		mockJiraJiraIssue6.setTypeName("Story");
-
 	}
 
 	@After
@@ -731,14 +727,13 @@ public class JiraIssueRepositoryImplTest {
 		// Call the method and assert the result
 		List<JiraIssue> result = jiraIssueRepository.findNonRegressionTestCases(mapOfFilters, uniqueProjectMap);
 
-		jiraIssueRepository.findIssuesByDateAndTypeAndStatus(mapOfFilters, uniqueProjectMap, startDate, endDate,
-				"range", "nin", true);
+		jiraIssueRepository.findIssuesByDateAndTypeAndStatus(mapOfFilters, uniqueProjectMap, startDate, endDate, "range",
+				"nin", true);
 		jiraIssueRepository.findLinkedDefects(mapOfFilters, new HashSet<>(), uniqueProjectMap);
 		jiraIssueRepository.findIssuesByFilterAndProjectMapFilter(mapOfFilters, uniqueProjectMap);
-		jiraIssueRepository.findByRelease(mapOfFilters,uniqueProjectMap);
+		jiraIssueRepository.findByRelease(mapOfFilters, uniqueProjectMap);
 
 		// Assert the result or perform further verifications
 		assertEquals(Collections.emptyList(), result);
 	}
-
 }

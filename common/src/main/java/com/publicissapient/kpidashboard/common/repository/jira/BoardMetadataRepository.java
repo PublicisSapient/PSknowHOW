@@ -24,26 +24,24 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 
-/**
- * Repository for BoardMetadata.
- */
+/** Repository for BoardMetadata. */
 @Repository
 public interface BoardMetadataRepository extends CrudRepository<BoardMetadata, ObjectId> {
 
 	/*
 	 * This method return metadata based on projectBasicconfigId
-	 * 
+	 *
 	 * @param projectBasicConfigId
-	 * 
+	 *
 	 * @return BoardMetadata
 	 */
 	BoardMetadata findByProjectBasicConfigId(ObjectId projectBasicConfigId);
 
 	/*
 	 * This method return metadata based on projectBasicconfigId
-	 * 
+	 *
 	 * @param projectToolConfigId
-	 * 
+	 *
 	 * @return BoardMetadata
 	 */
 	BoardMetadata findByProjectToolConfigId(ObjectId projectToolConfigId);
@@ -52,8 +50,7 @@ public interface BoardMetadataRepository extends CrudRepository<BoardMetadata, O
 	 * Deletes all documents that matches with given basicProjectConfigId.
 	 *
 	 * @param projectBasicConfigId
-	 *            projectBasicConfigId
+	 *          projectBasicConfigId
 	 */
 	void deleteByProjectBasicConfigId(ObjectId projectBasicConfigId);
-
 }

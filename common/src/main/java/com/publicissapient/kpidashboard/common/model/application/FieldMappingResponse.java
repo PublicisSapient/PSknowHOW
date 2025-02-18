@@ -28,10 +28,9 @@ import lombok.Setter;
 
 /**
  * The response of fieldmapping api call
- * 
+ *
  * @author shi6
  */
-
 @Getter
 @Setter
 @Builder
@@ -44,5 +43,4 @@ public class FieldMappingResponse {
 	Object originalValue;
 	Object previousValue;
 	List<ConfigurationHistoryChangeLog> history;
-
 }

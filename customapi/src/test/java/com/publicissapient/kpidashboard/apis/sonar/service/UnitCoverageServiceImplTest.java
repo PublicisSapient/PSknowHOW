@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,9 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.common.service.CommonService;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -50,12 +45,15 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SonarHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -71,7 +69,6 @@ import com.publicissapient.kpidashboard.common.repository.sonar.SonarHistoryRepo
 
 /**
  * @author prigupta8
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class UnitCoverageServiceImplTest {
@@ -197,7 +194,6 @@ public class UnitCoverageServiceImplTest {
 
 	@After
 	public void cleanup() {
-
 	}
 
 	@Test
@@ -230,7 +226,7 @@ public class UnitCoverageServiceImplTest {
 
 	/**
 	 * agg criteria null
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -258,7 +254,7 @@ public class UnitCoverageServiceImplTest {
 
 	/**
 	 * agg criteria sum
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -285,7 +281,7 @@ public class UnitCoverageServiceImplTest {
 
 	/**
 	 * agg criteria median
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -312,7 +308,7 @@ public class UnitCoverageServiceImplTest {
 
 	/**
 	 * agg criteria percentile
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -333,8 +329,7 @@ public class UnitCoverageServiceImplTest {
 		try {
 			KpiElement kpiElement = ucServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("Tech Debt :", ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getData(),
-					equalTo("37.00"));
+			assertThat("Tech Debt :", ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getData(), equalTo("37.00"));
 		} catch (Exception enfe) {
 
 		}

@@ -125,7 +125,6 @@ public class DeploymentFrequencyServiceImplTest {
 		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
 		projectConfigList.add(projectBasicConfig);
 
-
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
@@ -176,8 +175,8 @@ public class DeploymentFrequencyServiceImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		deploymentList.stream().filter(deployment -> deployment.getNumber().equalsIgnoreCase("1847"))
 				.forEach(deployment -> {
-					deployment.setStartTime(LocalDateTime.now().minusDays(1)
-							.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
+					deployment.setStartTime(
+							LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
 				});
 		when(deploymentRepository.findDeploymentList(anyMap(), anySet(), anyString(), anyString()))
 				.thenReturn(deploymentList);
@@ -195,8 +194,7 @@ public class DeploymentFrequencyServiceImplTest {
 		try {
 			KpiElement kpiElement = deploymentFrequencyService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("Deployment Frequency Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(),
-					equalTo(4));
+			assertThat("Deployment Frequency Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(4));
 		} catch (ApplicationException exception) {
 
 		}
@@ -228,8 +226,7 @@ public class DeploymentFrequencyServiceImplTest {
 		try {
 			KpiElement kpiElement = deploymentFrequencyService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("Deployment Frequency Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(),
-					equalTo(4));
+			assertThat("Deployment Frequency Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(4));
 		} catch (ApplicationException exception) {
 
 		}
@@ -240,7 +237,7 @@ public class DeploymentFrequencyServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList , false);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 
 		when(deploymentRepository.findDeploymentList(any(), any(), any(), any())).thenReturn(deploymentList);
 		String startDate = "2022-06-03T06:39:40.000";

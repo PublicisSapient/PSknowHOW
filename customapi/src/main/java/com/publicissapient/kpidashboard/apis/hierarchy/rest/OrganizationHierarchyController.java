@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
-import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 
 @RestController
 @RequestMapping("/organizationHierarchy")
@@ -27,12 +27,11 @@ public class OrganizationHierarchyController {
 		List<OrganizationHierarchy> organizationHierarchies = organizationHierarchyService.findAll();
 
 		if (CollectionUtils.isNotEmpty(organizationHierarchies)) {
-			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true,
-					"Fetched organization Hierarchies Successfully.", organizationHierarchies));
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(true, "Fetched organization Hierarchies Successfully.", organizationHierarchies));
 		} else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ServiceResponse(false, "Not Found Any Organization Hierarchies.", null));
 		}
 	}
-
 }

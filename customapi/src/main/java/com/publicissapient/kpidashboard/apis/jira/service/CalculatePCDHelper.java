@@ -41,11 +41,7 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Helper class for the PCD and potential delay calculation
- *
- *
- */
+/** Helper class for the PCD and potential delay calculation */
 @Slf4j
 @Service
 public class CalculatePCDHelper {
@@ -59,11 +55,11 @@ public class CalculatePCDHelper {
 	 * stories
 	 *
 	 * @param sprintDetails
-	 *            sprintDetails
+	 *          sprintDetails
 	 * @param allIssues
-	 *            allIssues
+	 *          allIssues
 	 * @param inProgressStatus
-	 *            inProgressStatus
+	 *          inProgressStatus
 	 * @return List of potential delay
 	 */
 	public static List<IterationPotentialDelay> calculatePotentialDelay(SprintDetails sprintDetails,
@@ -76,16 +72,14 @@ public class CalculatePCDHelper {
 				List<JiraIssue> inProgressIssues = new ArrayList<>();
 				List<JiraIssue> openIssues = new ArrayList<>();
 				arrangeJiraIssueList(inProgressStatus, jiraIssues, inProgressIssues, openIssues);
-				iterationPotentialDelayList
-						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
+				iterationPotentialDelayList.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 			});
 		}
 
 		if (CollectionUtils.isNotEmpty(inProgressStatus)) {
-			List<JiraIssue> inProgressIssues = allIssues.stream()
-					.filter(jiraIssue -> (jiraIssue.getAssigneeId() == null)
-							&& StringUtils.isNotEmpty(jiraIssue.getDueDate())
-							&& (inProgressStatus.contains(jiraIssue.getStatus())))
+			List<JiraIssue> inProgressIssues = allIssues
+					.stream().filter(jiraIssue -> (jiraIssue.getAssigneeId() == null) &&
+							StringUtils.isNotEmpty(jiraIssue.getDueDate()) && (inProgressStatus.contains(jiraIssue.getStatus())))
 					.collect(Collectors.toList());
 
 			List<JiraIssue> openIssues = new ArrayList<>();
@@ -99,9 +93,8 @@ public class CalculatePCDHelper {
 				.collect(Collectors.groupingBy(JiraIssue::getAssigneeId));
 	}
 
-	public static List<IterationPotentialDelay> sprintWiseDelayCalculation(
-			List<JiraIssue> inProgressIssuesJiraIssueList, List<JiraIssue> openIssuesJiraIssueList,
-			SprintDetails sprintDetails) {
+	public static List<IterationPotentialDelay> sprintWiseDelayCalculation(List<JiraIssue> inProgressIssuesJiraIssueList,
+			List<JiraIssue> openIssuesJiraIssueList, SprintDetails sprintDetails) {
 		List<IterationPotentialDelay> iterationPotentialDelayList = new ArrayList<>();
 		LocalDate pivotPCD = null;
 		Map<LocalDate, List<JiraIssue>> dueDateWiseInProgressJiraIssue = createDueDateWiseMap(
@@ -124,7 +117,7 @@ public class CalculatePCDHelper {
 	 * create dueDateWise sorted Map only for the stories having dueDate
 	 *
 	 * @param arrangeJiraIssueList
-	 *            arrangeJiraIssueList
+	 *          arrangeJiraIssueList
 	 * @return map
 	 */
 	private static Map<LocalDate, List<JiraIssue>> createDueDateWiseMap(List<JiraIssue> arrangeJiraIssueList) {
@@ -157,13 +150,13 @@ public class CalculatePCDHelper {
 			int remainingEstimateTime = getRemainingEstimateTime(issue);
 			// if remaining time is 0 and sprint is closed, then PCD is sprint end time
 			// otherwise will create PCD
-			LocalDate potentialClosedDate = (remainingEstimateTime == 0
-					&& sprintState.equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED)) ? sprintEndDate
+			LocalDate potentialClosedDate = (remainingEstimateTime == 0 &&
+					sprintState.equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED))
+							? sprintEndDate
 							: createPotentialClosedDate(sprintDetails, remainingEstimateTime, pivotPCD);
 			int potentialDelay = getPotentialDelay(dueDate, potentialClosedDate);
-			iterationPotentialDelayList
-					.add(createIterationPotentialDelay(potentialClosedDate, potentialDelay, remainingEstimateTime,
-							issue, sprintState.equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED), dueDate));
+			iterationPotentialDelayList.add(createIterationPotentialDelay(potentialClosedDate, potentialDelay,
+					remainingEstimateTime, issue, sprintState.equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED), dueDate));
 			pivotPCDLocal = checkPivotPCD(sprintDetails, potentialClosedDate, remainingEstimateTime, pivotPCDLocal);
 		}
 		pivotPCD = pivotPCDLocal == null ? pivotPCD : pivotPCDLocal;
@@ -180,7 +173,6 @@ public class CalculatePCDHelper {
 		iterationPotentialDelay.setAssigneeId(issue.getAssigneeId());
 		iterationPotentialDelay.setStatus(issue.getStatus());
 		return iterationPotentialDelay;
-
 	}
 
 	/**
@@ -188,9 +180,9 @@ public class CalculatePCDHelper {
 	 * negative
 	 *
 	 * @param dueDate
-	 *            dueDate
+	 *          dueDate
 	 * @param potentialClosedDate
-	 *            potentialClosedDate
+	 *          potentialClosedDate
 	 * @return integer
 	 */
 	private static int getPotentialDelay(LocalDate dueDate, LocalDate potentialClosedDate) {
@@ -231,21 +223,20 @@ public class CalculatePCDHelper {
 	 * be taken into account for further storie's delay calculation
 	 *
 	 * @param sprintDetails
-	 *            sprintDetails
+	 *          sprintDetails
 	 * @param potentialClosedDate
-	 *            potentialClosedDate
+	 *          potentialClosedDate
 	 * @param remainingEstimateTime
-	 *            remainingEstimateTime
+	 *          remainingEstimateTime
 	 * @param pivotPCDLocal
-	 *            pivotPCDLocal
+	 *          pivotPCDLocal
 	 * @return localdate
 	 */
 	private static LocalDate checkPivotPCD(SprintDetails sprintDetails, LocalDate potentialClosedDate,
 			int remainingEstimateTime, LocalDate pivotPCDLocal) {
-		if ((pivotPCDLocal == null || pivotPCDLocal.isBefore(potentialClosedDate))
-				&& (!sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED)
-						|| (sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED)
-								&& remainingEstimateTime != 0))) {
+		if ((pivotPCDLocal == null || pivotPCDLocal.isBefore(potentialClosedDate)) && (!sprintDetails.getState()
+				.equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED) ||
+				(sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED) && remainingEstimateTime != 0))) {
 			pivotPCDLocal = potentialClosedDate;
 		}
 		return pivotPCDLocal;
@@ -255,29 +246,26 @@ public class CalculatePCDHelper {
 	 * setting in progress and open issues
 	 *
 	 * @param inProgressStatus
-	 *            inProgressStatus
+	 *          inProgressStatus
 	 * @param allIssues
-	 *            allIssues
+	 *          allIssues
 	 * @param inProgressIssues
-	 *            inProgressIssues
+	 *          inProgressIssues
 	 * @param openIssues
-	 *            openIssues
+	 *          openIssues
 	 */
 	public static void arrangeJiraIssueList(List<String> inProgressStatus, List<JiraIssue> allIssues,
 			List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
 		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream()
 				.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
 		if (CollectionUtils.isNotEmpty(inProgressStatus)) {
-			inProgressIssues.addAll(
-					jiraIssuesWithDueDate.stream().filter(jiraIssue -> inProgressStatus.contains(jiraIssue.getStatus()))
-							.collect(Collectors.toList()));
+			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
+					.filter(jiraIssue -> inProgressStatus.contains(jiraIssue.getStatus())).collect(Collectors.toList()));
 			openIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> !inProgressStatus.contains(jiraIssue.getStatus()))
-					.collect(Collectors.toList()));
+					.filter(jiraIssue -> !inProgressStatus.contains(jiraIssue.getStatus())).collect(Collectors.toList()));
 		} else {
 			openIssues.addAll(jiraIssuesWithDueDate);
 		}
-
 	}
 
 	public static Map<String, IterationPotentialDelay> checkMaxDelayAssigneeWise(
@@ -285,18 +273,17 @@ public class CalculatePCDHelper {
 		Map<String, List<IterationPotentialDelay>> assigneeWiseDelay = issueWiseDelay.stream()
 				.collect(Collectors.groupingBy(IterationPotentialDelay::getAssigneeId));
 		List<IterationPotentialDelay> maxDelayList = new ArrayList<>();
-		List<String> jiraStatusInProgress = CollectionUtils.isNotEmpty(inProgressStatus) ? inProgressStatus
+		List<String> jiraStatusInProgress = CollectionUtils.isNotEmpty(inProgressStatus)
+				? inProgressStatus
 				: new ArrayList<>();
 		assigneeWiseDelay.entrySet().forEach(assignee -> maxDelayList.add(assignee.getValue().stream()
 				.filter(iterationPotentialDelay -> jiraStatusInProgress.contains(iterationPotentialDelay.getStatus()))
-				.max(Comparator.comparing(IterationPotentialDelay::getPotentialDelay))
-				.orElse(new IterationPotentialDelay())));
+				.max(Comparator.comparing(IterationPotentialDelay::getPotentialDelay)).orElse(new IterationPotentialDelay())));
 		if (CollectionUtils.isNotEmpty(maxDelayList)) {
 			maxDelayList.forEach(iterationPotentialDelay -> issueWiseDelay.stream()
 					.filter(issue -> issue.equals(iterationPotentialDelay)).forEach(issue -> issue.setMaxMarker(true)));
 		}
-		return issueWiseDelay.stream().collect(Collectors.toMap(IterationPotentialDelay::getIssueId,
-				Function.identity(), (e1, e2) -> e2, LinkedHashMap::new));
+		return issueWiseDelay.stream().collect(
+				Collectors.toMap(IterationPotentialDelay::getIssueId, Function.identity(), (e1, e2) -> e2, LinkedHashMap::new));
 	}
-
 }

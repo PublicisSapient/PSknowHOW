@@ -26,9 +26,7 @@ import org.springframework.stereotype.Component;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * This class is used to hold settings specific to the Bamboo processor.
- */
+/** This class is used to hold settings specific to the Bamboo processor. */
 @Component
 @ConfigurationProperties(prefix = "bamboo")
 public class BambooConfig {
@@ -58,9 +56,7 @@ public class BambooConfig {
 	@Value("${aesEncryptionKey}")
 	private String aesEncryptionKey;
 
-	/**
-	 * null if not running in docker on http://localhost
-	 */
+	/** null if not running in docker on http://localhost */
 	@Setter
 	private String dockerLocalHostIP;
 
@@ -68,7 +64,7 @@ public class BambooConfig {
 	 * Docker NATs the real host localhost to 10.0.2.2 when running in docker as
 	 * localhost is stored in the JSON payload from jenkins we need this hack to fix
 	 * the addresses
-	 * 
+	 *
 	 * @return dockerLocalHostIP
 	 */
 	public String getDockerLocalHostIP() {

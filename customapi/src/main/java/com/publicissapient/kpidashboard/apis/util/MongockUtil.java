@@ -44,7 +44,7 @@ public final class MongockUtil {
 		if (collection.countDocuments() == 0) {
 			List<Document> documentList = new ArrayList<>();
 			dataList.forEach(data -> prepDocList(data, documentList));
-            mongoTemplate.insert(documentList, collectionName);
+			mongoTemplate.insert(documentList, collectionName);
 		}
 	}
 
@@ -64,19 +64,19 @@ public final class MongockUtil {
 
 	/**
 	 * Method to create a fieldMappingStructure
-	 * 
+	 *
 	 * @param fieldName
-	 *            fieldName
+	 *          fieldName
 	 * @param fieldLabel
-	 *            fieldLabel
+	 *          fieldLabel
 	 * @param section
-	 *            section
+	 *          section
 	 * @param fieldCategory
-	 *            fieldCategory
+	 *          fieldCategory
 	 * @param fieldType
-	 *            fieldType
+	 *          fieldType
 	 * @param tooltipDefinition
-	 *            tooltipDefinition
+	 *          tooltipDefinition
 	 * @return Document
 	 */
 	public static Document createFieldMapping(String fieldName, String fieldLabel, String section, String fieldCategory,
@@ -85,7 +85,6 @@ public final class MongockUtil {
 				.append("fieldType", fieldType).append("fieldCategory", fieldCategory)
 				.append("tooltip", new Document("definition", tooltipDefinition));
 	}
-
 
 	public static void insertFilteredListToDB(List<?> dataList, String collectionName, MongoTemplate mongoTemplate) {
 		List<Document> documentList = new ArrayList<>();

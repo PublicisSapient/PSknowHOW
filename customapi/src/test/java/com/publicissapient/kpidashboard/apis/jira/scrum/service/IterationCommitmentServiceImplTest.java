@@ -126,15 +126,13 @@ public class IterationCommitmentServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(iterationCommitmentServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		try {
-			KpiElement kpiElement = iterationCommitmentServiceImpl.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0),
+			KpiElement kpiElement = iterationCommitmentServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 			assertNotNull(kpiElement.getIssueData());
 
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -158,15 +156,13 @@ public class IterationCommitmentServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(iterationCommitmentServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		try {
-			KpiElement kpiElement = iterationCommitmentServiceImpl.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0),
+			KpiElement kpiElement = iterationCommitmentServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 			assertNotNull(kpiElement.getIssueData());
 
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -177,6 +173,5 @@ public class IterationCommitmentServiceImplTest {
 	@After
 	public void cleanup() {
 		jiraIssueRepository.deleteAll();
-
 	}
 }

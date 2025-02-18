@@ -30,9 +30,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -49,6 +47,7 @@ import org.springframework.web.client.RestOperations;
 
 import com.publicissapient.kpidashboard.common.constant.CommitType;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
@@ -61,20 +60,18 @@ import com.publicissapient.kpidashboard.gitlab.model.GitLabRepo;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * The Class GitLabClient.
- */
+/** The Class GitLabClient. */
 @Slf4j
 @Component()
 public class GitLabClient {
 
 	private static final String PAGE_PARAM = "&page=";
 	private static final String UTF = "UTF-8";
-	/**
-	 * The Git lab config.
-	 */
+
+	/** The Git lab config. */
 	@Autowired
 	GitLabConfig gitLabConfig;
+
 	@Autowired
 	AesEncryptionService aesEncryptionService;
 	@Autowired
@@ -84,10 +81,10 @@ public class GitLabClient {
 	 * Decrypt apiToken.
 	 *
 	 * @param apiToken
-	 *            the encrypted apiToken
+	 *          the encrypted apiToken
 	 * @return the string
 	 * @throws GeneralSecurityException
-	 *             the GeneralSecurityException
+	 *           the GeneralSecurityException
 	 */
 	protected String decryptApiToken(String apiToken) throws GeneralSecurityException {
 		return StringUtils.isNotEmpty(apiToken)
@@ -99,15 +96,14 @@ public class GitLabClient {
 	 * Fetch all commits.
 	 *
 	 * @param repo
-	 *            the repo
+	 *          the repo
 	 * @param proBasicConfig
-	 *            proBasicConfig
+	 *          proBasicConfig
 	 * @param gitLabInfo
-	 *            tool and connections info
+	 *          tool and connections info
 	 * @return the list
-	 * 
 	 * @throws FetchingCommitException
-	 *             the exception
+	 *           the exception
 	 */
 	public List<CommitDetails> fetchAllCommits(GitLabRepo repo, ProcessorToolConnection gitLabInfo,
 			ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
@@ -137,7 +133,6 @@ public class GitLabClient {
 				} else {
 					restUri = restUri.concat(PAGE_PARAM + nextPage);
 				}
-
 			}
 		} catch (URISyntaxException | RestClientException | GeneralSecurityException | ParseException
 				| UnsupportedEncodingException ex) {
@@ -167,9 +162,7 @@ public class GitLabClient {
 					parentList.add(parents.get(index).toString());
 				}
 			}
-			commitDetails(gitLabInfo, commits, scmRevisionNumber, message, author, timestamp, parentList,
-					proBasicConfig);
-
+			commitDetails(gitLabInfo, commits, scmRevisionNumber, message, author, timestamp, parentList, proBasicConfig);
 		}
 	}
 
@@ -201,7 +194,6 @@ public class GitLabClient {
 				} else {
 					restUri = restUri.concat(PAGE_PARAM + nextPage);
 				}
-
 			}
 		} catch (URISyntaxException | RestClientException | GeneralSecurityException | ParseException
 				| UnsupportedEncodingException ex) {
@@ -215,12 +207,13 @@ public class GitLabClient {
 
 	/**
 	 * Get Gitlab Repository Name
+	 *
 	 * @param projectToolConfig
-	 * 				project tool config id
+	 *          project tool config id
 	 * @param gitLabInfo
-	 * 				gitlab info
+	 *          gitlab info
 	 * @param repo
-	 * 				processor item object
+	 *          processor item object
 	 */
 	public void setRepositoryNameByProjectId(ProjectToolConfig projectToolConfig, ProcessorToolConnection gitLabInfo,
 			GitLabRepo repo) {
@@ -236,8 +229,8 @@ public class GitLabClient {
 				String repositoryName = (String) responseJson.get(GitLabConstants.REPOSITORY_NAME);
 				projectToolConfig.setRepositoryName(repositoryName);
 			}
-		} catch (URISyntaxException | RestClientException | GeneralSecurityException | ParseException |
-				UnsupportedEncodingException ex) {
+		} catch (URISyntaxException | RestClientException | GeneralSecurityException | ParseException
+				| UnsupportedEncodingException ex) {
 			log.error("Failed to fetch merge request details ", ex);
 		}
 	}
@@ -309,9 +302,8 @@ public class GitLabClient {
 	}
 
 	@SuppressWarnings("java:S107")
-	private void commitDetails(ProcessorToolConnection gitLabInfo, List<CommitDetails> commits,
-			String scmRevisionNumber, String message, String author, long timestamp, List<String> parentList,
-			ProjectBasicConfig proBasicConfig) {
+	private void commitDetails(ProcessorToolConnection gitLabInfo, List<CommitDetails> commits, String scmRevisionNumber,
+			String message, String author, long timestamp, List<String> parentList, ProjectBasicConfig proBasicConfig) {
 		CommitDetails gitLabCommit = new CommitDetails();
 
 		gitLabCommit.setBranch(gitLabInfo.getBranch());
@@ -332,11 +324,11 @@ public class GitLabClient {
 	 * Gets the response.
 	 *
 	 * @param userName
-	 *            the user name
+	 *          the user name
 	 * @param apiToken
-	 *            the GitlabAccessToken
+	 *          the GitlabAccessToken
 	 * @param url
-	 *            the url
+	 *          the url
 	 * @return the response
 	 */
 	protected ResponseEntity<String> getResponse(String userName, String apiToken, String url) {
@@ -354,9 +346,9 @@ public class GitLabClient {
 	 * Gets the string.
 	 *
 	 * @param jsonObject
-	 *            the json object
+	 *          the json object
 	 * @param key
-	 *            the key
+	 *          the key
 	 * @return the string
 	 */
 	protected String getString(JSONObject jsonObject, String key) {
@@ -372,14 +364,13 @@ public class GitLabClient {
 	 * Gets the JSON from response.
 	 *
 	 * @param payload
-	 *            the payload
+	 *          the payload
 	 * @return the JSON from response
 	 * @throws ParseException
-	 *             the ParseException
+	 *           the ParseException
 	 */
 	protected JSONArray getJSONFromResponse(String payload) throws ParseException {
 		JSONParser parser = new JSONParser();
 		return (JSONArray) parser.parse(payload);
 	}
-
 }

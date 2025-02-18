@@ -27,7 +27,7 @@ public class BambooClientFactory {
 
 	/**
 	 * getBambooClient on the basis of jobType
-	 * 
+	 *
 	 * @param jobType
 	 * @return
 	 */

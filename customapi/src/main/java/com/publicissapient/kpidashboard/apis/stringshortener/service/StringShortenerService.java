@@ -21,10 +21,10 @@ import static com.publicissapient.kpidashboard.apis.stringshortener.util.UniqueS
 
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.apis.stringshortener.dto.StringShortenerDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.apis.stringshortener.dto.StringShortenerDTO;
 import com.publicissapient.kpidashboard.apis.stringshortener.model.StringShortener;
 import com.publicissapient.kpidashboard.apis.stringshortener.repository.StringShortenerRepository;
 
@@ -34,35 +34,39 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class StringShortenerService {
 
-    private final StringShortenerRepository stringShortenerRepository;
+	private final StringShortenerRepository stringShortenerRepository;
 
-    @Autowired
-    public StringShortenerService(StringShortenerRepository stringMappingRepository) {
-        this.stringShortenerRepository = stringMappingRepository;
-    }
+	@Autowired
+	public StringShortenerService(StringShortenerRepository stringMappingRepository) {
+		this.stringShortenerRepository = stringMappingRepository;
+	}
 
-    public StringShortener createShortString(StringShortenerDTO stringShortenerDTO){
-        if (stringShortenerDTO == null) {
-            log.warn("Provided stringShortenerDTO is null");
-            throw new IllegalArgumentException("Please provide a valid stringShortenerDTO");
-        }
-        Optional<StringShortener> stringShortenerOptional = stringShortenerRepository.findByLongKPIFiltersStringAndLongStateFiltersString(stringShortenerDTO.getLongKPIFiltersString(),stringShortenerDTO.getLongStateFiltersString());
-        if (stringShortenerOptional.isPresent()) {
-            log.info("Existing mapping found for long strings: {},{}", stringShortenerDTO.getLongKPIFiltersString().replaceAll("[^a-zA-Z0-9-_]", ""),stringShortenerDTO.getLongStateFiltersString().replaceAll("[^a-zA-Z0-9-_]", ""));
-            return stringShortenerOptional.get();
-        }
-        String shortKPIFiltersString = generateShortKey(stringShortenerDTO.getLongKPIFiltersString());
-        String shortStateFiltersString = generateShortKey(stringShortenerDTO.getLongStateFiltersString());
-        StringShortener stringMapping = new StringShortener();
-        stringMapping.setLongKPIFiltersString(stringShortenerDTO.getLongKPIFiltersString());
-        stringMapping.setShortKPIFilterString(shortKPIFiltersString);
-        stringMapping.setLongStateFiltersString(stringShortenerDTO.getLongStateFiltersString());
-        stringMapping.setShortStateFiltersString(shortStateFiltersString);
+	public StringShortener createShortString(StringShortenerDTO stringShortenerDTO) {
+		if (stringShortenerDTO == null) {
+			log.warn("Provided stringShortenerDTO is null");
+			throw new IllegalArgumentException("Please provide a valid stringShortenerDTO");
+		}
+		Optional<StringShortener> stringShortenerOptional = stringShortenerRepository
+				.findByLongKPIFiltersStringAndLongStateFiltersString(stringShortenerDTO.getLongKPIFiltersString(),
+						stringShortenerDTO.getLongStateFiltersString());
+		if (stringShortenerOptional.isPresent()) {
+			log.info("Existing mapping found for long strings: {},{}",
+					stringShortenerDTO.getLongKPIFiltersString().replaceAll("[^a-zA-Z0-9-_]", ""),
+					stringShortenerDTO.getLongStateFiltersString().replaceAll("[^a-zA-Z0-9-_]", ""));
+			return stringShortenerOptional.get();
+		}
+		String shortKPIFiltersString = generateShortKey(stringShortenerDTO.getLongKPIFiltersString());
+		String shortStateFiltersString = generateShortKey(stringShortenerDTO.getLongStateFiltersString());
+		StringShortener stringMapping = new StringShortener();
+		stringMapping.setLongKPIFiltersString(stringShortenerDTO.getLongKPIFiltersString());
+		stringMapping.setShortKPIFilterString(shortKPIFiltersString);
+		stringMapping.setLongStateFiltersString(stringShortenerDTO.getLongStateFiltersString());
+		stringMapping.setShortStateFiltersString(shortStateFiltersString);
 
-        return stringShortenerRepository.save(stringMapping);
-    }
+		return stringShortenerRepository.save(stringMapping);
+	}
 
-    public Optional<StringShortener> getLongString(String kpiFilters, String stateFilters) {
+	public Optional<StringShortener> getLongString(String kpiFilters, String stateFilters) {
 		return stringShortenerRepository.findByShortKPIFilterStringAndShortStateFiltersString(kpiFilters, stateFilters);
-    }
+	}
 }

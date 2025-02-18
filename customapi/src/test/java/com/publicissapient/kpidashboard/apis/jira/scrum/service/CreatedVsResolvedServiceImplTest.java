@@ -30,10 +30,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -47,7 +44,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
@@ -73,16 +71,11 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreatedVsResolvedServiceImplTest {
 
-	private final static String CREATED_VS_RESOLVED_KEY = "createdVsResolvedKey";
+	private static final String CREATED_VS_RESOLVED_KEY = "createdVsResolvedKey";
 	private static final String SPRINT_WISE_SPRINTDETAILS = "sprintWiseSprintDetailMap";
 	private static final String SUB_TASK_BUGS_HISTORY = "SubTaskBugsHistory";
 	private static final String SPRINT_WISE_SUB_TASK_BUGS = "sprintWiseSubTaskBugs";
@@ -167,12 +160,10 @@ public class CreatedVsResolvedServiceImplTest {
 		// setDataCountList();
 		kpiWiseAggregation.put("created_Vs_Resolved_Defects", "sum");
 		setTreadValuesDataCount();
-
 	}
 
 	@After
 	public void cleanup() {
-
 	}
 
 	@Test
@@ -180,7 +171,7 @@ public class CreatedVsResolvedServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList , false);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 		when(customApiConfig.getApplicationDetailedLogger()).thenReturn("Off");
@@ -197,7 +188,8 @@ public class CreatedVsResolvedServiceImplTest {
 		Map<String, Object> createdVsResolvedListMap = createdVsResolvedServiceImpl.fetchKPIDataFromDb(leafNodeList,
 				startDate, endDate, kpiRequest);
 		assertThat("createdVsResolved value :",
-				((List<JiraIssue>) (createdVsResolvedListMap.get(CREATED_VS_RESOLVED_KEY))).size(), equalTo(totalIssueList.size()));
+				((List<JiraIssue>) (createdVsResolvedListMap.get(CREATED_VS_RESOLVED_KEY))).size(),
+				equalTo(totalIssueList.size()));
 	}
 
 	@Test
@@ -309,5 +301,4 @@ public class CreatedVsResolvedServiceImplTest {
 		dataCount.setValue(value);
 		return dataCount;
 	}
-
 }
