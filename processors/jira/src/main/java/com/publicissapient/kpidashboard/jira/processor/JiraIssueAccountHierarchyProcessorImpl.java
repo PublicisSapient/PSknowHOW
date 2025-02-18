@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
@@ -38,13 +37,13 @@ import org.springframework.stereotype.Service;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
-import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 import lombok.extern.slf4j.Slf4j;
@@ -152,10 +151,8 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 			String state = (String) PropertyUtils.getSimpleProperty(sprintDetails, "state");
 			projectHierachy.setNodeId(sprintId);
 			// IF WANT TO CHANGE THE NAME
-			projectHierachy
-					.setNodeName(sprintName + JiraConstants.COMBINE_IDS_SYMBOL + projectBasicConfig.getProjectName());
-			projectHierachy.setNodeDisplayName(
-					sprintName + JiraConstants.COMBINE_IDS_SYMBOL + projectBasicConfig.getProjectDisplayName());
+			projectHierachy.setNodeName(sprintName);
+			projectHierachy.setNodeDisplayName(sprintName);
 			projectHierachy.setSprintState(state);
 			projectHierachy.setBeginDate((String) PropertyUtils.getSimpleProperty(sprintDetails, "startDate"));
 			projectHierachy.setEndDate((String) PropertyUtils.getSimpleProperty(sprintDetails, "endDate"));

@@ -432,10 +432,10 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				OrganizationHierarchy orgHierarchy = organizationHierarchyService
 						.findByNodeId(basicConfig.getProjectNodeId());
 
-				List<ProjectHierarchy> projectWiseHierarchyList = projectHierarchyRepository
+				/*List<ProjectHierarchy> projectWiseHierarchyList = projectHierarchyRepository
 						.findByBasicProjectConfigId(basicConfig.getId());
 				updateProjectNameInProjectHierch(savedConfig, basicConfig, projectWiseHierarchyList);
-
+*/
 				configHelperService.updateCacheProjectBasicConfig(basicConfig);
 				updateProjectNameInOrgHierarchy(basicConfig, orgHierarchy);
 				response = new ServiceResponse(true, "Updated Successfully.", updatedBasicConfig);

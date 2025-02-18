@@ -221,7 +221,7 @@ public class ProjectBasicConfigController {
 	public ResponseEntity<ServiceResponse> deleteProject(@PathVariable String basicProjectConfigId) {
 		ProjectBasicConfig projectBasicConfig = projectBasicConfigService.deleteProject(basicProjectConfigId);
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true,
-				projectBasicConfig.getProjectName() + " deleted successfully", projectBasicConfig));
+				projectBasicConfig.getProjectDisplayName() + " deleted successfully", projectBasicConfig));
 	}
 
 	/**

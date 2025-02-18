@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -560,7 +561,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 				sprintDetails.setOriginBoardId(boardList);
 				sprintDetails.setOriginalSprintId(sprintJson.get(ID).toString());
 				sprintDetails.setState(sprintJson.get(STATE).toString().toUpperCase());
-				String sprintId = sprintDetails.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL
+				String sprintId = sprintDetails.getOriginalSprintId() + CommonConstant.ADDITIONAL_FILTER_VALUE_ID_SEPARATOR
 						+ projectConfig.getProjectBasicConfig().getProjectNodeId();
 				sprintDetails.setSprintID(sprintId);
 				sprintDetails.setStartDate(sprintJson.get(STARTDATE) == null ? null

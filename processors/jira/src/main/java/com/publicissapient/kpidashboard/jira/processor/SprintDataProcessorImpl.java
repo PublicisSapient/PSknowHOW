@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -76,7 +77,7 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 				if (CollectionUtils.isNotEmpty(sprints)) {
 					for (SprintDetails sprint : sprints) {
 						sprint.setSprintID(
-								sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL + projectNodeId);
+								sprint.getOriginalSprintId() + CommonConstant.ADDITIONAL_FILTER_VALUE_ID_SEPARATOR + projectNodeId);
 						sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 
 					}

@@ -98,7 +98,7 @@ public interface AccountHierarchyService<R, S> {
 		// required only configured Project Below filters like sprint , squad , releases
 		List<ProjectHierarchy> configureHierarchies = projectHierarchyService
 				.findAllByBasicProjectConfigIds(projectBasicConfigIds);
-
+		projectHierarchyService.appendProjectName(projectBasicConfigList, configureHierarchies);
 		// configureOrganizationHierarchyList and projectHierarchyList merge into single
 		// list
 		configureOrganizationHierarchyList.stream().map(orgHierarchy -> {

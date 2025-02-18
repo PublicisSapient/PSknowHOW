@@ -439,7 +439,6 @@ public class ProjectBasicConfigServiceImplTest {
 		ph.add(projectHierarchy);
 		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigIdIn(anyString(),anyList())).thenReturn(traceLogs);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(new AssigneeDetails());
-		when(projectHierarchyRepository.findByBasicProjectConfigId(any())).thenReturn(ph);
 		ServiceResponse response = projectBasicConfigServiceImpl.updateBasicConfig("5f855dec29cf840345f2deef",
 				basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
@@ -461,7 +460,6 @@ public class ProjectBasicConfigServiceImplTest {
 		when(basicConfigRepository.findById(any())).thenReturn(basicConfigOpt);
 		when(basicConfigRepository.findByProjectNameAndIdNot(any(), any())).thenReturn(null);
 		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
-		when(projectHierarchyRepository.findByBasicProjectConfigId(any())).thenReturn(ph);
 		ServiceResponse response = projectBasicConfigServiceImpl.updateBasicConfig("5f855dec29cf840345f2deef",
 				basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(true));

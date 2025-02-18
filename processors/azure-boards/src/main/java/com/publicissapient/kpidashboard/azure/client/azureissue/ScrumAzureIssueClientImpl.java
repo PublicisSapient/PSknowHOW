@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
@@ -65,6 +64,7 @@ import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.azureboards.Attribute;
@@ -554,7 +554,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 			azureIssue.setSprintEndDate("");
 			azureIssue.setSprintAssetState("");
 		} else {
-			String sprintId = value.getId() + AzureConstants.COMBINE_IDS_SYMBOL
+			String sprintId = value.getId() + CommonConstant.ADDITIONAL_FILTER_VALUE_ID_SEPARATOR
 					+ projectConfig.getProjectBasicConfig().getProjectNodeId();
 			setSprintData(azureIssue, value, sprintId);
 			populateSprintDetails(value, sprintDetailsSet, sprintId);
@@ -1061,10 +1061,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 			String sprintId = (String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintID");
 			String state = (String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintAssetState");
 			projectHierarchy.setNodeId(sprintId);
-			projectHierarchy
-					.setNodeName(sprintName + AzureConstants.COMBINE_IDS_SYMBOL + projectBasicConfig.getProjectName());
-			projectHierarchy.setNodeDisplayName(
-					sprintName + AzureConstants.COMBINE_IDS_SYMBOL + projectBasicConfig.getProjectDisplayName());
+			projectHierarchy.setNodeName(sprintName);
+			projectHierarchy.setNodeDisplayName(sprintName);
 			projectHierarchy.setSprintState(state);
 			projectHierarchy.setBeginDate((String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintBeginDate"));
 			projectHierarchy.setEndDate((String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintEndDate"));
