@@ -210,4 +210,20 @@ public interface KpiDataCacheService {
 	 * @return list of Jira Issues.
 	 */
 	List<JiraIssue> fetchPiPredictabilityData(ObjectId basicProjectConfigId, String kpiId);
+
+	/**
+	 * Fetches Created vs Resolved KPI data from the database and caches the result.
+	 *
+	 * @param kpiRequest
+	 *            The KPI request object.
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @param sprintList
+	 *            The list of sprint IDs.
+	 * @param kpiId
+	 *            The KPI ID.
+	 * @return A map containing sprint details, Sub-tasks, Sub-task history.
+	 */
+	Map<String, Object> fetchCreatedVsResolvedData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+			List<String> sprintList, String kpiId);
 }

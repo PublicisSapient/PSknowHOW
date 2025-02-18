@@ -92,19 +92,11 @@ public class CommitmentReliabilityServiceImplTest {
 	List<JiraIssue> totalIssueList = new ArrayList<>();
 	List<SprintDetails> sprintDetailsList = new ArrayList<>();
 	@Mock
-	JiraIssueRepository jiraIssueRepository;
-	@Mock
-	SprintRepository sprintRepository;
-	@Mock
 	CacheService cacheService;
 	@Mock
 	ConfigHelperService configHelperService;
 	@InjectMocks
 	CommittmentReliabilityServiceImpl commitmentReliabilityImpl;
-	@Mock
-	ProjectBasicConfigRepository projectConfigRepository;
-	@Mock
-	FieldMappingRepository fieldMappingRepository;
 	@Mock
 	CustomApiConfig customApiConfig;
 	@Mock

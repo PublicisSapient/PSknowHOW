@@ -25,14 +25,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -41,11 +41,8 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -60,7 +57,6 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -68,10 +64,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -93,33 +85,24 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 	private static final String SUB_TASK_BUGS_HISTORY = "SubTaskBugsHistory";
 	private static final String CREATED_DEFECTS = "createdDefects";
 	private static final String RESOLVED_DEFECTS = "resolvedDefects";
-	private static final String DEV = "DeveloperKpi";
 	private static final String TAGGED_DEFECTS_CREATED_AFTER_SPRINT = "Added Defects";
 	private static final String TAGGED_DEFECTS = "Total Defects";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
-
-	@Autowired
-	private SprintRepository sprintRepository;
-
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-
 	@Autowired
 	private CacheService cacheService;
-
 	@Autowired
-	private FilterHelperService flterHelperService;
-
-	@Autowired
-	private KpiHelperService kpiHelperService;
+	private FilterHelperService filterHelperService;
 	@Autowired
 	private ConfigHelperService configHelperService;
-
 	@Autowired
-	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	private KpiDataCacheService kpiDataCacheService;
+	@Autowired
+	private KpiDataProvider kpiDataProvider;
+
+	private List<String> sprintIdList = Collections.synchronizedList(new ArrayList<>());
 
 	/**
 	 * Gets Qualifier Type
@@ -146,6 +129,8 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
+		sprintIdList = treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.SPRINT_MASTER).stream()
+				.map(node -> node.getSprintFilter().getId()).collect(Collectors.toList());
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
 			if (Filters.getFilter(k) == Filters.SPRINT) {
@@ -174,7 +159,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		statusTypeProjectWiseDc.forEach((issueType, projectWiseDc) -> {
 			DataCountGroup dataCountGroup = new DataCountGroup();
 			List<DataCount> dataList = new ArrayList<>();
-			projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
+			projectWiseDc.entrySet().forEach(trend -> dataList.addAll(trend.getValue()));
 			dataCountGroup.setFilter(issueType);
 			dataCountGroup.setValue(dataList);
 			dataCountGroups.add(dataCountGroup);
@@ -197,74 +182,46 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
-		List<String> sprintList = new ArrayList<>();
-		List<String> basicProjectConfigIds = new ArrayList<>();
-		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-		List<String> defectType = new ArrayList<>();
-
+		Map<ObjectId, List<String>> projectWiseSprints = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			sprintList.add(leaf.getSprintFilter().getId());
-			basicProjectConfigIds.add(basicProjectConfigId.toString());
-
-			defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
-			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(), defectType);
-			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-
+			projectWiseSprints.putIfAbsent(basicProjectConfigId, new ArrayList<>());
+			projectWiseSprints.get(basicProjectConfigId).add(leaf.getSprintFilter().getId());
 		});
 
-		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
-		Set<String> totalNonBugIssues = new HashSet<>();
-		Set<String> totalIssue = new HashSet<>();
-		Set<String> totalIssueInSprint = new HashSet<>();
-		sprintDetails.stream().forEach(sprintDetail -> {
-			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
-				FieldMapping fieldMapping = configHelperService.getFieldMapping(sprintDetail.getBasicProjectConfigId());
-				totalNonBugIssues.addAll(sprintDetail.getTotalIssues().stream()
-						.filter(sprintIssue -> !fieldMapping.getJiradefecttype().contains(sprintIssue.getTypeName()))
-						.map(SprintIssue::getNumber).collect(Collectors.toSet()));
-				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
-						CommonConstant.TOTAL_ISSUES));
+		List<JiraIssue> totalSprintReportDefects = new ArrayList<>();
+		List<JiraIssue> subTaskBugs = new ArrayList<>();
+		List<JiraIssueCustomHistory> subTaskBugsCustomHistory = new ArrayList<>();
+		List<SprintDetails> sprintDetails = new ArrayList<>();
+		List<JiraIssue> totalIssue = new ArrayList<>();
+		boolean fetchCachedData = filterHelperService.isFilterSelectedTillSprintLevel(kpiRequest.getLevel(), false);
+		projectWiseSprints.forEach((basicProjectConfigId, sprintList) -> {
+			Map<String, Object> result;
+			if (fetchCachedData) {// fetch data from cache only if Filter is selected till Sprint level.
+				result = kpiDataCacheService.fetchCreatedVsResolvedData(kpiRequest, basicProjectConfigId,
+						sprintIdList, KPICode.CREATED_VS_RESOLVED_DEFECTS.getKpiId());
+			} else {// fetch data from DB if filters below Sprint level (i.e. additional filters)
+				result = kpiDataProvider.fetchCreatedVsResolvedData(kpiRequest, basicProjectConfigId, sprintList);
 			}
-			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
-					CommonConstant.TOTAL_ISSUES));
-			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
-					CommonConstant.COMPLETED_ISSUES_ANOTHER_SPRINT));
-			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
-					CommonConstant.PUNTED_ISSUES));
-			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
-					CommonConstant.ADDED_ISSUES));
 
+			totalSprintReportDefects
+					.addAll((List<JiraIssue>) result.getOrDefault(CREATED_VS_RESOLVED_KEY, new ArrayList<>()));
+			subTaskBugs.addAll((List<JiraIssue>) result.getOrDefault(SPRINT_WISE_SUB_TASK_BUGS, new ArrayList<>()));
+			subTaskBugsCustomHistory.addAll(
+					(List<JiraIssueCustomHistory>) result.getOrDefault(SUB_TASK_BUGS_HISTORY, new ArrayList<>()));
+			List<SprintDetails> sprintDetailsList = (List<SprintDetails>) result.getOrDefault(SPRINT_WISE_SPRINTDETAILS,
+					new ArrayList<>());
+			sprintDetails.addAll(sprintDetailsList.stream().filter(sprint -> sprintList.contains(sprint.getSprintID()))
+					.collect(Collectors.toSet()));
+			totalIssue.addAll((List<JiraIssue>) result.getOrDefault(STORY_LIST, new ArrayList<>()));
 		});
+		resultListMap.put(CREATED_VS_RESOLVED_KEY, totalSprintReportDefects);
+		resultListMap.put(SPRINT_WISE_SUB_TASK_BUGS, subTaskBugs);
+		resultListMap.put(SUB_TASK_BUGS_HISTORY, subTaskBugsCustomHistory);
+		resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetails);
+		resultListMap.put(STORY_LIST, totalIssue);
 
-		/** additional filter **/
-		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
-
-		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-
-		if (CollectionUtils.isNotEmpty(totalIssue)) {
-			List<JiraIssue> totalSprintReportDefects = jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue,
-					uniqueProjectMap);
-			resultListMap.put(CREATED_VS_RESOLVED_KEY, totalSprintReportDefects);
-
-			List<JiraIssue> subTaskBugs = jiraIssueRepository
-					.findLinkedDefects(mapOfFilters, totalNonBugIssues, uniqueProjectMap).stream()
-					.filter(jiraIssue -> !totalIssueInSprint.contains(jiraIssue.getNumber()))
-					.collect(Collectors.toList());
-			List<JiraIssueCustomHistory> subTaskBugsCustomHistory = jiraIssueCustomHistoryRepository
-					.findByStoryIDInAndBasicProjectConfigIdIn(
-							subTaskBugs.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
-							basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-			resultListMap.put(SPRINT_WISE_SUB_TASK_BUGS, subTaskBugs);
-			resultListMap.put(SUB_TASK_BUGS_HISTORY, subTaskBugsCustomHistory);
-			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetails);
-			resultListMap.put(STORY_LIST, jiraIssueRepository.findIssueAndDescByNumber(new ArrayList<>(totalIssue)));
-
-		}
 		setDbQueryLogger((List<JiraIssue>) resultListMap.get(CREATED_VS_RESOLVED_KEY));
 		return resultListMap;
 
@@ -306,7 +263,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 				.compareTo(node2.getSprintFilter().getStartDate()));
 		long time = System.currentTimeMillis();
 		Map<String, Object> createdVsResolvedMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
-		log.info("CreatedVsResolved taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
+		log.info("CreatedVsResolved taking fetchKPIDataFromDb {}", System.currentTimeMillis() - time);
 
 		List<JiraIssue> allJiraIssue = (List<JiraIssue>) createdVsResolvedMap.get(CREATED_VS_RESOLVED_KEY);
 
@@ -341,7 +298,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 						allJiraIssue.stream().filter(element -> completedSprintIssues.contains(element.getNumber()))
 								.collect(Collectors.toList()),
 						sd);
-				// to get the resolved status along with the completed jiraissue
+				// to get the resolved status along with the completed jira issue
 				Map<String, String> issueWiseDeliveredStatus = completedIssues.stream()
 						.collect(Collectors.toMap(JiraIssue::getNumber, JiraIssue::getStatus, (e1, e2) -> e1));
 
@@ -370,8 +327,6 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 			Pair<String, String> currentNodeIdentifier = Pair
 					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
 
-			Map<String, Map<String, Double>> createdVsResolvedDefectsMap = new HashMap<>();
-
 			Map<String, Object> createdVsResolvedHoverMap = new HashMap<>();
 
 			List<JiraIssue> totalCreatedIssues = new ArrayList<>();
@@ -395,7 +350,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 				closedIssuesWithStatus = sprintWiseClosedIssueStatus.get(currentNodeIdentifier);
 
 			}
-			createdVsResolvedDefectsMap = createCreatedVsResolvedMap(totalCreatedIssues, totalClosedIssues,
+			Map<String, Map<String, Double>> createdVsResolvedDefectsMap = createCreatedVsResolvedMap(totalCreatedIssues, totalClosedIssues,
 					totalCreatedIssuesAfter, createdVsResolvedHoverMap);
 			populateExcelDataObject(requestTrackerId, excelData, node, totalCreatedIssues, closedIssuesWithStatus,
 					totalCreatedIssuesAfter, storyList);
@@ -424,7 +379,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.CREATED_VS_RESOLVED_DEFECTS.getColumns(sprintLeafNodeList,
-				cacheService, flterHelperService));
+				cacheService, filterHelperService));
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData, Node node,
@@ -434,7 +389,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
 			Map<String, JiraIssue> createdTicketMap = new HashMap<>();
-			totalCreatedTickets.stream()
+			totalCreatedTickets
 					.forEach(jiraIssue -> createdTicketMap.putIfAbsent(jiraIssue.getNumber(), jiraIssue));
 			KPIExcelUtility.populateCreatedVsResolvedExcelData(node.getSprintFilter().getName(), createdTicketMap,
 					totalCreatedTicketsSprintStart, closedIssuesWithStatus, excelData, customApiConfig, storyList);
@@ -457,7 +412,6 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 						.collect(Collectors.toList());
 				log.info("Story[{}]: {}", storyIdList.size(), storyIdList);
 			}
-			log.info(SEPARATOR_ASTERISK);
 			log.info("******************X----X*******************");
 		}
 	}

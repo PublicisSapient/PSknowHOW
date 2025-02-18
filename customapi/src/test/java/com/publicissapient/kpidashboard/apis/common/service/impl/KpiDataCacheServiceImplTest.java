@@ -178,4 +178,10 @@ public class KpiDataCacheServiceImplTest {
 		when(kpiDataProvider.fetchPiPredictabilityData(any())).thenReturn(new ArrayList<>());
 		assertNotNull(kpiDataCacheService.fetchPiPredictabilityData(new ObjectId(), KPICode.PI_PREDICTABILITY.getKpiId()));
 	}
+
+	@Test
+	public void testFetchCreatedVsResolvedData() {
+		when(kpiDataProvider.fetchCreatedVsResolvedData(any(), any(), any())).thenReturn(new HashMap<>());
+		assertNotNull(kpiDataCacheService.fetchCreatedVsResolvedData(new KpiRequest(), new ObjectId(), new ArrayList<>(), KPICode.CREATED_VS_RESOLVED_DEFECTS.getKpiId()));
+	}
 }
