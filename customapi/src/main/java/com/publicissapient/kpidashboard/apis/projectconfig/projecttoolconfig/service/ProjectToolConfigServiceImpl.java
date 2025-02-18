@@ -315,7 +315,11 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	}
 
 	public List<ProjectToolConfig> saveProjectToolConfigs(List<ProjectToolConfig> projectToolConfigs) {
-		return toolRepository.saveAll(projectToolConfigs);
+		List<ProjectToolConfig> savedProjectToolConfig = toolRepository.saveAll(projectToolConfigs);
+		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
+		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
+		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
+		return savedProjectToolConfig;
 	}
 
 	@Override
