@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.bson.types.ObjectId;
@@ -51,7 +53,7 @@ import lombok.extern.slf4j.Slf4j;
 public class KpiDataProvider {
 
 	private static final String DEV = "DeveloperKpi";
-	private static final String STORY_LIST = "stories";
+	private static final String STORIES = "stories";
 	private static final String SPRINTSDETAILS = "sprints";
 	private static final String JIRA_ISSUE_HISTORY_DATA = "JiraIssueHistoryData";
 	private static final String ESTIMATE_TIME = "Estimate_Time";
@@ -65,6 +67,11 @@ public class KpiDataProvider {
 	private static final String COD_DATA = "costOfDelayData";
 	private static final String COD_DATA_HISTORY = "costOfDelayDataHistory";
 	private static final String FIELD_MAPPING = "fieldMapping";
+	private static final String CREATED_VS_RESOLVED_KEY = "createdVsResolvedKey";
+	private static final String SPRINT_WISE_SPRINTDETAILS = "sprintWiseSprintDetailMap";
+	private static final String SPRINT_WISE_SUB_TASK_BUGS = "sprintWiseSubTaskBugs";
+	private static final String SUB_TASK_BUGS_HISTORY = "SubTaskBugsHistory";
+	public static final String STORY_LIST = "storyList";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -153,7 +160,7 @@ public class KpiDataProvider {
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(), basicProjectConfigIds);
 
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
-			resultListMap.put(STORY_LIST,
+			resultListMap.put(STORIES,
 					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, uniqueProjectMap));
 			resultListMap.put(SPRINTSDETAILS, sprintDetails);
 		}
@@ -261,7 +268,7 @@ public class KpiDataProvider {
 					.findByStoryIDInAndBasicProjectConfigIdIn(jiraIssues.stream().map(JiraIssue::getNumber).toList(),
 							basicProjectConfigIds.stream().distinct().toList());
 
-			resultListMap.put(STORY_LIST, jiraIssues);
+			resultListMap.put(STORIES, jiraIssues);
 			resultListMap.put(SPRINTSDETAILS, sprintDetails);
 			resultListMap.put(JIRA_ISSUE_HISTORY_DATA, jiraIssueCustomHistoryList);
 		}
@@ -676,5 +683,83 @@ public class KpiDataProvider {
 		});
 
 		return jiraIssueRepository.findByRelease(mapOfFilters, uniqueProjectMap);
+	}
+
+	/**
+	 * Fetches Created vs Resolved KPI data from the database for the given project
+	 * and sprints combination.
+	 *
+	 * @param kpiRequest
+	 *            The KPI request object.
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @param sprintList
+	 *            The list of sprint IDs.
+	 * @return A map containing list of sub-tasks, list of sub-task history, sprint
+	 *         details.
+	 */
+	public Map<String, Object> fetchCreatedVsResolvedData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+			List<String> sprintList) {
+		log.info("Fetching Created vs Resolved KPI Data for Project {}", basicProjectConfigId.toString());
+
+		Map<String, Object> resultListMap = new HashMap<>();
+		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+		List<String> basicProjectConfigIds = List.of(basicProjectConfigId.toString());
+
+		List<String> defectType = new ArrayList<>();
+		Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+		defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
+		mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(), defectType);
+		uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+
+		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
+		Set<String> totalNonBugIssues = new HashSet<>();
+		Set<String> totalIssue = new HashSet<>();
+		Set<String> totalIssueInSprint = new HashSet<>();
+		sprintDetails.stream().forEach(sprintDetail -> {
+			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
+				FieldMapping fieldMapping = configHelperService.getFieldMapping(sprintDetail.getBasicProjectConfigId());
+				totalNonBugIssues.addAll(sprintDetail.getTotalIssues().stream()
+						.filter(sprintIssue -> !fieldMapping.getJiradefecttype().contains(sprintIssue.getTypeName()))
+						.map(SprintIssue::getNumber).collect(Collectors.toSet()));
+				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+						CommonConstant.TOTAL_ISSUES));
+			}
+			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+					CommonConstant.TOTAL_ISSUES));
+			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+					CommonConstant.COMPLETED_ISSUES_ANOTHER_SPRINT));
+			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+					CommonConstant.PUNTED_ISSUES));
+			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+					CommonConstant.ADDED_ISSUES));
+		});
+
+		// additional filter **/
+		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, filterHelperService);
+
+		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+
+		if (CollectionUtils.isNotEmpty(totalIssue)) {
+			List<JiraIssue> totalSprintReportDefects = jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue,
+					uniqueProjectMap);
+			resultListMap.put(CREATED_VS_RESOLVED_KEY, totalSprintReportDefects);
+
+			List<JiraIssue> subTaskBugs = jiraIssueRepository
+					.findLinkedDefects(mapOfFilters, totalNonBugIssues, uniqueProjectMap).stream()
+					.filter(jiraIssue -> !totalIssueInSprint.contains(jiraIssue.getNumber()))
+					.collect(Collectors.toList());
+			List<JiraIssueCustomHistory> subTaskBugsCustomHistory = jiraIssueCustomHistoryRepository
+					.findByStoryIDInAndBasicProjectConfigIdIn(
+							subTaskBugs.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
+							basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+			resultListMap.put(SPRINT_WISE_SUB_TASK_BUGS, subTaskBugs);
+			resultListMap.put(SUB_TASK_BUGS_HISTORY, subTaskBugsCustomHistory);
+			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetails);
+			resultListMap.put(STORY_LIST, jiraIssueRepository.findIssueAndDescByNumber(new ArrayList<>(totalIssue)));
+		}
+		return resultListMap;
 	}
 }

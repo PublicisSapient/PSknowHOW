@@ -137,6 +137,7 @@ public class KpiDataProviderTest {
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(configHelperService.getFieldMapping(any())).thenReturn(fieldMapping);
 		/// set aggregation criteria kpi wise
 		kpiWiseAggregation.put(KPICode.ISSUE_COUNT.name(), "sum");
 
@@ -376,5 +377,24 @@ public class KpiDataProviderTest {
 		when(jiraIssueRepository.findByRelease(Mockito.any(), Mockito.any())).thenReturn(piWiseEpicList);
 		List<JiraIssue> list = kpiDataProvider.fetchPiPredictabilityData(new ObjectId("6335363749794a18e8a4479b"));
 		assertThat("Total Release : ", list.size(), equalTo(48));
+	}
+
+	@Test
+	public void testFetchCreatedVsResolvedData() {
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+
+		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
+		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(totalIssueList);
+		when(jiraIssueRepository.findLinkedDefects(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(new ArrayList<>());
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
+				.thenReturn(new ArrayList<>());
+
+		Map<String, Object> result = kpiDataProvider.fetchCreatedVsResolvedData(kpiRequest, basicProjectConfigId,
+				sprintList);
+		assertThat("createdVsResolved value :",
+				((List<JiraIssue>) (result.get("createdVsResolvedKey"))).size(), equalTo(totalIssueList.size()));
 	}
 }
