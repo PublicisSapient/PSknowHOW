@@ -41,13 +41,16 @@ import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
+import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.UserRatingData;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
@@ -69,6 +72,9 @@ public class KpiDataProviderTest {
 
 	@InjectMocks
 	KpiDataProvider kpiDataProvider;
+	@Mock
+	private HappinessKpiDataRepository happinessKpiDataRepository;
+
 	@Mock
 	private SprintRepositoryCustom sprintRepositoryCustom;
 	@Mock
@@ -224,6 +230,25 @@ public class KpiDataProviderTest {
 		Map<String, Object> result = kpiDataProvider.fetchSprintPredictabilityDataFromDb(kpiRequest, basicProjectConfigId,
 				sprintList);
 		assertThat(result.get(SPRINT_WISE_PREDICTABILITY), equalTo(sprintWiseStoryList));
+	}
+
+	@Test
+	public void fetchHappinessIndexDataFromDb_shouldReturnCorrectData_whenValidInput() {
+		SprintDetails sprintDetails = new SprintDetails();
+		sprintDetails.setSprintID("38294_Scrum Project_6335363749794a18e8a4479b");
+		sprintDetails.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
+
+		HappinessKpiData happinessKpiData = new HappinessKpiData();
+		happinessKpiData.setSprintID("38294_Scrum Project_6335363749794a18e8a4479b");
+		happinessKpiData.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
+		happinessKpiData.setUserRatingList(Arrays.asList(new UserRatingData(2, "uid", "uname")));
+
+		Mockito.when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(Arrays.asList(sprintDetails));
+		Mockito.when(happinessKpiDataRepository.findBySprintIDIn(Mockito.any()))
+				.thenReturn(Arrays.asList(happinessKpiData));
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		Map<String, Object> result = kpiDataProvider.fetchHappinessIndexDataFromDb(sprintList);
+		
 	}
 
 	@Test
