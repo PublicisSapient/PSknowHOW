@@ -32,25 +32,25 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 /**
  * @author dilip Repository for {@link Connection}.
  */
-
 public interface ConnectionRepository
-		extends MongoRepository<Connection, ObjectId>, QuerydslPredicateExecutor<Connection> {
+		extends
+			MongoRepository<Connection, ObjectId>,
+			QuerydslPredicateExecutor<Connection> {
 
 	/**
 	 * Find by type Connection.
 	 *
 	 * @param type
-	 *            the Connection
+	 *          the Connection
 	 * @return the Connection
 	 */
-
 	List<Connection> findByType(String type);
 
 	/**
 	 * s Returns connection from persistence store by id
 	 *
 	 * @param objectId
-	 *            id
+	 *          id
 	 * @return Connection
 	 */
 	Optional<Connection> findById(ObjectId objectId);
@@ -63,16 +63,14 @@ public interface ConnectionRepository
 	 * s Returns List Of connection based on connection id's
 	 *
 	 * @param connectionId
-	 *            id
+	 *          id
 	 * @return Connection
 	 */
 	List<Connection> findByIdIn(Set<ObjectId> connectionId);
 
 	/**
-	 *
 	 * @return
 	 */
 	@Query(value = "{}", fields = "{ 'password' : 0,'apiKey':0,'accessToken':0,'privateKey':0,'pat':0,'consumerKey':0,'patOAuthToken':0}")
 	List<Connection> findAllWithoutSecret();
-
 }

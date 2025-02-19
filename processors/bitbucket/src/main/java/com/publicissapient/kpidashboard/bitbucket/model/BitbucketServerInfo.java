@@ -27,7 +27,6 @@ import lombok.Setter;
 
 /**
  * @author sansharm13
- *
  */
 @Getter
 @Setter
@@ -50,5 +49,4 @@ public class BitbucketServerInfo {
 	private String createdAt;
 
 	private String updatedAt;
-
 }

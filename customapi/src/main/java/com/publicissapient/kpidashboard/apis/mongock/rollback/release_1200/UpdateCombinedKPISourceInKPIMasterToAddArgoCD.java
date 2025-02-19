@@ -63,5 +63,4 @@ public class UpdateCombinedKPISourceInKPIMasterToAddArgoCD {
 		// Update documents
 		updateDocument(kpiMaster, EXISTING_KPI_SOURCE, UPDATED_KPI_SOURCE);
 	}
-
 }

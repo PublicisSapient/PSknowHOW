@@ -86,13 +86,11 @@ public class BackLogCountByIssueTypeServiceImplTest {
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
-
 	}
 
 	@Test
 	public void getQualifierType() {
-		assertThat(backLogCountByIssueTypeService.getQualifierType(),
-				equalTo(KPICode.BACKLOG_COUNT_BY_ISSUE_TYPE.name()));
+		assertThat(backLogCountByIssueTypeService.getQualifierType(), equalTo(KPICode.BACKLOG_COUNT_BY_ISSUE_TYPE.name()));
 	}
 
 	@Test
@@ -105,8 +103,7 @@ public class BackLogCountByIssueTypeServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(issueList);
 		try {
-			KpiElement kpiElement = backLogCountByIssueTypeService.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0),
+			KpiElement kpiElement = backLogCountByIssueTypeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 			assertNotNull(kpiElement.getTrendValueList());
 
@@ -114,5 +111,4 @@ public class BackLogCountByIssueTypeServiceImplTest {
 
 		}
 	}
-
 }

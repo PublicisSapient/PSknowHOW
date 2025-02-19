@@ -26,19 +26,18 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Interface to provide methods for analytics details
- * 
- * @author prijain3
  *
+ * @author prijain3
  */
 public interface CustomAnalyticsService {
 
 	/**
 	 * Creates and return JSON object containing analytics data.
-	 * 
+	 *
 	 * @param httpServletResponse
-	 *            HttpServletResponse
+	 *          HttpServletResponse
 	 * @param username
-	 *            user name
+	 *          user name
 	 * @return JSON of analytics data
 	 */
 	JSONObject addAnalyticsData(HttpServletResponse httpServletResponse, String username);
@@ -47,9 +46,9 @@ public interface CustomAnalyticsService {
 	 * Creates and return JSON object containing analytics data.
 	 *
 	 * @param httpServletResponse
-	 *            HttpServletResponse
+	 *          HttpServletResponse
 	 * @param username
-	 *            user name
+	 *          user name
 	 * @return JSON of analytics data
 	 */
 	Map<String, Object> addAnalyticsDataAndSaveCentralUser(HttpServletResponse httpServletResponse, String username,

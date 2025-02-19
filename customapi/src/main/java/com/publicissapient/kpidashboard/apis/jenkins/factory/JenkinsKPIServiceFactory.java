@@ -21,19 +21,17 @@ package com.publicissapient.kpidashboard.apis.jenkins.factory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
-import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsKPIService;
 
-/**
- * Factory class for providing service objects.
- */
+import lombok.Builder;
+
+/** Factory class for providing service objects. */
 @Builder
 @Service
 public class JenkinsKPIServiceFactory {
@@ -46,29 +44,25 @@ public class JenkinsKPIServiceFactory {
 	 * Gets jenkins kpi service.
 	 *
 	 * @param type
-	 *            the type
+	 *          the type
 	 * @return the jenkins kpi service
 	 * @throws ApplicationException
-	 *             the application exception
+	 *           the application exception
 	 */
 	@SuppressWarnings("rawtypes")
 	public static JenkinsKPIService getJenkinsKPIService(String type) throws ApplicationException {
 		JenkinsKPIService<?, ?, ?> service = JENKINS_SERVICE_CACHE.get(type);
 		if (service == null) {
-			throw new ApplicationException(JenkinsKPIServiceFactory.class,
-					"Jenkins KPI Service Factory not initalized");
+			throw new ApplicationException(JenkinsKPIServiceFactory.class, "Jenkins KPI Service Factory not initalized");
 		}
 		return service;
 	}
 
-	/**
-	 * Init service cache.
-	 */
+	/** Init service cache. */
 	@PostConstruct
 	public void initMyServiceCache() {
 		for (JenkinsKPIService<?, ?, ?> service : services) {
 			JENKINS_SERVICE_CACHE.put(service.getQualifierType(), service);
 		}
 	}
-
 }

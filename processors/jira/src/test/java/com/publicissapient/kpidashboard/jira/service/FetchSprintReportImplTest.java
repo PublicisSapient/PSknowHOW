@@ -16,11 +16,9 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.service;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.FileInputStream;
@@ -31,8 +29,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
@@ -46,10 +42,12 @@ import org.springframework.beans.BeanUtils;
 
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.dataFactories.SprintDetailsDataFactory;
@@ -128,13 +126,18 @@ public class FetchSprintReportImplTest {
 	public void fetchSprints() throws InterruptedException, IOException {
 		when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
 		when(jiraProcessorConfig.getSubsequentApiCallDelayInMilli()).thenReturn(1000l);
-		when(jiraProcessorConfig.getJiraServerSprintReportApi()).thenReturn(
-				"rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
-//		when(jiraProcessorConfig.getJiraCloudGetUserApi()).thenReturn(
-//				"jira.jiraServerSprintDetailsApi=rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
-		when(jiraCommonService.getDataFromClient(any(), any(),any())).thenReturn(sprintResponse);
-		Assert.assertEquals(1,
-				fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet, krb5Client, false, new ObjectId()).size());
+		when(jiraProcessorConfig.getJiraServerSprintReportApi())
+				.thenReturn(
+						"rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
+		//		when(jiraProcessorConfig.getJiraCloudGetUserApi()).thenReturn(
+		//
+		//	"jira.jiraServerSprintDetailsApi=rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
+		when(jiraCommonService.getDataFromClient(any(), any(), any())).thenReturn(sprintResponse);
+		Assert.assertEquals(
+				1,
+				fetchSprintReport
+						.fetchSprints(projectConfig, sprintDetailsSet, krb5Client, false, new ObjectId())
+						.size());
 	}
 
 	private List<SprintDetails> getMockSprintDetails() {
@@ -164,14 +167,18 @@ public class FetchSprintReportImplTest {
 		when(jiraProcessorConfig.getSprintReportCountToBeFetched()).thenReturn(15);
 		when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
 		when(jiraProcessorConfig.getSubsequentApiCallDelayInMilli()).thenReturn(1000l);
-		when(jiraProcessorConfig.getJiraServerSprintReportApi()).thenReturn(
-				"rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
-//		when(jiraProcessorConfig.getJiraCloudGetUserApi()).thenReturn(
-//				"jira.jiraServerSprintDetailsApi=rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
-		when(jiraCommonService.getDataFromClient(any(), any(),any())).thenReturn(sprintResponse);
-		Assert.assertEquals(15,
-				fetchSprintReport.createSprintDetailBasedOnBoard(projectConfig, krb5Client, jiraBoard, new ObjectId("5e16c126e4b098db673cc372")).size());
-
+		when(jiraProcessorConfig.getJiraServerSprintReportApi())
+				.thenReturn(
+						"rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
+		//		when(jiraProcessorConfig.getJiraCloudGetUserApi()).thenReturn(
+		//
+		//	"jira.jiraServerSprintDetailsApi=rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
+		when(jiraCommonService.getDataFromClient(any(), any(), any())).thenReturn(sprintResponse);
+		Assert.assertEquals(
+				15,
+				fetchSprintReport
+						.createSprintDetailBasedOnBoard(
+								projectConfig, krb5Client, jiraBoard, new ObjectId("5e16c126e4b098db673cc372"))
+						.size());
 	}
-
 }

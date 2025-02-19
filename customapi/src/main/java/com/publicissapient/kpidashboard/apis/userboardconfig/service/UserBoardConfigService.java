@@ -25,9 +25,8 @@ import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardCo
 
 /**
  * Service class for user board config
- * 
- * @author narsingh9
  *
+ * @author narsingh9
  */
 public interface UserBoardConfigService {
 
@@ -36,9 +35,9 @@ public interface UserBoardConfigService {
 	 * and list of requested projects.
 	 *
 	 * @param configLevel
-	 *            {@link ConfigLevel}
+	 *          {@link ConfigLevel}
 	 * @param listOfRequestedProj
-	 *            the list of requested projects
+	 *          the list of requested projects
 	 * @return the board configuration DTO
 	 */
 	UserBoardConfigDTO getBoardConfig(ConfigLevel configLevel, ProjectListRequested listOfRequestedProj);
@@ -48,11 +47,11 @@ public interface UserBoardConfigService {
 	 * project configuration ID.
 	 *
 	 * @param userBoardConfigDTO
-	 *            the user board configuration DTO
+	 *          the user board configuration DTO
 	 * @param configLevel
-	 *            {@link ConfigLevel}
+	 *          {@link ConfigLevel}
 	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
+	 *          the ID of the basic project configuration
 	 * @return the service response indicating success or failure
 	 */
 	ServiceResponse saveBoardConfig(UserBoardConfigDTO userBoardConfigDTO, ConfigLevel configLevel,
@@ -62,7 +61,7 @@ public interface UserBoardConfigService {
 	 * delete UserBoard config by userName
 	 *
 	 * @param userName
-	 *            userName
+	 *          userName
 	 */
 	void deleteUser(String userName);
 
@@ -70,8 +69,7 @@ public interface UserBoardConfigService {
 	 * Deletes the project board config.
 	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 */
 	void deleteProjectBoardConfig(String basicProjectConfigId);
-
 }

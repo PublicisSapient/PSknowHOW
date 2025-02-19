@@ -23,15 +23,11 @@ import org.bson.types.ObjectId;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-/**
- * Custom object mapper that knows how to serialize Mongo ObjectIds.
- */
+/** Custom object mapper that knows how to serialize Mongo ObjectIds. */
 public class CustomObjectMapper extends ObjectMapper {
 	private static final long serialVersionUID = 2035695746790240402L;
 
-	/**
-	 * Default Constructor
-	 */
+	/** Default Constructor */
 	public CustomObjectMapper() {
 		super();
 		SimpleModule module = new SimpleModule("ObjectIdModule");

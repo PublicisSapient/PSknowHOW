@@ -16,10 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
-
+/** */
 package com.publicissapient.kpidashboard.common.model.testexecution;
 
 import lombok.AllArgsConstructor;
@@ -31,7 +28,6 @@ import lombok.Setter;
 
 /**
  * @author sansharm13
- *
  */
 @Data
 @Builder

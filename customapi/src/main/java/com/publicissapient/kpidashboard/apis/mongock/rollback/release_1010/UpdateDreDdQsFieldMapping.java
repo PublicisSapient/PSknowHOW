@@ -78,8 +78,8 @@ public class UpdateDreDdQsFieldMapping {
 
 		// added fieldmapping in DRE
 		Document resolutionTypeForRejectionKPI34 = new Document().append(FIELD_NAME, RESOLUTION_TYPE)
-				.append(FIELD_LABEL, "Resolution type to be excluded").append(FIELD_TYPE, CHIPS)
-				.append(SECTION, SECTION_DEF).append(TOOL_TIP, new Document(DEFINITION,
+				.append(FIELD_LABEL, "Resolution type to be excluded").append(FIELD_TYPE, CHIPS).append(SECTION, SECTION_DEF)
+				.append(TOOL_TIP, new Document(DEFINITION,
 						"Resolution types for defects that can be excluded from 'Defect Removal Efficiency' calculation"));
 
 		Document includeRCAForKPI34 = new Document().append(FIELD_NAME, "includeRCAForKPI34")
@@ -93,18 +93,18 @@ public class UpdateDreDdQsFieldMapping {
 				.append(TOOL_TIP,
 						new Document(DEFINITION,
 								"Priority values of defects that can be excluded from 'Defect Removal Efficiency' calculation"))
-				.append("options", Arrays.asList(new Document(LABEL, "p1").append(VALUE, "p1"),
-						new Document(LABEL, "p2").append(VALUE, "p2"), new Document(LABEL, "p3").append(VALUE, "p3"),
-						new Document(LABEL, "p4").append(VALUE, "p4"), new Document(LABEL, "p5").append(VALUE, "p5")));
+				.append("options",
+						Arrays.asList(new Document(LABEL, "p1").append(VALUE, "p1"), new Document(LABEL, "p2").append(VALUE, "p2"),
+								new Document(LABEL, "p3").append(VALUE, "p3"), new Document(LABEL, "p4").append(VALUE, "p4"),
+								new Document(LABEL, "p5").append(VALUE, "p5")));
 
 		Document jiraDefectRejectionStatusKPI34 = new Document().append(FIELD_NAME, REJECTION_STATUS)
 				.append(FIELD_LABEL, "Status to identify rejected defects").append(FIELD_TYPE, "text")
 				.append(FIELD_CATEGORY, "workflow").append(SECTION, SECTION_DEF)
 				.append(TOOL_TIP, new Document(DEFINITION, "All workflow statuses used to reject defects"));
 
-		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE)
-				.insertMany(Arrays.asList(jiraLabelsQAKPI111, jiraLabelsKPI133, includeRCAForKPI34, defectPriorityKPI34,
-						jiraDefectRejectionStatusKPI34, resolutionTypeForRejectionKPI34));
+		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).insertMany(Arrays.asList(jiraLabelsQAKPI111, jiraLabelsKPI133,
+				includeRCAForKPI34, defectPriorityKPI34, jiraDefectRejectionStatusKPI34, resolutionTypeForRejectionKPI34));
 	}
 
 	public void insertFieldMappingVal() {
@@ -113,8 +113,7 @@ public class UpdateDreDdQsFieldMapping {
 		// Define the new values
 		var newValues = new Document();
 		newValues.append(REJECTION_STATUS, "Rejected");
-		newValues.append(RESOLUTION_TYPE,
-				List.of("Invalid", "Duplicate", "Unrequired", "Cannot Reproduce", "Won't Fix"));
+		newValues.append(RESOLUTION_TYPE, List.of("Invalid", "Duplicate", "Unrequired", "Cannot Reproduce", "Won't Fix"));
 
 		// Define the update operation
 		var update = new Document();
@@ -132,10 +131,9 @@ public class UpdateDreDdQsFieldMapping {
 
 	private void deleteFieldMappingRollback() {
 		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE)
-				.deleteMany(Filters.or(Filters.eq(FIELD_NAME, "jiraLabelsQAKPI111"),
-						Filters.eq(FIELD_NAME, "jiraLabelsKPI133"), Filters.eq(FIELD_NAME, "includeRCAForKPI34"),
-						Filters.eq(FIELD_NAME, "defectPriorityKPI34"), Filters.eq(FIELD_NAME, REJECTION_STATUS),
-						Filters.eq(FIELD_NAME, RESOLUTION_TYPE)));
+				.deleteMany(Filters.or(Filters.eq(FIELD_NAME, "jiraLabelsQAKPI111"), Filters.eq(FIELD_NAME, "jiraLabelsKPI133"),
+						Filters.eq(FIELD_NAME, "includeRCAForKPI34"), Filters.eq(FIELD_NAME, "defectPriorityKPI34"),
+						Filters.eq(FIELD_NAME, REJECTION_STATUS), Filters.eq(FIELD_NAME, RESOLUTION_TYPE)));
 	}
 
 	public void rollbackInsertFieldMappingVal() {
@@ -147,5 +145,4 @@ public class UpdateDreDdQsFieldMapping {
 		// Execute the update to remove the field from all documents
 		mongoTemplate.getCollection("field_mapping").updateMany(new Document(), update);
 	}
-
 }

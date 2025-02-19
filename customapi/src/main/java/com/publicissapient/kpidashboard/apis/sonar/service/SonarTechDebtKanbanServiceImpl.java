@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
@@ -34,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -55,6 +52,7 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -63,18 +61,16 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author shichand0
- *
  */
 @Component
 @Slf4j
 public class SonarTechDebtKanbanServiceImpl
-		extends SonarKPIService<Long, List<Object>, Map<Pair<String, String>, List<SonarHistory>>> {
+		extends
+			SonarKPIService<Long, List<Object>, Map<Pair<String, String>, List<SonarHistory>>> {
 
 	private static final String SQALE_INDEX = "sqale_index";
 
-	/**
-	 * Gets KPICode's <tt>SONAR_TECH_DEBT_KANBAN</tt> enum
-	 */
+	/** Gets KPICode's <tt>SONAR_TECH_DEBT_KANBAN</tt> enum */
 	@Override
 	public String getQualifierType() {
 		return KPICode.SONAR_TECH_DEBT_KANBAN.name();
@@ -90,7 +86,7 @@ public class SonarTechDebtKanbanServiceImpl
 
 	/**
 	 * Gets KPI Data for Sonar Tech Debt for Kanban projects
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param kpiElement
 	 * @param treeAggregatorDetail
@@ -98,8 +94,8 @@ public class SonarTechDebtKanbanServiceImpl
 	 * @throws ApplicationException
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		log.info("SONAR-TECH-DEBT-KANBAN-", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
@@ -146,7 +142,6 @@ public class SonarTechDebtKanbanServiceImpl
 	 * @param leafNodeList
 	 * @param kpiElement
 	 * @param kpiRequest
-	 *
 	 */
 	private void dateWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> leafNodeList, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
@@ -162,7 +157,6 @@ public class SonarTechDebtKanbanServiceImpl
 				startDate, endDate, kpiRequest);
 
 		kpiWithFilter(sonarDetailsForAllProjects, mapTmp, kpiElement, kpiRequest);
-
 	}
 
 	private void kpiWithFilter(Map<Pair<String, String>, List<SonarHistory>> sonarDetailsForAllProjects,
@@ -179,29 +173,26 @@ public class SonarTechDebtKanbanServiceImpl
 				for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
 					CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate,
 							kpiRequest.getDuration());
-					Long startms = dateRange.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant()
-							.toEpochMilli();
+					Long startms = dateRange.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 					Long endms = dateRange.getEndDate().atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant()
 							.toEpochMilli();
 					Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms,
 							projectNodePair.getRight());
 					String date = getRange(dateRange, kpiRequest);
-					prepareSqualeList(history, date, projectNodePair.getRight(), projectList, debtList,
-							projectWiseDataMap, versionDate);
+					prepareSqualeList(history, date, projectNodePair.getRight(), projectList, debtList, projectWiseDataMap,
+							versionDate);
 					currentDate = getNextRangeDate(kpiRequest, currentDate);
 				}
 				mapTmp.get(projectNodePair.getLeft()).setValue(projectWiseDataMap);
 				if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-					KPIExcelUtility.populateSonarKpisExcelData(
-							mapTmp.get(projectNodePair.getLeft()).getProjectFilter().getName(), projectList, debtList,
-							versionDate, excelData, KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId());
+					KPIExcelUtility.populateSonarKpisExcelData(mapTmp.get(projectNodePair.getLeft()).getProjectFilter().getName(),
+							projectList, debtList, versionDate, excelData, KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId());
 				}
 			}
 		});
 
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.SONAR_TECH_DEBT_KANBAN.getColumns());
-
 	}
 
 	private LocalDate getNextRangeDate(KpiRequest kpiRequest, LocalDate currentDate) {
@@ -217,7 +208,7 @@ public class SonarTechDebtKanbanServiceImpl
 
 	/**
 	 * Fetches KPI Data from DB
-	 * 
+	 *
 	 * @param leafNodeList
 	 * @param startDate
 	 * @param endDate
@@ -243,12 +234,11 @@ public class SonarTechDebtKanbanServiceImpl
 		}
 
 		return techDebtValue;
-
 	}
 
 	/**
 	 * prepare Map after calculating squale data for each filter drop down
-	 * 
+	 *
 	 * @param history
 	 * @param date
 	 * @param projectName
@@ -279,9 +269,8 @@ public class SonarTechDebtKanbanServiceImpl
 				debtList.add(String.valueOf(techDebtValueInDays));
 			}
 		});
-		DataCount dcObj = getDataCountObject(
-				calculateKpiValue(dateWiseDebtList, KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId()), new HashMap<>(),
-				projectName, date);
+		DataCount dcObj = getDataCountObject(calculateKpiValue(dateWiseDebtList, KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId()),
+				new HashMap<>(), projectName, date);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 
 		return key;
@@ -297,8 +286,8 @@ public class SonarTechDebtKanbanServiceImpl
 		String range = null;
 		if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
-					DateUtil.DISPLAY_DATE_FORMAT) + " to "
-					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to " +
+					DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
 							DateUtil.DISPLAY_DATE_FORMAT);
 		} else if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.MONTH)) {
 			range = dateRange.getStartDate().getMonth().toString() + " " + dateRange.getStartDate().getYear();
@@ -341,9 +330,7 @@ public class SonarTechDebtKanbanServiceImpl
 						.name(split[0]).metrics(metricsList).build();
 			}
 			map.put(key.getValue(), build);
-		}
-
-		);
+		});
 		return map;
 	}
 
@@ -354,8 +341,6 @@ public class SonarTechDebtKanbanServiceImpl
 
 	@Override
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI67(),
-				KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId());
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI67(), KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId());
 	}
-
 }

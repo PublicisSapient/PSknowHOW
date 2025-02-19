@@ -118,7 +118,6 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 				.collect(Collectors.groupingBy(JiraIssueCustomHistory::getBasicProjectConfigId));
 
 		kpiWithFilter(projectWiseJiraIssue, leafNode, kpiElement, dataCount);
-
 	}
 
 	@Override
@@ -138,11 +137,9 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 
 		if (Optional.ofNullable(fieldMapping.getJiraIssueTypeKPI3()).isPresent()) {
 
-			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters,
-					fieldMapping.getJiradefecttype(), fieldMapping.getJiraIssueTypeKPI3(),
-					JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
+			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(),
+					fieldMapping.getJiraIssueTypeKPI3(), JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-
 		}
 		List<String> status = new ArrayList<>();
 		if (Optional.ofNullable(fieldMapping.getJiraDodKPI171()).isPresent()) {
@@ -212,7 +209,6 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 			Map<String, List<JiraIssueCustomHistory>> typeWiseIssues = jiraIssueCustomHistoriesList.stream()
 					.collect(Collectors.groupingBy(JiraIssueCustomHistory::getStoryType));
 			typeWiseIssues.forEach((type, jiraIssueCustomHistories) -> {
-
 				List<Long> intakeDorTime = new ArrayList<>();
 				List<Long> dorDodTime = new ArrayList<>();
 				List<Long> dodLiveTime = new ArrayList<>();
@@ -240,8 +236,8 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 						cycleTime.setIntakeTime(jiraIssueCustomHistory.getCreatedDate());
 						cycleTimeValidationData.setIntakeDate(jiraIssueCustomHistory.getCreatedDate());
 						Map<String, DateTime> dodStatusDateMap = new HashMap<>();
-						List<String> liveStatus = fieldMapping.getJiraLiveStatusKPI171().stream()
-								.filter(Objects::nonNull).map(String::toLowerCase).collect(Collectors.toList());
+						List<String> liveStatus = fieldMapping.getJiraLiveStatusKPI171().stream().filter(Objects::nonNull)
+								.map(String::toLowerCase).collect(Collectors.toList());
 						List<String> dodStatus = fieldMapping.getJiraDodKPI171().stream().filter(Objects::nonNull)
 								.map(String::toLowerCase).collect(Collectors.toList());
 						String storyFirstStatus = fieldMapping.getStoryFirstStatusKPI171();
@@ -250,12 +246,9 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 
 						jiraIssueCustomHistory.getStatusUpdationLog().forEach(statusUpdateLog -> {
 							DateTime updateTime = DateTime.parse(statusUpdateLog.getUpdatedOn().toString());
-							BacklogKpiHelper.setLiveTime(cycleTimeValidationData, cycleTime, statusUpdateLog,
-									updateTime, liveStatus);
-							BacklogKpiHelper.setReadyTime(cycleTimeValidationData, cycleTime, statusUpdateLog,
-									updateTime, dor);
-							BacklogKpiHelper.setDODTime(statusUpdateLog, updateTime, dodStatus, storyFirstStatus,
-									dodStatusDateMap);
+							BacklogKpiHelper.setLiveTime(cycleTimeValidationData, cycleTime, statusUpdateLog, updateTime, liveStatus);
+							BacklogKpiHelper.setReadyTime(cycleTimeValidationData, cycleTime, statusUpdateLog, updateTime, dor);
+							BacklogKpiHelper.setDODTime(statusUpdateLog, updateTime, dodStatus, storyFirstStatus, dodStatusDateMap);
 						});
 						DateTime minUpdatedOn = CollectionUtils.isNotEmpty(dodStatusDateMap.values())
 								? Collections.min(dodStatusDateMap.values())
@@ -270,16 +263,16 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 								cycleTime.getDeliveryTime(), DOR_TO_DOD_KPI, cycleTimeValidationData, null);
 						String deliverToLive = BacklogKpiHelper.setValueInCycleTime(cycleTime.getDeliveryTime(),
 								cycleTime.getLiveTime(), DOD_TO_LIVE_KPI, cycleTimeValidationData, null);
-						String leadTime = BacklogKpiHelper.setValueInCycleTime(cycleTime.getIntakeTime(),
-								cycleTime.getLiveTime(), LEAD_TIME_KPI, cycleTimeValidationData, null);
-						transitionExist(overAllIntakeDorTime, overAllIntakeDorModalValues, intakeDorTime,
-								intakeDorModalValues, jiraIssueCustomHistory, intakeToReady);
+						String leadTime = BacklogKpiHelper.setValueInCycleTime(cycleTime.getIntakeTime(), cycleTime.getLiveTime(),
+								LEAD_TIME_KPI, cycleTimeValidationData, null);
+						transitionExist(overAllIntakeDorTime, overAllIntakeDorModalValues, intakeDorTime, intakeDorModalValues,
+								jiraIssueCustomHistory, intakeToReady);
 						transitionExist(overAllDorDodTime, overAllDorDodModalValues, dorDodTime, dorDodModalValues,
 								jiraIssueCustomHistory, readyToDeliver);
 						transitionExist(overAllDodLiveTime, overAllDodLiveModalValues, dodLiveTime, dodLiveModalValues,
 								jiraIssueCustomHistory, deliverToLive);
-						transitionExist(overAllLeadTimeList, overAllLeadTimeModalValues, leadTimeList,
-								leadTimeModalValues, jiraIssueCustomHistory, leadTime);
+						transitionExist(overAllLeadTimeList, overAllLeadTimeModalValues, leadTimeList, leadTimeModalValues,
+								jiraIssueCustomHistory, leadTime);
 
 						cycleTimeList.add(cycleTimeValidationData);
 					}
@@ -289,16 +282,13 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 					dodLive = AggregationUtils.averageLong(dodLiveTime);
 
 					List<IterationKpiData> data = new ArrayList<>();
-					data.add(new IterationKpiData(INTAKE_TO_DOR,
-							 ObjectUtils.defaultIfNull(intakeDor, 0L).doubleValue() / 480,
+					data.add(new IterationKpiData(INTAKE_TO_DOR, ObjectUtils.defaultIfNull(intakeDor, 0L).doubleValue() / 480,
 							ObjectUtils.defaultIfNull(intakeDorTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
 							getIterationKpiModalValue(intakeDorModalValues, cycleTimeList)));
-					data.add(new IterationKpiData(DOR_TO_DOD,
-							ObjectUtils.defaultIfNull(dorDod, 0L).doubleValue() / 480,
+					data.add(new IterationKpiData(DOR_TO_DOD, ObjectUtils.defaultIfNull(dorDod, 0L).doubleValue() / 480,
 							ObjectUtils.defaultIfNull(dorDodTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
 							getIterationKpiModalValue(dorDodModalValues, cycleTimeList)));
-					data.add(new IterationKpiData(DOD_TO_LIVE,
-							ObjectUtils.defaultIfNull(dodLive, 0L).doubleValue() / 480,
+					data.add(new IterationKpiData(DOD_TO_LIVE, ObjectUtils.defaultIfNull(dodLive, 0L).doubleValue() / 480,
 							ObjectUtils.defaultIfNull(dodLiveTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
 							getIterationKpiModalValue(dodLiveModalValues, cycleTimeList)));
 					IterationKpiValue iterationKpiValue = new IterationKpiValue(type, null, data);
@@ -310,20 +300,16 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 			overAllDodLive = AggregationUtils.averageLong(overAllDodLiveTime);
 
 			List<IterationKpiData> data = new ArrayList<>();
-			data.add(new IterationKpiData(INTAKE_TO_DOR,
-					ObjectUtils.defaultIfNull(overAllIntakeDor, 0L).doubleValue() / 480,
+			data.add(new IterationKpiData(INTAKE_TO_DOR, ObjectUtils.defaultIfNull(overAllIntakeDor, 0L).doubleValue() / 480,
 					ObjectUtils.defaultIfNull(overAllIntakeDorTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
 					getIterationKpiModalValue(overAllIntakeDorModalValues, cycleTimeList)));
-			data.add(new IterationKpiData(DOR_TO_DOD,
-					ObjectUtils.defaultIfNull(overAllDorDod, 0L).doubleValue() / 480,
+			data.add(new IterationKpiData(DOR_TO_DOD, ObjectUtils.defaultIfNull(overAllDorDod, 0L).doubleValue() / 480,
 					ObjectUtils.defaultIfNull(overAllDorDodTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
 					getIterationKpiModalValue(overAllDorDodModalValues, cycleTimeList)));
-			data.add(new IterationKpiData(DOD_TO_LIVE,
-					ObjectUtils.defaultIfNull(overAllDodLive, 0L).doubleValue() / 480,
+			data.add(new IterationKpiData(DOD_TO_LIVE, ObjectUtils.defaultIfNull(overAllDodLive, 0L).doubleValue() / 480,
 					ObjectUtils.defaultIfNull(overAllDodLiveTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
 					getIterationKpiModalValue(overAllDodLiveModalValues, cycleTimeList)));
-			IterationKpiValue iterationKpiValue = new IterationKpiValue(CommonConstant.OVERALL, CommonConstant.OVERALL,
-					data);
+			IterationKpiValue iterationKpiValue = new IterationKpiValue(CommonConstant.OVERALL, CommonConstant.OVERALL, data);
 			dataList.add(iterationKpiValue);
 		}
 		Set<String> duration = new LinkedHashSet<>(
@@ -340,8 +326,8 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 	private List<IterationKpiModalValue> getIterationKpiModalValue(List<JiraIssueCustomHistory> modalJiraIssues,
 			List<CycleTimeValidationData> cycleTimeList) {
 		List<IterationKpiModalValue> iterationKpiDataList = new ArrayList<>();
-		Map<String, IterationKpiModalValue> dataMap = KpiDataHelper
-				.createMapOfModalObjectFromJiraHistory(modalJiraIssues, cycleTimeList);
+		Map<String, IterationKpiModalValue> dataMap = KpiDataHelper.createMapOfModalObjectFromJiraHistory(modalJiraIssues,
+				cycleTimeList);
 		for (Map.Entry<String, IterationKpiModalValue> entry : dataMap.entrySet()) {
 			iterationKpiDataList.add(dataMap.get(entry.getKey()));
 		}
@@ -364,5 +350,4 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 			overAllTransitionModalValues.add(jiraIssueCustomHistory);
 		}
 	}
-
 }

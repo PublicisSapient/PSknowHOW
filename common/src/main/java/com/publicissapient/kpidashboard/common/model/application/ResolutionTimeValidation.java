@@ -22,5 +22,4 @@ public class ResolutionTimeValidation {
 	private String issueDescription;
 	private String issueType;
 	private Double resolutionTime;
-
 }

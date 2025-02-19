@@ -70,5 +70,4 @@ class AzureRepoServerURIBuilderTests {
 		String expected = "https://test.com/testUser/testRepo/_apis/git/repositories/testRepo/commits?searchCriteria.itemVersion.version=master&api.Version=5.1";
 		Assert.assertEquals(expected, url);
 	}
-
 }

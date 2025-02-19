@@ -139,7 +139,6 @@ public class EstimateVsActualServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -150,6 +149,5 @@ public class EstimateVsActualServiceImplTest {
 	@After
 	public void cleanup() {
 		jiraIssueRepository.deleteAll();
-
 	}
 }

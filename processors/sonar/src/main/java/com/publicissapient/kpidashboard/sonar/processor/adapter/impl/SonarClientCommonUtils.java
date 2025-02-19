@@ -57,10 +57,7 @@ import com.publicissapient.kpidashboard.sonar.util.SonarUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Utility class for common clients methods.
- *
- */
+/** Utility class for common clients methods. */
 @Slf4j
 public class SonarClientCommonUtils {
 
@@ -83,14 +80,13 @@ public class SonarClientCommonUtils {
 	public static final String BRANCH = "branch";
 
 	private SonarClientCommonUtils() {
-
 	}
 
 	/**
 	 * Provides Sonar Project .
 	 *
 	 * @param sonarServer
-	 *            the Sonar server connection details
+	 *          the Sonar server connection details
 	 * @param toolCredentialProvider
 	 * @param restOperations
 	 * @return the list of Sonar Project
@@ -110,8 +106,7 @@ public class SonarClientCommonUtils {
 			response = searchProjectsSonarCloud(baseUrl, password, nextPageIndex, paging.getPageSize(),
 					sonarServer.getOrganizationKey(), restOperations);
 		} else if (!sonarServer.isCloudEnv() && sonarServer.isAccessTokenEnabled()) {
-			response = searchProjectsWithAccessToken(baseUrl, password, nextPageIndex, paging.getPageSize(),
-					restOperations);
+			response = searchProjectsWithAccessToken(baseUrl, password, nextPageIndex, paging.getPageSize(), restOperations);
 		} else {
 			response = searchProjects(baseUrl, username, password, nextPageIndex, paging.getPageSize(), restOperations);
 		}
@@ -122,13 +117,13 @@ public class SonarClientCommonUtils {
 	 * Rest call to get the projects of one page.
 	 *
 	 * @param baseUrl the base url
-	 * 
+	 *
 	 * @param password the password
-	 * 
+	 *
 	 * @param pageIndex the page index
-	 * 
+	 *
 	 * @param pageSize the page size
-	 * 
+	 *
 	 * @return SearchProjectsResponse containing projects and paging info
 	 */
 	private static SearchProjectsResponse searchProjectsWithAccessToken(String baseUrl, String password, int pageIndex,
@@ -140,19 +135,18 @@ public class SonarClientCommonUtils {
 		HttpEntity<?> httpEntity = new HttpEntity<>(SonarProcessorUtils.getHeaders(password, true));
 
 		return getSearchProjectsResponse(restOperations.exchange(url, HttpMethod.GET, httpEntity, String.class), url);
-
 	}
 
 	/**
 	 * Rest call to get the projects of one page.
 	 *
 	 * @param baseUrl
-	 *            the base url
+	 *          the base url
 	 * @param accessToken
 	 * @param pageIndex
-	 *            the page index
+	 *          the page index
 	 * @param pageSize
-	 *            the page size
+	 *          the page size
 	 * @param restOperations
 	 * @return SearchProjectsResponse containing projects and paging info
 	 */
@@ -164,29 +158,27 @@ public class SonarClientCommonUtils {
 
 		HttpEntity<?> httpEntity = new HttpEntity<>(SonarProcessorUtils.getHeaders(accessToken));
 
-		return getSearchProjectsResponse(restOperations.exchange(resUrl, HttpMethod.GET, httpEntity, String.class),
-				resUrl);
-
+		return getSearchProjectsResponse(restOperations.exchange(resUrl, HttpMethod.GET, httpEntity, String.class), resUrl);
 	}
 
 	/**
 	 * Rest call to get the projects of one page.
 	 *
 	 * @param baseUrl
-	 *            the base url
+	 *          the base url
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @param password
-	 *            the password
+	 *          the password
 	 * @param pageIndex
-	 *            the page index
+	 *          the page index
 	 * @param pageSize
-	 *            the page size
+	 *          the page size
 	 * @param restOperations
 	 * @return SearchProjectsResponse containing projects and paging info
 	 */
-	private static SearchProjectsResponse searchProjects(String baseUrl, String username, String password,
-			int pageIndex, int pageSize, RestOperations restOperations) {
+	private static SearchProjectsResponse searchProjects(String baseUrl, String username, String password, int pageIndex,
+			int pageSize, RestOperations restOperations) {
 
 		String resUrl = String.format(RESOURCE_ENDPOINT, pageIndex, pageSize);
 		String url = baseUrl + resUrl;
@@ -194,7 +186,6 @@ public class SonarClientCommonUtils {
 		HttpEntity<?> httpEntity = new HttpEntity<>(SonarProcessorUtils.getHeaders(username, password));
 
 		return getSearchProjectsResponse(restOperations.exchange(url, HttpMethod.GET, httpEntity, String.class), url);
-
 	}
 
 	@Nullable
@@ -223,12 +214,11 @@ public class SonarClientCommonUtils {
 	 * Provides List of Sonar Project setup properties.
 	 *
 	 * @param response
-	 *            the SearchProjectsResponse
+	 *          the SearchProjectsResponse
 	 * @param sonarServer
-	 *            the Sonar server connection details
+	 *          the Sonar server connection details
 	 * @return the list of Sonar Project
 	 */
-
 	public static List<SonarProcessorItem> getProjectsListFromResponse(SearchProjectsResponse response,
 			ProcessorToolConnection sonarServer) {
 		List<SonarProcessorItem> projectList = new ArrayList<>();
@@ -256,7 +246,7 @@ public class SonarClientCommonUtils {
 	 * Returns true if next page is available.
 	 *
 	 * @param paging
-	 *            the pagination properties
+	 *          the pagination properties
 	 * @return true if next page is available
 	 */
 	public static boolean hasNextPage(Paging paging) {
@@ -273,7 +263,7 @@ public class SonarClientCommonUtils {
 	 * Count total pages.
 	 *
 	 * @param paging
-	 *            the pagination properties
+	 *          the pagination properties
 	 * @return total number of pages
 	 */
 	private static int getTotalPages(Paging paging) {
@@ -292,39 +282,36 @@ public class SonarClientCommonUtils {
 	 * Populates sonar history.
 	 *
 	 * @param qualityList
-	 *            the list of Sonar measure data
+	 *          the list of Sonar measure data
 	 * @param singleHistory
-	 *            the single history
+	 *          the single history
 	 * @param sonarHistory
-	 *            the sonar history
+	 *          the sonar history
 	 */
 	public static void populateCodeQualityHistory(List<SonarMeasureData> qualityList, int singleHistory,
 			SonarHistory sonarHistory) {
 		for (SonarMeasureData sonarMeasureData : qualityList) {
 			SonarMetric metric = new SonarMetric(sonarMeasureData.getMetric());
-			if (!CollectionUtils.isEmpty(sonarMeasureData.getHistory())
-					&& sonarMeasureData.getHistory().size() > singleHistory) {
+			if (!CollectionUtils.isEmpty(sonarMeasureData.getHistory()) &&
+					sonarMeasureData.getHistory().size() > singleHistory) {
 				metric.setMetricValue(sonarMeasureData.getHistory().get(singleHistory).getValue());
-				sonarHistory
-						.setDate(new DateTime(sonarMeasureData.getHistory().get(singleHistory).getDate()).getMillis());
-				sonarHistory.setTimestamp(
-						new DateTime(sonarMeasureData.getHistory().get(singleHistory).getDate()).getMillis());
+				sonarHistory.setDate(new DateTime(sonarMeasureData.getHistory().get(singleHistory).getDate()).getMillis());
+				sonarHistory.setTimestamp(new DateTime(sonarMeasureData.getHistory().get(singleHistory).getDate()).getMillis());
 			}
 			sonarHistory.getMetrics().add(metric);
 		}
 	}
 
-	public static String createHistoryUrl(SonarProcessorItem project, String metrics, String lastUpdated,
-			int pageIndex) {
+	public static String createHistoryUrl(SonarProcessorItem project, String metrics, String lastUpdated, int pageIndex) {
 		String url = "";
 		if (!project.getToolDetailsMap().containsKey(BRANCH)) {
-			url = String.format(new StringBuilder(project.getInstanceUrl()).append(MEASURE_HISTORY_ENDPOINT)
-					.append(PAGE).toString(), project.getKey(), metrics, lastUpdated, pageIndex);
-		} else {
 			url = String.format(
-					new StringBuilder(project.getInstanceUrl()).append(MEASURE_HISTORY_ENDPOINT).append(BRANCH_ENDPOINT)
-							.append(PAGE).toString(),
-					project.getKey(), metrics, lastUpdated, project.getBranch(), pageIndex);
+					new StringBuilder(project.getInstanceUrl()).append(MEASURE_HISTORY_ENDPOINT).append(PAGE).toString(),
+					project.getKey(), metrics, lastUpdated, pageIndex);
+		} else {
+			url = String.format(new StringBuilder(project.getInstanceUrl()).append(MEASURE_HISTORY_ENDPOINT)
+					.append(BRANCH_ENDPOINT).append(PAGE).toString(), project.getKey(), metrics, lastUpdated, project.getBranch(),
+					pageIndex);
 		}
 		return url;
 	}
@@ -333,20 +320,20 @@ public class SonarClientCommonUtils {
 	 * Provides code quality metrics.
 	 *
 	 * @param metricJson
-	 *            the metrics as json
+	 *          the metrics as json
 	 * @return the code quality metric
 	 */
 	public static SonarMetric getSonarMetric(JSONObject metricJson) {
 		SonarMetric metric = new SonarMetric(SonarProcessorUtils.convertToString(metricJson, PROJECT_METRIC));
 		metric.setMetricValue(metricJson.get(PROJECT_MSR_VALUE));
 		if (metric.getMetricName().matches("sqale_index|security_remediation_effort|reliability_remediation_effort")) {
-			metric.setFormattedValue(SonarProcessorUtils
-					.dateFormatter(SonarProcessorUtils.convertToString(metricJson, PROJECT_MSR_VALUE)));
+			metric.setFormattedValue(
+					SonarProcessorUtils.dateFormatter(SonarProcessorUtils.convertToString(metricJson, PROJECT_MSR_VALUE)));
 		} else if (SonarProcessorUtils.convertToStringSafe(metricJson, PROJECT_MSR_VALUE).contains(DOT)) {
 			metric.setFormattedValue(SonarProcessorUtils.convertToString(metricJson, PROJECT_MSR_VALUE) + "%");
 		} else if (SonarProcessorUtils.convertToStringSafe(metricJson, PROJECT_MSR_VALUE).matches("\\d+")) {
-			metric.setFormattedValue(String.format("%,d",
-					Integer.parseInt(SonarProcessorUtils.convertToString(metricJson, PROJECT_MSR_VALUE))));
+			metric.setFormattedValue(
+					String.format("%,d", Integer.parseInt(SonarProcessorUtils.convertToString(metricJson, PROJECT_MSR_VALUE))));
 		} else {
 			metric.setFormattedValue(SonarProcessorUtils.convertToString(metricJson, PROJECT_MSR_VALUE));
 		}
@@ -357,9 +344,9 @@ public class SonarClientCommonUtils {
 	 * Set version to Sonar data.
 	 *
 	 * @param sonarDetail
-	 *            the sonar detail
+	 *          the sonar detail
 	 * @param eventJson
-	 *            the event json
+	 *          the event json
 	 */
 	public static void setVersionToSonarDetails(SonarDetails sonarDetail, JSONObject eventJson) {
 		if (SonarProcessorUtils.convertToStringSafe(eventJson, "category").equals("VERSION")) {
@@ -368,14 +355,12 @@ public class SonarClientCommonUtils {
 	}
 
 	/**
-	 *
 	 * @param sonarServer
 	 * @param sonarConfig
 	 * @param toolCredentialProvider
 	 * @param restOperations
 	 * @return
 	 */
-
 	public static List<SonarProcessorItem> getProcessorItemList(ProcessorToolConnection sonarServer,
 			SonarConfig sonarConfig, ToolCredentialProvider toolCredentialProvider, RestOperations restOperations) {
 		List<SonarProcessorItem> projectList = new ArrayList<>();
@@ -427,8 +412,7 @@ public class SonarClientCommonUtils {
 			int pageIndex = 1;
 			do {
 				url = SonarClientCommonUtils.createHistoryUrl(project, metrics, lastUpdated, pageIndex);
-				ResponseEntity<String> response = restOperations.exchange(url, HttpMethod.GET, httpHeaders,
-						String.class);
+				ResponseEntity<String> response = restOperations.exchange(url, HttpMethod.GET, httpHeaders, String.class);
 				JSONParser jsonParser = new JSONParser();
 				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
 				if (jsonObject != null) {
@@ -444,8 +428,7 @@ public class SonarClientCommonUtils {
 						return codeList;
 					}
 
-					for (int singleHistory = 0; singleHistory < qualityList.get(0).getHistory()
-							.size(); singleHistory++) {
+					for (int singleHistory = 0; singleHistory < qualityList.get(0).getHistory().size(); singleHistory++) {
 						SonarHistory sonarHistory = new SonarHistory();
 						sonarHistory.setKey(project.getKey());
 						sonarHistory.setName(project.getProjectName());
@@ -469,5 +452,4 @@ public class SonarClientCommonUtils {
 
 		return codeList;
 	}
-
 }

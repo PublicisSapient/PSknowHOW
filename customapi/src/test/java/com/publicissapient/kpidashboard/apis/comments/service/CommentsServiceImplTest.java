@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.comments.service;
 
 import static com.publicissapient.kpidashboard.common.util.DateUtil.dateTimeFormatter;
@@ -258,9 +257,9 @@ public class CommentsServiceImplTest {
 		mappedCollection.put("nodeChildId", sprintId);
 		mappedCollection.put("kpiId", kpiId);
 		mappedCollection.put("CommentsInfo", commentsInfo);
-		when(kpiCommentsHistoryRepository.findByNodeAndLevelAndNodeChildIdAndKpiId(node, level, sprintId, kpiId)).thenReturn(kpiComment);
-		Map<String, Object> mappedCollectionActual = commentServiceImpl.findCommentByKPIId(node, level, sprintId,
-				kpiId);
+		when(kpiCommentsHistoryRepository.findByNodeAndLevelAndNodeChildIdAndKpiId(node, level, sprintId, kpiId))
+				.thenReturn(kpiComment);
+		Map<String, Object> mappedCollectionActual = commentServiceImpl.findCommentByKPIId(node, level, sprintId, kpiId);
 		Assert.assertEquals(mappedCollection, mappedCollectionActual);
 	}
 
@@ -284,14 +283,15 @@ public class CommentsServiceImplTest {
 		commentsInfo.add(commentInfo);
 		commentsInfo.add(commentInfo);
 		kpiComment.setCommentsInfo(commentsInfo);
-		List<KpiCommentsHistory> kpiCommentsList= new ArrayList<>();
+		List<KpiCommentsHistory> kpiCommentsList = new ArrayList<>();
 		kpiCommentsList.add(kpiComment);
 
 		Map<String, Object> mappedCollection = new LinkedHashMap<>();
-		mappedCollection.put("kpi12",4);
-		when(kpiCommentsHistoryRepository.findCommentsByBoard(Arrays.asList(node), level, sprintId, Arrays.asList(kpiId))).thenReturn(kpiCommentsList);
-		Map<String, Integer> mappedCollectionActual = commentServiceImpl.findCommentByBoard(Arrays.asList(node), level, sprintId,
-				Arrays.asList(kpiId));
+		mappedCollection.put("kpi12", 4);
+		when(kpiCommentsHistoryRepository.findCommentsByBoard(Arrays.asList(node), level, sprintId, Arrays.asList(kpiId)))
+				.thenReturn(kpiCommentsList);
+		Map<String, Integer> mappedCollectionActual = commentServiceImpl.findCommentByBoard(Arrays.asList(node), level,
+				sprintId, Arrays.asList(kpiId));
 		Assert.assertEquals(mappedCollection, mappedCollectionActual);
 	}
 
@@ -300,14 +300,11 @@ public class CommentsServiceImplTest {
 		Mockito.doNothing().when(kpiCommentsCustomRepository).deleteByCommentId(anyString());
 		Mockito.doNothing().when(kpiCommentsHistoryCustomRepository).markCommentDelete(anyString());
 		commentServiceImpl.deleteComments("");
-
 	}
-
-
 
 	@Test
 	public void findLatestCommentSummaryTest() {
-		List<KpiCommentsHistory> kpiCommentsList= new ArrayList<>();
+		List<KpiCommentsHistory> kpiCommentsList = new ArrayList<>();
 		KpiCommentsHistory kpiComment = new KpiCommentsHistory();
 		kpiComment.setNode(node);
 		kpiComment.setLevel(level);
@@ -347,9 +344,8 @@ public class CommentsServiceImplTest {
 
 		when(kpiCommentsHistoryRepository.findCommentsByBoard(nodes, level, sprintId, kpiIds)).thenReturn(kpiCommentsList);
 		Mockito.when(customApiConfig.getLatestKpiCommentsSummary()).thenReturn(10);
-		List<CommentViewResponseDTO> commentViewResponse = commentServiceImpl.findLatestCommentSummary(nodes, level, sprintId,
-				kpiIds);
+		List<CommentViewResponseDTO> commentViewResponse = commentServiceImpl.findLatestCommentSummary(nodes, level,
+				sprintId, kpiIds);
 		Assert.assertEquals(commentViewResponseDTOList, commentViewResponse);
 	}
-
 }

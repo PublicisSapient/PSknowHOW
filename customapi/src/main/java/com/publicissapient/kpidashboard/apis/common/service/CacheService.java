@@ -21,16 +21,15 @@ package com.publicissapient.kpidashboard.apis.common.service;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 
 /**
  * A Service to manage cache.
- * 
+ *
  * @author anisingh4
  */
 @Component
@@ -51,23 +50,23 @@ public interface CacheService {
 	/**
 	 * Stores the KPI data result. Cache key = key+requestOrigin+kpiSource. Given
 	 * that none of them is empty.
-	 * 
+	 *
 	 * @param key
-	 *            mandatory parameter
+	 *          mandatory parameter
 	 * @param value
-	 *            KPI result
+	 *          KPI result
 	 * @param kpiSource
-	 *            taken into account if not empty
+	 *          taken into account if not empty
 	 * @param groupId
 	 * @param sprintIncluded
-	 *            sprintIncluded
+	 *          sprintIncluded
 	 */
 	void setIntoApplicationCache(String[] key, Object value, String kpiSource, Integer groupId,
 			List<String> sprintIncluded);
 
 	/**
 	 * Gets data from cache based on key
-	 * 
+	 *
 	 * @param key
 	 * @return
 	 */
@@ -76,12 +75,12 @@ public interface CacheService {
 	/**
 	 * Gets from the cache. Key formation strategy is same as detailed in the
 	 * setIntoApplicationCache method above.
-	 * 
+	 *
 	 * @param keyList
 	 * @param kpiSource
 	 * @param groupId
 	 * @param sprintIncluded
-	 *            sprintIncluded
+	 *          sprintIncluded
 	 * @return
 	 */
 	public Object getFromApplicationCache(String[] keyList, String kpiSource, Integer groupId,

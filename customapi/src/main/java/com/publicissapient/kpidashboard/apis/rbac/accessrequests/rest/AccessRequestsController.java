@@ -18,10 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.rbac.accessrequests.rest;
 
-
 import javax.validation.Valid;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,7 +40,7 @@ import com.publicissapient.kpidashboard.apis.abac.AccessRequestListener;
 import com.publicissapient.kpidashboard.apis.abac.GrantAccessListener;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.abac.RejectAccessListener;
-import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.rbac.accessrequests.service.AccessRequestsHelperService;
@@ -52,7 +50,6 @@ import com.publicissapient.kpidashboard.common.model.rbac.AccessRequestDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequestDecision;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,15 +63,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AccessRequestsController {
 
-	/**
-	 * Instantiates the AccessRequestsHelperService
-	 */
+	/** Instantiates the AccessRequestsHelperService */
 	@Autowired
 	private AccessRequestsHelperService accessRequestsHelperService;
 
 	@Autowired
 	private ProjectAccessManager projectAccessManager;
-	
+
 	@Autowired
 	private AuthProperties authProperties;
 
@@ -92,9 +87,8 @@ public class AccessRequestsController {
 
 	/**
 	 * Gets access request data at id.
-	 * 
-	 * @param id
 	 *
+	 * @param id
 	 * @return responseEntity with data,message and status
 	 */
 	@GetMapping(value = "/{id}")
@@ -106,24 +100,21 @@ public class AccessRequestsController {
 
 	/**
 	 * Gets all access requests data under a username.
-	 * 
-	 * @param username
 	 *
+	 * @param username
 	 * @return responseEntity with data,message and status
 	 */
 	@GetMapping(value = "/user/{username}")
 	@PreAuthorize("hasPermission(#username,'GET_ACCESS_REQUESTS_OF_USER')")
 	public ResponseEntity<ServiceResponse> getAccessRequestByUsername(@PathVariable("username") String username) {
 		log.info("Getting all requests under user {}", username);
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(accessRequestsHelperService.getAccessRequestByUsername(username));
+		return ResponseEntity.status(HttpStatus.OK).body(accessRequestsHelperService.getAccessRequestByUsername(username));
 	}
 
 	/**
 	 * Gets all access requests data with a current status.
-	 * 
-	 * @param status
 	 *
+	 * @param status
 	 * @return responseEntity with data,message and status
 	 */
 	@GetMapping(value = "/status/{status}")
@@ -135,11 +126,11 @@ public class AccessRequestsController {
 
 	/**
 	 * Modify an access request data by id
-	 * 
+	 *
 	 * @param id
-	 *            access request id
+	 *          access request id
 	 * @param accessRequestDecision
-	 *            decision data
+	 *          decision data
 	 * @return updated access request
 	 */
 	@PutMapping(value = "/{id}")
@@ -165,20 +156,17 @@ public class AccessRequestsController {
 			});
 		} else if (Constant.ACCESS_REQUEST_STATUS_REJECTED.equalsIgnoreCase(accessRequestDecision.getStatus())) {
 			log.info("Reject access {}", id);
-			projectAccessManager.rejectAccessRequest(id, accessRequestDecision.getMessage(),
-					new RejectAccessListener() {
-						@Override
-						public void onSuccess(AccessRequest accessRequest) {
-							serviceResponse[0] = new ServiceResponse(true, "Rejected Successfully", null);
-						}
+			projectAccessManager.rejectAccessRequest(id, accessRequestDecision.getMessage(), new RejectAccessListener() {
+				@Override
+				public void onSuccess(AccessRequest accessRequest) {
+					serviceResponse[0] = new ServiceResponse(true, "Rejected Successfully", null);
+				}
 
-						@Override
-						public void onFailure(AccessRequest accessRequest, String message) {
-							serviceResponse[0] = new ServiceResponse(false, message, null);
-
-						}
-					});
-
+				@Override
+				public void onFailure(AccessRequest accessRequest, String message) {
+					serviceResponse[0] = new ServiceResponse(false, message, null);
+				}
+			});
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse[0]);
@@ -186,9 +174,8 @@ public class AccessRequestsController {
 
 	/**
 	 * Create an access requests data.
-	 * 
-	 * @param accessRequestDTO
 	 *
+	 * @param accessRequestDTO
 	 * @return responseEntity with data,message and status
 	 */
 	@PostMapping()
@@ -197,7 +184,7 @@ public class AccessRequestsController {
 		ModelMapper modelMapper = new ModelMapper();
 		AccessRequest accessRequestsData = modelMapper.map(accessRequestDTO, AccessRequest.class);
 		log.info("creating new request");
-		final ServiceResponse[] serviceResponse = { null };
+		final ServiceResponse[] serviceResponse = {null};
 		projectAccessManager.createAccessRequest(accessRequestsData, new AccessRequestListener() {
 
 			@Override
@@ -216,15 +203,13 @@ public class AccessRequestsController {
 		});
 
 		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse[0]);
-
 	}
 
 	/**
 	 * Gets access request data at id.
 	 *
 	 * @param id
-	 *            id
-	 *
+	 *          id
 	 * @return responseEntity with data,message and status
 	 */
 	@DeleteMapping("/{id}")
@@ -248,8 +233,7 @@ public class AccessRequestsController {
 	 * Gets access requests count data with a pending status.
 	 *
 	 * @param status
-	 *            status
-	 *
+	 *          status
 	 * @return responseEntity with data,message and status
 	 */
 	@RequestMapping(value = "/{status}/notification", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
@@ -257,23 +241,20 @@ public class AccessRequestsController {
 			HttpServletRequest request) {
 		log.info("Getting requests count with current status {}", status);
 		return ResponseEntity.status(HttpStatus.OK)
-				.body(accessRequestsHelperService.getNotificationByStatus(status , false));
+				.body(accessRequestsHelperService.getNotificationByStatus(status, false));
 	}
 
 	/**
 	 * Gets access requests count data with a pending status.
 	 *
 	 * @param status
-	 *            status
-	 *
+	 *          status
 	 * @return responseEntity with data,message and status
 	 */
 	@RequestMapping(value = "/{status}/notification/central", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getNotificationByStatusForCentral(@PathVariable("status") String status,
 			HttpServletRequest request) {
 		log.info("Getting requests count with current status {}", status);
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(accessRequestsHelperService.getNotificationByStatus(status , true));
+		return ResponseEntity.status(HttpStatus.OK).body(accessRequestsHelperService.getNotificationByStatus(status, true));
 	}
-
 }

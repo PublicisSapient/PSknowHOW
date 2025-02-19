@@ -31,15 +31,13 @@ import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /*
 author @shi6
@@ -55,8 +53,7 @@ public class TestCaseDetailsRepositoryImplTest {
 
 	@Test
 	public void testFindNonRegressionTestDetails() {
-		Map<String, List<String>> mapOfFilters = Collections.singletonMap("projectKey",
-				Arrays.asList("PROJ1", "PROJ2"));
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("projectKey", Arrays.asList("PROJ1", "PROJ2"));
 
 		Map<String, Object> map = new HashMap<>();
 		map.put("storyType", Arrays.asList(Pattern.compile("Story")));
@@ -71,5 +68,4 @@ public class TestCaseDetailsRepositoryImplTest {
 		testCaseDetailsRepository.findTestDetails(mapOfFilters, uniqueProjectMap, "nin");
 		assertEquals(Collections.emptyList(), result);
 	}
-
 }

@@ -17,9 +17,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CommentViewRequestDTO {
 
-    private List<String> nodes;
-    private String level;
-    private String nodeChildId;
-    private List<String> kpiIds;
-    private String commentId;
+	private List<String> nodes;
+	private String level;
+	private String nodeChildId;
+	private List<String> kpiIds;
+	private String commentId;
 }

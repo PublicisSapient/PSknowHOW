@@ -57,6 +57,5 @@ public class MigrationLockLog extends BasicModel {
 
 	public MigrationLockLog(String stepName) {
 		this.stepName = stepName;
-
 	}
 }

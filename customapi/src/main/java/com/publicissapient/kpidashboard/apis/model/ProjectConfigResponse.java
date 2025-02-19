@@ -34,5 +34,4 @@ public class ProjectConfigResponse {
 	private String token;
 	private ServiceResponse serviceResponse;
 	private List<RoleWiseProjects> projectsAccess;
-
 }

@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.autoapprove.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,7 +49,6 @@ import com.publicissapient.kpidashboard.common.repository.rbac.RolesRepository;
 
 /**
  * @author sanbhand1
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class AutoApproveAccessServiceImplTest {
@@ -87,16 +85,12 @@ public class AutoApproveAccessServiceImplTest {
 		autoApproveAccessConfig.setEnableAutoApprove("true");
 		autoApproveAccessConfig.setRoles(roles);
 		listAutoApproveAccessConfig.add(autoApproveAccessConfig);
-
 	}
 
-	/**
-	 * method includes post processes for test cases
-	 */
+	/** method includes post processes for test cases */
 	@After
 	public void after() {
 		autoApproveAccessConfigDTO = null;
-
 	}
 
 	@SuppressWarnings("deprecation")
@@ -112,9 +106,9 @@ public class AutoApproveAccessServiceImplTest {
 	public void testSaveAutoApproveRoles() throws Exception {
 
 		when(autoAccessRepository.save(Mockito.any())).thenReturn(autoApproveAccessConfig);
-		AutoApproveAccessConfig response = autoApproveAccessServiceImpl.saveAutoApproveConfig(autoApproveAccessConfig);
+		AutoApproveAccessConfig response =
+				autoApproveAccessServiceImpl.saveAutoApproveConfig(autoApproveAccessConfig);
 		assertThat("status: ", response.getEnableAutoApprove(), equalTo("true"));
-
 	}
 
 	@Test
@@ -124,7 +118,6 @@ public class AutoApproveAccessServiceImplTest {
 		AutoApproveAccessConfig response = autoApproveAccessServiceImpl.modifyAutoApprovConfigById(testId,
 				autoApproveAccessConfig);
 		assertThat("status: ", response.getEnableAutoApprove(), equalTo("true"));
-
 	}
 
 	@Test
@@ -135,7 +128,6 @@ public class AutoApproveAccessServiceImplTest {
 		boolean isEnabled = autoApproveAccessServiceImpl.isAutoApproveEnabled("ROLE_PROJECT_ADMIN");
 
 		assertTrue(isEnabled);
-
 	}
 
 	@Test
@@ -146,7 +138,6 @@ public class AutoApproveAccessServiceImplTest {
 		boolean isEnabled = autoApproveAccessServiceImpl.isAutoApproveEnabled("ROLE_PROJECT_VIEWER");
 
 		assertFalse(isEnabled);
-
 	}
 
 	@Test
@@ -157,7 +148,5 @@ public class AutoApproveAccessServiceImplTest {
 		boolean isEnabled = autoApproveAccessServiceImpl.isAutoApproveEnabled("ROLE_PROJECT_VIEWER");
 
 		assertFalse(isEnabled);
-
 	}
-
 }

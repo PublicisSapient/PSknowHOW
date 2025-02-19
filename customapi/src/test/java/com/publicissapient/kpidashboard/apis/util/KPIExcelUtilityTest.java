@@ -34,8 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.*;
-import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -52,6 +50,7 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.TestCaseDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
@@ -77,6 +76,7 @@ public class KPIExcelUtilityTest {
 	private List<TestCaseDetails> testCaseDetailsList;
 	List<JiraIssue> storyList = new ArrayList<>();
 	private DeploymentFrequencyInfo deploymentFrequencyInfo;
+
 	@Before
 	public void setup() {
 		deploymentFrequencyInfo = Mockito.mock(DeploymentFrequencyInfo.class);
@@ -148,10 +148,8 @@ public class KPIExcelUtilityTest {
 					excelData.setPickupTime(m.getValue().toString());
 					kpiExcelData.add(excelData);
 				}
-
 			}
 		}
-
 	}
 
 	@Test
@@ -305,7 +303,6 @@ public class KPIExcelUtilityTest {
 		assertEquals(1, defectIdDetails.size());
 		// Depending on your kpiId logic, assert the corresponding fields
 		assertEquals(Constant.EXCEL_YES, excelData.getRemovedDefect());
-
 	}
 
 	@Test
@@ -488,8 +485,7 @@ public class KPIExcelUtilityTest {
 		Set<String> fieldValues = new HashSet<>(Arrays.asList("FieldA"));
 		Set<KanbanIssueCustomHistory> kanbanJiraIssues = new HashSet<>(
 				Arrays.asList(createKanbanIssue("Issue1", "FieldA", "2022-01-01"),
-						createKanbanIssue("Issue2", "FieldB", "2022-01-01"),
-						createKanbanIssue("Issue3", "FieldA", "2022-01-02")));
+						createKanbanIssue("Issue2", "FieldB", "2022-01-01"), createKanbanIssue("Issue3", "FieldA", "2022-01-02")));
 		List<KPIExcelData> excelDataList = new ArrayList<>();
 
 		// Create a mock of YourClass and use it to call the method
@@ -763,7 +759,6 @@ public class KPIExcelUtilityTest {
 		assertEquals(4, kpiExcelData.size());
 		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(0).getSprintName());
 		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(1).getSprintName());
-
 	}
 
 	@Test
@@ -880,8 +875,8 @@ public class KPIExcelUtilityTest {
 		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.ACTUAL_ESTIMATION);
 
 		// Act
-		KPIExcelUtility.populateDefectRCAandStatusRelatedExcelData(sprint, jiraIssue, createDuringIteration,
-				kpiExcelData, fieldMapping);
+		KPIExcelUtility.populateDefectRCAandStatusRelatedExcelData(sprint, jiraIssue, createDuringIteration, kpiExcelData,
+				fieldMapping);
 
 		// Assert
 		assertEquals(1, kpiExcelData.size());
@@ -910,8 +905,8 @@ public class KPIExcelUtilityTest {
 		List<KPIExcelData> kpiExcelData = new ArrayList<>();
 		Map<String, JiraIssue> issueData = jiraIssue.stream().collect(Collectors.toMap(JiraIssue::getNumber, x -> x));
 		// Act
-		KPIExcelUtility.populateCreatedVsResolvedExcelData(sprint, issueData, createdConditionStories, map,
-				kpiExcelData, customApiConfig, storyList);
+		KPIExcelUtility.populateCreatedVsResolvedExcelData(sprint, issueData, createdConditionStories, map, kpiExcelData,
+				customApiConfig, storyList);
 		// Assert
 		assertEquals(1, kpiExcelData.size());
 		assertEquals("Sprint1", kpiExcelData.get(0).getSprintName());
@@ -991,7 +986,6 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(48, kpiExcelData.size());
-
 	}
 
 	@Test
@@ -1008,7 +1002,6 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(48, kpiExcelData.size());
-
 	}
 
 	@Test
@@ -1023,7 +1016,6 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(48, kpiExcelData.size());
-
 	}
 
 	@Test
@@ -1040,7 +1032,6 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(48, kpiExcelData.size());
-
 	}
 
 	@Test
@@ -1052,7 +1043,6 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(48, kpiExcelData.size());
-
 	}
 
 	@Test
@@ -1121,7 +1111,8 @@ public class KPIExcelUtilityTest {
 		when(deploymentFrequencyInfo.getDeploymentDateList()).thenReturn(deploymentDateList);
 
 		// Call the method
-		KPIExcelUtility.populateDeploymentFrequencyExcelData(projectName, deploymentFrequencyInfo, kpiExcelData, deploymentMapPipelineNameWise);
+		KPIExcelUtility.populateDeploymentFrequencyExcelData(projectName, deploymentFrequencyInfo, kpiExcelData,
+				deploymentMapPipelineNameWise);
 
 		// Verify the results
 		assertEquals(2, kpiExcelData.size());
@@ -1132,6 +1123,7 @@ public class KPIExcelUtilityTest {
 		assertEquals("Week2", kpiExcelData.get(1).getWeeks());
 		assertEquals("Env2", kpiExcelData.get(1).getDeploymentEnvironment());
 	}
+
 	@Test
 	public void testPopulateDeploymentFrequencyExcelData_ValidData() {
 		// Setup mock data
@@ -1149,7 +1141,8 @@ public class KPIExcelUtilityTest {
 		when(deploymentFrequencyInfo.getDeploymentDateList()).thenReturn(deploymentDateList);
 
 		// Call the method
-		KPIExcelUtility.populateDeploymentFrequencyExcelData(projectName, deploymentFrequencyInfo, kpiExcelData, deploymentMapPipelineNameWise);
+		KPIExcelUtility.populateDeploymentFrequencyExcelData(projectName, deploymentFrequencyInfo, kpiExcelData,
+				deploymentMapPipelineNameWise);
 
 		// Verify the results
 		assertEquals(2, kpiExcelData.size());
@@ -1171,7 +1164,8 @@ public class KPIExcelUtilityTest {
 		String projectName = "projectName";
 		Map<String, String> deploymentMapPipelineNameWise = new HashMap<>();
 		// Call the method
-		KPIExcelUtility.populateDeploymentFrequencyExcelData(projectName, deploymentFrequencyInfo, kpiExcelData, deploymentMapPipelineNameWise);
+		KPIExcelUtility.populateDeploymentFrequencyExcelData(projectName, deploymentFrequencyInfo, kpiExcelData,
+				deploymentMapPipelineNameWise);
 
 		// Verify the results
 		assertEquals(0, kpiExcelData.size());

@@ -20,7 +20,7 @@ package com.publicissapient.kpidashboard.apis.model;
 
 /**
  * Base class for api request/response having maturity level.
- * 
+ *
  * @author anisingh4
  */
 public class BaseModel {
@@ -40,10 +40,9 @@ public class BaseModel {
 	 * Sets maturity level.
 	 *
 	 * @param maturityLevel
-	 *            the maturity level
+	 *          the maturity level
 	 */
 	public void setMaturityLevel(String maturityLevel) {
 		this.maturityLevel = maturityLevel;
 	}
-
 }

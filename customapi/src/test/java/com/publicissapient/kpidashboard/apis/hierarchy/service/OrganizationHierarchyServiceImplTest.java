@@ -99,5 +99,4 @@ public class OrganizationHierarchyServiceImplTest {
 		assertEquals(orgHierarchy, result);
 		verify(organizationHierarchyRepository, times(1)).save(orgHierarchy);
 	}
-
 }

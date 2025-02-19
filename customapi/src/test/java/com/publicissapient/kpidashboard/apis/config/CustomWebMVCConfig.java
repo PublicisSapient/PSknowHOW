@@ -36,7 +36,7 @@ import com.publicissapient.kpidashboard.common.mapper.CustomObjectMapper;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan({ "com.publicissapient.kpidashboard" })
+@ComponentScan({"com.publicissapient.kpidashboard"})
 public class CustomWebMVCConfig implements WebMvcConfigurer {
 	@Override
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
@@ -61,5 +61,4 @@ public class CustomWebMVCConfig implements WebMvcConfigurer {
 		resolver.setMaxPageSize(Integer.MAX_VALUE);
 		argumentResolvers.add(resolver);
 	}
-
 }

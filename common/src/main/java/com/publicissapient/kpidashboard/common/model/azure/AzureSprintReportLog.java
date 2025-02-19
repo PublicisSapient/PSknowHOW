@@ -35,5 +35,4 @@ public class AzureSprintReportLog extends BasicModel {
 	private String sprintStartDate;
 	private String sprintEndDate;
 	private List<RefreshAuditDetails> refreshAuditDetails;
-
 }

@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.jira;//NOPMD
+package com.publicissapient.kpidashboard.common.model.jira; // NOPMD
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +38,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The type Kanban feature custom history.
- */
+/** The type Kanban feature custom history. */
 @SuppressWarnings("PMD.TooManyFields")
 @Data
 @Builder
@@ -66,10 +64,9 @@ public class KanbanIssueCustomHistory extends BasicModel {
 	// root cause
 	private List<String> rootCauseList;
 
-	/**
-	 * Device Platform (iOS/Android/Desktop)
-	 */
+	/** Device Platform (iOS/Android/Desktop) */
 	private String devicePlatform;
+
 	private String projectKey;
 	private String projectComponentId;
 
@@ -90,10 +87,10 @@ public class KanbanIssueCustomHistory extends BasicModel {
 
 	@Override
 	public String toString() {
-		return "FeatureCustomHistory [projectID=" + projectID + ", storyID=" + storyID + ", url=" + url + ",storyType="
-				+ storyType + ", defectStoryID=" + defectStoryID + ", estimate=" + estimate + ", bufferedEstimateTime="
-				+ bufferedEstimateTime + ", devicePlatform=" + devicePlatform + ", projectKey=" + projectKey
-				+ ", projectComponentId=" + projectComponentId + "]";
+		return "FeatureCustomHistory [projectID=" + projectID + ", storyID=" + storyID + ", url=" + url + ",storyType=" +
+				storyType + ", defectStoryID=" + defectStoryID + ", estimate=" + estimate + ", bufferedEstimateTime=" +
+				bufferedEstimateTime + ", devicePlatform=" + devicePlatform + ", projectKey=" + projectKey +
+				", projectComponentId=" + projectComponentId + "]";
 	}
 
 	@Override
@@ -113,5 +110,4 @@ public class KanbanIssueCustomHistory extends BasicModel {
 		}
 		return isEqual;
 	}
-
 }

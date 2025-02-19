@@ -110,7 +110,6 @@ public class ProcessorAsyncAzureRestClientImplTest {
 		azureServer.setApiVersion("5.1");
 		azureServer.setUsername("username");
 		return azureServer;
-
 	}
 
 	@Test
@@ -123,8 +122,7 @@ public class ProcessorAsyncAzureRestClientImplTest {
 		headers.set(HttpHeaders.AUTHORIZATION, authHeader);
 		ResponseEntity<String> response = new ResponseEntity<>(createUpdateResponse(), HttpStatus.OK);
 		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.GET),
-				ArgumentMatchers.eq(new HttpEntity<>(headers)), ArgumentMatchers.eq(String.class)))
-				.thenReturn(response);
+				ArgumentMatchers.eq(new HttpEntity<>(headers)), ArgumentMatchers.eq(String.class))).thenReturn(response);
 		AzureUpdatesModel actualModel = processorAsyncAzureRestClient.getUpdatesResponse(azureServer, "92");
 		AzureUpdatesModel expectedModel = new AzureUpdatesModel();
 		expectedModel.setCount(7);
@@ -152,10 +150,8 @@ public class ProcessorAsyncAzureRestClientImplTest {
 		AzureWiqlModel actualModel = processorAsyncAzureRestClient.getWiqlResponse(azureServer, time,
 				projectConfFieldMapping, false);
 		AzureWiqlModel expectedModel = new AzureWiqlModel();
-		expectedModel.setAsOf("2020-07-17T12:01:50.663Z");
-		;
+		expectedModel.setAsOf("2020-07-17T12:01:50.663Z");;
 		assertEquals(expectedModel.getAsOf(), actualModel.getAsOf(), "Checking for values");
-
 	}
 
 	private String createWiqlResponse() throws IOException {
@@ -163,8 +159,8 @@ public class ProcessorAsyncAzureRestClientImplTest {
 		return new String(Files.readAllBytes(Paths.get(filePath)));
 	}
 
-	private void prepareProjectConfigFieldMapping() throws IllegalAccessException, InvocationTargetException,
-			JsonParseException, JsonMappingException, IOException {
+	private void prepareProjectConfigFieldMapping()
+			throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
 		String filePath = "src/test/resources/onlinedata/azure/scrumprojectconfig.json";
 		File file = new File(filePath);
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -196,14 +192,12 @@ public class ProcessorAsyncAzureRestClientImplTest {
 		headers.set(HttpHeaders.AUTHORIZATION, authHeader);
 		ResponseEntity<String> response = new ResponseEntity<>(createWorkItemResponse(), HttpStatus.OK);
 		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.GET),
-				ArgumentMatchers.eq(new HttpEntity<>(headers)), ArgumentMatchers.eq(String.class)))
-				.thenReturn(response);
+				ArgumentMatchers.eq(new HttpEntity<>(headers)), ArgumentMatchers.eq(String.class))).thenReturn(response);
 		List<Integer> ids = Arrays.asList(1, 2, 3, 4, 41, 92, 127, 128);
 		AzureBoardsWIModel actualModel = processorAsyncAzureRestClient.getWorkItemInfo(azureServer, ids);
 		AzureBoardsWIModel expectedModel = new AzureBoardsWIModel();
 		expectedModel.setCount(8);
 		assertEquals(expectedModel.getCount(), actualModel.getCount(), "Checking for count values");
-
 	}
 
 	private String createWorkItemResponse() throws IOException {
@@ -222,13 +216,11 @@ public class ProcessorAsyncAzureRestClientImplTest {
 		headers.set(HttpHeaders.AUTHORIZATION, authHeader);
 		ResponseEntity<String> response = new ResponseEntity<>(createIterationsResponse(), HttpStatus.OK);
 		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.GET),
-				ArgumentMatchers.eq(new HttpEntity<>(headers)), ArgumentMatchers.eq(String.class)))
-				.thenReturn(response);
+				ArgumentMatchers.eq(new HttpEntity<>(headers)), ArgumentMatchers.eq(String.class))).thenReturn(response);
 		AzureIterationsModel actualModel = processorAsyncAzureRestClient.getIterationsResponse(azureServer);
 		AzureIterationsModel expectedModel = new AzureIterationsModel();
 		expectedModel.setCount(3);
 		assertEquals(expectedModel.getCount(), actualModel.getCount(), "Checking for count values");
-
 	}
 
 	private String createIterationsResponse() throws IOException {
@@ -238,7 +230,7 @@ public class ProcessorAsyncAzureRestClientImplTest {
 
 	/**
 	 * prepare query when data doesn't exist in db
-	 * 
+	 *
 	 * @throws RestClientException
 	 * @throws URISyntaxException
 	 * @throws JsonParseException
@@ -279,7 +271,7 @@ public class ProcessorAsyncAzureRestClientImplTest {
 
 	/**
 	 * prepare query when data exist in db
-	 * 
+	 *
 	 * @throws RestClientException
 	 * @throws URISyntaxException
 	 * @throws JsonParseException
@@ -318,5 +310,4 @@ public class ProcessorAsyncAzureRestClientImplTest {
 		projectConfFieldMapping.setAzure(azureToolConfig);
 		actualModel = processorAsyncAzureRestClient.getWiqlResponse(azureServer, time, projectConfFieldMapping, true);
 	}
-
 }

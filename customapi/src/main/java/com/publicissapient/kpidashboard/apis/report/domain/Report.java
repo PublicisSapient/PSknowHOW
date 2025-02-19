@@ -17,34 +17,36 @@
 
 package com.publicissapient.kpidashboard.apis.report.domain;
 
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
-import lombok.Data;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+
+import lombok.Data;
 
 @Data
 @Document(collection = "reports")
 public class Report extends BasicModel {
 
-    private String name;
+	private String name;
 
-    @CreatedBy
-    private String createdBy;
+	@CreatedBy
+	private String createdBy;
 
-    @LastModifiedBy
-    private String updatedBy;
+	@LastModifiedBy
+	private String updatedBy;
 
-    @CreatedDate
-    private LocalDateTime createdAt;
+	@CreatedDate
+	private LocalDateTime createdAt;
 
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+	@LastModifiedDate
+	private LocalDateTime updatedAt;
 
-    private List<KPI> kpis;
+	private List<KPI> kpis;
 }

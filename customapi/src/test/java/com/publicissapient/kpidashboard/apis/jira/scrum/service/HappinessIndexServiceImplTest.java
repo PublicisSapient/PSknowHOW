@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +40,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
@@ -113,7 +113,6 @@ public class HappinessIndexServiceImplTest {
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-
 	}
 
 	@Test
@@ -146,7 +145,6 @@ public class HappinessIndexServiceImplTest {
 		List<DataCount> dataCountList = (List<DataCount>) kpiElement.getTrendValueList();
 
 		assertEquals("Story Count : ", 1, dataCountList.size());
-
 	}
 
 	@Test
@@ -175,7 +173,5 @@ public class HappinessIndexServiceImplTest {
 		List<DataCount> dataCountList = (List<DataCount>) kpiElement.getTrendValueList();
 
 		assertEquals("Story Count : ", 1, dataCountList.size());
-
 	}
-
 }

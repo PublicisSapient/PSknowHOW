@@ -17,6 +17,27 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.bson.types.ObjectId;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -38,29 +59,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import org.bson.types.ObjectId;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.when;
 
 /**
  * @author purgupta2
@@ -105,10 +104,12 @@ public class RisksAndDependenciesServiceImplTest {
 				.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		storyList = jiraIssueDataFactory.findIssueByNumberList(jiraIssueList);
-		JiraIssue jiraIssuee1=storyList.stream().filter(jiraIssue -> !jiraIssue.getNumber().equalsIgnoreCase("TEST-17908")).findFirst().get();
+		JiraIssue jiraIssuee1 = storyList.stream()
+				.filter(jiraIssue -> !jiraIssue.getNumber().equalsIgnoreCase("TEST-17908")).findFirst().get();
 		jiraIssuee1.setTypeName("Risk");
 		jiraIssuee1.setNumber("TEST-179081");
-		JiraIssue jiraIssuee2=storyList.stream().filter(jiraIssue -> !jiraIssue.getNumber().equalsIgnoreCase("TEST-17918")).findFirst().get();
+		JiraIssue jiraIssuee2 = storyList.stream()
+				.filter(jiraIssue -> !jiraIssue.getNumber().equalsIgnoreCase("TEST-17918")).findFirst().get();
 		jiraIssuee2.setTypeName("Dependency");
 		jiraIssuee2.setNumber("TEST-179082");
 	}
@@ -140,15 +141,13 @@ public class RisksAndDependenciesServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(risksAndDependenciesServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		try {
-			KpiElement kpiElement = risksAndDependenciesServiceImpl.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0),
+			KpiElement kpiElement = risksAndDependenciesServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 			assertNotNull(kpiElement.getIssueData());
 
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -159,6 +158,5 @@ public class RisksAndDependenciesServiceImplTest {
 	@After
 	public void cleanup() {
 		jiraIssueRepository.deleteAll();
-
 	}
 }

@@ -159,7 +159,6 @@ public class TeamcityProcessorJobExecutorTest {
 		when(teamcityConfig.getAesEncryptionKey()).thenReturn("aesKey");
 		doNothing().when(processorExecutionTraceLogService).save(Mockito.any());
 		when(aesEncryptionService.decrypt(anyString(), anyString())).thenReturn(PLAIN_TEXT_PASSWORD);
-
 	}
 
 	@Test
@@ -172,9 +171,9 @@ public class TeamcityProcessorJobExecutorTest {
 			when(teamcityClient.getInstanceJobs(any())).thenReturn(buildMap);
 			when(buildRepository.findByProjectToolConfigIdAndNumber(any(), any())).thenReturn(build1);
 			when(teamcityClient.getBuildDetails(any(), any(), any(), any())).thenReturn(build2);
-			when(processorExecutionTraceLogRepository
-					.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JENKINS, "624d5c9ed837fc14d40b3039"))
-							.thenReturn(optionalProcessorExecutionTraceLog);
+			when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
+							ProcessorConstants.JENKINS, "624d5c9ed837fc14d40b3039"))
+					.thenReturn(optionalProcessorExecutionTraceLog);
 			jobExecutor.execute(processorWithOneServer());
 		} catch (RestClientException exception) {
 			Assert.assertEquals("Exception is: ", EXCEPTION, exception.getMessage());
@@ -191,9 +190,9 @@ public class TeamcityProcessorJobExecutorTest {
 			when(teamcityClient.getInstanceJobs(any())).thenReturn(buildMap);
 			when(buildRepository.findByProjectToolConfigIdAndNumber(any(), any())).thenReturn(null);
 			when(teamcityClient.getBuildDetails(any(), any(), any(), any())).thenReturn(build2);
-			when(processorExecutionTraceLogRepository
-					.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JENKINS, "624d5c9ed837fc14d40b3039"))
-							.thenReturn(optionalProcessorExecutionTraceLog);
+			when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
+							ProcessorConstants.JENKINS, "624d5c9ed837fc14d40b3039"))
+					.thenReturn(optionalProcessorExecutionTraceLog);
 			jobExecutor.execute(processorWithOneServer());
 		} catch (RestClientException exception) {
 			Assert.assertEquals("Exception is: ", EXCEPTION, exception.getMessage());

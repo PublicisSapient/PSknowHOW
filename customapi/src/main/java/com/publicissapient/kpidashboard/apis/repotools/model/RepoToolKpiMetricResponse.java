@@ -18,39 +18,46 @@
 
 package com.publicissapient.kpidashboard.apis.repotools.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
 
 @Data
 public class RepoToolKpiMetricResponse {
 
-    @JsonProperty("project_name")
-    private String projectName;
-    @JsonProperty("project_code")
-    private String projectCode;
-    private double projectGrade;
-    private  double projectHours;
-    @JsonProperty("commit_count")
-    private long commitCount;
-    @JsonProperty("mr_count")
-    private long mrCount;
-    private long mergeRequests;
-    private long prLinesChanged;
-    private double average;
-    private double projectReworkRateGrade;
-    private double revertRateGrade;
-    private double projectRevertPercentage;
-    private double projectReworkRatePercent;
-    private double innovationRatePercentage;
-    private int mergeRequestsNumber;
-    private double projectDefectMergeRequestPercentage;
-    private double projectPercentage;
-    private List<RepoToolRepositories> repositories;
-    private List<RepoToolRepositories> projectRepositories;
-    @JsonProperty("date_label")
-    private String dateLabel;
-    private List<RepoToolUserDetails> users;
+	@JsonProperty("project_name")
+	private String projectName;
 
+	@JsonProperty("project_code")
+	private String projectCode;
+
+	private double projectGrade;
+	private double projectHours;
+
+	@JsonProperty("commit_count")
+	private long commitCount;
+
+	@JsonProperty("mr_count")
+	private long mrCount;
+
+	private long mergeRequests;
+	private long prLinesChanged;
+	private double average;
+	private double projectReworkRateGrade;
+	private double revertRateGrade;
+	private double projectRevertPercentage;
+	private double projectReworkRatePercent;
+	private double innovationRatePercentage;
+	private int mergeRequestsNumber;
+	private double projectDefectMergeRequestPercentage;
+	private double projectPercentage;
+	private List<RepoToolRepositories> repositories;
+	private List<RepoToolRepositories> projectRepositories;
+
+	@JsonProperty("date_label")
+	private String dateLabel;
+
+	private List<RepoToolUserDetails> users;
 }

@@ -16,15 +16,11 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.dataFactories;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -32,15 +28,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author sansharm13
- *
  */
-
 @Slf4j
 public class KanbanJiraIssueDataFactory {
 	private static final String FILE_PATH = "/json/default/kanban_jira_issue.json";
@@ -50,9 +45,9 @@ public class KanbanJiraIssueDataFactory {
 	private KanbanJiraIssueDataFactory() {
 	}
 
-//	public static KanbanJiraIssueDataFactory newInstance() {
-//		return newInstance(null);
-//	}
+	// public static KanbanJiraIssueDataFactory newInstance() {
+	// return newInstance(null);
+	// }
 
 	public static KanbanJiraIssueDataFactory newInstance(String filePath) {
 
@@ -87,19 +82,17 @@ public class KanbanJiraIssueDataFactory {
 		return mapper;
 	}
 
-	public KanbanJiraIssue findTopByBasicProjectConfigId(String basicProjectConfigId){
-		return kanbanJiraIssueDataFactory.stream().filter(kanbanJiraIssue -> kanbanJiraIssue.getBasicProjectConfigId().equals(basicProjectConfigId)).findFirst()
+	public KanbanJiraIssue findTopByBasicProjectConfigId(String basicProjectConfigId) {
+		return kanbanJiraIssueDataFactory.stream()
+				.filter(kanbanJiraIssue -> kanbanJiraIssue.getBasicProjectConfigId().equals(basicProjectConfigId)).findFirst()
 				.orElse(null);
 	}
 
-	public List<AdditionalFilter> getAdditionalFilter(){
+	public List<AdditionalFilter> getAdditionalFilter() {
 		return kanbanJiraIssueDataFactory.get(0).getAdditionalFilters();
 	}
 
-	public List<KanbanJiraIssue> getKanbanJiraIssues(){
+	public List<KanbanJiraIssue> getKanbanJiraIssues() {
 		return kanbanJiraIssueDataFactory;
 	}
 }
-
-
-

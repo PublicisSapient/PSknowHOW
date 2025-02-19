@@ -15,7 +15,6 @@
  *    limitations under the License.
  */
 
-
 package com.publicissapient.kpidashboard.apis.jenkins.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,8 +33,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,11 +52,13 @@ import com.publicissapient.kpidashboard.apis.data.BuildDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.Build;
@@ -90,18 +89,18 @@ public class ChangeFailureRateKanbanServiceImplTest {
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 
-
 	private List<Build> buildList = new ArrayList<>();
 
 	private List<DataCount> trendValues = new ArrayList<>();
 	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
-	Map<String, Object> durationFilter =  new LinkedHashMap<>();
+	Map<String, Object> durationFilter = new LinkedHashMap<>();
 	@Mock
 	private CommonService commonService;
 
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;
 	private TreeAggregatorDetail treeAggregatorDetail;
+
 	@Before
 	public void setup() throws ApplicationException {
 
@@ -129,8 +128,8 @@ public class ChangeFailureRateKanbanServiceImplTest {
 
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-		treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, accountHierarchyDataList,
+				new ArrayList<>(), "hierarchyLevelOne", 5);
 	}
 
 	private void setTreadValuesDataCount() {
@@ -152,8 +151,8 @@ public class ChangeFailureRateKanbanServiceImplTest {
 
 	@Test
 	public void testGetChangeFailureRateWeek() throws Exception {
-		durationFilter.put(Constant.DURATION,CommonConstant.WEEK);
-		durationFilter.put(Constant.COUNT,14);
+		durationFilter.put(Constant.DURATION, CommonConstant.WEEK);
+		durationFilter.put(Constant.COUNT, 14);
 		kpiElement.setFilterDuration(durationFilter);
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
@@ -174,12 +173,12 @@ public class ChangeFailureRateKanbanServiceImplTest {
 			assertThat("CHANGE-FAILURE-RATE :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
 		} catch (Exception e) {
 		}
-
 	}
+
 	@Test
 	public void testGetChangeFailureRateMonth() throws Exception {
-		durationFilter.put(Constant.DURATION,CommonConstant.MONTH);
-		durationFilter.put(Constant.COUNT,20);
+		durationFilter.put(Constant.DURATION, CommonConstant.MONTH);
+		durationFilter.put(Constant.COUNT, 20);
 		kpiElement.setFilterDuration(durationFilter);
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
@@ -200,7 +199,6 @@ public class ChangeFailureRateKanbanServiceImplTest {
 			assertThat("CHANGE-FAILURE-RATE :", ((List<DataCount>) kpiElement2.getTrendValueList()).size(), equalTo(3));
 		} catch (Exception e) {
 		}
-
 	}
 
 	@Test
@@ -210,7 +208,8 @@ public class ChangeFailureRateKanbanServiceImplTest {
 	}
 
 	@Test
-	public void testTrendValueWithPipelineName() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	public void testTrendValueWithPipelineName()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		List<Build> buildList = new ArrayList<>();
 		Build build = new Build();
 		build.setPipelineName("Pipeline1");
@@ -222,7 +221,8 @@ public class ChangeFailureRateKanbanServiceImplTest {
 		List<DataCount> dataCountList = new ArrayList<>();
 		DataCount dataCount = new DataCount();
 		dataCountList.add(dataCount);
-		Method trendValueMethod = ChangeFailureRateServiceImpl.class.getDeclaredMethod("trendValue", List.class, String.class, Map.class, String.class, List.class);
+		Method trendValueMethod = ChangeFailureRateServiceImpl.class.getDeclaredMethod("trendValue", List.class,
+				String.class, Map.class, String.class, List.class);
 		trendValueMethod.setAccessible(true);
 		trendValueMethod.invoke(null, buildList, trendLineName, trendValueMap, jobName, dataCountList);
 

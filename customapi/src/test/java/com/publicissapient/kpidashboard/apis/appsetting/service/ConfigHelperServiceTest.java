@@ -108,10 +108,12 @@ public class ConfigHelperServiceTest {
 		configHelperService.loadConfigData();
 		Assertions.assertTrue(((Map<String, ProjectBasicConfig>) configHelperService
 				.getConfigMapData(CommonConstant.CACHE_PROJECT_CONFIG_MAP)).size() > 0);
-		Assertions.assertTrue(((Map<ObjectId, FieldMapping>) configHelperService
-				.getConfigMapData(CommonConstant.CACHE_FIELD_MAPPING_MAP)).size() > 0);
-		Assertions.assertFalse(((Map<ObjectId, FieldMapping>) configHelperService
-				.getConfigMapData(CommonConstant.CACHE_BOARD_META_DATA_MAP)).size() > 0);
+		Assertions.assertTrue(
+				((Map<ObjectId, FieldMapping>) configHelperService.getConfigMapData(CommonConstant.CACHE_FIELD_MAPPING_MAP))
+						.size() > 0);
+		Assertions.assertFalse(
+				((Map<ObjectId, FieldMapping>) configHelperService.getConfigMapData(CommonConstant.CACHE_BOARD_META_DATA_MAP))
+						.size() > 0);
 	}
 
 	@Test
@@ -126,8 +128,7 @@ public class ConfigHelperServiceTest {
 		Mockito.when(toolConfigRepository.getToolList()).thenReturn(toolList);
 		configHelperService.loadToolConfig();
 		Assertions.assertTrue(
-				((Map<ObjectId, Tool>) configHelperService.getConfigMapData(CommonConstant.CACHE_TOOL_CONFIG_MAP))
-						.size() > 0);
+				((Map<ObjectId, Tool>) configHelperService.getConfigMapData(CommonConstant.CACHE_TOOL_CONFIG_MAP)).size() > 0);
 	}
 
 	@Test
@@ -138,7 +139,8 @@ public class ConfigHelperServiceTest {
 		userBoardConfig.setUsername("PSK");
 		userBoardConfigs.add(userBoardConfig);
 		Mockito.when(userBoardConfigRepository.findAll()).thenReturn(userBoardConfigs);
-		String username = configHelperService.loadUserBoardConfig().values().stream().findFirst().orElse(new UserBoardConfig()).getUsername();
+		String username = configHelperService.loadUserBoardConfig().values().stream().findFirst()
+				.orElse(new UserBoardConfig()).getUsername();
 		Assertions.assertEquals("PSK", username);
 	}
 

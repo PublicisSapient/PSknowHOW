@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.jira.service;
 
 import java.util.ArrayList;
@@ -41,7 +40,6 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
  * Test class for @{SprintVelocityServiceHelper}
  *
  * @author dhachuda
- *
  */
 public class SprintVelocityServiceHelperTest {
 
@@ -60,7 +58,6 @@ public class SprintVelocityServiceHelperTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
-
 	}
 
 	@Test
@@ -85,5 +82,4 @@ public class SprintVelocityServiceHelperTest {
 		Assert.assertTrue(sprintVelocityServiceHelper.calculateSprintVelocityValue(currentSprintLeafVelocityMap,
 				currentNodeIdent, fieldMapping) > 0);
 	}
-
 }

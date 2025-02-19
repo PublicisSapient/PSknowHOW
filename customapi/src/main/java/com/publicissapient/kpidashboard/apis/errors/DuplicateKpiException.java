@@ -20,19 +20,19 @@ package com.publicissapient.kpidashboard.apis.errors;
 
 /**
  * Exception thrown when a duplicate KPI is detected.
+ *
  * <p>
- * This exception is used to indicate that an attempt to create or update a report
- * has failed due to the presence of duplicate KPI IDs.
- * </p>
+ * This exception is used to indicate that an attempt to create or update a
+ * report has failed due to the presence of duplicate KPI IDs.
  */
-
-public class DuplicateKpiException extends  RuntimeException {
-    /**
-     * Constructs a new DuplicateKpiException with the specified detail message.
-     *
-     * @param message the detail message
-     */
-    public DuplicateKpiException(String message) {
-        super(message);
-    }
+public class DuplicateKpiException extends RuntimeException {
+	/**
+	 * Constructs a new DuplicateKpiException with the specified detail message.
+	 *
+	 * @param message
+	 *          the detail message
+	 */
+	public DuplicateKpiException(String message) {
+		super(message);
+	}
 }

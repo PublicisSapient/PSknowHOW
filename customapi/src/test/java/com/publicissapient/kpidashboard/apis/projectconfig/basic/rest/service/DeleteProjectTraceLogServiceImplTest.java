@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.projectconfig.basic.rest.service;
 
 import static org.mockito.Mockito.times;

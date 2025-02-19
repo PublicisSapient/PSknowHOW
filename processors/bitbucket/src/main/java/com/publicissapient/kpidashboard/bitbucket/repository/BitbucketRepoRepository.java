@@ -28,7 +28,7 @@ import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemR
 
 /**
  * BitbucketRepoRepository is used for to process BitbucketRepo.
- * 
+ *
  * @see BitbucketRepo
  */
 public interface BitbucketRepoRepository extends ProcessorItemRepository<BitbucketRepo> {
@@ -38,20 +38,18 @@ public interface BitbucketRepoRepository extends ProcessorItemRepository<Bitbuck
 	 * BitbucketRepo.
 	 *
 	 * @param processorId
-	 *            the processor id
+	 *          the processor id
 	 * @return BitbucketRepo list of BitbucketRepo
 	 */
 	@Query("{ 'processorId' : ?0, 'isActive': true}")
 	List<BitbucketRepo> findActiveRepos(ObjectId processorId);
 
 	/**
-	 * 
 	 * @param processorId
-	 *            the processor id
+	 *          the processor id
 	 * @param toolConfigId
-	 *            the toolConfig id
+	 *          the toolConfig id
 	 * @return list of BitbucketRepo
 	 */
 	List<BitbucketRepo> findByProcessorIdAndToolConfigId(ObjectId processorId, ObjectId toolConfigId);
-
 }

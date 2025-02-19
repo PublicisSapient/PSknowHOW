@@ -18,10 +18,10 @@
 
 /**
  * Represents a SubProject Basic configuration.
- * 
+ *
  * @author pankumar8
  */
-package com.publicissapient.kpidashboard.common.model.application;//NOPMD
+package com.publicissapient.kpidashboard.common.model.application; // NOPMD
 
 import java.util.List;
 
@@ -46,5 +46,4 @@ public class SubProjectConfig extends BasicModel {
 	private List<String> subProjectIdentMultiValue;
 	private String subProjectIdentSingleValue;
 	private List<SubProjectUserProvided> subProjectUserProvided;
-
 }

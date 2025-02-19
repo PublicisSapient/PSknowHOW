@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +58,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -74,7 +72,6 @@ import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
 
 /**
  * @author shichand0
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class CodeCommitKanbanServiceImplTest {
@@ -120,7 +117,7 @@ public class CodeCommitKanbanServiceImplTest {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi65");
 		kpiRequest.setLabel("PROJECT");
-		String[] ids = { "5" };
+		String[] ids = {"5"};
 		kpiRequest.setIds(ids);
 		Map<String, List<String>> selectedMap = kpiRequest.getSelectedMap();
 		selectedMap.put(CommonConstant.date, Arrays.asList("DAYS"));
@@ -149,7 +146,6 @@ public class CodeCommitKanbanServiceImplTest {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		});
 
-
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		setToolMap();
@@ -157,7 +153,6 @@ public class CodeCommitKanbanServiceImplTest {
 		setTreadValuesDataCount();
 		filterCategory.add("Project");
 		filterCategory.add("Sprint");
-
 	}
 
 	private void setTreadValuesDataCount() {
@@ -176,7 +171,6 @@ public class CodeCommitKanbanServiceImplTest {
 		trendValues.add(dataCount);
 		trendValueMap.put("Overall", trendValues);
 		trendValueMap.put("BRANCH1->PR_10304", trendValues);
-
 	}
 
 	private DataCount createDataCount(String date, Long data) {
@@ -246,26 +240,23 @@ public class CodeCommitKanbanServiceImplTest {
 
 		String kpiRequestTrackerId = "Excel-Bitbucket-5be544de025de212549176a9";
 
-		when(cacheService
-				.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKETKANBAN.name()))
-						.thenReturn(kpiRequestTrackerId);
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKETKANBAN.name()))
+				.thenReturn(kpiRequestTrackerId);
 
 		KpiElement kpiElement = codeCommitServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(data -> {
 			String projectName = data.getFilter();
 			switch (projectName) {
-			case "Overall":
-				assertThat("Overall Commit Details:", data.getValue().size(), equalTo(2));
-				break;
+				case "Overall" :
+					assertThat("Overall Commit Details:", data.getValue().size(), equalTo(2));
+					break;
 
-			case "BRANCH1->PR_10304":
-				assertThat("Branch1 Commit Details:", data.getValue().size(), equalTo(2));
-				break;
-
+				case "BRANCH1->PR_10304" :
+					assertThat("Branch1 Commit Details:", data.getValue().size(), equalTo(2));
+					break;
 			}
 		});
-
 	}
 
 	@Test

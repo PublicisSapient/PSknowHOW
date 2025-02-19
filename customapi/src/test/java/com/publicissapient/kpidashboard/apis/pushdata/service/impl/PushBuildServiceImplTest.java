@@ -88,34 +88,47 @@ public class PushBuildServiceImplTest {
 	@Test
 	public void unsucessfullInsert() {
 		when(customApiConfig.getPushDataLimit()).thenReturn(51);
-		when(buildService.checkandCreateBuilds(any(), anySet(), anyList(), anyList(), anyList())).thenReturn(2);
-		when(deployService.checkandCreateDeployment(any(), anySet(), anyList(), anyList(), anyList())).thenReturn(1);
-		doThrow(new PushDataException()).when(pushDataTraceLogService).setExceptionTraceLog(anyString(),
-				any(Object.class));
-		Assert.assertThrows(PushDataException.class, () -> {
-			pushBuildService.processPushDataInput(pushBuildDeploy, projectBasicConfigId);
-		});
+		when(buildService.checkandCreateBuilds(any(), anySet(), anyList(), anyList(), anyList()))
+				.thenReturn(2);
+		when(deployService.checkandCreateDeployment(any(), anySet(), anyList(), anyList(), anyList()))
+				.thenReturn(1);
+		doThrow(new PushDataException())
+				.when(pushDataTraceLogService)
+				.setExceptionTraceLog(anyString(), any(Object.class));
+		Assert.assertThrows(
+				PushDataException.class,
+				() -> {
+					pushBuildService.processPushDataInput(pushBuildDeploy, projectBasicConfigId);
+				});
 	}
 
 	@Test
 	public void checkSizeFalse() {
 		when(customApiConfig.getPushDataLimit()).thenReturn(1);
-		doThrow(new PushDataException()).when(pushDataTraceLogService).setExceptionTraceLog(anyString(), isNull());
-		Assert.assertThrows(PushDataException.class, () -> {
-			pushBuildService.getTotalRecords(pushBuildDeploy);
-		});
+		doThrow(new PushDataException())
+				.when(pushDataTraceLogService)
+				.setExceptionTraceLog(anyString(), isNull());
+		Assert.assertThrows(
+				PushDataException.class,
+				() -> {
+					pushBuildService.getTotalRecords(pushBuildDeploy);
+				});
 	}
 
 	@Test
 	public void sucessfullInsert() {
 		when(customApiConfig.getPushDataLimit()).thenReturn(51);
-		when(buildService.checkandCreateBuilds(any(), anySet(), anyList(), anyList(), anyList())).thenReturn(2);
-		when(deployService.checkandCreateDeployment(any(), anySet(), anyList(), anyList(), anyList())).thenReturn(1);
-		doThrow(new PushDataException()).when(pushDataTraceLogService).setExceptionTraceLog(anyString(),
-				any(Object.class));
-		Assert.assertThrows(PushDataException.class, () -> {
-			pushBuildService.processPushDataInput(pushBuildDeploy, projectBasicConfigId);
-		});
+		when(buildService.checkandCreateBuilds(any(), anySet(), anyList(), anyList(), anyList()))
+				.thenReturn(2);
+		when(deployService.checkandCreateDeployment(any(), anySet(), anyList(), anyList(), anyList()))
+				.thenReturn(1);
+		doThrow(new PushDataException())
+				.when(pushDataTraceLogService)
+				.setExceptionTraceLog(anyString(), any(Object.class));
+		Assert.assertThrows(
+				PushDataException.class,
+				() -> {
+					pushBuildService.processPushDataInput(pushBuildDeploy, projectBasicConfigId);
+				});
 	}
-
 }

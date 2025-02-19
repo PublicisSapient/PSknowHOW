@@ -17,12 +17,12 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.common.model.rbac;
 
-import lombok.Data;
-
 import java.util.List;
+
+import lombok.Data;
 
 @Data
 public class AccessNodeDTO {
-    private String accessLevel;
-    private List<AccessItemDTO> accessItems;
+	private String accessLevel;
+	private List<AccessItemDTO> accessItems;
 }

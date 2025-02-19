@@ -49,7 +49,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author purgupta2
- *
  */
 @Component
 @Slf4j
@@ -61,7 +60,7 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.springframework.batch.core.ItemWriteListener#beforeWrite(java.util.List)
 	 */
@@ -72,7 +71,7 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.springframework.batch.core.ItemWriteListener#afterWrite(java.util.List)
 	 */
@@ -85,9 +84,8 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 				.toList();
 
 		Map<String, Map<String, List<KanbanJiraIssue>>> projectBoardWiseIssues = jiraIssues.stream()
-				.filter(issue -> !issue.getTypeName().equalsIgnoreCase(JiraConstants.EPIC))
-				.collect(Collectors.groupingBy(KanbanJiraIssue::getBasicProjectConfigId,
-						Collectors.groupingBy(KanbanJiraIssue::getBoardId)));
+				.filter(issue -> !issue.getTypeName().equalsIgnoreCase(JiraConstants.EPIC)).collect(Collectors
+						.groupingBy(KanbanJiraIssue::getBasicProjectConfigId, Collectors.groupingBy(KanbanJiraIssue::getBoardId)));
 		// getting step context
 		StepContext stepContext = StepSynchronizationManager.getContext();
 		for (Map.Entry<String, Map<String, List<KanbanJiraIssue>>> entry : projectBoardWiseIssues.entrySet()) {
@@ -96,18 +94,15 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 			List<ProcessorExecutionTraceLog> procTraceLogList = processorExecutionTraceLogRepo
 					.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
 							Collections.singletonList(basicProjectConfigId));
-			Map<String, ProcessorExecutionTraceLog> boardWiseTraceLogMap = procTraceLogList.stream()
-					.collect(Collectors.toMap(
-							traceLog -> Optional.ofNullable(traceLog.getBoardId()).orElse(PROG_TRACE_LOG),
-							Function.identity()));
-			ProcessorExecutionTraceLog progressStatsTraceLog = boardWiseTraceLogMap.getOrDefault(PROG_TRACE_LOG, new ProcessorExecutionTraceLog());
+			Map<String, ProcessorExecutionTraceLog> boardWiseTraceLogMap = procTraceLogList.stream().collect(Collectors
+					.toMap(traceLog -> Optional.ofNullable(traceLog.getBoardId()).orElse(PROG_TRACE_LOG), Function.identity()));
+			ProcessorExecutionTraceLog progressStatsTraceLog = boardWiseTraceLogMap.getOrDefault(PROG_TRACE_LOG,
+					new ProcessorExecutionTraceLog());
 			for (Map.Entry<String, List<KanbanJiraIssue>> boardData : boardWiseIssues.entrySet()) {
 				String boardId = boardData.getKey();
-				KanbanJiraIssue firstIssue = boardData
-						.getValue().stream().sorted(
-								Comparator
-										.comparing((KanbanJiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(), DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
-										.reversed())
+				KanbanJiraIssue firstIssue = boardData.getValue().stream()
+						.sorted(Comparator.comparing((KanbanJiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
+								DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT))).reversed())
 						.findFirst().orElse(null);
 				if (firstIssue != null) {
 					ProcessorExecutionTraceLog processorExecutionTraceLog;
@@ -124,7 +119,6 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 			}
 			Optional.ofNullable(JiraProcessorUtil.saveChunkProgressInTrace(progressStatsTraceLog, stepContext))
 					.ifPresent(processorExecutionToSave::add);
-
 		}
 		if (CollectionUtils.isNotEmpty(processorExecutionToSave)) {
 			processorExecutionTraceLogRepo.saveAll(processorExecutionToSave);
@@ -135,8 +129,8 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 			String boardId, String changeDate, List<ProcessorExecutionTraceLog> processorExecutionToSave) {
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		processorExecutionTraceLog.setBoardId(boardId);
-		processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(changeDate,
-				JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
+		processorExecutionTraceLog.setLastSuccessfulRun(
+				DateUtil.dateTimeConverter(changeDate, JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
 		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
 		processorExecutionToSave.add(processorExecutionTraceLog);
 	}

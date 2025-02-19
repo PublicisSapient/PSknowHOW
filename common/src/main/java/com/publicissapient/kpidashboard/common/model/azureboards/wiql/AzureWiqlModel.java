@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -33,21 +32,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "queryType", "queryResultType", "asOf", "columns", "sortColumns", "workItems" })
+@JsonPropertyOrder({"queryType", "queryResultType", "asOf", "columns", "sortColumns", "workItems"})
 public class AzureWiqlModel {
 
 	@JsonProperty("queryType")
 	private String queryType;
+
 	@JsonProperty("queryResultType")
 	private String queryResultType;
+
 	@JsonProperty("asOf")
 	private String asOf;
+
 	@JsonProperty("columns")
 	private List<Column> columns = null;
+
 	@JsonProperty("sortColumns")
 	private List<SortColumn> sortColumns = null;
+
 	@JsonProperty("workItems")
 	private List<WorkItem> workItems = null;
+
 	@JsonIgnore
 	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -127,5 +132,4 @@ public class AzureWiqlModel {
 				.append("asOf", asOf).append("columns", columns).append("sortColumns", sortColumns)
 				.append("workItems", workItems).append("additionalProperties", additionalProperties).toString();
 	}
-
 }

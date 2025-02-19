@@ -18,11 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1010;
 
+import org.bson.Document;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
-import org.bson.Document;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 /**
  * updated hirarchy_levels to add helper text
@@ -30,15 +31,15 @@ import org.springframework.data.mongodb.core.MongoTemplate;
  * @author tejgorip
  */
 @ChangeUnit(id = "r_hierarchy_helpertext_enh", order = "010107", author = "tejgorip", systemVersion = "10.1.0")
-
 public class HierarchyHelpertextEnh {
 
 	private final MongoTemplate mongoTemplate;
-	private static final String HIERARCHY_INFO ="hierarchyInfo";
+	private static final String HIERARCHY_INFO = "hierarchyInfo";
 	private static final String HIERARCHY_LEVELS = "hierarchy_levels";
 	private static final String LEVEL = "level";
 	private static final String SET = "$set";
 	private static final String UNSET = "$unset";
+
 	public HierarchyHelpertextEnh(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
@@ -53,7 +54,6 @@ public class HierarchyHelpertextEnh {
 		Document newField = new Document(HIERARCHY_INFO, null);
 		Document update1 = new Document(UNSET, newField);
 		mongoTemplate.getCollection(HIERARCHY_LEVELS).updateMany(new Document(), update1);
-
 	}
 
 	@RollbackExecution
@@ -79,5 +79,4 @@ public class HierarchyHelpertextEnh {
 		Document update4 = new Document(SET, newField4);
 		mongoTemplate.getCollection(HIERARCHY_LEVELS).updateOne(query4, update4);
 	}
-
 }

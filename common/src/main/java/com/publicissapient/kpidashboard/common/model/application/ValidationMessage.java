@@ -7,5 +7,4 @@ public class ValidationMessage {
 
 	private boolean valid;
 	private String message;
-
 }

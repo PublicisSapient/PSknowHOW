@@ -25,44 +25,41 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
-import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
-import com.publicissapient.kpidashboard.apis.model.ProjectWiseKpiRecommendation;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
-import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiMasterDataFactory;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
+import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.ProjectWiseKpiRecommendation;
 import com.publicissapient.kpidashboard.apis.sonar.service.SonarServiceR;
 import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrService;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
+import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 
 /**
  * @author kunkambl
@@ -131,15 +128,19 @@ public class KpiIntegrationServiceImplTest {
 	}
 
 	@Test
-    public void getMaturityValuesTestSuccess() throws EntityNotFoundException {
-        when(kpiMasterRepository.findByKpiIdIn(kpiIdList)).thenReturn(kpiMasterDataFactory.getSpecificKpis(kpiIdList));
-        when(jiraService.processWithExposedApiToken(kpiRequest)).thenReturn(Arrays.asList(kpiElement1));
-        when(sonarService.processWithExposedApiToken(kpiRequest)).thenReturn(Arrays.asList(kpiElement2));
-        when(zephyrService.processWithExposedApiToken(kpiRequest)).thenReturn(Arrays.asList(kpiElement2));
-		when(jenkinsService.processWithExposedApiToken(kpiRequest)).thenReturn(Arrays.asList(kpiElement2));
-        List<KpiElement> kpiElementList = maturityService.getKpiResponses(kpiRequest);
-        assertEquals(4, kpiElementList.size());
-    }
+	public void getMaturityValuesTestSuccess() throws EntityNotFoundException {
+		when(kpiMasterRepository.findByKpiIdIn(kpiIdList))
+				.thenReturn(kpiMasterDataFactory.getSpecificKpis(kpiIdList));
+		when(jiraService.processWithExposedApiToken(kpiRequest)).thenReturn(Arrays.asList(kpiElement1));
+		when(sonarService.processWithExposedApiToken(kpiRequest))
+				.thenReturn(Arrays.asList(kpiElement2));
+		when(zephyrService.processWithExposedApiToken(kpiRequest))
+				.thenReturn(Arrays.asList(kpiElement2));
+		when(jenkinsService.processWithExposedApiToken(kpiRequest))
+				.thenReturn(Arrays.asList(kpiElement2));
+		List<KpiElement> kpiElementList = maturityService.getKpiResponses(kpiRequest);
+		assertEquals(4, kpiElementList.size());
+	}
 
 	@Test
 	public void getMaturityValuesTestEmpty() {
@@ -153,7 +154,7 @@ public class KpiIntegrationServiceImplTest {
 	@Test
 	public void testGetProjectWiseKpiRecommendation() {
 		KpiRequest kpiRequest = new KpiRequest();
-		kpiRequest.setIds(new String[] { "id1" });
+		kpiRequest.setIds(new String[]{"id1"});
 		Map<String, List<String>> selectedMap = new HashMap<>();
 		selectedMap.put(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, Arrays.asList("project1"));
 		selectedMap.put(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, Arrays.asList("sprint1"));

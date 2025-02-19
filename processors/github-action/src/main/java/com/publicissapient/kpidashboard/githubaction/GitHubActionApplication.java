@@ -22,7 +22,6 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-
 import javax.net.ssl.SSLContext;
 
 import org.apache.hc.client5.http.classic.HttpClient;
@@ -51,15 +50,15 @@ import org.springframework.web.client.RestTemplate;
  */
 @SpringBootApplication
 @EnableCaching
-@ComponentScan({ "com.publicissapient" })
-@EnableMongoRepositories(basePackages = { "com.publicissapient.**.repository" })
+@ComponentScan({"com.publicissapient"})
+@EnableMongoRepositories(basePackages = {"com.publicissapient.**.repository"})
 public class GitHubActionApplication {
 
 	/**
 	 * Main thread from where GitHubActionApplication starts.
-	 * 
+	 *
 	 * @param args
-	 *            the command line argument
+	 *          the command line argument
 	 */
 	public static void main(final String[] args) {
 		SpringApplication.run(GitHubActionApplication.class, args);
@@ -67,36 +66,34 @@ public class GitHubActionApplication {
 
 	/**
 	 * create rest template bean which accept response given by github
-	 * 
+	 *
 	 * @return RestTemplate RestTemplate
 	 * @throws KeyStoreException
-	 *             KeyStoreException
+	 *           KeyStoreException
 	 * @throws NoSuchAlgorithmException
-	 *             NoSuchAlgorithmException
+	 *           NoSuchAlgorithmException
 	 * @throws KeyManagementException
-	 *             KeyManagementException
+	 *           KeyManagementException
 	 */
 	@Bean
-	public RestTemplate restTemplate()  throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+	public RestTemplate restTemplate() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
 		final RestTemplate restTemplate = new RestTemplate();
 
 		SSLContext sslContext = SSLContextBuilder.create()
-				.loadTrustMaterial((X509Certificate[] certificateChain, String authType) -> true)  // <--- accepts each certificate
+				.loadTrustMaterial((X509Certificate[] certificateChain, String authType) -> true) // <--- accepts each
+				// certificate
 				.build();
 
 		Registry<ConnectionSocketFactory> socketRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
 				.register(URIScheme.HTTPS.getId(), new SSLConnectionSocketFactory(sslContext))
-				.register(URIScheme.HTTP.getId(), new PlainConnectionSocketFactory())
-				.build();
+				.register(URIScheme.HTTP.getId(), new PlainConnectionSocketFactory()).build();
 
 		HttpClient httpClient = HttpClientBuilder.create()
-				.setConnectionManager(new PoolingHttpClientConnectionManager(socketRegistry))
-				.setConnectionManagerShared(true)
+				.setConnectionManager(new PoolingHttpClientConnectionManager(socketRegistry)).setConnectionManagerShared(true)
 				.build();
 
 		ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		restTemplate.setRequestFactory(requestFactory);
 		return restTemplate;
 	}
-
 }

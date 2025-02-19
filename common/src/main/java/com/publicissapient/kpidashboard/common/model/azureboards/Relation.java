@@ -31,15 +31,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "rel", "url", "attributes" })
+@JsonPropertyOrder({"rel", "url", "attributes"})
 public class Relation {
 
 	@JsonProperty("rel")
 	private String rel;
+
 	@JsonProperty("url")
 	private String url;
+
 	@JsonProperty("attributes")
 	private Attribute attributes;
+
 	@JsonIgnore
 	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -88,5 +91,4 @@ public class Relation {
 		return new ToStringBuilder(this).append("rel", rel).append("url", url).append("attributes", attributes)
 				.append("additionalProperties", additionalProperties).toString();
 	}
-
 }

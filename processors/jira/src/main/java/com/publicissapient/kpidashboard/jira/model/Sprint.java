@@ -23,9 +23,7 @@ import com.atlassian.jira.rest.client.api.IdentifiableEntity;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * An object representing a com.atlassian.greenhopper.service.sprint.Sprint.
- */
+/** An object representing a com.atlassian.greenhopper.service.sprint.Sprint. */
 @Getter
 @Setter
 public class Sprint implements IdentifiableEntity<Long> {

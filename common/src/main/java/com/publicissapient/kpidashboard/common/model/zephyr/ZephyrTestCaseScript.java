@@ -25,9 +25,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents test case script.
- */
+/** Represents test case script. */
 @Data
 @Builder
 @Getter
@@ -53,7 +51,7 @@ public class ZephyrTestCaseScript {
 	 * Sets steps.
 	 *
 	 * @param steps
-	 *            the steps
+	 *          the steps
 	 */
 	public void setSteps(ZephyrTestCaseStep[] steps) {
 		this.steps = steps == null ? null : steps.clone();

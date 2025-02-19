@@ -50,7 +50,6 @@ public class KPILabelUpdateForSonar {
 		Document update = new Document("$set", new Document("xAxisLabel", "Sprints"));
 		// Perform the update
 		kpiMaster.updateOne(filter, update);
-
 	}
 
 	@RollbackExecution

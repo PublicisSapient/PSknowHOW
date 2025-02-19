@@ -24,5 +24,4 @@ import com.publicissapient.kpidashboard.apis.datamigration.model.MigrationLockLo
 
 @Repository
 public interface MigrationLogRepository extends MongoRepository<MigrationLockLog, ObjectId> {
-
 }

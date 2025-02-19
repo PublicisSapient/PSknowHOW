@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application;//NOPMD
+package com.publicissapient.kpidashboard.common.model.application; // NOPMD
 
 import java.util.List;
 
@@ -32,9 +32,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The type Project release.
- */
+/** The type Project release. */
 @Data
 @Builder
 @Getter
@@ -49,5 +47,4 @@ public class ProjectRelease extends BasicModel {
 
 	private ObjectId configId;
 	private List<ProjectVersion> listProjectVersion;
-
 }

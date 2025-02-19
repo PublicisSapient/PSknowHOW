@@ -30,9 +30,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The Class RepoBranch.
- */
+/** The Class RepoBranch. */
 @Data
 @Builder
 @Getter
@@ -77,12 +75,9 @@ public class RepoBranch {
 		} catch (MalformedURLException e) {
 			return url;
 		}
-
 	}
 
-	/**
-	 * The Enum RepoType.
-	 */
+	/** The Enum RepoType. */
 	public enum RepoType {
 		SVN, GIT, UNKNOWN;
 
@@ -90,7 +85,7 @@ public class RepoBranch {
 		 * From string.
 		 *
 		 * @param value
-		 *            the value
+		 *          the value
 		 * @return the com.publicissapient.kpidashboard.model. repo branch. repo type
 		 */
 		public static RepoBranch.RepoType fromString(String value) {

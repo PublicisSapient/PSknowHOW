@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.processor;
 
 import static org.junit.Assert.assertNotNull;
@@ -28,8 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -43,6 +40,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
@@ -51,58 +49,58 @@ import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 @RunWith(MockitoJUnitRunner.class)
 public class SprintDataProcessorImplTest {
 
-    @Mock
-    private FetchSprintReport fetchSprintReport;
+	@Mock
+	private FetchSprintReport fetchSprintReport;
 
-    @Mock
-    private JiraClientService jiraClientService;
+	@Mock
+	private JiraClientService jiraClientService;
 
-    @InjectMocks
-    private SprintDataProcessorImpl sprintDataProcessor;
+	@InjectMocks
+	private SprintDataProcessorImpl sprintDataProcessor;
 
-    ProjectConfFieldMapping projectConfFieldMapping= ProjectConfFieldMapping.builder().build();
+	ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 
-    @Test
-    public void testProcessSprintDataWithValidSprintField() throws IOException, JSONException {
-        createProjectConfigMap();
-        // Arrange
-        Issue issue = createMockIssueWithSprintField();
-        String boardId = "yourBoardId";
+	@Test
+	public void testProcessSprintDataWithValidSprintField() throws IOException, JSONException {
+		createProjectConfigMap();
+		// Arrange
+		Issue issue = createMockIssueWithSprintField();
+		String boardId = "yourBoardId";
 
-        // Act
-        Set<SprintDetails> result = sprintDataProcessor.processSprintData(issue, projectConfFieldMapping, boardId, new ObjectId("5e16c126e4b098db673cc372"));
+		// Act
+		Set<SprintDetails> result = sprintDataProcessor.processSprintData(issue, projectConfFieldMapping, boardId,
+				new ObjectId("5e16c126e4b098db673cc372"));
 
-        // Assert
-        assertNotNull(result);
-    }
+		// Assert
+		assertNotNull(result);
+	}
 
-    private Issue createMockIssueWithSprintField() throws JSONException {
-        List<IssueField> issueFieldList = new ArrayList<>();
-        List<Object> sprintList = new ArrayList<>();
-        String sprint = "com.atlassian.greenhopper.service.sprint.Sprint@6fc7072e[id=23356,rapidViewId=11649,state=CLOSED,name=TEST | 06 Jan - 19 Jan,startDate=2020-01-06T11:38:31.937Z,endDate=2020-01-19T11:38:00.000Z,completeDate=2020-01-20T11:15:21.528Z,sequence=22778,goal=]";
-        sprintList.add(sprint);
-        JSONArray array = new JSONArray(sprintList);
+	private Issue createMockIssueWithSprintField() throws JSONException {
+		List<IssueField> issueFieldList = new ArrayList<>();
+		List<Object> sprintList = new ArrayList<>();
+		String sprint = "com.atlassian.greenhopper.service.sprint.Sprint@6fc7072e[id=23356,rapidViewId=11649,state=CLOSED,name=TEST | 06 Jan - 19 Jan,startDate=2020-01-06T11:38:31.937Z,endDate=2020-01-19T11:38:00.000Z,completeDate=2020-01-20T11:15:21.528Z,sequence=22778,goal=]";
+		sprintList.add(sprint);
+		JSONArray array = new JSONArray(sprintList);
 
-        IssueField issueField = new IssueField("customfield_12700", "Sprint", null, array);
-        issueFieldList.add(issueField);
-        Issue issue = new Issue("summary1", null, "key1", 1l, null, null, null, "story",
-                null, null, new ArrayList<>(), null, null, DateTime.now(), DateTime.now(),
-                DateTime.now(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFieldList, null,
-                null, null, null, null, null, Arrays.asList("expandos"), null,
-                Arrays.asList(), null, new HashSet<>(Arrays.asList("label1")));
-        return issue;
-    }
+		IssueField issueField = new IssueField("customfield_12700", "Sprint", null, array);
+		issueFieldList.add(issueField);
+		Issue issue = new Issue("summary1", null, "key1", 1l, null, null, null, "story", null, null, new ArrayList<>(),
+				null, null, DateTime.now(), DateTime.now(), DateTime.now(), new ArrayList<>(), new ArrayList<>(),
+				new ArrayList<>(), null, issueFieldList, null, null, null, null, null, null, Arrays.asList("expandos"), null,
+				Arrays.asList(), null, new HashSet<>(Arrays.asList("label1")));
+		return issue;
+	}
 
-    private void createProjectConfigMap() {
-        projectConfFieldMapping.setProjectName("knowhow");
-        projectConfFieldMapping.setKanban(false);
-        projectConfFieldMapping.setBasicProjectConfigId(new ObjectId("5fd99f7bc8b51a7b55aec836"));
-        ProjectBasicConfig basicConfig= new ProjectBasicConfig();
-        basicConfig.setProjectName("knowhow");
-        basicConfig.setProjectNodeId("abc_uniqueId");
-        projectConfFieldMapping.setProjectBasicConfig(basicConfig);
-        FieldMapping fieldMapping=new FieldMapping();
-        fieldMapping.setSprintName("customfield_12700");
-        projectConfFieldMapping.setFieldMapping(fieldMapping);
-    }
+	private void createProjectConfigMap() {
+		projectConfFieldMapping.setProjectName("knowhow");
+		projectConfFieldMapping.setKanban(false);
+		projectConfFieldMapping.setBasicProjectConfigId(new ObjectId("5fd99f7bc8b51a7b55aec836"));
+		ProjectBasicConfig basicConfig = new ProjectBasicConfig();
+		basicConfig.setProjectName("knowhow");
+		basicConfig.setProjectNodeId("abc_uniqueId");
+		projectConfFieldMapping.setProjectBasicConfig(basicConfig);
+		FieldMapping fieldMapping = new FieldMapping();
+		fieldMapping.setSprintName("customfield_12700");
+		projectConfFieldMapping.setFieldMapping(fieldMapping);
+	}
 }

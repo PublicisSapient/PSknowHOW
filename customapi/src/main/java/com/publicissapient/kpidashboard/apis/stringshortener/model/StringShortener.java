@@ -18,17 +18,18 @@
 
 package com.publicissapient.kpidashboard.apis.stringshortener.model;
 
-import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-    @Data
-    @Document(collection = "string_shorteners")
-    public class StringShortener {
-        @Id
-        private String id;
-        private String longStateFiltersString;
-        private String shortStateFiltersString;
-        private String longKPIFiltersString;
-        private String shortKPIFilterString;
-    }
+import lombok.Data;
+
+@Data
+@Document(collection = "string_shorteners")
+public class StringShortener {
+	@Id
+	private String id;
+	private String longStateFiltersString;
+	private String shortStateFiltersString;
+	private String longKPIFiltersString;
+	private String shortKPIFilterString;
+}

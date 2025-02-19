@@ -17,14 +17,15 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1020;
 
-import io.mongock.api.annotations.ChangeUnit;
-import io.mongock.api.annotations.Execution;
-import io.mongock.api.annotations.RollbackExecution;
+import java.util.Arrays;
+import java.util.List;
+
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.util.Arrays;
-import java.util.List;
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
 
 /**
  * @author purgupta2
@@ -56,7 +57,7 @@ public class ChangeIterationKPIsGroupId {
 
 	@RollbackExecution
 	public void rollBack() {
-		updateGroupId(Arrays.asList("kpi119", "kpi132", "kp136", "kpi140", "kpi123", "kpi122", "kpi134", "kpi131",
-				"kpi75", "kpi124", "kpi135", "kpi176", "kpi125"), 8);
+		updateGroupId(Arrays.asList("kpi119", "kpi132", "kp136", "kpi140", "kpi123", "kpi122", "kpi134", "kpi131", "kpi75",
+				"kpi124", "kpi135", "kpi176", "kpi125"), 8);
 	}
 }

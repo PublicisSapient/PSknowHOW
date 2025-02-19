@@ -18,60 +18,61 @@
 
 package com.publicissapient.kpidashboard.apis.stringshortener.controller;
 
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.stringshortener.dto.StringShortenerDTO;
-import com.publicissapient.kpidashboard.apis.stringshortener.model.StringShortener;
-import com.publicissapient.kpidashboard.apis.stringshortener.service.StringShortenerService;
+import java.util.Optional;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.stringshortener.dto.StringShortenerDTO;
+import com.publicissapient.kpidashboard.apis.stringshortener.model.StringShortener;
+import com.publicissapient.kpidashboard.apis.stringshortener.service.StringShortenerService;
 
 @RestController
 @RequestMapping("/stringShortener")
 public class StringShortenerController {
 
-    private final StringShortenerService stringShortenerService;
-    private static final String SHORT_STRING_RESPONSE_MESSAGE = "Successfully Created Short String";
-    private static final String FAILURE_RESPONSE_MESSAGE = "Invalid URL.";
-    private static final String FETCH_SUCCESS_MESSAGE = "Successfully fetched";
+	private final StringShortenerService stringShortenerService;
+	private static final String SHORT_STRING_RESPONSE_MESSAGE = "Successfully Created Short String";
+	private static final String FAILURE_RESPONSE_MESSAGE = "Invalid URL.";
+	private static final String FETCH_SUCCESS_MESSAGE = "Successfully fetched";
 
+	@Autowired
+	private StringShortenerController(StringShortenerService stringShortenerService) {
+		this.stringShortenerService = stringShortenerService;
+	}
 
-    @Autowired
-    private StringShortenerController(StringShortenerService stringShortenerService) {
-        this.stringShortenerService=stringShortenerService;
-    }
+	@PostMapping("/shorten")
+	public ResponseEntity<ServiceResponse> createShortString(@RequestBody StringShortenerDTO stringShortenerDTO) {
+		ServiceResponse response = null;
+		StringShortener stringShortener = stringShortenerService.createShortString(stringShortenerDTO);
+		final ModelMapper modelMapper = new ModelMapper();
+		final StringShortenerDTO responseDTO = modelMapper.map(stringShortener, StringShortenerDTO.class);
+		if (responseDTO != null && !responseDTO.toString().isEmpty()) {
+			response = new ServiceResponse(true, SHORT_STRING_RESPONSE_MESSAGE, responseDTO);
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} else {
+			response = new ServiceResponse(false, FAILURE_RESPONSE_MESSAGE, null);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+		}
+	}
 
-    @PostMapping("/shorten")
-    public ResponseEntity<ServiceResponse> createShortString(@RequestBody StringShortenerDTO stringShortenerDTO) {
-        ServiceResponse response = null;
-        StringShortener stringShortener = stringShortenerService.createShortString(stringShortenerDTO);
-        final ModelMapper modelMapper = new ModelMapper();
-        final StringShortenerDTO responseDTO = modelMapper.map(stringShortener, StringShortenerDTO.class);
-        if (responseDTO != null && !responseDTO.toString().isEmpty()) {
-            response = new ServiceResponse(true, SHORT_STRING_RESPONSE_MESSAGE, responseDTO);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        } else {
-            response = new ServiceResponse(false, FAILURE_RESPONSE_MESSAGE, null);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
-    }
-
-    @GetMapping("/longString")
-    public ResponseEntity<ServiceResponse> getLongString(@RequestParam String kpiFilters, @RequestParam String stateFilters) {
-        ServiceResponse response = null;
-        Optional<StringShortener> stringShortener = stringShortenerService.getLongString(kpiFilters, stateFilters);
-        if (stringShortener.isPresent()) {
-            final ModelMapper modelMapper = new ModelMapper();
-            final StringShortenerDTO responseDTO = modelMapper.map(stringShortener.get(), StringShortenerDTO.class);
-            response = new ServiceResponse(true, FETCH_SUCCESS_MESSAGE, responseDTO);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        } else {
-            response = new ServiceResponse(false, FAILURE_RESPONSE_MESSAGE, null);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
-    }
+	@GetMapping("/longString")
+	public ResponseEntity<ServiceResponse> getLongString(@RequestParam String kpiFilters,
+			@RequestParam String stateFilters) {
+		ServiceResponse response = null;
+		Optional<StringShortener> stringShortener = stringShortenerService.getLongString(kpiFilters, stateFilters);
+		if (stringShortener.isPresent()) {
+			final ModelMapper modelMapper = new ModelMapper();
+			final StringShortenerDTO responseDTO = modelMapper.map(stringShortener.get(), StringShortenerDTO.class);
+			response = new ServiceResponse(true, FETCH_SUCCESS_MESSAGE, responseDTO);
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} else {
+			response = new ServiceResponse(false, FAILURE_RESPONSE_MESSAGE, null);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+		}
+	}
 }
