@@ -184,6 +184,14 @@
         <heap unit="MB">50</heap>
     </cache>
 
+    <cache alias="projectHierarchies">
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+
+        <heap unit="MB">50</heap>
+    </cache>
+
     <cache alias="allProjectConfigMap">
         <expiry>
             <ttl unit="hours">2</ttl>

@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.Node;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -118,19 +119,19 @@ public class KPIExcelUtility {
 	 */
 	public static void populateDirExcelData(List<String> storyIds, List<JiraIssue> defects,
 			List<KPIExcelData> kpiExcelData, Map<String, JiraIssue> issueData, FieldMapping fieldMapping,
-			CustomApiConfig customApiConfig) {
+			CustomApiConfig customApiConfig, Node node) {
 		if (CollectionUtils.isNotEmpty(storyIds)) {
-			setQualityKPIExcelData(storyIds, defects, kpiExcelData, issueData, fieldMapping, customApiConfig);
+			setQualityKPIExcelData(storyIds, defects, kpiExcelData, issueData, fieldMapping, customApiConfig, node);
 		}
 	}
 
 	private static void setQualityCommonExcelData(JiraIssue jiraIssue, String story,
 			Map<String, JiraIssue> defectIssueMap, KPIExcelData excelData, String defectNumber,
-			CustomApiConfig customApiConfig) {
+			CustomApiConfig customApiConfig, Node node) {
 
 		JiraIssue defect = defectIssueMap.get(defectNumber);
 		if (jiraIssue != null) {
-			String sprintName = jiraIssue.getSprintName() + "_" + jiraIssue.getProjectName();
+			String sprintName = node.getSprintFilter().getName();
 			excelData.setSprintName(sprintName);
 			excelData.setStoryDesc(checkEmptyName(jiraIssue));
 			excelData.setStoryId(Collections.singletonMap(story, checkEmptyURL(jiraIssue)));
@@ -156,15 +157,15 @@ public class KPIExcelUtility {
 
 	public static void populateDefectDensityExcelData(List<String> storyIds, List<JiraIssue> defects,
 			List<KPIExcelData> kpiExcelData, Map<String, JiraIssue> issueData, FieldMapping fieldMapping,
-			CustomApiConfig customApiConfig) {
+			CustomApiConfig customApiConfig, Node node) {
 		if (CollectionUtils.isNotEmpty(storyIds)) {
-			setQualityKPIExcelData(storyIds, defects, kpiExcelData, issueData, fieldMapping, customApiConfig);
+			setQualityKPIExcelData(storyIds, defects, kpiExcelData, issueData, fieldMapping, customApiConfig,node);
 		}
 	}
 
 	private static void setQualityKPIExcelData(List<String> storyIds, List<JiraIssue> defects,
 			List<KPIExcelData> kpiExcelData, Map<String, JiraIssue> issueData, FieldMapping fieldMapping,
-			CustomApiConfig customApiConfig) {
+			CustomApiConfig customApiConfig, Node node) {
 		storyIds.forEach(story -> {
 			List<JiraIssue> linkedDefects = defects.stream().filter(defect -> defect.getDefectStoryID().contains(story))
 					.toList();
@@ -174,14 +175,16 @@ public class KPIExcelUtility {
 					KPIExcelData excelData = new KPIExcelData();
 					Map<String, JiraIssue> defectIssueMap = Collections.singletonMap(defect.getNumber(), defect);
 					JiraIssue jiraIssue = issueData.get(story);
-					setQualityCommonExcelData(jiraIssue, story, defectIssueMap, excelData, defect.getNumber(), customApiConfig);
+					setQualityCommonExcelData(jiraIssue, story, defectIssueMap, excelData, defect.getNumber(),
+							customApiConfig, node);
 					setStoryPoint(fieldMapping, excelData, jiraIssue);
 					kpiExcelData.add(excelData);
 				});
 			} else {
 				KPIExcelData excelData = new KPIExcelData();
 				JiraIssue jiraIssue = issueData.get(story);
-				setQualityCommonExcelData(jiraIssue, story, Collections.emptyMap(), excelData, Constant.BLANK, customApiConfig);
+				setQualityCommonExcelData(jiraIssue, story, Collections.emptyMap(), excelData, Constant.BLANK,
+						customApiConfig,node);
 				setStoryPoint(fieldMapping, excelData, jiraIssue);
 				kpiExcelData.add(excelData);
 			}
@@ -202,9 +205,9 @@ public class KPIExcelUtility {
 
 	public static List<KPIExcelData> populateFTPRExcelData(List<String> storyIds, List<JiraIssue> ftprStories,
 			List<KPIExcelData> kpiExcelData, Map<String, JiraIssue> issueData, List<JiraIssue> defects,
-			CustomApiConfig customApiConfig, FieldMapping fieldMapping) {
+			CustomApiConfig customApiConfig, FieldMapping fieldMapping, Node node) {
 		List<String> collectFTPIds = ftprStories.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
-		setQualityKPIExcelData(storyIds, defects, kpiExcelData, issueData, fieldMapping, customApiConfig);
+		setQualityKPIExcelData(storyIds, defects, kpiExcelData, issueData, fieldMapping, customApiConfig, node);
 		setFTPRSpecificData(kpiExcelData, collectFTPIds);
 		return kpiExcelData;
 	}

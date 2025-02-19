@@ -209,7 +209,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					List<KPIExcelData> excelDatas = new ArrayList<>();
 					KPIExcelUtility.populateFTPRExcelData(totalStoryIdList, ftpStoriesList, excelDatas, issueMapping,
 							new ArrayList<>(linkedDefects != null ? linkedDefects : new ArrayList<>()), customApiConfig,
-							fieldMapping);
+							fieldMapping, node);
 					excelData.addAll(excelDatas);
 				}
 			} else {
