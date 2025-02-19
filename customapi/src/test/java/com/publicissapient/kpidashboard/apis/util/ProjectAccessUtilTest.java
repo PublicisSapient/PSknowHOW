@@ -10,18 +10,17 @@ import static org.mockito.Mockito.when;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectAccessUtilTest {

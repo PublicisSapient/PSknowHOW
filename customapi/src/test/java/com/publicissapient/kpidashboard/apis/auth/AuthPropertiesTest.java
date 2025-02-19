@@ -42,5 +42,4 @@ public class AuthPropertiesTest {
 		assertNotNull(tokenAuthProperties.getExpirationTime());
 		assertNotNull(tokenAuthProperties.getSecret());
 	}
-
 }

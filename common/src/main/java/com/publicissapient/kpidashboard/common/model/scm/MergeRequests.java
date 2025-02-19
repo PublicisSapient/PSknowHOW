@@ -15,17 +15,15 @@ import lombok.Setter;
 
 /**
  * @author yasbano
- * 
+ *         <p>
  *         Represents the merge requests in a repository.
  */
-
 @Data
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "merge_requests")
-
 public class MergeRequests extends BasicModel {
 	private ObjectId processorItemId;
 	private String title;

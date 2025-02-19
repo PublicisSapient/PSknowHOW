@@ -20,18 +20,19 @@ package com.publicissapient.kpidashboard.apis.errors;
 
 /**
  * Exception thrown when a duplicate report is detected.
+ *
  * <p>
- * This exception is used to indicate that an attempt to create or update a report
- * has failed due to the presence of duplicate report IDs.
- * </p>
+ * This exception is used to indicate that an attempt to create or update a
+ * report has failed due to the presence of duplicate report IDs.
  */
 public class DuplicateReportException extends RuntimeException {
-    /**
-     * Constructs a new DuplicateReportException with the specified detail message.
-     *
-     * @param message the detail message
-     */
-    public DuplicateReportException(String message) {
-        super(message);
-    }
+	/**
+	 * Constructs a new DuplicateReportException with the specified detail message.
+	 *
+	 * @param message
+	 *          the detail message
+	 */
+	public DuplicateReportException(String message) {
+		super(message);
+	}
 }

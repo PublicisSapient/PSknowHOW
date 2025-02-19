@@ -71,8 +71,7 @@ public class GitHubActionDeployClient implements GitHubActionClient {
 	private GitHubActionConfig gitHubActionConfig;
 	@Autowired
 	private RestTemplate restTemplate;
-	int p=1;
-
+	int p = 1;
 
 	@Override
 	public Set<Build> getBuildJobsFromServer(ProcessorToolConnection gitHubServer, ProjectBasicConfig proBasicConfig)
@@ -94,15 +93,14 @@ public class GitHubActionDeployClient implements GitHubActionClient {
 			// GitHub has a API rate limit of 5000 hits per hour
 			boolean includeDelay = false;
 			ResponseEntity<String> respPayload = getResponse(gitHubServer.getUsername(), decryptedApiToken,
-					restUri+PAGE_PARAM+"167");
-			if (respPayload != null && respPayload.getBody().length()>=20)
+					restUri + PAGE_PARAM + "167");
+			if (respPayload != null && respPayload.getBody().length() >= 20)
 				includeDelay = true;
 			boolean hasMorePage = true;
 			int nextPage = 1;
 			while (hasMorePage) {
 
-				respPayload = getResponse(gitHubServer.getUsername(), decryptedApiToken,
-						restUri);
+				respPayload = getResponse(gitHubServer.getUsername(), decryptedApiToken, restUri);
 				if (respPayload == null)
 					break;
 				JSONArray responseJson = getJSONFromResponse(respPayload.getBody());
@@ -116,7 +114,6 @@ public class GitHubActionDeployClient implements GitHubActionClient {
 				if (responseJson.isEmpty()) {
 					hasMorePage = false;
 				}
-
 			}
 
 		} catch (RestClientException | URISyntaxException | UnsupportedEncodingException | ParseException e) {
@@ -127,7 +124,7 @@ public class GitHubActionDeployClient implements GitHubActionClient {
 	}
 
 	private void initializeDeployments(Map<Deployment, Set<Deployment>> result, JSONArray jsonArray,
-									   ProcessorToolConnection gitHubServer, String decryptedApiToken, boolean includeDelay) throws ParseException {
+			ProcessorToolConnection gitHubServer, String decryptedApiToken, boolean includeDelay) throws ParseException {
 
 		for (Object jsonObj : jsonArray) {
 			JSONObject deploymentObject = (JSONObject) jsonObj;
@@ -136,10 +133,8 @@ public class GitHubActionDeployClient implements GitHubActionClient {
 			String endDate = String.valueOf(deploymentObject.get(Constants.UPDATED_AT));
 			String number = String.valueOf(deploymentObject.get(Constants.DEPLOYNUMBER));
 			String env = ProcessorUtils.getString(deploymentObject, Constants.ENVIRONMENT);
-			long createdDate = Instant.parse(ProcessorUtils.getString(deploymentObject, Constants.CREATED_AT))
-					.toEpochMilli();
-			long updatedDate = Instant.parse(ProcessorUtils.getString(deploymentObject, Constants.UPDATED_AT))
-					.toEpochMilli();
+			long createdDate = Instant.parse(ProcessorUtils.getString(deploymentObject, Constants.CREATED_AT)).toEpochMilli();
+			long updatedDate = Instant.parse(ProcessorUtils.getString(deploymentObject, Constants.UPDATED_AT)).toEpochMilli();
 
 			Deployment deployment = new Deployment();
 			deployment.setProjectToolConfigId(gitHubServer.getId());
@@ -148,13 +143,12 @@ public class GitHubActionDeployClient implements GitHubActionClient {
 			deployment.setNumber(number);
 
 			String statusesURL = ProcessorUtils.getString(deploymentObject, Constants.STATUSES_URL);
-			ResponseEntity<String> respPayload = getResponse(gitHubServer.getUsername(), decryptedApiToken,
-					statusesURL);
+			ResponseEntity<String> respPayload = getResponse(gitHubServer.getUsername(), decryptedApiToken, statusesURL);
 			JSONArray responseJson = getJSONFromResponse(respPayload.getBody());
 			if (respPayload != null && !responseJson.isEmpty()) {
 				JSONObject statusObject = (JSONObject) responseJson.get(0);
 				deployment.setDeploymentStatus(getDeploymentStatus(statusObject));
-				log.info("Total Development Fetched : "+ (p++));
+				log.info("Total Development Fetched : " + (p++));
 			}
 
 			if (StringUtils.isNotEmpty(startDate)) {
@@ -220,19 +214,18 @@ public class GitHubActionDeployClient implements GitHubActionClient {
 	private DeploymentStatus getDeploymentStatus(JSONObject jsonDeploy) {
 		String status = String.valueOf(jsonDeploy.get(Constants.DEPLOYMENTSTATUS));
 		switch (status) {
-		case "success":
-			return DeploymentStatus.SUCCESS;
-		case "error":
-			return DeploymentStatus.FAILURE;
-		case "in_progress":
-			return DeploymentStatus.IN_PROGRESS;
-		case "failure":
-			return DeploymentStatus.FAILURE;
-		case "inactive":
-			return DeploymentStatus.INACTIVE;
-		default:
-			return DeploymentStatus.UNKNOWN;
+			case "success" :
+				return DeploymentStatus.SUCCESS;
+			case "error" :
+				return DeploymentStatus.FAILURE;
+			case "in_progress" :
+				return DeploymentStatus.IN_PROGRESS;
+			case "failure" :
+				return DeploymentStatus.FAILURE;
+			case "inactive" :
+				return DeploymentStatus.INACTIVE;
+			default :
+				return DeploymentStatus.UNKNOWN;
 		}
 	}
-
 }

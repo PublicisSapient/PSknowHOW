@@ -25,21 +25,28 @@ import java.util.Arrays;
  *
  * @author tauakram
  */
-
 public enum NormalizedJira {
 
 	// @formatter:off
 
-	DEFECT_TYPE("Bug"), TEST_TYPE("Test"), YES_VALUE("Yes"), NO_VALUE("No"), THIRD_PARTY_DEFECT_VALUE("UAT"), TECHSTORY(
-			"TechStory"), INVALID("Invalid"), TO_BE_AUTOMATED("To be automated"), QA_DEFECT_VALUE("QA"),STATUS("Closed"),ISSUE_TYPE("Epic") ;
+	DEFECT_TYPE("Bug"),
+	TEST_TYPE("Test"),
+	YES_VALUE("Yes"),
+	NO_VALUE("No"),
+	THIRD_PARTY_DEFECT_VALUE("UAT"),
+	TECHSTORY("TechStory"),
+	INVALID("Invalid"),
+	TO_BE_AUTOMATED("To be automated"),
+	QA_DEFECT_VALUE("QA"),
+	STATUS("Closed"),
+	ISSUE_TYPE("Epic");
 
 	private String normalizedValue;
 
 	/**
 	 * Instantiates a new normalized jira.
 	 *
-	 * @param normalizedValue
-	 *            the normalized value
+	 * @param normalizedValue the normalized value
 	 */
 	NormalizedJira(String normalizedValue) {
 		this.setNormalizedValue(normalizedValue);
@@ -48,14 +55,15 @@ public enum NormalizedJira {
 	/**
 	 * Gets the normalized jira value.
 	 *
-	 * @param valueType
-	 *            the value type
+	 * @param valueType the value type
 	 * @return the normalized jira value
 	 */
 	public static NormalizedJira getNormalizedJiraValue(String valueType) {
 
-		return Arrays.asList(NormalizedJira.values()).stream().filter(t -> t.getValue().equalsIgnoreCase(valueType))
-				.findAny().orElse(INVALID);
+		return Arrays.asList(NormalizedJira.values()).stream()
+				.filter(t -> t.getValue().equalsIgnoreCase(valueType))
+				.findAny()
+				.orElse(INVALID);
 	}
 
 	/**
@@ -70,11 +78,9 @@ public enum NormalizedJira {
 	/**
 	 * Sets the normalized value.
 	 *
-	 * @param normalizedValue
-	 *            the new normalized value
+	 * @param normalizedValue the new normalized value
 	 */
 	private void setNormalizedValue(String normalizedValue) {
 		this.normalizedValue = normalizedValue;
 	}
-
 }

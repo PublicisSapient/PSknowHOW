@@ -32,9 +32,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- *
- */
+/** */
 @Slf4j
 public class ProjectBasicConfigDataFactory {
 	private static final String FILE_PATH_BASIC_CONFIG = "/json/project_basic_configs.json";
@@ -52,6 +50,7 @@ public class ProjectBasicConfigDataFactory {
 		factory.init(filePath);
 		return factory;
 	}
+
 	public static ProjectBasicConfigDataFactory newInstance() {
 		return newInstance(null);
 	}
@@ -77,7 +76,6 @@ public class ProjectBasicConfigDataFactory {
 			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		}
-
 	}
 
 	public List<ProjectBasicConfig> getProjectBasicConfigs() {
@@ -87,15 +85,13 @@ public class ProjectBasicConfigDataFactory {
 	public ProjectBasicConfig findById(String id) {
 
 		return projectBasicConfigs.stream()
-				.filter(projectBasicConfig -> projectBasicConfig.getId().toHexString().equals(id)).findFirst()
-				.orElse(null);
+				.filter(projectBasicConfig -> projectBasicConfig.getId().toHexString().equals(id)).findFirst().orElse(null);
 	}
 
 	public ProjectBasicConfig findByProjectName(String projectName) {
 
 		return projectBasicConfigs.stream()
-				.filter(projectBasicConfig -> projectBasicConfig.getProjectName().equals(projectName)).findFirst()
-				.orElse(null);
+				.filter(projectBasicConfig -> projectBasicConfig.getProjectName().equals(projectName)).findFirst().orElse(null);
 	}
 
 	public List<ProjectBasicConfig> findScrumProjects() {

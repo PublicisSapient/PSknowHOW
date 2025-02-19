@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +60,7 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
 
@@ -68,8 +68,8 @@ import com.publicissapient.kpidashboard.common.repository.application.TestExecut
 public class TestExecutionServiceImplTest {
 
 	private static final String TEST_EXECUTION_DETAIL = "testExecutionDetail";
-	private final static String TESTCASEKEY = "testCaseData";
-	private final static String AUTOMATEDTESTCASEKEY = "automatedTestCaseData";
+	private static final String TESTCASEKEY = "testCaseData";
+	private static final String AUTOMATEDTESTCASEKEY = "automatedTestCaseData";
 	@Mock
 	ConfigHelperService configHelperService;
 	@Mock
@@ -117,7 +117,6 @@ public class TestExecutionServiceImplTest {
 		});
 		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 
-
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
@@ -160,7 +159,6 @@ public class TestExecutionServiceImplTest {
 		Map<String, Object> outputMap = new HashMap<>();
 		outputMap.put(TEST_EXECUTION_DETAIL, testExecutionList);
 		assertThat("fetch KPI data from DB :", defectDataListMap, equalTo(outputMap));
-
 	}
 
 	@Test
@@ -187,8 +185,7 @@ public class TestExecutionServiceImplTest {
 			KpiElement kpiElement = testExecutionServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			assertThat("Test Exceution Value :",
-					((List<DataCount>) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(),
-					equalTo(5));
+					((List<DataCount>) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(), equalTo(5));
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 		}
@@ -199,5 +196,4 @@ public class TestExecutionServiceImplTest {
 		Double kpiValue = testExecutionServiceImpl.calculateKpiValue(Arrays.asList(1.0, 2.0), "kpi70");
 		assertThat("Kpi value  :", kpiValue, equalTo(0.0));
 	}
-
 }

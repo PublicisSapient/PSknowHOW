@@ -33,7 +33,6 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -115,14 +114,12 @@ public class ReleaseProgressServiceImpl extends JiraReleaseKPIService {
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			Map<String, Object> resultMap = fetchKPIDataFromDb(latestRelease, null, null, kpiRequest);
 			List<JiraIssue> releaseIssues = (List<JiraIssue>) resultMap.get(TOTAL_ISSUES);
-			JiraIssueReleaseStatus jiraIssueReleaseStatus = (JiraIssueReleaseStatus) resultMap
-					.get(RELEASE_JIRA_ISSUE_STATUS);
+			JiraIssueReleaseStatus jiraIssueReleaseStatus = (JiraIssueReleaseStatus) resultMap.get(RELEASE_JIRA_ISSUE_STATUS);
 			List<IterationKpiValue> filterDataList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(releaseIssues) && jiraIssueReleaseStatus != null) {
 				Set<String> issueTypes = new LinkedHashSet<>();
 				issueTypes.add(CommonConstant.OVERALL);
-				createDataCountGroupMap(releaseIssues, jiraIssueReleaseStatus, issueTypes, fieldMapping,
-						filterDataList);
+				createDataCountGroupMap(releaseIssues, jiraIssueReleaseStatus, issueTypes, fieldMapping, filterDataList);
 				populateExcelDataObject(requestTrackerId, excelData, releaseIssues, fieldMapping);
 				List<DataCount> dataCountList = new ArrayList<>();
 				dataCountList.add(getStatusWiseCountList(releaseIssues, jiraIssueReleaseStatus));
@@ -159,7 +156,6 @@ public class ReleaseProgressServiceImpl extends JiraReleaseKPIService {
 			iterationKpiValue.setValue(dataCountList);
 			iterationKpiValues.add(iterationKpiValue);
 		});
-
 	}
 
 	/**
@@ -240,8 +236,8 @@ public class ReleaseProgressServiceImpl extends JiraReleaseKPIService {
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
 			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				CollectionUtils.isNotEmpty(jiraIssueList)) {
 			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
 		}
 	}
@@ -289,5 +285,4 @@ public class ReleaseProgressServiceImpl extends JiraReleaseKPIService {
 		DataCount spDc = new DataCount(releaseStatus, releaseStatusSp, spDrillDownList);
 		storyPointDcList.add(spDc);
 	}
-
 }

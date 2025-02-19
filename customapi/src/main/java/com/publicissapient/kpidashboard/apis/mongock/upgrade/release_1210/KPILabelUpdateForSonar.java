@@ -31,7 +31,6 @@ import io.mongock.api.annotations.RollbackExecution;
  * @author aksshriv1
  */
 @ChangeUnit(id = "sonar_xaxis_label", order = "12103", author = "aksshriv1", systemVersion = "12.1.0")
-
 public class KPILabelUpdateForSonar {
 
 	private final MongoTemplate mongoTemplate;
@@ -53,7 +52,6 @@ public class KPILabelUpdateForSonar {
 
 		// Perform the update
 		kpiMaster.updateOne(filter, update);
-
 	}
 
 	@RollbackExecution

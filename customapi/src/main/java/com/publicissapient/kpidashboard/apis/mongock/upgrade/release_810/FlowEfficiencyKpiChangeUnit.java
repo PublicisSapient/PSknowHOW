@@ -18,18 +18,19 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_810;
 
-import io.mongock.api.annotations.ChangeUnit;
-import io.mongock.api.annotations.Execution;
-import io.mongock.api.annotations.RollbackExecution;
-import org.bson.Document;
-import org.springframework.data.mongodb.core.MongoTemplate;
-
 import java.util.Arrays;
 import java.util.List;
 
+import org.bson.Document;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
+
 /**
  * add flow efficiency kpi and field mapping
- * 
+ *
  * @author kunkambl
  */
 @ChangeUnit(id = "flow_efficiency_kpi", order = "8107", author = "kunkambl", systemVersion = "8.1.0")
@@ -51,11 +52,12 @@ public class FlowEfficiencyKpiChangeUnit {
 
 	public void addFlowEfficiencyKpiToKpiMaster() {
 		Document kpiDocument = new Document().append("kpiId", "kpi170").append("kpiName", "Flow Efficiency")
-				.append("kpiUnit", "%").append("isDeleted", "False").append("defaultOrder", 1)
-				.append("kpiCategory", "Backlog").append("kpiSource", "Jira").append("groupId", 11)
-				.append("thresholdValue", "").append("kanban", false).append("chartType", "line")
-				.append("kpiInfo", new Document(DEFINITION,
-						"The percentage of time spent in work states vs wait states across the lifecycle of an issue"))
+				.append("kpiUnit", "%").append("isDeleted", "False").append("defaultOrder", 1).append("kpiCategory", "Backlog")
+				.append("kpiSource", "Jira").append("groupId", 11).append("thresholdValue", "").append("kanban", false)
+				.append("chartType", "line")
+				.append("kpiInfo",
+						new Document(DEFINITION,
+								"The percentage of time spent in work states vs wait states across the lifecycle of an issue"))
 				.append("xAxisLabel", "Duration").append("yAxisLabel", "Percentage").append("isPositiveTrend", false)
 				.append("kpiFilter", "dropDown").append("showTrend", false).append("aggregationCriteria", "average")
 				.append("isAdditionalFilterSupport", false).append("calculateMaturity", false)
@@ -67,19 +69,16 @@ public class FlowEfficiencyKpiChangeUnit {
 
 		Document closeStatusDocument = new Document(FIELD_NAME, "jiraIssueClosedStateKPI170")
 				.append("fieldLabel", "Status to identify Close Statuses").append("fieldCategory", "workflow")
-				.append("fieldType", "chips").append("section", "WorkFlow Status Mapping")
-				.append("tooltip", new Document(DEFINITION,
-						"All statuses that signify an issue is 'DONE' based on 'Definition Of Done'"));
+				.append("fieldType", "chips").append("section", "WorkFlow Status Mapping").append("tooltip",
+						new Document(DEFINITION, "All statuses that signify an issue is 'DONE' based on 'Definition Of Done'"));
 
 		Document waitStatusDocument = new Document(FIELD_NAME, "jiraIssueWaitStateKPI170")
 				.append("fieldLabel", "Status to identify Wait Statuses").append("fieldCategory", "workflow")
-				.append("fieldType", "chips").append("section", "WorkFlow Status Mapping")
-				.append("tooltip", new Document(DEFINITION,
-						"The statuses wherein no activity takes place and signifies that issue is in queue"));
+				.append("fieldType", "chips").append("section", "WorkFlow Status Mapping").append("tooltip", new Document(
+						DEFINITION, "The statuses wherein no activity takes place and signifies that issue is in queue"));
 
 		mongoTemplate.getCollection("field_mapping_structure")
 				.insertMany(Arrays.asList(waitStatusDocument, closeStatusDocument));
-
 	}
 
 	@RollbackExecution

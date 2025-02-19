@@ -15,12 +15,16 @@
 
 package com.publicissapient.kpidashboard.apis.stringshortener.repository;
 
-import com.publicissapient.kpidashboard.apis.stringshortener.model.StringShortener;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 
-public interface StringShortenerRepository extends MongoRepository<StringShortener, String> {
-    Optional<StringShortener> findByShortKPIFilterStringAndShortStateFiltersString(String shortKPIFilterString, String shortStateFiltersString);
-    Optional<StringShortener> findByLongKPIFiltersStringAndLongStateFiltersString(String longKPIFiltersString, String longStateFiltersString);
+import org.springframework.data.mongodb.repository.MongoRepository;
 
+import com.publicissapient.kpidashboard.apis.stringshortener.model.StringShortener;
+
+public interface StringShortenerRepository extends MongoRepository<StringShortener, String> {
+	Optional<StringShortener> findByShortKPIFilterStringAndShortStateFiltersString(String shortKPIFilterString,
+			String shortStateFiltersString);
+
+	Optional<StringShortener> findByLongKPIFiltersStringAndLongStateFiltersString(String longKPIFiltersString,
+			String longStateFiltersString);
 }

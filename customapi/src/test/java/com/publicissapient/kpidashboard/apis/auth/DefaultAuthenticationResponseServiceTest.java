@@ -109,5 +109,4 @@ public class DefaultAuthenticationResponseServiceTest {
 		usernamePasswordAuthenticationToken.setDetails(AuthType.STANDARD);
 		return usernamePasswordAuthenticationToken;
 	}
-
 }

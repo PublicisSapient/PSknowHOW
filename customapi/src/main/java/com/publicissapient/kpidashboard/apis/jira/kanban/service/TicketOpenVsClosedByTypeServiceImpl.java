@@ -72,9 +72,8 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class calculates the project wise issue types and trend analysis.
- * 
- * @author vijmishr1
  *
+ * @author vijmishr1
  */
 @Component
 @Slf4j
@@ -100,7 +99,7 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 
 	/**
 	 * Gets Qualifier Type
-	 * 
+	 *
 	 * @return KPICode's <tt>TICKET OPEN VS CLOSED RATE BY TYPE</tt> enum
 	 */
 	@Override
@@ -110,7 +109,7 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 
 	/**
 	 * Gets KPI Data
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param kpiElement
 	 * @param treeAggregatorDetail
@@ -118,8 +117,8 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 	 * @throws ApplicationException
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		log.info("[TICKET OPEN VS CLOSED RATE BY TYPE-KANBAN-LEAF-NODE-VALUE][{}]", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
@@ -158,7 +157,7 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 
 	/**
 	 * Calculates KPI Metrics
-	 * 
+	 *
 	 * @param subCategoryMap
 	 * @return Integer
 	 */
@@ -214,14 +213,14 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 			}
 		});
 
-		/** additional filter **/
-		String subGroupCategory = KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.KANBAN,
-				DEV, flterHelperService);
+		/** additional filter * */
+		String subGroupCategory = KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.KANBAN, DEV,
+				flterHelperService);
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				projectList.stream().distinct().collect(Collectors.toList()));
 
-		resultListMap.put(OPENED_TICKET, kanbanJiraIssueRepository.findIssuesByDateAndType(mapOfFilters,
-				uniqueProjectMap, startDate, endDate, RANGE));
+		resultListMap.put(OPENED_TICKET,
+				kanbanJiraIssueRepository.findIssuesByDateAndType(mapOfFilters, uniqueProjectMap, startDate, endDate, RANGE));
 
 		mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				mapOfFilters.get(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature()));
@@ -239,13 +238,11 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 	/**
 	 * Populates KPI value to sprint leaf nodes and gives the trend analysis at
 	 * sprint wise.
-	 * 
+	 *
 	 * @param mapTmp
 	 * @param leafNodeList
-	 *
 	 * @param kpiElement
 	 * @param kpiRequest
-	 *
 	 */
 	private void dateWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> leafNodeList, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
@@ -273,18 +270,16 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 				.createProjectWiseMapKanbanHistory((List<KanbanIssueCustomHistory>) resultMap.get(CLOSED_TICKET),
 						subGroupCategory, flterHelperService);
 
-		Map<String, List<String>> projectWiseIssueMap = (Map<String, List<String>>) resultMap
-				.get(PROJECT_WISE_ISSUETYPES);
+		Map<String, List<String>> projectWiseIssueMap = (Map<String, List<String>>) resultMap.get(PROJECT_WISE_ISSUETYPES);
 		Map<String, List<String>> projectWiseClosedStatusMap = (Map<String, List<String>>) resultMap
 				.get(PROJECT_WISE_CLOSED_STORY_STATUS);
 		leafNodeList.forEach(node -> {
 			String projectNodeId = node.getProjectFilter().getBasicProjectConfigId().toString();
 			List<KanbanJiraIssue> kanbanOpenedIssueList = projectWiseOpenedJiraIssue.getOrDefault(projectNodeId,
 					new ArrayList<>());
-			List<KanbanIssueCustomHistory> kanbanClosedIssueList = projectWiseClosedJiraIssue
-					.getOrDefault(projectNodeId, new ArrayList<>());
-			if (CollectionUtils.isNotEmpty(kanbanOpenedIssueList)
-					|| CollectionUtils.isNotEmpty(kanbanClosedIssueList)) {
+			List<KanbanIssueCustomHistory> kanbanClosedIssueList = projectWiseClosedJiraIssue.getOrDefault(projectNodeId,
+					new ArrayList<>());
+			if (CollectionUtils.isNotEmpty(kanbanOpenedIssueList) || CollectionUtils.isNotEmpty(kanbanClosedIssueList)) {
 
 				Map<String, List<DataCount>> projectFilterWiseDataMap = new HashMap<>();
 				List<String> issueTypeList = projectWiseIssueMap.get(projectNodeId);
@@ -307,8 +302,8 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 
 					String date = getRange(dateRange, kpiRequest);
 
-					populateProjectFilterWiseDataMap(openedIssueCountMap, closedIssueCountMap, projectFilterWiseDataMap,
-							node, date);
+					populateProjectFilterWiseDataMap(openedIssueCountMap, closedIssueCountMap, projectFilterWiseDataMap, node,
+							date);
 
 					if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 						currentDate = currentDate.minusWeeks(1);
@@ -317,8 +312,8 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 					} else {
 						currentDate = currentDate.minusDays(1);
 					}
-					populateExcelDataObject(requestTrackerId, dateWiseIssueTypeList, dateWiseIssueClosedStatusList,
-							date, node.getProjectFilter().getName(), excelData);
+					populateExcelDataObject(requestTrackerId, dateWiseIssueTypeList, dateWiseIssueClosedStatusList, date,
+							node.getProjectFilter().getName(), excelData);
 				}
 				mapTmp.get(node.getId()).setValue(projectFilterWiseDataMap);
 			}
@@ -331,8 +326,8 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 		String range = null;
 		if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
-					DateUtil.DISPLAY_DATE_FORMAT) + " to "
-					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to " +
+					DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
 							DateUtil.DISPLAY_DATE_FORMAT);
 		} else if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.MONTH)) {
 			range = dateRange.getStartDate().getMonth().toString();
@@ -343,10 +338,10 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 	}
 
 	private void populateProjectFilterWiseDataMap(Map<String, Long> openedIssueCountMap,
-												  Map<String, Long> closedIssueCountMap, Map<String, List<DataCount>> projectFilterWiseDataMap,
-												  Node node, String date) {
+			Map<String, Long> closedIssueCountMap, Map<String, List<DataCount>> projectFilterWiseDataMap, Node node,
+			String date) {
 		String projectName = node.getProjectFilter().getName();
-		String projectNodeId= node.getProjectFilter().getId();
+		String projectNodeId = node.getProjectFilter().getId();
 
 		openedIssueCountMap.forEach((key, value) -> {
 			DataCount dcObj = getDataCountObject(value, closedIssueCountMap.getOrDefault(key, 0L), projectName, date,
@@ -381,19 +376,18 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 	private void populateExcelDataObject(String requestTrackerId, List<KanbanJiraIssue> dateWiseIssueTypeList,
 			List<KanbanIssueCustomHistory> dateWiseIssueClosedStatusList, String dateProjectKey, String projectName,
 			List<KPIExcelData> excelData) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& CollectionUtils.isNotEmpty(dateWiseIssueTypeList)) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				CollectionUtils.isNotEmpty(dateWiseIssueTypeList)) {
 			KPIExcelUtility.populateOpenVsClosedExcelData(dateProjectKey, projectName, dateWiseIssueTypeList,
 					dateWiseIssueClosedStatusList, excelData, KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE.getKpiId());
 		}
 	}
 
 	public Map<String, Long> filterKanbanDataBasedOnStartAndEndDateAndIssueType(List<KanbanJiraIssue> issueList,
-			List<String> issueTypeList, LocalDate startDate, LocalDate endDate,
-			List<KanbanJiraIssue> dateWiseIssueTypeList) {
+			List<String> issueTypeList, LocalDate startDate, LocalDate endDate, List<KanbanJiraIssue> dateWiseIssueTypeList) {
 		Predicate<KanbanJiraIssue> predicate = issue -> LocalDateTime
-				.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER).isAfter(startDate.atTime(0, 0, 0))
-				&& LocalDateTime.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER).isAfter(startDate.atTime(0, 0, 0)) &&
+				LocalDateTime.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
 						.isBefore(endDate.atTime(23, 59, 59));
 		List<KanbanJiraIssue> filteredIssue = issueList.stream().filter(predicate).collect(Collectors.toList());
 		Map<String, Long> projectIssueTypeMap = filteredIssue.stream().map(KanbanJiraIssue::getTypeName)
@@ -408,10 +402,10 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 	public Map<String, Long> filterKanbanHistoryDataBasedOnStartAndEndDateAndIssueType(
 			List<KanbanIssueCustomHistory> issueList, List<String> issueTypeList, List<String> issueClosedStatusList,
 			LocalDate startDate, LocalDate endDate, List<KanbanIssueCustomHistory> dateWiseIssueClosedStatusList) {
-		Predicate<KanbanIssueHistory> predicate = issue -> issueClosedStatusList.contains(issue.getStatus())
-				&& LocalDateTime.parse(issue.getActivityDate().split("\\.")[0], DATE_TIME_FORMATTER)
-						.isAfter(startDate.atTime(0, 0, 0))
-				&& LocalDateTime.parse(issue.getActivityDate().split("\\.")[0], DATE_TIME_FORMATTER)
+		Predicate<KanbanIssueHistory> predicate = issue -> issueClosedStatusList.contains(issue.getStatus()) &&
+				LocalDateTime.parse(issue.getActivityDate().split("\\.")[0], DATE_TIME_FORMATTER)
+						.isAfter(startDate.atTime(0, 0, 0)) &&
+				LocalDateTime.parse(issue.getActivityDate().split("\\.")[0], DATE_TIME_FORMATTER)
 						.isBefore(endDate.atTime(23, 59, 59));
 
 		List<KanbanIssueCustomHistory> filteredIssue = new ArrayList<>();
@@ -435,5 +429,4 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI55(),
 				KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE.getKpiId());
 	}
-
 }

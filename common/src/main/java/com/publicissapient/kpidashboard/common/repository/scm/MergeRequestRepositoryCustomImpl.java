@@ -41,23 +41,22 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 	public List<MergeRequests> findMergeList(List<ObjectId> collectorItemIdList, Long startDate, Long endDate,
 			BasicDBList filterList) {
 		List<BasicDBObject> pipeline;
-		Object[] array = { new Date(0), IDENT_CREATED_DATE };
+		Object[] array = {new Date(0), IDENT_CREATED_DATE};
 		pipeline = Arrays.asList(
 				new BasicDBObject("$match",
 						new BasicDBObject("$or", filterList).append(SCM_CREATED_DATE,
 								new BasicDBObject("$gte", startDate).append("$lte", endDate))),
 				new BasicDBObject(IDENT_PROJECT,
-						new BasicDBObject(SCM_CREATED_DATE, new BasicDBObject("$add", array)).append(PROCESSOR_ITEM_ID,
-								1)),
+						new BasicDBObject(SCM_CREATED_DATE, new BasicDBObject("$add", array)).append(PROCESSOR_ITEM_ID, 1)),
 				new BasicDBObject("$group",
-						new BasicDBObject(ID, new BasicDBObject(DATE,
-								new BasicDBObject("$dateToString",
-										new BasicDBObject("format", "%Y-%m-%d").append(DATE, IDENT_CREATED_DATE)))
-												.append(PROCESSOR_ITEM_ID, "$processorItemId")).append(COUNT,
-														new BasicDBObject("$sum", 1))),
-				new BasicDBObject(IDENT_PROJECT,
-						new BasicDBObject(ID, 0).append(DATE, "$_id.date")
-								.append(PROCESSOR_ITEM_ID, "$_id.processorItemId").append(COUNT, 1)),
+						new BasicDBObject(ID,
+								new BasicDBObject(DATE,
+										new BasicDBObject("$dateToString",
+												new BasicDBObject("format", "%Y-%m-%d").append(DATE, IDENT_CREATED_DATE)))
+										.append(PROCESSOR_ITEM_ID, "$processorItemId"))
+								.append(COUNT, new BasicDBObject("$sum", 1))),
+				new BasicDBObject(IDENT_PROJECT, new BasicDBObject(ID, 0).append(DATE, "$_id.date")
+						.append(PROCESSOR_ITEM_ID, "$_id.processorItemId").append(COUNT, 1)),
 				new BasicDBObject("$sort", new BasicDBObject(DATE, 1)));
 
 		AggregateIterable<Document> cursor = operations.getCollection(MERGE_REQUESTS).aggregate(pipeline);
@@ -85,7 +84,6 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 			Document obj = itr.next();
 			MergeRequests mergeRequestList = operations.getConverter().read(MergeRequests.class, obj);
 			returnList.add(mergeRequestList);
-
 		}
 		return returnList;
 	}
@@ -93,7 +91,7 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 	/**
 	 * find merge request list based on basic config id and from branch , to branch
 	 * and state matches
-	 * 
+	 *
 	 * @param basicProjectConfigId
 	 * @param fromBranches
 	 * @param toBranch
@@ -108,8 +106,8 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 		LookupOperation lookupProjectToolConfig = LookupOperation.newLookup().from("project_tool_configs")
 				.localField("processorItem.toolConfigId").foreignField("_id").as("projectToolConfig");
 
-		MatchOperation matchStage = Aggregation.match(
-				Criteria.where("projectToolConfig.basicProjectConfigId").is(basicProjectConfigId).and("fromBranch")
+		MatchOperation matchStage = Aggregation
+				.match(Criteria.where("projectToolConfig.basicProjectConfigId").is(basicProjectConfigId).and("fromBranch")
 						.in(fromBranches).and("toBranch").is(toBranch).and("state").is("MERGED"));
 
 		ProjectionOperation projectStage = Aggregation.project(PROCESSOR_ITEM_ID, "title", "state", "revisionNumber",
@@ -119,7 +117,6 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 				lookupProjectToolConfig, Aggregation.unwind("projectToolConfig"), matchStage, projectStage);
 
 		return operations.aggregate(aggregation, MERGE_REQUESTS, MergeRequests.class).getMappedResults();
-		//add to index
+		// add to index
 	}
-
 }

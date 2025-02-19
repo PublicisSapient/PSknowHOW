@@ -52,7 +52,7 @@ public class SonarMetric {
 	 * Instantiates a new Sonar metric.
 	 *
 	 * @param metricName
-	 *            the metricName
+	 *          the metricName
 	 */
 	public SonarMetric(String metricName) {
 		this.metricName = metricName;
@@ -62,9 +62,9 @@ public class SonarMetric {
 	 * Instantiates a new Sonar metric.
 	 *
 	 * @param metricName
-	 *            the metricName
+	 *          the metricName
 	 * @param metricValue
-	 *            the metricValue
+	 *          the metricValue
 	 */
 	public SonarMetric(String metricName, Object metricValue) {
 		this.metricName = metricName;
@@ -87,5 +87,4 @@ public class SonarMetric {
 	public int hashCode() {
 		return metricName.hashCode();
 	}
-
 }

@@ -60,9 +60,8 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controller for CRUD operation for project basic details.
- * 
- * @author narsingh9
  *
+ * @author narsingh9
  */
 @RestController
 @RequestMapping("/basicconfigs")
@@ -86,19 +85,18 @@ public class ProjectBasicConfigController {
 
 	@Autowired
 	private AuthenticationService authenticationService;
-	
+
 	@Autowired
 	private CustomApiConfig customApiConfig;
 
 	/**
-	 * 
 	 * Returns the list of project's basic configuration.
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basic project config id
+	 *          basic project config id
 	 * @return ResponseEntity
 	 */
-	@GetMapping(value = { "/{id}" })
+	@GetMapping(value = {"/{id}"})
 	public ResponseEntity<ServiceResponse> getProjectBasicConfig(@PathVariable("id") String basicProjectConfigId) {
 		basicProjectConfigId = CommonUtils.handleCrossScriptingTaintedValue(basicProjectConfigId);
 		log.info("List project configuration request recieved for : {}", basicProjectConfigId);
@@ -117,32 +115,29 @@ public class ProjectBasicConfigController {
 
 		} else {
 			returnObj = projectBasicConfigService.getFilteredProjectsBasicConfigs(Boolean.TRUE);
-
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(isSuccess, message, returnObj));
 	}
 
 	/**
-	 * 
 	 * Returns the list of project's basic configuration.
-	 * 
+	 *
 	 * @return ResponseEntity
 	 */
 	@GetMapping
-	public ResponseEntity<ServiceResponse> getProjectBasicConfig(@RequestParam(value = "includeAll", defaultValue = "true") Boolean includeAll) {
+	public ResponseEntity<ServiceResponse> getProjectBasicConfig(
+			@RequestParam(value = "includeAll", defaultValue = "true") Boolean includeAll) {
 		try {
 			// Call the service layer
 			Object result = projectBasicConfigService.getFilteredProjectsBasicConfigs(includeAll);
 
 			// Return a successful response
-			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ServiceResponse(true, FETCHED_SUCCESSFULLY, result));
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, FETCHED_SUCCESSFULLY, result));
 
 		} catch (Exception ex) {
 			// Handle unexpected exceptions
 			String message = "An error occurred while fetching project configurations.";
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ServiceResponse(false, message, null));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ServiceResponse(false, message, null));
 		}
 	}
 
@@ -152,8 +147,8 @@ public class ProjectBasicConfigController {
 	 * @return ResponseEntity
 	 */
 	@PostMapping
-	public ResponseEntity<ProjectConfigResponse> addBasicConfig(
-			@RequestBody ProjectBasicConfigDTO projectBasicConfigDTO, HttpServletResponse response) {
+	public ResponseEntity<ProjectConfigResponse> addBasicConfig(@RequestBody ProjectBasicConfigDTO projectBasicConfigDTO,
+			HttpServletResponse response) {
 
 		policy.checkPermission(projectBasicConfigDTO, "ADD_PROJECT");
 
@@ -163,8 +158,8 @@ public class ProjectBasicConfigController {
 
 		List<RoleWiseProjects> projectAccess = projectAccessManager
 				.getProjectAccessesWithRole(authenticationService.getLoggedInUser());
-		ProjectConfigResponse projectConfigResponse = new ProjectConfigResponse(
-				response.getHeader(AUTH_RESPONSE_HEADER), serviceResp, projectAccess);
+		ProjectConfigResponse projectConfigResponse = new ProjectConfigResponse(response.getHeader(AUTH_RESPONSE_HEADER),
+				serviceResp, projectAccess);
 		return ResponseEntity.status(HttpStatus.OK).body(projectConfigResponse);
 	}
 
@@ -185,15 +180,14 @@ public class ProjectBasicConfigController {
 
 		ServiceResponse serviceResp = projectBasicConfigService.updateBasicConfig(basicConfigId, projectBasicConfigDTO);
 
-		ProjectConfigResponse projectConfigResponse = new ProjectConfigResponse(
-				response.getHeader(AUTH_RESPONSE_HEADER), serviceResp, Lists.newArrayList());
+		ProjectConfigResponse projectConfigResponse = new ProjectConfigResponse(response.getHeader(AUTH_RESPONSE_HEADER),
+				serviceResp, Lists.newArrayList());
 		return ResponseEntity.status(HttpStatus.OK).body(projectConfigResponse);
 	}
 
 	/**
-	 * 
 	 * Gets All ProjectsList
-	 * 
+	 *
 	 * @return list of project list
 	 */
 	@GetMapping(value = "/all")
@@ -211,9 +205,9 @@ public class ProjectBasicConfigController {
 
 	/**
 	 * Delete project
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            id
+	 *          id
 	 * @return ServiceResponse
 	 */
 	@PreAuthorize("hasPermission(#basicProjectConfigId, 'DELETE_PROJECT')")
@@ -225,7 +219,6 @@ public class ProjectBasicConfigController {
 	}
 
 	/**
-	 *
 	 * Gets All Scrum ProjectsList with hierarchy details this method is only use
 	 * for specific purpose for Expose API
 	 *
@@ -235,8 +228,8 @@ public class ProjectBasicConfigController {
 	@GetMapping(value = "/hierarchyResponses")
 	public ResponseEntity<List<HierarchyResponseDTO>> getAllHierarchyResponse(HttpServletRequest request) {
 		String apiKey = customApiConfig.getxApiKey();
-		boolean isApiAuth = StringUtils.isNotEmpty(apiKey)
-				&& apiKey.equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
+		boolean isApiAuth = StringUtils.isNotEmpty(apiKey) &&
+				apiKey.equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		if (isApiAuth) {
 			List<HierarchyResponseDTO> hierarchyData = projectBasicConfigService.getHierarchyData();
 			List<HierarchyResponseDTO> filteredHierarchyData = projectBasicConfigService

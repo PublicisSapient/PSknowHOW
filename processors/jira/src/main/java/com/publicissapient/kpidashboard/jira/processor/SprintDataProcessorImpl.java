@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -35,6 +34,7 @@ import org.springframework.stereotype.Service;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
@@ -48,7 +48,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
- *
  */
 @Slf4j
 @Service
@@ -69,8 +68,8 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 		String projectNodeId = projectConfig.getProjectBasicConfig().getProjectNodeId();
 		Map<String, IssueField> fields = JiraIssueClientUtil.buildFieldMap(issue.getFields());
 		IssueField sprintField = fields.get(fieldMapping.getSprintName());
-		if (null != sprintField && null != sprintField.getValue()
-				&& !JiraConstants.EMPTY_STR.equals(sprintField.getValue())) {
+		if (null != sprintField && null != sprintField.getValue() &&
+				!JiraConstants.EMPTY_STR.equals(sprintField.getValue())) {
 			Object sValue = sprintField.getValue();
 			try {
 				List<SprintDetails> sprints = JiraProcessorUtil.processSprintDetail(sValue);
@@ -79,7 +78,6 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 						sprint.setSprintID(
 								sprint.getOriginalSprintId() + CommonConstant.ADDITIONAL_FILTER_VALUE_ID_SEPARATOR + projectNodeId);
 						sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
-
 					}
 					sprintDetailsSet.addAll(sprints);
 				}

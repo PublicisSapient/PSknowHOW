@@ -34,8 +34,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -46,7 +44,9 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.SprintDetailsService;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
@@ -118,7 +118,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	 * This method process the capacity data.
 	 *
 	 * @param capacityMaster
-	 *            capacityMaster
+	 *          capacityMaster
 	 * @return CapacityMaster object
 	 */
 	@Override
@@ -200,14 +200,12 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 		List<AssigneeCapacity> assigneeCapacityList = null;
 		for (SprintDetails sprint : sprintDetails) {
 			CapacityKpiData capacityKpiData = capacityKpiDataList.stream()
-					.filter(capacityData -> capacityData.getSprintID().equals(sprint.getSprintID())).findAny()
-					.orElse(null);
+					.filter(capacityData -> capacityData.getSprintID().equals(sprint.getSprintID())).findAny().orElse(null);
 
 			// finding latest submitted happiness index data for a sprint
 			HappinessKpiData happinessKpiData = happinessKpiDataList.stream()
 					.filter(data -> data.getSprintID().equals(sprint.getSprintID()))
-					.sorted(Comparator.comparing(HappinessKpiData::getDateOfSubmission).reversed()).findFirst()
-					.orElse(null);
+					.sorted(Comparator.comparing(HappinessKpiData::getDateOfSubmission).reversed()).findFirst().orElse(null);
 
 			CapacityMaster capacityMaster = new CapacityMaster();
 
@@ -215,8 +213,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				capacityMaster.setId(capacityKpiData.getId());
 				capacityMaster.setCapacity(Math.round(capacityKpiData.getCapacityPerSprint() * 100) / 100.0);
 				capacityMaster.setAdditionalFilterCapacityList(capacityKpiData.getAdditionalFilterCapacityList());
-				if (CollectionUtils.isNotEmpty(capacityKpiData.getAssigneeCapacity())
-						&& project.isSaveAssigneeDetails()) {
+				if (CollectionUtils.isNotEmpty(capacityKpiData.getAssigneeCapacity()) && project.isSaveAssigneeDetails()) {
 					capacityKpiData.getAssigneeCapacity().stream().forEach(assigneeCapacity -> assigneeCapacity
 							.setLeaves(Optional.ofNullable(assigneeCapacity.getLeaves()).orElse(0D)));
 					capacityKpiData.getAssigneeCapacity().stream()
@@ -226,7 +223,6 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					capacityMaster.setAssigneeCapacity(capacityKpiData.getAssigneeCapacity());
 					// if in normal flow assignees found saving it for future
 					assigneeCapacityList = createAssigneeData(capacityKpiData.getAssigneeCapacity());
-
 				}
 			} else {
 				capacityMaster.setId(null);
@@ -240,7 +236,6 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			setProjectMeta(capacityMaster, project);
 
 			capacityMasterList.add(capacityMaster);
-
 		}
 		// reversing the list to show future->active->closed
 		Collections.reverse(capacityMasterList);
@@ -257,7 +252,6 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					assigneeCapacity.setHappinessRating(userRatingData.getRating());
 				}
 			});
-
 		}
 	}
 
@@ -267,8 +261,8 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 
 		List<SprintDetails> sortedClosedSprints = allSprints.stream()
 				.filter(sprintDetails -> SprintDetails.SPRINT_STATE_CLOSED.equalsIgnoreCase(sprintDetails.getState()))
-				.sorted(Comparator.comparing((SprintDetails sprintDetails) -> LocalDateTime
-						.parse(sprintDetails.getStartDate(), DateTimeFormatter.ofPattern(SPRINT_DATE_FORMAT))))
+				.sorted(Comparator.comparing((SprintDetails sprintDetails) -> LocalDateTime.parse(sprintDetails.getStartDate(),
+						DateTimeFormatter.ofPattern(SPRINT_DATE_FORMAT))))
 				.collect(Collectors.toList());
 
 		if (CollectionUtils.isNotEmpty(sortedClosedSprints)) {
@@ -321,10 +315,9 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
 					capacityMasterKanban.setStartDate(kanbanCapacity.getStartDate().format(formatter));
 					capacityMasterKanban.setEndDate(kanbanCapacity.getEndDate().format(formatter));
-					if (CollectionUtils.isNotEmpty(kanbanCapacity.getAssigneeCapacity())
-							&& project.isSaveAssigneeDetails()) {
-						kanbanCapacity.getAssigneeCapacity().stream().forEach(assignees -> assignees
-								.setLeaves(Optional.ofNullable(assignees.getLeaves()).orElse(0D)));
+					if (CollectionUtils.isNotEmpty(kanbanCapacity.getAssigneeCapacity()) && project.isSaveAssigneeDetails()) {
+						kanbanCapacity.getAssigneeCapacity().stream()
+								.forEach(assignees -> assignees.setLeaves(Optional.ofNullable(assignees.getLeaves()).orElse(0D)));
 						capacityMasterKanban.setAssigneeCapacity(kanbanCapacity.getAssigneeCapacity());
 						assigneeCapacity = createAssigneeData(kanbanCapacity.getAssigneeCapacity());
 					}
@@ -347,20 +340,17 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			setProjectMeta(capacityMasterKanban, project);
 
 			capacityMasterList.add(capacityMasterKanban);
-
 		}
 		return capacityMasterList;
 	}
 
-	private void calculateAdditinalFilterCapacityForKanban(
-			List<AdditionalFilterCapacity> additionalFilterCapacityList) {
+	private void calculateAdditinalFilterCapacityForKanban(List<AdditionalFilterCapacity> additionalFilterCapacityList) {
 		if (CollectionUtils.isNotEmpty(additionalFilterCapacityList)) {
 			additionalFilterCapacityList.forEach(leafNode -> {
 				var leafNodeCapacity = leafNode.getNodeCapacityList();
 				if (CollectionUtils.isNotEmpty(leafNodeCapacity)) {
 					leafNodeCapacity.stream().filter(capacity -> capacity.getAdditionalFilterCapacity() != null)
-							.forEach(capacity -> capacity
-									.setAdditionalFilterCapacity(capacity.getAdditionalFilterCapacity() * 5));
+							.forEach(capacity -> capacity.setAdditionalFilterCapacity(capacity.getAdditionalFilterCapacity() * 5));
 				}
 			});
 		}
@@ -426,14 +416,14 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	 * process kanban team capacity data
 	 *
 	 * @param capacityMaster
-	 *            contains data to be saved
+	 *          contains data to be saved
 	 * @return boolean value
 	 */
 	private boolean processKanbanTeamCapacityData(CapacityMaster capacityMaster) {
 		boolean processed = false;
 		if (capacityIdCheck(capacityMaster)) {
-			List<KanbanCapacity> dataList = kanbanCapacityRepository
-					.findByFilterMapAndDate(kanbanFilterMap(capacityMaster), capacityMaster.getStartDate());
+			List<KanbanCapacity> dataList = kanbanCapacityRepository.findByFilterMapAndDate(kanbanFilterMap(capacityMaster),
+					capacityMaster.getStartDate());
 			KanbanCapacity capacityData;
 			if (CollectionUtils.isNotEmpty(dataList)) {
 				capacityData = dataList.get(0);
@@ -456,7 +446,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	 * process sprint capacity data
 	 *
 	 * @param capacityMaster
-	 *            contains data to be saved
+	 *          contains data to be saved
 	 * @return boolean value
 	 */
 	private boolean processSprintCapacityData(CapacityMaster capacityMaster) {
@@ -473,7 +463,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				capacityData = createCapacityData(capacityMaster);
 			}
 			capacityKpiDataRepository.save(capacityData);
-			//remove this call after cache changes are updated in CapacityService class
+			// remove this call after cache changes are updated in CapacityService class
 			clearCache(CommonConstant.JIRA_KPI_CACHE);
 			clearKpiCache(capacityMaster.getBasicProjectConfigId().toString(),
 					KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId());
@@ -486,17 +476,17 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	 * This method check for mandatory values for capacity data
 	 *
 	 * @param capacityMaster
-	 *            contains data for validation
+	 *          contains data for validation
 	 * @return boolean value
 	 */
 	private boolean capacityIdCheck(CapacityMaster capacityMaster) {
 		boolean isValid;
 		if (capacityMaster.isKanban()) {
-			isValid = StringUtils.isNotEmpty(capacityMaster.getProjectNodeId())
-					&& StringUtils.isNotEmpty(capacityMaster.getStartDate());
+			isValid = StringUtils.isNotEmpty(capacityMaster.getProjectNodeId()) &&
+					StringUtils.isNotEmpty(capacityMaster.getStartDate());
 		} else {
-			isValid = StringUtils.isNotEmpty(capacityMaster.getProjectNodeId())
-					&& StringUtils.isNotEmpty(capacityMaster.getSprintNodeId());
+			isValid = StringUtils.isNotEmpty(capacityMaster.getProjectNodeId()) &&
+					StringUtils.isNotEmpty(capacityMaster.getSprintNodeId());
 		}
 		return isValid;
 	}
@@ -505,7 +495,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	 * creates scrum capacity object
 	 *
 	 * @param capacityMaster
-	 *            contains data to be saved
+	 *          contains data to be saved
 	 * @return CapacityKpiData object
 	 */
 	private CapacityKpiData createCapacityData(CapacityMaster capacityMaster) {
@@ -529,8 +519,8 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	private void createScrumAssigneeData(CapacityKpiData data, CapacityMaster capacityMaster) {
 		if (capacityMaster.isAssigneeDetails() && CollectionUtils.isNotEmpty(capacityMaster.getAssigneeCapacity())) {
 			List<AssigneeCapacity> assigneeList = capacityMaster.getAssigneeCapacity().stream()
-					.filter(assigneeRole -> StringUtils.isNotEmpty(assigneeRole.getUserId())
-							&& (StringUtils.isNotEmpty(assigneeRole.getUserName())))
+					.filter(assigneeRole -> StringUtils.isNotEmpty(assigneeRole.getUserId()) &&
+							(StringUtils.isNotEmpty(assigneeRole.getUserName())))
 					.collect(Collectors.toList());
 
 			double sum = assigneeList.stream()
@@ -544,14 +534,13 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			data.setCapacityPerSprint(capacityMaster.getCapacity());
 			data.setAdditionalFilterCapacityList(saveAdditionalFilterCapacity(capacityMaster));
 		}
-
 	}
 
 	private void createKanbanAssigneeData(KanbanCapacity data, CapacityMaster capacityMaster) {
 		if (capacityMaster.isAssigneeDetails() && CollectionUtils.isNotEmpty(capacityMaster.getAssigneeCapacity())) {
 			List<AssigneeCapacity> assigneeList = capacityMaster.getAssigneeCapacity().stream()
-					.filter(assigneeRole -> StringUtils.isNotEmpty(assigneeRole.getUserId())
-							&& (StringUtils.isNotEmpty(assigneeRole.getUserName())))
+					.filter(assigneeRole -> StringUtils.isNotEmpty(assigneeRole.getUserId()) &&
+							(StringUtils.isNotEmpty(assigneeRole.getUserName())))
 					.collect(Collectors.toList());
 			double sum = assigneeList.stream()
 					.mapToDouble(assignee -> Optional.ofNullable(assignee.getAvailableCapacity()).orElse(0.0d)).sum();
@@ -566,16 +555,14 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			// dividing each leaf node capacity of full week to single day.
 			helper(capacityMaster);
 			data.setAdditionalFilterCapacityList(saveAdditionalFilterCapacity(capacityMaster));
-
 		}
-
 	}
 
 	/**
 	 * creates kanban team capacity object
 	 *
 	 * @param capacityMaster
-	 *            contains data to be saved
+	 *          contains data to be saved
 	 * @return KanbanCapacity object
 	 */
 	private KanbanCapacity createKanbanCapacityData(CapacityMaster capacityMaster) {
@@ -594,9 +581,9 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	 * method to get week start and end date
 	 *
 	 * @param date
-	 *            any date in week
+	 *          any date in week
 	 * @param isWeekend
-	 *            flag to decide week start or end date to pass
+	 *          flag to decide week start or end date to pass
 	 * @return date according to flag
 	 */
 	private String weekDate(String date, boolean isWeekend) {
@@ -616,7 +603,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	 * method to create filtermap
 	 *
 	 * @param capacityMaster
-	 *            capacityMaster
+	 *          capacityMaster
 	 * @return filterMap
 	 */
 	private Map<String, String> kanbanFilterMap(CapacityMaster capacityMaster) {
@@ -629,7 +616,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	 * Clears filter and jira related cache.
 	 *
 	 * @param cacheName
-	 *            cacheName
+	 *          cacheName
 	 */
 	private void clearCache(final String cacheName) {
 		cacheService.clearCache(cacheName);
@@ -637,11 +624,11 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 
 	/**
 	 * Clears kpi cache for given project and kpi.
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            project basic config id
+	 *          project basic config id
 	 * @param kpiId
-	 *            kpi id
+	 *          kpi id
 	 */
 	private void clearKpiCache(String basicProjectConfigId, String kpiId) {
 		kpiDataCacheService.clearCache(basicProjectConfigId, kpiId);
@@ -651,9 +638,9 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	 * delete capacity by basicProjectConfigId
 	 *
 	 * @param isKanban
-	 *            isKanban
+	 *          isKanban
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 */
 	public void deleteCapacityByProject(boolean isKanban, ObjectId basicProjectConfigId) {
 		if (isKanban) {
@@ -669,7 +656,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	 * each node capacity by 5.
 	 *
 	 * @param capacityMaster
-	 *            the CapacityMaster object containing additional filter capacities
+	 *          the CapacityMaster object containing additional filter capacities
 	 */
 	public void helper(CapacityMaster capacityMaster) {
 		// Retrieve the additional filter hierarchy levels and convert keys to uppercase
@@ -684,9 +671,9 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			for (AdditionalFilterCapacity category : capacityMaster.getAdditionalFilterCapacityList()) {
 				// Check if the filter ID is not empty, node capacity list is not empty, and the
 				// filter ID exists in additional filter categories
-				if (StringUtils.isNotEmpty(category.getFilterId())
-						&& CollectionUtils.isNotEmpty(category.getNodeCapacityList())
-						&& addFilterCategory.get(category.getFilterId().toUpperCase()) != null) {
+				if (StringUtils.isNotEmpty(category.getFilterId()) &&
+						CollectionUtils.isNotEmpty(category.getNodeCapacityList()) &&
+						addFilterCategory.get(category.getFilterId().toUpperCase()) != null) {
 
 					// For each node capacity, divide the additional filter capacity by 5 if it's
 					// not null
@@ -705,7 +692,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	 * Saves the additional filter capacities from the given capacity master.
 	 *
 	 * @param capacityMaster
-	 *            the capacity master containing additional filter capacities
+	 *          the capacity master containing additional filter capacities
 	 * @return a list of saved additional filter capacities
 	 */
 	public List<AdditionalFilterCapacity> saveAdditionalFilterCapacity(CapacityMaster capacityMaster) {
@@ -721,7 +708,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	 * Validates if the given additional filter capacity has a non-empty filter ID.
 	 *
 	 * @param additionalFilterCapacity
-	 *            the additional filter capacity to validate
+	 *          the additional filter capacity to validate
 	 * @return true if the filter ID is not empty, false otherwise
 	 */
 	private boolean isValidAdditionalFilterCapacity(AdditionalFilterCapacity additionalFilterCapacity) {
@@ -732,12 +719,11 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	 * Creates a database entity for the given additional filter capacity.
 	 *
 	 * @param additionalFilterCapacity
-	 *            the additional filter capacity to convert
+	 *          the additional filter capacity to convert
 	 * @return the corresponding database entity, or null if no valid node
 	 *         capacities exist
 	 */
-	private AdditionalFilterCapacity createDbAdditionalFilterCapacity(
-			AdditionalFilterCapacity additionalFilterCapacity) {
+	private AdditionalFilterCapacity createDbAdditionalFilterCapacity(AdditionalFilterCapacity additionalFilterCapacity) {
 		List<LeafNodeCapacity> dbNodeCapacityList = additionalFilterCapacity.getNodeCapacityList().stream()
 				.filter(this::isValidNodeCapacity).map(this::createDbLeafNodeCapacity).collect(Collectors.toList());
 
@@ -756,20 +742,20 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	 * a non-null additional filter capacity.
 	 *
 	 * @param nodeCapacity
-	 *            the node capacity to validate
+	 *          the node capacity to validate
 	 * @return true if the additional filter ID is not empty and the additional
 	 *         filter capacity is not null, false otherwise
 	 */
 	private boolean isValidNodeCapacity(LeafNodeCapacity nodeCapacity) {
-		return StringUtils.isNotEmpty(nodeCapacity.getAdditionalFilterId())
-				&& ObjectUtils.isNotEmpty(nodeCapacity.getAdditionalFilterCapacity());
+		return StringUtils.isNotEmpty(nodeCapacity.getAdditionalFilterId()) &&
+				ObjectUtils.isNotEmpty(nodeCapacity.getAdditionalFilterCapacity());
 	}
 
 	/**
 	 * Creates a database entity for the given node capacity.
 	 *
 	 * @param nodeCapacity
-	 *            the node capacity to convert
+	 *          the node capacity to convert
 	 * @return the corresponding database entity
 	 */
 	private LeafNodeCapacity createDbLeafNodeCapacity(LeafNodeCapacity nodeCapacity) {

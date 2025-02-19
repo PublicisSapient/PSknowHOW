@@ -48,7 +48,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -73,11 +72,8 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 
 /**
  * @author dilipKr
- * 
  * @author jagmongr
- *
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class ConnectionServiceImplTest {
 	Connection listDataConnection = new Connection();
@@ -116,9 +112,8 @@ public class ConnectionServiceImplTest {
 
 	@Mock
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
-	/**
-	 * method includes preprocesses for test cases
-	 */
+
+	/** method includes preprocesses for test cases */
 	@Before
 	public void setUp() {
 		MockitoAnnotations.openMocks(this);
@@ -165,12 +160,9 @@ public class ConnectionServiceImplTest {
 		projectBasicConfigList.add(projectBasicConfig);
 		testConnectionOpt = Optional.of(testConnection);
 		testConnectionOpt.get().setCreatedBy("superadmin");
-
 	}
 
-	/**
-	 * method includes post processes for test cases
-	 */
+	/** method includes post processes for test cases */
 	@After
 	public void cleanUp() {
 		testConnection = new Connection();
@@ -180,14 +172,9 @@ public class ConnectionServiceImplTest {
 		testConnection.setType("jira");
 		testConnectiondto.setId(new ObjectId("5f993135485b2c5028a5d33b"));
 		testConnectiondto.setConnectionName("UnitTest");
-
 	}
 
-	/**
-	 * 1. database call has records and returns them as an array
-	 *
-	 */
-
+	/** 1. database call has records and returns them as an array */
 	@Test
 	public void testgetAllConnection() {
 		List<Connection> connections = connectionsDataFactory.getConnections();
@@ -204,10 +191,7 @@ public class ConnectionServiceImplTest {
 		Assertions.assertTrue(((List<Connection>) response.getData()).size() > 0);
 	}
 
-	/**
-	 * 2. database call has an error and returns null
-	 *
-	 */
+	/** 2. database call has an error and returns null */
 	@Test
 	public void testgetAllConnectionNoData() {
 
@@ -217,10 +201,7 @@ public class ConnectionServiceImplTest {
 		assertThat("Data should not exist:  ", response.getData(), equalTo(null));
 	}
 
-	/**
-	 * 3. database call has an error and returns null
-	 *
-	 */
+	/** 3. database call has an error and returns null */
 	@Test
 	public void testgetConnectionByTypeNoData() {
 		String type = "jira";
@@ -230,10 +211,7 @@ public class ConnectionServiceImplTest {
 		assertThat("Data should exist but empty:  ", response.getData(), equalTo(null));
 	}
 
-	/**
-	 * 4. database call has records return true
-	 *
-	 */
+	/** 4. database call has records return true */
 	@Test
 	public void testgetConnectionByType() {
 		List<Connection> dataConnection1 = new ArrayList<>();
@@ -244,26 +222,19 @@ public class ConnectionServiceImplTest {
 		when(connectionRepository.findAllWithoutSecret()).thenReturn(dataConnection1);
 		ServiceResponse response = connectionServiceImpl.getConnectionByType(type);
 		assertThat("status", response.getSuccess(), equalTo(true));
-
 	}
 
-	/**
-	 * 1. Creating a connection
-	 *
-	 */
+	/** 1. Creating a connection */
 	@Test
 	public void testSaveConnectionDetails1() {
 		when(authenticationService.getLoggedInUser()).thenReturn("superadmin");
-		ServiceResponse response = connectionServiceImpl
-				.saveConnectionDetails(connectionsDataFactory.findConnectionsByType("Sonar").get(0));
+		ServiceResponse response =
+				connectionServiceImpl.saveConnectionDetails(
+						connectionsDataFactory.findConnectionsByType("Sonar").get(0));
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-
 	}
 
-	/**
-	 * 2. Input connection has no name.
-	 *
-	 */
+	/** 2. Input connection has no name. */
 	@Test
 	public void testSaveConnectionDetails2() {
 		testConnection.setConnectionName(null);
@@ -304,10 +275,9 @@ public class ConnectionServiceImplTest {
 		connection.setPassword("Password");
 		connection.setPat("Pat Key");
 		connection.setPrivateKey("Private Key");
-		when(connectionRepository.findById(new ObjectId("5fdc809fb55d53cc1692543c")))
-				.thenReturn(Optional.of(connection));
+		when(connectionRepository.findById(new ObjectId("5fdc809fb55d53cc1692543c"))).thenReturn(Optional.of(connection));
 		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
-		RepoToolsProvider provider= new RepoToolsProvider();
+		RepoToolsProvider provider = new RepoToolsProvider();
 		provider.setTestApiUrl("https://www.test.com");
 		ServiceResponse response = connectionServiceImpl.updateConnection("5fdc809fb55d53cc1692543c", connection);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
@@ -451,10 +421,7 @@ public class ConnectionServiceImplTest {
 		assertFalse(serviceResponse.getSuccess());
 	}
 
-	/**
-	 * 3. Input String id is null
-	 *
-	 */
+	/** 3. Input String id is null */
 	@Test
 	public void testmodifyConnectionById1() {
 		testId = null;
@@ -465,10 +432,7 @@ public class ConnectionServiceImplTest {
 		assertEquals(null, response.getData());
 	}
 
-	/**
-	 * 4. Input String id creates invalid ObjectId
-	 *
-	 */
+	/** 4. Input String id creates invalid ObjectId */
 	@Test
 	public void testmodifyConnectionById2() {
 		testId = "5f993135485b2c5028a5d";
@@ -479,10 +443,7 @@ public class ConnectionServiceImplTest {
 		assertEquals(null, response.getData());
 	}
 
-	/**
-	 * 5. Input String id is valid but input Connection has no name.
-	 *
-	 */
+	/** 5. Input String id is valid but input Connection has no name. */
 	@Test
 	public void testModifyConnectionById3() {
 		testId = "5f993135485b2c5028a5d33b";
@@ -582,7 +543,7 @@ public class ConnectionServiceImplTest {
 		dataConnection.add(listDataConnection);
 		when(connectionRepository.findAllWithoutSecret()).thenReturn(dataConnection);
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(false);
-//		when(authenticationService.getLoggedInUser()).thenReturn("user91");
+		// when(authenticationService.getLoggedInUser()).thenReturn("user91");
 		ServiceResponse response = connectionServiceImpl.getAllConnection();
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		dataConnection.get(0).getConnectionUsers().get(0).equals("user91");
@@ -667,7 +628,6 @@ public class ConnectionServiceImplTest {
 		when(connectionRepository.findByTypeAndSharedConnection("GitHub", true)).thenReturn(connList);
 		ServiceResponse serviceResponse = connectionServiceImpl.saveConnectionDetails(connectionInput);
 		assertTrue(serviceResponse.getSuccess());
-
 	}
 
 	@Test
@@ -680,7 +640,6 @@ public class ConnectionServiceImplTest {
 		ServiceResponse serviceResponse = connectionServiceImpl.updateConnection(connectionInput.getId().toHexString(),
 				connectionInput);
 		assertFalse(serviceResponse.getSuccess());
-
 	}
 
 	@Test
@@ -697,7 +656,6 @@ public class ConnectionServiceImplTest {
 		ServiceResponse serviceResponse = connectionServiceImpl.updateConnection(connectionInput.getId().toHexString(),
 				connectionInput);
 		assertFalse(serviceResponse.getSuccess());
-
 	}
 
 	@Test
@@ -714,7 +672,6 @@ public class ConnectionServiceImplTest {
 		ServiceResponse serviceResponse = connectionServiceImpl.updateConnection(connectionInput.getId().toHexString(),
 				connectionInput);
 		assertFalse(serviceResponse.getSuccess());
-
 	}
 
 	@Test
@@ -756,7 +713,6 @@ public class ConnectionServiceImplTest {
 		when(connectionRepository.findByTypeAndSharedConnection(anyString(), anyBoolean())).thenReturn(connList);
 		ServiceResponse serviceResponse = connectionServiceImpl.saveConnectionDetails(connList.get(1));
 		assertFalse(serviceResponse.getSuccess());
-
 	}
 
 	@Test
@@ -784,10 +740,9 @@ public class ConnectionServiceImplTest {
 		when(authenticationService.getLoggedInUser()).thenReturn("test");
 		when(connectionRepository.save(any(Connection.class))).thenReturn(connList.get(1));
 		when(connectionRepository.findByTypeAndSharedConnection(anyString(), anyBoolean())).thenReturn(connList);
-		when(aesEncryptionService.decrypt(anyString(),anyString())).thenReturn("pat");
+		when(aesEncryptionService.decrypt(anyString(), anyString())).thenReturn("pat");
 		ServiceResponse serviceResponse = connectionServiceImpl.saveConnectionDetails(connList.get(1));
 		assertTrue(serviceResponse.getSuccess());
-
 	}
 
 	@Test
@@ -842,7 +797,7 @@ public class ConnectionServiceImplTest {
 		connList.add(c1);
 		connList.add(c2);
 		when(authenticationService.getLoggedInUser()).thenReturn("test");
-//		when(connectionRepository.save(any(Connection.class))).thenReturn(connList.get(1));
+		// when(connectionRepository.save(any(Connection.class))).thenReturn(connList.get(1));
 		when(connectionRepository.findByTypeAndSharedConnection(anyString(), anyBoolean())).thenReturn(connList);
 		ServiceResponse serviceResponse = connectionServiceImpl.saveConnectionDetails(connList.get(1));
 		assertFalse(serviceResponse.getSuccess());
@@ -871,7 +826,7 @@ public class ConnectionServiceImplTest {
 		connList.add(c1);
 		connList.add(c2);
 		when(authenticationService.getLoggedInUser()).thenReturn("test");
-//		when(connectionRepository.save(any(Connection.class))).thenReturn(connList.get(1));
+		// when(connectionRepository.save(any(Connection.class))).thenReturn(connList.get(1));
 		when(connectionRepository.findByTypeAndSharedConnection(anyString(), anyBoolean())).thenReturn(connList);
 		ServiceResponse serviceResponse = connectionServiceImpl.saveConnectionDetails(connList.get(1));
 		assertFalse(serviceResponse.getSuccess());
@@ -892,7 +847,7 @@ public class ConnectionServiceImplTest {
 		c2.setConnectionUsers(connUsers);
 		connList.add(c2);
 		when(authenticationService.getLoggedInUser()).thenReturn("test");
-//		when(connectionRepository.save(any(Connection.class))).thenReturn(connList.get(0));
+		// when(connectionRepository.save(any(Connection.class))).thenReturn(connList.get(0));
 		when(connectionRepository.findByTypeAndSharedConnection(anyString(), anyBoolean())).thenReturn(connList);
 		ServiceResponse serviceResponse = connectionServiceImpl.saveConnectionDetails(connList.get(0));
 		assertFalse(serviceResponse.getSuccess());
@@ -911,5 +866,4 @@ public class ConnectionServiceImplTest {
 		List<Connection> connectionsByType = connectionsDataFactory.findConnectionsByType(ProcessorConstants.GITHUB);
 		return connectionsByType.get(0);
 	}
-
 }

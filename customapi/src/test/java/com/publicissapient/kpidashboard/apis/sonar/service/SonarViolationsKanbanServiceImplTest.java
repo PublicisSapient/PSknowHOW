@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -44,7 +42,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -57,7 +54,6 @@ import com.publicissapient.kpidashboard.apis.data.KanbanIssueCustomHistoryDataFa
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SonarHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -77,7 +73,6 @@ import com.publicissapient.kpidashboard.common.repository.sonar.SonarHistoryRepo
 
 /**
  * @author shichan0
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SonarViolationsKanbanServiceImplTest {
@@ -247,7 +242,6 @@ public class SonarViolationsKanbanServiceImplTest {
 
 	@After
 	public void cleanup() {
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -266,20 +260,18 @@ public class SonarViolationsKanbanServiceImplTest {
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(data -> {
 				String projectName = data.getFilter();
 				switch (projectName) {
-				case "Overall":
-					assertThat("Sonar Tech Debt:", data.getValue().size(), equalTo(1));
-					break;
+					case "Overall" :
+						assertThat("Sonar Tech Debt:", data.getValue().size(), equalTo(1));
+						break;
 
-				case "ENGINEERING.KPIDASHBOARD.PROCESSORS->origin/develop->DA_10304":
-					assertThat("Sonar Tech Debt:", data.getValue().size(), equalTo(1));
-					break;
-
+					case "ENGINEERING.KPIDASHBOARD.PROCESSORS->origin/develop->DA_10304" :
+						assertThat("Sonar Tech Debt:", data.getValue().size(), equalTo(1));
+						break;
 				}
 			});
 		} catch (Exception enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -305,5 +297,4 @@ public class SonarViolationsKanbanServiceImplTest {
 	public void testCalculateAggregatedValue() {
 		assertNotNull(svServiceImpl.calculateAggregatedValue(null, new HashMap<>(), KPICode.CODE_VIOLATIONS_KANBAN));
 	}
-
 }

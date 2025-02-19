@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.common.model.application;
 
+import java.time.LocalDateTime;
+
 import org.joda.time.DateTime;
 
 import lombok.AllArgsConstructor;
@@ -25,14 +27,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 /**
  * Model class to hold different params to define cycle time on scrum and kanban
  * board
- *
  */
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -51,5 +49,4 @@ public class CycleTime {
 	private Long dodLive;
 	private Long inProductiveState;
 	private Long inWasteState;
-
 }

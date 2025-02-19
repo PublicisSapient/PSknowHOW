@@ -34,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author sansharm13
- *
  */
 @Slf4j
 public class KanbanIssueCustomHistoryDataFactory {
@@ -90,5 +89,4 @@ public class KanbanIssueCustomHistoryDataFactory {
 		return KanbanIssueCustomHistoryDataFactory.stream().filter(f -> typeName.contains(f.getStoryType()))
 				.collect(Collectors.toList());
 	}
-
 }

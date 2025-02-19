@@ -57,11 +57,10 @@ public class PushDataTraceLogServiceImpl implements PushDataTraceLogService {
 		List<PushDataTraceLogDTO> pushDataTraceLogDTO = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(byBasicProjectConfigId)) {
 			byBasicProjectConfigId = byBasicProjectConfigId.stream()
-					.sorted(Comparator.comparing(PushDataTraceLog::getRequestTime).reversed())
-					.collect(Collectors.toList());
+					.sorted(Comparator.comparing(PushDataTraceLog::getRequestTime).reversed()).collect(Collectors.toList());
 			ModelMapper modelMapper = new ModelMapper();
-			byBasicProjectConfigId.stream().forEach(pushDataTraceLog -> pushDataTraceLogDTO
-					.add(modelMapper.map(pushDataTraceLog, PushDataTraceLogDTO.class)));
+			byBasicProjectConfigId.stream().forEach(
+					pushDataTraceLog -> pushDataTraceLogDTO.add(modelMapper.map(pushDataTraceLog, PushDataTraceLogDTO.class)));
 			return pushDataTraceLogDTO;
 		}
 		return Collections.emptyList();
@@ -83,7 +82,5 @@ public class PushDataTraceLogServiceImpl implements PushDataTraceLogService {
 			save(instance);
 			throw new PushDataException(unauthorizedAccessException, (PushDataResponse) object);
 		}
-
 	}
-
 }

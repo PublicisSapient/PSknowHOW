@@ -27,7 +27,7 @@ public class FetchingCommitException extends Exception {
 
 	/**
 	 * @param message
-	 *            message
+	 *          message
 	 */
 	public FetchingCommitException(String message) {
 		super(message);
@@ -35,9 +35,9 @@ public class FetchingCommitException extends Exception {
 
 	/**
 	 * @param message
-	 *            message
+	 *          message
 	 * @param cause
-	 *            cause
+	 *          cause
 	 */
 	public FetchingCommitException(String message, Throwable cause) {
 		super(message, cause);

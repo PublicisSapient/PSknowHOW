@@ -160,10 +160,8 @@ public class KPIExcelUtilityTest {
 					excelData.setPickupTime(m.getValue().toString());
 					kpiExcelData.add(excelData);
 				}
-
 			}
 		}
-
 	}
 
 	@Test
@@ -317,7 +315,6 @@ public class KPIExcelUtilityTest {
 		assertEquals(1, defectIdDetails.size());
 		// Depending on your kpiId logic, assert the corresponding fields
 		assertEquals(Constant.EXCEL_YES, excelData.getRemovedDefect());
-
 	}
 
 	@Test
@@ -500,8 +497,7 @@ public class KPIExcelUtilityTest {
 		Set<String> fieldValues = new HashSet<>(Arrays.asList("FieldA"));
 		Set<KanbanIssueCustomHistory> kanbanJiraIssues = new HashSet<>(
 				Arrays.asList(createKanbanIssue("Issue1", "FieldA", "2022-01-01"),
-						createKanbanIssue("Issue2", "FieldB", "2022-01-01"),
-						createKanbanIssue("Issue3", "FieldA", "2022-01-02")));
+						createKanbanIssue("Issue2", "FieldB", "2022-01-01"), createKanbanIssue("Issue3", "FieldA", "2022-01-02")));
 		List<KPIExcelData> excelDataList = new ArrayList<>();
 
 		// Create a mock of YourClass and use it to call the method
@@ -788,7 +784,6 @@ public class KPIExcelUtilityTest {
 		assertEquals(4, kpiExcelData.size());
 		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(0).getSprintName());
 		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(1).getSprintName());
-
 	}
 
 	@Test
@@ -909,8 +904,8 @@ public class KPIExcelUtilityTest {
 		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.ACTUAL_ESTIMATION);
 
 		// Act
-		KPIExcelUtility.populateDefectRCAandStatusRelatedExcelData(sprint, jiraIssue, createDuringIteration,
-				kpiExcelData, fieldMapping);
+		KPIExcelUtility.populateDefectRCAandStatusRelatedExcelData(sprint, jiraIssue, createDuringIteration, kpiExcelData,
+				fieldMapping);
 
 		// Assert
 		assertEquals(1, kpiExcelData.size());
@@ -939,8 +934,8 @@ public class KPIExcelUtilityTest {
 		List<KPIExcelData> kpiExcelData = new ArrayList<>();
 		Map<String, JiraIssue> issueData = jiraIssue.stream().collect(Collectors.toMap(JiraIssue::getNumber, x -> x));
 		// Act
-		KPIExcelUtility.populateCreatedVsResolvedExcelData(sprint, issueData, createdConditionStories, map,
-				kpiExcelData, customApiConfig, storyList);
+		KPIExcelUtility.populateCreatedVsResolvedExcelData(sprint, issueData, createdConditionStories, map, kpiExcelData,
+				customApiConfig, storyList);
 		// Assert
 		assertEquals(1, kpiExcelData.size());
 		assertEquals("Sprint1", kpiExcelData.get(0).getSprintName());
@@ -1020,7 +1015,6 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(48, kpiExcelData.size());
-
 	}
 
 	@Test
@@ -1037,7 +1031,6 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(48, kpiExcelData.size());
-
 	}
 
 	@Test
@@ -1052,7 +1045,6 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(48, kpiExcelData.size());
-
 	}
 
 	@Test
@@ -1069,7 +1061,6 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(48, kpiExcelData.size());
-
 	}
 
 	@Test
@@ -1081,7 +1072,6 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(48, kpiExcelData.size());
-
 	}
 
 	@Test

@@ -60,5 +60,4 @@ public class AuthenticationResultHandler implements AuthenticationSuccessHandler
 		// sgu106: Google Analytics data population ends
 
 	}
-
 }

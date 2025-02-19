@@ -47,7 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Implementation of {@link KpiDataCacheService}.
- * 
+ *
  * @author prijain3
  */
 @Service
@@ -111,7 +111,7 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 						KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId(), KPICode.SCOPE_CHURN.getKpiId(),
 						KPICode.COST_OF_DELAY.getKpiId(), KPICode.SPRINT_PREDICTABILITY.getKpiId(),
 						KPICode.SPRINT_VELOCITY.getKpiId(), KPICode.PROJECT_RELEASES.getKpiId(),
-						KPICode.PI_PREDICTABILITY.getKpiId()));
+						KPICode.PI_PREDICTABILITY.getKpiId(), KPICode.CREATED_VS_RESOLVED_DEFECTS.getKpiId()));
 		kpiMap.put(KPISource.JIRAKANBAN.name(), new ArrayList<>());
 		kpiMap.put(KPISource.SONAR.name(), new ArrayList<>());
 		kpiMap.put(KPISource.SONARKANBAN.name(), new ArrayList<>());
@@ -162,8 +162,8 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	@Override
 	public Map<String, Object> fetchSprintCapacityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList, String kpiId) {
-		log.info("Fetching Sprint Capacity Utilization KPI Data for Project {} and KPI {}",
-				basicProjectConfigId.toString(), kpiId);
+		log.info("Fetching Sprint Capacity Utilization KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(),
+				kpiId);
 		return kpiDataProvider.fetchSprintCapacityDataFromDb(kpiRequest, basicProjectConfigId, sprintList);
 	}
 
@@ -194,17 +194,22 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
 	@Override
 	public List<ProjectRelease> fetchProjectReleaseData(ObjectId basicProjectConfigId, String kpiId) {
-		log.info("Fetching Release Frequency KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(),
-				kpiId);
+		log.info("Fetching Release Frequency KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
 		return kpiDataProvider.fetchProjectReleaseData(basicProjectConfigId);
 	}
 
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
 	@Override
 	public List<JiraIssue> fetchPiPredictabilityData(ObjectId basicProjectConfigId, String kpiId) {
-		log.info("Fetching PI Predictability KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(),
-				kpiId);
+		log.info("Fetching PI Predictability KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
 		return kpiDataProvider.fetchPiPredictabilityData(basicProjectConfigId);
 	}
 
+	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
+	@Override
+	public Map<String, Object> fetchCreatedVsResolvedData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+			List<String> sprintList, String kpiId) {
+		log.info("Fetching Created vs Resolved KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
+		return kpiDataProvider.fetchCreatedVsResolvedData(kpiRequest, basicProjectConfigId, sprintList);
+	}
 }

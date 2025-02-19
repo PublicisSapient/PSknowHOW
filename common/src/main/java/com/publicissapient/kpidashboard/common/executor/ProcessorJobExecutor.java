@@ -20,9 +20,9 @@ package com.publicissapient.kpidashboard.common.executor;
 
 import java.util.List;
 import java.util.Objects;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -69,7 +69,6 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 	public void destroyLogContext() {
 		this.executionLogContext.destroy();
 		this.executionLogContext = null;
-
 	}
 
 	public List<String> getProjectsBasicConfigIds() {
@@ -105,8 +104,7 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 		if (processor.isActive()) {
 			// Do collection run
 			processor.setLastSuccess(execute(processor));
-			log.debug("Saving the last executed status as: {} for {} processor!", processor.isLastSuccess(),
-					processorName);
+			log.debug("Saving the last executed status as: {} for {} processor!", processor.isLastSuccess(), processorName);
 			// Update lastUpdate timestamp in Processor
 			processor.setUpdatedTime(System.currentTimeMillis());
 			getProcessorRepository().save(processor);
@@ -137,6 +135,7 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 	public abstract String getCron();
 
 	public abstract boolean execute(T processor);
+
 	public abstract boolean executeSprint(String sprintId);
 
 	private void setOnline(boolean online) {
@@ -149,10 +148,9 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 
 	/**
 	 * clean tool item map
-	 * 
+	 *
 	 * @param url
-	 *            url
-	 * 
+	 *          url
 	 */
 	public void clearToolItemCache(String url) {
 		HttpHeaders headers = new HttpHeaders();

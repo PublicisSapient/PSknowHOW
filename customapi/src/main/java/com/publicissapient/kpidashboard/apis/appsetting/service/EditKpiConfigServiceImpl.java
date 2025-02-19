@@ -58,11 +58,10 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 	DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
 
 	/**
-	 *
 	 * @param configHelperService
-	 *            for board meta data
+	 *          for board meta data
 	 * @param accountHierarchyRepository
-	 *            account hierarchy
+	 *          account hierarchy
 	 */
 	@Autowired
 	public EditKpiConfigServiceImpl(ConfigHelperService configHelperService,
@@ -75,20 +74,19 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 	 * Gets data by type for the environment.
 	 *
 	 * @param projectBasicConfigid
-	 *            - used for project config id
+	 *          - used for project config id
 	 * @param kpiCode
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
-
 	@Override
 	public Map<String, List<MetadataValue>> getDataForType(String projectBasicConfigid, String kpiCode) {
 
 		Map<String, List<MetadataValue>> data = new HashMap<>();
 		BoardMetadata boardmetadata = configHelperService.getBoardMetaData(new ObjectId(projectBasicConfigid));
 		if (boardmetadata != null && CollectionUtils.isNotEmpty(boardmetadata.getMetadata())) {
-			data = boardmetadata.getMetadata().stream().collect(Collectors.toMap(Metadata::getType,
-					metadata -> new ArrayList<>(new HashSet<>(metadata.getValue()))));
+			data = boardmetadata.getMetadata().stream().collect(
+					Collectors.toMap(Metadata::getType, metadata -> new ArrayList<>(new HashSet<>(metadata.getValue()))));
 		}
 
 		getClosedReleaseName(projectBasicConfigid, kpiCode, data);
@@ -98,13 +96,13 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 
 	/**
 	 * get list of closed releases
-	 * 
+	 *
 	 * @param projectBasicConfigid
-	 *            projectBasicConfigid
+	 *          projectBasicConfigid
 	 * @param kpiCode
-	 *            kpiCode
+	 *          kpiCode
 	 * @param data
-	 *            data
+	 *          data
 	 */
 	private void getClosedReleaseName(String projectBasicConfigid, String kpiCode,
 			Map<String, List<MetadataValue>> data) {
@@ -113,7 +111,6 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 					.findByLabelNameAndBasicProjectConfigIdAndReleaseStateOrderByEndDateDesc(LABEL_NAME,
 							new ObjectId(projectBasicConfigid), STATE)
 					.stream().map(accountHierarchy -> {
-
 						String releaseName;
 						double duration = 0;
 						duration = getDurationInDays(accountHierarchy, duration);
@@ -123,7 +120,6 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 						metadataValue.setKey(releaseName);
 						metadataValue.setData(releaseName);
 						return metadataValue;
-
 					}).collect(Collectors.toList());
 
 			data.put(RELEASE_KEY, metadataValueList);
@@ -131,11 +127,10 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 	}
 
 	/**
-	 * 
 	 * @param accountHierarchy
-	 *            accountHierarchy
+	 *          accountHierarchy
 	 * @param duration
-	 *            duration
+	 *          duration
 	 * @return return closed release name
 	 */
 	private static String getReleaseName(AccountHierarchy accountHierarchy, double duration) {
@@ -149,9 +144,8 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 	}
 
 	/**
-	 * 
 	 * @param releaseName
-	 *            releaseName
+	 *          releaseName
 	 * @return releaseName
 	 */
 	private static String splitNodeName(String releaseName) {
@@ -166,16 +160,16 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 	/**
 	 * This method calculate no. of working days between start and end date by
 	 * excluding saturday and sunday
-	 * 
+	 *
 	 * @param accountHierarchy
-	 *            accountHierarchy
+	 *          accountHierarchy
 	 * @param duration
-	 *            duration
+	 *          duration
 	 * @return duration between start and end date in days
 	 */
 	private static double getDurationInDays(AccountHierarchy accountHierarchy, double duration) {
-		if (StringUtils.isNotEmpty(accountHierarchy.getBeginDate())
-				&& StringUtils.isNotEmpty(accountHierarchy.getEndDate())) {
+		if (StringUtils.isNotEmpty(accountHierarchy.getBeginDate()) &&
+				StringUtils.isNotEmpty(accountHierarchy.getEndDate())) {
 			LocalDateTime startDate = DateUtil.convertingStringToLocalDateTime(accountHierarchy.getBeginDate(),
 					DateUtil.TIME_FORMAT);
 			LocalDateTime releaseDate = DateUtil.convertingStringToLocalDateTime(accountHierarchy.getEndDate(),
@@ -184,5 +178,4 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 		}
 		return duration;
 	}
-
 }

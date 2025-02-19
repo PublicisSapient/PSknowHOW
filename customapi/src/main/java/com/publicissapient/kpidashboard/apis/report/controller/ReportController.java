@@ -17,22 +17,22 @@
 
 package com.publicissapient.kpidashboard.apis.report.controller;
 
-import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.report.dto.ReportRequest;
-import com.publicissapient.kpidashboard.apis.report.service.ReportService;
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
-import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * Controller class for managing reports.
- */
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.report.dto.ReportRequest;
+import com.publicissapient.kpidashboard.apis.report.service.ReportService;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+
+/** Controller class for managing reports. */
 @RestController
 @RequestMapping("/reports")
 @Slf4j
@@ -49,7 +49,8 @@ public class ReportController {
 	/**
 	 * Creates a new report.
 	 *
-	 * @param report the report data transfer object
+	 * @param report
+	 *          the report data transfer object
 	 * @return the service response containing the created report
 	 */
 	@PostMapping
@@ -58,14 +59,16 @@ public class ReportController {
 		return reportService.create(report);
 	}
 
-
 	/**
 	 * Updates an existing report.
 	 *
-	 * @param id the report ID
-	 * @param report the report data transfer object
+	 * @param id
+	 *          the report ID
+	 * @param report
+	 *          the report data transfer object
 	 * @return the service response containing the updated report
-	 * @throws EntityNotFoundException if the report is not found
+	 * @throws EntityNotFoundException
+	 *           if the report is not found
 	 */
 	@PutMapping("/{id}")
 	public ServiceResponse update(@PathVariable String id, @Valid @RequestBody ReportRequest report)
@@ -77,7 +80,8 @@ public class ReportController {
 	/**
 	 * Deletes a report by ID.
 	 *
-	 * @param id the report ID
+	 * @param id
+	 *          the report ID
 	 * @return a response entity with no content
 	 */
 	@DeleteMapping("/{id}")
@@ -91,7 +95,8 @@ public class ReportController {
 	/**
 	 * Fetches a report by ID.
 	 *
-	 * @param id the report ID
+	 * @param id
+	 *          the report ID
 	 * @return the service response containing the report
 	 */
 	@GetMapping("/{id}")
@@ -104,17 +109,20 @@ public class ReportController {
 	/**
 	 * Fetches reports by createdBy with pagination.
 	 *
-	 * @param createdBy the report createdBy
-	 * @param page the page number
-	 * @param limit the page size
+	 * @param createdBy
+	 *          the report createdBy
+	 * @param page
+	 *          the page number
+	 * @param limit
+	 *          the page size
 	 * @return the service response containing a page of reports
 	 */
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
-	public ServiceResponse getReportsByCreatedBy(@RequestParam String createdBy, @RequestParam(defaultValue = "0") int page,
-												 @RequestParam(defaultValue = "10") int limit) {
-		log.info("Received request to fetch reports by createdBy: {}, page: {}, size: {}", CommonUtils.sanitize(createdBy), page,
-				limit);
+	public ServiceResponse getReportsByCreatedBy(@RequestParam String createdBy,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit) {
+		log.info("Received request to fetch reports by createdBy: {}, page: {}, size: {}", CommonUtils.sanitize(createdBy),
+				page, limit);
 		return reportService.getReportsByCreatedBy(createdBy, page, limit);
 	}
 }

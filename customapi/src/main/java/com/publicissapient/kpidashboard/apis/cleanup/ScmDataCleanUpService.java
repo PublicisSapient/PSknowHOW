@@ -95,16 +95,15 @@ public class ScmDataCleanUpService implements ToolDataCleanUpService {
 					tool.getBasicProjectConfigId().toHexString(), tool.getToolName());
 
 			cleanCache(tool);
-
 		}
 	}
 
 	private void cleanCache(ProjectToolConfig tool) {
 		cacheService.clearCache(CACHE_TOOL_CONFIG_MAP);
-		if (tool.getToolName().equalsIgnoreCase(ProcessorConstants.BITBUCKET)
-				|| tool.getToolName().equalsIgnoreCase(ProcessorConstants.GITLAB)
-				|| tool.getToolName().equalsIgnoreCase(ProcessorConstants.GITHUB)
-				|| tool.getToolName().equalsIgnoreCase(ProcessorConstants.AZUREREPO)) {
+		if (tool.getToolName().equalsIgnoreCase(ProcessorConstants.BITBUCKET) ||
+				tool.getToolName().equalsIgnoreCase(ProcessorConstants.GITLAB) ||
+				tool.getToolName().equalsIgnoreCase(ProcessorConstants.GITHUB) ||
+				tool.getToolName().equalsIgnoreCase(ProcessorConstants.AZUREREPO)) {
 			cacheService.clearCache(CommonConstant.BITBUCKET_KPI_CACHE);
 		}
 		if (tool.getToolName().equalsIgnoreCase(ProcessorConstants.GITLAB)) {
@@ -113,6 +112,5 @@ public class ScmDataCleanUpService implements ToolDataCleanUpService {
 		if (tool.getToolName().equalsIgnoreCase(ProcessorConstants.AZUREREPO)) {
 			cacheService.clearCache(CommonConstant.AZURE_KPI_CACHE);
 		}
-
 	}
 }

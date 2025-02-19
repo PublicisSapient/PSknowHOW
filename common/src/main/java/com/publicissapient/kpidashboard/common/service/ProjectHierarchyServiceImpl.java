@@ -55,24 +55,20 @@ public class ProjectHierarchyServiceImpl implements ProjectHierarchyService {
 	public Map<String, ProjectHierarchy> getProjectHierarchyMapByConfigId(String projectConfigId) {
 		return getProjectRelatedHierachy(projectConfigId).stream().collect(
 				Collectors.toMap(OrganizationHierarchy::getNodeId, p -> p, (existingValue, newValue) -> existingValue));
-
 	}
 
 	@Override
 	public Map<String, List<ProjectHierarchy>> getProjectHierarchyMapByConfig(String projectConfigId) {
 		return getProjectRelatedHierachy(projectConfigId).stream()
 				.collect(Collectors.groupingBy(OrganizationHierarchy::getNodeId));
-
 	}
 
 	@Override
 	public Map<String, ProjectHierarchy> getProjectHierarchyMapByConfigIdAndHierarchyLevelId(String projectConfigId,
 			String hierarchyLevelId) {
 		return getProjectRelatedHierachy(projectConfigId).stream()
-				.filter(hierarchy -> hierarchy.getHierarchyLevelId().equalsIgnoreCase(hierarchyLevelId))
-				.collect(Collectors.toMap(OrganizationHierarchy::getNodeId, p -> p,
-						(existingValue, newValue) -> existingValue));
-
+				.filter(hierarchy -> hierarchy.getHierarchyLevelId().equalsIgnoreCase(hierarchyLevelId)).collect(
+						Collectors.toMap(OrganizationHierarchy::getNodeId, p -> p, (existingValue, newValue) -> existingValue));
 	}
 
 	@Override
@@ -111,9 +107,8 @@ public class ProjectHierarchyServiceImpl implements ProjectHierarchyService {
 				// Update the node name and display name
 				hierarchy.setNodeName(updateNodeName(hierarchy.getNodeName(), projectName));
 				// Update node display name
-				hierarchy.setNodeDisplayName(
-						updateNodeDisplayName(hierarchy.getNodeDisplayName(), projectName, projectDisplayName));
-
+				hierarchy
+						.setNodeDisplayName(updateNodeDisplayName(hierarchy.getNodeDisplayName(), projectName, projectDisplayName));
 			}
 		}
 	}
@@ -129,8 +124,7 @@ public class ProjectHierarchyServiceImpl implements ProjectHierarchyService {
 	private String updateNodeDisplayName(String currentName, String projectName, String projectDisplayName) {
 		String newName = CommonConstant.ADDITIONAL_FILTER_VALUE_ID_SEPARATOR + projectDisplayName;
 
-		int indexBeforeRename = currentName
-				.lastIndexOf(CommonConstant.ADDITIONAL_FILTER_VALUE_ID_SEPARATOR + projectName);
+		int indexBeforeRename = currentName.lastIndexOf(CommonConstant.ADDITIONAL_FILTER_VALUE_ID_SEPARATOR + projectName);
 		int indexAfterRename = currentName
 				.lastIndexOf(CommonConstant.ADDITIONAL_FILTER_VALUE_ID_SEPARATOR + projectDisplayName);
 
@@ -139,5 +133,4 @@ public class ProjectHierarchyServiceImpl implements ProjectHierarchyService {
 		}
 		return (indexAfterRename == -1) ? currentName + newName : currentName.substring(0, indexAfterRename) + newName;
 	}
-
 }

@@ -16,41 +16,39 @@
  *
  ******************************************************************************/
 
-/**
- *
- */
-
+/** */
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1210;
 
-import io.mongock.api.annotations.ChangeUnit;
-import io.mongock.api.annotations.Execution;
-import io.mongock.api.annotations.RollbackExecution;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
+
 @ChangeUnit(id = "update_code_violations_filter_type", order = "12105", author = "kunkambl", systemVersion = "12.1.0")
 public class CodeViolationsFilterTypeUpdate {
-    private final MongoTemplate mongoTemplate;
+	private final MongoTemplate mongoTemplate;
 
-    public CodeViolationsFilterTypeUpdate(MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
-    }
+	public CodeViolationsFilterTypeUpdate(MongoTemplate mongoTemplate) {
+		this.mongoTemplate = mongoTemplate;
+	}
 
-    @Execution
-    public void execution() {
-        Query query = new Query(Criteria.where("kpiId").in("kpi38", "kpi64"));
-        Update update = new Update();
-        update.set("kpiFilter", "multiTypeFilters");
-        mongoTemplate.updateMulti(query, update, "kpi_master");
-    }
+	@Execution
+	public void execution() {
+		Query query = new Query(Criteria.where("kpiId").in("kpi38", "kpi64"));
+		Update update = new Update();
+		update.set("kpiFilter", "multiTypeFilters");
+		mongoTemplate.updateMulti(query, update, "kpi_master");
+	}
 
-    @RollbackExecution
-    public void rollback() {
-        Query query = new Query(Criteria.where("kpiId").in("kpi38", "kpi64"));
-        Update update = new Update();
-        update.set("kpiFilter", "multiSelectDropDown");
-        mongoTemplate.updateMulti(query, update, "kpi_master");
-    }
+	@RollbackExecution
+	public void rollback() {
+		Query query = new Query(Criteria.where("kpiId").in("kpi38", "kpi64"));
+		Update update = new Update();
+		update.set("kpiFilter", "multiSelectDropDown");
+		mongoTemplate.updateMulti(query, update, "kpi_master");
+	}
 }

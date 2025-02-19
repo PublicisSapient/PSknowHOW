@@ -17,34 +17,36 @@
 
 package com.publicissapient.kpidashboard.apis.config;
 
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 
-import java.util.Optional;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 
 @Configuration
 @EnableMongoAuditing
 public class AuditConfiguration {
 
-    private AuthenticationService authenticationService;
+	private AuthenticationService authenticationService;
 
-    @Autowired
-    public AuditConfiguration(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
+	@Autowired
+	public AuditConfiguration(AuthenticationService authenticationService) {
+		this.authenticationService = authenticationService;
+	}
 
-    @Bean
-    public AuditorAware<String> auditorProvider() {
-        return new AuditorAwareImpl();
-    }
-    class AuditorAwareImpl implements AuditorAware<String> {
-        @Override
-        public Optional<String> getCurrentAuditor() {
-            return Optional.ofNullable(authenticationService.getLoggedInUser());
-        }
-    }
+	@Bean
+	public AuditorAware<String> auditorProvider() {
+		return new AuditorAwareImpl();
+	}
+
+	class AuditorAwareImpl implements AuditorAware<String> {
+		@Override
+		public Optional<String> getCurrentAuditor() {
+			return Optional.ofNullable(authenticationService.getLoggedInUser());
+		}
+	}
 }

@@ -69,11 +69,11 @@ public class Teamcity2Client implements TeamcityClient {
 
 	/**
 	 * Instantiate Teamcity2Client.
-	 * 
+	 *
 	 * @param restOperationsFactory
-	 *            the object supplier for RestOperations
+	 *          the object supplier for RestOperations
 	 * @param teamcityConfig
-	 *            the Teamcity configuration details
+	 *          the Teamcity configuration details
 	 */
 	@Autowired
 	public Teamcity2Client(RestOperationsFactory<RestOperations> restOperationsFactory, TeamcityConfig teamcityConfig) {
@@ -85,16 +85,16 @@ public class Teamcity2Client implements TeamcityClient {
 	 * Rebuilds the API endpoint because the buildUrl obtained via Teamcity API.
 	 *
 	 * @param build
-	 *            the build
+	 *          the build
 	 * @param server
-	 *            the server
+	 *          the server
 	 * @return the build job URL
 	 * @throws URISyntaxException
-	 *             if there is any illegal character in URI
+	 *           if there is any illegal character in URI
 	 * @throws MalformedURLException
-	 *             if there is an invalid URL
+	 *           if there is an invalid URL
 	 * @throws UnsupportedEncodingException
-	 *             if there is wrong encoding specified
+	 *           if there is wrong encoding specified
 	 */
 	public static String rebuildJobUrl(String build, String server)
 			throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
@@ -119,7 +119,7 @@ public class Teamcity2Client implements TeamcityClient {
 	 * Provides Instance Jobs.
 	 *
 	 * @param toolConfig
-	 *            the tool configuration details
+	 *          the tool configuration details
 	 * @return the map of teamcity jobs and build
 	 */
 	public Map<ObjectId, Set<Build>> getInstanceJobs(ProcessorToolConnection toolConfig) {
@@ -139,8 +139,8 @@ public class Teamcity2Client implements TeamcityClient {
 				String url = ProcessorUtils.joinURL(toolConfig.getUrl(), Constants.JOBS_URL_SUFFIX, Constants.JOB_ID,
 						getProjectId(jobs, index));
 				ResponseEntity<String> responseEntity = doRestCall(url, toolConfig);
-				if (responseEntity == null || StringUtils.isEmpty(responseEntity.getBody())
-						|| processResponse(toolConfig, result, responseEntity.getBody())) {
+				if (responseEntity == null || StringUtils.isEmpty(responseEntity.getBody()) ||
+						processResponse(toolConfig, result, responseEntity.getBody())) {
 					break;
 				}
 
@@ -174,7 +174,6 @@ public class Teamcity2Client implements TeamcityClient {
 			log.error(String.format("Parsing jobs on instance: %s", url), e);
 		}
 		return object;
-
 	}
 
 	private String getProjectId(JSONObject jobs, int counter) {
@@ -226,16 +225,15 @@ public class Teamcity2Client implements TeamcityClient {
 	 * Provides Job Details recursively.
 	 *
 	 * @param jsonJob
-	 *            the job detail in json
+	 *          the job detail in json
 	 * @param jobName
-	 *            the job name
+	 *          the job name
 	 * @param jobURL
-	 *            the job URL
+	 *          the job URL
 	 * @param instanceUrl
-	 *            the teamcity instance URL
-	 *
+	 *          the teamcity instance URL
 	 * @param result
-	 *            the list of build
+	 *          the list of build
 	 */
 	private void recursiveGetJobDetails(JSONObject jsonJob, String jobName, String jobURL, String instanceUrl,
 			Map<ObjectId, Set<Build>> result, ProcessorToolConnection toolConfig) {
@@ -282,15 +280,13 @@ public class Teamcity2Client implements TeamcityClient {
 		JSONArray buildProperties = ProcessorUtils.getJsonArray(buildSettings, "property");
 		for (Object buildProperty : buildProperties) {
 			JSONObject property = (JSONObject) buildProperty;
-			if (property.get("name") != null
-					&& property.get("name").toString().equalsIgnoreCase("buildNumberCounter")) {
+			if (property.get("name") != null && property.get("name").toString().equalsIgnoreCase("buildNumberCounter")) {
 				buildNumber = property.get("value").toString();
 			}
 		}
 
 		log.debug(" buildNumber: {}", buildNumber);
 		return buildNumber;
-
 	}
 
 	private JSONObject getBuildInfo(String buildUrl, String hostName, ProcessorToolConnection toolConfig) {
@@ -314,11 +310,11 @@ public class Teamcity2Client implements TeamcityClient {
 
 	/**
 	 * Makes rest call.
-	 * 
+	 *
 	 * @param sUrl
-	 *            the url
+	 *          the url
 	 * @param toolConfig
-	 *            tool config
+	 *          tool config
 	 * @return response
 	 */
 	protected ResponseEntity<String> doRestCall(String sUrl, ProcessorToolConnection toolConfig) {
@@ -335,7 +331,6 @@ public class Teamcity2Client implements TeamcityClient {
 						"Credentials for the following url was not found. This could happen if the domain/subdomain/IP address in the build url returned by Teamcity and the Teamcity instance url in your configuration do not match: {} ",
 						sUrl);
 			}
-
 		}
 
 		if (StringUtils.isNotEmpty(userInfo)) {
@@ -344,12 +339,9 @@ public class Teamcity2Client implements TeamcityClient {
 		} else {
 			return rest.exchange(thisuri, HttpMethod.GET, null, String.class);
 		}
-
 	}
 
-	/**
-	 * Provides Build Details.
-	 */
+	/** Provides Build Details. */
 	@Override
 	public Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer,
 			ProjectBasicConfig proBasicConfig) {

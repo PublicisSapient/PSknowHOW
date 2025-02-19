@@ -131,26 +131,32 @@ public class RefinementRejectionRateServiceImplTest {
 		}
 
 		unassignedJiraHistoryDataList = JiraIssueHistoryDataFactory.newInstance().getJiraIssueCustomHistory();
-
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testFetchKPIDataFromDbData() throws ApplicationException {
-		when(jiraIssueRepository.findUnassignedIssues(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap()))
+		when(jiraIssueRepository.findUnassignedIssues(
+						Mockito.anyString(), Mockito.anyString(), Mockito.anyMap()))
 				.thenReturn(jiraIssueList);
-		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.anyList(),
-				Mockito.anyList())).thenReturn(unassignedJiraHistoryDataList);
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(
+						Mockito.anyList(), Mockito.anyList()))
+				.thenReturn(unassignedJiraHistoryDataList);
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(new JiraIssueReleaseStatus());
-		Map<String, Object> responseRefinementList = refinementRejectionRateService.fetchKPIDataFromDb(
-				leafNodeList.get(0), customDateRange.getStartDate().toString(), customDateRange.getEndDate().toString(),
-				kpiRequest);
+		Map<String, Object> responseRefinementList =
+				refinementRejectionRateService.fetchKPIDataFromDb(
+						leafNodeList.get(0),
+						customDateRange.getStartDate().toString(),
+						customDateRange.getEndDate().toString(),
+						kpiRequest);
 		assertNotNull(responseRefinementList);
 		assertNotNull(responseRefinementList.get(UNASSIGNED_JIRA_ISSUE));
 		assertNotNull(responseRefinementList.get(UNASSIGNED_JIRA_ISSUE_HISTORY));
 		assertEquals(jiraIssueList, responseRefinementList.get(UNASSIGNED_JIRA_ISSUE));
-		assertEquals(unassignedJiraHistoryDataList, responseRefinementList.get(UNASSIGNED_JIRA_ISSUE_HISTORY));
-		assertEquals(jiraIssueList.get(0).getNumber(),
+		assertEquals(
+				unassignedJiraHistoryDataList, responseRefinementList.get(UNASSIGNED_JIRA_ISSUE_HISTORY));
+		assertEquals(
+				jiraIssueList.get(0).getNumber(),
 				((List<JiraIssue>) responseRefinementList.get(UNASSIGNED_JIRA_ISSUE)).get(0).getNumber());
 	}
 
@@ -160,9 +166,11 @@ public class RefinementRejectionRateServiceImplTest {
 		when(customApiConfig.getBacklogWeekCount()).thenReturn(5);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(new JiraIssueReleaseStatus());
-		KpiElement responseKpiElement = refinementRejectionRateService.getKpiData(kpiRequest,
-				kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
+		KpiElement responseKpiElement =
+				refinementRejectionRateService.getKpiData(
+						kpiRequest,
+						kpiRequest.getKpiList().get(0),
+						treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 
 		assertNotNull(responseKpiElement);
 		assertNotNull(responseKpiElement.getTrendValueList());
@@ -171,10 +179,10 @@ public class RefinementRejectionRateServiceImplTest {
 
 		List<DataCount> dataCounts = (List<DataCount>) responseKpiElement.getTrendValueList();
 		for (DataCount dataCount : dataCounts) {
-			for (DataCount values : new ArrayList<DataCount>((Collection<? extends DataCount>) dataCount.getValue())) {
+			for (DataCount values :
+					new ArrayList<DataCount>((Collection<? extends DataCount>) dataCount.getValue())) {
 				assertThat(values.getsSprintName(), StringContains.containsString("Week"));
 			}
-
 		}
 	}
 

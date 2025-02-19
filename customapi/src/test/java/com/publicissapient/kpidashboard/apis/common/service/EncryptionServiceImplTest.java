@@ -42,5 +42,4 @@ public class EncryptionServiceImplTest {
 		Mockito.when(customApiConfig.getAesEncryptionKey()).thenReturn("708C150A5363290AAE3F579BF3746AD5");
 		Assert.assertNotNull("Encryption check", encryptionService.encrypt("TestString"));
 	}
-
 }

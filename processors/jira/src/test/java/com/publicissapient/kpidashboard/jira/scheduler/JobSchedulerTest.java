@@ -27,9 +27,6 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
-import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,14 +37,16 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionException;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.launch.JobLauncher;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfigurationImpl;
+import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
+import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -88,7 +87,6 @@ public class JobSchedulerTest {
 	@Mock
 	private JiraProcessor jiraProcessor;
 
-
 	@Before
 	public void init() {
 		MockitoAnnotations.openMocks(this);
@@ -105,7 +103,6 @@ public class JobSchedulerTest {
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to return a JobExecution instance
-		
 
 		// Calling the method
 		jobScheduler.startScrumBoardJob();
@@ -123,7 +120,6 @@ public class JobSchedulerTest {
 				.run(eq(fetchIssueScrumBoardJob), any(JobParameters.class));
 
 		jobScheduler.startScrumBoardJob();
-
 	}
 
 	@Test
@@ -144,8 +140,8 @@ public class JobSchedulerTest {
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to throw an exception
-		doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher)
-				.run(eq(fetchIssueScrumJqlJob), any(JobParameters.class));
+		doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher).run(eq(fetchIssueScrumJqlJob),
+				any(JobParameters.class));
 
 		jobScheduler.startScrumJqlJob();
 	}
@@ -158,10 +154,8 @@ public class JobSchedulerTest {
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to return a JobExecution instance
-		
 
 		jobScheduler.startKanbanJob();
-
 	}
 
 	@Test
@@ -201,8 +195,8 @@ public class JobSchedulerTest {
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to throw an exception
-		doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher)
-				.run(eq(fetchIssueKanbanJqlJob), any(JobParameters.class));
+		doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher).run(eq(fetchIssueKanbanJqlJob),
+				any(JobParameters.class));
 
 		jobScheduler.startKanbanJqlJob();
 	}

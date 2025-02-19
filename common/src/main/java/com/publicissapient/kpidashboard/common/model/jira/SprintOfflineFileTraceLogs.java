@@ -25,9 +25,7 @@ import lombok.Data;
 
 /**
  * @author yasbano
- *
  */
-
 @Data
 @Document(collection = "sprint_offline_tracelogs")
 public class SprintOfflineFileTraceLogs {

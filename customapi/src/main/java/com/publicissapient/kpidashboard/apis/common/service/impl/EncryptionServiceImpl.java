@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.common.service.impl;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -37,11 +36,9 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Class to provide implementation for encryption methods.
- * 
- * @author prijain3
- * 
- * @deprecated
  *
+ * @author prijain3
+ * @deprecated
  */
 @Service
 @Slf4j
@@ -66,9 +63,7 @@ public class EncryptionServiceImpl implements EncryptionService {
 			} catch (NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException
 					| InvalidKeyException exception) {
 				log.error("Failed to encript messaege", exception);
-
 			}
-
 		}
 		return returnString;
 	}

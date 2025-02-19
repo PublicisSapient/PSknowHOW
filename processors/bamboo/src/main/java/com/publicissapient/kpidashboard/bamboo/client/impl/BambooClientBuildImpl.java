@@ -34,7 +34,6 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
@@ -70,7 +69,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * This class is the implementation of {@link BambooClient} which could be used
  * to retrieve data from Bamboo server intsances.
- * 
+ *
  * @see BambooClient
  */
 @Component
@@ -102,7 +101,7 @@ public class BambooClientBuildImpl implements BambooClient {
 	 * fetch jobs based on job key and branch key
 	 *
 	 * @param bambooServer
-	 *            {@link ProcessorToolConnection}
+	 *          {@link ProcessorToolConnection}
 	 * @param proBasicConfig
 	 * @return
 	 * @throws ParseException
@@ -248,16 +247,16 @@ public class BambooClientBuildImpl implements BambooClient {
 	 * not save the auth user info and needs to be added
 	 *
 	 * @param buildURL
-	 *            build URL
+	 *          build URL
 	 * @param serverURL
-	 *            server URL
+	 *          server URL
 	 * @return final url with BUILD_DETAILS_URL_SUFFIX
 	 * @throws URISyntaxException
-	 *             URISyntax Exception
+	 *           URISyntax Exception
 	 * @throws MalformedURLException
-	 *             MalformedURL Exception
+	 *           MalformedURL Exception
 	 * @throws UnsupportedEncodingException
-	 *             UnsupportedEncoding Exception
+	 *           UnsupportedEncoding Exception
 	 */
 	protected String getFinalURL(String buildURL, String serverURL)
 			throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
@@ -280,32 +279,30 @@ public class BambooClientBuildImpl implements BambooClient {
 
 	private BuildStatus getStateOfBuild(String buildState) {
 		switch (buildState) {
-		case "Successful":
-			return BuildStatus.SUCCESS;
-		case "ABORTED":
-			return BuildStatus.ABORTED;
-		case "Failed":
-			return BuildStatus.FAILURE;
-		case "UNSTABLE":
-			return BuildStatus.UNSTABLE;
-		default:
-			return BuildStatus.UNKNOWN;
+			case "Successful" :
+				return BuildStatus.SUCCESS;
+			case "ABORTED" :
+				return BuildStatus.ABORTED;
+			case "Failed" :
+				return BuildStatus.FAILURE;
+			case "UNSTABLE" :
+				return BuildStatus.UNSTABLE;
+			default :
+				return BuildStatus.UNKNOWN;
 		}
 	}
 
 	/**
-	 *
-	 *
 	 * @param sUrl
-	 *            server url
+	 *          server url
 	 * @param bambooServer
-	 *            bambooServer data
+	 *          bambooServer data
 	 * @return response body
 	 */
 	protected String makeBambooServerCall(String sUrl, ProcessorToolConnection bambooServer) {
 		log.debug("Making rest call with user: {} to Url: {}", sUrl, bambooServer.getUsername());
-		ResponseEntity<String> response = restClient.exchange(URI.create(sUrl), HttpMethod.GET,
-				getHttpEntity(bambooServer), String.class);
+		ResponseEntity<String> response = restClient.exchange(URI.create(sUrl), HttpMethod.GET, getHttpEntity(bambooServer),
+				String.class);
 		if (HttpStatus.OK != response.getStatusCode()) {
 			if (response.getStatusCode().is4xxClientError()) {
 				String errMsg = ClientErrorMessageEnum.fromValue(response.getStatusCode().value()).getReasonPhrase();
@@ -315,12 +312,11 @@ public class BambooClientBuildImpl implements BambooClient {
 			throw new RestClientException("Got response" + response.toString() + " from URL :" + sUrl);
 		}
 		return response.getBody();
-
 	}
 
 	/**
 	 * @param bambooServer
-	 *            ProcessorToolConnection
+	 *          ProcessorToolConnection
 	 * @return respEntity
 	 */
 	private HttpEntity<String> getHttpEntity(ProcessorToolConnection bambooServer) {
@@ -331,12 +327,11 @@ public class BambooClientBuildImpl implements BambooClient {
 			respEntity = new HttpEntity<>(createHeaders(userInfo));
 		}
 		return respEntity;
-
 	}
 
 	/**
 	 * @param bambooServer
-	 *            basic auth data
+	 *          basic auth data
 	 * @return userInfo
 	 */
 	private String getUserInfo(ProcessorToolConnection bambooServer) {
@@ -352,7 +347,7 @@ public class BambooClientBuildImpl implements BambooClient {
 	 * creates Headers
 	 *
 	 * @param user
-	 *            username credentials
+	 *          username credentials
 	 * @return headers
 	 */
 	protected HttpHeaders createHeaders(String user) {
@@ -367,14 +362,12 @@ public class BambooClientBuildImpl implements BambooClient {
 	 * Gets log
 	 *
 	 * @param url
-	 *            bamboo service url
+	 *          bamboo service url
 	 * @param bambooServer
-	 *            bambooServer data
+	 *          bambooServer data
 	 * @param shouldGetLogs
-	 *            true or false
+	 *          true or false
 	 * @return logs
-	 * 
-	 * 
 	 */
 	protected String getLog(String url, ProcessorToolConnection bambooServer, boolean shouldGetLogs) {
 		String logs = StringUtils.EMPTY;
@@ -388,5 +381,4 @@ public class BambooClientBuildImpl implements BambooClient {
 		}
 		return logs;
 	}
-
 }

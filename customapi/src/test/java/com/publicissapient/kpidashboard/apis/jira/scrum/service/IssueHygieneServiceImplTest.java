@@ -134,7 +134,6 @@ public class IssueHygieneServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -145,6 +144,5 @@ public class IssueHygieneServiceImplTest {
 	@After
 	public void cleanup() {
 		jiraIssueRepository.deleteAll();
-
 	}
 }

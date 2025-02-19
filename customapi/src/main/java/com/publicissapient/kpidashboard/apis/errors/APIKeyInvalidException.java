@@ -27,5 +27,4 @@ public class APIKeyInvalidException extends AuthenticationException {
 	public APIKeyInvalidException(String msg) {
 		super(msg);
 	}
-
 }

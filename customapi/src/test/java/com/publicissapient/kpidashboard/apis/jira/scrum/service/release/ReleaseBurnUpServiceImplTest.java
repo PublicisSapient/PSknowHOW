@@ -1,13 +1,13 @@
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
- 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -122,8 +122,7 @@ public class ReleaseBurnUpServiceImplTest {
 		FieldMapping fieldMapping2 = fieldMappingDataFactory.getFieldMappings().get(0);
 		FieldMapping fieldMapping3 = fieldMappingDataFactory.getFieldMappings().get(1);
 		fieldMapping2.setEstimationCriteria("");
-		JiraIssueCustomHistory history = jiraIssuesCustomHistory.stream().findFirst()
-				.orElse(new JiraIssueCustomHistory());
+		JiraIssueCustomHistory history = jiraIssuesCustomHistory.stream().findFirst().orElse(new JiraIssueCustomHistory());
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		fieldMappingMap2.put(fieldMapping.getBasicProjectConfigId(), fieldMapping2);
 		fieldMappingMap3.put(fieldMapping.getBasicProjectConfigId(), fieldMapping3);
@@ -313,5 +312,4 @@ public class ReleaseBurnUpServiceImplTest {
 		double result = getTicketEstimate(jiraIssueList, fieldMapping, 0.0);
 		assertEquals(0.0, result, 0.01);
 	}
-
 }

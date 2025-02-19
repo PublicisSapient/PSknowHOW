@@ -25,21 +25,17 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfig;
 
 /**
- * 
  * @author narsingh9
- *
  */
 public interface UserBoardConfigRepository extends MongoRepository<UserBoardConfig, ObjectId> {
 
 	/**
-	 * 
 	 * @param userName
 	 * @return UserBoardConfig object
 	 */
 	UserBoardConfig findByUsername(String userName);
 
 	/**
-	 * 
 	 * @return UserBoardConfig object
 	 */
 	UserBoardConfig findByUsernameIsNull();
@@ -53,39 +49,39 @@ public interface UserBoardConfigRepository extends MongoRepository<UserBoardConf
 
 	/**
 	 * Fetch by basicProjConfigId & userName
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @param userName
-	 *            userName
+	 *          userName
 	 * @return user_board_config
 	 */
 	UserBoardConfig findByBasicProjectConfigIdAndUsername(String basicProjectConfigId, String userName);
 
 	/**
 	 * Fetch by basicProjectConfigId
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return Project Config Details
 	 */
 	List<UserBoardConfig> findByBasicProjectConfigIdIn(List<String> basicProjectConfigId);
 
 	/**
 	 * Fetch all the doc with basicProjConfigId
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return List<UserBoardConfig>
 	 */
 	List<UserBoardConfig> findByBasicProjectConfigId(String basicProjectConfigId);
 
 	/**
-	 * Deletes the project board configuration by the given basic project configuration
-	 * ID.
+	 * Deletes the project board configuration by the given basic project
+	 * configuration ID.
 	 *
 	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
+	 *          the ID of the basic project configuration
 	 */
 	void deleteByBasicProjectConfigId(String basicProjectConfigId);
 }

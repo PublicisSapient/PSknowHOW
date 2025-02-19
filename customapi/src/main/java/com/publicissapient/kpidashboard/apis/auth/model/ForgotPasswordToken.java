@@ -55,12 +55,11 @@ public class ForgotPasswordToken extends BasicModel {
 	 * Sets expiry date.
 	 *
 	 * @param minutes
-	 *            the minutes
+	 *          the minutes
 	 */
 	public void setExpiryDate(int minutes) {
 		Calendar now = Calendar.getInstance();
 		now.add(Calendar.MINUTE, minutes);
 		this.expiryDate = now.getTime();
 	}
-
 }

@@ -27,5 +27,4 @@ public class KPIComments extends BasicModel {
 	private String nodeChildId;
 	private String kpiId;
 	private List<CommentsInfo> commentsInfo;
-
 }

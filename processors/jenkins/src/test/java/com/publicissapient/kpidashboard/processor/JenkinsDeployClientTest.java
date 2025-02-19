@@ -77,11 +77,14 @@ public class JenkinsDeployClientTest {
 
 	@Test
 	void testGetDeployJobsFromServer() throws Exception {
-		when(restOperations.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET),
-				ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
-						.thenReturn(new ResponseEntity<>(getJson("deployments.json"), HttpStatus.OK));
-		Map<String, Set<Deployment>> response = jenkinsDeployClient.getDeployJobsFromServer(JENKINS_SERVER,
-				Jenkins_Processor);
+		when(restOperations.exchange(
+						ArgumentMatchers.any(URI.class),
+						eq(HttpMethod.GET),
+						ArgumentMatchers.any(HttpEntity.class),
+						eq(String.class)))
+				.thenReturn(new ResponseEntity<>(getJson("deployments.json"), HttpStatus.OK));
+		Map<String, Set<Deployment>> response =
+				jenkinsDeployClient.getDeployJobsFromServer(JENKINS_SERVER, Jenkins_Processor);
 		assertEquals(1, response.size());
 		Deployment deployment = response.values().stream().iterator().next().stream().iterator().next();
 		assertEquals("deployJob", deployment.getJobName());

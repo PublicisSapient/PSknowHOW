@@ -28,13 +28,12 @@ public interface UsersSessionRepository extends CrudRepository<UsersSession, Obj
 
 	/**
 	 * Find the latest login history for a user
-	 * 
+	 *
 	 * @param userName
-	 *            username
+	 *          username
 	 * @param event
-	 *            {@link AuthenticationEvent}
+	 *          {@link AuthenticationEvent}
 	 * @return most recent logout of user
 	 */
 	UsersSession findTopByUserNameAndEventOrderByTimeStampDesc(String userName, AuthenticationEvent event);
-
 }

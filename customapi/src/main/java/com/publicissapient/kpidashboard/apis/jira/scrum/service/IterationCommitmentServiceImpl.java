@@ -88,22 +88,19 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 				// to modify sprint details on the basis of configuration for the project
 				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
-				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
-						.collect(Collectors.toSet());
+				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toSet());
 
-				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
-						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI120(),
-						fieldMapping.getJiraIterationCompletionStatusKPI120(),
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+						fieldMapping.getJiraIterationIssuetypeKPI120(), fieldMapping.getJiraIterationCompletionStatusKPI120(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				List<String> puntedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.PUNTED_ISSUES);
 				Set<String> addedIssues = sprintDetails.getAddedIssues();
-				List<String> completeAndIncompleteIssues = Stream
-						.of(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-								CommonConstant.COMPLETED_ISSUES),
-								KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-										CommonConstant.NOT_COMPLETED_ISSUES))
+				List<String> completeAndIncompleteIssues = Stream.of(
+						KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails, CommonConstant.COMPLETED_ISSUES),
+						KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+								CommonConstant.NOT_COMPLETED_ISSUES))
 						.flatMap(Collection::stream).collect(Collectors.toList());
 				// Adding issues which were added before sprint start and later removed form
 				// sprint or dropped.
@@ -111,17 +108,15 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 				if (CollectionUtils.isNotEmpty(puntedIssues)) {
 					List<JiraIssue> filteredPuntedIssueList = IterationKpiHelper.getFilteredJiraIssue(puntedIssues,
 							totalJiraIssueList);
-					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getPuntedIssues(), filteredPuntedIssueList);
+					Set<JiraIssue> filtersIssuesList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
+							sprintDetails, sprintDetails.getPuntedIssues(), filteredPuntedIssueList);
 					resultListMap.put(PUNTED_ISSUES, new ArrayList<>(filtersIssuesList));
 				}
 				if (CollectionUtils.isNotEmpty(addedIssues)) {
-					List<JiraIssue> filterAddedIssueList = IterationKpiHelper
-							.getFilteredJiraIssue(new ArrayList<>(addedIssues), totalJiraIssueList);
-					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails, new HashSet<>(),
-									filterAddedIssueList);
+					List<JiraIssue> filterAddedIssueList = IterationKpiHelper.getFilteredJiraIssue(new ArrayList<>(addedIssues),
+							totalJiraIssueList);
+					Set<JiraIssue> filtersIssuesList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
+							sprintDetails, new HashSet<>(), filterAddedIssueList);
 					resultListMap.put(ADDED_ISSUES, new ArrayList<>(filtersIssuesList));
 					completeAndIncompleteIssues.removeAll(new ArrayList<>(addedIssues));
 				}
@@ -129,8 +124,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 					List<JiraIssue> filteredJiraIssue = IterationKpiHelper
 							.getFilteredJiraIssue(new ArrayList<>(completeAndIncompleteIssues), totalJiraIssueList);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails, new HashSet<>(),
-									filteredJiraIssue);
+							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails, new HashSet<>(), filteredJiraIssue);
 					resultListMap.put(EXCLUDE_ADDED_ISSUES, new ArrayList<>(filtersIssuesList));
 				}
 			}
@@ -141,7 +135,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 	/**
 	 * Populates KPI value to sprint leaf nodes and gives the trend analysis at
 	 * sprint level.
-	 * 
+	 *
 	 * @param sprintLeafNode
 	 * @param kpiElement
 	 * @param kpiRequest
@@ -206,7 +200,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Sets kpi data category and value field.
-	 * 
+	 *
 	 * @param issue
 	 * @param data
 	 * @param fieldMapping
@@ -220,8 +214,8 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 			data.getCategory().add(category);
 		}
 		data.setValue(0d);
-		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+				fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			if (null != issue.getStoryPoints()) {
 				data.setValue(issue.getStoryPoints());
 			}
@@ -232,7 +226,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates filter group.
-	 * 
+	 *
 	 * @return
 	 */
 	private FilterGroup createFilterGroup() {
@@ -248,7 +242,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates individual filter object.
-	 * 
+	 *
 	 * @param type
 	 * @param name
 	 * @param key
@@ -266,7 +260,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates data group that tells what kind of data will be shown on chart.
-	 * 
+	 *
 	 * @param fieldMapping
 	 * @return
 	 */
@@ -280,8 +274,8 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 		List<KpiData> dataGroup1 = new ArrayList<>();
 		String unit;
 		String displayName;
-		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+				fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			unit = CommonConstant.SP;
 			displayName = CommonConstant.STORY_POINT;
 		} else {
@@ -299,7 +293,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates kpi data object.
-	 * 
+	 *
 	 * @param key
 	 * @param name
 	 * @param order
@@ -320,7 +314,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates object to hold category related info.
-	 * 
+	 *
 	 * @return
 	 */
 	private CategoryData createCategoryData() {
@@ -337,7 +331,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates kpi data category object.
-	 * 
+	 *
 	 * @param categoryName
 	 * @param categoryValue
 	 * @param order

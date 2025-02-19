@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.logging;//NOPMD
+package com.publicissapient.kpidashboard.apis.logging; // NOPMD
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
@@ -67,9 +66,7 @@ import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Custom Logging filter.
- */
+/** Custom Logging filter. */
 @Slf4j
 public class LoggingFilter implements Filter {
 
@@ -106,16 +103,14 @@ public class LoggingFilter implements Filter {
 			chain.doFilter(bufferedRequest, bufferedResponse);
 			requestLog.setResponseContentType(httpServletResponse.getContentType());
 			try {
-				if (StringUtils.isNotBlank(httpServletRequest.getContentType())
-						&& (new MimeType(httpServletRequest.getContentType())
-								.match(new MimeType(APPLICATION_JSON_VALUE)))
-						&& StringUtils.isNotBlank(bufferedRequest.getRequestBody())) {
+				if (StringUtils.isNotBlank(httpServletRequest.getContentType()) &&
+						(new MimeType(httpServletRequest.getContentType()).match(new MimeType(APPLICATION_JSON_VALUE))) &&
+						StringUtils.isNotBlank(bufferedRequest.getRequestBody())) {
 					requestLog.setRequestBody(BasicDBObject.parse(bufferedRequest.getRequestBody()));
-
 				}
-				if (StringUtils.isNotBlank(bufferedResponse.getContentType())
-						&& (new MimeType(bufferedResponse.getContentType()).match(new MimeType(APPLICATION_JSON_VALUE)))
-						&& StringUtils.isNotBlank(bufferedResponse.getContent())) {
+				if (StringUtils.isNotBlank(bufferedResponse.getContentType()) &&
+						(new MimeType(bufferedResponse.getContentType()).match(new MimeType(APPLICATION_JSON_VALUE))) &&
+						StringUtils.isNotBlank(bufferedResponse.getContent())) {
 					requestLog.setResponseBody(BasicDBObject.parse(bufferedResponse.getContent()));
 				}
 			} catch (MimeTypeParseException e) {
@@ -140,7 +135,6 @@ public class LoggingFilter implements Filter {
 
 					addHeader(httpServletResponse, clientOrigin, incomingURLs);
 				}
-
 			}
 			chain.doFilter(request, response);
 		}
@@ -153,9 +147,9 @@ public class LoggingFilter implements Filter {
 	 * @return boolean
 	 */
 	private boolean isRequestContainsHttpMethods(HttpServletRequest httpServletRequest) {
-		return httpServletRequest.getMethod().equals(HttpMethod.PUT.toString())
-				|| (httpServletRequest.getMethod().equals(HttpMethod.POST.toString()))
-				|| (httpServletRequest.getMethod().equals(HttpMethod.DELETE.toString()));
+		return httpServletRequest.getMethod().equals(HttpMethod.PUT.toString()) ||
+				(httpServletRequest.getMethod().equals(HttpMethod.POST.toString())) ||
+				(httpServletRequest.getMethod().equals(HttpMethod.DELETE.toString()));
 	}
 
 	/**
@@ -210,9 +204,9 @@ public class LoggingFilter implements Filter {
 		 * Instantiates a new Buffered request wrapper.
 		 *
 		 * @param req
-		 *            the req
+		 *          the req
 		 * @throws IOException
-		 *             the io exception
+		 *           the io exception
 		 */
 		public BufferedRequestWrapper(HttpServletRequest req) throws IOException {
 			super(req);
@@ -241,7 +235,7 @@ public class LoggingFilter implements Filter {
 		 *
 		 * @return the request body
 		 * @throws IOException
-		 *             the io exception
+		 *           the io exception
 		 */
 		/* package */ String getRequestBody() throws IOException {
 			String line;
@@ -256,7 +250,6 @@ public class LoggingFilter implements Filter {
 			}
 			return inputBuffer.toString();
 		}
-
 	}
 
 	private static final class BufferedServletInputStream extends ServletInputStream {
@@ -267,7 +260,7 @@ public class LoggingFilter implements Filter {
 		 * Instantiates a new Buffered servlet input stream.
 		 *
 		 * @param bais
-		 *            the bais
+		 *          the bais
 		 */
 		public BufferedServletInputStream(ByteArrayInputStream bais) {
 			super();
@@ -307,9 +300,7 @@ public class LoggingFilter implements Filter {
 		}
 	}
 
-	/**
-	 * The type Tee servlet output stream.
-	 */
+	/** The type Tee servlet output stream. */
 	public class TeeServletOutputStream extends ServletOutputStream {
 
 		private final TeeOutputStream targetStream;
@@ -318,9 +309,9 @@ public class LoggingFilter implements Filter {
 		 * Instantiates a new Tee servlet output stream.
 		 *
 		 * @param one
-		 *            the one
+		 *          the one
 		 * @param two
-		 *            the two
+		 *          the two
 		 */
 		public TeeServletOutputStream(OutputStream one, OutputStream two) {
 			super();
@@ -357,9 +348,7 @@ public class LoggingFilter implements Filter {
 		}
 	}
 
-	/**
-	 * The type Buffered response wrapper.
-	 */
+	/** The type Buffered response wrapper. */
 	public class BufferedResponseWrapper implements HttpServletResponse {
 
 		private final HttpServletResponse original;
@@ -371,7 +360,7 @@ public class LoggingFilter implements Filter {
 		 * Instantiates a new Buffered response wrapper.
 		 *
 		 * @param response
-		 *            the response
+		 *          the response
 		 */
 		public BufferedResponseWrapper(HttpServletResponse response) {
 			original = response;
@@ -401,8 +390,8 @@ public class LoggingFilter implements Filter {
 
 			if (LoggingFilter.BufferedResponseWrapper.this.teeStream == null) {
 				bos = new ByteArrayOutputStream();
-				LoggingFilter.BufferedResponseWrapper.this.teeStream = new TeeServletOutputStream(
-						original.getOutputStream(), bos);
+				LoggingFilter.BufferedResponseWrapper.this.teeStream = new TeeServletOutputStream(original.getOutputStream(),
+						bos);
 			}
 			return LoggingFilter.BufferedResponseWrapper.this.teeStream;
 		}
@@ -572,7 +561,5 @@ public class LoggingFilter implements Filter {
 		public Collection<String> getHeaderNames() {
 			return Collections.emptyList();
 		}
-
 	}
-
 }

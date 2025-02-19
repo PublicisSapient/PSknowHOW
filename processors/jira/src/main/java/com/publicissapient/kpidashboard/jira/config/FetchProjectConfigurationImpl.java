@@ -60,8 +60,8 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 	public ProjectConfFieldMapping fetchConfigurationBasedOnSprintId(String sprintId) {
 		ProjectConfFieldMapping projectConfFieldMapping = null;
 		SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
-		ProjectBasicConfig projectBasicConfig = projectConfigRepository
-				.findById(sprintDetails.getBasicProjectConfigId()).orElse(new ProjectBasicConfig());
+		ProjectBasicConfig projectBasicConfig = projectConfigRepository.findById(sprintDetails.getBasicProjectConfigId())
+				.orElse(new ProjectBasicConfig());
 
 		FieldMapping fieldMapping = fieldMappingRepository
 				.findByBasicProjectConfigId(sprintDetails.getBasicProjectConfigId());
@@ -72,8 +72,8 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 			if (null != projectToolConfig.getConnectionId()) {
 				Optional<Connection> jiraConnOpt = connectionRepository.findById(projectToolConfig.getConnectionId());
 				JiraToolConfig jiraToolConfig = createJiraToolConfig(projectToolConfig, jiraConnOpt);
-				projectConfFieldMapping = createProjectConfFieldMapping(fieldMapping, projectBasicConfig,
-						projectToolConfig, jiraToolConfig);
+				projectConfFieldMapping = createProjectConfFieldMapping(fieldMapping, projectBasicConfig, projectToolConfig,
+						jiraToolConfig);
 			}
 		}
 		return projectConfFieldMapping;
@@ -92,8 +92,8 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 			if (null != projectToolConfig.getConnectionId()) {
 				Optional<Connection> jiraConnOpt = connectionRepository.findById(projectToolConfig.getConnectionId());
 				JiraToolConfig jiraToolConfig = createJiraToolConfig(projectToolConfig, jiraConnOpt);
-				projectConfFieldMapping = createProjectConfFieldMapping(fieldMapping, projectBasicConfig,
-						projectToolConfig, jiraToolConfig);
+				projectConfFieldMapping = createProjectConfFieldMapping(fieldMapping, projectBasicConfig, projectToolConfig,
+						jiraToolConfig);
 			}
 		}
 		return projectConfFieldMapping;
@@ -101,7 +101,8 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 
 	private JiraToolConfig createJiraToolConfig(ProjectToolConfig projectToolConfig, Optional<Connection> jiraConnOpt) {
 		JiraToolConfig jiraToolConfig = new JiraToolConfig();
-		//Todo: check the beanUtils func changed to import org.springframework.beans.BeanUtils;
+		// Todo: check the beanUtils func changed to import
+		// org.springframework.beans.BeanUtils;
 		BeanUtils.copyProperties(projectToolConfig, jiraToolConfig);
 
 		if (jiraConnOpt.isPresent()) {
@@ -138,5 +139,4 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 
 		return projectConfFieldMapping;
 	}
-
 }

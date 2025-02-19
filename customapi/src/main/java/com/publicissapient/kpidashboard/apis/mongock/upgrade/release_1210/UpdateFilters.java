@@ -45,11 +45,11 @@ public class UpdateFilters {
 
 	/**
 	 * Moving dora to scrum, kanban thus changing the boardId
-	 * 
+	 *
 	 * @param oldBoardId
-	 *            older board id
+	 *          older board id
 	 * @param newBoardId
-	 *            new board id
+	 *          new board id
 	 */
 	private void updateFilterBoardId(int oldBoardId, int newBoardId) {
 		mongoTemplate.getCollection("filters").updateMany(new Document(BOARD_ID, oldBoardId),
@@ -62,5 +62,4 @@ public class UpdateFilters {
 		updateFilterBoardId(9, 16);
 		updateFilterBoardId(19, 17);
 	}
-
 }

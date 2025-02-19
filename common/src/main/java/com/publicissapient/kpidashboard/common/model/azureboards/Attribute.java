@@ -31,26 +31,34 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "isLocked", "name", "authorizedDate", "id", "resourceCreatedDate", "resourceModifiedDate",
-		"revisedDate", "resourceSize" })
+@JsonPropertyOrder({"isLocked", "name", "authorizedDate", "id", "resourceCreatedDate", "resourceModifiedDate",
+		"revisedDate", "resourceSize"})
 public class Attribute {
 
 	@JsonProperty("isLocked")
 	private Boolean isLocked;
+
 	@JsonProperty("name")
 	private String name;
+
 	@JsonProperty("authorizedDate")
 	private String authorizedDate;
+
 	@JsonProperty("id")
 	private Integer id;
+
 	@JsonProperty("resourceCreatedDate")
 	private String resourceCreatedDate;
+
 	@JsonProperty("resourceModifiedDate")
 	private String resourceModifiedDate;
+
 	@JsonProperty("revisedDate")
 	private String revisedDate;
+
 	@JsonProperty("resourceSize")
 	private Integer resourceSize;
+
 	@JsonIgnore
 	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -147,10 +155,8 @@ public class Attribute {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this).append("isLocked", isLocked).append("name", name)
-				.append("authorizedDate", authorizedDate).append("id", id)
-				.append("resourceCreatedDate", resourceCreatedDate).append("resourceModifiedDate", resourceModifiedDate)
-				.append("revisedDate", revisedDate).append("resourceSize", resourceSize)
-				.append("additionalProperties", additionalProperties).toString();
+				.append("authorizedDate", authorizedDate).append("id", id).append("resourceCreatedDate", resourceCreatedDate)
+				.append("resourceModifiedDate", resourceModifiedDate).append("revisedDate", revisedDate)
+				.append("resourceSize", resourceSize).append("additionalProperties", additionalProperties).toString();
 	}
-
 }

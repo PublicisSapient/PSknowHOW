@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,19 +56,19 @@ import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFact
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServiceImpl;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.sonar.factory.SonarKPIServiceFactory;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
-/**
- *
- */
+/** */
 @RunWith(MockitoJUnitRunner.class)
 public class SonarServiceRTest {
 	private static final String TESTSONAR = "TEST_SONAR";
@@ -154,21 +152,16 @@ public class SonarServiceRTest {
 
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
-
 	}
 
-	/**
-	 * Test of empty filtered account hierarchy list.
-	 */
+	/** Test of empty filtered account hierarchy list. */
 	@Test
 	public void testProcessEmptyFilteredACH() {
 		createKpiRequest("Sonar", 6, kpiRequest);
 		sonarService.process(kpiRequest);
 	}
 
-	/**
-	 * Test of empty filtered account hierarchy list.
-	 */
+	/** Test of empty filtered account hierarchy list. */
 	@Test
 	public void testProcessEmptyFilteredException() {
 
@@ -182,7 +175,8 @@ public class SonarServiceRTest {
 		initialization();
 		when(service.getKpiData(any(), any(), any())).thenReturn(kpiRequest.getKpiList().get(0));
 		List<KpiElement> resultList = sonarService.process(kpiRequest);
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
+		assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
 	}
 
 	@Test
@@ -191,7 +185,8 @@ public class SonarServiceRTest {
 		initialization();
 		when(service.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
 		List<KpiElement> resultList = sonarService.process(kpiRequest);
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+		assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
 	}
 
 	@Test
@@ -200,13 +195,13 @@ public class SonarServiceRTest {
 		initialization();
 		when(service.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
 		List<KpiElement> resultList = sonarService.process(kpiRequest);
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+		assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
 	}
 
 	private void initialization() {
-		String[] exampleStringList = { "exampleElement", "exampleElement" };
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest))
-				.thenReturn(exampleStringList);
+		String[] exampleStringList = {"exampleElement", "exampleElement"};
+		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(exampleStringList);
 		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
@@ -224,9 +219,8 @@ public class SonarServiceRTest {
 	@Test
 	public void sonarViolationsTestProcess_Excel() {
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
-		String[] exampleStringList = { "exampleElement", "exampleElement" };
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest))
-				.thenReturn(exampleStringList);
+		String[] exampleStringList = {"exampleElement", "exampleElement"};
+		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(exampleStringList);
 		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
@@ -238,8 +232,9 @@ public class SonarServiceRTest {
 		when(filterHelperService.getFilteredBuilds(ArgumentMatchers.any(), Mockito.anyString()))
 				.thenReturn(accountHierarchyDataList);
 		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
-//		when(cacheService.getFromApplicationCache(eq(exampleStringList), eq(KPISource.ZEPHYRKANBAN.name()), eq(1), isNull()))
-//				.thenReturn(new ArrayList<KpiElement>());
+		// when(cacheService.getFromApplicationCache(eq(exampleStringList),
+		// eq(KPISource.ZEPHYRKANBAN.name()), eq(1), isNull()))
+		// .thenReturn(new ArrayList<KpiElement>());
 		try {
 			List<KpiElement> resultList = sonarService.process(kpiRequest);
 		} catch (Exception e) {
@@ -254,7 +249,6 @@ public class SonarServiceRTest {
 
 		List<KpiElement> resultList = sonarService.process(kpiRequest);
 		assertThat("Kpi list :", resultList.size(), equalTo(1));
-
 	}
 
 	@Test
@@ -268,7 +262,7 @@ public class SonarServiceRTest {
 		List<KpiElement> kpiList = new ArrayList<>();
 		addKpiElement(kpiList, TESTSONAR, TESTSONAR, "TechDebt", "", source);
 		kpiRequest.setLevel(level);
-		kpiRequest.setIds(new String[] { "Scrum Project_6335363749794a18e8a4479b" });
+		kpiRequest.setIds(new String[]{"Scrum Project_6335363749794a18e8a4479b"});
 		kpiRequest.setKpiList(kpiList);
 		kpiRequest.setRequestTrackerId();
 	}
@@ -285,5 +279,4 @@ public class SonarServiceRTest {
 		kpiElement.setChartType("gaugeChart");
 		kpiList.add(kpiElement);
 	}
-
 }

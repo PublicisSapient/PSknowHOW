@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.common.model.application;
 import java.util.List;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -66,7 +65,7 @@ public class ProjectBasicConfig extends BasicModel {
 	private boolean kanban;
 
 	// hierarchy will not read/write in DB
-	//@Transient
+	// @Transient
 	private List<HierarchyValue> hierarchy;
 
 	private boolean saveAssigneeDetails;
@@ -86,7 +85,7 @@ public class ProjectBasicConfig extends BasicModel {
 	 * set isKanban value
 	 *
 	 * @param isKanban
-	 *            boolean value
+	 *          boolean value
 	 */
 	public void setIsKanban(boolean isKanban) {
 		this.kanban = isKanban;

@@ -33,7 +33,7 @@ import org.springframework.web.client.RestTemplate;
  */
 @SpringBootApplication
 @EnableCaching
-@ComponentScan({ "com.publicissapient" })
+@ComponentScan({"com.publicissapient"})
 @EnableMongoRepositories(basePackages = "com.publicissapient.**.repository")
 public class BambooProcessorApplication {
 
@@ -46,5 +46,4 @@ public class BambooProcessorApplication {
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
-
 }

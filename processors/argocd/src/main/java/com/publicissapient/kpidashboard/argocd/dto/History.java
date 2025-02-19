@@ -20,10 +20,7 @@ package com.publicissapient.kpidashboard.argocd.dto;
 
 import lombok.Data;
 
-/**
- * History represents a deployment details of ArgoCD Application
- *
- */
+/** History represents a deployment details of ArgoCD Application */
 @Data
 public class History {
 	private String revision;

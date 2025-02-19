@@ -111,8 +111,9 @@ public class IterationBurnupServiceImplTest {
 		jiraIssues = jiraIssueDataFactory.getJiraIssues();
 		SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory
 				.newInstance("/json/default/iteration/sprint_details.json");
-		sprintDetailsList = sprintDetailsDataFactory.getSprintDetails().stream().filter(sprintDetails -> sprintDetails
-				.getBasicProjectConfigId().equals(new ObjectId("63d9280d5ce3ee7d77551313")))
+		sprintDetailsList = sprintDetailsDataFactory.getSprintDetails().stream()
+				.filter(
+						sprintDetails -> sprintDetails.getBasicProjectConfigId().equals(new ObjectId("63d9280d5ce3ee7d77551313")))
 				.collect(Collectors.toList());
 		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory
 				.newInstance("/json/default/iteration/jira_issue_custom_history_new_structure.json");
@@ -147,8 +148,8 @@ public class IterationBurnupServiceImplTest {
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> defectDataListMap = iterationBurnupService.fetchKPIDataFromDb(leafNodeList.get(0),
-				startDate, endDate, kpiRequest);
+		Map<String, Object> defectDataListMap = iterationBurnupService.fetchKPIDataFromDb(leafNodeList.get(0), startDate,
+				endDate, kpiRequest);
 		assertNotNull(defectDataListMap);
 	}
 
@@ -174,12 +175,10 @@ public class IterationBurnupServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
 	public void testGetQualifierType() {
 		assertThat(iterationBurnupService.getQualifierType(), equalTo(KPICode.ITERATION_BURNUP.name()));
 	}
-
 }

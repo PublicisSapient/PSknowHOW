@@ -173,13 +173,11 @@ public class DRRServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		when(configHelperService.getFieldMapping(projectBasicConfig.getId())).thenReturn(fieldMapping);
 		kpiWiseAggregation.put("defectRejectionRate", "percentile");
-
 	}
 
 	@After
 	public void cleanup() {
 		jiraIssueRepository.deleteAll();
-
 	}
 
 	@Test
@@ -207,8 +205,7 @@ public class DRRServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
 				.thenReturn(jiraIssueCustomHistoryList);
-		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(totalIssueList);
+		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(totalIssueList);
 
 		Map<String, Object> defectDataListMap = dRRServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);

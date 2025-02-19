@@ -22,9 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * The connection configuration properties for AzurePipeline server.
- */
+/** The connection configuration properties for AzurePipeline server. */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

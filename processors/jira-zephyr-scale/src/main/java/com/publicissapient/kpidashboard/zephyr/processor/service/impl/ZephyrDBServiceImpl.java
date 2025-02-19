@@ -82,8 +82,7 @@ public class ZephyrDBServiceImpl implements ZephyrDBService {
 	public void processTestCaseInfoToDB(final List<ZephyrTestCaseDTO> testCases,
 			ProcessorToolConnection processorToolConnection, boolean isKanban, boolean isZephyrCloud) {
 		if (CollectionUtils.isNotEmpty(testCases)) {
-			ObjectId zephyrProcessorId = zephyrProcessorRepository.findByProcessorName(ProcessorConstants.ZEPHYR)
-					.getId();
+			ObjectId zephyrProcessorId = zephyrProcessorRepository.findByProcessorName(ProcessorConstants.ZEPHYR).getId();
 			if (null != zephyrProcessorId) {
 				List<TestCaseDetails> testCaseDetailsList = new ArrayList<>();
 				Map<String, AccountHierarchy> hierarchyDataMapForScrum = new HashMap<>();
@@ -156,8 +155,8 @@ public class ZephyrDBServiceImpl implements ZephyrDBService {
 		if (CollectionUtils.isNotEmpty(testCase.getLabels())) {
 			testCaseDetails.setLabels(testCase.getLabels());
 		}
-		setCustomFieldValues(testCaseDetails, testCase.getCustomFields(), testCase.getUpdatedOn(),
-				processorToolConnection, isZephyrCloud);
+		setCustomFieldValues(testCaseDetails, testCase.getCustomFields(), testCase.getUpdatedOn(), processorToolConnection,
+				isZephyrCloud);
 		if (testCase.getFolder() != null) {
 			testCaseDetails.setTestCaseFolderName(testCase.getFolder());
 		}
@@ -178,13 +177,10 @@ public class ZephyrDBServiceImpl implements ZephyrDBService {
 	 *
 	 * @param hierarchyDataMapForScrum
 	 * @param testCaseDetails
-	 *
 	 */
-
 	private void setAccountInfoForScrum(Map<String, AccountHierarchy> hierarchyDataMapForScrum,
 			TestCaseDetails testCaseDetails) {
-		testCaseDetails
-				.setProjectID(hierarchyDataMapForScrum.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT).getNodeId());
+		testCaseDetails.setProjectID(hierarchyDataMapForScrum.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT).getNodeId());
 		testCaseDetails
 				.setProjectName(hierarchyDataMapForScrum.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT).getNodeName());
 	}
@@ -194,13 +190,10 @@ public class ZephyrDBServiceImpl implements ZephyrDBService {
 	 *
 	 * @param hierarchyDataMapForKanban
 	 * @param testCaseDetails
-	 *
 	 */
-
 	private void setAccountInfoForKanban(Map<String, KanbanAccountHierarchy> hierarchyDataMapForKanban,
 			TestCaseDetails testCaseDetails) {
-		testCaseDetails
-				.setProjectID(hierarchyDataMapForKanban.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT).getNodeId());
+		testCaseDetails.setProjectID(hierarchyDataMapForKanban.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT).getNodeId());
 		testCaseDetails
 				.setProjectName(hierarchyDataMapForKanban.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT).getNodeName());
 	}
@@ -213,7 +206,6 @@ public class ZephyrDBServiceImpl implements ZephyrDBService {
 	 * @param updatedOnDate
 	 * @param processorToolConnection
 	 * @param isZephyrCloud
-	 *
 	 */
 	private void setCustomFieldValues(TestCaseDetails testCaseDetails, Map<String, String> customFieldMap,
 			String updatedOnDate, ProcessorToolConnection processorToolConnection, boolean isZephyrCloud) {
@@ -230,8 +222,8 @@ public class ZephyrDBServiceImpl implements ZephyrDBService {
 			testCaseDetails.setIsTestAutomated(isTestAutomated);
 			testCaseDetails.setTestAutomated(testAutomatedCustomFieldValue);
 			testCaseDetails.setIsTestCanBeAutomated(testCanBeAutomated);
-			if (isTestAutomated.equals(NormalizedJira.YES_VALUE.getValue())
-					&& StringUtils.isBlank(testCaseDetails.getTestAutomatedDate())) {
+			if (isTestAutomated.equals(NormalizedJira.YES_VALUE.getValue()) &&
+					StringUtils.isBlank(testCaseDetails.getTestAutomatedDate())) {
 				testCaseDetails.setTestAutomatedDate(getDateFormatter(updatedOnDate, isZephyrCloud));
 			}
 
@@ -254,7 +246,7 @@ public class ZephyrDBServiceImpl implements ZephyrDBService {
 
 	/**
 	 * Converts the dateFromServer date to a format yyyy-MM-dd'T'HH:mm:ss.SSSSSSS
-	 * 
+	 *
 	 * @param dateFromServer
 	 * @param isZephyrCloud
 	 * @return formatted Date
@@ -277,22 +269,21 @@ public class ZephyrDBServiceImpl implements ZephyrDBService {
 
 	/**
 	 * Sets the regression labels..
-	 * 
+	 *
 	 * @param processorToolConnection
-	 *            processorToolConnection
+	 *          processorToolConnection
 	 * @param customFieldMap
-	 *            map of custom fields
+	 *          map of custom fields
 	 * @param testCaseDetails
-	 *            scrum test case
+	 *          scrum test case
 	 */
 	private void setRegressionLabel(ProcessorToolConnection processorToolConnection, Map<String, String> customFieldMap,
 			TestCaseDetails testCaseDetails) {
-		if (CollectionUtils.isNotEmpty(processorToolConnection.getTestRegressionValue())
-				&& (customFieldMap.get(processorToolConnection.getTestRegressionLabel()) != null)) {
+		if (CollectionUtils.isNotEmpty(processorToolConnection.getTestRegressionValue()) &&
+				(customFieldMap.get(processorToolConnection.getTestRegressionLabel()) != null)) {
 			Set<String> regressionCustomValueList = new HashSet<>(
 					Arrays.asList(customFieldMap.get(processorToolConnection.getTestRegressionLabel()).split(", ")));
-			if (CollectionUtils.containsAny(processorToolConnection.getTestRegressionValue(),
-					regressionCustomValueList)) {
+			if (CollectionUtils.containsAny(processorToolConnection.getTestRegressionValue(), regressionCustomValueList)) {
 				if (CollectionUtils.isNotEmpty(testCaseDetails.getLabels())) {
 					regressionCustomValueList.addAll(testCaseDetails.getLabels());
 				}
@@ -303,16 +294,16 @@ public class ZephyrDBServiceImpl implements ZephyrDBService {
 
 	/**
 	 * Gets the value for automated test.
-	 * 
+	 *
 	 * @param automatedTestValue
 	 * @param testAutomationStatusFieldLabel
-	 *            label used to check regression automation
+	 *          label used to check regression automation
 	 * @return String
 	 */
 	private String getIsTestAutomated(List<String> automatedTestValue, String testAutomationStatusFieldLabel) {
 		String testAutomated = NormalizedJira.NO_VALUE.getValue();
-		if (CollectionUtils.isNotEmpty(automatedTestValue) && StringUtils.isNotBlank(testAutomationStatusFieldLabel)
-				&& automatedTestValue.contains(testAutomationStatusFieldLabel)) {
+		if (CollectionUtils.isNotEmpty(automatedTestValue) && StringUtils.isNotBlank(testAutomationStatusFieldLabel) &&
+				automatedTestValue.contains(testAutomationStatusFieldLabel)) {
 			testAutomated = NormalizedJira.YES_VALUE.getValue();
 		}
 		return testAutomated;
@@ -325,8 +316,7 @@ public class ZephyrDBServiceImpl implements ZephyrDBService {
 	 */
 	private String getTestCanBeAutomated(List<String> canNotAutomatedTestValue, String testAutomatedValue) {
 		String testCanBeAutomated = NormalizedJira.YES_VALUE.getValue();
-		if (CollectionUtils.isNotEmpty(canNotAutomatedTestValue)
-				&& canNotAutomatedTestValue.contains(testAutomatedValue)) {
+		if (CollectionUtils.isNotEmpty(canNotAutomatedTestValue) && canNotAutomatedTestValue.contains(testAutomatedValue)) {
 			testCanBeAutomated = NormalizedJira.NO_VALUE.getValue();
 		}
 		return testCanBeAutomated;
@@ -337,14 +327,14 @@ public class ZephyrDBServiceImpl implements ZephyrDBService {
 	 * the given key, if yes then return that or else create a new Document
 	 *
 	 * @param number
-	 *            number
+	 *          number
 	 * @param basicProjectId
-	 *            basicProjectId
+	 *          basicProjectId
 	 * @return {@link TestCaseDetails}
 	 */
 	private TestCaseDetails getTestCaseDetail(final String number, String basicProjectId) {
-		final List<TestCaseDetails> testCaseDetails = testCaseDetailsRepository
-				.findByNumberAndBasicProjectConfigId(number, basicProjectId);
+		final List<TestCaseDetails> testCaseDetails = testCaseDetailsRepository.findByNumberAndBasicProjectConfigId(number,
+				basicProjectId);
 		if (testCaseDetails.size() > 1) {
 			log.warn("More than 1 Test Case Detail Found for Key: {} ", number);
 		}
@@ -353,5 +343,4 @@ public class ZephyrDBServiceImpl implements ZephyrDBService {
 		}
 		return new TestCaseDetails();
 	}
-
 }

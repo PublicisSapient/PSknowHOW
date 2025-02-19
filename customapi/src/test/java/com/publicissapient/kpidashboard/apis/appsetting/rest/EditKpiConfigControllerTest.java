@@ -44,7 +44,6 @@ import com.publicissapient.kpidashboard.apis.util.TestUtil;
  *
  * @author jagmongr
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class EditKpiConfigControllerTest {
 
@@ -73,7 +72,6 @@ public class EditKpiConfigControllerTest {
 
 		List<String> projectconfigidList = new ArrayList<>();
 		projectconfigidList.add("5f7ee917485b2c09bc8bac7a");
-
 	}
 
 	@Test
