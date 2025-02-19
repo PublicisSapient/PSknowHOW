@@ -259,7 +259,6 @@
                         </executions>
                         <configuration>
                             <java>
-                                <target>customapi/src/main/java/**/*.java</target>
                                 <googleJavaFormat />
                             </java>
                         </configuration>
