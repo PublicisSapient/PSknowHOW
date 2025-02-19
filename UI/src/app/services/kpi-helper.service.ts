@@ -219,11 +219,13 @@ export class KpiHelperService {
             if (data2.multipleValue) {
               value2 = issue[data2.key][filter];
             }
-            if (value2 > 0) {
+            const valTest = value2 / (60 * 8);
+            const id = issue["Issue Id"];
+//             if (value2 > 0) {
               return acc + value2 / (60 * 8);
-            } else {
-              return acc - value2 / (60 * 8);
-            }
+//             } else {
+//               return acc - value2 / (60 * 8);
+//             }
           } else {
             return acc;
           }
