@@ -29,9 +29,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.jenkins.model.JenkinsProcessor;
 
-/**
- * Client for fetching job and build information from Jenkins.
- */
+/** Client for fetching job and build information from Jenkins. */
 public interface JenkinsClient {
 
 	/**
@@ -39,7 +37,7 @@ public interface JenkinsClient {
 	 * At a minimum, the number and url of each Build will be populated.
 	 *
 	 * @param jenkinsServer
-	 *            the URL for the Jenkins instance
+	 *          the URL for the Jenkins instance
 	 * @param proBasicConfig
 	 * @return a summary of every build for each job on the instance
 	 */

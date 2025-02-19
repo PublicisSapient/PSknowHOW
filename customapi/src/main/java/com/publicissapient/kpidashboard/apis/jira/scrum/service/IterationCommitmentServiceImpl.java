@@ -18,38 +18,22 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationKPIService;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -65,16 +49,15 @@ import lombok.extern.slf4j.Slf4j;
 public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 
 	public static final String UNCHECKED = "unchecked";
-	public static final String OVERALL_COMMITMENT = "Overall Commitment";
-	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
-	private static final String SEARCH_BY_PRIORITY = "Filter by status";
 	private static final String PUNTED_ISSUES = "puntedIssues";
 	private static final String ADDED_ISSUES = "addedIssues";
 	private static final String EXCLUDE_ADDED_ISSUES = "excludeAddedIssues";
 	private static final String SCOPE_ADDED = "Scope added";
 	private static final String SCOPE_REMOVED = "Scope removed";
 	private static final String INITIAL_COMMITMENT = "Initial Commitment";
-	private static final String OVERALL = "Overall";
+	private static final String FILTER_TYPE = "Multi";
+	private static final String FILTER_BY_ISSUE_TYPE = "Filter by issue type";
+	private static final String FILTER_BY_STATUS = "Filter by status";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -82,8 +65,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
-		DataCount trendValue = new DataCount();
-		projectWiseLeafNodeValue(sprintNode, trendValue, kpiElement, kpiRequest);
+		projectWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
 		return kpiElement;
 	}
 
@@ -103,51 +85,46 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
-				// to modify sprintdetails on the basis of configuration for the project
+				// to modify sprint details on the basis of configuration for the project
 				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
-				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
-						.collect(Collectors.toSet());
+				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toSet());
 
 				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
-						fieldMapping.getJiraIterationIssuetypeKPI120(),
-						fieldMapping.getJiraIterationCompletionStatusKPI120(),
+						fieldMapping.getJiraIterationIssuetypeKPI120(), fieldMapping.getJiraIterationCompletionStatusKPI120(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				List<String> puntedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.PUNTED_ISSUES);
 				Set<String> addedIssues = sprintDetails.getAddedIssues();
-				List<String> completeAndIncompleteIssues = Stream
-						.of(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-								CommonConstant.COMPLETED_ISSUES),
-								KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-										CommonConstant.NOT_COMPLETED_ISSUES))
+				List<String> completeAndIncompleteIssues = Stream.of(
+						KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails, CommonConstant.COMPLETED_ISSUES),
+						KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+								CommonConstant.NOT_COMPLETED_ISSUES))
 						.flatMap(Collection::stream).collect(Collectors.toList());
 				// Adding issues which were added before sprint start and later removed form
 				// sprint or dropped.
 				completeAndIncompleteIssues.addAll(puntedIssues);
 				if (CollectionUtils.isNotEmpty(puntedIssues)) {
-					List<JiraIssue> filteredPuntedIssueList = IterationKpiHelper.getFilteredJiraIssue(puntedIssues, totalJiraIssueList);
-					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getPuntedIssues(), filteredPuntedIssueList);
+					List<JiraIssue> filteredPuntedIssueList = IterationKpiHelper.getFilteredJiraIssue(puntedIssues,
+							totalJiraIssueList);
+					Set<JiraIssue> filtersIssuesList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
+							sprintDetails, sprintDetails.getPuntedIssues(), filteredPuntedIssueList);
 					resultListMap.put(PUNTED_ISSUES, new ArrayList<>(filtersIssuesList));
 				}
 				if (CollectionUtils.isNotEmpty(addedIssues)) {
 					List<JiraIssue> filterAddedIssueList = IterationKpiHelper.getFilteredJiraIssue(new ArrayList<>(addedIssues),
 							totalJiraIssueList);
-					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails, new HashSet<>(),
-									filterAddedIssueList);
+					Set<JiraIssue> filtersIssuesList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
+							sprintDetails, new HashSet<>(), filterAddedIssueList);
 					resultListMap.put(ADDED_ISSUES, new ArrayList<>(filtersIssuesList));
 					completeAndIncompleteIssues.removeAll(new ArrayList<>(addedIssues));
 				}
 				if (CollectionUtils.isNotEmpty(completeAndIncompleteIssues)) {
-					List<JiraIssue> filteredJiraIssue = IterationKpiHelper.getFilteredJiraIssue(
-							new ArrayList<>(completeAndIncompleteIssues), totalJiraIssueList);
+					List<JiraIssue> filteredJiraIssue = IterationKpiHelper
+							.getFilteredJiraIssue(new ArrayList<>(completeAndIncompleteIssues), totalJiraIssueList);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails, new HashSet<>(),
-									filteredJiraIssue);
+							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails, new HashSet<>(), filteredJiraIssue);
 					resultListMap.put(EXCLUDE_ADDED_ISSUES, new ArrayList<>(filtersIssuesList));
 				}
 			}
@@ -158,14 +135,13 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 	/**
 	 * Populates KPI value to sprint leaf nodes and gives the trend analysis at
 	 * sprint level.
-	 * 
+	 *
 	 * @param sprintLeafNode
-	 * @param trendValue
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Node sprintLeafNode, DataCount trendValue, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node sprintLeafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 
 		Object basicProjectConfigId = sprintLeafNode.getProjectFilter().getBasicProjectConfigId();
@@ -175,158 +151,197 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 		List<JiraIssue> puntedIssues = (List<JiraIssue>) resultMap.get(PUNTED_ISSUES);
 		List<JiraIssue> addedIssues = (List<JiraIssue>) resultMap.get(ADDED_ISSUES);
 		List<JiraIssue> initialIssues = (List<JiraIssue>) resultMap.get(EXCLUDE_ADDED_ISSUES);
-		List<JiraIssue> totalIssues = new ArrayList<>();
-		Set<String> issueTypes = new HashSet<>();
-		Set<String> statuses = new HashSet<>();
-		List<IterationKpiModalValue> overAllAddmodalValues = new ArrayList<>();
-		List<IterationKpiModalValue> overAllRemovedmodalValues = new ArrayList<>();
-		List<IterationKpiModalValue> overAllInitialmodalValues = new ArrayList<>();
-		List<IterationKpiModalValue> overAllTotalmodalValues = new ArrayList<>();
-
-		List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
-		List<IterationKpiData> data = new ArrayList<>();
-		// for totalIssue adding initialIssues + addedIssues - puntedIssues
-		if (CollectionUtils.isNotEmpty(initialIssues)) {
-			totalIssues.addAll(initialIssues);
-		}
-		if (CollectionUtils.isNotEmpty(addedIssues)) {
-			totalIssues.addAll(addedIssues);
-		}
-		if (CollectionUtils.isNotEmpty(puntedIssues)) {
-			totalIssues.removeAll(puntedIssues);
-		}
-
-		if (CollectionUtils.isNotEmpty(totalIssues)) {
-			log.info("Scope Change -> request id : {} total jira Issues : {}", requestTrackerId, totalIssues.size());
-			List<Integer> overAllTotalIssueCount = Arrays.asList(0);
-			List<Double> overAllTotalIssueSp = Arrays.asList(0.0);
-			List<Double> overAllTotalOriginalEstimate = Arrays.asList(0.0);
-			setScopeChange(issueTypes, statuses, totalIssues, iterationKpiValues, overAllTotalIssueCount,
-					overAllTotalIssueSp, overAllTotalmodalValues, OVERALL_COMMITMENT, fieldMapping,
-					overAllTotalOriginalEstimate);
-			IterationKpiData overAllTotalCount = setIterationKpiData(fieldMapping, overAllTotalIssueCount,
-					overAllTotalIssueSp, overAllTotalOriginalEstimate, overAllTotalmodalValues, OVERALL_COMMITMENT);
-			data.add(overAllTotalCount);
-		}
+		Set<IssueKpiModalValue> issueData = new HashSet<>();
 
 		if (CollectionUtils.isNotEmpty(initialIssues)) {
-			log.info("Scope Change -> request id : {} initial jira Issues : {}", requestTrackerId,
+			log.info("Iteration Commitment - Initial Commitment -> request id : {} jira Issues : {}", requestTrackerId,
 					initialIssues.size());
-			List<Integer> overAllInitialIssueCount = Arrays.asList(0);
-			List<Double> overAllInitialIssueSp = Arrays.asList(0.0);
-			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
-			setScopeChange(issueTypes, statuses, initialIssues, iterationKpiValues, overAllInitialIssueCount,
-					overAllInitialIssueSp, overAllInitialmodalValues, INITIAL_COMMITMENT, fieldMapping,
-					overAllOriginalEstimate);
-			IterationKpiData overAllInitialCount = setIterationKpiData(fieldMapping, overAllInitialIssueCount,
-					overAllInitialIssueSp, overAllOriginalEstimate, overAllInitialmodalValues, INITIAL_COMMITMENT);
-			data.add(overAllInitialCount);
+			Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper.createMapOfIssueModal(initialIssues);
+			initialIssues.forEach(issue -> {
+				KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
+				IssueKpiModalValue data = issueKpiModalObject.get(issue.getNumber());
+				setCategoryAndDataValue(issue, data, fieldMapping, INITIAL_COMMITMENT);
+			});
+			issueData.addAll(new HashSet<>(issueKpiModalObject.values()));
 		}
-
 		if (CollectionUtils.isNotEmpty(addedIssues)) {
-			log.info("Scope Change -> request id : {} added jira Issues : {}", requestTrackerId, addedIssues.size());
-			List<Integer> overAllAddedIssueCount = Arrays.asList(0);
-			List<Double> overAllAddedIssueSp = Arrays.asList(0.0);
-			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
-			setScopeChange(issueTypes, statuses, addedIssues, iterationKpiValues, overAllAddedIssueCount,
-					overAllAddedIssueSp, overAllAddmodalValues, SCOPE_ADDED, fieldMapping, overAllOriginalEstimate);
-			IterationKpiData overAllAddedCount = setIterationKpiData(fieldMapping, overAllAddedIssueCount,
-					overAllAddedIssueSp, overAllOriginalEstimate, overAllAddmodalValues, SCOPE_ADDED);
-			data.add(overAllAddedCount);
+			log.info("Iteration Commitment - Scope Added -> request id : {} jira Issues : {}", requestTrackerId,
+					addedIssues.size());
+			Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper.createMapOfIssueModal(addedIssues);
+			addedIssues.forEach(issue -> {
+				KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
+				IssueKpiModalValue data = issueKpiModalObject.get(issue.getNumber());
+				setCategoryAndDataValue(issue, data, fieldMapping, SCOPE_ADDED);
+			});
+			issueData.addAll(new HashSet<>(issueKpiModalObject.values()));
 		}
-
 		if (CollectionUtils.isNotEmpty(puntedIssues)) {
-			log.info("Scope Change -> request id : {} punted jira Issues : {}", requestTrackerId, puntedIssues.size());
-			List<Integer> overAllPunIssueCount = Arrays.asList(0);
-			List<Double> overAllPunIssueSp = Arrays.asList(0.0);
-			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
-			setScopeChange(issueTypes, statuses, puntedIssues, iterationKpiValues, overAllPunIssueCount,
-					overAllPunIssueSp, overAllRemovedmodalValues, SCOPE_REMOVED, fieldMapping, overAllOriginalEstimate);
-			IterationKpiData overAllPuntedCount = setIterationKpiData(fieldMapping, overAllPunIssueCount,
-					overAllPunIssueSp, overAllOriginalEstimate, overAllRemovedmodalValues, SCOPE_REMOVED);
-			data.add(overAllPuntedCount);
+			log.info("Iteration Commitment - Scope Removed -> request id : {} jira Issues : {}", requestTrackerId,
+					puntedIssues.size());
+			Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper.createMapOfIssueModal(puntedIssues);
+			puntedIssues.forEach(issue -> {
+				KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
+				IssueKpiModalValue data = issueKpiModalObject.get(issue.getNumber());
+				setCategoryAndDataValue(issue, data, fieldMapping, SCOPE_REMOVED);
+			});
+			issueData.addAll(new HashSet<>(issueKpiModalObject.values()));
 		}
 
-		if (CollectionUtils.isNotEmpty(data)) {
-			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
-			iterationKpiValues.add(overAllIterationKpiValue);
+		if (CollectionUtils.isNotEmpty(issueData)) {
 
-			// Create kpi level filters
-			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
-			IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, statuses);
-			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
-			trendValue.setValue(iterationKpiValues);
-			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(sprintLeafNode.getName());
 			kpiElement.setModalHeads(KPIExcelColumn.ITERATION_COMMITMENT.getColumns());
+			kpiElement.setIssueData(issueData);
+			kpiElement.setFilterGroup(createFilterGroup());
+			kpiElement.setDataGroup(createDataGroup(fieldMapping));
+			kpiElement.setCategoryData(createCategoryData());
 		}
-		kpiElement.setTrendValueList(trendValue);
 	}
 
-	private void setScopeChange(Set<String> issueTypes, Set<String> statuses, List<JiraIssue> allIssues,
-			List<IterationKpiValue> iterationKpiValues, List<Integer> overAllIssueCount, List<Double> overAllIssueSp,
-			List<IterationKpiModalValue> overAllmodalValues, String label, FieldMapping fieldMapping,
-			List<Double> overAllOriginalEstimate) {
-		Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues = allIssues.stream()
-				.collect(Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getStatus)));
-		// Creating map of modal Objects
-		Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
-		typeAndStatusWiseIssues.forEach((issueType, statusWiseIssue) -> statusWiseIssue.forEach((status, issues) -> {
-			issueTypes.add(issueType);
-			statuses.add(status);
-			List<IterationKpiModalValue> modalValues = new ArrayList<>();
-			int issueCount = 0;
-			double storyPoints = 0;
-			Double originalEstimate = 0.0;
-			for (JiraIssue jiraIssue : issues) {
-				KPIExcelUtility.populateIterationKPI(overAllmodalValues, modalValues, jiraIssue, fieldMapping,
-						modalObjectMap);
-				issueCount = issueCount + 1;
-				if (null != jiraIssue.getStoryPoints()) {
-					storyPoints = storyPoints + jiraIssue.getStoryPoints();
-					overAllIssueSp.set(0, overAllIssueSp.get(0) + jiraIssue.getStoryPoints());
-				}
-				if (null != jiraIssue.getOriginalEstimateMinutes()) {
-					originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
-					overAllOriginalEstimate.set(0,
-							overAllOriginalEstimate.get(0) + jiraIssue.getOriginalEstimateMinutes());
-				}
-				overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
-			}
-			List<IterationKpiData> data = new ArrayList<>();
-			IterationKpiData issueCounts;
-			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-				issueCounts = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(storyPoints), null,
-						"", CommonConstant.SP, modalValues);
-			} else {
-				issueCounts = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(originalEstimate),
-						null, "", CommonConstant.DAY, modalValues);
-			}
-			data.add(issueCounts);
-			IterationKpiValue matchingObject = iterationKpiValues.stream()
-					.filter(p -> p.getFilter1().equals(issueType) && p.getFilter2().equals(status)).findAny()
-					.orElse(null);
-			if (null == matchingObject) {
-				IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, status, data);
-				iterationKpiValues.add(iterationKpiValue);
-			} else {
-				matchingObject.getData().addAll(data);
-			}
-		}));
-	}
-
-	private IterationKpiData setIterationKpiData(FieldMapping fieldMapping, List<Integer> overAllIssueCount,
-			List<Double> overAllIssueSp, List<Double> overAllOriginalEstimate,
-			List<IterationKpiModalValue> overAllModalValues, String kpiLabel) {
-		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			return new IterationKpiData(kpiLabel, Double.valueOf(overAllIssueCount.get(0)),
-					roundingOff(overAllIssueSp.get(0)), null, "", CommonConstant.SP, overAllModalValues);
+	/**
+	 * Sets kpi data category and value field.
+	 *
+	 * @param issue
+	 * @param data
+	 * @param fieldMapping
+	 * @param category
+	 */
+	private static void setCategoryAndDataValue(JiraIssue issue, IssueKpiModalValue data, FieldMapping fieldMapping,
+			String category) {
+		if (null == data.getCategory()) {
+			data.setCategory(List.of(category));
 		} else {
-			return new IterationKpiData(kpiLabel, Double.valueOf(overAllIssueCount.get(0)),
-					roundingOff(overAllOriginalEstimate.get(0)), null, "", CommonConstant.DAY, overAllModalValues);
+			data.getCategory().add(category);
+		}
+		data.setValue(0d);
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+				fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			if (null != issue.getStoryPoints()) {
+				data.setValue(issue.getStoryPoints());
+			}
+		} else if (null != issue.getOriginalEstimateMinutes()) {
+			data.setValue(Double.valueOf(issue.getOriginalEstimateMinutes()));
 		}
 	}
 
+	/**
+	 * Creates filter group.
+	 *
+	 * @return
+	 */
+	private FilterGroup createFilterGroup() {
+		FilterGroup filterGroup = new FilterGroup();
+		// for the group by selection
+		List<Filter> filterList = new ArrayList<>();
+		filterList.add(createFilter(FILTER_TYPE, FILTER_BY_ISSUE_TYPE, "Issue Type", 1));
+		filterList.add(createFilter(FILTER_TYPE, FILTER_BY_STATUS, "Issue Status", 2));
+		filterGroup.setFilterGroup1(filterList);
+
+		return filterGroup;
+	}
+
+	/**
+	 * Creates individual filter object.
+	 *
+	 * @param type
+	 * @param name
+	 * @param key
+	 * @param order
+	 * @return
+	 */
+	private Filter createFilter(String type, String name, String key, Integer order) {
+		Filter filter = new Filter();
+		filter.setFilterType(type);
+		filter.setFilterName(name);
+		filter.setFilterKey(key);
+		filter.setOrder(order);
+		return filter;
+	}
+
+	/**
+	 * Creates data group that tells what kind of data will be shown on chart.
+	 *
+	 * @param fieldMapping
+	 * @return
+	 */
+	private KpiDataGroup createDataGroup(FieldMapping fieldMapping) {
+		KpiDataGroup dataGroup = new KpiDataGroup();
+
+		KpiDataSummary summary = new KpiDataSummary();
+		summary.setName("Overall Commitment");
+		summary.setAggregation("sum");
+
+		List<KpiData> dataGroup1 = new ArrayList<>();
+		String unit;
+		String displayName;
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+				fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			unit = CommonConstant.SP;
+			displayName = CommonConstant.STORY_POINT;
+		} else {
+			unit = CommonConstant.DAY;
+			displayName = CommonConstant.ORIGINAL_ESTIMATE;
+		}
+
+		dataGroup1.add(createKpiData("", "Issues", 1, "count", ""));
+		dataGroup1.add(createKpiData("value", displayName, 2, "sum", unit));
+
+		dataGroup.setSummary(summary);
+		dataGroup.setDataGroup1(dataGroup1);
+		return dataGroup;
+	}
+
+	/**
+	 * Creates kpi data object.
+	 *
+	 * @param key
+	 * @param name
+	 * @param order
+	 * @param aggregation
+	 * @param unit
+	 * @return
+	 */
+	private KpiData createKpiData(String key, String name, Integer order, String aggregation, String unit) {
+		KpiData data = new KpiData();
+		data.setKey(key);
+		data.setName(name);
+		data.setOrder(order);
+		data.setAggregation(aggregation);
+		data.setUnit(unit);
+		data.setShowAsLegend(false);
+		return data;
+	}
+
+	/**
+	 * Creates object to hold category related info.
+	 *
+	 * @return
+	 */
+	private CategoryData createCategoryData() {
+		CategoryData categoryData = new CategoryData();
+		categoryData.setCategoryKey("Category");
+
+		List<KpiDataCategory> categoryGroup = new ArrayList<>();
+		categoryGroup.add(createKpiDataCategory(INITIAL_COMMITMENT, "+", 1));
+		categoryGroup.add(createKpiDataCategory(SCOPE_ADDED, "+", 2));
+		categoryGroup.add(createKpiDataCategory(SCOPE_REMOVED, "-", -1));
+		categoryData.setCategoryGroup(categoryGroup);
+		return categoryData;
+	}
+
+	/**
+	 * Creates kpi data category object.
+	 *
+	 * @param categoryName
+	 * @param categoryValue
+	 * @param order
+	 * @return
+	 */
+	private KpiDataCategory createKpiDataCategory(String categoryName, String categoryValue, Integer order) {
+		KpiDataCategory category = new KpiDataCategory();
+		category.setCategoryName(categoryName);
+		category.setCategoryValue(categoryValue);
+		category.setOrder(order);
+		return category;
+	}
 }

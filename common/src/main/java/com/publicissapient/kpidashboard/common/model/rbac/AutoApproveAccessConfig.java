@@ -26,5 +26,4 @@ public class AutoApproveAccessConfig {
 
 	@Field("roles")
 	private List<RoleData> roles;
-
 }

@@ -35,5 +35,4 @@ public class DeleteProjectTraceLog extends BasicModel {
 	private ProjectBasicConfig projectBasicConfig;
 	private String deletedBy;
 	private LocalDateTime deletionDate;
-
 }

@@ -1,6 +1,5 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,13 +9,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -26,11 +22,10 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -51,8 +46,6 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -68,7 +61,6 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	private static final String INITIAL_ORIGINAL_ESTIMATE = "Initial Commitment (Hours)";
 	private static final String FINAL_SCOPE_ORIGINAL_ESTIMATE = "Final Scope (Hours)";
 	private static final String PROJECT_WISE_TOTAL_ISSUE = "projectWiseTotalIssues";
-	private static final String DEV = "DeveloperKpi";
 	private static final String TOTAL_ISSUE_SIZE = "totalIssueSize";
 	private static final String COMPLETED_ISSUE_SIZE = "completedIssueSize";
 	private static final String INITIAL_ISSUE_SIZE = "initialIssueSize";
@@ -90,21 +82,19 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	private static final String SPECIAL_SYMBOL = "#";
 
 	@Autowired
-	private SprintRepository sprintRepository;
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-	@Autowired
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
-	private KpiHelperService kpiHelperService;
-
-	@Autowired
-	private FilterHelperService flterHelperService;
-
+	private FilterHelperService filterHelperService;
 	@Autowired
 	private CacheService cacheService;
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
+	@Autowired
+	private KpiDataProvider kpiDataProvider;
+
+	private List<String> sprintIdList = Collections.synchronizedList(new ArrayList<>());
 
 	@Override
 	public Long calculateKPIMetrics(Map<String, Object> stringObjectMap) {
@@ -117,16 +107,16 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-
+		sprintIdList = treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.SPRINT_MASTER).stream()
+				.map(node -> node.getSprintFilter().getId()).collect(Collectors.toList());
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			if (Filters.getFilter(k) == Filters.SPRINT) {
 				sprintWiseLeafNodeValue(mapTmp, v, kpiElement, kpiRequest);
-
 			}
 		});
 
@@ -170,8 +160,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 
-		Collections.sort(sprintLeafNodeList, (Node o1, Node o2) -> o1.getSprintFilter().getStartDate()
-				.compareTo(o2.getSprintFilter().getStartDate()));
+		Collections.sort(sprintLeafNodeList,
+				(Node o1, Node o2) -> o1.getSprintFilter().getStartDate().compareTo(o2.getSprintFilter().getStartDate()));
 
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
@@ -179,8 +169,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
 		long time = System.currentTimeMillis();
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
-		log.info("CommitmentReliability taking fetchKPIDataFromDb {}",
-				String.valueOf(System.currentTimeMillis() - time));
+		log.info("CommitmentReliability taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 
 		List<JiraIssue> allJiraIssue = (List<JiraIssue>) resultMap.get(PROJECT_WISE_TOTAL_ISSUE);
 		List<SprintDetails> sprintDetails = (List<SprintDetails>) resultMap.get(SPRINT_DETAILS);
@@ -220,13 +209,10 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 						new HashSet<>(completedIssues));
 				sprintWiseInitialScopeIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
 						new HashSet<>(totalInitialIssues));
-				sprintWiseInitialScopeCompletedIssues.put(
-						Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
+				sprintWiseInitialScopeCompletedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
 						new HashSet<>(totalCompltdInitialIssues));
-				sprintWiseAddedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-						addedIssues);
-				sprintWiseRemovedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-						puntedIssues);
+				sprintWiseAddedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()), addedIssues);
+				sprintWiseRemovedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()), puntedIssues);
 			});
 		}
 
@@ -236,8 +222,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			String trendLineName = node.getProjectFilter().getName();
 
 			String currentSprintComponentId = node.getSprintFilter().getId();
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
+			Pair<String, String> currentNodeIdentifier = Pair.of(node.getProjectFilter().getBasicProjectConfigId().toString(),
+					currentSprintComponentId);
 
 			List<CommitmentReliabilityValidationData> validationDataList = new ArrayList<>();
 
@@ -260,7 +246,6 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 					totalAddedIssue.addAll(sprintWiseAddedIssues.get(currentNodeIdentifier));
 				}
 				totalPresentCompltdInitialIssue = sprintWiseInitialScopeCompletedIssues.get(currentNodeIdentifier);
-
 			}
 
 			Map<String, Double> commitmentHowerMap = new HashMap<>();
@@ -272,8 +257,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 			List<String> uniqueIssues = totalSumIssues.stream().map(JiraIssue::getTypeName).distinct().toList();
 			Map<String, List<JiraIssue>> totalPresentJiraIssueGroup = getGroupByAllIssues(totalPresentJiraIssue);
-			Map<String, List<JiraIssue>> totalPresentCompletedIssueGroup = getGroupByAllIssues(
-					totalPresentCompletedIssue);
+			Map<String, List<JiraIssue>> totalPresentCompletedIssueGroup = getGroupByAllIssues(totalPresentCompletedIssue);
 			Map<String, List<JiraIssue>> totalPresentInitialIssueGroup = getGroupByAllIssues(totalPresentInitialIssue);
 			Map<String, List<JiraIssue>> totalPresentCompltdInitialIssueGroup = getGroupByAllIssues(
 					totalPresentCompltdInitialIssue);
@@ -282,9 +266,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			for (String issueType : uniqueIssues) {
 				Map<String, Double> issueTypeWiseHowerMap = new HashMap<>();
 				commitmentMap = getCommitmentMap(totalPresentJiraIssueGroup.getOrDefault(issueType, new ArrayList<>()),
-						totalPresentCompletedIssueGroup.getOrDefault(issueType, new ArrayList<>()),
-						issueTypeWiseHowerMap, fieldMapping,
-						totalPresentInitialIssueGroup.getOrDefault(issueType, new ArrayList<>()),
+						totalPresentCompletedIssueGroup.getOrDefault(issueType, new ArrayList<>()), issueTypeWiseHowerMap,
+						fieldMapping, totalPresentInitialIssueGroup.getOrDefault(issueType, new ArrayList<>()),
 						totalPresentCompltdInitialIssueGroup.getOrDefault(issueType, new ArrayList<>()), issueType);
 				prepareDataCount(issueTypeWiseHowerMap, commitmentMap, trendLineName, node, fieldMapping, dataCountMap);
 				commitmentHowerMap.putAll(issueTypeWiseHowerMap);
@@ -305,18 +288,17 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			prepareDataCount(commitmentHowerMap, commitmentMap, trendLineName, node, fieldMapping, dataCountMap);
 
 			mapTmp.get(node.getId()).setValue(dataCountMap);
-
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(
-				KPIExcelColumn.COMMITMENT_RELIABILITY.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+				KPIExcelColumn.COMMITMENT_RELIABILITY.getColumns(sprintLeafNodeList, cacheService, filterHelperService));
 	}
 
 	private static Set<JiraIssue> getCompletedIssues(List<JiraIssue> allJiraIssue, SprintDetails sd,
 			Set<JiraIssue> completedIssues) {
 		if (sd.getCompletedIssues() != null && CollectionUtils.isNotEmpty(sd.getCompletedIssues())) {
-			completedIssues = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd,
-					sd.getCompletedIssues(), allJiraIssue);
+			completedIssues = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd, sd.getCompletedIssues(),
+					allJiraIssue);
 		}
 		return completedIssues;
 	}
@@ -340,72 +322,41 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			dataCount.setHoverValue(generateHowerMap(commitmentHowerMap, keyIssues[0], fieldMapping));
 			dataCountMap.put(map.getKey(), new ArrayList<>(Arrays.asList(dataCount)));
 		}
-
 	}
 
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
-		List<String> sprintList = new ArrayList<>();
-		List<String> basicProjectConfigIds = new ArrayList<>();
+		Map<ObjectId, List<String>> projectWiseSprints = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			sprintList.add(leaf.getSprintFilter().getId());
-			basicProjectConfigIds.add(basicProjectConfigId.toString());
-		});
-		List<SprintDetails> sprintDetails = new ArrayList<>(sprintRepository.findBySprintIDIn(sprintList));
-		Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = sprintDetails.stream()
-				.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
-
-		Map<ObjectId, Set<String>> duplicateIssues = kpiHelperService
-				.getProjectWiseTotalSprintDetail(projectWiseTotalSprintDetails);
-		Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = null;
-		Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
-
-		if (MapUtils.isNotEmpty(fieldMappingMap) && !duplicateIssues.isEmpty()) {
-			Map<ObjectId, List<String>> customFieldMapping = duplicateIssues.keySet().stream()
-					.filter(fieldMappingMap::containsKey).collect(Collectors.toMap(Function.identity(), key -> {
-						FieldMapping fieldMapping = fieldMappingMap.get(key);
-						return Optional.ofNullable(fieldMapping)
-								.map(FieldMapping::getJiraIterationCompletionStatusKpi72)
-								.orElse(Collections.emptyList());
-					}));
-			projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService
-					.getMinimumClosedDateFromConfiguration(duplicateIssues, customFieldMapping);
-		}
-
-		Map<ObjectId, Map<String, List<LocalDateTime>>> finalProjectWiseDuplicateIssuesWithMinCloseDate = projectWiseDuplicateIssuesWithMinCloseDate;
-		Set<String> totalIssue = new HashSet<>();
-		sprintDetails.stream().forEach(dbSprintDetail -> {
-			FieldMapping fieldMapping = fieldMappingMap.get(dbSprintDetail.getBasicProjectConfigId());
-			// to modify sprintdetails on the basis of configuration for the project
-			SprintDetails sprintDetail = KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail,
-					fieldMapping.getJiraIterationIssuetypeKpi72(), fieldMapping.getJiraIterationCompletionStatusKpi72(),
-					finalProjectWiseDuplicateIssuesWithMinCloseDate);
-			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
-				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
-						CommonConstant.TOTAL_ISSUES));
-			}
-			if (CollectionUtils.isNotEmpty(sprintDetail.getPuntedIssues())) {
-				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
-						CommonConstant.PUNTED_ISSUES));
-
-			}
-			if (CollectionUtils.isNotEmpty(sprintDetail.getAddedIssues())) {
-				totalIssue.addAll(sprintDetail.getAddedIssues());
-			}
-
+			projectWiseSprints.putIfAbsent(basicProjectConfigId, new ArrayList<>());
+			projectWiseSprints.get(basicProjectConfigId).add(leaf.getSprintFilter().getId());
 		});
 
-		/** additional filter **/
-		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
-		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-				basicProjectConfigIds.stream().distinct().toList());
+		List<JiraIssue> totalIssue = new ArrayList<>();
+		List<SprintDetails> sprintDetails = new ArrayList<>();
+		boolean fetchCachedData = filterHelperService.isFilterSelectedTillSprintLevel(kpiRequest.getLevel(), false);
+		projectWiseSprints.forEach((basicProjectConfigId, sprintList) -> {
+			Map<String, Object> result;
+			if (fetchCachedData) { // fetch data from cache only if Filter is selected till Sprint
+				// level.
+				result = kpiDataCacheService.fetchCommitmentReliabilityData(kpiRequest, basicProjectConfigId, sprintIdList,
+						KPICode.COMMITMENT_RELIABILITY.getKpiId());
+			} else { // fetch data from DB if filters below Sprint level (i.e. additional filters)
+				result = kpiDataProvider.fetchCommitmentReliabilityData(kpiRequest, basicProjectConfigId, sprintList);
+			}
+			List<JiraIssue> allJiraIssue = (List<JiraIssue>) result.get(PROJECT_WISE_TOTAL_ISSUE);
+			List<SprintDetails> sprintDetailsList = (List<SprintDetails>) result.get(SPRINT_DETAILS);
+
+			sprintDetails.addAll(sprintDetailsList.stream().filter(sprint -> sprintList.contains(sprint.getSprintID()))
+					.collect(Collectors.toSet()));
+			totalIssue.addAll(allJiraIssue);
+		});
+
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
-			resultListMap.put(PROJECT_WISE_TOTAL_ISSUE,
-					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, new HashMap<>()));
+			resultListMap.put(PROJECT_WISE_TOTAL_ISSUE, totalIssue);
 			resultListMap.put(SPRINT_DETAILS, sprintDetails);
 		}
 		return resultListMap;
@@ -421,15 +372,14 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	private Map<String, Object> generateHowerMap(Map<String, Double> commitmentHowerMap, String key,
 			FieldMapping fieldMapping) {
 		Map<String, Object> howerMap = new LinkedHashMap<>();
-		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+				fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			if (FINAL_SCOPE_COUNT.equalsIgnoreCase(key)) {
 				howerMap.put(DELIVERED, commitmentHowerMap.getOrDefault(COMPLETED_ISSUE_SIZE, 0.0d));
 				howerMap.put(COMMITTED, commitmentHowerMap.getOrDefault(TOTAL_ISSUE_SIZE, 0.0d));
 			} else if (INITIAL_ISSUE_COUNT.equalsIgnoreCase(key)) {
 				howerMap.put(DELIVERED_FINAL_COMMITMENT, commitmentHowerMap.getOrDefault(COMPLETED_ISSUE_SIZE, 0.0d));
-				howerMap.put(DELIVERED_INITIAL_COMMITMENT,
-						commitmentHowerMap.getOrDefault(INITIALCMPLTD_ISSUE_SIZE, 0.0d));
+				howerMap.put(DELIVERED_INITIAL_COMMITMENT, commitmentHowerMap.getOrDefault(INITIALCMPLTD_ISSUE_SIZE, 0.0d));
 				howerMap.put(INITIALLYCOMMITED, commitmentHowerMap.getOrDefault(INITIAL_ISSUE_SIZE, 0.0d));
 			} else if (INITIAL_STORY_POINT.equalsIgnoreCase(key)) {
 				howerMap.put(DELIVERED_FINAL_COMMITMENT, commitmentHowerMap.getOrDefault(COMPLETED_STORY_POINTS, 0.0d));
@@ -446,13 +396,11 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 				howerMap.put(COMMITTED, commitmentHowerMap.getOrDefault(TOTAL_ISSUE_SIZE, 0.0d));
 			} else if (INITIAL_ISSUE_COUNT.equalsIgnoreCase(key)) {
 				howerMap.put(DELIVERED_FINAL_COMMITMENT, commitmentHowerMap.getOrDefault(COMPLETED_ISSUE_SIZE, 0.0d));
-				howerMap.put(DELIVERED_INITIAL_COMMITMENT,
-						commitmentHowerMap.getOrDefault(INITIALCMPLTD_ISSUE_SIZE, 0.0d));
+				howerMap.put(DELIVERED_INITIAL_COMMITMENT, commitmentHowerMap.getOrDefault(INITIALCMPLTD_ISSUE_SIZE, 0.0d));
 				howerMap.put(INITIALLYCOMMITED, commitmentHowerMap.getOrDefault(INITIAL_ISSUE_SIZE, 0.0d));
 			} else if (INITIAL_ORIGINAL_ESTIMATE.equalsIgnoreCase(key)) {
 				howerMap.put(DELIVERED_FINAL_COMMITMENT, commitmentHowerMap.get(COMPLETED_ORIGINAL_ESTIMATE) + " hrs");
-				howerMap.put(DELIVERED_INITIAL_COMMITMENT,
-						commitmentHowerMap.get(INITIALCMPLTD_ORIGINAL_ESTIMATE) + " hrs");
+				howerMap.put(DELIVERED_INITIAL_COMMITMENT, commitmentHowerMap.get(INITIALCMPLTD_ORIGINAL_ESTIMATE) + " hrs");
 				howerMap.put(INITIALLYCOMMITED, commitmentHowerMap.get(INITIALISSUE_ORIGINAL_ESTIMATE) + " hrs");
 			} else {
 				howerMap.put(DELIVERED, commitmentHowerMap.get(COMPLETED_ORIGINAL_ESTIMATE) + " hrs");
@@ -473,20 +421,16 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			String sprintName = node.getSprintFilter().getName();
 			if (CollectionUtils.isNotEmpty(validationDataList)) {
 				validationDataList.stream().forEach(data -> {
-
 					Map<String, JiraIssue> totalSprintStoryMap = new HashMap<>();
 					data.getTotalIssueNumbers().stream()
 							.forEach(issue -> totalSprintStoryMap.putIfAbsent(issue.getNumber(), issue));
 					data.getInitialIssueNumber().stream()
 							.forEach(issue -> totalSprintStoryMap.putIfAbsent(issue.getNumber(), issue));
-					KPIExcelUtility.populateCommittmentReliability(sprintName, totalSprintStoryMap, data, excelData,
-							fieldMapping, customApiConfig);
-
+					KPIExcelUtility.populateCommittmentReliability(sprintName, totalSprintStoryMap, data, excelData, fieldMapping,
+							customApiConfig);
 				});
-
 			}
 		}
-
 	}
 
 	/**
@@ -534,8 +478,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		Double initialOriginalEstimateInHours = initialIssueOriginalEstimate / 60;
 		Double initialCompltdOriginalEstimateInHours = initialCompltdIssueOriginalEstimate / 60;
 		long totalHours = (long) ((completedOriginalEstimateInHours / totalOriginalEstimateInHours) * 100);
-		long initialTotalHours = (long) ((initialCompltdOriginalEstimateInHours / initialOriginalEstimateInHours)
-				* 100);
+		long initialTotalHours = (long) ((initialCompltdOriginalEstimateInHours / initialOriginalEstimateInHours) * 100);
 		commitmentHowerMap.put(TOTAL_ORIGINAL_ESTIMATE, totalOriginalEstimateInHours);
 		commitmentHowerMap.put(COMPLETED_ORIGINAL_ESTIMATE, completedOriginalEstimateInHours);
 		commitmentHowerMap.put(INITIALISSUE_ORIGINAL_ESTIMATE, initialOriginalEstimateInHours);
@@ -549,8 +492,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		commitmentHowerMap.put(INITIALISSUE_STORY_POINTS, initialIssueSum);
 		commitmentHowerMap.put(INITIALCMPLTDISSUE_STORY_POINTS, initialCompltdIssueSum);
 
-		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+				fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			commitmentResult.put(FINAL_SCOPE_STORY_POINTS + SPECIAL_SYMBOL + issues,
 					ObjectUtils.defaultIfNull(storyCount, 0L));
 			commitmentResult.put(INITIAL_STORY_POINT + SPECIAL_SYMBOL + issues,
@@ -565,13 +508,11 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		commitmentResult.put(INITIAL_ISSUE_COUNT + SPECIAL_SYMBOL + issues,
 				ObjectUtils.defaultIfNull(initialIssueCount, 0L));
 		return commitmentResult;
-
 	}
 
 	private double getTotalSum(List<JiraIssue> totalJiraIssue) {
 		return totalJiraIssue.stream().filter(jiraIssue -> Objects.nonNull(jiraIssue.getStoryPoints()))
 				.mapToDouble(JiraIssue::getStoryPoints).sum();
-
 	}
 
 	@Override
@@ -581,8 +522,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 	@Override
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI72(),
-				KPICode.COMMITMENT_RELIABILITY.getKpiId());
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI72(), KPICode.COMMITMENT_RELIABILITY.getKpiId());
 	}
 
 	@Getter
@@ -597,5 +537,4 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		private Set<String> addedIssues;
 		private Set<String> puntedIssues;
 	}
-
 }

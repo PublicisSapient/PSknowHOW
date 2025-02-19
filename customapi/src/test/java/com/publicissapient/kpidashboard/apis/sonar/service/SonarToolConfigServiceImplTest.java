@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -33,7 +32,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
@@ -53,6 +51,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarVersionResponseDTO;
@@ -61,9 +60,7 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 
 /**
  * @author hiren babariya
- *
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class SonarToolConfigServiceImplTest {
 
@@ -166,9 +163,8 @@ public class SonarToolConfigServiceImplTest {
 		String branchJson = getJSONDataResponse("sonarV8Dot9Branches.json");
 		String branchUrl = String.format(new StringBuilder(SONAR_URL).append(RESOURCE_BRANCH_ENDPOINT).toString(),
 				PROJECT_KEY);
-		Mockito.doReturn(new ResponseEntity<>(branchJson, HttpStatus.OK)).when(restTemplate).exchange(
-				Mockito.eq(branchUrl), Mockito.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				Mockito.eq(String.class));
+		Mockito.doReturn(new ResponseEntity<>(branchJson, HttpStatus.OK)).when(restTemplate).exchange(Mockito.eq(branchUrl),
+				Mockito.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), Mockito.eq(String.class));
 		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
 		ServiceResponse response = sonarToolConfigService.getSonarProjectBranchList(connectionId, versionAbove,
 				PROJECT_KEY);
@@ -212,7 +208,6 @@ public class SonarToolConfigServiceImplTest {
 				.thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
 		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
 		sonarToolConfigService.getSonarProjectKeyList(connectionId, "");
-
 	}
 
 	@Test
@@ -220,9 +215,8 @@ public class SonarToolConfigServiceImplTest {
 		String branchJson = getJSONDataResponse("sonarV8Dot9Branches.json");
 		String branchUrl = String.format(new StringBuilder(SONAR_URL).append(RESOURCE_BRANCH_ENDPOINT).toString(),
 				PROJECT_KEY);
-		Mockito.doReturn(new ResponseEntity<>(branchJson, HttpStatus.OK)).when(restTemplate).exchange(
-				Mockito.eq(branchUrl), Mockito.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				Mockito.eq(String.class));
+		Mockito.doReturn(new ResponseEntity<>(branchJson, HttpStatus.OK)).when(restTemplate).exchange(Mockito.eq(branchUrl),
+				Mockito.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), Mockito.eq(String.class));
 
 		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
 		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
@@ -248,7 +242,6 @@ public class SonarToolConfigServiceImplTest {
 		// Assert
 		Assert.assertTrue(result.getSuccess());
 		Assert.assertEquals("Version List Successfully Fetched", result.getMessage());
-
 	}
 
 	private SonarVersionResponseDTO prepareSonarVersionList(String type, boolean branchSupport,
@@ -259,5 +252,4 @@ public class SonarToolConfigServiceImplTest {
 		sonarVersionList.setVersions(versionList);
 		return sonarVersionList;
 	}
-
 }

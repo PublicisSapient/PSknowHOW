@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.auth;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,5 +60,4 @@ public class AuthenticationResultHandler implements AuthenticationSuccessHandler
 		// sgu106: Google Analytics data population ends
 
 	}
-
 }

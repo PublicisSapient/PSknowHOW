@@ -25,10 +25,7 @@ import com.publicissapient.kpidashboard.bitbucket.processor.service.BitBucketCli
 import com.publicissapient.kpidashboard.bitbucket.processor.service.impl.BitBucketCloudClient;
 import com.publicissapient.kpidashboard.bitbucket.processor.service.impl.BitBucketServerClient;
 
-/**
- * Provides factory to create Bitbucket Clients.
- *
- */
+/** Provides factory to create Bitbucket Clients. */
 @Component
 public class BitBucketClientFactory {
 
@@ -37,11 +34,11 @@ public class BitBucketClientFactory {
 
 	/**
 	 * Instantiate BitBucketClientFactory.
-	 * 
+	 *
 	 * @param bitBucketCloudClient
-	 *            Bitbucket cloud client
+	 *          Bitbucket cloud client
 	 * @param bitBucketServerClient
-	 *            Bitbucket server client
+	 *          Bitbucket server client
 	 */
 	@Autowired
 	public BitBucketClientFactory(BitBucketCloudClient bitBucketCloudClient,
@@ -52,7 +49,7 @@ public class BitBucketClientFactory {
 
 	/**
 	 * Provides the respective Sonar client based on connection type
-	 * 
+	 *
 	 * @param cloudEnv
 	 * @return the BitBucketClient
 	 */
@@ -65,5 +62,4 @@ public class BitBucketClientFactory {
 		}
 		return temp;
 	}
-
 }

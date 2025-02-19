@@ -43,5 +43,4 @@ public class BambooClientFactoryTest {
 			Assert.assertNull(bambooClient);
 		}
 	}
-
 }

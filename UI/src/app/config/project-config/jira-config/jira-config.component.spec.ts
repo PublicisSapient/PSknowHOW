@@ -223,7 +223,7 @@ describe('JiraConfigComponent', () => {
   it('should save form', () => {
     component.ngOnInit();
     component.toolForm.controls['projectKey'].setValue('1212');
-    component.toolForm.controls['metadataTemplateCode'].setValue({
+    component.toolForm.controls['originalTemplateCode'].setValue({
       id:"641d986af8d42d02b0c2558f",
       kanban:true,
       templateCode: "1",
@@ -793,7 +793,7 @@ describe('JiraConfigComponent', () => {
     }
     component.jiraTemplate = [];
     component.toolForm = new UntypedFormGroup({
-      metadataTemplateCode : new UntypedFormControl()
+      originalTemplateCode : new UntypedFormControl()
     })
     spyOn(httpService, 'getJiraTemplate').and.returnValue(of(templateList))
     component.getJiraTemplate()
@@ -811,7 +811,7 @@ describe('JiraConfigComponent', () => {
     }
     spyOn(httpService, 'getJiraTemplate').and.returnValue(of(templateList))
     component.getJiraTemplate()
-    expect(component.toolForm.get('metadataTemplateCode').disabled).toBeFalsy();
+    expect(component.toolForm.get('originalTemplateCode').disabled).toBeTruthy();
   })
 
   it("should get api response for GitHub action tool",()=>{

@@ -21,8 +21,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 
 /**
  * Service interface for synchronizing project hierarchies.
@@ -34,43 +33,30 @@ public interface ProjectHierarchySyncService {
 	 * Synchronizes the hierarchy for Scrum sprints.
 	 *
 	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
+	 *          the ID of the basic project configuration
 	 */
 	void syncScrumSprintHierarchy(ObjectId basicProjectConfigId);
 
 	/**
-	 * Synchronizes the hierarchy for Scrum releases.
+	 * Synchronizes the hierarchy for releases.
 	 *
 	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
+	 *          the ID of the basic project configuration
 	 * @param fetchedReleasedHierarchy
-	 *            the list of fetched release hierarchies
+	 *          the list of fetched release hierarchies
 	 */
-	void syncScrumReleaseHierarchy(ObjectId basicProjectConfigId, List<AccountHierarchy> fetchedReleasedHierarchy);
-
-	/**
-	 * Synchronizes the hierarchy for Kanban releases.
-	 *
-	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
-	 * @param fetchedReleasedHierarchy
-	 *            the list of fetched release hierarchies
-	 */
-	void syncKanbanReleaseHierarchy(ObjectId basicProjectConfigId,
-									List<KanbanAccountHierarchy> fetchedReleasedHierarchy);
+	void syncReleaseHierarchy(ObjectId basicProjectConfigId, List<ProjectHierarchy> fetchedReleasedHierarchy);
 
 	/**
 	 * Deletes entries that do not match the given criteria.
 	 *
 	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
+	 *          the ID of the basic project configuration
 	 * @param distinctReleaseNodeIds
-	 *            the list of distinct release node IDs
+	 *          the list of distinct release node IDs
 	 * @param hierarchyLevelId
-	 *            the ID of the hierarchy level
-	 * @param isKanban
-	 *            flag indicating if the project is Kanban
+	 *          the ID of the hierarchy level
 	 */
 	void deleteNonMatchingEntries(ObjectId basicProjectConfigId, List<String> distinctReleaseNodeIds,
-			String hierarchyLevelId, boolean isKanban);
+			String hierarchyLevelId);
 }

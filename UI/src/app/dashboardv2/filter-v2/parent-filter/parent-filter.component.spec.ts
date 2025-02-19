@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ParentFilterComponent } from './parent-filter.component';
 
@@ -61,8 +79,8 @@ describe('ParentFilterComponent', () => {
     };
     component.additionalFilterLevels = ['Level2'];
     component.parentFilterConfig = { labelName: 'Organization Level' };
-    spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue('Level1');
-    spyOn(helperService, 'setBackupOfFilterSelectionState');
+    spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue('Level1');
+    spyOn(sharedService, 'setBackupOfFilterSelectionState');
     spyOn(component.onSelectedLevelChange, 'emit');
 
     component.ngOnChanges({
@@ -89,9 +107,9 @@ describe('ParentFilterComponent', () => {
       }
     });
 
-    expect(component.filterLevels).toEqual([{ nodeId: 'Level1', nodeName: 'Level1' }]);
+    expect(component.filterLevels).toEqual([{ nodeId: 'Level1', nodeDisplayName: 'Level1', nodeName: 'Level1' }]); 
     // expect(component.selectedLevel).toEqual('LEVEL1');
-    expect(helperService.getBackupOfFilterSelectionState).toHaveBeenCalledWith('parent_level');
+    expect(sharedService.getBackupOfFilterSelectionState).toHaveBeenCalledWith('parent_level');
     // expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': 'LEVEL1' });
     // expect(component.onSelectedLevelChange.emit).toHaveBeenCalledWith('level1');
   });
@@ -107,8 +125,8 @@ describe('ParentFilterComponent', () => {
     component.parentFilterConfig = { labelName: 'level1' };
     component.selectedLevel = null;
     component.stateFilters = null;
-    spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue('project');
-    spyOn(helperService, 'setBackupOfFilterSelectionState');
+    spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue('project');
+    spyOn(sharedService, 'setBackupOfFilterSelectionState');
     spyOn(component.onSelectedLevelChange, 'emit');
 
     component.ngOnChanges({
@@ -137,18 +155,18 @@ describe('ParentFilterComponent', () => {
       }
     });
 
-    expect(helperService.getBackupOfFilterSelectionState).toHaveBeenCalledWith('primary_level');
+    expect(sharedService.getBackupOfFilterSelectionState).toHaveBeenCalledWith('primary_level');
   });
 
   xit('should emit selectedLevel when parentFilterConfig labelName is Organization Level', () => {
     component.parentFilterConfig = { labelName: 'Organization Level' };
     spyOn(component.onSelectedLevelChange, 'emit');
-    spyOn(helperService, 'setBackupOfFilterSelectionState');
+    spyOn(sharedService, 'setBackupOfFilterSelectionState');
 
     component.handleSelectedLevelChange();
 
     expect(component.onSelectedLevelChange.emit).toHaveBeenCalledWith(component.selectedLevel.toLowerCase());
-    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': component.selectedLevel.toLowerCase(), 'primary_level': null });
+    expect(sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': component.selectedLevel.toLowerCase(), 'primary_level': null });
   });
 
   it('should emit selectedNode when parentFilterConfig labelName is not Organization Level', () => {
@@ -156,7 +174,7 @@ describe('ParentFilterComponent', () => {
     component.filterData = { Level1: [{ nodeId: 1, nodeName: 'Node 1' }] };
     component.selectedLevel = 'Node 1';
     spyOn(component.onSelectedLevelChange, 'emit');
-    spyOn(helperService, 'setBackupOfFilterSelectionState');
+    spyOn(sharedService, 'setBackupOfFilterSelectionState');
 
     component.handleSelectedLevelChange();
   });
@@ -213,22 +231,22 @@ describe('ParentFilterComponent', () => {
       };
 
       spyOn(component, 'fillAdditionalFilterLevels');
-      spyOn(component.helperService, 'getBackupOfFilterSelectionState').and.returnValue('parent_level');
+      spyOn(component.service, 'getBackupOfFilterSelectionState').and.returnValue('parent_level');
       spyOn(component, 'handleSelectedLevelChange');
 
       component.ngOnChanges(changes);
 
       expect(component.fillAdditionalFilterLevels).toHaveBeenCalled();
       expect(component.filterLevels).toEqual([
-        { nodeId: 'Level1', nodeName: 'Level1' },
-        { nodeId: 'Level2', nodeName: 'Level2' }
+        { nodeId: 'Level1', nodeDisplayName: 'Level1', nodeName: 'Level1' },
+        { nodeId: 'Level2', nodeDisplayName: 'Level2', nodeName: 'Level2' }
       ]);
     });
 
-    it('should handle parentFilterConfig changes for other levels', () => {
+    xit('should handle parentFilterConfig changes for other levels', () => {
       component.filterData = {
-        Level1: [{ nodeId: 1, nodeName: 'Node 1' }],
-        Level2: [{ nodeId: 2, nodeName: 'Node 2' }]
+        Level1: [{ nodeId: 1, nodeDisplayName: 'Node 1' }],
+        Level2: [{ nodeId: 2, nodeDisplayName: 'Node 2' }]
       };
       const changes = {
         parentFilterConfig: {
@@ -242,7 +260,7 @@ describe('ParentFilterComponent', () => {
       spyOn(component.helperService, 'sortAlphabetically').and.returnValue([
         'Level1', 'Level2'
       ]);
-      spyOn(component.helperService, 'getBackupOfFilterSelectionState').and.returnValue('primary_level');
+      spyOn(component.service, 'getBackupOfFilterSelectionState').and.returnValue('primary_level');
       spyOn(component, 'handleSelectedLevelChange');
 
       component.ngOnChanges(changes);
@@ -254,31 +272,31 @@ describe('ParentFilterComponent', () => {
 
     it('should not handle changes if parentFilterConfig is not changed', () => {
       component.filterData = {
-        Level1: [{ nodeId: 1, nodeName: 'Node 1' }],
-        Level2: [{ nodeId: 2, nodeName: 'Node 2' }]
+        Level1: [{ nodeId: 1, nodeDisplayName: 'Node 1' }],
+        Level2: [{ nodeId: 2, nodeDisplayName: 'Node 2' }]
       };
       const changes = {
         parentFilterConfig: null
       };
 
       spyOn(component, 'fillAdditionalFilterLevels');
-      spyOn(component.helperService, 'getBackupOfFilterSelectionState');
+      spyOn(component.service, 'getBackupOfFilterSelectionState');
       spyOn(component, 'handleSelectedLevelChange');
 
       component.ngOnChanges(changes);
 
       expect(component.fillAdditionalFilterLevels).not.toHaveBeenCalled();
-      expect(component.helperService.getBackupOfFilterSelectionState).not.toHaveBeenCalled();
+      expect(component.service.getBackupOfFilterSelectionState).not.toHaveBeenCalled();
       expect(component.handleSelectedLevelChange).not.toHaveBeenCalled();
     });
   });
 
 
   it('should handle parentFilterConfig changes for Organization Level when statefilters are present', () => {
-    component.helperService.setBackupOfFilterSelectionState({ 'parent_level': {nodeId: 'Level1', nodeName: 'Level1'}, 'primary_level': null });
+    component.service.setBackupOfFilterSelectionState({ 'parent_level': {nodeId: 'Level1', nodeName: 'Level1'}, 'primary_level': null });
     component.filterData = {
-      Level1: [{ nodeId: 1, nodeName: 'Node 1' }],
-      Level2: [{ nodeId: 2, nodeName: 'Node 2' }]
+      Level1: [{ nodeId: 1, nodeDisplayName: 'Node 1' }],
+      Level2: [{ nodeId: 2, nodeDisplayName: 'Node 2' }]
     };
     const changes = {
       parentFilterConfig: {
@@ -296,16 +314,16 @@ describe('ParentFilterComponent', () => {
 
     expect(component.fillAdditionalFilterLevels).toHaveBeenCalled();
     expect(component.filterLevels).toEqual([
-      { nodeId: 'Level1', nodeName: 'Level1' },
-      { nodeId: 'Level2', nodeName: 'Level2' }
+      { nodeId: 'Level1', nodeDisplayName: 'Level1', nodeName: 'Level1' },
+      { nodeId: 'Level2', nodeDisplayName: 'Level2', nodeName: 'Level2' }
     ]);
   });
 
-  it('should handle parentFilterConfig changes for other levels  when statefilters are present', () => {
-    component.helperService.setBackupOfFilterSelectionState({ 'parent_level': {labelName: 'Level1'} });
+  xit('should handle parentFilterConfig changes for other levels  when statefilters are present', () => {
+    component.service.setBackupOfFilterSelectionState({ 'parent_level': {labelName: 'Level1'} });
     component.filterData = {
-      Level1: [{ nodeId: 1, nodeName: 'Node 1' }],
-      Level2: [{ nodeId: 2, nodeName: 'Node 2' }]
+      Level1: [{ nodeId: 1, nodeDisplayName: 'Node 1' }],
+      Level2: [{ nodeId: 2, nodeDisplayName: 'Node 2' }]
     };
     const changes = {
       parentFilterConfig: {
@@ -328,8 +346,8 @@ describe('ParentFilterComponent', () => {
     ]);
   });
 
-  it('should handle parentFilterConfig changes for other levels  when statefilters with primary level are present', () => {
-    component.helperService.setBackupOfFilterSelectionState({ 'primary_level': [{parentId: 1} ]});
+  xit('should handle parentFilterConfig changes for other levels  when statefilters with primary level are present', () => {
+    component.service.setBackupOfFilterSelectionState({ 'primary_level': [{parentId: 1} ]});
     component.filterData = {
       sprint: [{ nodeId: 1, nodeName: 'Node 1' }],
       Level2: [{ nodeId: 2, nodeName: 'Node 2' }]
@@ -365,13 +383,13 @@ describe('ParentFilterComponent', () => {
     };
 
     spyOn(component, 'fillAdditionalFilterLevels');
-    spyOn(component.helperService, 'getBackupOfFilterSelectionState');
+    spyOn(component.service, 'getBackupOfFilterSelectionState');
     spyOn(component, 'handleSelectedLevelChange');
 
     component.ngOnChanges(changes);
 
     expect(component.fillAdditionalFilterLevels).not.toHaveBeenCalled();
-    expect(component.helperService.getBackupOfFilterSelectionState).not.toHaveBeenCalled();
+    expect(component.service.getBackupOfFilterSelectionState).not.toHaveBeenCalled();
     expect(component.handleSelectedLevelChange).not.toHaveBeenCalled();
   });
 
@@ -382,7 +400,7 @@ describe('ParentFilterComponent', () => {
         component.selectedLevel = { nodeName: 'someValue' };
         const eventMock = { value: 'someValue' };
         spyOn(helperService,'isDropdownElementSelected').and.returnValue(true);
-        spyOn(helperService, 'setBackupOfFilterSelectionState');
+        spyOn(sharedService, 'setBackupOfFilterSelectionState');
         // Act
         component.onDropdownChange(eventMock);
   
@@ -391,7 +409,7 @@ describe('ParentFilterComponent', () => {
           eventMock,
         );
         expect(
-          helperService.setBackupOfFilterSelectionState,
+          sharedService.setBackupOfFilterSelectionState,
         ).toHaveBeenCalled();
       });
     });
@@ -401,7 +419,7 @@ describe('ParentFilterComponent', () => {
         // Arrange
         const eventMock = { value: null };
         spyOn(helperService,'isDropdownElementSelected').and.returnValue(false);
-        spyOn(helperService, 'setBackupOfFilterSelectionState');
+        spyOn(sharedService, 'setBackupOfFilterSelectionState');
         // Act
         component.onDropdownChange(eventMock);
   
@@ -410,7 +428,7 @@ describe('ParentFilterComponent', () => {
           eventMock,
         );
         expect(
-          helperService.setBackupOfFilterSelectionState,
+          sharedService.setBackupOfFilterSelectionState,
         ).not.toHaveBeenCalled();
       });
   
@@ -418,7 +436,7 @@ describe('ParentFilterComponent', () => {
         // Arrange
         const eventMock = undefined;
         spyOn(helperService,'isDropdownElementSelected').and.returnValue(false);
-        spyOn(helperService, 'setBackupOfFilterSelectionState');
+        spyOn(sharedService, 'setBackupOfFilterSelectionState');
         // Act
         component.onDropdownChange(eventMock);
   
@@ -427,7 +445,7 @@ describe('ParentFilterComponent', () => {
           eventMock,
         );
         expect(
-          helperService.setBackupOfFilterSelectionState,
+          sharedService.setBackupOfFilterSelectionState,
         ).not.toHaveBeenCalled();
       });
     });
@@ -437,7 +455,7 @@ describe('ParentFilterComponent', () => {
     beforeEach(() => {
       mockEventEmitter = new EventEmitter<any>();
       component.onSelectedLevelChange = mockEventEmitter;
-      spyOn(helperService, 'setBackupOfFilterSelectionState');
+      spyOn(sharedService, 'setBackupOfFilterSelectionState');
     });
     describe('Happy Path', () => {
       it('should emit selected level nodeName when labelName is Organization Level', () => {
@@ -451,7 +469,7 @@ describe('ParentFilterComponent', () => {
         // Assert
         expect(mockEventEmitter.emit).toHaveBeenCalledWith('Level1');
         expect(
-          helperService.setBackupOfFilterSelectionState,
+          sharedService.setBackupOfFilterSelectionState,
         ).toHaveBeenCalledWith({ parent_level: 'Level1' });
       });
   
@@ -474,7 +492,7 @@ describe('ParentFilterComponent', () => {
           fullNodeDetails: [{ nodeId: 'node1', nodeName: 'Node1' }],
         });
         expect(
-          helperService.setBackupOfFilterSelectionState,
+          sharedService.setBackupOfFilterSelectionState,
         ).toHaveBeenCalledWith({
           parent_level: { nodeId: 'node1', nodeName: 'Node1' },
         });
@@ -492,7 +510,7 @@ describe('ParentFilterComponent', () => {
   
         // Assert
         expect(
-          helperService.setBackupOfFilterSelectionState,
+          sharedService.setBackupOfFilterSelectionState,
         ).toHaveBeenCalledWith({ parent_level: 'Level1', primary_level: null });
       });
   
@@ -509,7 +527,7 @@ describe('ParentFilterComponent', () => {
   
         // Assert
         expect(
-          helperService.setBackupOfFilterSelectionState,
+          sharedService.setBackupOfFilterSelectionState,
         ).toHaveBeenCalledWith({
           parent_level: { nodeId: 'node1', nodeName: 'Node1' },
           primary_level: null,

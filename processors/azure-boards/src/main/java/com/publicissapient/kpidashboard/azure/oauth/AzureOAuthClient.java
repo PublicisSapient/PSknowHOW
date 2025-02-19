@@ -50,9 +50,8 @@ import net.oauth.signature.RSA_SHA1;
 
 /**
  * Provides Azure OAuth client authentication services
- * 
- * @author vijkumar18
  *
+ * @author vijkumar18
  */
 @Component
 @Slf4j
@@ -73,7 +72,7 @@ public class AzureOAuthClient {
 
 	/**
 	 * Generates requestToken
-	 * 
+	 *
 	 * @return RequestToken
 	 */
 	public TokenSecretVerifierHolder getRequestToken() {
@@ -100,13 +99,13 @@ public class AzureOAuthClient {
 
 	/**
 	 * Generates accessToken
-	 * 
+	 *
 	 * @param requestToken
-	 *            request token
+	 *          request token
 	 * @param tokenSecret
-	 *            secret
+	 *          secret
 	 * @param oauthVerifier
-	 *            oauth verifier
+	 *          oauth verifier
 	 * @return accessToken
 	 */
 	public String swapRequestTokenForAccessToken(String requestToken, String tokenSecret, String oauthVerifier) {
@@ -121,20 +120,19 @@ public class AzureOAuthClient {
 		} catch (IOException | OAuthException | URISyntaxException e) {
 			throw new RuntimeException("Failed to get Token from Access Token", e); // NOSONAR
 		}
-
 	}
 
 	/**
 	 * Provides OAuthAccessor
-	 * 
+	 *
 	 * @return OAuthAccessor
 	 */
 	public final OAuthAccessor getAccessor() {
 		if (accessor == null) {
 			OAuthServiceProvider serviceProvider = new OAuthServiceProvider(getRequestTokenUrl(), getAuthorizeUrl(),
 					getAccessTokenUrl());
-			OAuthConsumer consumer = new OAuthConsumer(getAzureCallbackURL(), azureOAuthProperties.getConsumerKey(),
-					null, serviceProvider);
+			OAuthConsumer consumer = new OAuthConsumer(getAzureCallbackURL(), azureOAuthProperties.getConsumerKey(), null,
+					serviceProvider);
 			consumer.setProperty(RSA_SHA1.PRIVATE_KEY, azureOAuthProperties.getPrivateKey());
 			consumer.setProperty(OAuth.OAUTH_SIGNATURE_METHOD, OAuth.RSA_SHA1);
 			accessor = new OAuthAccessor(consumer);
@@ -166,14 +164,14 @@ public class AzureOAuthClient {
 	 * Provides oauthVerifier
 	 *
 	 * @param authorizationUrl
-	 *            authorizationUrl
+	 *          authorizationUrl
 	 * @param username
-	 *            username
+	 *          username
 	 * @param password
-	 *            password
+	 *          password
 	 * @return oauthVerifier oauthVerifier
 	 * @throws IOException
-	 *             IOException
+	 *           IOException
 	 */
 	public String getOAuthVerifier(String authorizationUrl, String username, String password) throws IOException {
 		String oauthVerifier = null;
@@ -220,19 +218,18 @@ public class AzureOAuthClient {
 			}
 			return oauthVerifier;
 		}
-
 	}
 
 	/**
 	 * Provides acessToken.
 	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @param password
-	 *            the password
+	 *          the password
 	 * @return acessToken
 	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 *           Signals that an I/O exception has occurred.
 	 */
 	public String getAccessToken(String username, String password) throws IOException {
 
@@ -246,9 +243,8 @@ public class AzureOAuthClient {
 		String oauthVerifier = getOAuthVerifier(authorizeUrl, username, password);
 
 		// Provides accessToken
-		return azureOauthClient.swapRequestTokenForAccessToken(requestToken.token,
-				azureOAuthProperties.getConsumerKey(), oauthVerifier);
-
+		return azureOauthClient.swapRequestTokenForAccessToken(requestToken.token, azureOAuthProperties.getConsumerKey(),
+				oauthVerifier);
 	}
 
 	final class TokenSecretVerifierHolder {
@@ -256,5 +252,4 @@ public class AzureOAuthClient {
 		private String verifier; // NOSONAR
 		private String secret; // NOSONAR
 	}
-
 }

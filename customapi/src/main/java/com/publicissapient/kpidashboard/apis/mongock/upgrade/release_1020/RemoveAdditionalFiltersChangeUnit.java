@@ -44,5 +44,4 @@ public class RemoveAdditionalFiltersChangeUnit {
 	public void rollback() {
 		// not required as value dashboard don't need additionalFilter of sqd,sprint
 	}
-
 }

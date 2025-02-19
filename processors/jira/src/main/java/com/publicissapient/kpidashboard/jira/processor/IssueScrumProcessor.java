@@ -27,7 +27,7 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -39,7 +39,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
- *
  */
 @Slf4j
 @Component
@@ -62,24 +61,23 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.springframework.batch.item.ItemProcessor#process(java.lang.Object)
 	 */
 	@Override
 	public CompositeResult process(ReadData readData) throws Exception {
-		log.debug("Scrum processing started for the project : {}",
-				readData.getProjectConfFieldMapping().getProjectName());
+		log.debug("Scrum processing started for the project : {}", readData.getProjectConfFieldMapping().getProjectName());
 		CompositeResult compositeResult = null;
 		JiraIssue jiraIssue = convertIssueToJiraIssue(readData);
 		if (null != jiraIssue) {
 			compositeResult = new CompositeResult();
 			JiraIssueCustomHistory jiraIssueCustomHistory = convertIssueToJiraIssueHistory(readData, jiraIssue);
 			Set<SprintDetails> sprintDetailsSet = null;
-			Set<AccountHierarchy> accountHierarchies = null;
+			Set<ProjectHierarchy> projectHierarchies = null;
 			AssigneeDetails assigneeDetails = null;
 			if (!readData.isSprintFetch()) {
 				sprintDetailsSet = processSprintData(readData);
-				accountHierarchies = createAccountHierarchies(jiraIssue, readData, sprintDetailsSet);
+				projectHierarchies = createAccountHierarchies(jiraIssue, readData, sprintDetailsSet);
 				assigneeDetails = createAssigneeDetails(readData, jiraIssue);
 			}
 			if (StringUtils.isEmpty(readData.getBoardId()) && CollectionUtils.isNotEmpty(sprintDetailsSet)) {
@@ -87,15 +85,14 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 			}
 			compositeResult.setJiraIssue(jiraIssue);
 			compositeResult.setJiraIssueCustomHistory(jiraIssueCustomHistory);
-			if (CollectionUtils.isNotEmpty(accountHierarchies)) {
-				compositeResult.setAccountHierarchies(accountHierarchies);
+			if (CollectionUtils.isNotEmpty(projectHierarchies)) {
+				compositeResult.setProjectHierarchies(projectHierarchies);
 			}
 			if (null != assigneeDetails) {
 				compositeResult.setAssigneeDetails(assigneeDetails);
 			}
 		}
 		return compositeResult;
-
 	}
 
 	private JiraIssue convertIssueToJiraIssue(ReadData readData) throws JSONException {
@@ -114,16 +111,13 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 				readData.getBoardId(), readData.getProcessorId());
 	}
 
-	private Set<AccountHierarchy> createAccountHierarchies(JiraIssue jiraIssue, ReadData readData,
+	private Set<ProjectHierarchy> createAccountHierarchies(JiraIssue jiraIssue, ReadData readData,
 			Set<SprintDetails> sprintDetailsSet) {
-		return jiraIssueAccountHierarchyProcessor.createAccountHierarchy(jiraIssue,
-				readData.getProjectConfFieldMapping(), sprintDetailsSet);
-
+		return jiraIssueAccountHierarchyProcessor.createAccountHierarchy(jiraIssue, readData.getProjectConfFieldMapping(),
+				sprintDetailsSet);
 	}
 
 	private AssigneeDetails createAssigneeDetails(ReadData readData, JiraIssue jiraIssue) {
 		return jiraIssueAssigneeProcessor.createAssigneeDetails(readData.getProjectConfFieldMapping(), jiraIssue);
-
 	}
-
 }

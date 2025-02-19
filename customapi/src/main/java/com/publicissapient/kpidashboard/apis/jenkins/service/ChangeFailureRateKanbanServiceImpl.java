@@ -56,6 +56,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.BuildStatus;
@@ -77,7 +78,8 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class ChangeFailureRateKanbanServiceImpl
-		extends JenkinsKPIService<Double, List<Object>, Map<ObjectId, List<Build>>> {
+		extends
+			JenkinsKPIService<Double, List<Object>, Map<ObjectId, List<Build>>> {
 
 	private static final DecimalFormat decimalFormat = new DecimalFormat("#0.00");
 	private static final String TOTAL_CHANGES = "Total number of Changes";
@@ -87,8 +89,8 @@ public class ChangeFailureRateKanbanServiceImpl
 	private BuildRepository buildRepository;
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
@@ -102,8 +104,8 @@ public class ChangeFailureRateKanbanServiceImpl
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.CHANGE_FAILURE_RATE_KANBAN);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
-		Map<String, List<DataCount>> trendValuesMap = getAggregateTrendValuesMap(kpiRequest, kpiElement,
-				nodeWiseKPIValue, KPICode.CHANGE_FAILURE_RATE_KANBAN);
+		Map<String, List<DataCount>> trendValuesMap = getAggregateTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.CHANGE_FAILURE_RATE_KANBAN);
 		Map<String, Map<String, List<DataCount>>> jobNameKeyProjectWiseDc = new LinkedHashMap<>();
 		trendValuesMap.forEach((issueType, dataCounts) -> {
 			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
@@ -136,7 +138,6 @@ public class ChangeFailureRateKanbanServiceImpl
 		leafNodeList.forEach(node -> {
 			ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
 			projectBasicConfigIds.add(basicProjectConfigId);
-
 		});
 
 		statusListForTotalBuildCount.add(BuildStatus.SUCCESS.name());
@@ -155,7 +156,6 @@ public class ChangeFailureRateKanbanServiceImpl
 	 * @param kpiElement
 	 * @param mapTmp
 	 * @param projectLeafNodeList
-	 *
 	 */
 	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp,
 			List<Node> projectLeafNodeList) {
@@ -191,13 +191,18 @@ public class ChangeFailureRateKanbanServiceImpl
 			List<DataCount> dataCountAggList = new ArrayList<>();
 			List<Build> aggBuildList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(buildListProjectWise)) {
-
 				Map<String, List<Build>> buildMapJobWise = buildListProjectWise.stream()
 						.collect(Collectors.groupingBy(Build::getBuildJob, Collectors.toList()));
 				for (Map.Entry<String, List<Build>> entry : buildMapJobWise.entrySet()) {
 					String jobName;
 					List<Build> buildList = entry.getValue();
-					jobName = getJobName(entry, buildList);
+					if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
+						jobName = buildList.get(0).getJobFolder();
+					} else if (StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
+						jobName = buildList.get(0).getPipelineName();
+					} else {
+						jobName = entry.getKey();
+					}
 					aggBuildList.addAll(buildList);
 					prepareInfoForBuildTimeWise(changeFailureRateInfo, buildList, trendLineName, trendValueMap, jobName,
 							dataCountAggList, durationFilter);
@@ -214,14 +219,9 @@ public class ChangeFailureRateKanbanServiceImpl
 			}
 			mapTmp.get(node.getId()).setValue(trendValueMap);
 			populateExcelDataObject(requestTrackerId, excelData, trendLineName, changeFailureRateInfo);
-
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.CHANGE_FAILURE_RATE_KANBAN.getColumns());
-	}
-
-	private static String getJobName(Map.Entry<String, List<Build>> entry, List<Build> buildList) {
-		return StringUtils.defaultIfEmpty(buildList.get(0).getJobFolder(), entry.getKey());
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData, String trendLineName,
@@ -233,7 +233,7 @@ public class ChangeFailureRateKanbanServiceImpl
 
 	/**
 	 * Sets build info to holder object and duration list
-	 * 
+	 *
 	 * @param changeFailureRateInfo
 	 * @param buildList
 	 * @param trendLineName
@@ -264,9 +264,8 @@ public class ChangeFailureRateKanbanServiceImpl
 			}
 
 			for (Build build : buildList) {
-				if ((weekOrMonth.equalsIgnoreCase(CommonConstant.WEEK) && checkDateIsInWeeks(currentDate, build))
-						|| (weekOrMonth.equalsIgnoreCase(CommonConstant.MONTH)
-								&& checkDateIsInMonth(currentDate, build))) {
+				if ((weekOrMonth.equalsIgnoreCase(CommonConstant.WEEK) && checkDateIsInWeeks(currentDate, build)) ||
+						(weekOrMonth.equalsIgnoreCase(CommonConstant.MONTH) && checkDateIsInMonth(currentDate, build))) {
 
 					failureBuildCount = getFailureBuildCount(failureBuildCount, build);
 					totalBuildCount = getTotalBuildCount(totalBuildCount, build);
@@ -274,14 +273,13 @@ public class ChangeFailureRateKanbanServiceImpl
 			}
 
 			if (totalBuildCount > 0 && failureBuildCount > 0) {
-				buildFailurePercentage = Double
-						.parseDouble(decimalFormat.format(failureBuildCount / totalBuildCount * 100));
+				buildFailurePercentage = Double.parseDouble(decimalFormat.format(failureBuildCount / totalBuildCount * 100));
 			}
 
 			String date = getDateFormatted(weekOrMonth, currentDate);
 
-			DataCount dataCount = createDataCount(trendLineName, buildFailurePercentage, date,
-					totalBuildCount.intValue(), failureBuildCount.intValue(), jobName);
+			DataCount dataCount = createDataCount(trendLineName, buildFailurePercentage, date, totalBuildCount.intValue(),
+					failureBuildCount.intValue(), jobName);
 			setChangeFailureRateInfoForExcel(changeFailureRateInfo, jobName, totalBuildCount, failureBuildCount,
 					buildFailurePercentage, date);
 
@@ -293,28 +291,27 @@ public class ChangeFailureRateKanbanServiceImpl
 	}
 
 	/**
-	 *
 	 * @param trendValueMap
-	 *            trendValueMap
+	 *          trendValueMap
 	 * @param trendLineName
-	 *            trendLineName
+	 *          trendLineName
 	 * @param jobName
-	 *            jobName
+	 *          jobName
 	 * @param buildList
-	 *            buildList
+	 *          buildList
 	 * @param dataCountList
-	 *            dataCountList
+	 *          dataCountList
 	 */
 	private static void trendValue(List<Build> buildList, String trendLineName,
 			Map<String, List<DataCount>> trendValueMap, String jobName, List<DataCount> dataCountList) {
 		if (StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
-			trendValueMap.putIfAbsent(jobName + CommonConstant.ARROW + buildList.get(0).getPipelineName(),
+			trendValueMap.putIfAbsent(buildList.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName),
 					new ArrayList<>());
-			trendValueMap.get(jobName + CommonConstant.ARROW + buildList.get(0).getPipelineName())
+			trendValueMap.get(buildList.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName))
 					.addAll(dataCountList);
 		} else {
-			trendValueMap.putIfAbsent(jobName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
-			trendValueMap.get(jobName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
+			trendValueMap.putIfAbsent(jobName + CommonUtils.getStringWithDelimiters(trendLineName), new ArrayList<>());
+			trendValueMap.get(jobName + CommonUtils.getStringWithDelimiters(trendLineName)).addAll(dataCountList);
 		}
 	}
 
@@ -333,7 +330,7 @@ public class ChangeFailureRateKanbanServiceImpl
 
 	/**
 	 * check build date is between given weeks or not
-	 * 
+	 *
 	 * @param currentDate
 	 * @param build
 	 * @return
@@ -343,8 +340,8 @@ public class ChangeFailureRateKanbanServiceImpl
 		LocalDate monday = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 		LocalDate sunday = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
-		return (buildTime.isAfter(monday) || buildTime.isEqual(monday))
-				&& (buildTime.isBefore(sunday) || buildTime.isEqual(sunday));
+		return (buildTime.isAfter(monday) || buildTime.isEqual(monday)) &&
+				(buildTime.isBefore(sunday) || buildTime.isEqual(sunday));
 	}
 
 	/**
@@ -386,7 +383,6 @@ public class ChangeFailureRateKanbanServiceImpl
 	 * @param date
 	 * @return
 	 */
-
 	private void setChangeFailureRateInfoForExcel(ChangeFailureRateInfo changeFailureRateInfo, String jobName,
 			Double totalBuildCount, Double failureBuildCount, Double buildFailurePercentage, String date) {
 		if (null != changeFailureRateInfo) {
@@ -435,7 +431,6 @@ public class ChangeFailureRateKanbanServiceImpl
 	 * @param jobsAggregatedValueList
 	 * @return list of DataCount
 	 */
-
 	public List<DataCount> calculateAggregatedWeeksWise(String kpiId, List<DataCount> jobsAggregatedValueList) {
 
 		Map<String, List<DataCount>> weeksWiseDataCount = jobsAggregatedValueList.stream()
@@ -499,5 +494,4 @@ public class ChangeFailureRateKanbanServiceImpl
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI184(),
 				KPICode.CHANGE_FAILURE_RATE_KANBAN.getKpiId());
 	}
-
 }

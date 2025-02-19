@@ -91,9 +91,9 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			projectList.add(basicProjectConfigId.toString());
-			if (Optional.ofNullable(fieldMapping.getKanbanCycleTimeIssueType()).isPresent()) {
+			if (Optional.ofNullable(fieldMapping.getKanbanCycleTimeIssueTypeKPI53()).isPresent()) {
 				mapOfProjectFilters.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getKanbanCycleTimeIssueType()));
+						CommonUtils.convertToPatternList(fieldMapping.getKanbanCycleTimeIssueTypeKPI53()));
 			}
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
@@ -101,15 +101,15 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 		mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				projectList.stream().distinct().collect(Collectors.toList()));
 
-		resultListMap.put(STORY_HISTORY_DATA, kanbanJiraIssueHistoryRepository
-				.findIssuesByCreatedDateAndType(mapOfFilters, uniqueProjectMap, startDate, endDate));
+		resultListMap.put(STORY_HISTORY_DATA, kanbanJiraIssueHistoryRepository.findIssuesByCreatedDateAndType(mapOfFilters,
+				uniqueProjectMap, startDate, endDate));
 
 		return resultListMap;
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		log.info("LEAD-TIME-KANBAN", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
@@ -143,7 +143,6 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 	}
 
 	/**
-	 * 
 	 * @param mapTmp
 	 * @param leafNodeList
 	 * @param kpiElement
@@ -165,19 +164,16 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 				.collect(Collectors.groupingBy(KanbanIssueCustomHistory::getBasicProjectConfigId));
 
 		kpiWithFilter(projectWiseJiraIssue, mapTmp, leafNodeList, kpiElement);
-
 	}
 
 	/**
-	 * 
 	 * @param projectWiseJiraIssue
 	 * @param mapTmp
 	 * @param leafNodeList
 	 * @param kpiElement
 	 */
-
-	private void kpiWithFilter(Map<String, List<KanbanIssueCustomHistory>> projectWiseJiraIssue,
-			Map<String, Node> mapTmp, List<Node> leafNodeList, KpiElement kpiElement) {
+	private void kpiWithFilter(Map<String, List<KanbanIssueCustomHistory>> projectWiseJiraIssue, Map<String, Node> mapTmp,
+			List<Node> leafNodeList, KpiElement kpiElement) {
 
 		List<KPIExcelData> excelData = new ArrayList<>();
 		String requestTrackerId = getKanbanRequestTrackerId();
@@ -200,7 +196,6 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 
 				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 					KPIExcelUtility.populateKanbanLeadTime(excelData, trendLineName, leadTimeData);
-
 				}
 
 				log.debug(
@@ -211,7 +206,6 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.LEAD_TIME_KANBAN.getColumns());
-
 	}
 
 	private LeadTimeData getLeadTime(List<LeadTimeValidationDataForKanban> leadTimeValidationDataForKanbanList) {
@@ -233,39 +227,38 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 				issueURL.add(leadTimeValidationDataForKanban.getUrl());
 				issueDisc.add(leadTimeValidationDataForKanban.getIssueDesc());
 
-				if (leadTimeValidationDataForKanban.getIntakeDate() != null
-						&& leadTimeValidationDataForKanban.getTriageDate() != null) {
-					Long diff = leadTimeValidationDataForKanban.getTriageDate().getMillis()
-							- leadTimeValidationDataForKanban.getIntakeDate().getMillis();
+				if (leadTimeValidationDataForKanban.getIntakeDate() != null &&
+						leadTimeValidationDataForKanban.getTriageDate() != null) {
+					Long diff = leadTimeValidationDataForKanban.getTriageDate().getMillis() -
+							leadTimeValidationDataForKanban.getIntakeDate().getMillis();
 					openToTriageDay.add(String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)));
 				} else {
-					openToTriageDay.add("NA");
+					openToTriageDay.add(" ");
 				}
-				if (leadTimeValidationDataForKanban.getTriageDate() != null
-						&& leadTimeValidationDataForKanban.getCompletedDate() != null) {
-					Long diff = leadTimeValidationDataForKanban.getCompletedDate().getMillis()
-							- leadTimeValidationDataForKanban.getTriageDate().getMillis();
+				if (leadTimeValidationDataForKanban.getTriageDate() != null &&
+						leadTimeValidationDataForKanban.getCompletedDate() != null) {
+					Long diff = leadTimeValidationDataForKanban.getCompletedDate().getMillis() -
+							leadTimeValidationDataForKanban.getTriageDate().getMillis();
 					triageToCompleteDay.add(String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)));
 				} else {
-					triageToCompleteDay.add("NA");
+					triageToCompleteDay.add(" ");
 				}
-				if (leadTimeValidationDataForKanban.getCompletedDate() != null
-						&& leadTimeValidationDataForKanban.getLiveDate() != null) {
-					Long diff = leadTimeValidationDataForKanban.getLiveDate().getMillis()
-							- leadTimeValidationDataForKanban.getCompletedDate().getMillis();
+				if (leadTimeValidationDataForKanban.getCompletedDate() != null &&
+						leadTimeValidationDataForKanban.getLiveDate() != null) {
+					Long diff = leadTimeValidationDataForKanban.getLiveDate().getMillis() -
+							leadTimeValidationDataForKanban.getCompletedDate().getMillis();
 					completeToLiveDay.add(String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)));
 				} else {
-					completeToLiveDay.add("NA");
+					completeToLiveDay.add(" ");
 				}
-				if (leadTimeValidationDataForKanban.getIntakeDate() != null
-						&& leadTimeValidationDataForKanban.getLiveDate() != null) {
-					Long diff = leadTimeValidationDataForKanban.getLiveDate().getMillis()
-							- leadTimeValidationDataForKanban.getIntakeDate().getMillis();
+				if (leadTimeValidationDataForKanban.getIntakeDate() != null &&
+						leadTimeValidationDataForKanban.getLiveDate() != null) {
+					Long diff = leadTimeValidationDataForKanban.getLiveDate().getMillis() -
+							leadTimeValidationDataForKanban.getIntakeDate().getMillis();
 					openToLiveDay.add(String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)));
 				} else {
-					openToLiveDay.add("NA");
+					openToLiveDay.add(" ");
 				}
-
 			}
 			leadTimeData.setIssueNumber(issueNumber);
 			leadTimeData.setUrlList(issueURL);
@@ -280,7 +273,6 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 	}
 
 	/**
-	 * 
 	 * @param trendLineName
 	 * @param cycleMap
 	 * @return
@@ -300,7 +292,6 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 	}
 
 	/**
-	 * 
 	 * @param jiraIssueCustomHistories
 	 * @param fieldMapping
 	 * @param leadTimeList
@@ -321,9 +312,9 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 			// in below loop create list of day difference between Intake and
 			// DOR. Here Intake is created date of issue.
 			for (KanbanIssueCustomHistory jiraIssueCustomHistory : jiraIssueCustomHistories) {
-				List<String> triaged = fieldMapping.getJiraTicketTriagedStatus();
-				List<String> completed = fieldMapping.getJiraTicketClosedStatus();
-				String live = fieldMapping.getJiraLiveStatusLTK();
+				List<String> triaged = fieldMapping.getJiraTicketTriagedStatusKPI53();
+				List<String> completed = fieldMapping.getJiraTicketClosedStatusKPI53();
+				String live = fieldMapping.getJiraLiveStatusKPI53();
 				LeadTimeValidationDataForKanban leadTimeValidationDataForKanban = new LeadTimeValidationDataForKanban();
 				leadTimeValidationDataForKanban.setIssueNumber(jiraIssueCustomHistory.getStoryID());
 				leadTimeValidationDataForKanban.setUrl(jiraIssueCustomHistory.getUrl());
@@ -331,11 +322,9 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 				CycleTime cycleTime = new CycleTime();
 				cycleTime.setIntakeTime(new DateTime(jiraIssueCustomHistory.getCreatedDate()));
 				leadTimeValidationDataForKanban.setIntakeDate(DateTime.parse(jiraIssueCustomHistory.getCreatedDate()));
-				jiraIssueCustomHistory.getHistoryDetails()
-						.forEach(kanbanIssueHistory -> updateCycleTimeValidationData(triaged, completed, live,
-								leadTimeValidationDataForKanban, cycleTime, kanbanIssueHistory));
-				setCycleTimeAsPerFilter(openToTriageTime, triageToCompleteTime, completeToLiveTime, openToLiveTime,
-						cycleTime);
+				jiraIssueCustomHistory.getHistoryDetails().forEach(kanbanIssueHistory -> updateCycleTimeValidationData(triaged,
+						completed, live, leadTimeValidationDataForKanban, cycleTime, kanbanIssueHistory));
+				setCycleTimeAsPerFilter(openToTriageTime, triageToCompleteTime, completeToLiveTime, openToLiveTime, cycleTime);
 				leadTimeList.add(leadTimeValidationDataForKanban);
 			}
 
@@ -353,14 +342,12 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 	}
 
 	/**
-	 * 
 	 * @param openToTriageTime
 	 * @param triageToCompleteTime
 	 * @param completeToLiveTime
 	 * @param openToLiveTime
 	 * @param cycleTime
 	 */
-
 	private void setCycleTimeAsPerFilter(List<Long> openToTriageTime, List<Long> triageToCompleteTime,
 			List<Long> completeToLiveTime, List<Long> openToLiveTime, CycleTime cycleTime) {
 		if (cycleTime.getReadyTime() != null && cycleTime.getIntakeTime() != null) {
@@ -382,7 +369,6 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 	}
 
 	/**
-	 * 
 	 * @param triaged
 	 * @param completed
 	 * @param live
@@ -390,7 +376,6 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 	 * @param cycleTime
 	 * @param history
 	 */
-
 	private void updateCycleTimeValidationData(List<String> triaged, List<String> completed, String live,
 			LeadTimeValidationDataForKanban leadTimeValidationDataForKanban, CycleTime cycleTime,
 			KanbanIssueHistory history) {
@@ -409,7 +394,6 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 	}
 
 	/**
-	 *
 	 * @param trendValuesMap
 	 * @return
 	 */
@@ -433,8 +417,7 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 					List<DataCount> latestDcList = (List<DataCount>) dc.getValue();
 					latestDcList.forEach(dataCount -> dcValues.add((Long) dataCount.getValue()));
 					Long aggValue = calculateKpiValue(dcValues, KPICode.LEAD_TIME_KANBAN.getKpiId());
-					String maturityValue = calculateMaturity(
-							configHelperService.calculateMaturity().get(filter.replace(" ", "")),
+					String maturityValue = calculateMaturity(configHelperService.calculateMaturity().get(filter.replace(" ", "")),
 							KPICode.LEAD_TIME_KANBAN.getKpiId(), String.valueOf(aggValue));
 					dc.setMaturity(maturityValue);
 					dc.setMaturityValue(aggValue);
@@ -448,8 +431,7 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 		return dataCountGroups;
 	}
 
-	private Map<String, List<DataCount>> sortTrendValueMap(Map<String, List<DataCount>> trendMap,
-			List<String> keyOrder) {
+	private Map<String, List<DataCount>> sortTrendValueMap(Map<String, List<DataCount>> trendMap, List<String> keyOrder) {
 		Map<String, List<DataCount>> sortedMap = new LinkedHashMap<>();
 		keyOrder.forEach(order -> {
 			if (null != trendMap.get(order)) {
@@ -466,5 +448,10 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 	@Override
 	public Long calculateKpiValue(List<Long> valueList, String kpiName) {
 		return calculateKpiValueForLong(valueList, kpiName);
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI53(), KPICode.LEAD_TIME_KANBAN.getKpiId());
 	}
 }

@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.azurerepo.processor;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 
 import java.io.File;
 import java.io.IOException;
@@ -79,7 +80,6 @@ import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLo
 public class AzureRepoProcessorJobExecutorTest {
 
 	/** The processorid. */
-
 	private final ObjectId processorId = new ObjectId("5eeb595c0cccfd093afd2b43");
 
 	@Mock
@@ -149,8 +149,8 @@ public class AzureRepoProcessorJobExecutorTest {
 	public void setUp() throws Exception {
 		azureRepoProcessorJobExecutor = new AzureRepoProcessorJobExecutor(taskScheduler, azureRepoProcessorRepo,
 				azureRepoConfig, toolConfigRepository, azureRepoRepository, azureRepoClient, processorItemRepository,
-				commitsRepo, connectionsRepository, processorToolConnectionService, projectConfigRepository,
-				mergReqRepo, processorExecutionTraceLogService, processorExecutionTraceLogRepository);
+				commitsRepo, connectionsRepository, processorToolConnectionService, projectConfigRepository, mergReqRepo,
+				processorExecutionTraceLogService, processorExecutionTraceLogRepository);
 		Mockito.when(azurerepoRestOperations.getTypeInstance()).thenReturn(new RestTemplate());
 		basicAzureRepoClient = new BasicAzureRepoClient(azureRepoConfig, azurerepoRestOperations, aesEncryptionService);
 
@@ -203,11 +203,12 @@ public class AzureRepoProcessorJobExecutorTest {
 		pl.add(processorExecutionTraceLog);
 		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
 
-		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		Mockito.when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 
 		Mockito.when(azureRepoRepository.findActiveRepos(processorId)).thenReturn(azurerepoRepos);
-		Mockito.when(processorExecutionTraceLogRepository
-				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.AZUREREPO, "60b7dbb489c5974a407e923b"))
+		Mockito
+				.when(processorExecutionTraceLogRepository
+						.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.AZUREREPO, "60b7dbb489c5974a407e923b"))
 				.thenReturn(optionalProcessorExecutionTraceLog);
 
 		boolean actualexecutionstatus = azureRepoProcessorJobExecutor.execute(azurerepoProcessor);
@@ -217,7 +218,7 @@ public class AzureRepoProcessorJobExecutorTest {
 	}
 
 	@Test
-	public void testAddProcessorItems() throws Exception {// NOSONAR
+	public void testAddProcessorItems() throws Exception { // NOSONAR
 
 		List<ProcessorItem> processorItems = new ArrayList<>();
 
@@ -245,7 +246,8 @@ public class AzureRepoProcessorJobExecutorTest {
 		Mockito.when(processorItemRepository.findByProcessorIdIn(processorIds)).thenReturn(processorItems);
 		Mockito.when(connectionsRepository.findById(toolConfigs.get(0).getConnectionId()))
 				.thenReturn(Optional.of(connection));
-		Method method = AzureRepoProcessorJobExecutor.class.getDeclaredMethod("addProcessorItems", Processor.class, List.class);
+		Method method = AzureRepoProcessorJobExecutor.class.getDeclaredMethod("addProcessorItems", Processor.class,
+				List.class);
 		method.setAccessible(true);
 		method.invoke(azureRepoProcessorJobExecutor, processor, toolConfigs);
 	}

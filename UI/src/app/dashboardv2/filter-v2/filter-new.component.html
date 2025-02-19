@@ -28,17 +28,17 @@
     </ng-container>
   </div>
 </div>
-<div class="selected-filter-container p-d-flex p-jc-between p-pl-3 p-pr-3" *ngIf="!noSprint">
+<div class="selected-filter-container p-d-flex p-jc-between p-pl-3 p-pr-3">
   <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
     <ng-container *ngIf="objectKeys(colorObj).length">
       <ng-container *ngFor="let item of objectKeys(colorObj); let i = index;">
-        <li class="selectedfilter p-mr-3">
+        <li class="selectedfilter cursor-pointer p-mr-3" pTooltip="{{ getTooltipText(item.tooltip) }}" tooltipPosition="bottom" [tooltipEscape]="false" tooltipEvent="hover">
           <div class="selected-node">
-            <div class="selected-node-label p-pl-0" [title]="colorObj[item]?.nodeName">
-              <span class="align-list-marker" [ngStyle]="{'background':colorObj[item]?.color}"></span>
-              <span class="p-l-1">{{filterType | uppercase}} {{ colorObj[item]?.nodeName?.length<= 20 ?
-                  colorObj[item]?.nodeName : colorObj[item]?.nodeName?.slice(0,20)+'...'}} <span class="remove-node"
-                  (click)="removeFilter(colorObj[item]?.nodeId)">&times;</span>
+            <div class="selected-node-label p-pl-0" >
+              <span class="align-list-marker" [ngStyle]="{'background':item?.color}"></span>
+              <span class="p-l-1">{{filterType | uppercase}} {{ item?.nodeDisplayName?.length<= 20 ?
+                  item?.nodeDisplayName : item?.nodeDisplayName?.slice(0,20)+'...'}} <span class="remove-node"
+                  (click)="removeFilter(item?.nodeId)">&times;</span>
               </span>
             </div>
           </div>
@@ -46,112 +46,125 @@
       </ng-container>
     </ng-container>
   </ul>
-  <div class="p-d-flex p-col-fixed p-jc-end p-pl-0 p-pr-0 duration-container" *ngIf="additionalData">
-    <div class="p-d-inline-block p-mr-2">
-      <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-clock"></i></span>
-      <span class="text-container p-d-inline-block p-mr-2">Days Left:</span>
-      <span class="p-text-bold p-d-inline-block data-container p-mr-3">{{iterationConfigData?.daysLeft}}</span>
-    </div>
-    <div class="p-d-inline-block p-mr-2">
-      <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-calendar-times"></i></span>
-      <span class="text-container p-d-inline-block p-mr-2">Duration:</span>
-      <span class="p-text-bold p-d-inline-block data-container p-mr-3">{{combinedDate}}</span>
-    </div>
-    <div class="p-d-inline-block p-mr-2"
-      *ngIf="iterationConfigData?.capacity !== undefined && selectedTab?.toLowerCase() !== 'release'">
-      <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-chart-line"></i></span>
-      <span class="text-container p-d-inline-block p-mr-2">Capacity:</span>
-      <span class="p-text-bold p-d-inline-block data-container p-mr-3">
-        {{iterationConfigData.capacity?.value?.value ? iterationConfigData.capacity?.value?.value + ' Hours' : 'N/A'}}
-      </span>
-    </div>
-
-    <div class="p-mr-2"
-      *ngIf="this.selectedSprint?.['sprintState']?.toLowerCase() === 'active' && selectedTab?.toLowerCase() === 'iteration'">
-      <span class="refresh-state p-p-2" (click)="displayModal = true"
-        *ngIf=" ((lastSyncData | json) == '{}' || lastSyncData.errorInFetch) && isAzureProect === false ">
-        <img src="../../../assets/img/icon-refresh.svg" class="p-mr-1" alt="Refresh" />Refresh
-      </span>
-      <span class="refresh-state p-p-2"
-        *ngIf=" !((lastSyncData | json) == '{}') && !lastSyncData.fetchSuccessful && !lastSyncData.errorInFetch">
-        <img src="../../../assets/img/icon-syncing.svg" class="p-mr-1" alt="Sync" />Syncing
-      </span>
-    </div>
-
-  </div>
-  <div class="p-d-flex">
-    <div class="view-tabs p-pl-2 p-pr-2"
-      *ngIf="this.selectedTab?.toLowerCase()  !== 'release' && this.selectedTab?.toLowerCase()  !== 'backlog' && this.selectedTab?.toLowerCase()  !== 'dora'&& this.selectedTab?.toLowerCase()  !== 'developer' && this.selectedTab?.toLowerCase()  !== 'iteration' && this.selectedTab?.toLowerCase()  !== 'kpi-maturity'">
-      <div aria-hidden="true" pTooltip="Chart View" tooltipPosition="top" tooltipEvent="hover"
-        tooltipStyleClass="tooltiptext">
-        <input id="chart-view" class="chart-view" type="radio" name="view" [checked]="showChart === 'chart'">
-        <label class="label1" for="chart-view" (click)="showChartToggle('chart')" id="Layout-Chart">
-          <img src="../../../assets/img/ico-graph-white.svg" alt="Chart View" class="ico-active" />
-          <img src="../../../assets/img/ico-graph-black.svg" alt="Chart View" class="ico-default" />
-        </label>
+  <ng-container>
+    <div class="p-d-flex p-col-fixed p-jc-end p-pl-0 p-pr-0 duration-container" *ngIf="additionalData">
+      <div class="p-d-inline-block p-mr-2">
+        <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-clock"></i></span>
+        <span class="text-container p-d-inline-block p-mr-2">Days Left:</span>
+        <span class="p-text-bold p-d-inline-block data-container p-mr-3">{{iterationConfigData?.daysLeft}}</span>
       </div>
-      <div aria-hidden="true" pTooltip="Table View" tooltipPosition="top" tooltipEvent="hover"
-        tooltipStyleClass="tooltiptext">
-        <input id="table-view" class="table-view" type="radio" name="view" [checked]="showChart === 'table'">
-        <label class="label2" for="table-view" (click)="showChartToggle('table')" id="Layout-Table">
-          <img src="../../../assets/img/ico-table-black.svg" alt="Table View" class="ico-default" />
-          <img src="../../../assets/img/ico-table-white.svg" alt="Table View" class="ico-active" />
-        </label>
+      <div class="p-d-inline-block p-mr-2">
+        <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-calendar-times"></i></span>
+        <span class="text-container p-d-inline-block p-mr-2">Duration:</span>
+        <span class="p-text-bold p-d-inline-block data-container p-mr-3">{{combinedDate}}</span>
       </div>
-    </div>
-    <div class="show-hide-container cursor-pointer" pTooltip="Show/Hide" tooltipPosition="top" tooltipEvent="hover"
-      tooltipStyleClass="tooltiptext"
-      *ngIf="selectedTab !== 'iteration' && selectedTab.toLowerCase() !== 'kpi-maturity' && !noFilterApplyData">
-      <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleShowHideMenu($event)">
-        <i class="pi pi-pause" style="font-size: 1rem"></i>
-      </span>
-      <p-multiSelect #showHideDdn [styleClass]="'showHideDdn'" [options]="masterDataCopy['kpiList']" optionLabel="kpiName">
-        <ng-template pTemplate="header">
-          <p-checkbox [styleClass]="'showHideDdnSelectAll'" name="showHideSelectAll" [(ngModel)]="showHideSelectAll"
-            [binary]="true" (onChange)="showHideSelectAllApply();disableShowHideApply = false;"></p-checkbox>
-        </ng-template>
-        <ng-template let-option pTemplate="item">
-          <div class="filter-item">
-            <p-checkbox name="{{ option.kpiId }}" [(ngModel)]="option.isEnabled" [binary]="true"
-              (onChange)="setSelectAll(); disableShowHideApply = false;"></p-checkbox>
-            <span>{{option.kpiName}}</span>
-          </div>
-        </ng-template>
-        <ng-template pTemplate="footer">
-          <div class="p-p-3 p-text-right">
-            <p-button label="Apply" (onClick)="showHideKPIs()" [style]="{backgroundColor: '#0B4BC8'}"
-              [disabled]="disableShowHideApply"></p-button>
-          </div>
-        </ng-template>
-      </p-multiSelect>
-    </div>
+      <div class="p-d-inline-block p-mr-2"
+        *ngIf="iterationConfigData?.capacity !== undefined && selectedTab?.toLowerCase() !== 'release'">
+        <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-chart-line"></i></span>
+        <span class="text-container p-d-inline-block p-mr-2">Capacity:</span>
+        <span class="p-text-bold p-d-inline-block data-container p-mr-3">
+          {{iterationConfigData.capacity?.value?.value ? iterationConfigData.capacity?.value?.value + ' Hours' : 'N/A'}}
+        </span>
+      </div>
 
-    <div class="date-filter-container cursor-pointer"
-      *ngIf="(kanban || selectedTab?.toLowerCase() === 'developer') && selectedTab.toLowerCase() != 'kpi-maturity' && !(kanban && selectedTab.toLowerCase() === 'dora')">
-      <!-- Date filter start -->
-      <div class="position-relative">
-        <div class="p-d-flex p-align-center p-p-2 rounded p-ml-2 date-filter-btn" #dateToggleButton
-          [ngClass]="{'active': toggleDateDropdown}" (click)="toggleDateDropdown = !toggleDateDropdown">
-          <i class="pi pi-calendar-plus p-mr-2"></i>
-          Date Filter
+      <div class="p-mr-2"
+        *ngIf="this.selectedSprint?.['sprintState']?.toLowerCase() === 'active' && selectedTab?.toLowerCase() === 'iteration'">
+        <span class="refresh-state p-p-2" (click)="displayModal = true"
+          *ngIf=" ((lastSyncData | json) == '{}' || lastSyncData.errorInFetch) && isAzureProect === false ">
+          <img src="../../../assets/img/icon-refresh.svg" class="p-mr-1" alt="Refresh" />Refresh
+        </span>
+        <span class="refresh-state p-p-2"
+          *ngIf=" !((lastSyncData | json) == '{}') && !lastSyncData.fetchSuccessful && !lastSyncData.errorInFetch">
+          <img src="../../../assets/img/icon-syncing.svg" class="p-mr-1" alt="Sync" />Syncing
+        </span>
+      </div>
+
+    </div>
+    <div class="p-d-flex p-jc-between p-ai-center">
+      <div class="view-tabs p-pl-2 p-pr-2"
+        *ngIf="this.selectedTab?.toLowerCase()  !== 'release' && this.selectedTab?.toLowerCase()  !== 'backlog' && this.selectedTab?.toLowerCase()  !== 'dora'&& this.selectedTab?.toLowerCase()  !== 'developer' && this.selectedTab?.toLowerCase()  !== 'iteration' && this.selectedTab?.toLowerCase()  !== 'kpi-maturity'">
+        <div aria-hidden="true" pTooltip="Chart View" tooltipPosition="top" tooltipEvent="hover"
+          tooltipStyleClass="tooltiptext">
+          <input id="chart-view" class="chart-view" type="radio" name="view" [checked]="showChart === 'chart'">
+          <label class="label1" for="chart-view" (click)="showChartToggle('chart')" id="Layout-Chart">
+            <img src="../../../assets/img/ico-graph-white.svg" alt="Chart View" class="ico-active" />
+            <img src="../../../assets/img/ico-graph-black.svg" alt="Chart View" class="ico-default" />
+          </label>
         </div>
-        <div class="filter-options-container date-filter-dropdown" *ngIf="toggleDateDropdown" #dateDrpmenu>
-          <div class="filter-options filter-date p-d-flex p-jc-evenly">
-            <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.counts"
-              [(ngModel)]="selectedDateValue"></p-dropdown>
-            <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.types"
-              [(ngModel)]="selectedDayType" (onChange)="setSelectedDateType($event.value)"></p-dropdown>
-          </div>
-          <div class="p-d-flex p-justify-end p-align-center btn-container">
-            <button pButton pRipple label="Apply" class="p-button-secondary p-button-sm btn-apply p-mr-1"
-              (click)="applyDateFilter()"></button>
-            <button pButton pRipple label="Cancel" class="p-button-secondary p-button-sm btn-apply"
-              (click)="closeDateFilterModel()"></button>
-          </div>
+        <div aria-hidden="true" pTooltip="Table View" tooltipPosition="top" tooltipEvent="hover"
+          tooltipStyleClass="tooltiptext">
+          <input id="table-view" class="table-view" type="radio" name="view" [checked]="showChart === 'table'">
+          <label class="label2" for="table-view" (click)="showChartToggle('table')" id="Layout-Table">
+            <img src="../../../assets/img/ico-table-black.svg" alt="Table View" class="ico-default" />
+            <img src="../../../assets/img/ico-table-white.svg" alt="Table View" class="ico-active" />
+          </label>
         </div>
       </div>
+      <div aria-hidden="true" pTooltip="Share URL" tooltipPosition="bottom" tooltipEvent="hover"
+        tooltipStyleClass="tooltiptext" class="share-url-btn" *ngIf="buttonStyleClass === 'default'">
+        <span class="icon-container p-d-inline-block p-mr-2 p-cursor-pointer" (click)="copyUrlToClipboard($event)"
+          [ngClass]="buttonStyleClass">
+          <img src="../../../assets/img/Vector.svg" *ngIf="!isSuccess" style="height: 18px; margin-left: -2px;"
+            alt="Table View" class="ico-default" />
+          <img src="../../../assets/img/Check-white.svg" *ngIf="isSuccess" style="height: 18px; margin-left: -2px;"
+            alt="Table View" class="ico-active" />
+        </span>
+      </div>
+      <div class="show-hide-container cursor-pointer" pTooltip="Show/Hide" tooltipPosition="top" tooltipEvent="hover"
+        tooltipStyleClass="tooltiptext"
+        *ngIf="selectedTab !== 'iteration' && selectedTab?.toLowerCase() !== 'kpi-maturity' && !noFilterApplyData">
+        <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleShowHideMenu($event)">
+          <i class="pi pi-pause" style="font-size: 1rem"></i>
+        </span>
+        <p-multiSelect #showHideDdn [styleClass]="'showHideDdn'" [options]="masterDataCopy['kpiList']"
+          optionLabel="kpiName">
+          <ng-template pTemplate="header">
+            <p-checkbox [styleClass]="'showHideDdnSelectAll'" name="showHideSelectAll" [(ngModel)]="showHideSelectAll"
+              [binary]="true" (onChange)="showHideSelectAllApply();disableShowHideApply = false;"></p-checkbox>
+          </ng-template>
+          <ng-template let-option pTemplate="item">
+            <div class="filter-item">
+              <p-checkbox name="{{ option.kpiId }}" [(ngModel)]="option.isEnabled" [binary]="true"
+                (onChange)="setSelectAll(); disableShowHideApply = false;"></p-checkbox>
+              <span>{{option.kpiName}}</span>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="footer">
+            <div class="p-p-3 p-text-right">
+              <p-button label="Apply" (onClick)="showHideKPIs()" [style]="{backgroundColor: '#0B4BC8'}"
+                [disabled]="disableShowHideApply"></p-button>
+            </div>
+          </ng-template>
+        </p-multiSelect>
+      </div>
+
+      <div class="date-filter-container cursor-pointer"
+        *ngIf="(kanban || selectedTab?.toLowerCase() === 'developer') && selectedTab.toLowerCase() != 'kpi-maturity' && !(kanban && selectedTab.toLowerCase() === 'dora')">
+        <!-- Date filter start -->
+        <div class="position-relative">
+          <div class="p-d-flex p-align-center p-p-2 rounded p-ml-2 date-filter-btn" #dateToggleButton
+            [ngClass]="{'active': toggleDateDropdown}" (click)="toggleDateDropdown = !toggleDateDropdown">
+            <i class="pi pi-calendar-plus p-mr-2"></i>
+            Date Filter
+          </div>
+          <div class="filter-options-container date-filter-dropdown" *ngIf="toggleDateDropdown" #dateDrpmenu>
+            <div class="filter-options filter-date p-d-flex p-jc-evenly">
+              <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.counts"
+                [(ngModel)]="selectedDateValue"></p-dropdown>
+              <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.types"
+                [(ngModel)]="selectedDayType" (onChange)="setSelectedDateType($event.value)"></p-dropdown>
+            </div>
+            <div class="p-d-flex p-justify-end p-align-center btn-container">
+              <button pButton pRipple label="Apply" class="p-button-secondary p-button-sm btn-apply p-mr-1"
+                (click)="applyDateFilter()"></button>
+              <button pButton pRipple label="Cancel" class="p-button-secondary p-button-sm btn-apply"
+                (click)="closeDateFilterModel()"></button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </ng-container>
 </div>
 
 <p-dialog [(visible)]="displayModal" [modal]="true">

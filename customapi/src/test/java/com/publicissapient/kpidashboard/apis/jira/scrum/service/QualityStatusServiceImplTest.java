@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -26,13 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyMap;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
@@ -48,11 +41,7 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
-import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
-import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
-import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
+import com.publicissapient.kpidashboard.apis.data.*;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
@@ -106,7 +95,7 @@ public class QualityStatusServiceImplTest {
 		kpiRequest.setLabel("PROJECT");
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
-				.newInstance();
+				.newInstance("/json/default/project_hierarchy_filter_data.json");
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 
 		setMockProjectConfig();
@@ -159,12 +148,40 @@ public class QualityStatusServiceImplTest {
 		try {
 			KpiElement kpiElement = qualityStatusServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
-			assertNotNull(kpiElement.getTrendValueList());
+			assertNotNull(kpiElement.getIssueData());
 
 		} catch (ApplicationException enfe) {
 
 		}
+	}
 
+	@Test
+	public void testGetKpiDataProject_OriginalEstimate() throws ApplicationException {
+		fieldMappingMap.forEach((projectId, mapping) -> {
+			mapping.setEstimationCriteria("Original Estimate");
+			mapping.setJiraLabelsKPI133(List.of("label"));
+		});
+		configHelperService.setFieldMappingMap(fieldMappingMap);
+
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
+		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
+		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(linkedStories);
+		when(jiraIssueRepository.findLinkedDefects(anyMap(), any(), anyMap())).thenReturn(bugList);
+
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9 ";
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(customApiConfig.getPriority()).thenReturn(priority);
+		try {
+			KpiElement kpiElement = qualityStatusServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
+			assertNotNull(kpiElement.getIssueData());
+
+		} catch (ApplicationException enfe) {
+
+		}
 	}
 
 	@Test
@@ -175,6 +192,5 @@ public class QualityStatusServiceImplTest {
 	@After
 	public void cleanup() {
 		jiraIssueRepository.deleteAll();
-
 	}
 }

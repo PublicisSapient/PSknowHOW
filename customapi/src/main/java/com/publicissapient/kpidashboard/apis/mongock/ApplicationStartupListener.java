@@ -16,7 +16,6 @@
  */
 package com.publicissapient.kpidashboard.apis.mongock;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -24,6 +23,8 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.abac.policy.SimplePolicyDefinition;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.datamigration.service.DataMigrationService;
 import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
 
 /**
@@ -40,19 +41,22 @@ public class ApplicationStartupListener implements ApplicationListener<Applicati
 	GlobalConfigRepository globalConfigRepository;
 	@Autowired
 	CacheService cacheService;
+	@Autowired
+	DataMigrationService dataMigrationService;
 
 	@Override
 	public void onApplicationEvent(ApplicationReadyEvent event) {
+		dataMigrationService.populateOrganizationHierarchy();
 		configHelperService.loadKpiMaster();
 		configHelperService.calculateMaturity();
 		configHelperService.calculateCriteria();
 		configHelperService.calculateCriteriaForCircleKPI();
 		configHelperService.loadProjectBasicTree();
-		configHelperService.loadHierarchyLevelSuggestion();
 		configHelperService.loadFieldMappingStructure();
 		configHelperService.loadUserBoardConfig();
 		configHelperService.loadAllProjectToolConfig();
 		configHelperService.loadAllFilters();
+		configHelperService.loadAllOrganizationHierarchy();
 		configHelperService.loadConfigData();
 		configHelperService.loadBoardMetaData();
 		configHelperService.loadToolConfig();
@@ -60,6 +64,5 @@ public class ApplicationStartupListener implements ApplicationListener<Applicati
 		cacheService.cacheSprintLevelData();
 		simplePolicyDefinition.init();
 		globalConfigRepository.findAll();
-
 	}
 }

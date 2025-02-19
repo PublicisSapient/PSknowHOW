@@ -20,11 +20,6 @@ package com.publicissapient.kpidashboard.apis.appsetting.rest;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,12 +34,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ProcessorService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.dto.ProcessorExecutionTraceLogDTO;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -84,12 +84,11 @@ public class ProcessorController {
 			log.warn("Did not get successful reponse from the service: {}", response);
 		}
 		return ResponseEntity.status(responseStatus).body(response);
-
 	}
 
 	/**
 	 * Triggers the processor to run the job to fetch the latest data from the tool
-	 * 
+	 *
 	 * @return {@code ResponseEntity<ServiceResponse>} with true is triggered
 	 *         successfully success
 	 */
@@ -110,26 +109,23 @@ public class ProcessorController {
 			log.warn("Did not get successful reponse from the service: {}", response);
 		}
 		return ResponseEntity.status(responseStatus).body(response);
-
 	}
 
 	@GetMapping("/tracelog")
 	public ResponseEntity<ServiceResponse> getProcessorTraceLog(@RequestParam(required = false) String processorName,
 			@RequestParam(required = false) String basicProjectConfigId) {
 
-		List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogService.getTraceLogs(processorName,
+		List<ProcessorExecutionTraceLogDTO> traceLogs = processorExecutionTraceLogService.getTraceLogDTOs(processorName,
 				basicProjectConfigId);
 
 		ServiceResponse response = new ServiceResponse(true, "Processor trace logs", traceLogs);
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
-
 	}
 
 	@PostMapping(path = "/fetchSprint/{sprintId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasPermission(#sprintId, 'TRIGGER_SPRINT_FETCH')")
 	public ResponseEntity<ServiceResponse> triggerSprintFetch(@PathVariable String sprintId) {
-
 
 		ServiceResponse response = processorService.fetchActiveSprint(sprintId);
 
@@ -139,15 +135,15 @@ public class ProcessorController {
 			log.warn("Did not get successful response from the service: {} ", response);
 		}
 		return ResponseEntity.status(responseStatus).body(response);
-
 	}
 
 	/**
 	 * to be hit by repo tool platform to save repo tool tracelogs
+	 *
 	 * @param request
-	 * 			http request with api key
+	 *          http request with api key
 	 * @param repoToolsStatusResponse
-	 * 			status to be saved in trace logs
+	 *          status to be saved in trace logs
 	 * @return {@code ResponseEntity<>} with HttpStatus OK if authorized
 	 */
 	@PostMapping(path = "/saveRepoToolsStatus", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -162,4 +158,15 @@ public class ProcessorController {
 		return ResponseEntity.status(HttpStatus.OK).body(null);
 	}
 
+	@PostMapping(path = "/metadata/step/{projectBasicConfigId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasPermission(#projectBasicConfigId, 'TRIGGER_PROCESSOR')")
+	public ResponseEntity<ServiceResponse> triggerMetaDataStep(@PathVariable String projectBasicConfigId) {
+		ServiceResponse response = processorService.runMetadataStep(projectBasicConfigId);
+		HttpStatus responseStatus = HttpStatus.OK;
+		if (null == response) {
+			responseStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+			log.warn("Did not get successful response from the service: {} ", response);
+		}
+		return ResponseEntity.status(responseStatus).body(response);
+	}
 }

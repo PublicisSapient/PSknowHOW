@@ -18,7 +18,7 @@
 
 import { EventEmitter, Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
-
+import { ActivatedRoute, Router } from '@angular/router';
 /*************
 SharedService
 This Service is used for sharing data and also let filter component know that
@@ -42,7 +42,7 @@ export class SharedService {
   public title = <any>{};
   public logoImage;
   public dashConfigData;
-  iterationCongifData = new BehaviorSubject({});
+  iterationConfigData = new BehaviorSubject({});
   kpiListNewOrder = new BehaviorSubject([]);
   private subject = new Subject<any>();
   private accountType;
@@ -57,6 +57,8 @@ export class SharedService {
   private authToken = '';
   public sprintForRnR;
   public dateFilterSelectedDateType = new BehaviorSubject<String>('Weeks');
+  primaryFilterChangeSubject = new BehaviorSubject(false);
+  public kpiExcelSubject = new BehaviorSubject<{}>({});
 
   // make filterdata and masterdata persistent across dashboards
   private filterData = {};
@@ -126,7 +128,12 @@ export class SharedService {
   // KPI filter retention
   selectedKPIFilterObj = {};
 
-  constructor() {
+  // URL Sharing
+  selectedFilterArray: any = [];
+  selectedFilters: any = {};
+  selectedUrlFilters: string = '{}';
+
+  constructor(private router: Router, private route: ActivatedRoute) {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
     this.passErrorToErrorPage = new EventEmitter();
@@ -136,7 +143,6 @@ export class SharedService {
     // For additional filters
     this.populateAdditionalFilters = new EventEmitter();
     this.triggerAdditionalFilters = new EventEmitter();
-    // this.selectedTrendsEvent = new EventEmitter();
 
     this.selectedTrendsEventSubject = new Subject<any>();
     // Observable to subscribe to
@@ -168,7 +174,9 @@ export class SharedService {
 
   setSelectedBoard(selectedBoard) {
     this.selectedTab = selectedBoard;
-    this.onTabSwitch.next({ selectedBoard });
+    if (selectedBoard) {
+      this.onTabSwitch.next({ selectedBoard });
+    }
   }
 
   setSelectedTab(selectedTab) {
@@ -185,7 +193,7 @@ export class SharedService {
   }
 
   // getter for tab i.e Scrum/Kanban
-  getSelectedType() {
+  getSelectedType(): string {
     return this.selectedtype;
   }
 
@@ -244,7 +252,7 @@ export class SharedService {
   }
 
   clearLogoImage() {
-    this.subject.next();
+    this.subject.next(true);
   }
 
   getLogoImage(): Observable<any> {
@@ -362,12 +370,102 @@ export class SharedService {
     this.mapColorToProject.next(value);
   }
 
+  private tempStateFilters = null;
+  setBackupOfFilterSelectionState(selectedFilterObj) {
+    const routerUrl = decodeURIComponent(this.router.url).split('?')[0];
+    const segments = typeof routerUrl === 'string' && routerUrl?.split('/');
+    const hasConfig = segments && segments.includes('Config');
+    const hasHelp = segments && segments.includes('Help');
+    const hasError = segments && segments.includes('Error');
+
+    if (selectedFilterObj && Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj).includes('selected_type')) {
+      this.selectedFilters = { ...selectedFilterObj };
+    } else if (selectedFilterObj) {
+      this.selectedFilters = { ...this.selectedFilters, ...selectedFilterObj };
+    } else {
+      this.selectedFilters = null;
+    }
+
+    // Navigate and update query parameters
+    const stateFilterEnc = btoa(JSON.stringify(this.selectedFilters || {}));
+    this.setBackupOfUrlFilters(JSON.stringify(this.selectedFilters || {}));
+
+    // NOTE: Do not navigate if the state filters are same as previous, this is to reduce the number of navigation calls, hence refactoring the code
+    if ((this.tempStateFilters !== stateFilterEnc) && (!hasConfig && !hasError && !hasHelp)) {
+      this.tempStateFilters = stateFilterEnc;
+      setTimeout(() => {
+        this.router.navigate([], {
+          queryParams: { 'stateFilters': stateFilterEnc, 'selectedTab': this.selectedTab, 'selectedType': this.selectedtype },
+          relativeTo: this.route
+        });
+      });
+    }
+  }
+
+  isObjectArrayEmpty(value) {
+    if (value === null || value === undefined) {
+      return true;
+    }
+    if (Array.isArray(value)) {
+      return value.length === 0 || value.every(x => this.isObjectArrayEmpty(x)); // Recursively check all elements
+    }
+    if (typeof value === 'object') {
+      const keys = Object.keys(value);
+      if (keys.length === 0) {
+        return true; // Empty object
+      }
+      return false; // Not empty if it has other keys
+    }
+    return false; // For other data types like numbers, strings, booleans
+  }
+
+  getBackupOfFilterSelectionState(prop = null) {
+    if (this.selectedFilters) {
+      if (prop) {
+        return this.selectedFilters[prop];
+      } else {
+        return this.selectedFilters;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  setBackupOfUrlFilters(data) {
+    this.selectedUrlFilters = data;
+  }
+
+  getBackupOfUrlFilters() {
+    return this.selectedUrlFilters;
+  }
+
+
+  removeQueryParams() {
+    this.router.navigate([], {
+      queryParams: {}, // Clear query params
+      relativeTo: this.route
+    });
+  }
+
   setKpiSubFilterObj(value: any) {
-    if(!value) {
+    const routerUrl = decodeURIComponent(this.router.url).split('?')[0];
+    const segments = routerUrl?.split('/');
+    const hasConfig = segments.includes('Config');
+    const hasHelp = segments.includes('Help');
+    const hasError = segments.includes('Error');
+    if (!value) {
       this.selectedKPIFilterObj = {};
     } else if (Object.keys(value)?.length && Object.keys(value)[0].indexOf('kpi') !== -1) {
       Object.keys(value).forEach((key) => {
         this.selectedKPIFilterObj[key] = value[key];
+      });
+    }
+    const kpiFilterParamStr = btoa(Object.keys(this.selectedKPIFilterObj).length ? JSON.stringify(this.selectedKPIFilterObj) : '');
+
+    if (!hasConfig && !hasError && !hasHelp) {
+      this.router.navigate([], {
+        queryParams: { 'stateFilters': this.tempStateFilters, 'kpiFilters': kpiFilterParamStr, 'selectedTab': this.selectedTab, 'selectedType': this.selectedtype }, // Pass the object here
+        relativeTo: this.route,
       });
     }
     this.selectedFilterOption.next(value);
@@ -425,8 +523,12 @@ export class SharedService {
     return this.selectedLevel;
   }
   setSelectedTrends(values) {
+    values.forEach(trend => {
+      if (trend?.path) {
+        trend.path = trend.path?.replace(/___/g, '###');
+      }
+    });
     this.selectedTrends = values;
-    // this.selectedTrendsEvent.emit(values);
     this.selectedTrendsEventSubject.next(values);
   }
   getSelectedTrends() {
@@ -439,18 +541,8 @@ export class SharedService {
     this.isSideNav.emit(flag);
   }
 
-  setCurrentUserDetails(details) {
-
-    if (!this.currentUserDetails || !details || Object.keys(details).length === 0) {
-      this.currentUserDetails = details;
-    } else {
-      this.currentUserDetails = { ...this.currentUserDetails, ...details };
-    }
-    localStorage.setItem('currentUserDetails', JSON.stringify(this.currentUserDetails));
-    this.currentUserDetailsSubject.next(this.currentUserDetails);
-  }
-
   getCurrentUserDetails(key = null) {
+    this.currentUserDetails = JSON.parse(localStorage.getItem('currentUserDetails'));
     if (key) {
       if (this.currentUserDetails && this.currentUserDetails.hasOwnProperty(key)) {
         return this.currentUserDetails[key];
@@ -583,6 +675,86 @@ export class SharedService {
   setRecommendationsFlag(value: boolean) {
     this.isRecommendationsEnabledSubject.next(value);
   }
+
+  getProjectWithHierarchy(){
+    return JSON.parse(localStorage.getItem('projectWithHierarchy') || '[]');
+  }
+
+  extractHierarchyData(hierarchyArray) {
+    let result = {};
+    if (!Array.isArray(hierarchyArray)) {
+        console.error("Invalid input: hierarchyArray should be an array.");
+        return result; // Return empty object if input is not an array
+    }
+    hierarchyArray.forEach(item => {
+        if (item && typeof item === 'object' && item.hierarchyLevel && item.value) {
+            if (item.hierarchyLevel.hierarchyLevelName) {
+                result[item.hierarchyLevel.hierarchyLevelName] = item.value;
+            } else {
+                console.warn("Missing hierarchyLevelName in:", item);
+            }
+        } else {
+            console.warn("Invalid item structure:", item);
+        }
+    });
+    return result;
+  }
+
+  getTooltipTextFromObject(tooltipData): string {
+    return Object?.entries(tooltipData)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join('\n');
+  }
+
+  //#region  can be remove after iteraction component removal
+
+  isTrendValueListValid(trendValueList: any[]): boolean {
+    return trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1');
+  }
+
+  populateDropdownFromTrendValues(trendValueList: any[], dropdownArr: any[]): void {
+    trendValueList.forEach(item => {
+      if (!dropdownArr.includes(item?.filter1)) {
+        dropdownArr.push(item?.filter1);
+      }
+    });
+  }
+
+
+  shouldRemoveOverallFilter(kpiObj: any): boolean {
+    return (
+      kpiObj &&
+      kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') &&
+      (
+        kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() === 'multiselectdropdown' ||
+        (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() === 'dropdown' &&
+          kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') &&
+          kpiObj['kpiDetail']['hideOverallFilter'])
+      )
+    );
+  }
+
+  removeOverallFilter(dropdownArr: any[]): void {
+    const index = dropdownArr.findIndex(x => x?.toLowerCase() === 'overall');
+    if (index > -1) {
+      dropdownArr.splice(index, 1);
+    }
+  }
+
+  createFilterObject(dropdownArr: any[]): any[] {
+    return [
+      {
+        filterType: 'Select a filter',
+        options: dropdownArr
+      }
+    ];
+  }
+
+  setUserDetailsAsBlankObj() {
+    this.currentUserDetails = {}
+  }
+
+  //#endregion
 }
 
 

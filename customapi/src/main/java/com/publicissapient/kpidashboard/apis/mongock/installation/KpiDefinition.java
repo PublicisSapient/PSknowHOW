@@ -66,8 +66,7 @@ public class KpiDefinition {
 		KpiColumnConfigDataFactory kpiColumnConfigDataFactory = KpiColumnConfigDataFactory.newInstance();
 		KpiCategoryMappingDataFactory kpiCategoryMappingDataFactory = KpiCategoryMappingDataFactory.newInstance();
 		KpiCategoryDataFactory kpiCategoryDataFactory = KpiCategoryDataFactory.newInstance();
-		FieldMappingStructureDataFactory fieldMappingStructureDataFactory = FieldMappingStructureDataFactory
-				.newInstance();
+		FieldMappingStructureDataFactory fieldMappingStructureDataFactory = FieldMappingStructureDataFactory.newInstance();
 
 		kpiList = kpiDefinationDataFactory.getKpiList();
 		kpiColumnConfigs = kpiColumnConfigDataFactory.getKpiColumnConfigs();

@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.jira.kanban.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -43,12 +41,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
@@ -111,8 +111,7 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 		accountHierarchyDataKanbanList = accountHierarchyKanbanFilterDataFactory.getAccountHierarchyKanbanDataList();
 
 		KanbanJiraIssueDataFactory kanbanJiraIssueDataFactory = KanbanJiraIssueDataFactory.newInstance();
-		kanbanJiraIssueDataList = kanbanJiraIssueDataFactory
-				.getKanbanJiraIssueDataListByTypeName(Arrays.asList("Story"));
+		kanbanJiraIssueDataList = kanbanJiraIssueDataFactory.getKanbanJiraIssueDataListByTypeName(Arrays.asList("Story"));
 
 		setMockProjectConfig();
 		setMockFieldMapping();
@@ -120,6 +119,7 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
@@ -134,13 +134,17 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 		setTreadValuesDataCount();
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		when(cacheService.getFullKanbanHierarchyLevel()).thenReturn(hierachyLevelFactory.getHierarchyLevels());
-
-
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		ProjectBasicConfig p1 = new ProjectBasicConfig();
+		p1.setId(new ObjectId("6335368249794a18e8a4479f"));
+		p1.setProjectName("Test");
+		p1.setProjectNodeId("Kanban Project_6335368249794a18e8a4479f");
+		mapOfProjectDetails.put(p1.getId().toString(), p1);
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 	}
 
 	@After
 	public void cleanup() {
-
 	}
 
 	private void setMockProjectConfig() {
@@ -156,15 +160,15 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 
 		FieldMapping projectOne = new FieldMapping();
 		projectOne.setBasicProjectConfigId(new ObjectId("6335368249794a18e8a4479f"));
-		projectOne.setTicketCountIssueType(Arrays.asList("Story"));
+		projectOne.setTicketCountIssueTypeKPI54(Arrays.asList("Story"));
 
 		FieldMapping projectTwo = new FieldMapping();
 		projectTwo.setBasicProjectConfigId(new ObjectId("5b719d06a500d00814bfb2b9"));
-		projectTwo.setTicketCountIssueType(Arrays.asList("Story"));
+		projectTwo.setTicketCountIssueTypeKPI54(Arrays.asList("Story"));
 
 		FieldMapping projectThree = new FieldMapping();
 		projectThree.setBasicProjectConfigId(new ObjectId("5ba8e182d3735010e7f1fa45"));
-		projectThree.setTicketCountIssueType(Arrays.asList("Story"));
+		projectThree.setTicketCountIssueTypeKPI54(Arrays.asList("Story"));
 
 		fieldMappingList.add(projectOne);
 		fieldMappingList.add(projectTwo);
@@ -202,8 +206,8 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 		when(kpiHelperService.computeProjectWiseJiraHistoryByFieldAndDate(anyMap(), anyString(), anyMap(), anyString()))
 				.thenReturn(projectWiseJiraHistoryPriorityAndDateWiseIssueMap);
 
-		List<KanbanIssueCustomHistory> kanbanIssueCustomHistoryDataList = KanbanIssueCustomHistoryDataFactory
-				.newInstance().getKanbanIssueCustomHistoryDataList();
+		List<KanbanIssueCustomHistory> kanbanIssueCustomHistoryDataList = KanbanIssueCustomHistoryDataFactory.newInstance()
+				.getKanbanIssueCustomHistoryDataList();
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("JiraIssueHistoryData", kanbanIssueCustomHistoryDataList);
 		when(kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(anyList(), anyString(), anyString(), any(),
@@ -217,32 +221,30 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
 		try {
-			KpiElement kpiElement = netOpenTicketCountByPriorityImpl.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0), treeAggregatorDetail);
+			KpiElement kpiElement = netOpenTicketCountByPriorityImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(dc -> {
-
 				String priority = dc.getFilter();
 				switch (priority) {
-				case "P1":
-					assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "P2":
-					assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "P3":
-					assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "P4":
-					assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "MISC":
-					assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
+					case "P1" :
+						assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "P2" :
+						assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "P3" :
+						assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "P4" :
+						assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "MISC" :
+						assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
 
-				default:
-					break;
+					default :
+						break;
 				}
-
 			});
 		} catch (ApplicationException e) {
 			e.printStackTrace();
@@ -276,5 +278,4 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 	public void testCalculateKPIMetrics() {
 		assertThat(netOpenTicketCountByPriorityImpl.calculateKPIMetrics(null), equalTo(0L));
 	}
-
 }

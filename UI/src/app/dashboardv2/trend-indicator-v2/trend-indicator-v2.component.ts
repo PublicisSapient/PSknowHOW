@@ -10,6 +10,7 @@ export class TrendIndicatorV2Component implements OnChanges {
 
   @Input() trendData: any;
   @Input() colorObj: any;
+  @Input() selectedTab: any;
   dataObj = [];
   headerObj = [];
 
@@ -21,11 +22,17 @@ export class TrendIndicatorV2Component implements OnChanges {
       this.colorObj = Object.keys((this.colorObj)).map((key) => this.colorObj[key]);
 
       this.trendData.forEach((trend) => {
-        this.dataObj.push({
-          'Project': this.colorObj.filter((obj) => obj.nodeName === trend['hierarchyName'])[0].color,
-          'Latest Trend': trend['value'] + ' (' + trend['trend'] + ')',
-          'KPI Maturity': this.getMaturityValue(trend),
-        });
+        if (trend['hierarchyName']) {
+          const trendObj = {
+            'Project': this.colorObj.filter((obj) => obj.nodeId === trend['hierarchyId'])[0].color,
+            'Latest Trend': trend['value'] + ' (' + trend['trend'] + ')',
+            'KPI Maturity': this.getMaturityValue(trend),
+          };
+
+          this.dataObj.push(trendObj);
+        } else {
+          this.dataObj.push({});
+        }
       });
       this.headerObj.push(...Object.keys(this.dataObj[0]));
 

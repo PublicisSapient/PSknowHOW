@@ -29,11 +29,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -45,7 +43,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -59,14 +57,12 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.common.constant.BuildStatus;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -83,11 +79,9 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	private static final long DAYS_IN_WEEKS = 7;
 
 	@Autowired
-	private ConfigHelperService configHelperService;
-	@Autowired
-	private BuildRepository buildRepository;
-	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
 
 	@Override
 	public String getQualifierType() {
@@ -96,8 +90,8 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		Map<String, List<DataCount>> trendValueMap = new HashMap<>();
 		Node root = treeAggregatorDetail.getRoot();
@@ -143,12 +137,11 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	 * @param projectLeafNodeList
 	 * @param trendValueMap
 	 */
-	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp,
-			List<Node> projectLeafNodeList, Map<String, List<DataCount>> trendValueMap) {
+	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp, List<Node> projectLeafNodeList,
+			Map<String, List<DataCount>> trendValueMap) {
 
 		String requestTrackerId = getRequestTrackerId();
-		LocalDateTime localStartDate = LocalDateTime.now()
-				.minusDays(customApiConfig.getJenkinsWeekCount() * DAYS_IN_WEEKS);
+		LocalDateTime localStartDate = LocalDateTime.now().minusDays(customApiConfig.getJenkinsWeekCount() * DAYS_IN_WEEKS);
 		LocalDateTime localEndDate = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
 		String startDate = localStartDate.format(formatter);
@@ -162,7 +155,6 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 
 		List<KPIExcelData> excelData = new ArrayList<>();
 		projectLeafNodeList.forEach(node -> {
-
 			String trendLineName = node.getProjectFilter().getName();
 			CodeBuildTimeInfo codeBuildTimeInfo = new CodeBuildTimeInfo();
 			LocalDateTime end = localEndDate;
@@ -192,12 +184,11 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 				mapTmp.get(node.getId()).setValue(null);
 				return;
 			}
-			prepareInfoForBuild(codeBuildTimeInfo, end, aggBuildList, trendLineName, trendValueMap,
-					Constant.AGGREGATED_VALUE, aggDataMap);
+			prepareInfoForBuild(codeBuildTimeInfo, end, aggBuildList, trendLineName, trendValueMap, Constant.AGGREGATED_VALUE,
+					aggDataMap);
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 
 			populateValidationDataObject(requestTrackerId, excelData, trendLineName, codeBuildTimeInfo);
-
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.CODE_BUILD_TIME.getColumns());
@@ -205,30 +196,29 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 
 	/**
 	 * to get the job name
-	 * 
+	 *
 	 * @param trendLineName
-	 *            trendLineName
+	 *          trendLineName
 	 * @param entry
-	 *            entry
+	 *          entry
 	 * @param buildList
-	 *            list of builds
+	 *          list of builds
 	 * @return returns the job name
 	 */
-	private static String getJobName(String trendLineName, Map.Entry<String, List<Build>> entry,
+	protected static String getJobName(String trendLineName, Map.Entry<String, List<Build>> entry,
 			List<Build> buildList) {
 		String jobName;
 		if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
 			if (StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
-				jobName = buildList.get(0).getJobFolder() + CommonConstant.ARROW + buildList.get(0).getPipelineName();
+				jobName = buildList.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName);
 			} else {
-				jobName = buildList.get(0).getJobFolder() + CommonConstant.ARROW + trendLineName;
+				jobName = buildList.get(0).getJobFolder() + CommonUtils.getStringWithDelimiters(trendLineName);
 			}
-
 		} else {
 			if (StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
-				jobName = entry.getKey() + CommonConstant.ARROW + buildList.get(0).getPipelineName();
+				jobName = buildList.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName);
 			} else {
-				jobName = entry.getKey() + CommonConstant.ARROW + trendLineName;
+				jobName = entry.getKey() + CommonUtils.getStringWithDelimiters(trendLineName);
 			}
 		}
 		return jobName;
@@ -273,7 +263,6 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 			}
 			weekRange.putIfAbsent(date, null);
 			endDateTime = endDateTime.minusWeeks(1);
-
 		}
 		trendValueMap.putIfAbsent(jobName, new ArrayList<>());
 		aggDataMap.putIfAbsent(jobName, new ArrayList<>());
@@ -282,7 +271,6 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 			aggDataMap.get(jobName).add(dataCount);
 			trendValueMap.get(jobName).add(dataCount);
 		});
-
 	}
 
 	/**
@@ -295,8 +283,8 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	 */
 	private boolean checkDateIsInWeeks(LocalDate monday, LocalDate sunday, Build build) {
 		LocalDate buildTime = Instant.ofEpochMilli(build.getStartTime()).atZone(ZoneId.systemDefault()).toLocalDate();
-		return (buildTime.isAfter(monday) || buildTime.isEqual(monday))
-				&& (buildTime.isBefore(sunday) || buildTime.isEqual(sunday));
+		return (buildTime.isAfter(monday) || buildTime.isEqual(monday)) &&
+				(buildTime.isBefore(sunday) || buildTime.isEqual(sunday));
 	}
 
 	/**
@@ -311,6 +299,8 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 
 			if (StringUtils.isNotEmpty(build.getJobFolder())) {
 				codeBuildTimeInfo.addBuidJob(build.getJobFolder());
+			} else if (StringUtils.isNotEmpty(build.getPipelineName())) {
+				codeBuildTimeInfo.addPipeLineNames(build.getPipelineName());
 			} else {
 				codeBuildTimeInfo.addBuidJob(build.getBuildJob());
 			}
@@ -318,8 +308,8 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 			codeBuildTimeInfo.addBuildStartTime(
 					DateUtil.dateTimeFormatter(new Date(build.getStartTime()), DateUtil.DISPLAY_DATE_TIME_FORMAT));
 			codeBuildTimeInfo.addWeeks(date);
-			codeBuildTimeInfo.addBuildEndTime(
-					DateUtil.dateTimeFormatter(new Date(build.getEndTime()), DateUtil.DISPLAY_DATE_TIME_FORMAT));
+			codeBuildTimeInfo
+					.addBuildEndTime(DateUtil.dateTimeFormatter(new Date(build.getEndTime()), DateUtil.DISPLAY_DATE_TIME_FORMAT));
 			codeBuildTimeInfo.addDuration(createDurationString(minutes, seconds));
 			codeBuildTimeInfo.addBuildStatus(build.getBuildStatus().toString());
 			codeBuildTimeInfo.addStartedBy(build.getStartedBy());
@@ -347,8 +337,8 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	 */
 	private DataCount createDataCount(String trendLineName, Long valueForCurrentLeaf, String date) {
 		DataCount dataCount = new DataCount();
-		dataCount.setData(String
-				.valueOf(valueForCurrentLeaf == null ? 0L : TimeUnit.MILLISECONDS.toMinutes(valueForCurrentLeaf)));
+		dataCount.setData(
+				String.valueOf(valueForCurrentLeaf == null ? 0L : TimeUnit.MILLISECONDS.toMinutes(valueForCurrentLeaf)));
 		dataCount.setSProjectName(trendLineName);
 		dataCount.setDate(date);
 		dataCount.setHoverValue(new HashMap<>());
@@ -373,17 +363,13 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	public Map<ObjectId, List<Build>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 
-		Set<ObjectId> projectBasicConfigIds = new HashSet<>();
-		List<String> statusList = new ArrayList<>();
-		Map<String, List<String>> mapOfFilters = new HashMap<>();
+		List<Build> buildList = new ArrayList<>();
 		leafNodeList.forEach(node -> {
 			ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
-			projectBasicConfigIds.add(basicProjectConfigId);
+			// get cached build info from BuildFrequency db kpi cache
+			buildList.addAll(kpiDataCacheService.fetchBuildFrequencyData(basicProjectConfigId, startDate, endDate,
+					KPICode.BUILD_FREQUENCY.getKpiId()));
 		});
-
-		statusList.add(BuildStatus.SUCCESS.name());
-		mapOfFilters.put("buildStatus", statusList);
-		List<Build> buildList = buildRepository.findBuildList(mapOfFilters, projectBasicConfigIds, startDate, endDate);
 		if (CollectionUtils.isEmpty(buildList)) {
 			return new HashMap<>();
 		}
@@ -403,7 +389,6 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			KPIExcelUtility.populateCodeBuildTime(excelData, projectName, codeBuildTimeInfo);
-
 		}
 	}
 
@@ -416,5 +401,4 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI8(), KPICode.CODE_BUILD_TIME.getKpiId());
 	}
-
 }

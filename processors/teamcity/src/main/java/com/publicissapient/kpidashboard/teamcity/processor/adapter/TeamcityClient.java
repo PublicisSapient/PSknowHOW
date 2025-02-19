@@ -27,9 +27,7 @@ import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 
-/**
- * Client for fetching job and build information from Teamcity.
- */
+/** Client for fetching job and build information from Teamcity. */
 public interface TeamcityClient {
 
 	/**
@@ -38,7 +36,7 @@ public interface TeamcityClient {
 	 * populated.
 	 *
 	 * @param teamcityServer
-	 *            the URL for the Teamcity instance
+	 *          the URL for the Teamcity instance
 	 * @return a summary of every build for each job on the instance
 	 */
 	Map<ObjectId, Set<Build>> getInstanceJobs(ProcessorToolConnection teamcityServer);
@@ -47,11 +45,11 @@ public interface TeamcityClient {
 	 * Fetch full populated build information for a build.
 	 *
 	 * @param buildUrl
-	 *            the url of the build
+	 *          the url of the build
 	 * @param instanceUrl
-	 *            the url of Teamcity server
+	 *          the url of Teamcity server
 	 * @param teamcityServer
-	 *            the teamcity server
+	 *          the teamcity server
 	 * @param proBasicConfig
 	 * @return a Build instance or null
 	 */

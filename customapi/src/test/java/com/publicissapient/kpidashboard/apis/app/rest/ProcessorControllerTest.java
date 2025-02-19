@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.app.rest;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
@@ -30,7 +32,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -47,7 +48,6 @@ import com.publicissapient.kpidashboard.common.model.generic.Processor;
  *
  * @author pansharm5
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class ProcessorControllerTest {
 
@@ -59,18 +59,13 @@ public class ProcessorControllerTest {
 	@Mock
 	private ProcessorService processorService;
 
-	/**
-	 * method includes preprocesses for test cases
-	 */
+	/** method includes preprocesses for test cases */
 	@Before
 	public void before() {
 		mockMvc = MockMvcBuilders.standaloneSetup(processorController).build();
-
 	}
 
-	/**
-	 * method includes post processes for test cases
-	 */
+	/** method includes post processes for test cases */
 	@After
 	public void after() {
 		mockMvc = null;
@@ -95,10 +90,25 @@ public class ProcessorControllerTest {
 	@Test
 	public void test_getData200() throws Exception {
 		List<Processor> listProcessor = new ArrayList<>();
-		Mockito.when(processorService.getAllProcessorDetails())
+		when(processorService.getAllProcessorDetails())
 				.thenReturn(new ServiceResponse(true, StringUtils.EMPTY, listProcessor));
 		mockMvc.perform(MockMvcRequestBuilders.get("/processor").contentType(TestUtil.APPLICATION_JSON_UTF8))
 				.andExpect(status().is2xxSuccessful());
 	}
 
+	/**
+	 * method to test /processor restPoint ; Get All Processors
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void metadata() throws Exception {
+		List<Processor> listProcessor = new ArrayList<>();
+		when(processorService.runMetadataStep(any()))
+				.thenReturn(new ServiceResponse(true, StringUtils.EMPTY, listProcessor));
+		mockMvc
+				.perform(
+						MockMvcRequestBuilders.post("/processor/metadata/step/abc").contentType(TestUtil.APPLICATION_JSON_UTF8))
+				.andExpect(status().is2xxSuccessful());
+	}
 }

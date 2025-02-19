@@ -25,11 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
-import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
@@ -48,10 +46,7 @@ public class ProjectHierarchySyncServiceImpl implements ProjectHierarchySyncServ
 	private JiraIssueRepository jiraIssueRepository;
 
 	@Autowired
-	private AccountHierarchyRepository accountHierarchyRepository;
-
-	@Autowired
-	private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepository;
+	private ProjectHierarchyRepository projectHierarchyRepository;
 
 	@Autowired
 	private SprintRepository sprintRepository;
@@ -62,7 +57,7 @@ public class ProjectHierarchySyncServiceImpl implements ProjectHierarchySyncServ
 	 * entries.
 	 *
 	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
+	 *          the ID of the basic project configuration
 	 */
 	@Override
 	public void syncScrumSprintHierarchy(ObjectId basicProjectConfigId) {
@@ -70,19 +65,18 @@ public class ProjectHierarchySyncServiceImpl implements ProjectHierarchySyncServ
 				.findDistinctSprintIDsByBasicProjectConfigId(String.valueOf(basicProjectConfigId)).stream()
 				.map(JiraIssue::getSprintID).toList();
 
-		// Find nodeIds that are in accountHierarchy but not in jira issue sprintIDs
-		List<String> nonMatchingNodeIds = accountHierarchyRepository
+		// Find nodeIds that are in projectHierarchy but not in jira issue sprintIDs
+		List<String> nonMatchingNodeIds = projectHierarchyRepository
 				.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(basicProjectConfigId, distinctSprintIDs,
 						CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
-				.stream().map(AccountHierarchy::getNodeId).toList();
+				.stream().map(ProjectHierarchy::getNodeId).toList();
 
 		if (CollectionUtils.isNotEmpty(nonMatchingNodeIds)) {
 			log.info("Syncing sprint details of projectId {}. Deleting sprintID: {}", basicProjectConfigId,
 					nonMatchingNodeIds);
 			sprintRepository.deleteBySprintIDInAndBasicProjectConfigId(nonMatchingNodeIds, basicProjectConfigId);
 
-			deleteNonMatchingEntries(basicProjectConfigId, nonMatchingNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
-					false);
+			deleteNonMatchingEntries(basicProjectConfigId, nonMatchingNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
 		}
 	}
 
@@ -92,51 +86,22 @@ public class ProjectHierarchySyncServiceImpl implements ProjectHierarchySyncServ
 	 * deleting non-matching entries.
 	 *
 	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
+	 *          the ID of the basic project configuration
 	 * @param fetchedReleasedHierarchy
-	 *            the list of fetched release hierarchy
+	 *          the list of fetched release hierarchy
 	 */
 	@Override
-	public void syncScrumReleaseHierarchy(ObjectId basicProjectConfigId,
-										  List<AccountHierarchy> fetchedReleasedHierarchy) {
-		List<String> distinctReleaseNodeIds = fetchedReleasedHierarchy.stream().map(AccountHierarchy::getNodeId)
-				.distinct().toList();
+	public void syncReleaseHierarchy(ObjectId basicProjectConfigId, List<ProjectHierarchy> fetchedReleasedHierarchy) {
+		List<String> distinctReleaseNodeIds = fetchedReleasedHierarchy.stream().map(ProjectHierarchy::getNodeId).distinct()
+				.toList();
 
-		List<String> entriesToDelete = accountHierarchyRepository
+		List<String> entriesToDelete = projectHierarchyRepository
 				.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(basicProjectConfigId, distinctReleaseNodeIds,
 						CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)
-				.stream().map(AccountHierarchy::getNodeId).toList();
+				.stream().map(ProjectHierarchy::getNodeId).toList();
 
 		if (CollectionUtils.isNotEmpty(entriesToDelete)) {
-			deleteNonMatchingEntries(basicProjectConfigId, entriesToDelete, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE,
-					false);
-		}
-	}
-
-	/**
-	 * Synchronizes the hierarchy of Kanban releases by comparing the release node
-	 * IDs in the fetched release hierarchy with those in the Kanban account
-	 * hierarchy and deleting non-matching entries.
-	 *
-	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
-	 * @param fetchedReleasedHierarchy
-	 *            the list of fetched release hierarchy
-	 */
-	@Override
-	public void syncKanbanReleaseHierarchy(ObjectId basicProjectConfigId,
-										   List<KanbanAccountHierarchy> fetchedReleasedHierarchy) {
-		List<String> distinctReleaseNodeIds = fetchedReleasedHierarchy.stream().map(KanbanAccountHierarchy::getNodeId)
-				.distinct().toList();
-
-		List<String> entriesToDelete = kanbanAccountHierarchyRepository
-				.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(basicProjectConfigId, distinctReleaseNodeIds,
-						CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)
-				.stream().map(KanbanAccountHierarchy::getNodeId).toList();
-
-		if (CollectionUtils.isNotEmpty(entriesToDelete)) {
-			deleteNonMatchingEntries(basicProjectConfigId, entriesToDelete, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE,
-					true);
+			deleteNonMatchingEntries(basicProjectConfigId, entriesToDelete, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
 		}
 	}
 
@@ -145,28 +110,18 @@ public class ProjectHierarchySyncServiceImpl implements ProjectHierarchySyncServ
 	 * do not match the provided list of distinct release node IDs.
 	 *
 	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
+	 *          the ID of the basic project configuration
 	 * @param nodeIdsToBeDeleted
-	 *            the list of node IDs to delete
+	 *          the list of node IDs to delete
 	 * @param hierarchyLevelId
-	 *            the hierarchy level ID
-	 * @param isKanban
-	 *            flag indicating if the hierarchy is Kanban
+	 *          the hierarchy level ID
 	 */
 	@Override
 	public void deleteNonMatchingEntries(ObjectId basicProjectConfigId, List<String> nodeIdsToBeDeleted,
-			String hierarchyLevelId, boolean isKanban) {
-		if (isKanban) {
-			log.info("Syncing Kanban {} hierarchy of projectId {}. Deleting node IDs: {}", hierarchyLevelId,
-					basicProjectConfigId, nodeIdsToBeDeleted);
-			kanbanAccountHierarchyRepository.deleteByBasicProjectConfigIdAndNodeIdIn(basicProjectConfigId,
-					nodeIdsToBeDeleted, hierarchyLevelId);
-		} else {
-			log.info("Syncing Scrum {} hierarchy of projectId {}. Deleting node IDs: {}", hierarchyLevelId,
-					basicProjectConfigId, nodeIdsToBeDeleted);
-			accountHierarchyRepository.deleteByBasicProjectConfigIdAndNodeIdIn(basicProjectConfigId, nodeIdsToBeDeleted,
-					hierarchyLevelId);
-		}
+			String hierarchyLevelId) {
+		log.info("Syncing {} hierarchy of projectId {}. Deleting node IDs: {}", hierarchyLevelId, basicProjectConfigId,
+				nodeIdsToBeDeleted);
+		projectHierarchyRepository.deleteByBasicProjectConfigIdAndNodeIdIn(basicProjectConfigId, nodeIdsToBeDeleted,
+				hierarchyLevelId);
 	}
-
 }

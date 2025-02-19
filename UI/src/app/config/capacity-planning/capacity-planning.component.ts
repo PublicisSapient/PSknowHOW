@@ -303,9 +303,18 @@ export class CapacityPlanningComponent implements OnInit {
     }
   }
 
-  getSquadsOfSelectedProject(projectName) {
-    if (projectName) {
-      this.selectedSquad = [...this.squadListArr?.filter((x) => x['path'][0]?.includes(projectName))];
+  getSquadsOfSelectedProject(projectNodeId) {
+    if (projectNodeId) {
+      let sprintData = this.getGridData();
+      let sprintNodeIdList = new Set(sprintData.map(sprint => sprint.sprintNodeId));
+      this.selectedSquad = [...this.squadListArr?.filter((x) => {
+        // sprintNodeIdList.has(x['parentId'])
+        for (const sprintId of sprintNodeIdList) {
+          if(x['parentId'].includes(sprintId)) {
+            return x;
+          }
+        }
+      })];
     }
   }
 
@@ -330,6 +339,7 @@ export class CapacityPlanningComponent implements OnInit {
           }
         }
         this.tableLoader = false;
+        this.getSquadsOfSelectedProject(projectId);
       } else {
         this.tableLoader = false;
         this.noData = true;
@@ -346,7 +356,7 @@ export class CapacityPlanningComponent implements OnInit {
   }
 
   getAssigneeRoles() {
-    if (!(this.projectAssigneeRoles.length > 0)) {
+    if (this.projectAssigneeRoles.length <= 0) {
       this.http_service.getAssigneeRoles()
         .subscribe(response => {
           if (response && response?.success && response?.data) {
@@ -362,7 +372,7 @@ export class CapacityPlanningComponent implements OnInit {
   }
 
   getCapacityJiraAssignee(projectId) {
-    if (!(Object.keys(this.projectJiraAssignees).length > 0) || (this.projectJiraAssignees['basicProjectConfigId'] !== projectId)) {
+    if (Object.keys(this.projectJiraAssignees).length <= 0 || (this.projectJiraAssignees['basicProjectConfigId'] !== projectId)) {
       this.jiraAssigneeLoader = true;
       this.http_service.getJiraProjectAssignee(projectId)
         .subscribe(response => {
@@ -897,6 +907,42 @@ export class CapacityPlanningComponent implements OnInit {
     let projectMap = projectListArr.map(project => project.level);
     // Filter out the objects from filterData which have a level that is exactly 2 levels above any project level
     return this.sortAlphabetically(this.filterData.filter(data => projectMap.includes(data.level - 2)));
+
+  }
+
+  getGridColumns() {
+    return this.kanban ? this.cols.capacityKanbanKeys : this.cols.capacityScrumKeys;
+  }
+
+  checkIfGridDataIdEmpty() {
+    if (this.kanban) {
+      return this.capacityKanbanData?.length > 0;
+    } else {
+      return this.capacityScrumData?.length > 0
+    }
+  }
+
+  getGridData() {
+    return this.kanban ? this.capacityKanbanData : this.capacityScrumData;
+  }
+
+  getDataKey() {
+    return this.kanban ? 'startDate' : 'sprintNodeId';
+  }
+
+  getExpandedClass(item, expanded) {
+
+    if (this.kanban) {
+      return {
+        'tr-active': (item) === true, //(item | comparedates
+        'row-expanded': expanded
+      }
+    } else {
+      return {
+        'tr-active': item?.sprintState?.toLowerCase() === 'active',
+        'row-expanded': expanded
+      }
+    }
 
   }
 

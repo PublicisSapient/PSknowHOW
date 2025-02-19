@@ -18,14 +18,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FieldMappingFieldComponent } from './field-mapping-field.component';
+import { Router } from '@angular/router';
 
 describe('FieldMappingFieldComponent', () => {
   let component: FieldMappingFieldComponent;
   let fixture: ComponentFixture<FieldMappingFieldComponent>;
+  let mockRouter: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
+
+    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
     await TestBed.configureTestingModule({
-      declarations: [ FieldMappingFieldComponent ]
+      declarations: [ FieldMappingFieldComponent ],
+      providers: [{ provide: Router, useValue: mockRouter }]
     })
     .compileComponents();
   });
@@ -136,5 +141,13 @@ describe('FieldMappingFieldComponent', () => {
     component.resetRadioButton('test')
     expect(spyObj).toHaveBeenCalled();
   })
+
+  it('should navigate to the provided URL', () => {
+    const testUrl = '/dashboard';
+
+    component.navigate(testUrl);
+
+    expect(mockRouter.navigate).toHaveBeenCalledWith([testUrl]);
+  });
  
 });

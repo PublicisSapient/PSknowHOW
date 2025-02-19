@@ -34,9 +34,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents a Capacity Kpi Data.
- */
+/** Represents a Capacity Kpi Data. */
 @Data
 @Builder
 @Getter
@@ -53,11 +51,10 @@ public class CapacityKpiData extends BasicModel {
 	private List<AdditionalFilterCapacity> additionalFilterCapacityList;
 	private List<AssigneeCapacity> assigneeCapacity;
 
-
 	@Override
 	public String toString() {
-		return "CapacityKpiData{" + "sprintID='" + sprintID + '\'' + ", projectName='" + projectName + '\''
-				+ ", projectId='" + projectId + '\'' + ", capacityPerSprint=" + capacityPerSprint
-				+ ", basicProjectConfigId=" + basicProjectConfigId + '}';
+		return "CapacityKpiData{" + "sprintID='" + sprintID + '\'' + ", projectName='" + projectName + '\'' +
+				", projectId='" + projectId + '\'' + ", capacityPerSprint=" + capacityPerSprint + ", basicProjectConfigId=" +
+				basicProjectConfigId + '}';
 	}
 }

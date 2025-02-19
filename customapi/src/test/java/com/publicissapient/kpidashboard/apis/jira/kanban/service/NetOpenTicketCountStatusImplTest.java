@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -43,12 +42,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
@@ -65,6 +66,7 @@ import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 
@@ -93,12 +95,27 @@ public class NetOpenTicketCountStatusImplTest {
 	private KpiRequest kpiRequest;
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+
 	@Before
 	public void setup() {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance("/json/default/kanban_kpi_request.json");
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi48");
 		kpiRequest.setLabel("PROJECT");
 		kpiRequest.setDuration("WEEKS");
+
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335368249794a18e8a4479f"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Kanban Project");
+		projectBasicConfig.setProjectNodeId("Kanban Project_6335368249794a18e8a4479f");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 
 		AccountHierarchyKanbanFilterDataFactory accountHierarchyKanbanFilterDataFactory = AccountHierarchyKanbanFilterDataFactory
 				.newInstance();
@@ -108,21 +125,18 @@ public class NetOpenTicketCountStatusImplTest {
 		kpiWiseAggregation.put(KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS.name(), "sum");
 		setTreadValuesDataCount();
 		FieldMapping fieldMapping = new FieldMapping();
-		fieldMapping.setJiraLiveStatusNOSK("");
-		fieldMapping.setJiraTicketClosedStatus(Collections.EMPTY_LIST);
-		fieldMapping.setKanbanRCACountIssueType(Collections.EMPTY_LIST);
-		fieldMapping.setTicketCountIssueType(Collections.EMPTY_LIST);
+		fieldMapping.setJiraLiveStatusKPI48("");
+		fieldMapping.setJiraTicketClosedStatusKPI48(Collections.EMPTY_LIST);
+		fieldMapping.setTicketCountIssueTypeKPI48(Collections.EMPTY_LIST);
 		fieldMapping.setStoryFirstStatus("");
 		fieldMappingMap.put(new ObjectId("6335368249794a18e8a4479f"), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		when(cacheService.getFullKanbanHierarchyLevel()).thenReturn(hierachyLevelFactory.getHierarchyLevels());
-
 	}
 
 	@After
 	public void cleanup() {
-
 	}
 
 	@Test
@@ -191,8 +205,8 @@ public class NetOpenTicketCountStatusImplTest {
 		Map<String, Map<String, Map<String, Set<String>>>> projectWiseJiraHistoryStatusAndDateWiseIssueMap = prepareProjectWiseJiraHistoryByStatusAndDate();
 		when(kpiHelperService.computeProjectWiseJiraHistoryByStatusAndDate(anyMap(), anyString(), anyMap()))
 				.thenReturn(projectWiseJiraHistoryStatusAndDateWiseIssueMap);
-		List<KanbanIssueCustomHistory> kanbanIssueCustomHistoryDataList = KanbanIssueCustomHistoryDataFactory
-				.newInstance().getKanbanIssueCustomHistoryDataList();
+		List<KanbanIssueCustomHistory> kanbanIssueCustomHistoryDataList = KanbanIssueCustomHistoryDataFactory.newInstance()
+				.getKanbanIssueCustomHistoryDataList();
 
 		Map<String, List<String>> projectWiseDoneStatus = new HashMap<>();
 		projectWiseDoneStatus.put("6335368249794a18e8a4479f", Arrays.asList("Closed"));
@@ -213,19 +227,17 @@ public class NetOpenTicketCountStatusImplTest {
 			KpiElement kpiElement = totalTicketCountImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(dc -> {
-
 				String status = dc.getFilter();
 				switch (status) {
-				case "In Analysis":
-					assertThat("Ticket Analysis Count Value :", dc.getValue().size(), equalTo(7));
-					break;
-				case "Open":
-					assertThat("Ticket Open Count Value :", dc.getValue().size(), equalTo(8));
-					break;
-				default:
-					break;
+					case "In Analysis" :
+						assertThat("Ticket Analysis Count Value :", dc.getValue().size(), equalTo(7));
+						break;
+					case "Open" :
+						assertThat("Ticket Open Count Value :", dc.getValue().size(), equalTo(8));
+						break;
+					default :
+						break;
 				}
-
 			});
 		} catch (ApplicationException e) {
 			e.printStackTrace();
@@ -260,5 +272,4 @@ public class NetOpenTicketCountStatusImplTest {
 	public void testGetQualifierType() {
 		assertThat("Kpi Name :", totalTicketCountImpl.getQualifierType(), equalTo("NET_OPEN_TICKET_COUNT_BY_STATUS"));
 	}
-
 }

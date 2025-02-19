@@ -31,12 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
-import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationServiceR;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCapacity;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
-import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,17 +43,23 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCapacity;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
@@ -97,12 +97,11 @@ public class CapacityServiceImplTest {
 		kpiRequest.setLabel("PROJECT");
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
-				.newInstance();
+				.newInstance("/json/default/project_hierarchy_filter_data.json");
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 
 		setMockProjectConfig();
 		setMockFieldMapping();
-
 	}
 
 	private void setMockProjectConfig() {
@@ -144,9 +143,7 @@ public class CapacityServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
-
 
 	@Test
 	public void testGetKpiDataProjectAdditionalFilter() throws ApplicationException {
@@ -167,10 +164,10 @@ public class CapacityServiceImplTest {
 		CapacityKpiData capacityKpiData = new CapacityKpiData();
 		capacityKpiData.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
 		capacityKpiData.setCapacityPerSprint(12.0);
-		List<AdditionalFilterCapacity> additionalFilterCapacityList= new ArrayList<>();
-		AdditionalFilterCapacity additionalFilterCapacity= new AdditionalFilterCapacity();
+		List<AdditionalFilterCapacity> additionalFilterCapacityList = new ArrayList<>();
+		AdditionalFilterCapacity additionalFilterCapacity = new AdditionalFilterCapacity();
 		additionalFilterCapacity.setFilterId("sqd");
-		LeafNodeCapacity leafNodeCapacity= new LeafNodeCapacity("JAVA",12.0);
+		LeafNodeCapacity leafNodeCapacity = new LeafNodeCapacity("JAVA", 12.0);
 		additionalFilterCapacity.setNodeCapacityList(List.of(leafNodeCapacity));
 		additionalFilterCapacityList.add(additionalFilterCapacity);
 		capacityKpiData.setAdditionalFilterCapacityList(additionalFilterCapacityList);
@@ -191,13 +188,10 @@ public class CapacityServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
-
 
 	@Test
 	public void testGetQualifierType() {
 		assertThat(capacityServiceImpl.getQualifierType(), equalTo("CAPACITY"));
 	}
-
 }

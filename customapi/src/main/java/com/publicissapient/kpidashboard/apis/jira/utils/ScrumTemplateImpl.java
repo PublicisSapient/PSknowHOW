@@ -45,7 +45,6 @@ import lombok.extern.slf4j.Slf4j;
  * filter Impl UnitCoverageServiceImpl for week wise data in line chart
  * SonarViolationServiceImpl for week wise data group column chart with filter
  * Impl.
- *
  */
 @Component
 @Slf4j
@@ -65,34 +64,27 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 	@Autowired
 	private CustomApiConfig customApiConfig;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public String getQualifierType() {
 		// KPI Name from KPICODE
 		return "ScrumTemplateKPI";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-
 			if (Filters.getFilter(k) == Filters.SPRINT) {
 				sprintWiseLeafNodeValueForSimpleLineChart(mapTmp, v, kpiElement, kpiRequest);
 
-				sprintWiseLeafNodeValueForLineChartWithFilterOrGroupStackChartWithFilter(mapTmp, v, kpiElement,
-						kpiRequest);
+				sprintWiseLeafNodeValueForLineChartWithFilterOrGroupStackChartWithFilter(mapTmp, v, kpiElement, kpiRequest);
 			}
-
 		});
 
 		log.debug("[DIR-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
@@ -133,9 +125,7 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 		return kpiElement;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
@@ -156,9 +146,7 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 		return resultListMap;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> filterComponentIdWiseFCHMap) {
 		return null;
@@ -167,39 +155,38 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 	/**
 	 * This method populates KPI value to sprint leaf nodes. It also gives the trend
 	 * analysis at sprint wise.
-	 * 
+	 *
 	 * @param mapTmp
-	 *            node is map
+	 *          node is map
 	 * @param sprintLeafNodeList
-	 *            sprint nodes list
+	 *          sprint nodes list
 	 * @param kpiElement
-	 *            KpiElement
+	 *          KpiElement
 	 * @param kpiRequest
-	 *            KpiRequest
+	 *          KpiRequest
 	 */
 	@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValueForSimpleLineChart(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
+		sprintLeafNodeList.sort(
+				(node1, node2) -> node1.getSprintFilter().getStartDate().compareTo(node2.getSprintFilter().getStartDate()));
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 
 		// db call to make kpi specific queries
-		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
-				kpiRequest);
+		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
 		String subGroupCategory = (String) storyDefectDataListMap.get(SUBGROUPCATEGORY);
 
 		// grouping data to ease up operations ahead
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap.get(STORY_DATA);
 
-		/** Additional Filter **/
+		/** Additional Filter * */
 		Map<Pair<String, String>, Map<String, List<String>>> sprintWiseMap = KpiDataHelper
 				.createSubCategoryWiseMap(subGroupCategory, sprintWiseStoryList, kpiRequest.getFilterToShowOnTrend());
-		Map<String, String> sprintIdSprintNameMap = sprintWiseStoryList.stream().collect(
-				Collectors.toMap(SprintWiseStory::getSprint, SprintWiseStory::getSprintName, (name1, name2) -> name1));
+		Map<String, String> sprintIdSprintNameMap = sprintWiseStoryList.stream()
+				.collect(Collectors.toMap(SprintWiseStory::getSprint, SprintWiseStory::getSprintName, (name1, name2) -> name1));
 
 		Map<Pair<String, String>, Double> sprintWiseDIRMap = new HashMap<>();
 		Map<String, ValidationData> validationDataMap = new HashMap<>();
@@ -213,9 +200,8 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 			List<String> totalStoryIdList = new ArrayList<>();
 			subCategoryMap.forEach((subCategory, storyIdList) -> {
 				List<JiraIssue> additionalFilterDefectList = ((List<JiraIssue>) storyDefectDataListMap.get(DEFECT_DATA))
-						.stream()
-						.filter(f -> sprint.getKey().equals(f.getProjectID())
-								&& CollectionUtils.containsAny(f.getDefectStoryID(), storyIdList))
+						.stream().filter(f -> sprint.getKey().equals(f.getBasicProjectConfigId()) &&
+								CollectionUtils.containsAny(f.getDefectStoryID(), storyIdList))
 						.collect(Collectors.toList());
 
 				double dirForCurrentLeaf = 0.0d;
@@ -229,15 +215,14 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 
 			String validationDataKey = sprintIdSprintNameMap.get(sprint.getValue());
 			// this will be written according to what u want to be present in excel
-			populateValidationDataObject(kpiElement, requestTrackerId, validationDataKey, validationDataMap,
-					totalStoryIdList, sprintWiseDefectList);
+			populateValidationDataObject(kpiElement, requestTrackerId, validationDataKey, validationDataMap, totalStoryIdList,
+					sprintWiseDefectList);
 			double sprintWiseDir = calculateKpiValue(addFilterDirList, KPICode.FIRST_TIME_PASS_RATE.getKpiId());
 			sprintWiseDIRMap.put(sprint, sprintWiseDir);
 			setHowerMap(sprintWiseHowerMap, sprint, totalStoryIdList, sprintWiseDefectList);
 		});
 
 		sprintLeafNodeList.forEach(node -> {
-
 			String trendLineName = node.getProjectFilter().getName();
 			String currentSprintComponentId = node.getSprintFilter().getId();
 			Pair<String, String> currentNodeIdentifier = Pair.of(node.getParentId(), currentSprintComponentId);
@@ -252,8 +237,8 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 				defectInjectionRateForCurrentLeaf = 0.0d;
 			}
 
-			log.debug("[DIR-SPRINT-WISE][{}]. DIR for sprint {}  is {}", requestTrackerId,
-					node.getSprintFilter().getName(), defectInjectionRateForCurrentLeaf);
+			log.debug("[DIR-SPRINT-WISE][{}]. DIR for sprint {}  is {}", requestTrackerId, node.getSprintFilter().getName(),
+					defectInjectionRateForCurrentLeaf);
 
 			DataCount dataCount = new DataCount();
 			dataCount.setData(String.valueOf(Math.round(defectInjectionRateForCurrentLeaf)));
@@ -265,7 +250,6 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 			dataCount.setValue(defectInjectionRateForCurrentLeaf);
 			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 			mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
-
 		});
 	}
 
@@ -273,8 +257,8 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 			List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
+		sprintLeafNodeList.sort(
+				(node1, node2) -> node1.getSprintFilter().getStartDate().compareTo(node2.getSprintFilter().getStartDate()));
 
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
@@ -315,8 +299,8 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 				}
 			});
 			// this will be written according to what u want to be present in excel
-			populateValidationDataObject(kpiElement, requestTrackerId, "sprint name", validationDataMap,
-					new ArrayList<>(), new ArrayList<>());
+			populateValidationDataObject(kpiElement, requestTrackerId, "sprint name", validationDataMap, new ArrayList<>(),
+					new ArrayList<>());
 			Double aggregateAvgTime = sprintTime.stream().mapToDouble(a -> a).average().orElse(0.0);
 			issueTypeAvgTime.put(AGGREGATED, aggregateAvgTime);
 			sprintIssueTypeWiseTime.put(sprint, issueTypeAvgTime);
@@ -336,7 +320,6 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 					issueTypes.add(NormalizedJira.DEFECT_TYPE.getValue());
 				}
 				issueTypes.add(AGGREGATED);
-
 			}
 			Set<String> absentIssueTypesRoot = new HashSet<>();
 			String currentSprintComponentId = node.getSprintFilter().getId();
@@ -347,8 +330,7 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 			Set<String> issueTypesFound = issueTypeAvgTime.keySet();
 			issueTypes.removeAll(issueTypesFound);
 			absentIssueTypesRoot.addAll(issueTypes);
-			Map<String, Double> absentIssueTypes = issueTypes.stream().distinct()
-					.collect(Collectors.toMap(s -> s, s -> 0.0));
+			Map<String, Double> absentIssueTypes = issueTypes.stream().distinct().collect(Collectors.toMap(s -> s, s -> 0.0));
 			// add issue types
 			Map<String, Double> allIssueTypes = new HashMap<>();
 			allIssueTypes.putAll(issueTypeAvgTime);
@@ -373,15 +355,15 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 	/**
 	 * This method sets the defect and story count for each leaf node to show data
 	 * on trend line on mouse hover.
-	 * 
+	 *
 	 * @param sprintWiseHowerMap
-	 *            map of sprint key and hover value
+	 *          map of sprint key and hover value
 	 * @param sprint
-	 *            key to identify sprint
+	 *          key to identify sprint
 	 * @param storyIdList
-	 *            story id list
+	 *          story id list
 	 * @param sprintWiseDefectList
-	 *            defects linked to story
+	 *          defects linked to story
 	 */
 	private void setHowerMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
 			Pair<String, String> sprint, List<String> storyIdList, List<JiraIssue> sprintWiseDefectList) {
@@ -402,29 +384,28 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 	/**
 	 * This method populates KPI Element with Validation data. It will be triggered
 	 * only for request originated to get Excel data.
-	 * 
+	 *
 	 * @param kpiElement
-	 *            KpiElement
+	 *          KpiElement
 	 * @param requestTrackerId
-	 *            request id
+	 *          request id
 	 * @param validationDataKey
-	 *            validation data key
+	 *          validation data key
 	 * @param validationDataMap
-	 *            validation data map
+	 *          validation data map
 	 * @param storyIdList
-	 *            story id list
+	 *          story id list
 	 * @param sprintWiseDefectList
-	 *            sprints defect list
+	 *          sprints defect list
 	 */
 	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId, String validationDataKey,
-			Map<String, ValidationData> validationDataMap, List<String> storyIdList,
-			List<JiraIssue> sprintWiseDefectList) {
+			Map<String, ValidationData> validationDataMap, List<String> storyIdList, List<JiraIssue> sprintWiseDefectList) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			ValidationData validationData = new ValidationData();
 			validationData.setStoryKeyList(storyIdList);
-			validationData.setDefectKeyList(
-					sprintWiseDefectList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
+			validationData
+					.setDefectKeyList(sprintWiseDefectList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
 			validationDataMap.put(validationDataKey, validationData);
 			kpiElement.setMapOfSprintAndData(validationDataMap);
 		}

@@ -16,7 +16,6 @@
  */
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_920;
 
-import io.mongock.api.annotations.RollbackExecution;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -24,6 +23,7 @@ import org.springframework.data.mongodb.core.query.Update;
 
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
 
 /**
  * @author girpatha

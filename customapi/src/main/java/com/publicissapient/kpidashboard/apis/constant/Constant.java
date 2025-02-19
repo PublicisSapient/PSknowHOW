@@ -56,6 +56,9 @@ public final class Constant {
 	public static final String MAJOR_VIOLATIONS = "major_violations";
 	public static final String MINOR_VIOLATIONS = "minor_violations";
 	public static final String INFO_VIOLATIONS = "info_violations";
+	public static final String CODE_SMELL = "code_smells";
+	public static final String BUGS = "bugs";
+	public static final String VULNERABILITIES = "vulnerabilities";
 
 	public static final String SPEEDY_ROOT = "Root";
 	public static final String PROJECT = "Project";
@@ -138,8 +141,8 @@ public final class Constant {
 	public static final String RED = "#FF0000";
 	public static final String AMBER = "#FFBF00";
 	public static final String GREEN = "#00ff00";
-	public static final String DOT =".";
-	public static final String STAR="*";
+	public static final String DOT = ".";
+	public static final String STAR = "*";
 	public static final String COUNT = "count";
 	public static final String DURATION = "duration";
 	public static final String REPO_TOOLS = "RepoTool";
@@ -151,7 +154,8 @@ public final class Constant {
 	public static final String DUPLICATED_LINES = "duplicated_lines";
 	public static final String N_CLOC = "ncloc";
 	public static final String PROJECT_LEVEL_THRESHOLD = "Project Level Threshold";
+	public static final String CACHE_PROJECT_KPI_DATA = "project_kpi_data_cache";
+
 	private Constant() {
 	}
-
 }

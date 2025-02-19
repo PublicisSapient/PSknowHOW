@@ -304,7 +304,7 @@ export class MultilineV2Component implements OnChanges {
           })
           .style('left', (d, i) => {
             let left = d.date || d.sortSprint;
-            if (viewType === 'large' || (board === 'dora' && viewType === 'chart')) {
+            if (viewType === 'large' || (board === 'dora' && viewType === 'chart') || this.kpiId === 'kpi997') {
               return xScale(left) + xScale.bandwidth() / 2 + 'px';
             } else {
               return xScale(i + 1) + xScale.bandwidth() / 2 + 'px';
@@ -528,7 +528,7 @@ export class MultilineV2Component implements OnChanges {
           svgX
             .append('text')
             .attr('class', 'title-text')
-            .style('fill', color[i])
+            .style('fill', (color && color[i]))
             .text(d.data)
             .attr('text-anchor', 'middle')
             .attr('x', (width - margin) / 2)
@@ -544,7 +544,7 @@ export class MultilineV2Component implements OnChanges {
         })
         .attr('d', (d) => line(d.value))
         .call(transition)
-        .style('stroke', (d, i) => color[i])
+        .style('stroke', (d, i) => (color && color[i]))
         .style('opacity', lineOpacity)
         .style('stroke-dasharray', function (d, i) {
           if (d['filter']?.toLowerCase() == 'average coverage' || d['data']?.toLowerCase() == 'average coverage') {
@@ -582,8 +582,8 @@ export class MultilineV2Component implements OnChanges {
         .attr('class', function (d, i) {
           return 'circlegroup' + i;
         })
-        .style('fill', (d, i) => color[i])
-        .style('stroke', (d, i) => color[i])
+        .style('fill', (d, i) => (color && color[i]))
+        .style('stroke', (d, i) => (color && color[i]))
         .selectAll('circle')
         .data((d) => d.value)
         .enter()

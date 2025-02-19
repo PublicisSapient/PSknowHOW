@@ -61,9 +61,7 @@ import com.publicissapient.kpidashboard.jiratest.repository.JiraTestProcessorRep
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * The Job executor class which starts the execution of zephyr processor.
- */
+/** The Job executor class which starts the execution of zephyr processor. */
 @Component
 @Slf4j
 public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestProcessor> {
@@ -104,9 +102,8 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 	 * Instantiates a new ZEPHYR processor job executor.
 	 *
 	 * @param taskScheduler
-	 *            the task scheduler
+	 *          the task scheduler
 	 */
-
 	@Autowired
 	protected JiraTestProcessorJobExecutor(TaskScheduler taskScheduler) {
 		super(taskScheduler, ProcessorConstants.JIRA_TEST);
@@ -158,8 +155,7 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 					.filter(projectConfig -> null != projectConfig.getConnectionId()).collect(Collectors.toList());
 
 			if (CollectionUtils.isNotEmpty(processorToolConnectionList)) {
-				List<ProjectConfFieldMapping> onlineProjectConfigMap = createProjectConfigMap(
-						processorToolConnectionList);
+				List<ProjectConfFieldMapping> onlineProjectConfigMap = createProjectConfigMap(processorToolConnectionList);
 
 				onlineProjectConfigMap.forEach(projectConfigMap -> {
 					try {
@@ -200,7 +196,6 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 		log.info("JIRA TEST Processor execution complete.");
 		MDC.clear();
 		return executionStatus;
-
 	}
 
 	@Override
@@ -212,11 +207,10 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 	 * Gets project conf Field Mapping
 	 *
 	 * @param projectConfigList
-	 *            {@link ProcessorToolConnection}
+	 *          {@link ProcessorToolConnection}
 	 * @return {@link ProjectConfFieldMapping}
 	 */
-	private List<ProjectConfFieldMapping> createProjectConfigMap(
-			final List<ProcessorToolConnection> projectConfigList) {
+	private List<ProjectConfFieldMapping> createProjectConfigMap(final List<ProcessorToolConnection> projectConfigList) {
 		List<ProjectConfFieldMapping> projectConfigMap = new ArrayList<>();
 		for (ProcessorToolConnection projectConfig : projectConfigList) {
 			ProjectConfFieldMapping projectConfFieldMapping = new ProjectConfFieldMapping();
@@ -263,18 +257,17 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 
 	/**
 	 * Cleans the cache in the Custom API
-	 * 
+	 *
 	 * @param cacheEndPoint
-	 *            the cache endpoint
+	 *          the cache endpoint
 	 * @param cacheName
-	 *            the cache name
+	 *          the cache name
 	 */
 	public void cacheRestClient(final String cacheEndPoint, final String cacheName) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 
-		UriComponentsBuilder uriBuilder = UriComponentsBuilder
-				.fromHttpUrl(jiraTestProcessorConfig.getCustomApiBaseUrl());
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(jiraTestProcessorConfig.getCustomApiBaseUrl());
 		uriBuilder.path("/");
 		uriBuilder.path(cacheEndPoint);
 		uriBuilder.path("/");
@@ -302,19 +295,19 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 	/**
 	 * Return List of selected ProjectBasicConfig id if null then return all
 	 * ProjectBasicConfig ids
-	 * 
+	 *
 	 * @return List of ProjectBasicConfig
 	 */
 	private List<ProjectBasicConfig> getSelectedProjects() {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findActiveProjects(false);
 		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
 		if (CollectionUtils.isEmpty(selectedProjectsBasicIds)) {
 			return allProjects;
 		}
-		return CollectionUtils.emptyIfNull(allProjects).stream().filter(
-				projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
+		return CollectionUtils.emptyIfNull(allProjects).stream()
+				.filter(projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
 				.collect(Collectors.toList());
 	}
 

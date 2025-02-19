@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.common.constant;
 
 public enum ProcessorType {
-
 	BUILD("Build"), @Deprecated
 	FEATURE("Feature"), SONAR_ANALYSIS("SonarDetails"), EXCEL("Excel"), APP_PERFORMANCE("AppPerformance"), AGILE_TOOL(
 			"AgileTool"), STATIC_SECURITY_SCAN(

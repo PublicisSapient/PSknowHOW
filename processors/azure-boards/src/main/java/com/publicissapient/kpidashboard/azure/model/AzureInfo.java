@@ -35,5 +35,4 @@ public class AzureInfo {
 	private String azureConfigProxyUrl;
 	private String azureConfigProxyPort;
 	private String azureConfigAccessToken;
-
 }

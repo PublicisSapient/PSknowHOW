@@ -28,6 +28,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +74,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * ProcessorJobExecutor that fetches Build log information from AzurePipeline.
  */
-
 @Component
 @Slf4j
 public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<AzurePipelineProcessor> {
@@ -112,19 +112,18 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 	/**
 	 * Provides AzurePipeline TaskScheduler.
-	 * 
+	 *
 	 * @param taskScheduler
-	 *            the task scheduler
+	 *          the task scheduler
 	 */
 	@Autowired
 	public AzurePipelineProcessorJobExecutor(TaskScheduler taskScheduler) {
 		super(taskScheduler, ProcessorConstants.AZUREPIPELINE);
-
 	}
 
 	/**
 	 * Provides Processor.
-	 * 
+	 *
 	 * @return the AzurePipelineProcessor
 	 */
 	@Override
@@ -134,9 +133,8 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 	/**
 	 * Provides Processor Repository.
-	 * 
-	 * @return the ProcessorRepository
 	 *
+	 * @return the ProcessorRepository
 	 */
 	@Override
 	public ProcessorRepository<AzurePipelineProcessor> getProcessorRepository() {
@@ -145,7 +143,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 	/**
 	 * Provides cron expression.
-	 * 
+	 *
 	 * @return the cron expression
 	 */
 	@Override
@@ -155,9 +153,9 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 	/**
 	 * Processes AzurePipeline build data.
-	 * 
+	 *
 	 * @param processor
-	 *            the azurePipeline processor instance
+	 *          the azurePipeline processor instance
 	 */
 	@Override
 	public boolean execute(AzurePipelineProcessor processor) {
@@ -181,14 +179,13 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 			log.info("Fetching data for project : {}", proBasicConfig.getProjectName());
 			List<ProcessorToolConnection> azurePipelineJobList = processorToolConnectionService
 					.findByToolAndBasicProjectConfigId(ProcessorConstants.AZUREPIPELINE, proBasicConfig.getId());
-
+			int count1 = 0;
 			for (ProcessorToolConnection azurePipelineServer : azurePipelineJobList) {
 
 				String instanceUrl = AzurePipelineUtils.encodeSpaceInUrl(azurePipelineServer.getUrl());
 				azurePipelineServer.setPat(decryptKey(azurePipelineServer.getPat()));
 				MDC.put(INSTANCE_URL, instanceUrl);
-				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-						proBasicConfig.getId().toHexString());
+				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(proBasicConfig.getId().toHexString());
 				try {
 					processorToolConnectionService.validateConnectionFlag(azurePipelineServer);
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
@@ -196,12 +193,12 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 					long lastStartTimeOfJobs = lastStartTime(proBasicConfig, processorExecutionTraceLog, processor,
 							azurePipelineServer, deploymentJobs);
 					if (azurePipelineServer.getJobType().equalsIgnoreCase(BUILD)) {
-						count = buildJobs(processor, startTime, count, azurePipelineServer, lastStartTimeOfJobs,
-								proBasicConfig);
+						count1 = buildJobs(processor, startTime, count1, azurePipelineServer, lastStartTimeOfJobs, proBasicConfig);
 					} else {
-						count = deployJobs(processor, startTime, deploymentJobs, activeDeployJobs, azurePipelineServer,
+						count1 += deployJobs(processor, startTime, deploymentJobs, activeDeployJobs, azurePipelineServer,
 								lastStartTimeOfJobs, proBasicConfig);
 					}
+					count += count1;
 					log.info("Finished : {}", startTime);
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
@@ -216,7 +213,10 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 					log.error(String.format("Error getting jobs for: %s", instanceUrl), exception);
 				}
-
+			}
+			if (count1 > 0) {
+				cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, proBasicConfig.getId().toString(),
+						CommonConstant.JENKINS);
 			}
 		}
 		MDC.put(TOTAL_UPDATED_COUNT, String.valueOf(count));
@@ -235,17 +235,16 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 	}
 
 	/**
-	 * 
 	 * @param azurePipelineServer
-	 *            azurePipelineServer
+	 *          azurePipelineServer
 	 * @param exception
-	 *            exception
+	 *          exception
 	 */
 	private void isClientException(ProcessorToolConnection azurePipelineServer, RestClientException exception) {
-		if (exception instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ClientErrorMessageEnum
-					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+		if (exception instanceof HttpClientErrorException &&
+				((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) exception).getStatusCode().value())
+					.getReasonPhrase();
 			processorToolConnectionService.updateBreakingConnection(azurePipelineServer.getConnectionId(), errMsg);
 		}
 	}
@@ -279,9 +278,9 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 	/**
 	 * Gets the last start time from the list of azurepipeline builds in db
-	 * 
+	 *
 	 * @param processor
-	 *            the processor
+	 *          the processor
 	 * @return lastStartTimeOfBuilds
 	 */
 	private long getLastStartTimeOfJobs(AzurePipelineProcessor processor, ProcessorToolConnection azurePipelineServer,
@@ -291,25 +290,24 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 		} else {
 			return getLastStartTimeOfReleases(processor, azurePipelineServer, deploymentJobs);
 		}
-
 	}
 
-	private long getLastStartTimeOfReleases(AzurePipelineProcessor processor,
-			ProcessorToolConnection azurePipelineServer, List<Deployment> deploymentJobs) {
+	private long getLastStartTimeOfReleases(AzurePipelineProcessor processor, ProcessorToolConnection azurePipelineServer,
+			List<Deployment> deploymentJobs) {
 		long lastStartTimeOfReleases = 0;
 		for (Deployment releaseJob : deploymentJobs) {
-			if (releaseJob.getProcessorId().equals(processor.getId())
-					&& releaseJob.getJobName().equals(azurePipelineServer.getJobName())) {
-				List<Deployment> releases = deploymentRepository.findByProjectToolConfigIdAndJobName(
-						releaseJob.getProjectToolConfigId(), releaseJob.getJobName());
+			if (releaseJob.getProcessorId().equals(processor.getId()) &&
+					releaseJob.getJobName().equals(azurePipelineServer.getJobName())) {
+				List<Deployment> releases = deploymentRepository
+						.findByProjectToolConfigIdAndJobName(releaseJob.getProjectToolConfigId(), releaseJob.getJobName());
 				if (!releases.isEmpty()) {
 					try {
-						List<Deployment> sortedOnStartDate = releases.stream().sorted((c1, c2) -> DateUtil
-								.stringToLocalDateTime(c2.getStartTime(), DateUtil.TIME_FORMAT)
-								.compareTo(DateUtil.stringToLocalDateTime(c1.getStartTime(), DateUtil.TIME_FORMAT)))
+						List<Deployment> sortedOnStartDate = releases.stream()
+								.sorted((c1, c2) -> DateUtil.stringToLocalDateTime(c2.getStartTime(), DateUtil.TIME_FORMAT)
+										.compareTo(DateUtil.stringToLocalDateTime(c1.getStartTime(), DateUtil.TIME_FORMAT)))
 								.collect(Collectors.toList());
-						lastStartTimeOfReleases = Math.max(lastStartTimeOfReleases, DateUtil
-								.convertStringToLong(sortedOnStartDate.get(releases.size() - 1).getStartTime()));
+						lastStartTimeOfReleases = Math.max(lastStartTimeOfReleases,
+								DateUtil.convertStringToLong(sortedOnStartDate.get(releases.size() - 1).getStartTime()));
 					} catch (Exception e) {
 						log.error(" error in calculating lastStartTimeOfReleases" + e);
 					}
@@ -324,8 +322,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 		List<Build> builds = buildRepository.findByProjectToolConfigIdAndBuildJob(azurePipelineServer.getId(),
 				azurePipelineServer.getJobName());
 		if (!builds.isEmpty()) {
-			builds.sort(
-					(Build b1, Build b2) -> Long.valueOf(b1.getStartTime()).compareTo(Long.valueOf(b2.getStartTime())));
+			builds.sort((Build b1, Build b2) -> Long.valueOf(b1.getStartTime()).compareTo(Long.valueOf(b2.getStartTime())));
 			lastStartTimeOfBuilds = Math.max(lastStartTimeOfBuilds, builds.get(builds.size() - 1).getStartTime());
 		}
 		return lastStartTimeOfBuilds;
@@ -341,9 +338,8 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.AZUREPIPELINE, basicProjectConfigId);
-		existingTraceLogOptional.ifPresent(
-				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
-						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
+		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> processorExecutionTraceLog
+				.setLastEnableAssigneeToggleState(existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 		return processorExecutionTraceLog;
 	}
 
@@ -353,7 +349,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 	 * @param processorId
 	 * @param azurePipelineServer
 	 * @param buildsByJob
-	 *            the build by job
+	 *          the build by job
 	 * @param proBasicConfig
 	 * @return adds new build
 	 */
@@ -378,8 +374,8 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 				buildsToSave.add(build);
 				count++;
 			} else {
-				if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null
-						&& build.getStartedBy() != null) {
+				if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null &&
+						build.getStartedBy() != null) {
 					buildData.setStartedBy(build.getStartedBy());
 					buildsToSave.add(buildData);
 				}
@@ -398,9 +394,9 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 	/**
 	 * Checks if builds is null or not.
-	 * 
+	 *
 	 * @param builds
-	 *            the build list
+	 *          the build list
 	 * @return builds if not null
 	 */
 	private Set<Build> nullSafe(Set<Build> builds) {
@@ -415,8 +411,8 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 		List<Deployment> newJobs = new ArrayList<>();
 		for (Deployment job : deploymentsByJob.keySet()) {
 			Deployment existing = null;
-			Deployment deploymentData = deploymentRepository
-					.findByProjectToolConfigIdAndNumber(azurePipelineServer.getId(), job.getNumber());
+			Deployment deploymentData = deploymentRepository.findByProjectToolConfigIdAndNumber(azurePipelineServer.getId(),
+					job.getNumber());
 
 			if (!CollectionUtils.isEmpty(existingJobs) && existingJobs.contains(job)) {
 				existing = existingJobs.get(existingJobs.indexOf(job));
@@ -428,8 +424,8 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 				count++;
 			}
 
-			if (proBasicConfig.isSaveAssigneeDetails() && deploymentData != null
-					&& deploymentData.getDeployedBy() == null && job.getDeployedBy() != null) {
+			if (proBasicConfig.isSaveAssigneeDetails() && deploymentData != null && deploymentData.getDeployedBy() == null &&
+					job.getDeployedBy() != null) {
 				deploymentData.setDeployedBy(job.getDeployedBy());
 				newJobs.add(deploymentData);
 			}
@@ -446,11 +442,11 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 	/**
 	 * Cleans the cache in the Custom API
-	 * 
+	 *
 	 * @param cacheEndPoint
-	 *            the cache endpoint
+	 *          the cache endpoint
 	 * @param cacheName
-	 *            the cache name
+	 *          the cache name
 	 */
 	private void cacheRestClient(String cacheEndPoint, String cacheName) {
 		HttpHeaders headers = new HttpHeaders();
@@ -477,25 +473,65 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 		} else {
 			log.error("[AZUREPIPELINE-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache: {}", cacheName);
 		}
+	}
 
+	/**
+	 * Cleans the cache in the Custom API
+	 *
+	 * @param cacheEndPoint
+	 *          the cache endpoint
+	 * @param param1
+	 *          parameter 1
+	 * @param param2
+	 *          parameter 2
+	 */
+	private void cacheRestClient(String cacheEndPoint, String param1, String param2) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+		if (StringUtils.isNoneEmpty(param1)) {
+			cacheEndPoint = cacheEndPoint.replace("param1", param1);
+		}
+		if (StringUtils.isNoneEmpty(param2)) {
+			cacheEndPoint = cacheEndPoint.replace("param2", param2);
+		}
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(azurePipelineConfig.getCustomApiBaseUrl());
+		uriBuilder.path("/");
+		uriBuilder.path(cacheEndPoint);
+
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
+		} catch (RestClientException e) {
+			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service {}", e);
+		}
+
+		if (null != response && response.getStatusCode().is2xxSuccessful()) {
+			log.info("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache for: {} and {} ", param1, param2);
+		} else {
+			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache for: {} and {} ", param1, param2);
+		}
 	}
 
 	/**
 	 * Return List of selected ProjectBasicConfig id if null then return all
 	 * ProjectBasicConfig ids
-	 * 
+	 *
 	 * @return List of ProjectBasicConfig
 	 */
 	private List<ProjectBasicConfig> getSelectedProjects() {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findActiveProjects(false);
 		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
 		if (CollectionUtils.isEmpty(selectedProjectsBasicIds)) {
 			return allProjects;
 		}
-		return CollectionUtils.emptyIfNull(allProjects).stream().filter(
-				projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
+		return CollectionUtils.emptyIfNull(allProjects).stream()
+				.filter(projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
 				.collect(Collectors.toList());
 	}
 
@@ -504,8 +540,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 	}
 
 	private long lastStartTime(ProjectBasicConfig proBasicConfig, ProcessorExecutionTraceLog processorExecutionTraceLog,
-			AzurePipelineProcessor processor, ProcessorToolConnection azurePipelineServer,
-			List<Deployment> deploymentJobs) {
+			AzurePipelineProcessor processor, ProcessorToolConnection azurePipelineServer, List<Deployment> deploymentJobs) {
 		long lastStartTimeOfJobs;
 		if (proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 			lastStartTimeOfJobs = 0;

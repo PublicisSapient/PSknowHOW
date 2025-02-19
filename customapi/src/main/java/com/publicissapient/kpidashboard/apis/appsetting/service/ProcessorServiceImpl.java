@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.appsetting.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.ws.rs.core.Context;
 
 import org.apache.commons.lang3.StringUtils;
@@ -57,6 +56,7 @@ import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepos
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+
 /**
  * This class provides various methods related to operations on Processor Data
  *
@@ -79,7 +79,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 	private ProcessorUrlConfig processorUrlConfig;
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
-	
+
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
@@ -118,8 +118,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 		if (scmToolList.contains(processorName) && isSCMToolEnabled) {
 			statuscode = repoToolsConfigService.triggerScanRepoToolProject(processorName, projectBasicConfigId);
 		} else {
-			httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
-					.getRequest();
+			httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 			String token = httpServletRequest.getHeader(AUTHORIZATION);
 			token = CommonUtils.handleCrossScriptingTaintedValue(token);
 			if (StringUtils.isNotEmpty(url)) {
@@ -127,10 +126,9 @@ public class ProcessorServiceImpl implements ProcessorService {
 					HttpHeaders headers = new HttpHeaders();
 					headers.add(AUTHORIZATION, token);
 
-					HttpEntity<ProcessorExecutionBasicConfig> requestEntity = new HttpEntity<>(
-							processorExecutionBasicConfig, headers);
-					ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-							String.class);
+					HttpEntity<ProcessorExecutionBasicConfig> requestEntity = new HttpEntity<>(processorExecutionBasicConfig,
+							headers);
+					ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
 					statuscode = resp.getStatusCode().value();
 				} catch (HttpClientErrorException ex) {
 					statuscode = ex.getStatusCode().value();
@@ -163,8 +161,8 @@ public class ProcessorServiceImpl implements ProcessorService {
 	@Override
 	public ServiceResponse fetchActiveSprint(String sprintId) {
 
-		String url = processorUrlConfig.getProcessorUrl(ProcessorConstants.JIRA)
-				.replaceFirst("/startprojectwiseissuejob", "/startfetchsprintjob");
+		String url = processorUrlConfig.getProcessorUrl(ProcessorConstants.JIRA).replaceFirst("/startprojectwiseissuejob",
+				"/startfetchsprintjob");
 
 		boolean isSuccess = true;
 
@@ -179,7 +177,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				Gson gson = new Gson();
 				String payload = gson.toJson(sprintId);
-				HttpEntity<String> requestEntity = new HttpEntity<>(payload,headers);
+				HttpEntity<String> requestEntity = new HttpEntity<>(payload, headers);
 				ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
 				statuscode = resp.getStatusCode().value();
 			} catch (HttpClientErrorException ex) {
@@ -210,7 +208,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 	 * saves the response statuses for repo tools
 	 *
 	 * @param repoToolsStatusResponse
-	 * 		repo tool response status
+	 *          repo tool response status
 	 */
 	public void saveRepoToolTraceLogs(RepoToolsStatusResponse repoToolsStatusResponse) {
 		repoToolsConfigService.saveRepoToolProjectTraceLog(repoToolsStatusResponse);
@@ -219,4 +217,45 @@ public class ProcessorServiceImpl implements ProcessorService {
 		cacheService.clearCache(CommonConstant.BITBUCKET_KPI_CACHE);
 	}
 
+	/**
+	 * run the metadata step of processor, to get the options of fieldmapping
+	 *
+	 * @param projectBasicConfigId
+	 *          id of the project
+	 * @return {@code ServiceResponse}
+	 */
+	@Override
+	public ServiceResponse runMetadataStep(String projectBasicConfigId) {
+
+		String url = processorUrlConfig.getProcessorUrl(ProcessorConstants.JIRA).replaceFirst("/startprojectwiseissuejob",
+				"/runMetadataStep");
+
+		boolean isSuccess = true;
+
+		httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+		String token = httpServletRequest.getHeader(AUTHORIZATION);
+		token = CommonUtils.handleCrossScriptingTaintedValue(token);
+		int statuscode = HttpStatus.NOT_FOUND.value();
+		if (StringUtils.isNotEmpty(url)) {
+			try {
+				HttpHeaders headers = new HttpHeaders();
+				headers.add(AUTHORIZATION, token);
+				headers.setContentType(MediaType.APPLICATION_JSON);
+				Gson gson = new Gson();
+				String payload = gson.toJson(projectBasicConfigId);
+				HttpEntity<String> requestEntity = new HttpEntity<>(payload, headers);
+				ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+				statuscode = resp.getStatusCode().value();
+			} catch (HttpClientErrorException ex) {
+				statuscode = ex.getStatusCode().value();
+				isSuccess = false;
+			} catch (ResourceAccessException ex) {
+				isSuccess = false;
+			}
+		}
+		if (HttpStatus.NOT_FOUND.value() == statuscode || HttpStatus.INTERNAL_SERVER_ERROR.value() == statuscode) {
+			isSuccess = false;
+		}
+		return new ServiceResponse(isSuccess, "Got HTTP response: " + statuscode + " on url: " + url, null);
+	}
 }

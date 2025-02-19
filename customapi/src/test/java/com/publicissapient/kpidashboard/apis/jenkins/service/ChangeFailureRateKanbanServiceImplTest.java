@@ -15,16 +15,18 @@
  *    limitations under the License.
  */
 
-
 package com.publicissapient.kpidashboard.apis.jenkins.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -37,6 +39,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -49,11 +52,13 @@ import com.publicissapient.kpidashboard.apis.data.BuildDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.Build;
@@ -84,20 +89,20 @@ public class ChangeFailureRateKanbanServiceImplTest {
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 
-
 	private List<Build> buildList = new ArrayList<>();
 
 	private List<DataCount> trendValues = new ArrayList<>();
 	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
-	Map<String, Object> durationFilter =  new LinkedHashMap<>();
+	Map<String, Object> durationFilter = new LinkedHashMap<>();
 	@Mock
 	private CommonService commonService;
 
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;
+	private TreeAggregatorDetail treeAggregatorDetail;
 
 	@Before
-	public void setup() {
+	public void setup() throws ApplicationException {
 
 		setTreadValuesDataCount();
 
@@ -116,13 +121,15 @@ public class ChangeFailureRateKanbanServiceImplTest {
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		});
 
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-
+		treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, accountHierarchyDataList,
+				new ArrayList<>(), "hierarchyLevelOne", 5);
 	}
 
 	private void setTreadValuesDataCount() {
@@ -144,8 +151,8 @@ public class ChangeFailureRateKanbanServiceImplTest {
 
 	@Test
 	public void testGetChangeFailureRateWeek() throws Exception {
-		durationFilter.put(Constant.DURATION,CommonConstant.WEEK);
-		durationFilter.put(Constant.COUNT,14);
+		durationFilter.put(Constant.DURATION, CommonConstant.WEEK);
+		durationFilter.put(Constant.COUNT, 14);
 		kpiElement.setFilterDuration(durationFilter);
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
@@ -166,12 +173,12 @@ public class ChangeFailureRateKanbanServiceImplTest {
 			assertThat("CHANGE-FAILURE-RATE :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
 		} catch (Exception e) {
 		}
-
 	}
+
 	@Test
 	public void testGetChangeFailureRateMonth() throws Exception {
-		durationFilter.put(Constant.DURATION,CommonConstant.MONTH);
-		durationFilter.put(Constant.COUNT,20);
+		durationFilter.put(Constant.DURATION, CommonConstant.MONTH);
+		durationFilter.put(Constant.COUNT, 20);
 		kpiElement.setFilterDuration(durationFilter);
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
@@ -192,7 +199,6 @@ public class ChangeFailureRateKanbanServiceImplTest {
 			assertThat("CHANGE-FAILURE-RATE :", ((List<DataCount>) kpiElement2.getTrendValueList()).size(), equalTo(3));
 		} catch (Exception e) {
 		}
-
 	}
 
 	@Test
@@ -201,4 +207,26 @@ public class ChangeFailureRateKanbanServiceImplTest {
 		assertEquals(result, KPICode.CHANGE_FAILURE_RATE_KANBAN.name());
 	}
 
+	@Test
+	public void testTrendValueWithPipelineName()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		List<Build> buildList = new ArrayList<>();
+		Build build = new Build();
+		build.setPipelineName("Pipeline1");
+		buildList.add(build);
+
+		String trendLineName = "TrendLine1";
+		Map<String, List<DataCount>> trendValueMap = new HashMap<>();
+		String jobName = "Job1";
+		List<DataCount> dataCountList = new ArrayList<>();
+		DataCount dataCount = new DataCount();
+		dataCountList.add(dataCount);
+		Method trendValueMethod = ChangeFailureRateServiceImpl.class.getDeclaredMethod("trendValue", List.class,
+				String.class, Map.class, String.class, List.class);
+		trendValueMethod.setAccessible(true);
+		trendValueMethod.invoke(null, buildList, trendLineName, trendValueMap, jobName, dataCountList);
+
+		assertTrue(trendValueMap.containsKey("Pipeline1" + CommonUtils.getStringWithDelimiters(trendLineName)));
+		assertEquals(dataCountList, trendValueMap.get("Pipeline1" + CommonUtils.getStringWithDelimiters(trendLineName)));
+	}
 }

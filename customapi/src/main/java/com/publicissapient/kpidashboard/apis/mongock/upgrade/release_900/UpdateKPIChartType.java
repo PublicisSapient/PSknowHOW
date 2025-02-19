@@ -58,5 +58,4 @@ public class UpdateKPIChartType {
 						"It shows the breakup of all defects tagged to a release based on RCA. The breakup is shown in terms of count & percentage"));
 		mongoTemplate.getCollection("kpi_master").updateOne(query, update);
 	}
-
 }

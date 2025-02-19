@@ -22,10 +22,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.StepContribution;
@@ -38,12 +34,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
+import com.publicissapient.kpidashboard.jira.client.JiraClient;
+import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -76,16 +76,14 @@ public class SprintReportTasklet implements Tasklet {
 	@Value("#{jobParameters['processorId']}")
 	private String processorId;
 
-
-
 	/**
 	 * @param sc
-	 *            StepContribution
+	 *          StepContribution
 	 * @param cc
-	 *            ChunkContext
+	 *          ChunkContext
 	 * @return RepeatStatus
 	 * @throws Exception
-	 *             Exception
+	 *           Exception
 	 */
 	@TrackExecutionTime
 	@Override
@@ -99,25 +97,23 @@ public class SprintReportTasklet implements Tasklet {
 			Connection connection = connectionOptional.get();
 			krb5Client = new KerberosClient(connection.getJaasConfigFilePath(), connection.getKrb5ConfigFilePath(),
 					connection.getJaasUser(), connection.getSamlEndPoint(), connection.getBaseUrl());
-			jiraClientService.setKerberosClientMap(sprintId,krb5Client);
+			jiraClientService.setKerberosClientMap(sprintId, krb5Client);
 		}
 		ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);
-        jiraClientService.setRestClientMap(sprintId,client);
+		jiraClientService.setRestClientMap(sprintId, client);
 		SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
 		List<String> originalBoardIds = sprintDetails.getOriginBoardId();
 		for (String boardId : originalBoardIds) {
-			List<SprintDetails> sprintDetailsList = fetchSprintReport.getSprints(projConfFieldMapping, boardId,
-					krb5Client);
+			List<SprintDetails> sprintDetailsList = fetchSprintReport.getSprints(projConfFieldMapping, boardId, krb5Client);
 			if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
 				// filtering the sprint need to update
 				Set<SprintDetails> sprintDetailSet = sprintDetailsList.stream()
 						.filter(s -> s.getSprintID().equalsIgnoreCase(sprintId)).collect(Collectors.toSet());
-				Set<SprintDetails> setOfSprintDetails = fetchSprintReport.fetchSprints(projConfFieldMapping,
-						sprintDetailSet, krb5Client, true, new ObjectId(processorId));
+				Set<SprintDetails> setOfSprintDetails = fetchSprintReport.fetchSprints(projConfFieldMapping, sprintDetailSet,
+						krb5Client, true, new ObjectId(processorId));
 				sprintRepository.saveAll(setOfSprintDetails);
 			}
 		}
 		return RepeatStatus.FINISHED;
 	}
-
 }

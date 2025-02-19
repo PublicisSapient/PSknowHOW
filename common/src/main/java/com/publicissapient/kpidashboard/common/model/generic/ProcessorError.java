@@ -24,9 +24,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * The Processor error.
- */
+/** The Processor error. */
 @Data
 @Builder
 @Getter
@@ -34,10 +32,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ProcessorError {
 
-	/**
-	 * The constant UNKNOWN_HOST.
-	 */
+	/** The constant UNKNOWN_HOST. */
 	public static final String UNKNOWN_HOST = "Unreachable";
+
 	private final String errorCode;
 	private final String errorMessage;
 	private final long timestamp;
@@ -46,14 +43,13 @@ public class ProcessorError {
 	 * Instantiates a new Collection error.
 	 *
 	 * @param errorCode
-	 *            the error code
+	 *          the error code
 	 * @param errorMessage
-	 *            the error message
+	 *          the error message
 	 */
 	public ProcessorError(String errorCode, String errorMessage) {
 		this.errorCode = errorCode;
 		this.errorMessage = errorMessage;
 		this.timestamp = System.currentTimeMillis();
 	}
-
 }

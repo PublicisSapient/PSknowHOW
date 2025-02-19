@@ -72,14 +72,15 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class DeploymentFrequencyKanbanServiceImpl
-		extends JenkinsKPIService<Long, Long, Map<ObjectId, List<Deployment>>> {
+		extends
+			JenkinsKPIService<Long, Long, Map<ObjectId, List<Deployment>>> {
 
 	@Autowired
 	private DeploymentRepository deploymentRepository;
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
@@ -93,8 +94,8 @@ public class DeploymentFrequencyKanbanServiceImpl
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.DEPLOYMENT_FREQUENCY_KANBAN);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
-		Map<String, List<DataCount>> trendValuesMap = getAggregateTrendValuesMap(kpiRequest, kpiElement,
-				nodeWiseKPIValue, KPICode.DEPLOYMENT_FREQUENCY_KANBAN);
+		Map<String, List<DataCount>> trendValuesMap = getAggregateTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.DEPLOYMENT_FREQUENCY_KANBAN);
 		Map<String, Map<String, List<DataCount>>> envNameProjectWiseDc = new LinkedHashMap<>();
 		trendValuesMap.forEach((envName, dataCounts) -> {
 			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
@@ -112,8 +113,7 @@ public class DeploymentFrequencyKanbanServiceImpl
 			dataCountGroups.add(dataCountGroup);
 		});
 		kpiElement.setTrendValueList(dataCountGroups);
-		log.debug(
-				"[DEPLOYMENT-FREQUENCY-KANBAN-LEAF-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
+		log.debug("[DEPLOYMENT-FREQUENCY-KANBAN-LEAF-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
 				kpiRequest.getRequestTrackerId(), root);
 		return kpiElement;
 	}
@@ -136,8 +136,7 @@ public class DeploymentFrequencyKanbanServiceImpl
 		String startDate = localStartDate.format(formatterMonth);
 		String endDate = localEndDate.format(formatterMonth);
 		List<KPIExcelData> excelData = new ArrayList<>();
-		Map<ObjectId, List<Deployment>> deploymentGroup = fetchKPIDataFromDb(projectLeafNodeList, startDate, endDate,
-				null);
+		Map<ObjectId, List<Deployment>> deploymentGroup = fetchKPIDataFromDb(projectLeafNodeList, startDate, endDate, null);
 
 		if (MapUtils.isEmpty(deploymentGroup)) {
 			return;
@@ -169,16 +168,16 @@ public class DeploymentFrequencyKanbanServiceImpl
 			mapTmp.get(node.getId()).setValue(trendValueMap);
 
 			if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-				Map<String, String> deploymentMapPipelineNameWise = deploymentListProjectWise.stream().filter(
-								d -> StringUtils.isNotEmpty(d.getJobName()) && StringUtils.isNotEmpty(d.getPipelineName()))
+				Map<String, String> deploymentMapPipelineNameWise = deploymentListProjectWise.stream()
+						.filter(d -> StringUtils.isNotEmpty(d.getJobName()) && StringUtils.isNotEmpty(d.getPipelineName()))
 						.collect(Collectors.toMap(Deployment::getJobName, Deployment::getPipelineName, (e1, e2) -> e1,
 								LinkedHashMap::new));
-				KPIExcelUtility.populateDeploymentFrequencyExcelData(projectName, deploymentFrequencyInfo, excelData, deploymentMapPipelineNameWise);
+				KPIExcelUtility.populateDeploymentFrequencyExcelData(projectName, deploymentFrequencyInfo, excelData,
+						deploymentMapPipelineNameWise);
 			}
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.DEPLOYMENT_FREQUENCY_KANBAN.getColumns());
-
 	}
 
 	@Override
@@ -202,7 +201,7 @@ public class DeploymentFrequencyKanbanServiceImpl
 
 	/**
 	 * Method to set value at project node.
-	 * 
+	 *
 	 * @param deploymentListProjectWise
 	 * @param aggDataCountList
 	 * @param trendValueMap
@@ -211,8 +210,8 @@ public class DeploymentFrequencyKanbanServiceImpl
 	 * @param durationFilter
 	 */
 	private void prepareProjectNodeValue(List<Deployment> deploymentListProjectWise, List<DataCount> aggDataCountList,
-			Map<String, List<DataCount>> trendValueMap, String trendLineName,
-			DeploymentFrequencyInfo deploymentFrequencyInfo, Map<String, Object> durationFilter) {
+			Map<String, List<DataCount>> trendValueMap, String trendLineName, DeploymentFrequencyInfo deploymentFrequencyInfo,
+			Map<String, Object> durationFilter) {
 		String duration = (String) durationFilter.getOrDefault(Constant.DURATION, CommonConstant.WEEK);
 		int previousTimeCount = (int) durationFilter.getOrDefault(Constant.COUNT, 5);
 		Map<String, List<Deployment>> deploymentMapEnvWise = deploymentListProjectWise.stream()
@@ -246,34 +245,29 @@ public class DeploymentFrequencyKanbanServiceImpl
 				});
 
 				aggDataCountList.addAll(dataCountList);
-				trendValue(trendValueMap, trendLineName, envName, deploymentListEnvWise, dataCountList);
+				trendValue(trendValueMap, envName, deploymentListEnvWise, dataCountList);
 			}
 		});
 	}
 
 	/**
-	 * 
 	 * @param trendValueMap
-	 *            trendValueMap
-	 * @param trendLineName
-	 *            trendLineName
+	 *          trendValueMap
 	 * @param envName
-	 *            envName
+	 *          envName
 	 * @param deploymentListEnvWise
-	 *            deploymentListEnvWise
+	 *          deploymentListEnvWise
 	 * @param dataCountList
-	 *            dataCountList
+	 *          dataCountList
 	 */
-	private static void trendValue(Map<String, List<DataCount>> trendValueMap, String trendLineName, String envName,
+	protected static void trendValue(Map<String, List<DataCount>> trendValueMap, String envName,
 			List<Deployment> deploymentListEnvWise, List<DataCount> dataCountList) {
 		if (StringUtils.isNotEmpty(deploymentListEnvWise.get(0).getPipelineName())) {
-			trendValueMap.putIfAbsent(envName + CommonConstant.ARROW + deploymentListEnvWise.get(0).getPipelineName(),
-					new ArrayList<>());
-			trendValueMap.get(envName + CommonConstant.ARROW + deploymentListEnvWise.get(0).getPipelineName())
-					.addAll(dataCountList);
+			trendValueMap.putIfAbsent(deploymentListEnvWise.get(0).getPipelineName(), new ArrayList<>());
+			trendValueMap.get(deploymentListEnvWise.get(0).getPipelineName()).addAll(dataCountList);
 		} else {
-			trendValueMap.putIfAbsent(envName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
-			trendValueMap.get(envName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
+			trendValueMap.putIfAbsent(envName, new ArrayList<>());
+			trendValueMap.get(envName).addAll(dataCountList);
 		}
 	}
 
@@ -312,7 +306,7 @@ public class DeploymentFrequencyKanbanServiceImpl
 	 * @param deploymentListCurrentMonth
 	 * @return
 	 */
-	private void setDeploymentFrequencyInfoForExcel(DeploymentFrequencyInfo deploymentFrequencyInfo,
+	protected void setDeploymentFrequencyInfoForExcel(DeploymentFrequencyInfo deploymentFrequencyInfo,
 			List<Deployment> deploymentListCurrentMonth) {
 		if (null != deploymentFrequencyInfo && CollectionUtils.isNotEmpty(deploymentListCurrentMonth)) {
 			deploymentListCurrentMonth.forEach(deployment -> {
@@ -322,8 +316,8 @@ public class DeploymentFrequencyKanbanServiceImpl
 				} else {
 					deploymentFrequencyInfo.addJobNameList(deployment.getJobName());
 				}
-				deploymentFrequencyInfo.addDeploymentDateList(DateUtil.dateTimeConverter(deployment.getStartTime(),
-						DateUtil.TIME_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+				deploymentFrequencyInfo.addDeploymentDateList(
+						DateUtil.dateTimeConverter(deployment.getStartTime(), DateUtil.TIME_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
 				LocalDateTime dateTime = LocalDateTime.parse(deployment.getStartTime(), formatter);
 				deploymentFrequencyInfo.addMonthList(DateUtil.getWeekRange(dateTime.toLocalDate()));
@@ -346,7 +340,6 @@ public class DeploymentFrequencyKanbanServiceImpl
 			lastMonth = lastMonth.minusMonths(1);
 			String lastMonthStr = lastMonth.getYear() + Constant.DASH + lastMonth.getMonthValue();
 			lastNMonth.put(lastMonthStr, new ArrayList<>());
-
 		}
 		return lastNMonth;
 	}
@@ -420,5 +413,4 @@ public class DeploymentFrequencyKanbanServiceImpl
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI183(),
 				KPICode.DEPLOYMENT_FREQUENCY_KANBAN.getKpiId());
 	}
-
 }

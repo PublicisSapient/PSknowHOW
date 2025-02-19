@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class AzureOnlineRunnable implements Runnable {// NOPMD
+public class AzureOnlineRunnable implements Runnable { // NOPMD
 
 	private CountDownLatch latch;
 	private ProjectConfFieldMapping onlineprojectConfigMap;
@@ -58,33 +58,29 @@ public class AzureOnlineRunnable implements Runnable {// NOPMD
 	 * Sets the configurations and variables
 	 *
 	 * @param latch
-	 *            latch
+	 *          latch
 	 * @param azureAdapter
-	 *            JiraAdapter
+	 *          JiraAdapter
 	 * @param onlineprojectConfigMap
-	 *            OnlineConfigurationMap
+	 *          OnlineConfigurationMap
 	 * @param projectKey
-	 *            projectKey
+	 *          projectKey
 	 * @param factory
-	 *            JiraIssueClientFactory
+	 *          JiraIssueClientFactory
 	 * @param azureConfig
-	 *            AzureProcessorConfig
+	 *          AzureProcessorConfig
 	 * @param boardMetadataRepository
-	 *            board metadata repo
-	 *
+	 *          board metadata repo
 	 * @param metadataIdentifierRepository
-	 *            metadata identifier
-	 *
+	 *          metadata identifier
 	 * @param fieldMappingRepository
-	 *            fieldmapping repo
-	 *
-	 *
+	 *          fieldmapping repo
 	 */
 	public AzureOnlineRunnable(CountDownLatch latch, AzureAdapter azureAdapter, // NOSONAR
 			ProjectConfFieldMapping onlineprojectConfigMap, String projectKey, AzureIssueClientFactory factory, // NOSONAR
 			AzureProcessorConfig azureConfig, BoardMetadataRepository boardMetadataRepository, // NOSONAR
 			MetadataIdentifierRepository metadataIdentifierRepository, FieldMappingRepository fieldMappingRepository,
-			AzureRestClientFactory azureRestClientFactory, AzureStateCategoryRepository azureStateCategoryRepository)// NOSONAR
+			AzureRestClientFactory azureRestClientFactory, AzureStateCategoryRepository azureStateCategoryRepository) // NOSONAR
 	{
 		this.latch = latch;
 		this.azureAdapter = azureAdapter;
@@ -125,18 +121,17 @@ public class AzureOnlineRunnable implements Runnable {// NOPMD
 			log.info("run() complete.");
 			latch.countDown();
 		}
-
 	}
 
 	/**
 	 * Collects JiraIssue Data
 	 *
 	 * @param azureAdapter
-	 *            JiraAdapter to create Connection
+	 *          JiraAdapter to create Connection
 	 * @param projectConfig
-	 *            Project Configuration map
+	 *          Project Configuration map
 	 * @param projectKey
-	 *            ProjectKey
+	 *          ProjectKey
 	 */
 	private void collectAzureIssueData(AzureAdapter azureAdapter, ProjectConfFieldMapping projectConfig,
 			String projectKey) {
@@ -154,10 +149,9 @@ public class AzureOnlineRunnable implements Runnable {// NOPMD
 
 	/**
 	 * @param azureAdapter
-	 *            to create connection.
-	 *
+	 *          to create connection.
 	 * @param projectConfig
-	 *            for procesing purpose.
+	 *          for procesing purpose.
 	 */
 	private void collectMetadata(AzureAdapter azureAdapter, ProjectConfFieldMapping projectConfig) {
 		if (null == boardMetadataRepository.findByProjectBasicConfigId(projectConfig.getBasicProjectConfigId())) {
@@ -175,11 +169,12 @@ public class AzureOnlineRunnable implements Runnable {// NOPMD
 						CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 				azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.CACHE_PROJECT_CONFIG_MAP);
+				azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
+						CommonConstant.CACHE_ALL_PROJECT_CONFIG_MAP);
 			}
 			MDC.put("Fetched metadata", String.valueOf(isSuccess));
 			long end = System.currentTimeMillis();
 			MDC.put("meraDataStartTime", String.valueOf(end));
 		}
 	}
-
 }

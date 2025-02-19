@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Implementation of {@link UserTokenDeletionService}
- * 
+ *
  * @author anisingh4
  */
 @Slf4j
@@ -43,7 +43,6 @@ public class UserTokenDeletionServiceImpl implements UserTokenDeletionService {
 		log.info("UserTokenDeletionServiceImpl::deleteUserDetails start");
 		userTokenReopository.deleteByUserToken(userToken);
 		log.info("UserTokenDeletionServiceImpl::deleteUserDetails end");
-
 	}
 
 	public void invalidateSession(String userName) {
@@ -52,5 +51,4 @@ public class UserTokenDeletionServiceImpl implements UserTokenDeletionService {
 		userTokenReopository.deleteByuserName(userName);
 		log.info("UserTokenDeletionServiceImpl::deleteUserToken end");
 	}
-
 }

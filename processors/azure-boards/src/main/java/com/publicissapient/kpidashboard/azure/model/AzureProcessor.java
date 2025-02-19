@@ -31,7 +31,7 @@ public class AzureProcessor extends Processor {
 
 	/**
 	 * retruns jira processor propotype
-	 * 
+	 *
 	 * @return JiraProcessor
 	 */
 	public static AzureProcessor prototype() {
@@ -44,5 +44,4 @@ public class AzureProcessor extends Processor {
 		protoType.setProcessorType(ProcessorType.AGILE_TOOL);
 		return protoType;
 	}
-
 }

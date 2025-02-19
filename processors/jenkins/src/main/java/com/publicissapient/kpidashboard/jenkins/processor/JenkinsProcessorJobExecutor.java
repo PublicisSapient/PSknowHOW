@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,10 +71,7 @@ import com.publicissapient.kpidashboard.jenkins.repository.JenkinsProcessorRepos
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * ProcessorJobExecutor that fetches Build log information from Jenkins.
- */
-
+/** ProcessorJobExecutor that fetches Build log information from Jenkins. */
 @Component
 @Slf4j
 public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsProcessor> {
@@ -104,12 +102,11 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	 * Provides Jenkins TaskScheduler.
 	 *
 	 * @param taskScheduler
-	 *            the task scheduler
+	 *          the task scheduler
 	 */
 	@Autowired
 	public JenkinsProcessorJobExecutor(TaskScheduler taskScheduler) {
 		super(taskScheduler, ProcessorConstants.JENKINS);
-
 	}
 
 	/**
@@ -126,7 +123,6 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	 * Provides Processor Repository.
 	 *
 	 * @return the ProcessorRepository
-	 *
 	 */
 	@Override
 	public ProcessorRepository<JenkinsProcessor> getProcessorRepository() {
@@ -147,7 +143,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	 * Processes Jenkins build data.
 	 *
 	 * @param processor
-	 *            the jenkins processor instance
+	 *          the jenkins processor instance
 	 */
 	@Override
 	public boolean execute(JenkinsProcessor processor) {
@@ -165,7 +161,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 			log.info("Fetching data for project : {}", proBasicConfig.getProjectName());
 			List<ProcessorToolConnection> jenkinsJobFromConfig = processorToolConnectionService
 					.findByToolAndBasicProjectConfigId(ProcessorConstants.JENKINS, proBasicConfig.getId());
-
+			int count1 = 0;
 			for (ProcessorToolConnection jenkinsServer : jenkinsJobFromConfig) {
 				String jobType = jenkinsServer.getJobType();
 				jenkinsServer.setApiKey(decryptKey(jenkinsServer.getApiKey()));
@@ -182,13 +178,14 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 
 					JenkinsClient jenkinsClient = jenkinsClientFactory.getJenkinsClient(jobType);
 					if (BUILD.equalsIgnoreCase(jobType)) {
-						count += processBuildJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog,
+						count1 += processBuildJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog,
 								proBasicConfig);
-						MDC.put("totalUpdatedCount", String.valueOf(count));
+						MDC.put("totalUpdatedCount", String.valueOf(count1));
 					} else {
-						count += processDeployJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog);
-						MDC.put("totalUpdatedCount", String.valueOf(count));
+						count1 += processDeployJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog);
+						MDC.put("totalUpdatedCount", String.valueOf(count1));
 					}
+					count += count1;
 				} catch (RestClientException exception) {
 					isClientException(jenkinsServer, exception);
 					executionStatus = false;
@@ -197,6 +194,10 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 					log.error(exception.getMessage(), exception);
 				}
+			}
+			if (count1 > 0) {
+				cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, proBasicConfig.getId().toString(),
+						CommonConstant.JENKINS);
 			}
 		}
 
@@ -214,17 +215,17 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 
 	/**
 	 * to check the client exception
-	 * 
+	 *
 	 * @param jenkinsServer
-	 *            jenkinsServer
+	 *          jenkinsServer
 	 * @param exception
-	 *            exception
+	 *          exception
 	 */
 	private void isClientException(ProcessorToolConnection jenkinsServer, RestClientException exception) {
-		if (exception instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ClientErrorMessageEnum
-					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+		if (exception instanceof HttpClientErrorException &&
+				((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) exception).getStatusCode().value())
+					.getReasonPhrase();
 			processorToolConnectionService.updateBreakingConnection(jenkinsServer.getConnectionId(), errMsg);
 		}
 	}
@@ -304,7 +305,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	 * Iterates over the enabled build jobs and adds new builds to the database.
 	 *
 	 * @param buildsByJob
-	 *            the build by job
+	 *          the build by job
 	 * @param proBasicConfig
 	 * @return build count
 	 */
@@ -314,8 +315,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		int count = 0;
 		List<Build> buildsToSave = new ArrayList<>();
 		for (Build build : buildsByJob.values().iterator().next()) {
-			Build buildData = buildRepository.findByProjectToolConfigIdAndNumber(jenkinsServer.getId(),
-					build.getNumber());
+			Build buildData = buildRepository.findByProjectToolConfigIdAndNumber(jenkinsServer.getId(), build.getNumber());
 			if (buildData == null) {
 				build.setJobFolder(jenkinsServer.getJobName());
 				build.setProcessorId(processorId);
@@ -326,8 +326,8 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 				count++;
 			} else {
 
-				if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null
-						&& build.getStartedBy() != null) {
+				if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null &&
+						build.getStartedBy() != null) {
 					buildData.setStartedBy(build.getStartedBy());
 					buildsToSave.add(buildData);
 				}
@@ -351,9 +351,8 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JENKINS, basicProjectConfigId);
-		existingTraceLogOptional.ifPresent(
-				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
-						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
+		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> processorExecutionTraceLog
+				.setLastEnableAssigneeToggleState(existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 
 		return processorExecutionTraceLog;
 	}
@@ -362,9 +361,9 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	 * Cleans the cache in the Custom API
 	 *
 	 * @param cacheEndPoint
-	 *            the cache endpoint
+	 *          the cache endpoint
 	 * @param cacheName
-	 *            the cache name
+	 *          the cache name
 	 */
 	private void cacheRestClient(String cacheEndPoint, String cacheName) {
 		HttpHeaders headers = new HttpHeaders();
@@ -394,26 +393,66 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	}
 
 	/**
+	 * Cleans the cache in the Custom API
+	 *
+	 * @param cacheEndPoint
+	 *          the cache endpoint
+	 * @param param1
+	 *          parameter 1
+	 * @param param2
+	 *          parameter 2
+	 */
+	private void cacheRestClient(String cacheEndPoint, String param1, String param2) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+		if (StringUtils.isNoneEmpty(param1)) {
+			cacheEndPoint = cacheEndPoint.replace("param1", param1);
+		}
+		if (StringUtils.isNoneEmpty(param2)) {
+			cacheEndPoint = cacheEndPoint.replace("param2", param2);
+		}
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(jenkinsConfig.getCustomApiBaseUrl());
+		uriBuilder.path("/");
+		uriBuilder.path(cacheEndPoint);
+
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
+		} catch (RestClientException e) {
+			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service {}", e);
+		}
+
+		if (null != response && response.getStatusCode().is2xxSuccessful()) {
+			log.info("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache for: {} and {} ", param1, param2);
+		} else {
+			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache for: {} and {} ", param1, param2);
+		}
+	}
+
+	/**
 	 * Return List of selected ProjectBasicConfig id if null then return all
 	 * ProjectBasicConfig ids
 	 *
 	 * @return List of projects
 	 */
 	private List<ProjectBasicConfig> getSelectedProjects() {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findActiveProjects(false);
 		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
 		if (CollectionUtils.isEmpty(selectedProjectsBasicIds)) {
 			return allProjects;
 		}
-		return CollectionUtils.emptyIfNull(allProjects).stream().filter(
-				projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
+		return CollectionUtils.emptyIfNull(allProjects).stream()
+				.filter(projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
 				.collect(Collectors.toList());
 	}
 
 	private void clearSelectedBasicProjectConfigIds() {
 		setProjectsBasicConfigIds(null);
 	}
-
 }

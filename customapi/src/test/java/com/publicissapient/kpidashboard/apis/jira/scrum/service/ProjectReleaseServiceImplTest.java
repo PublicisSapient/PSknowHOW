@@ -36,10 +36,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -63,7 +65,6 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectReleaseServiceImplTest {
@@ -71,7 +72,7 @@ public class ProjectReleaseServiceImplTest {
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
-	ProjectReleaseRepo projectReleaseRepo;
+	private KpiDataCacheService kpiDataCacheService;
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -108,7 +109,10 @@ public class ProjectReleaseServiceImplTest {
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
 		projectConfig.setProjectName("Scrum Project");
+		projectConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
 		projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
@@ -121,14 +125,10 @@ public class ProjectReleaseServiceImplTest {
 		releaseList = projectReleaseDataFactory.findByBasicProjectConfigId("6335363749794a18e8a4479b");
 
 		when(customApiSetting.getSprintCountForFilters()).thenReturn(5);
-
 	}
 
 	@After
 	public void cleanup() {
-
-		projectReleaseRepo.deleteAll();
-
 	}
 
 	@Test
@@ -136,13 +136,13 @@ public class ProjectReleaseServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 
-		when(projectReleaseRepo.findByConfigIdIn(any())).thenReturn(releaseList);
-		Map<String, Object> storyDataListMap = projectVersionService.fetchKPIDataFromDb(leafNodeList, startDate,
-				endDate, kpiRequest);
+		when(kpiDataCacheService.fetchProjectReleaseData(any(), any())).thenReturn(releaseList);
+		Map<String, Object> storyDataListMap = projectVersionService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
+				kpiRequest);
 		assertThat("Total Release : ", storyDataListMap.size(), equalTo(1));
 	}
 
@@ -151,7 +151,7 @@ public class ProjectReleaseServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(projectReleaseRepo.findByConfigIdIn(any())).thenReturn(releaseList);
+		when(kpiDataCacheService.fetchProjectReleaseData(any(), any())).thenReturn(releaseList);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
@@ -171,5 +171,4 @@ public class ProjectReleaseServiceImplTest {
 		String type = projectVersionService.getQualifierType();
 		assertThat("KPI Name : ", type, equalTo(kpiName));
 	}
-
 }

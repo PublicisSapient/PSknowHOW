@@ -27,7 +27,7 @@ public interface OutlierSprintStrategy {
 	 * Finds overlapping sprints.
 	 *
 	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
+	 *          the ID of the basic project configuration
 	 * @return a map of overlapping sprints
 	 */
 	Map<String, List<String>> execute(ObjectId basicProjectConfigId);
@@ -36,8 +36,8 @@ public interface OutlierSprintStrategy {
 	 * Prints a table of sprint issues for outlier sprint email
 	 *
 	 * @param outlierSprintIssueMap
-	 *            outlier map where the key is the sprint name and the value is a
-	 *            list of issue keys
+	 *          outlier map where the key is the sprint name and the value is a list
+	 *          of issue keys
 	 * @return a string representation of the sprint issues table
 	 */
 	String printSprintIssuesTable(Map<String, List<String>> outlierSprintIssueMap);

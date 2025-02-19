@@ -235,4 +235,14 @@ describe('ConditionalInputComponent', () => {
     ]);
     expect(component.setOutput).toHaveBeenCalled();
   });
+
+  it('should call blur() on the event target', () => {
+    const mockEvent = {
+      target: jasmine.createSpyObj('HTMLElement', ['blur'])
+    };
+
+    component.removeFocus(mockEvent);
+
+    expect(mockEvent.target.blur).toHaveBeenCalled();
+  });
 });

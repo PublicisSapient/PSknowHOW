@@ -13,7 +13,7 @@ describe('AppModule', () => {
     module = new AppModule();
     TestBed.configureTestingModule({
       imports: [AppModule],
-			providers: [	
+			providers: [
         { provide: AppInitializerService, useValue: appInitializerServiceSpy  }
       ]
 		});

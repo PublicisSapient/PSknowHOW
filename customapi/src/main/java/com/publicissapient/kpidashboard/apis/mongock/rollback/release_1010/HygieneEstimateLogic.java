@@ -53,7 +53,6 @@ public class HygieneEstimateLogic {
 	@RollbackExecution
 	public void rollback() {
 		insertFieldMappingStructure();
-
 	}
 
 	public void insertFieldMappingStructure() {
@@ -71,5 +70,4 @@ public class HygieneEstimateLogic {
 				.append("processorCommon", false).append("fieldCategory", fieldCategory).append("section", section)
 				.append("tooltip", new Document("definition", definition));
 	}
-
 }

@@ -18,6 +18,23 @@
 
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
@@ -38,7 +55,6 @@ import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolUserDetails
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -46,24 +62,8 @@ import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author kunkambl
@@ -94,14 +94,14 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 	 * create data count
 	 *
 	 * @param kpiRequest
-	 * 		kpi request
+	 *          kpi request
 	 * @param kpiElement
-	 * 		kpi element
+	 *          kpi element
 	 * @param projectNode
-	 * 		project node
+	 *          project node
 	 * @return kpi element
 	 * @throws ApplicationException
-	 * 		application exception
+	 *           application exception
 	 */
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
@@ -143,16 +143,17 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 	}
 
 	/**
-	 * Populates KPI value to project leaf nodes. It also gives the trend analysis project wise.
+	 * Populates KPI value to project leaf nodes. It also gives the trend analysis
+	 * project wise.
 	 *
 	 * @param kpiElement
-	 * 		kpi element
+	 *          kpi element
 	 * @param mapTmp
-	 * 		node map
+	 *          node map
 	 * @param projectLeafNode
-	 * 		leaf node of project
+	 *          leaf node of project
 	 * @param kpiRequest
-	 * 		kpi request
+	 *          kpi request
 	 */
 	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp, Node projectLeafNode,
@@ -172,8 +173,8 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 		Map<String, List<Tool>> toolListMap = toolMap == null ? null : toolMap.get(projectBasicConfigId);
 
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = kpiHelperService.getRepoToolsKpiMetricResponse(
-				localEndDate, kpiHelperService.getScmToolJobs(toolListMap, projectLeafNode), projectLeafNode, duration, dataPoints,
-				customApiConfig.getRepoToolReworkRateUrl());
+				localEndDate, kpiHelperService.getScmToolJobs(toolListMap, projectLeafNode), projectLeafNode, duration,
+				dataPoints, customApiConfig.getRepoToolReworkRateUrl());
 
 		if (CollectionUtils.isEmpty(repoToolKpiMetricResponseList)) {
 			log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}", projectLeafNode);
@@ -183,8 +184,7 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 		List<KPIExcelData> excelData = new ArrayList<>();
 		List<Tool> reposList = kpiHelperService.populateSCMToolsRepoList(toolListMap);
 		if (CollectionUtils.isEmpty(reposList)) {
-			log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}",
-					projectLeafNode.getProjectFilter());
+			log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}", projectLeafNode.getProjectFilter());
 			return;
 		}
 
@@ -205,18 +205,9 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 			Optional<RepoToolKpiMetricResponse> repoToolKpiMetricResponse = repoToolKpiMetricResponseList.stream()
 					.filter(value -> value.getDateLabel().equals(weekRange.getStartDate().toString())).findFirst();
 
-			Double overallPickupTime = repoToolKpiMetricResponse.map(
-					RepoToolKpiMetricResponse::getProjectReworkRatePercent).orElse(0.0d);
-
-			setDataCount(projectName, date, Constant.AGGREGATED_VALUE + "#" + Constant.AGGREGATED_VALUE,
-					overallPickupTime, aggDataMap);
-			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
-					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
-			setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, null,
-							projectName, date, aggDataMap);
 			reposList.forEach(repo -> {
-				if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) && repo.getProcessorItemList().get(0)
-						.getId() != null) {
+				if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) &&
+						repo.getProcessorItemList().get(0).getId() != null) {
 					List<RepoToolUserDetails> repoToolUserDetailsList = new ArrayList<>();
 					String branchName = getBranchSubFilter(repo, projectName);
 					Double reworkRate = 0.0d;
@@ -231,8 +222,7 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 						repoToolUserDetailsList = matchingBranch.map(Branches::getUsers).orElse(new ArrayList<>());
 					}
 					repoToolValidationDataList.addAll(
-							setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, repo, projectName,
-									date, aggDataMap));
+							setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, repo, projectName, date, aggDataMap));
 					setDataCount(projectName, date, overallKpiGroup, reworkRate, aggDataMap);
 				}
 			});
@@ -250,20 +240,20 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 	 * fetch data from db
 	 *
 	 * @param leafNodeList
-	 * 		leaf node list
+	 *          leaf node list
 	 * @param startDate
-	 * 		start date
+	 *          start date
 	 * @param endDate
-	 * 		end date
+	 *          end date
 	 * @param kpiRequest
-	 * 		kpi request
+	 *          kpi request
 	 * @return map of data
 	 */
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(
-				leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId().toString());
+		AssigneeDetails assigneeDetails = assigneeDetailsRepository
+				.findByBasicProjectConfigId(leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId().toString());
 		Set<Assignee> assignees = assigneeDetails != null ? assigneeDetails.getAssignee() : new HashSet<>();
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put(ASSIGNEE, assignees);
@@ -274,36 +264,36 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 	 * set data count for user filter
 	 *
 	 * @param overAllUsers
-	 * 		list of user emails from repotool
+	 *          list of user emails from repotool
 	 * @param repoToolUserDetailsList
-	 * 		list of repo tool user data
+	 *          list of repo tool user data
 	 * @param assignees
-	 * 		assignee data
+	 *          assignee data
 	 * @param repo
-	 * 		repo tool item
+	 *          repo tool item
 	 * @param projectName
-	 * 		project name
+	 *          project name
 	 * @param date
-	 * 		date
+	 *          date
 	 * @param dateUserWiseAverage
-	 * 		total data map
+	 *          total data map
 	 * @return repotool validation data
 	 */
 	private List<RepoToolValidationData> setUserDataCounts(Set<String> overAllUsers,
-			List<RepoToolUserDetails> repoToolUserDetailsList, Set<Assignee> assignees, Tool repo,
-			String projectName, String date,  Map<String, List<DataCount>> dateUserWiseAverage) {
+			List<RepoToolUserDetails> repoToolUserDetailsList, Set<Assignee> assignees, Tool repo, String projectName,
+			String date, Map<String, List<DataCount>> dateUserWiseAverage) {
 		List<RepoToolValidationData> repoToolValidationDataList = new ArrayList<>();
 		overAllUsers.forEach(userEmail -> {
 			Optional<RepoToolUserDetails> repoToolUserDetails = repoToolUserDetailsList.stream()
 					.filter(user -> userEmail.equalsIgnoreCase(user.getEmail())).findFirst();
-			Optional<Assignee> assignee = assignees.stream().filter(
-					assign -> CollectionUtils.isNotEmpty(assign.getEmail()) && assign.getEmail().contains(userEmail))
+			Optional<Assignee> assignee = assignees.stream()
+					.filter(assign -> CollectionUtils.isNotEmpty(assign.getEmail()) && assign.getEmail().contains(userEmail))
 					.findFirst();
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Double userReworkRate = repoToolUserDetails.map(RepoToolUserDetails::getUserReworkRatePercent).orElse(0.0d);
-			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
+			String branchName = getBranchSubFilter(repo, projectName);
 			String userKpiGroup = branchName + "#" + developerName;
-			if(repoToolUserDetails.isPresent() && repo != null) {
+			if (repoToolUserDetails.isPresent()) {
 				RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
 				repoToolValidationData.setProjectName(projectName);
 				repoToolValidationData.setBranchName(repo.getBranch());
@@ -315,7 +305,6 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 			}
 
 			setDataCount(projectName, date, userKpiGroup, userReworkRate, dateUserWiseAverage);
-
 		});
 		return repoToolValidationDataList;
 	}
@@ -324,15 +313,15 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 	 * set individual data count
 	 *
 	 * @param projectName
-	 * 		project name
+	 *          project name
 	 * @param week
-	 * 		date
+	 *          date
 	 * @param kpiGroup
-	 * 		combined filter
+	 *          combined filter
 	 * @param value
-	 * 		value
+	 *          value
 	 * @param dataCountMap
-	 * 		data count map by filter
+	 *          data count map by filter
 	 */
 	private void setDataCount(String projectName, String week, String kpiGroup, Double value,
 			Map<String, List<DataCount>> dataCountMap) {
@@ -360,11 +349,11 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 	 * populate excel data
 	 *
 	 * @param requestTrackerId
-	 * 				request tracker id
+	 *          request tracker id
 	 * @param repoToolUserDetails
-	 * 				repo tool validation data
+	 *          repo tool validation data
 	 * @param validationDataMap
-	 * 				excel data map
+	 *          excel data map
 	 */
 	private void populateExcelDataObject(String requestTrackerId, List<RepoToolValidationData> repoToolUserDetails,
 			List<KPIExcelData> validationDataMap) {

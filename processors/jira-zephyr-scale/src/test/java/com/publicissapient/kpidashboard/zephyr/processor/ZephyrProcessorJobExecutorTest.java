@@ -3,6 +3,7 @@ package com.publicissapient.kpidashboard.zephyr.processor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -115,7 +116,6 @@ public class ZephyrProcessorJobExecutorTest {
 
 		projectConfFieldMapping = new ProjectConfFieldMapping();
 		projectConfFieldMapping.setProjectKey("TEST");
-
 	}
 
 	@Test
@@ -134,7 +134,7 @@ public class ZephyrProcessorJobExecutorTest {
 		zephyrProcessor.setId(PROCESSOR_ID);
 		zephyrProcessorJobExecutor.setProjectsBasicConfigIds(
 				Arrays.asList("604092b52b424d5e90d39342", "604092b52b424d5e90d39343", "604092b52b424d5e90d39344"));
-		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(ProcessorConstants.ZEPHYR,
 				new ObjectId("604092b52b424d5e90d39342"))).thenReturn(toolList);
 		when(zephyrClientFactory.getClient(false)).thenReturn(zephyrServer);

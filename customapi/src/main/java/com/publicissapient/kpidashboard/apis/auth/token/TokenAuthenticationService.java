@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.auth.token;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -42,9 +41,9 @@ public interface TokenAuthenticationService {
 	 * Add authentication.
 	 *
 	 * @param response
-	 *            the response
+	 *          the response
 	 * @param authentication
-	 *            the authentication
+	 *          the authentication
 	 */
 	void addAuthentication(HttpServletResponse response, Authentication authentication);
 
@@ -52,27 +51,24 @@ public interface TokenAuthenticationService {
 	 * Gets authentication.
 	 *
 	 * @param httpServletRequest
-	 *            the request
+	 *          the request
 	 * @return the authentication
 	 */
 	Authentication getAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse response);
 
 	/**
-	 *
 	 * @param jwtToken
 	 * @return
 	 */
 	boolean isJWTTokenExpired(String jwtToken);
 
 	/**
-	 *
 	 * @param jwtToken
 	 * @return
 	 */
 	String getUserNameFromToken(String jwtToken);
 
 	/**
-	 *
 	 * @param httpServletRequest
 	 * @return
 	 */
@@ -80,7 +76,7 @@ public interface TokenAuthenticationService {
 
 	/**
 	 * validate token
-	 * 
+	 *
 	 * @param httpServletRequest
 	 * @param response
 	 * @return
@@ -89,27 +85,27 @@ public interface TokenAuthenticationService {
 
 	/**
 	 * This method returns Projects related to user
-	 * 
+	 *
 	 * @return set of projects
 	 */
 	Set<String> getUserProjects();
 
 	/*
 	 * This method refresh the token with new project and save in db
-	 * 
+	 *
 	 * @param HttpServletRequest
-	 * 
+	 *
 	 * @param HttpServletResponse
-	 * 
+	 *
 	 * @return List<ProjectsAccess>
 	 */
 	List<RoleWiseProjects> refreshToken(HttpServletRequest req, HttpServletResponse resp);
 
 	/**
 	 * Invalidate(Remove) auth tokens for provided users
-	 * 
+	 *
 	 * @param users
-	 *            list of users (usernames)
+	 *          list of users (usernames)
 	 */
 	void invalidateAuthToken(List<String> users);
 

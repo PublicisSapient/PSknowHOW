@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.connection.rest;
 
 import javax.validation.constraints.NotNull;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -53,7 +52,7 @@ public class TestConnectionController {
 
 	/**
 	 * Validate JIRA connection
-	 * 
+	 *
 	 * @param connectionDTO
 	 * @return
 	 */
@@ -65,12 +64,11 @@ public class TestConnectionController {
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(testConnectionService.validateConnection(connection, Constant.TOOL_JIRA));
-
 	}
 
 	/**
 	 * Validate Sonar connection
-	 * 
+	 *
 	 * @param connectionDTO
 	 * @return
 	 */
@@ -82,25 +80,22 @@ public class TestConnectionController {
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(testConnectionService.validateConnection(connection, Constant.TOOL_SONAR));
-
 	}
 
 	/**
 	 * Validate teamcity connection
-	 * 
+	 *
 	 * @param connectionDTO
 	 * @return
 	 */
 	@RequestMapping(path = "/teamcity", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	@PreAuthorize("hasPermission(#connectionDTO,'CONNECTION_ACCESS')")
-	public ResponseEntity<ServiceResponse> validateTeamcityConnection(
-			@NotNull @RequestBody ConnectionDTO connectionDTO) {
+	public ResponseEntity<ServiceResponse> validateTeamcityConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
 		log.info("validating Teamcity connections credentials");
 		final ModelMapper modelMapper = new ModelMapper();
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(testConnectionService.validateConnection(connection, Constant.TOOL_TEAMCITY));
-
 	}
 
 	@RequestMapping(path = "/zephyr", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
@@ -111,12 +106,11 @@ public class TestConnectionController {
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(testConnectionService.validateConnection(connection, Constant.TOOL_ZEPHYR));
-
 	}
 
 	/**
 	 * Validate bamboo connection
-	 * 
+	 *
 	 * @param connectionDTO
 	 * @return
 	 */
@@ -128,25 +122,22 @@ public class TestConnectionController {
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(testConnectionService.validateConnection(connection, Constant.TOOL_BAMBOO));
-
 	}
 
 	/**
 	 * Validate Jenkins connection
-	 * 
+	 *
 	 * @param connectionDTO
 	 * @return
 	 */
 	@RequestMapping(path = "/jenkins", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	@PreAuthorize("hasPermission(#connectionDTO,'CONNECTION_ACCESS')")
-	public ResponseEntity<ServiceResponse> validateJenkinsConnection(
-			@NotNull @RequestBody ConnectionDTO connectionDTO) {
+	public ResponseEntity<ServiceResponse> validateJenkinsConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
 		log.info("validating Jenkins connections credentials");
 		final ModelMapper modelMapper = new ModelMapper();
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(testConnectionService.validateConnection(connection, Constant.TOOL_JENKINS));
-
 	}
 
 	@PostMapping("/gitlab")
@@ -157,12 +148,11 @@ public class TestConnectionController {
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(testConnectionService.validateConnection(connection, Constant.TOOL_GITLAB));
-
 	}
 
 	/**
 	 * Validate Bitbucket connection
-	 * 
+	 *
 	 * @param connectionDTO
 	 * @return
 	 */
@@ -175,7 +165,6 @@ public class TestConnectionController {
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(testConnectionService.validateConnection(connection, Constant.TOOL_BITBUCKET));
-
 	}
 
 	@PostMapping("/azureboard")
@@ -187,7 +176,6 @@ public class TestConnectionController {
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(testConnectionService.validateConnection(connection, Constant.TOOL_AZURE));
-
 	}
 
 	@PostMapping("/azurerepo")
@@ -199,7 +187,6 @@ public class TestConnectionController {
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(testConnectionService.validateConnection(connection, Constant.TOOL_AZUREREPO));
-
 	}
 
 	@PostMapping("/azurepipeline")
@@ -211,7 +198,6 @@ public class TestConnectionController {
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(testConnectionService.validateConnection(connection, Constant.TOOL_AZUREPIPELINE));
-
 	}
 
 	@PostMapping("/github")
@@ -222,7 +208,6 @@ public class TestConnectionController {
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(testConnectionService.validateConnection(connection, Constant.TOOL_GITHUB));
-
 	}
 
 	/**
@@ -233,8 +218,7 @@ public class TestConnectionController {
 	 */
 	@PostMapping(path = "/argocd", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasPermission(#connectionDTO,'CONNECTION_ACCESS')")
-	public ResponseEntity<ServiceResponse> validateArgoCDConnection(
-			@NotNull @RequestBody ConnectionDTO connectionDTO) {
+	public ResponseEntity<ServiceResponse> validateArgoCDConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
 		log.info("validating ArgoCD connections credentials");
 		final ModelMapper modelMapper = new ModelMapper();
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
@@ -245,7 +229,5 @@ public class TestConnectionController {
 	@RequestMapping(value = "/zephyrcloudurl", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getZephyrCloudUrl() {
 		return ResponseEntity.status(HttpStatus.OK).body(testConnectionService.getZephyrCloudUrlDetails());
-
 	}
-
 }

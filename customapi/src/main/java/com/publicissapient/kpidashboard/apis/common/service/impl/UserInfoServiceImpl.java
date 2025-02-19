@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -66,13 +67,16 @@ import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.errors.APIKeyInvalidException;
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardConfigService;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
+import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccessDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
@@ -87,10 +91,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Implementation of {@link UserInfoService}.
- */
-
+/** Implementation of {@link UserInfoService}. */
 @Component
 @Slf4j
 public class UserInfoServiceImpl implements UserInfoService {
@@ -130,6 +131,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 	private CookieUtil cookieUtil;
 	@Autowired
 	private UserTokenReopository userTokenReopository;
+	@Autowired
+	private OrganizationHierarchyService organizationHierarchyService;
 
 	final ModelMapper modelMapper = new ModelMapper();
 
@@ -152,7 +155,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public Collection<UserInfo> getUsers() {
+	public Collection<UserInfoDTO> getUsers() {
 		List<UserInfo> userInfoList = userInfoRepository.findAll();
 		List<String> userNames = userInfoList.stream().map(UserInfo::getUsername).toList();
 
@@ -164,26 +167,49 @@ public class UserInfoServiceImpl implements UserInfoService {
 		List<UserInfo> nonApprovedUserList = new ArrayList<>();
 
 		userInfoList.forEach(userInfo -> {
-
 			Authentication auth = authMap.get(userInfo.getUsername());
 			if (auth != null) {
 				userInfo.setEmailAddress(auth.getEmail().toLowerCase());
 				if (!auth.isApproved()) {
 					nonApprovedUserList.add(userInfo);
 				}
-
 			}
 			createProjectAccess(userInfo);
 		});
 		List<UserInfo> approvedUserList = Lists.newArrayList(userInfoList);
 		approvedUserList.removeAll(nonApprovedUserList);
-		return approvedUserList;
+		List<UserInfoDTO> userInfoDTOList;
+
+		// Map approvedUser objects to UserInfoDTO objects
+		userInfoDTOList = approvedUserList.stream().map(approvedUser -> modelMapper.map(approvedUser, UserInfoDTO.class))
+				.collect(Collectors.toList());
+
+		// Fetch all organization hierarchy and store it in a map for quick lookup
+		List<OrganizationHierarchy> organizationHierarchyList = organizationHierarchyService.findAll();
+		if (CollectionUtils.isEmpty(organizationHierarchyList)) {
+			log.error("No organization hierarchy found");
+		}
+		Map<String, String> organizationHierarchyMap = organizationHierarchyList.stream()
+				.collect(Collectors.toMap(OrganizationHierarchy::getNodeId, OrganizationHierarchy::getNodeDisplayName));
+
+		userInfoDTOList.forEach(userInfoDTO -> Optional.ofNullable(userInfoDTO.getProjectsAccess())
+				.ifPresent(projectsAccessList -> projectsAccessList
+						.forEach(projectsAccess -> Optional.ofNullable(projectsAccess.getAccessNodes()).ifPresent(
+								accessNodeList -> accessNodeList.forEach(accessNode -> Optional.ofNullable(accessNode.getAccessItems())
+										.ifPresent(accessItemList -> accessItemList.forEach(accessItem -> {
+											String itemName = organizationHierarchyMap.get(accessItem.getItemId());
+											if (itemName != null) {
+												accessItem.setItemName(itemName);
+											}
+										})))))));
+
+		return userInfoDTOList;
 	}
 
 	/**
 	 * when autority is Superadmin, then project access has to be send with a role
 	 * SUPERADMIN as requIred in projectAccess page
-	 * 
+	 *
 	 * @param userInfo
 	 */
 	private void createProjectAccess(UserInfo userInfo) {
@@ -196,21 +222,20 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Override
 	public ServiceResponse getAllUserInfo() {
-		List<UserInfo> userInfoList = (List<UserInfo>) getUsers();
+		List<UserInfoDTO> userInfoList = (List<UserInfoDTO>) getUsers();
 
 		if (CollectionUtils.isEmpty(userInfoList)) {
 			log.info("Db has no userinfo");
 			return new ServiceResponse(true, "No userinfo in user_info collection", userInfoList);
 		}
-		userInfoList.sort(Comparator.comparing(UserInfo::getUsername));
+		userInfoList.sort(Comparator.comparing(UserInfoDTO::getUsername));
 		log.info("Successfully fetched all userinfo");
 		return new ServiceResponse(true, "Found all users info", userInfoList);
 	}
 
 	@Override
 	public UserInfo demoteFromAdmin(String username, AuthType authType) {
-		int numberOfAdmins = this.userInfoRepository.findByAuthoritiesIn(Arrays.asList(Constant.ROLE_SUPERADMIN))
-				.size();
+		int numberOfAdmins = this.userInfoRepository.findByAuthoritiesIn(Arrays.asList(Constant.ROLE_SUPERADMIN)).size();
 		if (numberOfAdmins <= 1) {
 			throw new DeleteLastAdminException();
 		}
@@ -262,8 +287,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	private UserInfo createUserInCaseSSOUserNotFound(UserInfo existingUserInfo, UserInfo userInfo) {
-		if (existingUserInfo == null && StringUtils.isNotEmpty(userInfo.getUsername()) && null != userInfo.getAuthType()
-				&& userInfo.getAuthType().equals(AuthType.SSO)) {
+		if (existingUserInfo == null && StringUtils.isNotEmpty(userInfo.getUsername()) && null != userInfo.getAuthType() &&
+				userInfo.getAuthType().equals(AuthType.SSO)) {
 			UserInfo defaultUserInfo = createDefaultUserInfo(userInfo.getUsername(), AuthType.SSO,
 					userInfo.getEmailAddress().toLowerCase());
 			existingUserInfo = save(defaultUserInfo);
@@ -278,7 +303,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 * @return true if valid
 	 */
 	public boolean hasRoleSuperadmin(UserInfoDTO userInfoDto) {
-		List<ProjectsAccess> projectsAccess = userInfoDto.getProjectsAccess();
+		List<ProjectsAccessDTO> projectsAccess = userInfoDto.getProjectsAccess();
 		return projectsAccess.stream().anyMatch(pa -> pa.getRole().equalsIgnoreCase(Constant.ROLE_SUPERADMIN));
 	}
 
@@ -297,9 +322,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 * Return userinfo along with email in case of standardlogin
 	 *
 	 * @param username
-	 *            username
+	 *          username
 	 * @param authType
-	 *            authtype enum
+	 *          authtype enum
 	 * @return userinfo
 	 */
 	public UserInfo getUserInfoWithEmail(String username, AuthType authType) {
@@ -317,7 +342,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 			return userInfoRepository.save(superAdminUserInfo);
 		}
 		return userInfoRepository.save(userInfo);
-
 	}
 
 	@Override
@@ -358,7 +382,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 * This method is for deleting the users
 	 *
 	 * @param username
-	 *            username
+	 *          username
 	 */
 	@Override
 	public ServiceResponse deleteUser(String username, boolean centralAuthService) {
@@ -397,9 +421,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 	private UserInfoDTO convertToDTOObject(UserInfo userInfo) {
 		UserInfoDTO userInfoDTO = null;
 		if (null != userInfo) {
-			userInfoDTO = UserInfoDTO.builder().username(userInfo.getUsername()).authType(userInfo.getAuthType())
-					.authorities(userInfo.getAuthorities()).emailAddress(userInfo.getEmailAddress().toLowerCase())
-					.projectsAccess(userInfo.getProjectsAccess()).build();
+			ModelMapper mapper = new ModelMapper();
+
+			// Map UserInfo to UserInfoDTO
+			userInfoDTO = mapper.map(userInfo, UserInfoDTO.class);
+			userInfoDTO.setEmailAddress(userInfo.getEmailAddress().toLowerCase());
 		}
 		return userInfoDTO;
 	}
@@ -434,7 +460,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 			userDetailsResponseDTO.setNotificationEmail(userinfo.getNotificationEmail());
 		}
 		return userDetailsResponseDTO;
-
 	}
 
 	public UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities) {
@@ -453,11 +478,10 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	/**
 	 * get user details from Central auth
-	 * 
+	 *
 	 * @param username
 	 * @return
 	 */
-
 	@Override
 	public CentralUserInfoDTO getCentralAuthUserInfoDetails(String username, String authCookieToken) {
 		HttpHeaders headers = cookieUtil.setCookieIntoHeader(authCookieToken);
@@ -628,9 +652,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 	public UserInfo updateNotificationEmail(String loggedUserName, Map<String, Boolean> notificationEmail) {
 		UserInfo userinfo = userInfoRepository.findByUsername(loggedUserName);
 
-		if (Objects.nonNull(userinfo) && Objects.nonNull(notificationEmail)
-				&& (userinfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN)
-						|| userinfo.getAuthorities().contains(Constant.ROLE_PROJECT_ADMIN))) {
+		if (Objects.nonNull(userinfo) && Objects.nonNull(notificationEmail) &&
+				(userinfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN) ||
+						userinfo.getAuthorities().contains(Constant.ROLE_PROJECT_ADMIN))) {
 			userinfo.setNotificationEmail(notificationEmail);
 			userInfoRepository.save(userinfo);
 			return userinfo;
@@ -638,7 +662,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return null;
 	}
 
-	@Override 
+	@Override
 	public List<UserAccessApprovalResponseDTO> findAllUnapprovedUsers() {
 		List<UserAccessApprovalResponseDTO> userAccessApprovalResponseDTOList = new ArrayList<>();
 		List<CentralUserInfoDTO> nonApprovedUserList = findAllUnapprovedUsersForCentralAuth();
@@ -648,8 +672,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 			userAccessApprovalResponseDTO.setEmail(userInfoDTO.getEmail());
 			userAccessApprovalResponseDTO.setApproved(userInfoDTO.isApproved());
 			List<String> whitelistDomain = authProperties.getWhiteListDomainForEmail();
-			if (CollectionUtils.isNotEmpty(whitelistDomain)
-					&& whitelistDomain.stream().anyMatch(domain -> userInfoDTO.getEmail().contains(domain))) {
+			if (CollectionUtils.isNotEmpty(whitelistDomain) &&
+					whitelistDomain.stream().anyMatch(domain -> userInfoDTO.getEmail().contains(domain))) {
 				userAccessApprovalResponseDTO.setWhitelistDomainEmail(true);
 			} else {
 				userAccessApprovalResponseDTO.setWhitelistDomainEmail(false);
@@ -658,5 +682,4 @@ public class UserInfoServiceImpl implements UserInfoService {
 		});
 		return userAccessApprovalResponseDTOList;
 	}
-
 }

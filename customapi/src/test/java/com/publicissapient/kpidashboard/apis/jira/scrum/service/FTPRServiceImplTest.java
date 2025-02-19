@@ -16,26 +16,16 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import static com.publicissapient.kpidashboard.apis.constant.Constant.P1;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.P2;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.P3;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.P4;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.P5;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,12 +42,7 @@ import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
-import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
-import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
-import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
-import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
+import com.publicissapient.kpidashboard.apis.data.*;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -123,7 +108,7 @@ public class FTPRServiceImplTest {
 		kpiRequest.setLabel("PROJECT");
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
-				.newInstance();
+				.newInstance("/json/default/project_hierarchy_filter_data.json");
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 
 		sprintDetails = SprintDetailsDataFactory.newInstance().getSprintDetails().get(0);
@@ -145,10 +130,9 @@ public class FTPRServiceImplTest {
 		fieldMapping.setJiraDefectRejectionStatusKPI135("");
 		fieldMapping.setResolutionTypeForRejectionKPI135(Arrays.asList("Invalid", "Duplicate", "Unrequired"));
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(Arrays.asList("Closed"));
-		fieldMapping.setDefectPriorityKPI135(Arrays.asList(new LabelCount("p2",1),new LabelCount("p1",3)));
+		fieldMapping.setDefectPriorityKPI135(Arrays.asList(new LabelCount("p2", 1), new LabelCount("p1", 3)));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-
 	}
 
 	@Test
@@ -188,7 +172,7 @@ public class FTPRServiceImplTest {
 		try {
 			KpiElement kpiElement = ftprService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
-			assertNotNull(kpiElement.getTrendValueList());
+			assertNotNull(kpiElement.getIssueData());
 
 		} catch (ApplicationException enfe) {
 

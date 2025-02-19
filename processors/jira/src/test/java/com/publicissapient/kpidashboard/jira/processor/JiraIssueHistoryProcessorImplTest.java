@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.processor;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -105,20 +104,21 @@ public class JiraIssueHistoryProcessorImplTest {
 		createFieldsMap(true);
 		createIssue();
 		jiraIssue = getMockJiraIssue();
-
 	}
 
 	@Test
 	public void createIssueCustomHistory() {
 		when(jiraIssueCustomHistoryRepository.findByStoryIDAndBasicProjectConfigId(any(), any()))
 				.thenReturn(new JiraIssueCustomHistory());
-		Assert.assertEquals("63bfa0d5b7617e260763ca21", createJiraIssueHistory
-				.convertToJiraIssueHistory(issue, createProjectConfig(), jiraIssue).getBasicProjectConfigId());
+		Assert.assertEquals(
+				"63bfa0d5b7617e260763ca21",
+				createJiraIssueHistory
+						.convertToJiraIssueHistory(issue, createProjectConfig(), jiraIssue)
+						.getBasicProjectConfigId());
 	}
 
 	@Test
-	public void getDevDueDateChangeLog()
-			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	public void getDevDueDateChangeLog() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		Method method = JiraIssueHistoryProcessorImpl.class.getDeclaredMethod("getDevDueDateChangeLog", List.class,
 				FieldMapping.class, Map.class); // Make the private method accessibl
 		method.setAccessible(true);
@@ -140,7 +140,6 @@ public class JiraIssueHistoryProcessorImplTest {
 		Map<String, IssueField> fieldMap = new HashMap<>();
 		fieldMap.put("customfield_20303", new IssueField("", "Dev_Due_Date", null, "2023-02-28T03:57:59.000+0000"));
 		method.invoke(createJiraIssueHistory, new ArrayList<>(), fieldMapping, issue, fieldMap);
-
 	}
 
 	private ProjectConfFieldMapping createProjectConfig() {
@@ -207,40 +206,38 @@ public class JiraIssueHistoryProcessorImplTest {
 				Arrays.asList(new ChangelogItem(FieldType.JIRA, "assignee", "10003", "Harsh", "15752", "Akshat")));
 		changeLogList.add(changelogGroup);
 		changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""),
-				new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.JIRA,
-						"fix version", "10003", "KnowHOW v6.7.0", "15752", "KnowHOW v6.8.0")));
+				new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(
+						new ChangelogItem(FieldType.JIRA, "fix version", "10003", "KnowHOW v6.7.0", "15752", "KnowHOW v6.8.0")));
 		changeLogList.add(changelogGroup);
 		changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""),
-				new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.JIRA,
-						"fix version", "10003", "KnowHOW v6.8.0", "15752", "KnowHOW v6.9.0")));
+				new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(
+						new ChangelogItem(FieldType.JIRA, "fix version", "10003", "KnowHOW v6.8.0", "15752", "KnowHOW v6.9.0")));
 		changeLogList.add(changelogGroup);
 		changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""),
-				new DateTime("2023-02-28T03:59:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.JIRA,
-						"fix version", "10003", "KnowHOW v6.7.0", "15752", "KnowHOW v6.8.0")));
+				new DateTime("2023-02-28T03:59:59.000+0000"), Arrays.asList(
+						new ChangelogItem(FieldType.JIRA, "fix version", "10003", "KnowHOW v6.7.0", "15752", "KnowHOW v6.8.0")));
 		changeLogList.add(changelogGroup);
 		changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""),
 				new DateTime("2023-02-28T03:57:59.000+0000"),
 				Arrays.asList(new ChangelogItem(FieldType.JIRA, "Labels", "10003", "L1", "15752", "L2")));
 		changeLogList.add(changelogGroup);
 		changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""),
-				new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.CUSTOM,
-						"Due_Date", "2023-02-21", "2023-02-21 00:00:00.0", "2023-02-24", "2023-02-24 00:00:00.0")));
+				new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.CUSTOM, "Due_Date",
+						"2023-02-21", "2023-02-21 00:00:00.0", "2023-02-24", "2023-02-24 00:00:00.0")));
 		changeLogList.add(changelogGroup);
 		changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""),
-				new DateTime("2023-02-28T03:57:59.000+0000"),
-				Arrays.asList(new ChangelogItem(FieldType.CUSTOM, "Sprint", "10003",
-						"KnowHOW | PI_12| ITR_4, KnowHOW | PI_12| ITR_5", "15752", "KnowHOW | PI_12| ITR_5")));
+				new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.CUSTOM, "Sprint",
+						"10003", "KnowHOW | PI_12| ITR_4, KnowHOW | PI_12| ITR_5", "15752", "KnowHOW | PI_12| ITR_5")));
 		changeLogList.add(changelogGroup);
 
 		Version version = new Version(new URI(""), 1l, "", "description", false, false, DateTime.now());
 		List<Version> versionList = new ArrayList<>();
 		versionList.add(version);
 
-		issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType1, status1, "story",
-				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
-				DateTime.now(), new ArrayList<>(), versionList, new ArrayList<>(), null, issueFields, comments, null,
-				createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null, changeLogList, null,
-				new HashSet<>(Arrays.asList("label1")));
+		issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType1, status1, "story", basicPriority,
+				resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(), DateTime.now(), new ArrayList<>(),
+				versionList, new ArrayList<>(), null, issueFields, comments, null, createIssueLinkData(), basicVotes, workLogs,
+				null, Arrays.asList("expandos"), null, changeLogList, null, new HashSet<>(Arrays.asList("label1")));
 	}
 
 	private List<IssueLink> createIssueLinkData() throws URISyntaxException {
@@ -331,16 +328,19 @@ public class JiraIssueHistoryProcessorImplTest {
 		// map = new HashMap<>();
 		// map.put("value"," ");
 		fields.put("customfield_20303", new IssueField("", "Due_Date", null, ""));
+	}
 
-	}
 	@Test
-	public void parseStringToLocalDateTimeTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-		Method method = JiraIssueHistoryProcessorImpl.class.getDeclaredMethod("parseStringToLocalDateTime",String.class);
+	public void parseStringToLocalDateTimeTest()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = JiraIssueHistoryProcessorImpl.class.getDeclaredMethod("parseStringToLocalDateTime", String.class);
 		method.setAccessible(true);
-		method.invoke(createJiraIssueHistory,new DateTime().toLocalDateTime().toString());
+		method.invoke(createJiraIssueHistory, new DateTime().toLocalDateTime().toString());
 	}
+
 	@Test
-	public void getDueDateChangeLogTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JSONException {
+	public void getDueDateChangeLogTest()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JSONException {
 		List<ChangelogGroup> changeLogList = new ArrayList<>();
 		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setRootCause("code_issue");
@@ -348,12 +348,15 @@ public class JiraIssueHistoryProcessorImplTest {
 		IssueField issueField = new IssueField("customfield_19121", "code_issue", null, new JSONArray(rcaList));
 		Map<String, IssueField> fields = new HashMap<>();
 		fields.put("code_issue", issueField);
-		Method method = JiraIssueHistoryProcessorImpl.class.getDeclaredMethod("getDueDateChangeLog",List.class,FieldMapping.class,Map.class);
+		Method method = JiraIssueHistoryProcessorImpl.class.getDeclaredMethod("getDueDateChangeLog", List.class,
+				FieldMapping.class, Map.class);
 		method.setAccessible(true);
-		method.invoke(createJiraIssueHistory,changeLogList,fieldMapping,fields);
+		method.invoke(createJiraIssueHistory, changeLogList, fieldMapping, fields);
 	}
+
 	@Test
-	public void getDueDateChangeNoDueDate() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JSONException {
+	public void getDueDateChangeNoDueDate()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JSONException {
 		List<ChangelogGroup> changeLogList = new ArrayList<>();
 		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setJiraDueDateField("no_duedate");
@@ -362,9 +365,9 @@ public class JiraIssueHistoryProcessorImplTest {
 		IssueField issueField = new IssueField("customfield_19121", "code_issue", null, new JSONArray(rcaList));
 		Map<String, IssueField> fields = new HashMap<>();
 		fields.put("custom_date", issueField);
-		Method method = JiraIssueHistoryProcessorImpl.class.getDeclaredMethod("getDueDateChangeLog",List.class,FieldMapping.class,Map.class);
+		Method method = JiraIssueHistoryProcessorImpl.class.getDeclaredMethod("getDueDateChangeLog", List.class,
+				FieldMapping.class, Map.class);
 		method.setAccessible(true);
-		method.invoke(createJiraIssueHistory,changeLogList,fieldMapping,fields);
+		method.invoke(createJiraIssueHistory, changeLogList, fieldMapping, fields);
 	}
-
 }

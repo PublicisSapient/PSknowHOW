@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.jira.dataFactories;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -36,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author anisingh4
  */
-
 @Slf4j
 public class ConnectionsDataFactory {
 
@@ -44,15 +42,14 @@ public class ConnectionsDataFactory {
 	private List<Connection> connections;
 	private ObjectMapper mapper = null;
 
+	private ConnectionsDataFactory() {
+	}
 
-    private ConnectionsDataFactory() {
-    }
+	public static ConnectionsDataFactory newInstance() {
+		return newInstance(null);
+	}
 
-    public static ConnectionsDataFactory newInstance() {
-        return newInstance(null);
-    }
-
-    public static ConnectionsDataFactory newInstance(String filePath) {
+	public static ConnectionsDataFactory newInstance(String filePath) {
 
 		ConnectionsDataFactory connectionsDataFactory = new ConnectionsDataFactory();
 		connectionsDataFactory.createObjectMapper();
@@ -85,9 +82,8 @@ public class ConnectionsDataFactory {
 		return mapper;
 	}
 
-    public Optional<Connection> findConnectionById(String id){
+	public Optional<Connection> findConnectionById(String id) {
 
-       return connections.stream().filter(connection -> connection.getId().toString().equals(id))
-                .findFirst();
-    }
+		return connections.stream().filter(connection -> connection.getId().toString().equals(id)).findFirst();
+	}
 }

@@ -39,8 +39,8 @@ public class ChangeRepoToolKpiGroupId {
 	public void execution() {
 		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
 		// Update documents
-		updateDocument(kpiMaster, "kpi84", 1);//mean time to merge kpi
-		updateDocument(kpiMaster, "kpi11", 1);//code commit kpi
+		updateDocument(kpiMaster, "kpi84", 1); // mean time to merge kpi
+		updateDocument(kpiMaster, "kpi11", 1); // code commit kpi
 	}
 
 	private void updateDocument(MongoCollection<Document> kpiCategoryMapping, String kpiId, int groupId) {
@@ -56,8 +56,7 @@ public class ChangeRepoToolKpiGroupId {
 	public void rollback() {
 		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
 		// Update documents
-		updateDocument(kpiMaster, "kpi84", 2);//mean time to merge kpi
-		updateDocument(kpiMaster, "kpi11", 2);//code commit kpi
+		updateDocument(kpiMaster, "kpi84", 2); // mean time to merge kpi
+		updateDocument(kpiMaster, "kpi11", 2); // code commit kpi
 	}
-
 }

@@ -26,9 +26,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,9 +45,12 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.publicissapient.kpidashboard.apis.appsetting.config.ProcessorUrlConfig;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.ProcessorDataFactory;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
@@ -59,9 +59,7 @@ import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepos
 
 import jakarta.servlet.http.HttpServletRequest;
 
-/**
- * This class contains test cases for ProcessorServiceImpl.class
- */
+/** This class contains test cases for ProcessorServiceImpl.class */
 @RunWith(MockitoJUnitRunner.class)
 public class ProcessorServiceImplTest {
 
@@ -92,18 +90,14 @@ public class ProcessorServiceImplTest {
 	@Mock
 	private ConfigHelperService configHelperService;
 
-	/**
-	 * method includes preprocesses for test cases
-	 */
+	/** method includes preprocesses for test cases */
 	@Before
 	public void setup() {
 		MockitoAnnotations.openMocks(this);
 		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpServletRequest));
 	}
 
-	/**
-	 * Methods tests insertion of Project configurations with null values.
-	 */
+	/** Methods tests insertion of Project configurations with null values. */
 	@Test
 	public void testGetAllProcessors() {
 		ProcessorDataFactory processorDataFactory = ProcessorDataFactory.newInstance();
@@ -112,9 +106,7 @@ public class ProcessorServiceImplTest {
 		assertThat("Status: ", true, equalTo(response.getSuccess()));
 	}
 
-	/**
-	 * Methods tests insertion of Project configurations with null values.
-	 */
+	/** Methods tests insertion of Project configurations with null values. */
 	@Test
 	public void testRunProcessorInvalidName() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn(StringUtils.EMPTY);
@@ -131,9 +123,7 @@ public class ProcessorServiceImplTest {
 		assertFalse(response.getSuccess());
 	}
 
-	/**
-	 * Methods tests insertion of Project configurations with null values.
-	 */
+	/** Methods tests insertion of Project configurations with null values. */
 	@Test
 	public void testRunProcessorAtm() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToAtmProcessor");
@@ -144,9 +134,7 @@ public class ProcessorServiceImplTest {
 		assertTrue(response.getSuccess());
 	}
 
-	/**
-	 * Methods tests insertion of Project configurations with null values.
-	 */
+	/** Methods tests insertion of Project configurations with null values. */
 	@Test
 	public void testRunProcessorSonar() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToSonarProcessor");
@@ -157,13 +145,10 @@ public class ProcessorServiceImplTest {
 		assertTrue(response.getSuccess());
 	}
 
-	/**
-	 * Methods tests insertion of Project configurations with null values.
-	 */
+	/** Methods tests insertion of Project configurations with null values. */
 	@Test
 	public void testRunProcessorBitbucket() {
-		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString()))
-				.thenReturn("validUrlToBitbucketProcessor");
+		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToBitbucketProcessor");
 		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
 				Mockito.<Class<String>>any())).thenReturn(mockResponseEntity);
 		Mockito.when(mockResponseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
@@ -173,9 +158,7 @@ public class ProcessorServiceImplTest {
 		assertTrue(response.getSuccess());
 	}
 
-	/**
-	 * Methods tests insertion of Project configurations with null values.
-	 */
+	/** Methods tests insertion of Project configurations with null values. */
 	@Test
 	public void testRunProcessorExcel() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToExcelProcessor");
@@ -186,9 +169,7 @@ public class ProcessorServiceImplTest {
 		assertTrue(response.getSuccess());
 	}
 
-	/**
-	 * Methods tests insertion of Project configurations with null values.
-	 */
+	/** Methods tests insertion of Project configurations with null values. */
 	@Test
 	public void testRunProcessorBamboo() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToBambooProcessor");
@@ -199,9 +180,7 @@ public class ProcessorServiceImplTest {
 		assertTrue(response.getSuccess());
 	}
 
-	/**
-	 * Methods tests insertion of Project configurations with null values.
-	 */
+	/** Methods tests insertion of Project configurations with null values. */
 	@Test
 	public void testRunProcessorJenkins() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToJenkinsProcessor");
@@ -212,9 +191,7 @@ public class ProcessorServiceImplTest {
 		assertTrue(response.getSuccess());
 	}
 
-	/**
-	 * Methods tests insertion of Project configurations with null values.
-	 */
+	/** Methods tests insertion of Project configurations with null values. */
 	@Test
 	public void testRunProcessorJira() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToJiraProcessor");
@@ -225,9 +202,7 @@ public class ProcessorServiceImplTest {
 		assertTrue(response.getSuccess());
 	}
 
-	/**
-	 * Methods tests insertion of Project configurations with null values.
-	 */
+	/** Methods tests insertion of Project configurations with null values. */
 	@Test
 	public void testRunProcessorSonar500() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToSonarProcessor");
@@ -238,9 +213,7 @@ public class ProcessorServiceImplTest {
 		assertFalse(response.getSuccess());
 	}
 
-	/**
-	 * Methods tests insertion of Project configurations with null values.
-	 */
+	/** Methods tests insertion of Project configurations with null values. */
 	@Test
 	public void testRunProcessorSonar404() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToSonarProcessor");
@@ -263,8 +236,9 @@ public class ProcessorServiceImplTest {
 	@Test
 	public void fetchActiveSprint_HttpClientErrorException() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToJiraProcessor");
-		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
-				Mockito.<Class<String>>any()))
+		Mockito
+				.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+						Mockito.<Class<String>>any()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request"));
 		ServiceResponse response = processorService.fetchActiveSprint("132_TestSprint");
 		assertFalse(response.getSuccess());
@@ -273,9 +247,48 @@ public class ProcessorServiceImplTest {
 	@Test
 	public void saveRepoToolTraceLogsTest() {
 
-		processorService.saveRepoToolTraceLogs(new RepoToolsStatusResponse("project", "repo", "repo", "src",
-				Constant.SUCCESS, 0l));
+		processorService
+				.saveRepoToolTraceLogs(new RepoToolsStatusResponse("project", "repo", "repo", "src", Constant.SUCCESS, 0l));
 		Mockito.verify(cacheService, Mockito.times(3)).clearCache(Mockito.anyString());
+	}
 
+	@Test
+	public void fetchMetaData() {
+		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToJiraProcessor");
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+				Mockito.<Class<String>>any())).thenReturn(mockResponseEntity);
+		Mockito.when(mockResponseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
+		ServiceResponse response = processorService.runMetadataStep("132_TestSprint");
+		assertTrue(response.getSuccess());
+	}
+
+	@Test
+	public void fetchMetaData_ResourceException() {
+		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToJiraProcessor");
+		Mockito
+				.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+						Mockito.<Class<String>>any()))
+				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request"));
+		ServiceResponse response = processorService.runMetadataStep("132_TestSprint");
+		assertFalse(response.getSuccess());
+	}
+
+	@Test
+	public void fetchMetaData_ResourceAccessException() {
+		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToJiraProcessor");
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+				Mockito.<Class<String>>any())).thenThrow(new ResourceAccessException("Bad Request"));
+		ServiceResponse response = processorService.runMetadataStep("132_TestSprint");
+		assertFalse(response.getSuccess());
+	}
+
+	@Test
+	public void fetchMetaData_serverError() {
+		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToJiraProcessor");
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+				Mockito.<Class<String>>any())).thenReturn(mockResponseEntity);
+		Mockito.when(mockResponseEntity.getStatusCode()).thenReturn(HttpStatus.INTERNAL_SERVER_ERROR);
+		ServiceResponse response = processorService.runMetadataStep("132_TestSprint");
+		assertFalse(response.getSuccess());
 	}
 }

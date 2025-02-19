@@ -15,7 +15,6 @@
  *    limitations under the License.
  */
 
-
 package com.publicissapient.kpidashboard.apis.jenkins.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,6 +39,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -54,6 +54,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
+import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
@@ -80,7 +81,9 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 	private Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolProjectMap = new HashMap<>();
 	private Map<String, List<String>> maturityRangeMap = new HashMap<>();
 	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
-	Map<String, Object> durationFilter =  new LinkedHashMap<>();
+	Map<String, Object> durationFilter = new LinkedHashMap<>();
+	private DeploymentFrequencyInfo deploymentFrequencyInfo;
+	private List<Deployment> deploymentListCurrentMonth;
 
 	@Mock
 	private DeploymentRepository deploymentRepository;
@@ -122,6 +125,7 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 		projectToolConfigMap.put("Bamboo", projectToolConfigList);
 
 		toolProjectMap.put(new ObjectId("6335363749794a18e8a4479b"), projectToolConfigMap);
@@ -129,7 +133,16 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 		setTreadValuesDataCount();
 
 		maturityRangeMap.put(KPICode.DEPLOYMENT_FREQUENCY_KANBAN.name(), Arrays.asList("-1", "1-2", "2-5", "5-10", "10-"));
+		deploymentFrequencyInfo = new DeploymentFrequencyInfo();
+		deploymentListCurrentMonth = new ArrayList<>();
 
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		ProjectBasicConfig p1 = new ProjectBasicConfig();
+		p1.setId(new ObjectId("6335368249794a18e8a4479f"));
+		p1.setProjectName("Test");
+		p1.setProjectNodeId("Kanban Project_6335368249794a18e8a4479f");
+		mapOfProjectDetails.put(p1.getId().toString(), p1);
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 	}
 
 	private void setTreadValuesDataCount() {
@@ -157,13 +170,10 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-
 		when(deploymentRepository.findDeploymentList(anyMap(), anySet(), anyString(), anyString()))
 				.thenReturn(deploymentList);
-
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINSKANBAN.name()))
 				.thenReturn(kpiRequest.getRequestTrackerId());
-
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put(KPICode.DEPLOYMENT_FREQUENCY_KANBAN.name(), Arrays.asList("-1", "1-2", "2-5", "5-10", "10-"));
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
@@ -172,20 +182,19 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 		Map<String, String> kpiWiseAggregation = new HashMap<>();
 		kpiWiseAggregation.put(KPICode.DEPLOYMENT_FREQUENCY_KANBAN.name(), "sum");
 		when(configHelperService.calculateCriteria()).thenReturn(kpiWiseAggregation);
-
 		try {
 			KpiElement kpiElement = deploymentFrequencyKanbanService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("Deployment Frequency Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(),
-					equalTo(4));
+			assertThat("Deployment Frequency Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(4));
 		} catch (ApplicationException exception) {
 
 		}
 	}
+
 	@Test
 	public void getKpiDataMonth() throws ApplicationException {
-		durationFilter.put(Constant.DURATION,CommonConstant.MONTH);
-		durationFilter.put(Constant.COUNT,20);
+		durationFilter.put(Constant.DURATION, CommonConstant.MONTH);
+		durationFilter.put(Constant.COUNT, 20);
 		kpiElement.setFilterDuration(durationFilter);
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
@@ -208,8 +217,7 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 		try {
 			KpiElement kpiElement = deploymentFrequencyKanbanService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("Deployment Frequency Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(),
-					equalTo(4));
+			assertThat("Deployment Frequency Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(4));
 		} catch (ApplicationException exception) {
 
 		}
@@ -220,13 +228,13 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 
 		when(deploymentRepository.findDeploymentList(any(), any(), any(), any())).thenReturn(deploymentList);
 		String startDate = "2022-06-03T06:39:40.000";
 		String endDate = "2022-01-03T06:39:40.000";
-		Map<ObjectId, List<Deployment>> deploymentListMap = deploymentFrequencyKanbanService.fetchKPIDataFromDb(leafNodeList,
-				startDate, endDate, null);
+		Map<ObjectId, List<Deployment>> deploymentListMap = deploymentFrequencyKanbanService
+				.fetchKPIDataFromDb(leafNodeList, startDate, endDate, null);
 		assertThat("Total Deployments Group: ", deploymentListMap.size(), equalTo(1));
 	}
 
@@ -264,8 +272,131 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 	}
 
 	@Test
-	public void testThreshold(){
+	public void testThreshold() {
 		assertEquals(Double.valueOf(0), deploymentFrequencyKanbanService.calculateThresholdValue(new FieldMapping()));
 	}
 
+	@Test
+	public void testTrendValueWithNonEmptyPipelineName() {
+		Map<String, List<DataCount>> trendValueMap = new HashMap<>();
+		String envName = "QA";
+		List<Deployment> deploymentListEnvWise = new ArrayList<>();
+		Deployment deployment = new Deployment();
+		deployment.setPipelineName("Pipeline1");
+		deploymentListEnvWise.add(deployment);
+
+		List<DataCount> dataCountList = new ArrayList<>();
+		DataCount dataCount = new DataCount();
+		dataCountList.add(dataCount);
+
+		DeploymentFrequencyKanbanServiceImpl.trendValue(trendValueMap, envName, deploymentListEnvWise, dataCountList);
+
+		assertEquals(1, trendValueMap.get("Pipeline1").size());
+	}
+
+	@Test
+	public void testTrendValueWithEmptyPipelineName() {
+		Map<String, List<DataCount>> trendValueMap = new HashMap<>();
+		String envName = "QA";
+		List<Deployment> deploymentListEnvWise = new ArrayList<>();
+		Deployment deployment = new Deployment();
+		deployment.setPipelineName("");
+		deploymentListEnvWise.add(deployment);
+
+		List<DataCount> dataCountList = new ArrayList<>();
+		DataCount dataCount = new DataCount();
+		dataCountList.add(dataCount);
+
+		DeploymentFrequencyKanbanServiceImpl.trendValue(trendValueMap, envName, deploymentListEnvWise, dataCountList);
+
+		assertEquals(1, trendValueMap.get(envName).size());
+	}
+
+	@Test
+	public void testTrendValueWithMultipleDeployments() {
+		Map<String, List<DataCount>> trendValueMap = new HashMap<>();
+		String envName = "QA";
+		List<Deployment> deploymentListEnvWise = new ArrayList<>();
+		Deployment deployment1 = new Deployment();
+		deployment1.setPipelineName("Pipeline1");
+		Deployment deployment2 = new Deployment();
+		deployment2.setPipelineName("Pipeline1");
+		deploymentListEnvWise.add(deployment1);
+		deploymentListEnvWise.add(deployment2);
+
+		List<DataCount> dataCountList = new ArrayList<>();
+		DataCount dataCount1 = new DataCount();
+		DataCount dataCount2 = new DataCount();
+		dataCountList.add(dataCount1);
+		dataCountList.add(dataCount2);
+
+		DeploymentFrequencyKanbanServiceImpl.trendValue(trendValueMap, envName, deploymentListEnvWise, dataCountList);
+
+		assertEquals(2, trendValueMap.get("Pipeline1").size());
+	}
+
+	@Test
+	public void testSetDeploymentFrequencyInfoForExcelWithJobFolderName() {
+		Deployment deployment = new Deployment();
+		deployment.setEnvName("QA");
+		deployment.setJobFolderName("JobFolder1");
+		deployment.setStartTime("2023-10-01T10:00:00");
+		deploymentListCurrentMonth.add(deployment);
+
+		deploymentFrequencyKanbanService.setDeploymentFrequencyInfoForExcel(deploymentFrequencyInfo,
+				deploymentListCurrentMonth);
+
+		assertEquals(1, deploymentFrequencyInfo.getEnvironmentList().size());
+		assertEquals("QA", deploymentFrequencyInfo.getEnvironmentList().get(0));
+		assertEquals("JobFolder1", deploymentFrequencyInfo.getJobNameList().get(0));
+		assertEquals("01-Oct-2023", deploymentFrequencyInfo.getDeploymentDateList().get(0));
+		assertEquals("25/09 - 01/10", deploymentFrequencyInfo.getMonthList().get(0));
+	}
+
+	@Test
+	public void testSetDeploymentFrequencyInfoForExcelWithJobName() {
+		Deployment deployment = new Deployment();
+		deployment.setEnvName("QA");
+		deployment.setJobName("Job1");
+		deployment.setStartTime("2023-10-01T10:00:00");
+		deploymentListCurrentMonth.add(deployment);
+
+		deploymentFrequencyKanbanService.setDeploymentFrequencyInfoForExcel(deploymentFrequencyInfo,
+				deploymentListCurrentMonth);
+
+		assertEquals(1, deploymentFrequencyInfo.getEnvironmentList().size());
+		assertEquals("QA", deploymentFrequencyInfo.getEnvironmentList().get(0));
+		assertEquals("Job1", deploymentFrequencyInfo.getJobNameList().get(0));
+		assertEquals("01-Oct-2023", deploymentFrequencyInfo.getDeploymentDateList().get(0));
+		assertEquals("25/09 - 01/10", deploymentFrequencyInfo.getMonthList().get(0));
+	}
+
+	@Test
+	public void testSetDeploymentFrequencyInfoForExcelWithMultipleDeployments() {
+		Deployment deployment1 = new Deployment();
+		deployment1.setEnvName("QA");
+		deployment1.setJobName("Job1");
+		deployment1.setStartTime("2023-10-01T10:00:00");
+
+		Deployment deployment2 = new Deployment();
+		deployment2.setEnvName("Prod");
+		deployment2.setJobFolderName("JobFolder2");
+		deployment2.setStartTime("2023-10-02T10:00:00");
+
+		deploymentListCurrentMonth.add(deployment1);
+		deploymentListCurrentMonth.add(deployment2);
+
+		deploymentFrequencyKanbanService.setDeploymentFrequencyInfoForExcel(deploymentFrequencyInfo,
+				deploymentListCurrentMonth);
+
+		assertEquals(2, deploymentFrequencyInfo.getEnvironmentList().size());
+		assertEquals("QA", deploymentFrequencyInfo.getEnvironmentList().get(0));
+		assertEquals("Prod", deploymentFrequencyInfo.getEnvironmentList().get(1));
+		assertEquals("Job1", deploymentFrequencyInfo.getJobNameList().get(0));
+		assertEquals("JobFolder2", deploymentFrequencyInfo.getJobNameList().get(1));
+		assertEquals("01-Oct-2023", deploymentFrequencyInfo.getDeploymentDateList().get(0));
+		assertEquals("02-Oct-2023", deploymentFrequencyInfo.getDeploymentDateList().get(1));
+		assertEquals("25/09 - 01/10", deploymentFrequencyInfo.getMonthList().get(0));
+		assertEquals("02/10 - 08/10", deploymentFrequencyInfo.getMonthList().get(1));
+	}
 }

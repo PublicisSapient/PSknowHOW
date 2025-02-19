@@ -44,9 +44,8 @@ public class JenkinsToolConfigServiceImpl {
 	private ConnectionService connectionService;
 
 	/**
-	 *
 	 * @param connectionId
-	 *            the jenkins server connection details
+	 *          the jenkins server connection details
 	 * @return @{@code List<String>} job name list for build/deploy job type
 	 */
 	public List<String> getJenkinsJobNameList(String connectionId) {
@@ -57,8 +56,7 @@ public class JenkinsToolConfigServiceImpl {
 			Connection connection = optConnection.get();
 			String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
 			String username = connection.getUsername() == null ? null : connection.getUsername().trim();
-			String password = connection.getApiKey() == null ? null
-					: restAPIUtils.decryptPassword(connection.getApiKey());
+			String password = connection.getApiKey() == null ? null : restAPIUtils.decryptPassword(connection.getApiKey());
 
 			String url = baseUrl + RESOURCE_JOBS_ENDPOINT;
 
@@ -88,17 +86,17 @@ public class JenkinsToolConfigServiceImpl {
 
 	/**
 	 * this method check for the client exception
-	 * 
+	 *
 	 * @param connection
-	 *            connection
+	 *          connection
 	 * @param exception
-	 *            exception
+	 *          exception
 	 */
 	private void isClientException(Connection connection, Exception exception) {
-		if (exception instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ClientErrorMessageEnum
-					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+		if (exception instanceof HttpClientErrorException &&
+				((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) exception).getStatusCode().value())
+					.getReasonPhrase();
 			connectionService.updateBreakingConnection(connection, errMsg);
 		}
 	}

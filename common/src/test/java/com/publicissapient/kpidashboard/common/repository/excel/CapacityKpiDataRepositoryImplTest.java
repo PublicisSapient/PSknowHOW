@@ -33,15 +33,13 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * @author shi6
@@ -94,5 +92,4 @@ public class CapacityKpiDataRepositoryImplTest {
 		// Verify that the find method is called with the correct parameters
 		verify(mongoOperations, times(1)).find(any(Query.class), eq(CapacityKpiData.class));
 	}
-
 }

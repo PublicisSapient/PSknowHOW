@@ -38,7 +38,6 @@ import lombok.extern.slf4j.Slf4j;
  * This class call repository method to save the user authentication.
  *
  * @author prijain3
- *
  */
 @Component
 @Slf4j
@@ -50,9 +49,7 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 	@Autowired
 	private UserInfoService userInfoService;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public void handle(HttpServletResponse response, Authentication authentication) {
 		String username = authentication.getPrincipal().toString();
@@ -62,7 +59,5 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 				authentication.getPrincipal(), authentication.getCredentials(), authorities);
 		authenticationWithAuthorities.setDetails(AuthType.STANDARD);
 		tokenAuthenticationService.addAuthentication(response, authenticationWithAuthorities);
-
 	}
-
 }

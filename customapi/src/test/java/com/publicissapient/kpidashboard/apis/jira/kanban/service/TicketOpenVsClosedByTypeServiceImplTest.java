@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -38,11 +37,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
@@ -103,6 +104,18 @@ public class TicketOpenVsClosedByTypeServiceImplTest {
 		kpiRequest.setLabel("PROJECT");
 		kpiRequest.setDuration("WEEKS");
 
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335368249794a18e8a4479f"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Kanban Project");
+		projectBasicConfig.setProjectNodeId("Kanban Project_6335368249794a18e8a4479f");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
+
 		AccountHierarchyKanbanFilterDataFactory accountHierarchyKanbanFilterDataFactory = AccountHierarchyKanbanFilterDataFactory
 				.newInstance();
 		accountHierarchyDataKanbanList = accountHierarchyKanbanFilterDataFactory.getAccountHierarchyKanbanDataList();
@@ -117,10 +130,7 @@ public class TicketOpenVsClosedByTypeServiceImplTest {
 				.newInstance("/json/kanban/kanban_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
-		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
-		projectConfig.setId(new ObjectId("6335368249794a18e8a4479f"));
-		projectConfig.setProjectName("Kanban Project");
-		projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+
 		filterCategory.add("Project");
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
@@ -130,15 +140,12 @@ public class TicketOpenVsClosedByTypeServiceImplTest {
 
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		when(cacheService.getFullKanbanHierarchyLevel()).thenReturn(hierachyLevelFactory.getHierarchyLevels());
-
-
 	}
 
 	@After
 	public void cleanup() {
 
 		kanbanJiraIssueRepository.deleteAll();
-
 	}
 
 	private void setMockProjectConfig() {
@@ -158,25 +165,24 @@ public class TicketOpenVsClosedByTypeServiceImplTest {
 		projectConfigList.add(projectOne);
 		projectConfigList.add(projectTwo);
 		projectConfigList.add(projectThree);
-
 	}
 
 	private void setMockFieldMapping() {
 
 		FieldMapping projectOne = new FieldMapping();
 		projectOne.setBasicProjectConfigId(new ObjectId("5b674d58f47cae8935b1b26f"));
-		projectOne.setTicketCountIssueType(Arrays.asList("bug"));
-		projectOne.setJiraTicketClosedStatus(Arrays.asList("CLOSED"));
+		projectOne.setTicketCountIssueTypeKPI55(Arrays.asList("bug"));
+		projectOne.setJiraTicketClosedStatusKPI55(Arrays.asList("CLOSED"));
 
 		FieldMapping projectTwo = new FieldMapping();
 		projectTwo.setBasicProjectConfigId(new ObjectId("5b719d06a500d00814bfb2b9"));
-		projectTwo.setTicketCountIssueType(Arrays.asList("Story"));
-		projectTwo.setJiraTicketClosedStatus(Arrays.asList("CLOSED"));
+		projectTwo.setTicketCountIssueTypeKPI55(Arrays.asList("Story"));
+		projectTwo.setJiraTicketClosedStatusKPI55(Arrays.asList("CLOSED"));
 
 		FieldMapping projectThree = new FieldMapping();
 		projectThree.setBasicProjectConfigId(new ObjectId("5ba8e182d3735010e7f1fa45"));
-		projectThree.setTicketCountIssueType(Arrays.asList("Story"));
-		projectThree.setJiraTicketClosedStatus(Arrays.asList("CLOSED"));
+		projectThree.setTicketCountIssueTypeKPI55(Arrays.asList("Story"));
+		projectThree.setJiraTicketClosedStatusKPI55(Arrays.asList("CLOSED"));
 
 		fieldMappingList.add(projectOne);
 		fieldMappingList.add(projectTwo);
@@ -207,8 +213,8 @@ public class TicketOpenVsClosedByTypeServiceImplTest {
 		when(commonService.sortTrendValueMap(any())).thenReturn(trendMap);
 
 		try {
-			KpiElement kpiElement = storyOpenRateByIssueServiceImpl.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0), treeAggregatorDetail);
+			KpiElement kpiElement = storyOpenRateByIssueServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
 			List<DataCount> response = (List<DataCount>) kpiElement.getTrendValueList();
 			assertEquals(1, response.size());
 		} catch (ApplicationException e) {

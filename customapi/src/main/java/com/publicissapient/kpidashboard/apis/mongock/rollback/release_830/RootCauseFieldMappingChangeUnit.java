@@ -18,11 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.rollback.release_830;
 
+import org.bson.Document;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
-import org.bson.Document;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 /**
  * @author kunkambl
@@ -63,21 +64,20 @@ public class RootCauseFieldMappingChangeUnit {
 	public void insertFieldMapping() {
 		Document fieldMappingDocument = new Document().append(FIELD_NAME, ROOT_CAUSE_IDENTIFIER)
 				.append(FIELD_LABEL, "Root Cause").append(FIELD_TYPE, "radiobutton").append(FIELD_CATEGORY, FIELDS)
-				.append("section", "Custom Fields Mapping").append(TOOL_TIP, new Document(DEFINITION,
+				.append("section", "Custom Fields Mapping")
+				.append(TOOL_TIP, new Document(DEFINITION,
 						"JIRA/AZURE applications let you add custom fields in addition to the built-in fields. Root Cause is a custom field in JIRA. So User need to provide that custom field which is associated with Root Cause in Users JIRA Installation."))
-				.append("nestedFields", new Document[] {
-						new Document().append(FIELD_NAME, ROOT_CAUSE).append(FIELD_LABEL, "Root Cause CustomField")
-								.append(FIELD_TYPE, "text").append(FIELD_CATEGORY, FIELDS)
-								.append("filterGroup", new String[] { CUSTOM_FIELD }).append(TOOL_TIP,
-								new Document(DEFINITION,
-										" Provide customfield name to Root Cause.")),
-						new Document().append(FIELD_NAME, "rootCauseValues")
-								.append(FIELD_LABEL, "Root Cause Defect Values").append(FIELD_TYPE, "chips")
-								.append("filterGroup", new String[] { LABELS }).append(TOOL_TIP,
-								new Document(DEFINITION, "Provide label name to identify Root Cause")) })
-				.append("options",
-						new Document[] { new Document().append("label", CUSTOM_FIELD).append("value", CUSTOM_FIELD),
-								new Document().append("label", LABELS).append("value", LABELS) });
+				.append("nestedFields",
+						new Document[]{
+								new Document().append(FIELD_NAME, ROOT_CAUSE).append(FIELD_LABEL, "Root Cause CustomField")
+										.append(FIELD_TYPE, "text").append(FIELD_CATEGORY, FIELDS)
+										.append("filterGroup", new String[]{CUSTOM_FIELD})
+										.append(TOOL_TIP, new Document(DEFINITION, " Provide customfield name to Root Cause.")),
+								new Document().append(FIELD_NAME, "rootCauseValues").append(FIELD_LABEL, "Root Cause Defect Values")
+										.append(FIELD_TYPE, "chips").append("filterGroup", new String[]{LABELS})
+										.append(TOOL_TIP, new Document(DEFINITION, "Provide label name to identify Root Cause"))})
+				.append("options", new Document[]{new Document().append("label", CUSTOM_FIELD).append("value", CUSTOM_FIELD),
+						new Document().append("label", LABELS).append("value", LABELS)});
 
 		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).insertOne(fieldMappingDocument);
 	}
@@ -112,5 +112,4 @@ public class RootCauseFieldMappingChangeUnit {
 		Document update = new Document("$set", new Document(ROOT_CAUSE, ""));
 		mongoTemplate.getCollection("field_mapping").updateMany(query, update);
 	}
-
 }

@@ -24,6 +24,8 @@ import { GetAuthorizationService } from '../../../services/get-authorization.ser
 import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
 import { HelperService } from 'src/app/services/helper.service';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule, FormGroup, FormControl } from '@angular/forms';
 
 declare const require: any;
 @Component({
@@ -61,6 +63,11 @@ export class ProjectListComponent implements OnInit {
   items: MenuItem[];
   roleBasedItems: MenuItem[];
   selectedProductForExecutingAction: any;
+  isRenameProject = false;
+  submitted = false;
+  newProjectName: string = "";
+  projectGroup;
+  selectedProject: any;
 
   constructor(private http: HttpService, private sharedService: SharedService, private messenger: MessageService, private router: Router, private confirmationService: ConfirmationService,
     private getAuthorizationService: GetAuthorizationService, private helper: HelperService) { }
@@ -85,6 +92,11 @@ export class ProjectListComponent implements OnInit {
       {
         label: 'Clone Project', icon: 'pi pi-copy', command: () => {
           this.editProject(this.selectedProductForExecutingAction, true);
+        }
+      },
+      {
+        label: 'Rename Project', icon: 'pi pi-file-edit', command: () => {
+          this.renameProject(this.selectedProductForExecutingAction);
         }
       },
       {
@@ -196,7 +208,7 @@ export class ProjectListComponent implements OnInit {
     for (let i = 0; i < this.projectList?.length; i++) {
       const obj = {
         id: this.projectList[i]?.id,
-        name: this.projectList[i]?.projectName,
+        name: this.projectList[i]?.projectDisplayName,
         type: this.projectList[i]?.kanban ? 'Kanban' : 'Scrum',
         saveAssigneeDetails: this.projectList[i]?.saveAssigneeDetails,
         developerKpiEnabled: this.projectList[i]?.developerKpiEnabled,
@@ -238,7 +250,7 @@ export class ProjectListComponent implements OnInit {
               item.projects = item.projects.filter(x => x.projectId != project.id);
             });
             arr = arr?.filter(item => item.projects?.length > 0);
-            this.sharedService.setCurrentUserDetails({ projectsAccess: arr });
+            this.http.setCurrentUserDetails({ projectsAccess: arr });
           }
         }, error => {
           this.projectDeletionStatus(error);
@@ -292,4 +304,42 @@ export class ProjectListComponent implements OnInit {
     this.router.navigate([`/dashboard/Config/ConfigSettings/${project['id']}`], { queryParams: { 'type': project['type'].toLowerCase(), tab: tabNum } });
 
   }
+
+  renameProject(project) {
+    this.submitted = false;
+    this.selectedProject = project;
+    this.isRenameProject = true;
+    this.newProjectName = project.name;
+     this.projectGroup = new FormGroup({
+          projectName: new FormControl()
+      });
+  }
+  onSubmit(form: any) {
+    this.submitted = true;
+    if(this.newProjectName === this.selectedProject.name) {
+      return;
+    }
+    if (form.valid) {
+      const updatedDetails = {...this.projectList.filter(x => x.projectDisplayName === this.selectedProject.name)[0]};
+      updatedDetails['projectName'] = this.newProjectName;
+      updatedDetails['projectDisplayName'] = this.newProjectName;
+      this.http.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
+            if (response && response.serviceResponse && response.serviceResponse.success) {
+              this.messenger.add({
+                severity: 'success',
+                summary: 'Project renamed successfully.'
+              });
+              this.getData();
+            } else {
+              this.messenger.add({
+                severity: 'error',
+                summary: 'Some error occurred. Please try again later.'
+              });
+            }
+          })
+      this.isRenameProject = false;
+      console.log('Form submitted:', this.newProjectName);
+    }
+  }
+
 }

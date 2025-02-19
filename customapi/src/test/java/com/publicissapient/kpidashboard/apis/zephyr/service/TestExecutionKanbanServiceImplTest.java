@@ -29,12 +29,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -58,19 +60,19 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanTestExecutionRepository;
 
 /**
  * @author anisingh4
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class TestExecutionKanbanServiceImplTest {
 
 	private static final String TEST_EXECUTION_DETAIL = "testExecutionDetail";
-	private final static String TESTCASEKEY = "testCaseData";
-	private final static String AUTOMATEDTESTCASEKEY = "automatedTestCaseData";
+	private static final String TESTCASEKEY = "testCaseData";
+	private static final String AUTOMATEDTESTCASEKEY = "automatedTestCaseData";
 	@InjectMocks
 	TestExecutionKanbanServiceImpl testExecutionKanbanService;
 	@Mock
@@ -90,11 +92,28 @@ public class TestExecutionKanbanServiceImplTest {
 	@Mock
 	private CommonService commonService;
 
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+
 	@Before
 	public void setup() {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi71");
 		kpiRequest.setLabel("PROJECT");
+
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
+
 		kpiWiseAggregation.put("testExecutionPercentage", "average");
 		AccountHierarchyKanbanFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyKanbanFilterDataFactory
 				.newInstance();
@@ -165,8 +184,7 @@ public class TestExecutionKanbanServiceImplTest {
 		});
 		when(kanbanTestExecutionRepository.findTestExecutionDetailByFilters(any(), any(), any(), any()))
 				.thenReturn(testExecutionList);
-		Map<String, Object> resultMap = testExecutionKanbanService.fetchKPIDataFromDb(leafNodeList, null, null,
-				kpiRequest);
+		Map<String, Object> resultMap = testExecutionKanbanService.fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
 		assertThat("Total Result Count :", ((List<KanbanTestExecution>) (resultMap.get(TEST_EXECUTION_DETAIL))).size(),
 				equalTo(3));
 	}
@@ -176,5 +194,4 @@ public class TestExecutionKanbanServiceImplTest {
 		Double kpiValue = testExecutionKanbanService.calculateKpiValue(Arrays.asList(1.0, 2.0), "kpi70");
 		assertThat("Kpi value  :", kpiValue, equalTo(0.0));
 	}
-
 }

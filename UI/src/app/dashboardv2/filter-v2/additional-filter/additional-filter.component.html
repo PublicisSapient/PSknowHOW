@@ -5,9 +5,10 @@
             tooltipPosition="bottom"
             *ngIf="filterData?.length && filterData[i]?.length && config['type'] !== 'singleSelect'"
             style="margin-left: 10px;">
-            <p-multiSelect #multiSelect [inputId]="'multiselectFilter_' + i" [disabled]="squadLevel && squadLevel.hierarchyLevelName === config.defaultLevel.labelName && selectedTrends?.length > 1"
-                [style]="{'width':'200px', 'max-width': '100%', 'height': '40px'}"
-                defaultLabel="Select" [optionLabel]="'nodeName'" [panelStyle]="{ 'min-width': 'min(100vw, 400px)' }"
+            <p-multiSelect #multiSelect [inputId]="'multiselectFilter_' + i"
+                [disabled]="squadLevel?.hierarchyLevelName === config.defaultLevel.labelName && selectedTrends?.length > 1"
+                [style]="{'width':'200px', 'max-width': '100%', 'height': '40px'}" defaultLabel="Select"
+                [optionLabel]="'nodeDisplayName'" [panelStyle]="{ 'min-width': 'min(100vw, 400px)' }"
                 [appendTo]="addnlFilterDiv" [(ngModel)]="selectedFilters[i]" [options]="filterData[i]"
                 (onChange)="onSelectionChange($event, i)" (onPanelShow)="moveSelectedOptionToTop($event, i)">
                 <ng-template pTemplate="footer">
@@ -17,17 +18,18 @@
                     </div>
                 </ng-template>
             </p-multiSelect>
-            <label class="floating-label" [for]="'multiselectFilter_' + i">Select {{ config.defaultLevel.labelName }}</label>
+            <label class="floating-label" [for]="'multiselectFilter_' + i">Select {{ config.defaultLevel.labelName
+                }}</label>
         </span>
         <span *ngIf="filterData?.length && filterData[i]?.length && config['type'] === 'singleSelect'"
             class="p-float-label" style="margin-left: 10px;">
             <p-dropdown [inputId]="'singleselectFilter_' + i" placeholder="Select"
                 [style]="{'width':'200px', 'max-width': '100%', 'height': '40px'}" [optionLabel]="'nodeName'"
                 [panelStyle]="{ 'min-width': 'min(100vw, 400px)' }" [appendTo]="addnlFilterDiv"
-                [(ngModel)]="selectedFilters[i]" [options]="filterData[i]"
-                (onChange)="onDropDownChange($event, i + 1)">
+                [(ngModel)]="selectedFilters[i]" [options]="filterData[i]" (onChange)="onDropDownChange($event, i + 1)">
             </p-dropdown>
-            <label class="floating-label" [for]="'singleselectFilter_' + i">Select {{ config.defaultLevel.labelName }}</label>
+            <label class="floating-label" [for]="'singleselectFilter_' + i">Select {{ config.defaultLevel.labelName
+                }}</label>
         </span>
     </ng-container>
 </div>

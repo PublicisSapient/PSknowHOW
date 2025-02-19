@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.jira;//NOPMD
+package com.publicissapient.kpidashboard.common.model.jira; // NOPMD
 
 import java.util.List;
 
@@ -29,5 +29,4 @@ public class Metadata {
 
 	private String type;
 	private List<MetadataValue> value;
-
 }

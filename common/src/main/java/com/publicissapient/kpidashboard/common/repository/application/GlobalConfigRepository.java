@@ -24,10 +24,7 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
 
-/**
- * Interface for global_config collection
- */
+/** Interface for global_config collection */
 @Repository
 public interface GlobalConfigRepository extends MongoRepository<GlobalConfig, ObjectId> {
-
 }

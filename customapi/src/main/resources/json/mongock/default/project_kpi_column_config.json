@@ -8,7 +8,7 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
       "isDefault": false
@@ -595,7 +595,7 @@
     "basicProjectConfigId": null,
     "kpiId": "kpi136",
     "kpiColumnDetails": [{
-      "columnName": "Defect ID",
+      "columnName": "Issue Id",
       "order": 0,
       "isShown": true,
       "isDefault": false
@@ -620,7 +620,7 @@
       "isShown": true,
       "isDefault": true
     }, {
-      "columnName": "Root Cause",
+      "columnName": "Root Cause List",
       "order": 5,
       "isShown": true,
       "isDefault": false
@@ -632,6 +632,11 @@
     }, {
       "columnName": "Assignee",
       "order": 7,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Created during Iteration",
+      "order": 8,
       "isShown": true,
       "isDefault": false
     }]
@@ -719,10 +724,10 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
       "columnName": "Unit Coverage",
       "order": 2,
@@ -745,18 +750,23 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
-      "columnName": "Sonar Violations",
-      "order": 2,
-      "isShown": true,
-      "isDefault": false
+      "columnName" : "Violation Type",
+      "order" : 2,
+      "isShown" : true,
+      "isDefault" : false
+    }, {
+        "columnName" : "Violation Severity",
+        "order" : 3,
+        "isShown" : true,
+        "isDefault" : false
     }, {
       "columnName": "Weeks",
-      "order": 3,
+      "order": 4,
       "isShown": true,
       "isDefault": false
     }]
@@ -771,10 +781,10 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
       "columnName": "Tech Debt (in days)",
       "order": 2,
@@ -797,7 +807,7 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
       "isDefault": false
@@ -898,6 +908,42 @@
 
   {
     "basicProjectConfigId": null,
+    "kpiId": "kpi114",
+    "kpiColumnDetails": [{
+      "columnName": "Project Name",
+      "order": 0,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Cost of Delay",
+      "order": 1,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Epic ID",
+      "order": 2,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Epic Name",
+      "order": 3,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Epic End Date",
+      "order": 4,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Month",
+      "order": 5,
+      "isShown": true,
+      "isDefault": false
+    }]
+  },
+
+  {
+    "basicProjectConfigId": null,
     "kpiId": "kpi125",
     "kpiColumnDetails": [{
       "columnName": "Issue ID",
@@ -915,46 +961,32 @@
       "isShown": true,
       "isDefault": true
     }, {
-      "columnName": "Issue Status",
+      "columnName": "Size(story point/hours)",
       "order": 3,
       "isShown": true,
       "isDefault": true
     }, {
-      "columnName": "Size(story point/hours)",
+      "columnName": "Priority",
       "order": 4,
-      "isShown": true,
-      "isDefault": true
-    }, {
-      "columnName": "Planned Completion Date (Due Date)",
-      "order": 5,
-      "isShown": true,
-      "isDefault": false
-    }, {
-      "columnName": "Actual Completion Date",
-      "order": 6,
-      "isShown": true,
-      "isDefault": false
-    }, {
-      "columnName": "Remaining Estimate",
-      "order": 7,
-      "isShown": true,
-      "isDefault": false
-    }, {
-      "columnName": "Potential Delay(in days)",
-      "order": 8,
-      "isShown": true,
-      "isDefault": false
-    }, {
-      "columnName": "Predicted Completion Date",
-      "order": 9,
       "isShown": true,
       "isDefault": false
     }, {
       "columnName": "Assignee",
-      "order": 10,
+      "order": 5,
       "isShown": true,
       "isDefault": false
-    }]
+    }, {
+      "columnName": "Issue Status",
+      "order": 6,
+      "isShown": true,
+      "isDefault": true
+    }, {
+      "columnName": "Due Date",
+      "order": 6,
+      "isShown": true,
+      "isDefault": true
+    }
+    ]
   },
 
   {
@@ -987,33 +1019,32 @@
       "isDefault": false
     }]
   },
-
   {
     "basicProjectConfigId": null,
     "kpiId": "kpi118",
     "kpiColumnDetails": [{
       "columnName": "Project Name",
-      "order": 0,
-      "isShown": true,
-      "isDefault": false
-    }, {
-      "columnName": "Date",
       "order": 1,
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 2,
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Month",
+      "columnName": "Date",
       "order": 3,
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Environment",
+      "columnName": "Month",
       "order": 4,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Environment",
+      "order": 5,
       "isShown": true,
       "isDefault": false
     }]
@@ -1127,10 +1158,10 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
       "columnName": "Unit Coverage",
       "order": 2,
@@ -1153,18 +1184,24 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
-      "columnName": "Sonar Violations",
-      "order": 2,
-      "isShown": true,
-      "isDefault": false
+      "columnName" : "Violation Type",
+      "order" : 2,
+      "isShown" : true,
+      "isDefault" : false
+    },
+    {
+      "columnName" : "Violation Severity",
+      "order" : 3,
+      "isShown" : true,
+      "isDefault" : false
     }, {
       "columnName": "Day/Week/Month",
-      "order": 3,
+      "order": 4,
       "isShown": true,
       "isDefault": false
     }]
@@ -1179,10 +1216,10 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
       "columnName": "Tech Debt (in days)",
       "order": 2,
@@ -1489,7 +1526,7 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
       "isDefault": false
@@ -1716,6 +1753,11 @@
     }, {
       "columnName": "Assignee",
       "order": 4,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Category",
+      "order": 5,
       "isShown": true,
       "isDefault": false
     }]
@@ -2187,6 +2229,11 @@
     }, {
       "columnName": "Assignee",
       "order": 14,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Category",
+      "order": 15,
       "isShown": true,
       "isDefault": false
     }]
@@ -3086,7 +3133,7 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
       "isDefault": false
@@ -3107,7 +3154,6 @@
       "isDefault": false
     }]
   },
-
   {
     "basicProjectConfigId": null,
     "kpiId": "kpi176",
@@ -3146,6 +3192,89 @@
       "order": 6,
       "isShown": true,
       "isDefault": false
+    }, {
+      "columnName": "Category",
+      "order": 7,
+      "isShown": true,
+      "isDefault": false
     }]
+  },
+  {
+    "basicProjectConfigId" : null,
+    "kpiId" : "kpi184",
+    "kpiColumnDetails" : [
+      {
+        "columnName" : "Project",
+        "order" : 1,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Job Name / Pipeline Name",
+        "order" : 2,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Total Build Count",
+        "order" : 3,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Total Build Failure Count",
+        "order" : 4,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Build Failure Percentage",
+        "order" : 5,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Weeks",
+        "order" : 6,
+        "isShown" : true,
+        "isDefault" : true
+      }
+    ]
+  },
+  {
+    "basicProjectConfigId" : null,
+    "kpiId" : "kpi183",
+    "kpiColumnDetails" : [
+      {
+        "columnName" : "Project Name",
+        "order" : 1,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Job Name / Pipeline Name",
+        "order" : 2,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Date",
+        "order" : 3,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Weeks",
+        "order" : 4,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Environment",
+        "order" : 5,
+        "isShown" : true,
+        "isDefault" : true
+      }
+    ]
   }
 ]

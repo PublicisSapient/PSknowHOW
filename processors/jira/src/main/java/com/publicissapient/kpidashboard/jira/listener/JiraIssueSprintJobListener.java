@@ -17,7 +17,8 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.listener;
 
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
+import java.io.IOException;
+
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
@@ -30,10 +31,9 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 
 import lombok.extern.slf4j.Slf4j;
-
-import java.io.IOException;
 
 @Component
 @Slf4j
@@ -78,6 +78,7 @@ public class JiraIssueSprintJobListener implements JobExecutionListener {
 			// clearing cache
 			processorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
 			processorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
+			processorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.CACHE_PROJECT_KPI_DATA);
 
 		} else {
 			sprintTrace.setErrorInFetch(true);
@@ -85,15 +86,14 @@ public class JiraIssueSprintJobListener implements JobExecutionListener {
 		}
 		log.info("Saving sprint Trace Log for sprintId: {}", sprintId);
 		sprintTraceLogRepository.save(sprintTrace);
-		if (jiraClientService.isContainRestClient(sprintId)){
+		if (jiraClientService.isContainRestClient(sprintId)) {
 			try {
 				jiraClientService.getRestClientMap(sprintId).close();
 			} catch (IOException e) {
-				throw new RuntimeException("Failed to close rest client",e);// NOSONAR
+				throw new RuntimeException("Failed to close rest client", e); // NOSONAR
 			}
 			jiraClientService.removeRestClientMapClientForKey(sprintId);
 			jiraClientService.removeKerberosClientMapClientForKey(sprintId);
 		}
-
 	}
 }

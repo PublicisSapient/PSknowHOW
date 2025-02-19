@@ -43,7 +43,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
- *
  */
 @Slf4j
 @Service
@@ -57,18 +56,23 @@ public class JobScheduler {
 	private static final String PROCESSOR_ID = "processorId";
 	@Autowired
 	JobLauncher jobLauncher;
+
 	@Qualifier("fetchIssueScrumBoardJob")
 	@Autowired
 	Job fetchIssueScrumBoardJob;
+
 	@Qualifier("fetchIssueScrumJqlJob")
 	@Autowired
 	Job fetchIssueScrumJqlJob;
+
 	@Qualifier("fetchIssueKanbanBoardJob")
 	@Autowired
 	Job fetchIssueKanbanBoardJob;
+
 	@Qualifier("fetchIssueKanbanJqlJob")
 	@Autowired
 	Job fetchIssueKanbanJqlJob;
+
 	@Autowired
 	private FetchProjectConfiguration fetchProjectConfiguration;
 	@Autowired
@@ -76,17 +80,14 @@ public class JobScheduler {
 	@Autowired
 	private JiraProcessorRepository jiraProcessorRepository;
 
-	/**
-	 * This method is used to start scrum job setup with board
-	 *
-	 */
+	/** This method is used to start scrum job setup with board */
 	@Async
 	@Scheduled(cron = "${jira.scrumBoardCron}")
 	public void startScrumBoardJob() {
 		log.info("Request come for job for Scrum project configured with board via cron");
 
-		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
-				false, false);
+		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA, false,
+				false);
 		log.info("Scrum - Board Wise Projects : {}", scrumBoardbasicProjConfIds);
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
 		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
@@ -101,8 +102,7 @@ public class JobScheduler {
 						ongoingExecutionsService.markExecutionInProgress(projectId);
 						jobLauncher.run(fetchIssueScrumBoardJob, params);
 					} catch (Exception e) {
-						log.info(
-								"Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+						log.info("Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
 								projectId, e);
 						ongoingExecutionsService.markExecutionAsCompleted(projectId);
 					}
@@ -112,17 +112,14 @@ public class JobScheduler {
 		executorService.shutdown();
 	}
 
-	/**
-	 * This method is used to start scrum job setup with JQL
-	 *
-	 */
+	/** This method is used to start scrum job setup with JQL */
 	@Async
 	@Scheduled(cron = "${jira.scrumJqlCron}")
 	public void startScrumJqlJob() {
 		log.info("Request coming for job for Scrum project configured with JQL via cron");
 
-		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
-				true, false);
+		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA, true,
+				false);
 
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
 		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
@@ -137,8 +134,7 @@ public class JobScheduler {
 						ongoingExecutionsService.markExecutionInProgress(projectId);
 						jobLauncher.run(fetchIssueScrumJqlJob, params);
 					} catch (Exception e) {
-						log.info(
-								"Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
+						log.info("Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
 								projectId, e);
 						ongoingExecutionsService.markExecutionAsCompleted(projectId);
 					}
@@ -148,16 +144,13 @@ public class JobScheduler {
 		executorService.shutdown();
 	}
 
-	/**
-	 * This method is used to start Kanban job setup with Board
-	 *
-	 */
+	/** This method is used to start Kanban job setup with Board */
 	@Async
 	@Scheduled(cron = "${jira.kanbanBoardCron}")
 	public void startKanbanJob() {
 		log.info("Request coming for job for Kanban project configured with Board via cron");
-		List<String> kanbanBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
-				false, true);
+		List<String> kanbanBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA, false,
+				true);
 		List<JobParameters> parameterSets = getDynamicParameterSets(kanbanBoardbasicProjConfIds);
 		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -171,8 +164,7 @@ public class JobScheduler {
 						ongoingExecutionsService.markExecutionInProgress(projectId);
 						jobLauncher.run(fetchIssueKanbanBoardJob, params);
 					} catch (Exception e) {
-						log.info(
-								"Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+						log.info("Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
 								projectId, e);
 						ongoingExecutionsService.markExecutionAsCompleted(projectId);
 					}
@@ -182,17 +174,14 @@ public class JobScheduler {
 		executorService.shutdown();
 	}
 
-	/**
-	 * This method is used to start Kanban job setup with JQL
-	 *
-	 */
+	/** This method is used to start Kanban job setup with JQL */
 	@Async
 	@Scheduled(cron = "${jira.kanbanJqlCron}")
 	public void startKanbanJqlJob() {
 		log.info("Request coming for job for Kanban project configured with JQL via cron");
 
-		List<String> kanbanJQLbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
-				true, true);
+		List<String> kanbanJQLbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA, true,
+				true);
 
 		List<JobParameters> parameterSets = getDynamicParameterSets(kanbanJQLbasicProjConfIds);
 		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
@@ -207,8 +196,7 @@ public class JobScheduler {
 						ongoingExecutionsService.markExecutionInProgress(projectId);
 						jobLauncher.run(fetchIssueKanbanJqlJob, params);
 					} catch (Exception e) {
-						log.info(
-								"Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
+						log.info("Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
 								projectId, e);
 						ongoingExecutionsService.markExecutionAsCompleted(projectId);
 					}
@@ -236,5 +224,4 @@ public class JobScheduler {
 
 		return parameterSets;
 	}
-
 }

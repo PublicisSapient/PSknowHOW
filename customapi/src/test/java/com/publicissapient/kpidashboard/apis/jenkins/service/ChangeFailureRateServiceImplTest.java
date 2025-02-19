@@ -16,16 +16,18 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.jenkins.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -38,6 +40,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -55,6 +58,7 @@ import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.Build;
@@ -93,7 +97,7 @@ public class ChangeFailureRateServiceImplTest {
 	private Map<String, List<String>> maturityRangeMap = new HashMap<>();
 	private List<DataCount> trendValues = new ArrayList<>();
 	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
-	Map<String, Object> durationFilter =  new LinkedHashMap<>();
+	Map<String, Object> durationFilter = new LinkedHashMap<>();
 	@Mock
 	private CommonService commonService;
 
@@ -116,17 +120,22 @@ public class ChangeFailureRateServiceImplTest {
 
 		BuildDataFactory buildDataFactory = BuildDataFactory.newInstance("/json/non-JiraProcessors/build_details.json");
 		buildList = buildDataFactory.getbuildDataList();
-
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		});
 
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-
 	}
 
 	private void setTreadValuesDataCount() {
@@ -148,8 +157,8 @@ public class ChangeFailureRateServiceImplTest {
 
 	@Test
 	public void testGetChangeFailureRateWeek() throws Exception {
-		durationFilter.put(Constant.DURATION,CommonConstant.WEEK);
-		durationFilter.put(Constant.COUNT,14);
+		durationFilter.put(Constant.DURATION, CommonConstant.WEEK);
+		durationFilter.put(Constant.COUNT, 14);
 		kpiElement.setFilterDuration(durationFilter);
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
@@ -170,12 +179,12 @@ public class ChangeFailureRateServiceImplTest {
 			assertThat("CHANGE-FAILURE-RATE :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
 		} catch (Exception e) {
 		}
-
 	}
+
 	@Test
 	public void testGetChangeFailureRateMonth() throws Exception {
-		durationFilter.put(Constant.DURATION,CommonConstant.MONTH);
-		durationFilter.put(Constant.COUNT,20);
+		durationFilter.put(Constant.DURATION, CommonConstant.MONTH);
+		durationFilter.put(Constant.COUNT, 20);
 		kpiElement.setFilterDuration(durationFilter);
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
@@ -196,7 +205,6 @@ public class ChangeFailureRateServiceImplTest {
 			assertThat("CHANGE-FAILURE-RATE :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
 		} catch (Exception e) {
 		}
-
 	}
 
 	@Test
@@ -205,4 +213,26 @@ public class ChangeFailureRateServiceImplTest {
 		assertEquals(result, KPICode.CHANGE_FAILURE_RATE.name());
 	}
 
+	@Test
+	public void testTrendValueWithPipelineName()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		List<Build> buildList = new ArrayList<>();
+		Build build = new Build();
+		build.setPipelineName("Pipeline1");
+		buildList.add(build);
+
+		String trendLineName = "TrendLine1";
+		Map<String, List<DataCount>> trendValueMap = new HashMap<>();
+		String jobName = "Job1";
+		List<DataCount> dataCountList = new ArrayList<>();
+		DataCount dataCount = new DataCount();
+		dataCountList.add(dataCount);
+		Method trendValueMethod = ChangeFailureRateServiceImpl.class.getDeclaredMethod("trendValue", List.class,
+				String.class, Map.class, String.class, List.class);
+		trendValueMethod.setAccessible(true);
+		trendValueMethod.invoke(null, buildList, trendLineName, trendValueMap, jobName, dataCountList);
+
+		assertTrue(trendValueMap.containsKey("Pipeline1" + CommonUtils.getStringWithDelimiters(trendLineName)));
+		assertEquals(dataCountList, trendValueMap.get("Pipeline1" + CommonUtils.getStringWithDelimiters(trendLineName)));
+	}
 }

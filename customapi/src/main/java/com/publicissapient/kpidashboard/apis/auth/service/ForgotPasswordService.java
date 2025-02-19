@@ -26,8 +26,7 @@ public interface ForgotPasswordService {
 
 	/**
 	 * Process forgotPassword request.
-	 * 
-	 * 
+	 *
 	 * @param email
 	 * @param url
 	 * @return Authentication
@@ -36,7 +35,7 @@ public interface ForgotPasswordService {
 
 	/**
 	 * Validate Email Token sent to the user via email.
-	 * 
+	 *
 	 * @param token
 	 * @return ResetPasswordTokenStatusEnum
 	 */
@@ -44,7 +43,7 @@ public interface ForgotPasswordService {
 
 	/**
 	 * Reset password after validating token
-	 * 
+	 *
 	 * @param updatedPasswordRequest
 	 * @return Authentication
 	 * @throws ApplicationException

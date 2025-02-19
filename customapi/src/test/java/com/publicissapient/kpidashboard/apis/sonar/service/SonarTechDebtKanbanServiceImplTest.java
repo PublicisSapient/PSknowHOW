@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -44,6 +42,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -57,7 +56,6 @@ import com.publicissapient.kpidashboard.apis.data.KanbanIssueCustomHistoryDataFa
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SonarHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -78,7 +76,6 @@ import com.publicissapient.kpidashboard.common.repository.sonar.SonarHistoryRepo
 
 /**
  * @author shichand0
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SonarTechDebtKanbanServiceImplTest {
@@ -132,6 +129,7 @@ public class SonarTechDebtKanbanServiceImplTest {
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		});
@@ -145,7 +143,6 @@ public class SonarTechDebtKanbanServiceImplTest {
 		filterCategory.add("Sprint");
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		when(cacheService.getFullKanbanHierarchyLevel()).thenReturn(hierachyLevelFactory.getHierarchyLevels());
-
 	}
 
 	private void setTreadValuesDataCount() {
@@ -205,7 +202,6 @@ public class SonarTechDebtKanbanServiceImplTest {
 
 	@After
 	public void cleanup() {
-
 	}
 
 	@Test
@@ -220,13 +216,16 @@ public class SonarTechDebtKanbanServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
-//		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
-//		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
+		// when(customApiConfig.getSonarWeekCount()).thenReturn(5);
+		// when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-//		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
-//				.thenReturn(kpiRequestTrackerId);
-//		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
-//				.thenReturn(sonarHistoryData);
+		// when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY
+		// +
+		// KPISource.SONARKANBAN.name()))
+		// .thenReturn(kpiRequestTrackerId);
+		// when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(),
+		// anyLong()))
+		// .thenReturn(sonarHistoryData);
 
 		try {
 			KpiElement kpiElement = stdServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -234,20 +233,18 @@ public class SonarTechDebtKanbanServiceImplTest {
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(data -> {
 				String projectName = data.getFilter();
 				switch (projectName) {
-				case "Overall":
-					assertThat("Sonar Tech Debt:", data.getValue().size(), equalTo(1));
-					break;
+					case "Overall" :
+						assertThat("Sonar Tech Debt:", data.getValue().size(), equalTo(1));
+						break;
 
-				case "ENGINEERING.KPIDASHBOARD.PROCESSORS->origin/develop->DA_10304":
-					assertThat("Sonar Tech Debt:", data.getValue().size(), equalTo(1));
-					break;
-
+					case "ENGINEERING.KPIDASHBOARD.PROCESSORS->origin/develop->DA_10304" :
+						assertThat("Sonar Tech Debt:", data.getValue().size(), equalTo(1));
+						break;
 				}
 			});
 		} catch (Exception enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -256,13 +253,16 @@ public class SonarTechDebtKanbanServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
-//		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
-//		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
+		// when(customApiConfig.getSonarWeekCount()).thenReturn(5);
+		// when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-//		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
-//				.thenReturn(kpiRequestTrackerId);
-//		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
-//				.thenReturn(sonarHistoryData);
+		// when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY
+		// +
+		// KPISource.SONARKANBAN.name()))
+		// .thenReturn(kpiRequestTrackerId);
+		// when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(),
+		// anyLong()))
+		// .thenReturn(sonarHistoryData);
 
 		try {
 			KpiElement kpiElement = stdServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -272,7 +272,6 @@ public class SonarTechDebtKanbanServiceImplTest {
 		} catch (Exception enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -281,13 +280,16 @@ public class SonarTechDebtKanbanServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
-//		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
-//		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
+		// when(customApiConfig.getSonarWeekCount()).thenReturn(5);
+		// when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-//		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
-//				.thenReturn(kpiRequestTrackerId);
-//		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
-//				.thenReturn(sonarHistoryData);
+		// when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY
+		// +
+		// KPISource.SONARKANBAN.name()))
+		// .thenReturn(kpiRequestTrackerId);
+		// when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(),
+		// anyLong()))
+		// .thenReturn(sonarHistoryData);
 		kpiRequest.setDuration(CommonConstant.MONTH);
 		try {
 			KpiElement kpiElement = stdServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -297,7 +299,6 @@ public class SonarTechDebtKanbanServiceImplTest {
 		} catch (Exception enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -306,13 +307,16 @@ public class SonarTechDebtKanbanServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
-//		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
-//		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
+		// when(customApiConfig.getSonarWeekCount()).thenReturn(5);
+		// when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-//		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
-//				.thenReturn(kpiRequestTrackerId);
-//		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
-//				.thenReturn(sonarHistoryData);
+		// when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY
+		// +
+		// KPISource.SONARKANBAN.name()))
+		// .thenReturn(kpiRequestTrackerId);
+		// when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(),
+		// anyLong()))
+		// .thenReturn(sonarHistoryData);
 		kpiRequest.setDuration(CommonConstant.COST_OF_DELAY);
 		try {
 			KpiElement kpiElement = stdServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -322,7 +326,6 @@ public class SonarTechDebtKanbanServiceImplTest {
 		} catch (Exception enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -331,11 +334,8 @@ public class SonarTechDebtKanbanServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
-//		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
+		// when(customApiConfig.getSonarWeekCount()).thenReturn(5);
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
-		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
-				.thenReturn(kpiRequestTrackerId);
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
 		try {
@@ -346,7 +346,6 @@ public class SonarTechDebtKanbanServiceImplTest {
 		} catch (Exception enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -369,16 +368,18 @@ public class SonarTechDebtKanbanServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
-//		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
-//		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
+		// when(customApiConfig.getSonarWeekCount()).thenReturn(5);
+		// when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-//		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
-//				.thenReturn(kpiRequestTrackerId);
-//		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
-//				.thenReturn(sonarHistoryData);
+		// when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY
+		// +
+		// KPISource.SONARKANBAN.name()))
+		// .thenReturn(kpiRequestTrackerId);
+		// when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(),
+		// anyLong()))
+		// .thenReturn(sonarHistoryData);
 
 		stdServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0), treeAggregatorDetail);
-
 	}
 
 	@Test
@@ -390,8 +391,7 @@ public class SonarTechDebtKanbanServiceImplTest {
 	}
 
 	@Test
-	public void testThresold(){
+	public void testThresold() {
 		assertEquals(new Double(0), stdServiceImpl.calculateThresholdValue(new FieldMapping()));
 	}
-
 }

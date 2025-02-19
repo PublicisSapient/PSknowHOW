@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.githubaction.processor;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -34,7 +35,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,10 +47,13 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.Build;
+import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
@@ -65,8 +68,6 @@ import com.publicissapient.kpidashboard.githubaction.factory.GitHubActionClientF
 import com.publicissapient.kpidashboard.githubaction.model.GitHubActionProcessor;
 import com.publicissapient.kpidashboard.githubaction.processor.adapter.GitHubActionClient;
 import com.publicissapient.kpidashboard.githubaction.repository.GitHubProcessorRepository;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 @SuppressWarnings("java:S5786")
 @ExtendWith(SpringExtension.class)
@@ -105,7 +106,7 @@ public class GitHubActionProcessorJobExecutorTest {
 
 	@BeforeEach
 	public void initMocks() {
-        MockitoAnnotations.openMocks(this);
+		MockitoAnnotations.openMocks(this);
 		client2 = mock(GitHubActionClient.class);
 		GitHubActionProcessor gitHubActionProcessor = new GitHubActionProcessor();
 		gitHubActionProcessor.setId(new ObjectId("62171d0f26dd266803fa87da"));
@@ -129,14 +130,13 @@ public class GitHubActionProcessorJobExecutorTest {
 		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
 
 		Mockito.when(gitHubActionConfig.getCustomApiBaseUrl()).thenReturn("http://customapi:8080/");
-		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
-		doThrow(RestClientException.class).when(restTemplate).exchange(
-				ArgumentMatchers.anyString(), ArgumentMatchers.eq(HttpMethod.GET),
-				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+		when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
+		doThrow(RestClientException.class).when(restTemplate).exchange(ArgumentMatchers.anyString(),
+				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 
 		when(gitHubActionClientFactory.getGitHubActionClient("build")).thenReturn(client2);
-		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
-				ProcessorConstants.GITHUBACTION, "624d5c9ed837fc14d40b3039"))
+		when(processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.GITHUBACTION, "624d5c9ed837fc14d40b3039"))
 				.thenReturn(optionalProcessorExecutionTraceLog);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
 	}
@@ -162,20 +162,20 @@ public class GitHubActionProcessorJobExecutorTest {
 		projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
 		projectConfig.setSaveAssigneeDetails(false);
 		projectConfigList.add(projectConfig);
-		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 
 		gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor);
 		assertTrue(gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor));
-
 	}
 
 	@Test
 	public void buildJobsAdded2() throws FetchingBuildException {
 		when(gitHubActionClientFactory.getGitHubActionClient("build")).thenReturn(client2);
 		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
-				ProcessorConstants.GITHUBACTION, "624d5c9ed837fc14d40b3039"))
+						ProcessorConstants.GITHUBACTION, "624d5c9ed837fc14d40b3039"))
 				.thenReturn(optionalProcessorExecutionTraceLog);
-		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
+		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
+				.thenReturn(connList);
 
 		GitHubActionProcessor gitHubActionProcessor = new GitHubActionProcessor();
 		Build build = new Build();
@@ -194,7 +194,6 @@ public class GitHubActionProcessorJobExecutorTest {
 
 		gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor);
 		assertTrue(gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor));
-
 	}
 
 	@Test
@@ -206,10 +205,10 @@ public class GitHubActionProcessorJobExecutorTest {
 		when(client2.getBuildJobsFromServer(any(), any())).thenThrow(FetchingBuildException.class);
 		try {
 			gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor);
-		} catch (Exception ex) {}
+		} catch (Exception ex) {
+		}
 
 		assertFalse(gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor));
-
 	}
 
 	@Test
@@ -242,11 +241,10 @@ public class GitHubActionProcessorJobExecutorTest {
 		projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
 		projectConfig.setSaveAssigneeDetails(false);
 		projectConfigList.add(projectConfig);
-		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 
 		gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor);
 		assertTrue(gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor));
-
 	}
 
 	private Set<Build> oneJobWithBuilds(Build builds) {
@@ -255,5 +253,4 @@ public class GitHubActionProcessorJobExecutorTest {
 		jobs.add(builds);
 		return jobs;
 	}
-
 }

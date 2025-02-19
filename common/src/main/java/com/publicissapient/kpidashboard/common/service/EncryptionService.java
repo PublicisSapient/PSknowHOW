@@ -26,5 +26,4 @@ public interface EncryptionService {
 	String encrypt(String text, String key);
 
 	String decrypt(String encryptedText, String key);
-
 }

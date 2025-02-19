@@ -32,24 +32,23 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
- *
  */
 @Slf4j
 @Component
@@ -62,7 +61,7 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	@Autowired
-	private AccountHierarchyRepository accountHierarchyRepository;
+	private ProjectHierarchyService projectHierarchyService;
 
 	@Autowired
 	private AssigneeDetailsRepository assigneeDetailsRepository;
@@ -79,27 +78,27 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 	public void write(Chunk<? extends CompositeResult> compositeResults) throws Exception {
 		Map<String, JiraIssue> jiraIssues = new HashMap<>();
 		Map<String, JiraIssueCustomHistory> jiraHistoryItems = new HashMap<>();
-		Set<AccountHierarchy> accountHierarchies = new HashSet<>();
+		Set<ProjectHierarchy> projectHierarchies = new HashSet<>();
 		Map<String, AssigneeDetails> assigneesToSave = new HashMap<>();
 		Set<SprintDetails> sprintDetailsSet = new HashSet<>();
 		Set<Assignee> assignee = new HashSet<>();
 
 		for (CompositeResult compositeResult : compositeResults) {
 			if (null != compositeResult.getJiraIssue()) {
-				String key = compositeResult.getJiraIssue().getNumber() + ","
-						+ compositeResult.getJiraIssue().getBasicProjectConfigId();
+				String key = compositeResult.getJiraIssue().getNumber() + "," +
+						compositeResult.getJiraIssue().getBasicProjectConfigId();
 				jiraIssues.putIfAbsent(key, compositeResult.getJiraIssue());
 			}
 			if (null != compositeResult.getJiraIssueCustomHistory()) {
-				String key = compositeResult.getJiraIssueCustomHistory().getStoryID() + ","
-						+ compositeResult.getJiraIssueCustomHistory().getBasicProjectConfigId();
+				String key = compositeResult.getJiraIssueCustomHistory().getStoryID() + "," +
+						compositeResult.getJiraIssueCustomHistory().getBasicProjectConfigId();
 				jiraHistoryItems.putIfAbsent(key, compositeResult.getJiraIssueCustomHistory());
 			}
 			if (null != compositeResult.getSprintDetailsSet()) {
 				sprintDetailsSet.addAll(compositeResult.getSprintDetailsSet());
 			}
-			if (CollectionUtils.isNotEmpty(compositeResult.getAccountHierarchies())) {
-				accountHierarchies.addAll(compositeResult.getAccountHierarchies());
+			if (CollectionUtils.isNotEmpty(compositeResult.getProjectHierarchies())) {
+				projectHierarchies.addAll(compositeResult.getProjectHierarchies());
 			}
 			addAssigness(assigneesToSave, assignee, compositeResult);
 		}
@@ -113,8 +112,8 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 			writeSprintDetail(sprintDetailsSet);
 		}
-		if (CollectionUtils.isNotEmpty(accountHierarchies)) {
-			writeAccountHierarchy(accountHierarchies);
+		if (CollectionUtils.isNotEmpty(projectHierarchies)) {
+			writeAccountHierarchy(projectHierarchies);
 		}
 		if (MapUtils.isNotEmpty(assigneesToSave)) {
 			writeAssigneeDetails(assigneesToSave);
@@ -130,8 +129,8 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 	 */
 	private static void addAssigness(Map<String, AssigneeDetails> assigneesToSave, Set<Assignee> assignee,
 			CompositeResult compositeResult) {
-		if (compositeResult.getAssigneeDetails() != null
-				&& CollectionUtils.isNotEmpty(compositeResult.getAssigneeDetails().getAssignee())) {
+		if (compositeResult.getAssigneeDetails() != null &&
+				CollectionUtils.isNotEmpty(compositeResult.getAssigneeDetails().getAssignee())) {
 			assignee.addAll(compositeResult.getAssigneeDetails().getAssignee());
 			compositeResult.getAssigneeDetails().setAssignee(assignee);
 			assigneesToSave.put(compositeResult.getAssigneeDetails().getBasicProjectConfigId(),
@@ -156,9 +155,9 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 		sprintRepository.saveAll(sprintDetailsSet);
 	}
 
-	private void writeAccountHierarchy(Set<AccountHierarchy> accountHierarchies) {
-		log.info("Writing issues to account_hierarchy Collection");
-		accountHierarchyRepository.saveAll(accountHierarchies);
+	private void writeAccountHierarchy(Set<ProjectHierarchy> projectHierarchies) {
+		log.info("Writing issues to project hierarchy Collection");
+		projectHierarchyService.saveAll(projectHierarchies);
 	}
 
 	private void writeAssigneeDetails(Map<String, AssigneeDetails> assigneesToSave) {

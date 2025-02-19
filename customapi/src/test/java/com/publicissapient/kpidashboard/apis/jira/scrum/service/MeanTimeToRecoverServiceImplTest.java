@@ -21,17 +21,19 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -46,6 +48,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.ToolsKPIService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
@@ -105,6 +108,9 @@ public class MeanTimeToRecoverServiceImplTest {
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private List<JiraIssue> jiraIssueList = new ArrayList<>();
 	private List<JiraIssueCustomHistory> issueCustomHistoryList = new ArrayList<>();
+	private ToolsKPIService toolsKPIService;
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 
 	@Before
 	public void setup() {
@@ -140,12 +146,23 @@ public class MeanTimeToRecoverServiceImplTest {
 		// set aggregation criteria kpi wise
 		kpiWiseAggregation.put("MEAN_TIME_TO_RECOVER", "sum");
 
+		toolsKPIService = mock(ToolsKPIService.class, CALLS_REAL_METHODS);
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfigs -> {
+			projectConfigMap.put(projectConfigs.getProjectName(), projectConfigs);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 	}
 
 	@After
 	public void cleanup() {
 		jiraIssueRepository.deleteAll();
-
 	}
 
 	@Test
@@ -153,15 +170,15 @@ public class MeanTimeToRecoverServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		when(jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(any(), any(), any(), any()))
 				.thenReturn(issueCustomHistoryList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> meanTimeToRecoverDataListMap = meanTimeToRecoverService.fetchKPIDataFromDb(leafNodeList, null, null,
-				kpiRequest);
+		Map<String, Object> meanTimeToRecoverDataListMap = meanTimeToRecoverService.fetchKPIDataFromDb(leafNodeList, null,
+				null, kpiRequest);
 		assertNotNull(meanTimeToRecoverDataListMap);
 	}
-	
+
 	@Test
 	public void testQualifierType() {
 		String kpiName = KPICode.MEAN_TIME_TO_RECOVER.name();
@@ -179,11 +196,9 @@ public class MeanTimeToRecoverServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 
-		issueCustomHistoryList.stream()
-				.forEach(
-						issue->issue.setCreatedDate(new DateTime().minusWeeks(3))
-				);
-		when(jiraIssueRepository.findIssuesWithBoolean(Mockito.anyMap(), Mockito.anyString(),Mockito.anyBoolean(), Mockito.anyString(), Mockito.anyString())).thenReturn(jiraIssueList);
+		issueCustomHistoryList.stream().forEach(issue -> issue.setCreatedDate(new DateTime().minusWeeks(3)));
+		when(jiraIssueRepository.findIssuesWithBoolean(Mockito.anyMap(), Mockito.anyString(), Mockito.anyBoolean(),
+				Mockito.anyString(), Mockito.anyString())).thenReturn(jiraIssueList);
 		when(jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(any(), any(), any(), any()))
 				.thenReturn(issueCustomHistoryList);
 		when(meanTimeToRecoverService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
@@ -194,6 +209,44 @@ public class MeanTimeToRecoverServiceImplTest {
 					equalTo(1));
 		} catch (Exception exception) {
 		}
+	}
+
+	@Test
+	public void testCalculateKPIMetrics_returnsNull() {
+		// Arrange
+		Map<String, Object> inputMap = new HashMap<>();
+		inputMap.put("key1", "value1");
+		inputMap.put("key2", "value2");
+
+		// Act
+		Double result = meanTimeToRecoverService.calculateKPIMetrics(inputMap);
+
+		// Assert
+		assertNull(result, "Expected calculateKPIMetrics to return null");
+	}
+
+	@Test
+	public void testCalculateKpiValue_withEmptyValueList() {
+		// Arrange
+		List<Double> valueList = Collections.emptyList();
+		String kpiId = "KPI001";
+
+		// Act
+		Double result = meanTimeToRecoverService.calculateKpiValue(valueList, kpiId);
+
+		// Assert
+		assertNotNull(String.valueOf(result), "Expected a non-null result even for empty list");
+		assertEquals(0.0, result, "Expected 0.0 for empty value list");
+	}
+
+	@Test
+	public void testCalculateKpiValue_withNullValueList() {
+		// Arrange
+		List<Double> valueList = null;
+		String kpiId = "KPI002";
+		// Act
+		Double result = meanTimeToRecoverService.calculateKpiValue(valueList, kpiId);
+		assertEquals(0.0, 0.0);
 	}
 
 	@Test
@@ -211,7 +264,8 @@ public class MeanTimeToRecoverServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		// Correct usage of argument matcher
-		when(jiraIssueRepository.findIssuesWithBoolean(Mockito.anyMap(), Mockito.anyString(),Mockito.anyBoolean(), Mockito.anyString(), Mockito.anyString())).thenReturn(jiraIssueList);
+		when(jiraIssueRepository.findIssuesWithBoolean(Mockito.anyMap(), Mockito.anyString(), Mockito.anyBoolean(),
+				Mockito.anyString(), Mockito.anyString())).thenReturn(jiraIssueList);
 		when(jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(any(), any(), any(), any()))
 				.thenReturn(issueCustomHistoryList);
 		when(meanTimeToRecoverService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
@@ -229,16 +283,18 @@ public class MeanTimeToRecoverServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
-//		when(jiraIssueRepository.findIssuesWithBoolean(Mockito.anyMap(), Mockito.anyString(),Mockito.anyBoolean(), Mockito.anyString(), Mockito.anyString())).thenReturn(new ArrayList<>());
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
+		// when(jiraIssueRepository.findIssuesWithBoolean(Mockito.anyMap(),
+		// Mockito.anyString(),Mockito.anyBoolean(), Mockito.anyString(),
+		// Mockito.anyString())).thenReturn(new ArrayList<>());
 		when(jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(any(), any(), any(), any()))
 				.thenReturn(new ArrayList<>());
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> meanTimeToRecoverDataListMap = meanTimeToRecoverService.fetchKPIDataFromDb(leafNodeList, null, null,
-				kpiRequest);
+		Map<String, Object> meanTimeToRecoverDataListMap = meanTimeToRecoverService.fetchKPIDataFromDb(leafNodeList, null,
+				null, kpiRequest);
 		assertNotNull(meanTimeToRecoverDataListMap);
 	}
-	
+
 	@Test
 	public void getMeanTimeToRecoverForJiraData_BadScenario() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
@@ -248,7 +304,8 @@ public class MeanTimeToRecoverServiceImplTest {
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(jiraIssueRepository.findIssuesWithBoolean(Mockito.anyMap(), Mockito.anyString(),Mockito.anyBoolean(), Mockito.anyString(), Mockito.anyString())).thenReturn(new ArrayList<>());
+		when(jiraIssueRepository.findIssuesWithBoolean(Mockito.anyMap(), Mockito.anyString(), Mockito.anyBoolean(),
+				Mockito.anyString(), Mockito.anyString())).thenReturn(new ArrayList<>());
 		when(jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(any(), any(), any(), any()))
 				.thenReturn(new ArrayList<>());
 		when(meanTimeToRecoverService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
@@ -260,6 +317,4 @@ public class MeanTimeToRecoverServiceImplTest {
 		} catch (Exception exception) {
 		}
 	}
-
-
 }

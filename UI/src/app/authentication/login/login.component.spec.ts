@@ -16,201 +16,188 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { CommonModule } from '@angular/common';
-import { InputSwitchModule } from 'primeng/inputswitch';
-import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { FormsModule } from '@angular/forms';
-import { LoginComponent } from '../login/login.component';
-import { RegisterComponent } from '../register/register.component';
-import { Routes } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { APP_CONFIG, AppConfig } from '../../services/app.config';
-import { DashboardComponent } from '../../dashboard/dashboard.component';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { HttpService } from '../../services/http.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { environment } from 'src/environments/environment';
-import { SharedService } from '../../services/shared.service';
-import { MyprofileComponent } from '../../config/profile/myprofile/myprofile.component';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
+import { LoginComponent } from './login.component';
+import { HttpService } from '../../services/http.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HelperService } from 'src/app/services/helper.service';
+import { SharedService } from '../../services/shared.service';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
+import { APP_CONFIG, AppConfig } from '../../services/app.config';
 
 describe('LoginComponent', () => {
-
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
-  const baseUrl = environment.baseUrl;
-  let httpMock;
-  let httpreq;
-  let httpService;
-  let sharedService;
-  let ga;
-  const fakeLogin = {
-    instance_owner: 'kbakshi@sapient.com',
-    user_email: 'test@gmail.com',
-    projectsAccess: [],
-    user_name: 'SUPERADMIN',
-    account_name: 'XYZ',
-    'X-Authentication-Token': 'dummytokenstring',
-    project_name: 'XYZ',
-    authorities: [
-      'ROLE_SUPERADMIN'
-    ]
+  let router: Router;
+  let httpService: HttpService;
+  let sharedService: SharedService;
+  let helperService: HelperService;
+  let ga: GoogleAnalyticsService;
+
+  const mockRouter = {
+    navigate: jasmine.createSpy('navigate'),
   };
-  const fakeInvalidLogin = { timestamp: 1567511436517, status: 401, error: 'Unauthorized', message: 'Authentication Failed: Login Failed: The username or password entered is incorrect', path: '/api/login' };
-  const fakeLoginResponse =  {
-    body: {
-      ['X-Authentication-Token']:
-        'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJTVVBFUkFETUlOIiwiZGV0YWlscyI6IlNUQU5EQVJEIiwicm9sZXMiOlsiUk9MRV9TVVBFUkFETUlOIl0sImV4cCI6MTY3NDUwNzA1MX0.Ad32D8uiQmXLzdFVUqnIVETM8Vtb55yceFVW4AT-Z4MFixLUWbAeVEpZdvFuyrTKMgqRd08L-gWO-nQH-bi5qw',
-      authorities: ['ROLE_SUPERADMIN'],
-      projectsAccess: [],
-      user_email: 'knowledgesharing@publicissapient.com',
-      user_name: 'SUPERADMIN',
+
+  const mockActivatedRoute = {
+    snapshot: {
+      queryParams: { returnUrl: '/' },
     },
-    status: 200,
+    queryParams: of({ sessionExpire: 'Session expired' }),
   };
 
-  beforeEach(waitForAsync(() => {
+  // const mockHttpService = jasmine.createSpyObj('HttpService', ['login', 'handleRestoreUrl', 'getAllProjects']);
 
-    const routes: Routes = [
-      { path: 'dashboard', component: DashboardComponent },
-      { path: 'authentication/login', component: LoginComponent },
-      { path: 'dashboard/Config/Profile', component: MyprofileComponent },
+  const mockSharedService = {
+    getCurrentUserDetails: jasmine.createSpy('getCurrentUserDetails'),
+    raiseError: jasmine.createSpy('raiseError'),
+  };
 
-    ];
+  const mockHelperService = jasmine.createSpyObj('HelperService', ['urlShorteningRedirection']);
 
-    TestBed.configureTestingModule({
-      imports: [
-        FormsModule,
-        InputSwitchModule,
-        ReactiveFormsModule,
-        CommonModule,
-        HttpClientTestingModule, // no need to import http client module
-        RouterTestingModule.withRoutes(routes)
+  const mockGoogleAnalyticsService = {
+    setLoginMethod: jasmine.createSpy('setLoginMethod'),
+  };
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [LoginComponent],
+      imports: [ReactiveFormsModule, HttpClientTestingModule],
+      providers: [
+        { provide: Router, useValue: mockRouter },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: APP_CONFIG, useValue: AppConfig },
+        HttpService,
+        { provide: SharedService, useValue: mockSharedService },
+        { provide: HelperService, useValue: mockHelperService },
+        { provide: GoogleAnalyticsService, useValue: mockGoogleAnalyticsService },
       ],
-      declarations: [LoginComponent,
-        RegisterComponent, DashboardComponent, MyprofileComponent],
-      providers: [{ provide: APP_CONFIG, useValue: AppConfig },
-        HttpService, SharedService
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    }).compileComponents();
 
-    })
-      .compileComponents();
+    fixture = TestBed.createComponent(LoginComponent);
+    component = fixture.componentInstance;
+    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    httpService = TestBed.inject(HttpService);
+    sharedService = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
+    ga = TestBed.inject(GoogleAnalyticsService) as jasmine.SpyObj<GoogleAnalyticsService>;
 
-      fixture = TestBed.createComponent(LoginComponent);
-      component = fixture.componentInstance;
-      httpService = TestBed.get(HttpService);
-      sharedService = TestBed.get(SharedService);
-      httpMock = TestBed.get(HttpTestingController);
-      ga = TestBed.get(GoogleAnalyticsService);
-      fixture.detectChanges();
-  }));
+    fixture.detectChanges();
+  });
 
-
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should initialize the form on init', () => {
+    expect(component.loginForm).toBeDefined();
+    expect(component.loginForm.controls['username']).toBeDefined();
+    expect(component.loginForm.controls['password']).toBeDefined();
+  });
 
-
-  it('invalid form should not call login', waitForAsync(() => {
-    component.loginForm.controls['username'].setValue('');
-    component.loginForm.controls['password'].setValue('');
+  it('should not submit if form is invalid', () => {
+    spyOn(httpService, 'login');
     component.onSubmit();
-    expect(component.loginForm.invalid).toBeTruthy();
-  }));
+    expect(component.submitted).toBeTrue();
+    expect(httpService.login).not.toHaveBeenCalled();
+  });
 
-  xit('valid form with correct username pswd', waitForAsync(() => {
-    component.loginForm.controls['username'].setValue('user');
-    component.loginForm.controls['password'].setValue('***');
+  xit('should call login service on valid form submission', () => {
+    component.loginForm.setValue({ username: 'test', password: 'password' });
+    spyOn(httpService,'login');
     component.onSubmit();
-    httpreq = httpMock.expectOne(baseUrl + '/api/login');
-    httpreq.flush(fakeLogin);
-    expect(component.loginForm.valid).toBeTruthy();
 
-  }));
+    expect(httpService.login).toHaveBeenCalledWith('', 'test', 'password');
+  });
 
-  // 0 status
-  it('Internal server error login requests', waitForAsync(() => {
-    component.loginForm.controls['username'].setValue('user');
-    component.loginForm.controls['password'].setValue('***');
+  it('should handle 401 error on login', () => {
+    component.loginForm.setValue({ username: 'test', password: 'password' });
+    spyOn(httpService,'login').and.returnValue(of({ status: 401, error: { message: 'Unauthorized' } }));
+
     component.onSubmit();
-    httpreq = httpMock.expectOne(baseUrl + '/api/login');
-    httpreq.error('');
+
+    expect(component.error).toBe('Unauthorized');
+    expect(component.f.password.value).toBe('');
+  });
+
+  xit('should redirect to profile if conditions are met', () => {
+    component.loginForm.setValue({ username: 'test', password: 'password' });
+    spyOn(httpService,'login').and.returnValue(of({ status: 200, body: {} }));
+
+    mockSharedService.getCurrentUserDetails.and.returnValue('');
+
+    component.onSubmit();
+
+    expect(router.navigate).toHaveBeenCalledWith(['./dashboard/Config/Profile']);
+  });
+
+  it('should handle 401 status code', () => {
+    const data = { status: 401, error: { message: 'Unauthorized' } };
+    component.performLogin(data, 'username', 'password');
+    expect(component.error).toBe('Unauthorized');
+    expect(component.f.password.value).toBe('');
+    expect(component.submitted).toBe(false);
+  });
+
+  it('should handle 0 status code (Internal Server Error)', () => {
+    const data = { status: 0 };
+    component.performLogin(data, 'username', 'password');
     expect(component.error).toBe('Internal Server Error');
-  }));
-
-
-  // 404 status
-  it('Unauthorized login requests', waitForAsync(() => {
-    component.loginForm.controls['username'].setValue('user');
-    component.loginForm.controls['password'].setValue('***');
-    component.onSubmit();
-    httpreq = httpMock.expectOne(baseUrl + '/api/login');
-    httpreq.error(fakeInvalidLogin, fakeInvalidLogin);
-    expect(component.error).toBe(fakeInvalidLogin.message);
-  }));
-
-  it("should redirect to profile if user email is blank",()=>{
-    sharedService.setCurrentUserDetails({user_email:""});
-    sharedService.setCurrentUserDetails('projectsAccess',JSON.stringify(["abc"]));
-    fixture.detectChanges();
-    component.redirectToProfile();
-    expect(component.redirectToProfile).toBeTruthy();
   });
 
-  it("should redirect on profile for superadmin",()=>{
-    sharedService.setCurrentUserDetails({user_email:"abc@gmail.com"});
-    sharedService.setCurrentUserDetails({'projectsAccess':[]});
-    sharedService.setCurrentUserDetails({authorities: ['ROLE_SUPERADMIN']});
-    fixture.detectChanges();
-    const respo = component.redirectToProfile();
-    expect(respo).toBeFalsy();
-  })
-
-  it("should not redirect on profile if not superadmin",()=>{
-    sharedService.setCurrentUserDetails({user_email:"abc@gmail.com"});
-    sharedService.setCurrentUserDetails({projectsAccess:undefined});
-    sharedService.setCurrentUserDetails({authorities: ['NOT_SUPERADMIN']});
-    fixture.detectChanges();
-    component.redirectToProfile();
-    expect(component.redirectToProfile).toBeTruthy();
+  it('should handle 200 status code with redirectToProfile() returning true', () => {
+    spyOn(component, 'redirectToProfile').and.returnValue(true);
+    const data = { status: 200, body: {} };
+    component.performLogin(data, 'username', 'password');
+    expect(router.navigate).toHaveBeenCalledWith(['./dashboard/Config/Profile']);
   });
 
-  it('should perform login successfully', ()=>{
-    let data = {
-      "headers": {
-          "normalizedNames": {},
-          "lazyUpdate": null,
-          "lazyInit": null,
-          "headers": {}
-      },
-      "status": 200,
-      "statusText": "OK",
-      "url": "https://domain-name/api/login",
-      "ok": true,
-      "type": 4,
-      "body": {
-          "user_email": "test@gmail.com",
-          "projectsAccess": [],
-          "user_name": "dummy_user",
-          "X-Authentication-Token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJTVVBFUkFETUlOIiwiZGV0YWlscyI6IlNUQU5EQVJEIiwicm9sZXMiOlsiUk9MRV9TVVBFUkFETUlOIl0sImV4cCI6MTY4OTE0Nzc1OX0.y9uAnMjyNfsqeCxHXQb2zX6akOD_kAeM2AmmbHEyrPcAi7eKtS6yyChwtLQ_BsNM3u56ChdovxBXjNA2LjdLyQ",
-          "authorities": [
-              "ROLE_SUPERADMIN"
-          ]
-      }
-  }
-    const loginType = 'AD';
-    localStorage.setItem('loginType', loginType);
-    component.adLogin = true;
-    spyOn(ga, 'setLoginMethod');
-    sharedService.setCurrentUserDetails({user_email:"abc@gmail.com"});
-    sharedService.setCurrentUserDetails({'projectsAccess':[]});
-    sharedService.setCurrentUserDetails({authorities: ['ROLE_SUPERADMIN']});
-    const isRedirect = spyOn(component, 'redirectToProfile').and.returnValue(false);
-    component.performLogin(data, 'dummy_user', 'dummy_password')
-    expect(isRedirect).toHaveBeenCalled();
-  })
+  it('should return true when user email is missing', () => {
+    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue(null);
+
+    expect(component.redirectToProfile()).toBeTrue();
+  });
+
+  it('should return true when user email is an empty string', () => {
+    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue('');
+
+    expect(component.redirectToProfile()).toBeTrue();
+  });
+
+  it('should return false when user has ROLE_SUPERADMIN', () => {
+    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue('test@example.com');
+    mockSharedService.getCurrentUserDetails.withArgs('authorities').and.returnValue(['ROLE_SUPERADMIN']);
+
+    expect(component.redirectToProfile()).toBeFalse();
+  });
+
+  it('should return true when projectsAccess is undefined', () => {
+    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue('test@example.com');
+    mockSharedService.getCurrentUserDetails.withArgs('authorities').and.returnValue(['ROLE_USER']);
+    mockSharedService.getCurrentUserDetails.withArgs('projectsAccess').and.returnValue(undefined);
+
+    expect(component.redirectToProfile()).toBeTrue();
+  });
+
+  it('should return true when projectsAccess is an empty array', () => {
+    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue('test@example.com');
+    mockSharedService.getCurrentUserDetails.withArgs('authorities').and.returnValue(['ROLE_USER']);
+    mockSharedService.getCurrentUserDetails.withArgs('projectsAccess').and.returnValue([]);
+
+    expect(component.redirectToProfile()).toBeTrue();
+  });
+
+  it('should return undefined when projectsAccess has data (valid case)', () => {
+    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue('test@example.com');
+    mockSharedService.getCurrentUserDetails.withArgs('authorities').and.returnValue(['ROLE_USER']);
+    mockSharedService.getCurrentUserDetails.withArgs('projectsAccess').and.returnValue(['Project1']);
+
+    expect(component.redirectToProfile()).toBeUndefined();
+  });
+
+
+  // afterEach(() => {
+  //   localStorage.removeItem('shared_link');
+  // });
 });

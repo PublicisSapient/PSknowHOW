@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -32,11 +31,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "newValue" })
+@JsonPropertyOrder({"newValue"})
 public class SystemCreatedDate {
 
 	@JsonProperty("newValue")
 	private String newValue;
+
 	@JsonIgnore
 	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -62,8 +62,7 @@ public class SystemCreatedDate {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this).append("newValue", newValue)
-				.append("additionalProperties", additionalProperties).toString();
+		return new ToStringBuilder(this).append("newValue", newValue).append("additionalProperties", additionalProperties)
+				.toString();
 	}
-
 }

@@ -26,6 +26,7 @@ import { SharedService } from 'src/app/services/shared.service';
 import { DailyScrumComponent } from './daily-scrum.component';
 import { TableModule } from 'primeng/table';
 import { SimpleChange, SimpleChanges } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 const assigneeList = [
   {
@@ -796,16 +797,25 @@ const issueData = [
 describe('DailyScrumComponent', () => {
   let component: DailyScrumComponent;
   let fixture: ComponentFixture<DailyScrumComponent>;
+  let sharedService: SharedService;
+  const routerMock = {
+    navigate: jasmine.createSpy('navigate')
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [DailyScrumComponent],
-      providers: [SharedService],
+      providers: [
+        SharedService,
+        { provide: ActivatedRoute, useValue: { snapshot: { params: {} } } },
+        { provide: Router, useValue: routerMock }
+      ],
       imports: [TableModule]
     })
       .compileComponents();
 
     fixture = TestBed.createComponent(DailyScrumComponent);
+    sharedService = TestBed.inject(SharedService);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -1502,10 +1512,10 @@ describe('DailyScrumComponent', () => {
       "Remaining Work",
       "Delay"
     ];
-    
+
     spyOn(component,'convertToHoursIfTime')
     component.calculateTotal();
-    
+
   });
 
   it('should set loader to true and emit reloadKPITab event', () => {
@@ -1516,7 +1526,7 @@ describe('DailyScrumComponent', () => {
     expect(component.reloadKPITab.emit).toHaveBeenCalledWith('event');
   });
 
- 
+
   it('should set onFullScreen to false and emit closeModal event', () => {
     spyOn(component.closeModal, 'emit');
     component.onFullScreen = true;
@@ -1528,7 +1538,7 @@ describe('DailyScrumComponent', () => {
   /**AI Generated */
 
   describe('YourComponent', () => {
-  
+
     it('should initialize the filters object with null values for new filter keys', () => {
 
       component.filterData = [
@@ -1543,7 +1553,7 @@ describe('DailyScrumComponent', () => {
         gender: null
       });
     });
-  
+
     it('should not overwrite existing filter values in the filters object', () => {
 
       component.filterData = [
@@ -1563,7 +1573,7 @@ describe('DailyScrumComponent', () => {
         gender: 'male'
       });
     });
-  
+
     it('should not modify the filters object if filterData is undefined', () => {
 
       component.filterData = undefined;
@@ -1597,7 +1607,7 @@ describe('DailyScrumComponent', () => {
   });
 
   describe('customSort', () => {
-  
+
     beforeEach(() => {
       component.assigneeList = [
         {
@@ -1651,7 +1661,7 @@ describe('DailyScrumComponent', () => {
       component.customSort(event);
       expect(component.assigneeList).toBeDefined();
     });
-  
+
     it('should sort the assigneeList by the specified field in ascending order', () => {
 
       const event = { field: 'field2', order: 1 };
@@ -1683,7 +1693,7 @@ describe('DailyScrumComponent', () => {
         }
       ]);
     });
-  
+
     it('should sort the assigneeList by the specified field in descending order', () => {
 
       const event = { field: 'field2', order: -1 };
@@ -1724,14 +1734,14 @@ describe('DailyScrumComponent', () => {
       const result = component.getNameInitials(name);
       expect(result).toBe('JD');
     });
-  
+
     it('should return the first two initials of a name with more than two words', () => {
 
       const name = 'John Doe Smith';
       const result = component.getNameInitials(name);
       expect(result).toBe('JD');
     });
-  
+
     it('should return the uppercase initials of a name', () => {
 
       const name = 'john doe abc';
@@ -1741,7 +1751,7 @@ describe('DailyScrumComponent', () => {
   });
 
   describe('getCurrentAssigneeIssueData', () => {
-  
+
     beforeEach(() => {
       component.issueData = [
         {
@@ -1758,21 +1768,21 @@ describe('DailyScrumComponent', () => {
         }
       ];
     });
-  
+
     it('should filter the issueData by the specified assigneeName', () => {
 
       const assigneeName = 'John';
       component.getCurrentAssigneeIssueData(assigneeName);
       expect(component.currentAssigneeissueData).toBeDefined();
     });
-  
+
     it('should update the subTask property if it is a string', () => {
 
       const assigneeName = 'John';
       component.getCurrentAssigneeIssueData(assigneeName);
       expect(component.currentAssigneeissueData).toBeDefined();
     });
-  
+
     it('should not update the subTask property if it is already an object', () => {
       const assigneeName = 'Jane';
       component.issueData[1].subTask = [
@@ -1797,5 +1807,36 @@ describe('DailyScrumComponent', () => {
       expect(component.currentAssigneeissueData).toBeUndefined();
     });
   });
-  
+
+  it('should return "-" when value is "-"', () => {
+    const result = component.convertToHoursIfTime('-', 'hours');
+    expect(result).toBe('-');
+  });
+
+  it('should return the original value when value is NaN', () => {
+    const result = component.convertToHoursIfTime(NaN, 'hours');
+    expect(result).toBeNaN();
+  });
+
+  it('should not return "-" when value is a valid number', () => {
+    const result = component.convertToHoursIfTime(10, 'hours');
+    expect(result).not.toBe('-');
+  });
+
+  it('should prefix "-" when isLessThanZero is true', () => {
+    spyOn(component, 'convertToDays').and.returnValue('2d'); // Mocking the dependency
+
+    const result = component.convertToHoursIfTime(-120, 'hours'); // -120 minutes (2 hours)
+    
+    expect(result).toBe('-120'); // Expected output should have "-" prefixed
+  });
+
+  it('should not modify value when isLessThanZero is false', () => {
+    spyOn(component, 'convertToDays').and.returnValue('2d'); // Mocking the dependency
+
+    const result = component.convertToHoursIfTime(120, 'hours'); // 120 minutes (2 hours)
+    
+    expect(result).toBe(120); // Expected output should NOT have "-"
+  });
+
 });

@@ -40,5 +40,4 @@ public class HierarchyResponseDTO {
 	private String projectId;
 
 	private List<SprintDetails> sprintDetailsList;
-
 }

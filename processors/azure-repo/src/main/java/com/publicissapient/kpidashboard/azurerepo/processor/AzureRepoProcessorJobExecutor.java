@@ -80,7 +80,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * AzureRepoProcessorJobExecutor represents a class which holds all the
  * configuration and Azure Repo execution process.
- * 
+ *
  * @see AzureRepoProcessor
  */
 @Slf4j
@@ -149,9 +149,9 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	 * Adds the processor items.
 	 *
 	 * @param processor
-	 *            the processor
+	 *          the processor
 	 * @param tools
-	 *            the processor
+	 *          the processor
 	 */
 	private void addProcessorItems(Processor processor, List<ProjectToolConfig> tools) {
 
@@ -176,9 +176,9 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	 * Creates the processor item.
 	 *
 	 * @param tool
-	 *            the tool
+	 *          the tool
 	 * @param processorId
-	 *            the processor id
+	 *          the processor id
 	 * @return the processor item
 	 */
 	private ProcessorItem createProcessorItem(ProjectToolConfig tool, ObjectId processorId) {
@@ -203,9 +203,9 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	 * Checks if is processor item exist.
 	 *
 	 * @param tool
-	 *            the tool
+	 *          the tool
 	 * @param processorItems
-	 *            the processor items
+	 *          the processor items
 	 * @return true, if is processor item exist
 	 */
 	private boolean isProcessorItemExist(ProjectToolConfig tool, List<ProcessorItem> processorItems) {
@@ -214,9 +214,9 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 			String pattern = null;
 			StringBuilder sb = new StringBuilder();
 			Map<String, Object> options = processorItem.getToolDetailsMap();
-			if (options.containsKey(AzureRepoConstants.SCM) && options.containsKey(AzureRepoConstants.URL)
-					&& options.containsKey(AzureRepoConstants.TOOL_BRANCH)
-					&& options.containsKey(AzureRepoConstants.REPOSITORY_NAME)) {
+			if (options.containsKey(AzureRepoConstants.SCM) && options.containsKey(AzureRepoConstants.URL) &&
+					options.containsKey(AzureRepoConstants.TOOL_BRANCH) &&
+					options.containsKey(AzureRepoConstants.REPOSITORY_NAME)) {
 				sb.append(options.get(AzureRepoConstants.SCM)).append(options.get(AzureRepoConstants.URL))
 						.append(options.get(AzureRepoConstants.TOOL_BRANCH))
 						.append(options.get(AzureRepoConstants.REPOSITORY_NAME));
@@ -224,8 +224,8 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 			}
 			Optional<Connection> connection = connectionsRepository.findById(tool.getConnectionId());
 			String match = new StringBuilder(tool.getToolName())
-					.append(connection.isPresent() ? connection.get().getBaseUrl() : StringUtils.EMPTY)
-					.append(tool.getBranch()).append(tool.getRepoSlug()).toString();
+					.append(connection.isPresent() ? connection.get().getBaseUrl() : StringUtils.EMPTY).append(tool.getBranch())
+					.append(tool.getRepoSlug()).toString();
 			if (match.equalsIgnoreCase(pattern) && tool.getId().equals(processorItem.getToolConfigId())) {
 				itemExists = true;
 				break;
@@ -239,9 +239,9 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	 * Checks if is new commitDetails.
 	 *
 	 * @param azureRepo
-	 *            the bit repo
+	 *          the bit repo
 	 * @param commitDetails
-	 *            the commitDetails
+	 *          the commitDetails
 	 * @return true, if is new commit
 	 */
 	private boolean isNewCommit(AzureRepoModel azureRepo, CommitDetails commitDetails) {
@@ -260,7 +260,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	 * Gets the active repos.
 	 *
 	 * @param processor
-	 *            the processor
+	 *          the processor
 	 * @return the active repos
 	 */
 	private List<AzureRepoModel> getActiveRepos(Processor processor) {
@@ -280,7 +280,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	 * Execute.
 	 *
 	 * @param processor
-	 *            the processor
+	 *          the processor
 	 */
 	@Override
 	public boolean execute(AzureRepoProcessor processor) {
@@ -308,8 +308,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 			log.info("Fetching data for project : {}", proBasicConfig.getProjectName());
 			List<ProcessorToolConnection> azureRepoInfo = processorToolConnectionService
 					.findByToolAndBasicProjectConfigId(ProcessorConstants.AZUREREPO, proBasicConfig.getId());
-			ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-					proBasicConfig.getId().toHexString());
+			ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(proBasicConfig.getId().toHexString());
 			try {
 				if (CollectionUtils.isNotEmpty(azureRepoInfo)) {
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
@@ -360,21 +359,19 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	}
 
 	/**
-	 * 
 	 * processRepoData
-	 * 
+	 *
 	 * @param azurerepoRepos
-	 *            azurerepoRepos
+	 *          azurerepoRepos
 	 * @param azureRepoInfo
-	 *            azureRepoInfo
+	 *          azureRepoInfo
 	 * @param reposCount
-	 *            reposCount
+	 *          reposCount
 	 * @param projectBasicConfig
 	 * @return executionStatus
 	 */
 	private int processRepoData(List<AzureRepoModel> azurerepoRepos, List<ProcessorToolConnection> azureRepoInfo,
-			int reposCount, ProjectBasicConfig projectBasicConfig,
-			ProcessorExecutionTraceLog processorExecutionTraceLog) {
+			int reposCount, ProjectBasicConfig projectBasicConfig, ProcessorExecutionTraceLog processorExecutionTraceLog) {
 		int commitsCount = 0;
 		for (AzureRepoModel azureRepo : azurerepoRepos) {
 			for (ProcessorToolConnection entry : azureRepoInfo) {
@@ -382,22 +379,21 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 					processorToolConnectionService.validateConnectionFlag(entry);
 					if (azureRepo.getToolConfigId().equals(entry.getId())) {
 						boolean firstTimeRun = (azureRepo.getLastUpdatedCommit() == null);
-						if (projectBasicConfig.isSaveAssigneeDetails()
-								&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+						if (projectBasicConfig.isSaveAssigneeDetails() &&
+								!processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 							azureRepo.setLastUpdatedTime(null);
 						}
-						MDC.put("AzurerepoReposDataCollectionStarted",
-								"Azurerepo Processor started collecting data for Url: " + entry.getUrl()
-										+ " and branch : " + entry.getBranch());
+						MDC.put("AzurerepoReposDataCollectionStarted", "Azurerepo Processor started collecting data for Url: " +
+								entry.getUrl() + " and branch : " + entry.getBranch());
 
-						List<CommitDetails> commitDetailList = azureRepoClient.fetchAllCommits(azureRepo, firstTimeRun,
-								entry, projectBasicConfig);
-						if (projectBasicConfig.isSaveAssigneeDetails()
-								&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+						List<CommitDetails> commitDetailList = azureRepoClient.fetchAllCommits(azureRepo, firstTimeRun, entry,
+								projectBasicConfig);
+						if (projectBasicConfig.isSaveAssigneeDetails() &&
+								!processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 							List<CommitDetails> updateAuthor = new ArrayList<>();
 							commitDetailList.stream().forEach(commitDetails -> {
-								CommitDetails dbCommit = commitsRepo.findByProcessorItemIdAndRevisionNumber(
-										azureRepo.getId(), commitDetails.getRevisionNumber());
+								CommitDetails dbCommit = commitsRepo.findByProcessorItemIdAndRevisionNumber(azureRepo.getId(),
+										commitDetails.getRevisionNumber());
 								if (dbCommit != null) {
 									dbCommit.setAuthor(commitDetails.getAuthor());
 									updateAuthor.add(dbCommit);
@@ -416,8 +412,8 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 							azureRepo.setLastUpdatedCommit(commitDetailList.get(0).getRevisionNumber());
 						}
 						azureRepoRepository.save(azureRepo);
-						MDC.put("AzurereppoReposDataCollectionCompleted", "Azurerepo Processor collected data for Url: "
-								+ entry.getUrl() + " and branch : " + entry.getBranch());
+						MDC.put("AzurereppoReposDataCollectionCompleted",
+								"Azurerepo Processor collected data for Url: " + entry.getUrl() + " and branch : " + entry.getBranch());
 						reposCount++;
 					}
 				} catch (FetchingCommitException exception) {
@@ -426,20 +422,18 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 					log.error(String.format("Error in processing %s", entry.getUrl()), exception);
 					executionStatus = false;
 				}
-
 			}
 		}
 		return commitsCount;
-
 	}
 
 	/**
 	 * this method check for the client exception
-	 * 
+	 *
 	 * @param entry
-	 *            entry
+	 *          entry
 	 * @param cause
-	 *            cause
+	 *          cause
 	 */
 	private void isClientException(ProcessorToolConnection entry, Throwable cause) {
 		if (cause != null && ((HttpClientErrorException) cause).getStatusCode().is4xxClientError()) {
@@ -449,9 +443,8 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 		}
 	}
 
-	private int processMergeRequestData(List<AzureRepoModel> azurerepoRepos,
-			List<ProcessorToolConnection> azureRepoInfo, int reposCount, ProjectBasicConfig proBasicConfig,
-			ProcessorExecutionTraceLog processorExecutionTraceLog) {
+	private int processMergeRequestData(List<AzureRepoModel> azurerepoRepos, List<ProcessorToolConnection> azureRepoInfo,
+			int reposCount, ProjectBasicConfig proBasicConfig, ProcessorExecutionTraceLog processorExecutionTraceLog) {
 
 		int mergReqCount = 0;
 		for (AzureRepoModel azureRepo : azurerepoRepos) {
@@ -459,22 +452,21 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 				try {
 					if (azureRepo.getToolConfigId().equals(entry.getId())) {
 						boolean firstTimeRun = (azureRepo.getLastUpdatedCommit() == null);
-						if (proBasicConfig.isSaveAssigneeDetails()
-								&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+						if (proBasicConfig.isSaveAssigneeDetails() &&
+								!processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 							azureRepo.setLastUpdatedTime(null);
 						}
-						MDC.put("AzurerepoReposDataCollectionStarted",
-								"Azurerepo Processor started collecting data for Url: " + entry.getUrl()
-										+ " and branch : " + entry.getBranch());
+						MDC.put("AzurerepoReposDataCollectionStarted", "Azurerepo Processor started collecting data for Url: " +
+								entry.getUrl() + " and branch : " + entry.getBranch());
 
-						List<MergeRequests> mergeRequestsList = azureRepoClient.fetchAllMergeRequest(azureRepo,
-								firstTimeRun, entry, proBasicConfig);
-						if (proBasicConfig.isSaveAssigneeDetails()
-								&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+						List<MergeRequests> mergeRequestsList = azureRepoClient.fetchAllMergeRequest(azureRepo, firstTimeRun, entry,
+								proBasicConfig);
+						if (proBasicConfig.isSaveAssigneeDetails() &&
+								!processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 							List<MergeRequests> updateAuthor = new ArrayList<>();
 							mergeRequestsList.forEach(mergeRequests -> {
-								MergeRequests dbMerge = mergReqRepo.findByProcessorItemIdAndRevisionNumber(
-										azureRepo.getId(), mergeRequests.getRevisionNumber());
+								MergeRequests dbMerge = mergReqRepo.findByProcessorItemIdAndRevisionNumber(azureRepo.getId(),
+										mergeRequests.getRevisionNumber());
 								if (dbMerge != null) {
 									dbMerge.setAuthor(mergeRequests.getAuthor());
 									updateAuthor.add(dbMerge);
@@ -489,8 +481,8 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 						mergReqCount += unsavedMergeRequests.size();
 						azureRepo.setLastUpdatedTime(Calendar.getInstance().getTime());
 						azureRepoRepository.save(azureRepo);
-						MDC.put("AzurereppoReposDataCollectionCompleted", "Azurerepo Processor collected data for Url: "
-								+ entry.getUrl() + " and branch : " + entry.getBranch());
+						MDC.put("AzurereppoReposDataCollectionCompleted",
+								"Azurerepo Processor collected data for Url: " + entry.getUrl() + " and branch : " + entry.getBranch());
 						reposCount++;
 					}
 				} catch (FetchingCommitException exception) {
@@ -499,11 +491,9 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 					log.error(String.format("Error in processing %s", entry.getUrl()), exception);
 					executionStatus = false;
 				}
-
 			}
 		}
 		return mergReqCount;
-
 	}
 
 	/**
@@ -523,8 +513,8 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.AZUREREPO, basicProjectConfigId);
 		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
-			processorExecutionTraceLog.setLastEnableAssigneeToggleState(
-					existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState());
+			processorExecutionTraceLog
+					.setLastEnableAssigneeToggleState(existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState());
 		});
 		return processorExecutionTraceLog;
 	}
@@ -541,11 +531,11 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 
 	/**
 	 * Cleans the cache in the Custom API
-	 * 
+	 *
 	 * @param cacheEndPoint
-	 *            the cache endpoint
+	 *          the cache endpoint
 	 * @param cacheName
-	 *            the cache name
+	 *          the cache name
 	 */
 	private void cacheRestClient(String cacheEndPoint, String cacheName) {
 		HttpHeaders headers = new HttpHeaders();
@@ -577,15 +567,13 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	}
 
 	/**
-	 *
 	 * @param tools
 	 * @param processor
 	 */
 	private void cleanUnusedProcessorItem(List<ProjectToolConfig> tools, AzureRepoProcessor processor) {
 		List<AzureRepoModel> azureRepoModels = getActiveRepos(processor);
 		if (CollectionUtils.isEmpty(tools)) {
-			CollectionUtils.emptyIfNull(azureRepoModels)
-					.forEach(item -> azureRepoProcessorRepo.deleteById(item.getId()));
+			CollectionUtils.emptyIfNull(azureRepoModels).forEach(item -> azureRepoProcessorRepo.deleteById(item.getId()));
 		} else {
 			CollectionUtils.emptyIfNull(azureRepoModels).stream().forEach(item -> {
 				boolean itemExists = tools.stream().anyMatch(t -> item.getProcessorId().equals(t.getId()));
@@ -599,13 +587,12 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	/**
 	 * Return List of selected ProjectBasicConfig id if null then return all
 	 * ProjectBasicConfig ids
-	 * 
+	 *
 	 * @return List of ProjectBasicConfig
 	 */
 	private List<ProjectBasicConfig> getSelectedProjects() {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll().stream()
-				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isDeveloperKpiEnabled()))
-				.toList();
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findActiveProjects(false).stream()
+				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isDeveloperKpiEnabled())).toList();
 		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
@@ -613,13 +600,12 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 			return allProjects;
 		}
 		return CollectionUtils.emptyIfNull(allProjects).stream()
-				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isDeveloperKpiEnabled())
-						&& selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
+				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isDeveloperKpiEnabled()) &&
+						selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
 				.toList();
 	}
 
 	private void clearSelectedBasicProjectConfigIds() {
 		setProjectsBasicConfigIds(null);
 	}
-
 }

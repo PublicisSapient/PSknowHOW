@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.azure.processor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -117,7 +118,6 @@ public class AzureProcessorJobExecutorTest {
 		prepareProjectConfig();
 		prepareToolConfig();
 		AzureProcessor processor = new AzureProcessor();
-
 	}
 
 	@Test
@@ -140,7 +140,7 @@ public class AzureProcessorJobExecutorTest {
 	public void execute() {
 		AzureProcessor azureProcessor = new AzureProcessor();
 		azureProcessor.setId(processorId);
-		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		Mockito.when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 
 		when(azureProcessorConfig.getThreadPoolSize()).thenReturn(3);
 
@@ -156,7 +156,6 @@ public class AzureProcessorJobExecutorTest {
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		ProjectBasicConfig projectConfig = objectMapper.readValue(file, ProjectBasicConfig.class);
 		projectConfigList.add(projectConfig);
-
 	}
 
 	private void prepareToolConfig() {
@@ -195,6 +194,5 @@ public class AzureProcessorJobExecutorTest {
 		azureServer.setApiVersion("5.1");
 		azureServer.setUsername("");
 		return azureServer;
-
 	}
 }

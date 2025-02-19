@@ -18,10 +18,8 @@
 
 package com.publicissapient.kpidashboard.common.model.application;
 
-import java.io.Serializable;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -105,7 +103,8 @@ public class ProjectToolConfig extends BasicModel implements Cloneable {
 	private String parameterNameForEnvironment;
 
 	// template ID
-	private String metadataTemplateCode;
+	private String metadataTemplateCode; // custom template
+	private String originalTemplateCode; // setting original template code
 	// workflows ID for github Action processor
 	private String workflowID;
 
@@ -118,13 +117,14 @@ public class ProjectToolConfig extends BasicModel implements Cloneable {
 	private boolean azureIterationStatusFieldUpdate;
 	private String projectComponent;
 	private Boolean isNew;
-	//to revise active sprint report in the db from the start
+	// to revise active sprint report in the db from the start
 	@Builder.Default
-	private Boolean azureRefreshActiveSprintReport =false;
+	private Boolean azureRefreshActiveSprintReport = false;
+	private String azureRefreshActiveSprintReportUpdatedBy;
+	private long azureRefreshActiveSprintReportUpdatedOn;
 
 	@Override
 	public ProjectToolConfig clone() throws CloneNotSupportedException {
 		return (ProjectToolConfig) super.clone();
 	}
-
 }

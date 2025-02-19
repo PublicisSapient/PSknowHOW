@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.common.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.net.UnknownHostException;
@@ -26,14 +28,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -47,7 +47,9 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.EmailServerDetail;
 import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -135,7 +137,6 @@ public class CommonServiceImplTest {
 		list.add("20-40-20");
 
 		Assert.assertEquals("4", commonService.getMaturityLevel(list, Constant.AUTOMATED_PERCENTAGE, "90"));
-
 	}
 
 	@Test
@@ -162,7 +163,6 @@ public class CommonServiceImplTest {
 		list.add("80-60");
 		list.add("80-");
 		Assert.assertEquals("0", commonService.getMaturityLevel(list, "kpi28", "90"));
-
 	}
 
 	@Test
@@ -175,7 +175,6 @@ public class CommonServiceImplTest {
 		list.add("20-40-20");
 
 		Assert.assertEquals("4", commonService.getMaturityLevel(list, KPICode.CODE_COMMIT.getKpiId(), "90"));
-
 	}
 
 	@Test
@@ -196,8 +195,8 @@ public class CommonServiceImplTest {
 		projectsAccess.setAccessNodes(accessNodes);
 		user.setProjectsAccess(Arrays.asList(projectsAccess));
 		Map<String, Boolean> notificationEmail = new HashMap<>();
-		notificationEmail.put("accessAlertNotification" , true);
-		notificationEmail.put("errorAlertNotification" , false);
+		notificationEmail.put("accessAlertNotification", true);
+		notificationEmail.put("errorAlertNotification", false);
 		user.setNotificationEmail(notificationEmail);
 		List<UserInfo> users = new ArrayList<>();
 		users.add(user);
@@ -213,7 +212,6 @@ public class CommonServiceImplTest {
 		when(userInfoRepository.findByAuthoritiesIn(Arrays.asList("ROLE_SUPERADMIN"))).thenReturn(users);
 		when(authenticationRepository.findByUsernameIn(Arrays.asList(username))).thenReturn(authentications);
 		commonService.getEmailAddressBasedOnRoles(Arrays.asList("ROLE_SUPERADMIN"));
-
 	}
 
 	@Test
@@ -233,8 +231,8 @@ public class CommonServiceImplTest {
 		projectsAccess.setRole("");
 		projectsAccess.setAccessNodes(accessNodes);
 		Map<String, Boolean> notificationEmail = new HashMap<>();
-		notificationEmail.put("accessAlertNotification" , true);
-		notificationEmail.put("errorAlertNotification" , false);
+		notificationEmail.put("accessAlertNotification", true);
+		notificationEmail.put("errorAlertNotification", false);
 		user.setNotificationEmail(notificationEmail);
 		user.setProjectsAccess(Arrays.asList(projectsAccess));
 		List<UserInfo> users = new ArrayList<>();
@@ -250,7 +248,6 @@ public class CommonServiceImplTest {
 
 		when(userInfoRepository.findByAuthoritiesIn(Arrays.asList("ROLE_SUPERADMIN"))).thenReturn(null);
 		commonService.getEmailAddressBasedOnRoles(Arrays.asList("ROLE_SUPERADMIN"));
-
 	}
 
 	@Test
@@ -271,8 +268,8 @@ public class CommonServiceImplTest {
 		projectsAccess.setAccessNodes(accessNodes);
 		user.setProjectsAccess(Arrays.asList(projectsAccess));
 		Map<String, Boolean> notificationEmail = new HashMap<>();
-		notificationEmail.put("accessAlertNotification" , true);
-		notificationEmail.put("errorAlertNotification" , false);
+		notificationEmail.put("accessAlertNotification", true);
+		notificationEmail.put("errorAlertNotification", false);
 		user.setNotificationEmail(notificationEmail);
 		List<UserInfo> users = new ArrayList<>();
 		users.add(user);
@@ -288,7 +285,6 @@ public class CommonServiceImplTest {
 		when(userInfoRepository.findByAuthoritiesIn(Arrays.asList("ROLE_SUPERADMIN"))).thenReturn(users);
 		when(authenticationRepository.findByUsernameIn(Arrays.asList(username))).thenReturn(null);
 		commonService.getEmailAddressBasedOnRoles(Arrays.asList("ROLE_SUPERADMIN"));
-
 	}
 
 	@Test
@@ -297,7 +293,6 @@ public class CommonServiceImplTest {
 		when(customApiConfig.getUiPort()).thenReturn("9999");
 		when(request.getScheme()).thenReturn("http://");
 		commonService.getApiHost();
-
 	}
 
 	@Test
@@ -308,7 +303,6 @@ public class CommonServiceImplTest {
 		} catch (UnknownHostException e) {
 
 		}
-
 	}
 
 	@Test
@@ -321,27 +315,80 @@ public class CommonServiceImplTest {
 		} catch (UnknownHostException e) {
 
 		}
+	}
 
+	@Test
+	public void testSortTrendValueMap_withOverallAndOverallOverallKeys() {
+		// Arrange
+		Map<String, List<DataCount>> trendMap = new HashMap<>();
+		trendMap.put(CommonConstant.OVERALL, List.of(new DataCount()));
+		trendMap.put(CommonConstant.OVERALL + "#" + CommonConstant.OVERALL, List.of(new DataCount()));
+		trendMap.put("Key2", List.of(new DataCount()));
+		trendMap.put("Key1", List.of(new DataCount()));
+
+		// Act
+		Map<String, List<DataCount>> sortedMap = commonService.sortTrendValueMap(trendMap);
+
+		// Assert
+		assertEquals(4, sortedMap.size());
+		assertTrue(sortedMap.containsKey(CommonConstant.OVERALL));
+		assertTrue(sortedMap.containsKey(CommonConstant.OVERALL + "#" + CommonConstant.OVERALL));
+		assertEquals("Key1", sortedMap.keySet().toArray()[2]);
+		assertEquals("Key2", sortedMap.keySet().toArray()[3]);
+	}
+
+	@Test
+	public void testSortTrendValueMap_withoutSpecialKeys() {
+		// Arrange
+		Map<String, List<DataCount>> trendMap = new HashMap<>();
+		trendMap.put("Key3", List.of(new DataCount()));
+		trendMap.put("Key1", List.of(new DataCount()));
+		trendMap.put("Key2", List.of(new DataCount()));
+
+		// Act
+		Map<String, List<DataCount>> sortedMap = commonService.sortTrendValueMap(trendMap);
+
+		// Assert
+		assertEquals(3, sortedMap.size());
+		assertEquals("Key1", sortedMap.keySet().toArray()[0]);
+		assertEquals("Key2", sortedMap.keySet().toArray()[1]);
+		assertEquals("Key3", sortedMap.keySet().toArray()[2]);
+	}
+
+	@Test
+	public void testSortTrendValueMap_withEmptyMap() {
+		// Arrange
+		Map<String, List<DataCount>> trendMap = new HashMap<>();
+
+		// Act
+		Map<String, List<DataCount>> sortedMap = commonService.sortTrendValueMap(trendMap);
+
+		// Assert
+		assertTrue(sortedMap.isEmpty());
 	}
 
 	@Test
 	public void getProjectAdminEmailAddressBasedProjectId() {
 
 		String username = "user";
+		String emailAddress = "user@gmail.com";
 		AuthType authType = AuthType.STANDARD;
 		UserInfo user = new UserInfo();
 		user.setUsername(username);
 		user.setAuthType(authType);
+		user.setEmailAddress(emailAddress);
+		Map<String, Boolean> ne = new HashMap<>();
+		ne.put(CommonConstant.ACCESS_ALERT_NOTIFICATION, true);
+		user.setNotificationEmail(ne);
 		user.setId(new ObjectId("5ddf69f6a592816aa30c4fbe"));
 		List<String> auth = new ArrayList<>();
 		auth.add(Constant.ROLE_PROJECT_ADMIN);
 		user.setAuthorities(auth);
 		List<AccessNode> accessNodes = new ArrayList<>();
 		AccessNode acc = new AccessNode();
-		acc.setAccessLevel("Project");
+		acc.setAccessLevel("project");
 		AccessItem accessItem = new AccessItem();
 		accessItem.setItemId("61e4f7852747353d4405c765");
-		accessItem.setItemName("project");
 		acc.setAccessItems(Lists.newArrayList(accessItem));
 		accessNodes.add(acc);
 		ProjectsAccess projectsAccess = new ProjectsAccess();
@@ -359,12 +406,8 @@ public class CommonServiceImplTest {
 		List<Authentication> authentications = new ArrayList<>();
 		authentications.add(authentication);
 
-		when(projectBasicConfigRepository.findById(ArgumentMatchers.any()))
-				.thenReturn(Optional.of(projectBasicConfigObj()));
-
 		when(userInfoRepository.findByAuthoritiesIn(Arrays.asList(Constant.ROLE_PROJECT_ADMIN))).thenReturn(users);
 		commonService.getProjectAdminEmailAddressBasedProjectId("5ddf69f6a592816aa30c4fbe");
-
 	}
 
 	ProjectBasicConfig projectBasicConfigObj() {

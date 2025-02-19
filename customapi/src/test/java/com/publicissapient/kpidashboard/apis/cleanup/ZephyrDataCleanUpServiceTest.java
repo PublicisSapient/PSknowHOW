@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.cleanup;
 
 import static org.junit.Assert.assertEquals;
@@ -74,8 +73,8 @@ public class ZephyrDataCleanUpServiceTest {
 		projectToolConfig.setToolName(ProcessorConstants.ZEPHYR);
 		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
 		doNothing().when(testCaseDetailsRepository).deleteByBasicProjectConfigId(anyString());
-		doNothing().when(processorExecutionTraceLogRepository)
-				.deleteByBasicProjectConfigIdAndProcessorName(Mockito.any(), Mockito.anyString());
+		doNothing().when(processorExecutionTraceLogRepository).deleteByBasicProjectConfigIdAndProcessorName(Mockito.any(),
+				Mockito.anyString());
 		zephyrDataCleanUpService.clean("5e9db8f1e4b0caefbfa8e0c7");
 		verify(testCaseDetailsRepository, times(1)).deleteByBasicProjectConfigId("5e9db8f1e4b0caefbfa8e0c7");
 		verify(processorExecutionTraceLogRepository, times(1))

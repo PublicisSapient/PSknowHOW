@@ -23,11 +23,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
@@ -42,11 +38,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
-import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
-import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
-import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
+import com.publicissapient.kpidashboard.apis.data.*;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationServiceR;
@@ -55,12 +47,12 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
@@ -75,9 +67,6 @@ public class IssueLikelyToSpillServiceImplTest {
 	private ConfigHelperService configHelperService;
 	@Mock
 	private ProjectBasicConfigRepository projectConfigRepository;
-
-	@Mock
-	private FieldMappingRepository fieldMappingRepository;
 
 	@InjectMocks
 	private IssueLikelyToSpillServiceImpl issueLikelyToSpillServiceImpl;
@@ -99,7 +88,7 @@ public class IssueLikelyToSpillServiceImplTest {
 		kpiRequest.setLabel("PROJECT");
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
-				.newInstance();
+				.newInstance("/json/default/project_hierarchy_filter_data.json");
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 
 		setMockProjectConfig();
@@ -131,6 +120,8 @@ public class IssueLikelyToSpillServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
+		fieldMappingMap.forEach((projectId, mapping) -> mapping.setEstimationCriteria(CommonConstant.ACTUAL_ESTIMATION));
+		configHelperService.setFieldMappingMap(fieldMappingMap);
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 
@@ -142,12 +133,11 @@ public class IssueLikelyToSpillServiceImplTest {
 		try {
 			KpiElement kpiElement = issueLikelyToSpillServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
-			assertNotNull(kpiElement.getTrendValueList());
+			assertNotNull(kpiElement.getIssueData());
 
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -167,12 +157,11 @@ public class IssueLikelyToSpillServiceImplTest {
 		try {
 			KpiElement kpiElement = issueLikelyToSpillServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
-			assertNotNull(kpiElement.getTrendValueList());
+			assertNotNull(kpiElement.getIssueData());
 
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -183,6 +172,5 @@ public class IssueLikelyToSpillServiceImplTest {
 	@After
 	public void cleanup() {
 		jiraIssueRepository.deleteAll();
-
 	}
 }

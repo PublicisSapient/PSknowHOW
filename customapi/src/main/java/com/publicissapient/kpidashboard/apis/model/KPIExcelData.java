@@ -29,10 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents the Excel Data for KPIs
- */
-
+/** Represents the Excel Data for KPIs */
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -148,11 +145,8 @@ public class KPIExcelData {
 	@JsonProperty("Project")
 	private String project;
 
-	@JsonProperty("Job Name")
+	@JsonProperty("Job Name / Pipeline Name")
 	private String jobName;
-
-	@JsonProperty("Pipeline Name")
-	private String pipelineName;
 
 	@JsonProperty("Unit Coverage")
 	private String unitCoverage;
@@ -160,8 +154,11 @@ public class KPIExcelData {
 	@JsonProperty("Tech Debt (in days)")
 	private String techDebt;
 
-	@JsonProperty("Sonar Violations")
-	private String sonarViolation;
+	@JsonProperty("Violation Type")
+	private String sonarViolationType;
+
+	@JsonProperty("Violation Severity")
+	private String sonarViolationSeverity;
 
 	@JsonProperty("Code Quality")
 	private String codeQuality;
@@ -490,10 +487,9 @@ public class KPIExcelData {
 	@JsonProperty("Author")
 	private String author;
 
-	@JsonProperty( "PR Review Time")
+	@JsonProperty("PR Review Time")
 	private String prReviewTime;
 
 	@JsonProperty("PR Status")
 	private String prStatus;
-
 }

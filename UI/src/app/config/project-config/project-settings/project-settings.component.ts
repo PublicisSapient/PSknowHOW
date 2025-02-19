@@ -64,7 +64,7 @@ export class ProjectSettingsComponent implements OnInit {
     public sharedService: SharedService,
     public router: Router,
     private confirmationService: ConfirmationService,
-    private httpService: HttpService,
+    public httpService: HttpService,
     private messageService: MessageService,
     public getAuthorizationService: GetAuthorizationService,
   ) { }
@@ -105,11 +105,7 @@ export class ProjectSettingsComponent implements OnInit {
       },
     ];
 
-    this.sharedService.currentUserDetailsObs.subscribe(details => {
-      if (details) {
-        this.userName = details['user_name'];
-      }
-    });
+    this.userName = this.sharedService.getCurrentUserDetails('user_name');
 
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
     this.isSuperAdmin = this.getAuthorizationService.checkIfSuperUser();
@@ -308,7 +304,7 @@ export class ProjectSettingsComponent implements OnInit {
             });
             arr = arr?.filter(item => item.projects?.length > 0);
 
-            this.sharedService.setCurrentUserDetails({ projectsAccess: arr });
+            this.httpService.setCurrentUserDetails({ projectsAccess: arr });
           }
         }, error => {
           this.projectDeletionStatus(error);
@@ -371,32 +367,11 @@ export class ProjectSettingsComponent implements OnInit {
 
   updateProjectDetails(successMsg) {
 
-    let hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedProject?.type?.toLowerCase()];
-
-    const updatedDetails = {};
-    updatedDetails['projectName'] = this.selectedProject?.name || this.selectedProject?.Project;
-    updatedDetails['kanban'] = this.selectedProject?.type === 'Kanban' ? true : false;
-    updatedDetails['hierarchy'] = [];
+    const updatedDetails = {...this.projectList.filter(x => x.projectDisplayName === this.selectedProject.name)[0]};
     updatedDetails['saveAssigneeDetails'] = this.isAssigneeSwitchChecked;
-    updatedDetails['id'] = this.selectedProject?.id;
     updatedDetails["createdAt"] = new Date().toISOString();
     updatedDetails["developerKpiEnabled"] = this.developerKpiEnabled;
     updatedDetails["projectOnHold"] = this.projectOnHold;
-
-    for (let element of hierarchyData) {
-      if (element.hierarchyLevelId == 'project') {
-        break;
-      }
-
-      updatedDetails['hierarchy'].push({
-        hierarchyLevel: {
-          level: element.level,
-          hierarchyLevelId: element.hierarchyLevelId,
-          hierarchyLevelName: element.hierarchyLevelName
-        },
-        value: this.selectedProject[element.hierarchyLevelName]
-      });
-    }
 
     this.httpService.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
 

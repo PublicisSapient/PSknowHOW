@@ -23,9 +23,7 @@ import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResp
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 
 /**
- *
  * @author pansharm5
- *
  */
 public interface ProcessorService {
 	/**
@@ -38,18 +36,18 @@ public interface ProcessorService {
 
 	/**
 	 * Triggers the processor to fetch the latest data based on the processor name
-	 * 
+	 *
 	 * @param processorName
-	 *            name of the processor same as in the processor collection
+	 *          name of the processor same as in the processor collection
 	 * @return {@code ServiceResponse}
 	 */
 	ServiceResponse runProcessor(String processorName, ProcessorExecutionBasicConfig processorExecutionBasicConfig);
 
 	/**
 	 * Fetches the active sprint data for the project
-	 * 
+	 *
 	 * @param sprintId
-	 *            id of the sprint
+	 *          id of the sprint
 	 * @return {@code ServiceResponse}
 	 */
 	ServiceResponse fetchActiveSprint(String sprintId);
@@ -58,7 +56,16 @@ public interface ProcessorService {
 	 * saves the response statuses for repo tools
 	 *
 	 * @param repoToolsStatusResponse
-	 * 		repo tool response status
+	 *          repo tool response status
 	 */
 	void saveRepoToolTraceLogs(RepoToolsStatusResponse repoToolsStatusResponse);
+
+	/**
+	 * run the metadata step of processor, to get the options of fieldmapping
+	 *
+	 * @param projectBasicConfigId
+	 *          id of the project
+	 * @return {@code ServiceResponse}
+	 */
+	ServiceResponse runMetadataStep(String projectBasicConfigId);
 }

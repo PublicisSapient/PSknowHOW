@@ -20,9 +20,7 @@ package com.publicissapient.kpidashboard.apis.model;
 
 import java.util.List;
 
-/**
- * The Account filter response.
- */
+/** The Account filter response. */
 public class AccountFilterResponse extends BaseModel {
 
 	private int level;
@@ -43,7 +41,7 @@ public class AccountFilterResponse extends BaseModel {
 	 * Sets level.
 	 *
 	 * @param level
-	 *            the level
+	 *          the level
 	 */
 	public void setLevel(int level) {
 		this.level = level;
@@ -62,7 +60,7 @@ public class AccountFilterResponse extends BaseModel {
 	 * Sets label.
 	 *
 	 * @param label
-	 *            the label
+	 *          the label
 	 */
 	public void setLabel(String label) {
 		this.label = label;
@@ -81,7 +79,7 @@ public class AccountFilterResponse extends BaseModel {
 	 * Sets filter data.
 	 *
 	 * @param filterData
-	 *            the filter data
+	 *          the filter data
 	 */
 	public void setFilterData(List<AccountFilteredData> filterData) {
 		this.filterData = filterData;
@@ -100,7 +98,7 @@ public class AccountFilterResponse extends BaseModel {
 	 * Sets enabled.
 	 *
 	 * @param show
-	 *            the enabled
+	 *          the enabled
 	 */
 	public void setShow(boolean show) {
 		this.show = show;

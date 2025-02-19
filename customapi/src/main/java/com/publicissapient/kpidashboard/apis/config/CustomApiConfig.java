@@ -16,7 +16,9 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.config;//NOPMD // do not remove NOPMD comment it ignores ExcessivePublicCount
+package com.publicissapient.kpidashboard.apis.config; // NOPMD // do not remove NOPMD comment it
+
+// ignores ExcessivePublicCount
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,7 @@ import lombok.Setter;
  * This class is used to bind external configurations to a bean in application
  * code. You can inject and use this bean throughout your application code just
  * like any other spring bean.
+ *
  * <p>
  * Properties defined in CustomApi.properties files are bind with this bean in
  * CustomApiApplication.
@@ -40,7 +43,7 @@ import lombok.Setter;
  */
 @Component
 @ConfigurationProperties
-public class CustomApiConfig {// NOPMD
+public class CustomApiConfig { // NOPMD
 	// Do not remove NOPMD comment. This is required to ignore TooManyFields.
 
 	// AES key used to encrypt
@@ -66,24 +69,31 @@ public class CustomApiConfig {// NOPMD
 	// Cors Enables toggle
 	@Value("#{new Boolean('${corsEnabled:false}')}")
 	private boolean corsEnabled;
+
 	// Cors whitelist ip
 	private String corsWhitelist;
+
 	@Value("${forgotPassword.expiryInterval}")
 	private String forgotPasswordExpiryInterval;
+
 	// forgot password email subject
 	@Value("${forgotPassword.emailSubject}")
 	private String emailSubject;
+
 	// forgot password server host only for server where nginex is not
 	// setup
 	@Value("${forgotPassword.serverPort}")
 	private String serverPort;
+
 	// forgot password server host only for server where nginex is not
 	// setup
 	@Value("${forgotPassword.uiHost}")
 	private String uiHost;
+
 	// forgot password UI port only for server where nginex is not setup
 	@Value("${forgotPassword.uiPort}")
 	private String uiPort;
+
 	// detailed logger property toggle
 	private String applicationDetailedLogger;
 	// white list of origin values to be allowed under CORS
@@ -91,6 +101,7 @@ public class CustomApiConfig {// NOPMD
 
 	// Maximum Pending Requests allowed Per Username
 	private Integer maxPendingRequestsPerUsername;
+
 	@Value("${filter.date.range.show:true}")
 	private boolean showDateRangeFilter;
 
@@ -141,25 +152,35 @@ public class CustomApiConfig {// NOPMD
 
 	@Value("${priority.P4}")
 	private String priorityP4;
+
 	@Value("p5-trivial, 5, trivial")
 	private String priorityP5;
+
 	@Value("$spring.kafka.producer.bootstrap-servers")
 	private List<String> kafkaProducerBootStrapServers;
+
 	@Value("${kafka.mailtopic}")
 	private String kafkaMailTopic;
+
 	private Map<String, String> notificationSubject;
+
 	@Value("${notification.switch}")
 	private boolean notificationSwitch;
+
 	@Value("${analytics.switch}")
 	private boolean analyticsSwitch;
+
 	// feedback categories
 	@Value("${feedback.categories}")
 	private List<String> feedbackCategories;
+
 	// Subject For Feedback Email
 	@Value("${feedback.categories.emailSubject}")
 	private String feedbackEmailSubject;
+
 	@Value("${approval.categories.emailSubject}")
 	private String approvalEmailSubject;
+
 	@Value("${certhostpath}")
 	private String hostPath;
 
@@ -170,8 +191,10 @@ public class CustomApiConfig {// NOPMD
 	private boolean authCookieSecured;
 	private String authCookieSameSite;
 	private int hierarchySelectionCount; // get hierachySelection Count, by default 3
+
 	@Value("${dateRangeFilter.types}")
 	private List<String> dateRangeFilterTypes; // get type of date for Kanban Date Filter
+
 	@Value("${dateRangeFilter.counts}")
 	private List<Integer> dateRangeFilterCounts; // get counts of date type for Kanban Date Filter
 
@@ -210,12 +233,16 @@ public class CustomApiConfig {// NOPMD
 
 	@Value("${sprint.velocity.limit}")
 	private int sprintVelocityLimit;
-	private int pushDataLimit;// limit of data allowed to push through api
+
+	private int pushDataLimit; // limit of data allowed to push through api
 	private int exposeAPITokenExpiryDays; // expose api token expiry after days limit
+
 	@Value("${backlogWeekCount}")
 	private int backlogWeekCount;
+
 	@Value("${flowKpiMonthCount}")
 	private int flowKpiMonthCount;
+
 	private String samlTokenStartString;
 	private String samlTokenEndString;
 	private String samlUrlStartString;
@@ -279,24 +306,36 @@ public class CustomApiConfig {// NOPMD
 
 	@Value("${exposed_api_key}")
 	private String xApiKey;
+
 	private String repoToolReworkRateUrl;
 	private String repoToolRevertRateUrl;
 	private String repoToolPRSuccessRateUrl;
 
 	@Value("${max-age-seconds}")
 	private long maxAgeInSeconds;
+
 	@Value("${include-subdomains}")
 	private boolean includeSubDomains;
 
 	@Value("${zephyrCloudBaseUrl}")
 	private String zephyrCloudBaseUrl;
+
 	private String innovationRateUrl;
 	private String repoToolMembersUrl;
 	private String defectRateUrl;
 
-    @Setter
-    @Getter
-    private int userSessionsExpiresOn;
+	@Setter
+	@Getter
+	private int sprintVelocityVarianceThreshold;
+
+	@Setter
+	@Getter
+	private List<Integer> groupIdsToExcludeFromCache;
+
+	@Setter
+	@Getter
+	private int userSessionsExpiresOn;
+
 	public String getDefectRateUrl() {
 		return defectRateUrl;
 	}
@@ -560,7 +599,7 @@ public class CustomApiConfig {// NOPMD
 
 	/**
 	 * @param feedbackCategories
-	 *            new value of {@link #feedbackCategories}.
+	 *          new value of {@link #feedbackCategories}.
 	 */
 	public void setFeedbackCategories(List<String> feedbackCategories) {
 		this.feedbackCategories = feedbackCategories;
@@ -575,7 +614,7 @@ public class CustomApiConfig {// NOPMD
 
 	/**
 	 * @param feedbackEmailSubject
-	 *            new value of {@link #feedbackEmailSubject}.
+	 *          new value of {@link #feedbackEmailSubject}.
 	 */
 	public void setFeedbackEmailSubject(String feedbackEmailSubject) {
 		this.feedbackEmailSubject = feedbackEmailSubject;
@@ -594,7 +633,7 @@ public class CustomApiConfig {// NOPMD
 	 * set aesEncryptionKey
 	 *
 	 * @param aesEncryptionKey
-	 *            the aesEncryptionKey to set
+	 *          the aesEncryptionKey to set
 	 */
 	public void setAesEncryptionKey(String aesEncryptionKey) {
 		this.aesEncryptionKey = aesEncryptionKey;
@@ -615,7 +654,7 @@ public class CustomApiConfig {// NOPMD
 	 * project/sub-project
 	 *
 	 * @param sprintCountForFilters
-	 *            the sprintCountForFilters to set
+	 *          the sprintCountForFilters to set
 	 */
 	public void setSprintCountForFilters(int sprintCountForFilters) {
 		this.sprintCountForFilters = sprintCountForFilters;
@@ -634,7 +673,7 @@ public class CustomApiConfig {// NOPMD
 	 * set applicationDefaultLogo
 	 *
 	 * @param applicationDefaultLogo
-	 *            the applicationDefaultLogo to set
+	 *          the applicationDefaultLogo to set
 	 */
 	public void setApplicationDefaultLogo(String applicationDefaultLogo) {
 		this.applicationDefaultLogo = applicationDefaultLogo;
@@ -653,7 +692,7 @@ public class CustomApiConfig {// NOPMD
 	 * set totalDefectCountAgingXAxisRange
 	 *
 	 * @param totalDefectCountAgingXAxisRange
-	 *            the totalDefectCountAgingXAxisRange to set
+	 *          the totalDefectCountAgingXAxisRange to set
 	 */
 	public void setTotalDefectCountAgingXAxisRange(List<String> totalDefectCountAgingXAxisRange) {
 		this.totalDefectCountAgingXAxisRange = totalDefectCountAgingXAxisRange;
@@ -672,7 +711,7 @@ public class CustomApiConfig {// NOPMD
 	 * set percentileValue
 	 *
 	 * @param percentileValue
-	 *            the percentileValue to set
+	 *          the percentileValue to set
 	 */
 	public void setPercentileValue(Double percentileValue) {
 		this.percentileValue = percentileValue;
@@ -691,7 +730,7 @@ public class CustomApiConfig {// NOPMD
 	 * set repoXAxisCount
 	 *
 	 * @param repoXAxisCount
-	 *            the repoXAxisCount to set
+	 *          the repoXAxisCount to set
 	 */
 	public void setRepoXAxisCount(Integer repoXAxisCount) {
 		this.repoXAxisCount = repoXAxisCount;
@@ -710,7 +749,7 @@ public class CustomApiConfig {// NOPMD
 	 * set corsEnabled
 	 *
 	 * @param corsEnabled
-	 *            the corsEnabled to set
+	 *          the corsEnabled to set
 	 */
 	public void setCorsEnabled(boolean corsEnabled) {
 		this.corsEnabled = corsEnabled;
@@ -729,7 +768,7 @@ public class CustomApiConfig {// NOPMD
 	 * set corsWhitelist
 	 *
 	 * @param corsWhitelist
-	 *            the corsWhitelist to set
+	 *          the corsWhitelist to set
 	 */
 	public void setCorsWhitelist(String corsWhitelist) {
 		this.corsWhitelist = corsWhitelist;
@@ -748,7 +787,7 @@ public class CustomApiConfig {// NOPMD
 	 * set forgotPasswordExpiryInterval
 	 *
 	 * @param forgotPasswordExpiryInterval
-	 *            the forgotPasswordExpiryInterval to set
+	 *          the forgotPasswordExpiryInterval to set
 	 */
 	public void setForgotPasswordExpiryInterval(String forgotPasswordExpiryInterval) {
 		this.forgotPasswordExpiryInterval = forgotPasswordExpiryInterval;
@@ -767,7 +806,7 @@ public class CustomApiConfig {// NOPMD
 	 * set emailSubject
 	 *
 	 * @param emailSubject
-	 *            the emailSubject to set
+	 *          the emailSubject to set
 	 */
 	public void setEmailSubject(String emailSubject) {
 		this.emailSubject = emailSubject;
@@ -786,7 +825,7 @@ public class CustomApiConfig {// NOPMD
 	 * set serverPort
 	 *
 	 * @param serverPort
-	 *            the serverPort to set
+	 *          the serverPort to set
 	 */
 	public void setServerPort(String serverPort) {
 		this.serverPort = serverPort;
@@ -805,7 +844,7 @@ public class CustomApiConfig {// NOPMD
 	 * set uiHost
 	 *
 	 * @param uiHost
-	 *            the uiHost to set
+	 *          the uiHost to set
 	 */
 	public void setUiHost(String uiHost) {
 		this.uiHost = uiHost;
@@ -824,7 +863,7 @@ public class CustomApiConfig {// NOPMD
 	 * set uiPort
 	 *
 	 * @param uiPort
-	 *            the uiPort to set
+	 *          the uiPort to set
 	 */
 	public void setUiPort(String uiPort) {
 		this.uiPort = uiPort;
@@ -843,16 +882,14 @@ public class CustomApiConfig {// NOPMD
 	 * set applicationDetailedLogger
 	 *
 	 * @param applicationDetailedLogger
-	 *            the applicationDetailedLogger to set
+	 *          the applicationDetailedLogger to set
 	 */
 	public void setApplicationDetailedLogger(String applicationDetailedLogger) {
 		this.applicationDetailedLogger = applicationDetailedLogger;
 	}
 
 	/**
-	 * <p>
 	 * Returns the list of values valid as origin
-	 * </p>
 	 *
 	 * @return cors filter valid origin
 	 */
@@ -861,12 +898,10 @@ public class CustomApiConfig {// NOPMD
 	}
 
 	/**
-	 * <p>
 	 * Sets the list of values valid as origin
-	 * </p>
 	 *
 	 * @param corsFilterValidOrigin
-	 *            the cors filter valid origin
+	 *          the cors filter valid origin
 	 */
 	public void setCorsFilterValidOrigin(List<String> corsFilterValidOrigin) {
 		this.corsFilterValidOrigin = corsFilterValidOrigin;
@@ -885,7 +920,7 @@ public class CustomApiConfig {// NOPMD
 	 * set maxPendingRequestsPerUsername
 	 *
 	 * @param maxPendingRequestsPerUsername
-	 *            the maxPendingRequestsPerUsername to set
+	 *          the maxPendingRequestsPerUsername to set
 	 */
 	public void setMaxPendingRequestsPerUsername(Integer maxPendingRequestsPerUsername) {
 		this.maxPendingRequestsPerUsername = maxPendingRequestsPerUsername;
@@ -995,16 +1030,13 @@ public class CustomApiConfig {// NOPMD
 	}
 
 	/**
-	 *
 	 * @return emmStatsMonth
 	 */
-
 	public String getGitlabTestConnection() {
 		return gitlabTestConnection;
 	}
 
 	/**
-	 *
 	 * @return String
 	 */
 	public String getKafkaMailTopic() {
@@ -1012,7 +1044,6 @@ public class CustomApiConfig {// NOPMD
 	}
 
 	/**
-	 *
 	 * @param kafkaMailTopic
 	 */
 	public void setKafkaMailTopic(String kafkaMailTopic) {
@@ -1132,7 +1163,7 @@ public class CustomApiConfig {// NOPMD
 	 * set priority
 	 *
 	 * @param priority
-	 *            to set
+	 *          to set
 	 */
 	public void setPriority(Map<String, List<String>> priority) {
 		this.priority = priority;
@@ -1208,7 +1239,6 @@ public class CustomApiConfig {// NOPMD
 
 	public void setHostPath(String hostPath) {
 		this.hostPath = hostPath;
-
 	}
 
 	public String getSamlTokenStartString() {
@@ -1311,11 +1341,11 @@ public class CustomApiConfig {// NOPMD
 		return repoToolPRSuccessRateUrl;
 	}
 
-    public String getRepoToolPRDeclineRateUrl() {
-        return repoToolPRDeclineRateUrl;
-    }
+	public String getRepoToolPRDeclineRateUrl() {
+		return repoToolPRDeclineRateUrl;
+	}
 
-    public void setRepoToolPRDeclineRateUrl(String repoToolPRDeclineRateUrl) {
-        this.repoToolPRDeclineRateUrl = repoToolPRDeclineRateUrl;
-    }
+	public void setRepoToolPRDeclineRateUrl(String repoToolPRDeclineRateUrl) {
+		this.repoToolPRDeclineRateUrl = repoToolPRDeclineRateUrl;
+	}
 }

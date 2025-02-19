@@ -49,7 +49,7 @@ export class MyprofileComponent implements OnInit {
   ssoLogin = environment.SSO_LOGIN;
   loginType: string = '';
   constructor(private formBuilder: UntypedFormBuilder, private getAuthorizationService: GetAuthorizationService, private http: HttpService, private profile: ProfileComponent,
-    private sharedService: SharedService , private messageService: MessageService) { }
+    public sharedService: SharedService , private messageService: MessageService) { }
 
 
 
@@ -73,10 +73,7 @@ export class MyprofileComponent implements OnInit {
       this.noAccess = true;
     }
 
-    this.sharedService.currentUserDetailsObs.subscribe(details => {
-      this.setUserDetails(details);
-    })
-
+    this.setUserDetails(this.sharedService.getCurrentUserDetails());
     if (this.sharedService.getCurrentUserDetails('projectsAccess')?.length) {
       const accessList = JSON.parse(JSON.stringify(this.sharedService.getCurrentUserDetails('projectsAccess')));
       this.groupProjects(accessList);
@@ -171,7 +168,7 @@ export class MyprofileComponent implements OnInit {
           if (response?.['success'] && response['data']) {
             const userDetails = response['data'];
             this.messageService.add({ severity: 'success', summary: response['message'] });
-            this.sharedService.setCurrentUserDetails({
+            this.http.setCurrentUserDetails({
               notificationEmail: userDetails['notificationEmail'],
             });
           } else if (response && !response['success']) {

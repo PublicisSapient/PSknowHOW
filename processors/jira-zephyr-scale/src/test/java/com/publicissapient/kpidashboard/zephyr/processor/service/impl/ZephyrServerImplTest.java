@@ -123,11 +123,16 @@ public class ZephyrServerImplTest {
 		when(zephyrUtil.getCredentialsAsBase64String(toolInfo.getUsername(), toolInfo.getPassword()))
 				.thenReturn("base64String");
 		when(zephyrUtil.buildAuthenticationHeader(Mockito.anyString())).thenReturn(mockHttpEntity);
-		when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.GET), Mockito.eq(mockHttpEntity),
-				Mockito.any(Class.class))).thenReturn(testCaseResponse);
+		when(restTemplate.exchange(
+						Mockito.anyString(),
+						Mockito.eq(HttpMethod.GET),
+						Mockito.eq(mockHttpEntity),
+						Mockito.any(Class.class)))
+				.thenReturn(testCaseResponse);
 		when(testCaseResponse.getStatusCode()).thenReturn(HttpStatus.OK);
 		when(testCaseResponse.getBody()).thenReturn(zephyrTestCaseArr);
-		assertEquals((zephyrServer.getTestCase(0, projectConfFieldMapping)).size(), testCaseList.size());
+		assertEquals(
+				(zephyrServer.getTestCase(0, projectConfFieldMapping)).size(), testCaseList.size());
 	}
 
 	@Test()
@@ -138,13 +143,19 @@ public class ZephyrServerImplTest {
 		when(zephyrUtil.getCredentialsAsBase64String(toolInfo.getUsername(), toolInfo.getPassword()))
 				.thenReturn("base64String");
 		when(zephyrUtil.buildAuthenticationHeader(Mockito.anyString())).thenReturn(mockHttpEntity);
-		when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.GET), Mockito.eq(mockHttpEntity),
-				Mockito.any(Class.class))).thenReturn(testCaseResponse);
+		when(restTemplate.exchange(
+						Mockito.anyString(),
+						Mockito.eq(HttpMethod.GET),
+						Mockito.eq(mockHttpEntity),
+						Mockito.any(Class.class)))
+				.thenReturn(testCaseResponse);
 		when(testCaseResponse.getStatusCode()).thenReturn(HttpStatus.NOT_FOUND);
 		when(testCaseResponse.getBody()).thenReturn(null);
-		assertThrows(RestClientException.class, () -> {
-			zephyrServer.getTestCase(0, projectConfFieldMapping);
-		});
+		assertThrows(
+				RestClientException.class,
+				() -> {
+					zephyrServer.getTestCase(0, projectConfFieldMapping);
+				});
 	}
 
 	@Test

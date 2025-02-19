@@ -14,11 +14,11 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { of } from 'rxjs';
 import { Router, Routes } from '@angular/router';
 import { LoginComponent } from 'src/app/authentication/login/login.component';
-import { IterationComponent } from 'src/app/dashboard/iteration/iteration.component';
 import { RequestStatusComponent } from 'src/app/config/profile/request-status/request-status.component';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { ViewNewUserAuthRequestComponent } from 'src/app/config/profile/view-new-user-auth-request/view-new-user-auth-request.component';
 import { ViewRequestsComponent } from 'src/app/config/profile/view-requests/view-requests.component';
+import { ExecutiveV2Component } from '../executive-v2/executive-v2.component';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -33,7 +33,7 @@ describe('HeaderComponent', () => {
 
   const routes: Routes = [
     { path: 'authentication/login', component: LoginComponent },
-    { path: 'dashboard', component: IterationComponent },
+    { path: 'dashboard', component: ExecutiveV2Component },
     { path: 'dashboard/Config/Profile/RequestStatus', component: RequestStatusComponent },
     { path: 'dashboard/Config/Profile/GrantNewUserAuthRequests', component: ViewNewUserAuthRequestComponent },
     { path: 'dashboard/Config/Profile/GrantRequests', component: ViewRequestsComponent }

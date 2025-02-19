@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.controller;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -31,20 +30,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
-import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionException;
@@ -52,12 +45,15 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.http.ResponseEntity;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfigurationImpl;
+import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
+import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -101,7 +97,8 @@ public class JobControllerTest {
 
 	@Before
 	public void init() {
-		when(jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA)).thenReturn(jiraProcessor);
+		when(jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA))
+				.thenReturn(jiraProcessor);
 		when(jiraProcessor.getId()).thenReturn(new ObjectId("63bfa0d5b7617e260763ca21"));
 	}
 
@@ -128,7 +125,7 @@ public class JobControllerTest {
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to throw an exception
-	    doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher)
+		doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher)
 				.run(eq(fetchIssueScrumBoardJob), any(JobParameters.class));
 
 		// Calling the method
@@ -146,7 +143,7 @@ public class JobControllerTest {
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to return a JobExecution instance
-        when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(new JobExecution(1L));
+		when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(new JobExecution(1L));
 
 		// Calling the method
 		ResponseEntity<String> response = jobController.startScrumJqlJob();
@@ -163,8 +160,8 @@ public class JobControllerTest {
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to throw an exception
-		doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher)
-				.run(eq(fetchIssueScrumJqlJob), any(JobParameters.class));
+		doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher).run(eq(fetchIssueScrumJqlJob),
+				any(JobParameters.class));
 
 		// Calling the method
 		ResponseEntity<String> response = jobController.startScrumJqlJob();
@@ -198,8 +195,9 @@ public class JobControllerTest {
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to throw an exception
-		//doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher)
-			//	.run(eq(fetchIssueKanbanBoardJob), any(JobParameters.class));
+		// doThrow(new RuntimeException("Simulated job execution
+		// exception")).when(jobLauncher)
+		// .run(eq(fetchIssueKanbanBoardJob), any(JobParameters.class));
 
 		// Calling the method
 		ResponseEntity<String> response = jobController.startKanbanJob();
@@ -233,8 +231,8 @@ public class JobControllerTest {
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to throw an exception
-		doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher)
-				.run(eq(fetchIssueKanbanJqlJob), any(JobParameters.class));
+		doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher).run(eq(fetchIssueKanbanJqlJob),
+				any(JobParameters.class));
 
 		// Calling the method
 		ResponseEntity<String> response = jobController.startKanbanJqlJob();
@@ -246,7 +244,8 @@ public class JobControllerTest {
 	@Test
 	public void testStartFetchSprintJob_Success() throws Exception {
 		// Mocking jobLauncher.run() to return a JobExecution instance
-		when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(new JobExecution(1L));
+		when(jobLauncher.run(any(Job.class), any(JobParameters.class)))
+				.thenReturn(new JobExecution(1L));
 
 		// Calling the method with a sprintId
 		ResponseEntity<String> response = jobController.startFetchSprintJob("sprint123");
@@ -258,8 +257,8 @@ public class JobControllerTest {
 	@Test
 	public void testStartFetchSprintJob_ExceptionHandling() throws Exception {
 		// Mocking jobLauncher.run() to throw an exception
-		doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher)
-				.run(eq(fetchIssueSprintJob), any(JobParameters.class));
+		doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher).run(eq(fetchIssueSprintJob),
+				any(JobParameters.class));
 
 		// Calling the method with a sprintId
 		ResponseEntity<String> response = jobController.startFetchSprintJob("sprint456");
@@ -274,12 +273,16 @@ public class JobControllerTest {
 		when(ongoingExecutionsService.isExecutionInProgress(anyString())).thenReturn(true);
 
 		// Calling the method with ProcessorExecutionBasicConfig
-		ProcessorExecutionBasicConfig processorExecutionBasicConfig = new ProcessorExecutionBasicConfig();
-		processorExecutionBasicConfig.setProjectBasicConfigIds(Collections.singletonList("projex8749874ctId"));
-		ResponseEntity<String> response = jobController.startProjectWiseIssueJob(processorExecutionBasicConfig);
+		ProcessorExecutionBasicConfig processorExecutionBasicConfig =
+				new ProcessorExecutionBasicConfig();
+		processorExecutionBasicConfig.setProjectBasicConfigIds(
+				Collections.singletonList("projex8749874ctId"));
+		ResponseEntity<String> response =
+				jobController.startProjectWiseIssueJob(processorExecutionBasicConfig);
 
 		// Verifying the response and mocked interactions
-		assertEquals("Jira processor run is already in progress for this project. Please try after some time.",
+		assertEquals(
+				"Jira processor run is already in progress for this project. Please try after some time.",
 				response.getBody());
 	}
 
@@ -292,17 +295,21 @@ public class JobControllerTest {
 
 		// Mocking findByToolNameAndBasicProjectConfigId() to return a list of ProjectToolConfig
 		List<ProjectToolConfig> projectToolConfigs = Collections.singletonList(new ProjectToolConfig());
-		//when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(projectToolConfigs);
+		// when(toolRepository.findByToolNameAndBasicProjectConfigId(any(),
+		// any())).thenReturn(projectToolConfigs);
 
 		// Calling the method with ProcessorExecutionBasicConfig
-		ProcessorExecutionBasicConfig processorExecutionBasicConfig = new ProcessorExecutionBasicConfig();
-		processorExecutionBasicConfig.setProjectBasicConfigIds(Collections.singletonList("507f1f77bcf86cd799439011"));
-		ResponseEntity<String> response = jobController.startProjectWiseIssueJob(processorExecutionBasicConfig);
+		ProcessorExecutionBasicConfig processorExecutionBasicConfig =
+				new ProcessorExecutionBasicConfig();
+		processorExecutionBasicConfig.setProjectBasicConfigIds(
+				Collections.singletonList("507f1f77bcf86cd799439011"));
+		ResponseEntity<String> response =
+				jobController.startProjectWiseIssueJob(processorExecutionBasicConfig);
 
 		// Verify that the response is as expected
-		assertEquals("Job started for BasicProjectConfigId: 507f1f77bcf86cd799439011", response.getBody());
+		assertEquals(
+				"Job started for BasicProjectConfigId: 507f1f77bcf86cd799439011", response.getBody());
 		assertEquals(200, response.getStatusCode().value());
-
 	}
 
 	@Test
@@ -316,12 +323,41 @@ public class JobControllerTest {
 
 		// Mocking findByToolNameAndBasicProjectConfigId() to return a list of ProjectToolConfig
 		List<ProjectToolConfig> projectToolConfigs = Collections.singletonList(new ProjectToolConfig());
-		when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(projectToolConfigs);
+		when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any()))
+				.thenReturn(projectToolConfigs);
+
+		// Calling the method with ProcessorExecutionBasicConfig
+		ProcessorExecutionBasicConfig processorExecutionBasicConfig =
+				new ProcessorExecutionBasicConfig();
+		processorExecutionBasicConfig.setProjectBasicConfigIds(
+				Collections.singletonList("507f1f77bcf86cd799439011"));
+		ResponseEntity<String> response =
+				jobController.startProjectWiseIssueJob(processorExecutionBasicConfig);
+	}
+
+	@Test
+	public void testMetaData() throws Exception {
+		// Mocking ongoingExecutionsService.isExecutionInProgress() to return false
 
 		// Calling the method with ProcessorExecutionBasicConfig
 		ProcessorExecutionBasicConfig processorExecutionBasicConfig = new ProcessorExecutionBasicConfig();
 		processorExecutionBasicConfig.setProjectBasicConfigIds(Collections.singletonList("507f1f77bcf86cd799439011"));
-		ResponseEntity<String> response = jobController.startProjectWiseIssueJob(processorExecutionBasicConfig);
+		ResponseEntity<String> response = jobController.runMetadataStep("507f1f77bcf86cd799439011");
+	}
+
+	@Test
+	public void testMetaDataException() throws Exception {
+		// Mocking ongoingExecutionsService.isExecutionInProgress() to return false
+
+		// Mocking findById() to return an Optional<ProjectBasicConfig>
+
+		// Mocking findByToolNameAndBasicProjectConfigId() to return a list of
+		// ProjectToolConfig
+
+		// Calling the method with ProcessorExecutionBasicConfig
+		ProcessorExecutionBasicConfig processorExecutionBasicConfig = new ProcessorExecutionBasicConfig();
+		processorExecutionBasicConfig.setProjectBasicConfigIds(Collections.singletonList("507f1f77bcf86cd799439011"));
+		ResponseEntity<String> response = jobController.runMetadataStep("507f1f77bcf86cd799439011");
 	}
 
 	@Test
@@ -336,12 +372,15 @@ public class JobControllerTest {
 
 		// Mocking findByToolNameAndBasicProjectConfigId() to return a list of ProjectToolConfig
 		List<ProjectToolConfig> projectToolConfigs = Collections.singletonList(new ProjectToolConfig());
-		when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(projectToolConfigs);
+		when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any()))
+				.thenReturn(projectToolConfigs);
 
 		// Calling the method with ProcessorExecutionBasicConfig
-		ProcessorExecutionBasicConfig processorExecutionBasicConfig = new ProcessorExecutionBasicConfig();
-		processorExecutionBasicConfig.setProjectBasicConfigIds(Collections.singletonList("507f1f77bcf86cd799439011"));
-		ResponseEntity<String> response = jobController.startProjectWiseIssueJob(processorExecutionBasicConfig);
+		ProcessorExecutionBasicConfig processorExecutionBasicConfig =
+				new ProcessorExecutionBasicConfig();
+		processorExecutionBasicConfig.setProjectBasicConfigIds(
+				Collections.singletonList("507f1f77bcf86cd799439011"));
+		ResponseEntity<String> response =
+				jobController.startProjectWiseIssueJob(processorExecutionBasicConfig);
 	}
-
 }

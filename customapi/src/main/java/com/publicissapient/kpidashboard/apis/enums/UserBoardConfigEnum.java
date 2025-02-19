@@ -17,23 +17,21 @@ package com.publicissapient.kpidashboard.apis.enums;
 import java.util.Arrays;
 import java.util.List;
 
+import lombok.Getter;
+
 /**
  * Enum for UserBoardConfig
  *
  * @author aksshriv1
  */
+@Getter
 public enum UserBoardConfigEnum {
-	SCRUM_KANBAN_BOARD(Arrays.asList("Iteration", "Developer", "Dora", "Release", "Backlog")),
-	OTHER_BOARD(Arrays.asList("KPI Maturity"));
+	SCRUM_KANBAN_BOARD(Arrays.asList("Iteration", "Developer", "Dora", "Release", "Backlog")), OTHER_BOARD(
+			Arrays.asList("KPI Maturity"));
 
 	private final List<String> boardName;
 
 	UserBoardConfigEnum(List<String> boardName) {
 		this.boardName = boardName;
 	}
-
-	public List<String> getBoardName() {
-		return boardName;
-	}
-
 }

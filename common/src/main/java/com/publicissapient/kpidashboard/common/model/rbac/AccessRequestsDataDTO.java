@@ -29,9 +29,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * The type Access requests data dto.
- */
+/** The type Access requests data dto. */
 @Data
 @Builder
 @Getter
@@ -57,9 +55,7 @@ public class AccessRequestsDataDTO {
 
 	private Date lastModifiedDate;
 
-	/**
-	 * Instantiates a new Access requests data dto.
-	 */
+	/** Instantiates a new Access requests data dto. */
 	public AccessRequestsDataDTO() {
 		this.setId(new ObjectId());
 		this.setCreatedDate(new Date());
@@ -69,17 +65,17 @@ public class AccessRequestsDataDTO {
 	 * Instantiates a new Access requests data dto.
 	 *
 	 * @param id
-	 *            the id
+	 *          the id
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @param status
-	 *            the status
+	 *          the status
 	 * @param reviewComments
-	 *            the review comments
+	 *          the review comments
 	 * @param projects
-	 *            the projects
+	 *          the projects
 	 * @param roles
-	 *            the roles
+	 *          the roles
 	 */
 	public AccessRequestsDataDTO(ObjectId id, String username, String status, String reviewComments,
 			List<ProjectsForAccessRequest> projects, List<RoleData> roles) {
@@ -100,7 +96,7 @@ public class AccessRequestsDataDTO {
 	 * Sets id.
 	 *
 	 * @param id
-	 *            the id
+	 *          the id
 	 */
 	public void setId(ObjectId id) {
 		this.id = id;
@@ -111,7 +107,7 @@ public class AccessRequestsDataDTO {
 	 * Sets username.
 	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 */
 	public void setUsername(String username) {
 		this.username = username;
@@ -122,7 +118,7 @@ public class AccessRequestsDataDTO {
 	 * Sets status.
 	 *
 	 * @param status
-	 *            the status
+	 *          the status
 	 */
 	public void setStatus(String status) {
 		this.status = status;
@@ -133,7 +129,7 @@ public class AccessRequestsDataDTO {
 	 * Sets review comments.
 	 *
 	 * @param reviewComments
-	 *            the review comments
+	 *          the review comments
 	 */
 	public void setReviewComments(String reviewComments) {
 		this.reviewComments = reviewComments;
@@ -144,7 +140,7 @@ public class AccessRequestsDataDTO {
 	 * Sets projects.
 	 *
 	 * @param projects
-	 *            the projects
+	 *          the projects
 	 */
 	public void setProjects(List<ProjectsForAccessRequest> projects) {
 		this.projects = projects;
@@ -155,7 +151,7 @@ public class AccessRequestsDataDTO {
 	 * Sets roles.
 	 *
 	 * @param roles
-	 *            the roles
+	 *          the roles
 	 */
 	public void setRoles(List<RoleData> roles) {
 		this.roles = roles;
@@ -166,7 +162,7 @@ public class AccessRequestsDataDTO {
 	 * Sets is deleted.
 	 *
 	 * @param isDeleted
-	 *            the is deleted
+	 *          the is deleted
 	 */
 	public void setIsDeleted(String isDeleted) {
 		this.isDeleted = isDeleted;
@@ -177,11 +173,10 @@ public class AccessRequestsDataDTO {
 	 * Sets created date.
 	 *
 	 * @param createdDate
-	 *            the created date
+	 *          the created date
 	 */
 	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
 		resetLastModifiedDate();
 	}
-
 }

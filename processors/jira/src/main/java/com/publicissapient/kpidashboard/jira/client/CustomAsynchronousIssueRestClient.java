@@ -25,7 +25,6 @@ import static com.atlassian.jira.rest.client.api.IssueRestClient.Expandos.SCHEMA
 import java.net.URI;
 import java.util.EnumSet;
 import java.util.Set;
-
 import javax.annotation.Nullable;
 import javax.ws.rs.core.UriBuilder;
 
@@ -89,19 +88,19 @@ public class CustomAsynchronousIssueRestClient extends AsynchronousIssueRestClie
 
 	/**
 	 * Search using JQL query
-	 * 
+	 *
 	 * @param boardId
-	 *            boardId
+	 *          boardId
 	 * @param maxResults
-	 *            maximum results
+	 *          maximum results
 	 * @param startAt
-	 *            page search at start at
+	 *          page search at start at
 	 * @param expandosValues
-	 *            List of String expandos
+	 *          List of String expandos
 	 * @param jql
-	 *            Jql query String
+	 *          Jql query String
 	 * @param fields
-	 *            Fields
+	 *          Fields
 	 * @return Promise of SearchResult
 	 */
 	private Promise<SearchResult> searchJqlImplGet(String boardId, @Nullable Integer maxResults,
@@ -121,13 +120,13 @@ public class CustomAsynchronousIssueRestClient extends AsynchronousIssueRestClie
 
 	/**
 	 * Adds optional query params
-	 * 
+	 *
 	 * @param uriBuilder
-	 *            URI Builder
+	 *          URI Builder
 	 * @param key
-	 *            Key
+	 *          Key
 	 * @param values
-	 *            optional param values
+	 *          optional param values
 	 */
 	private void addOptionalQueryParam(final UriBuilder uriBuilder, final String key, final Object... values) {
 		if (values != null && values.length > 0 && values[0] != null) {
@@ -137,15 +136,15 @@ public class CustomAsynchronousIssueRestClient extends AsynchronousIssueRestClie
 
 	/**
 	 * @param maxResults
-	 *            Maximum results
+	 *          Maximum results
 	 * @param startAt
-	 *            start At page number
+	 *          start At page number
 	 * @param expandosValues
-	 *            Iterable String
+	 *          Iterable String
 	 * @param jql
-	 *            Jql Query String
+	 *          Jql Query String
 	 * @param fields
-	 *            query fields
+	 *          query fields
 	 * @return Promise of SearchResult
 	 */
 	private Promise<SearchResult> searchJqlImplPost(@Nullable Integer maxResults, @Nullable Integer startAt,
@@ -154,15 +153,14 @@ public class CustomAsynchronousIssueRestClient extends AsynchronousIssueRestClie
 		try {
 			postEntity.put(JiraConstants.JQL_ATTRIBUTE, jql)
 					.put(JiraConstants.EXPAND_ATTRIBUTE, ImmutableList.copyOf(expandosValues))
-					.putOpt(JiraConstants.START_AT_ATTRIBUTE, startAt)
-					.putOpt(JiraConstants.MAX_RESULTS_ATTRIBUTE, maxResults);
+					.putOpt(JiraConstants.START_AT_ATTRIBUTE, startAt).putOpt(JiraConstants.MAX_RESULTS_ATTRIBUTE, maxResults);
 
 			if (fields != null) {
 				postEntity.put(JiraConstants.FIELDS_ATTRIBUTE, fields); // putOpt
-																		// doesn't
-																		// work
-																		// with
-																		// collections
+				// doesn't
+				// work
+				// with
+				// collections
 			}
 		} catch (JSONException e) {
 			throw new RestClientException(e);
@@ -170,5 +168,4 @@ public class CustomAsynchronousIssueRestClient extends AsynchronousIssueRestClie
 		log.info("Making Post call as max length for Get Call has exceeded");
 		return postAndParse(baseUri, postEntity, searchResultJsonParser);
 	}
-
 }

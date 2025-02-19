@@ -89,8 +89,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 	public void collectMetadata(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client,
 			String isScheduler) {
 		processorToolConnectionService.validateJiraAzureConnFlag(projectConfig.getProjectToolConfig());
-		if (isScheduler.equalsIgnoreCase("false") || null == boardMetadataRepository
-				.findByProjectBasicConfigId(projectConfig.getBasicProjectConfigId())) {
+		if (isScheduler.equalsIgnoreCase("false") ||
+				null == boardMetadataRepository.findByProjectBasicConfigId(projectConfig.getBasicProjectConfigId())) {
 			boardMetadataRepository.deleteByProjectBasicConfigId(projectConfig.getBasicProjectConfigId());
 			log.info("creating metadata for the project : {}", projectConfig.getProjectName());
 			boolean isSuccess = processMetadata(projectConfig, client);
@@ -103,11 +103,12 @@ public class CreateMetadataImpl implements CreateMetadata {
 						CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 				jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.CACHE_PROJECT_CONFIG_MAP);
+				jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
+						CommonConstant.CACHE_ALL_PROJECT_CONFIG_MAP);
 			}
 			log.info("Fetched metadata");
 		} else {
-			log.info("metadata already present for the project : {} so not fetching again ",
-					projectConfig.getProjectName());
+			log.info("metadata already present for the project : {} so not fetching again ", projectConfig.getProjectName());
 		}
 	}
 
@@ -116,13 +117,13 @@ public class CreateMetadataImpl implements CreateMetadata {
 		List<Field> fieldList = getField(client, projectConfig);
 		List<IssueType> issueTypeList = getIssueType(client, projectConfig);
 		List<Status> statusList = JiraHelper.getStatus(client);
-		if (CollectionUtils.isNotEmpty(fieldList) && CollectionUtils.isNotEmpty(issueTypeList)
-				&& CollectionUtils.isNotEmpty(statusList)) {
+		if (CollectionUtils.isNotEmpty(fieldList) && CollectionUtils.isNotEmpty(issueTypeList) &&
+				CollectionUtils.isNotEmpty(statusList)) {
 
 			BoardMetadata boardMetadata = new BoardMetadata();
 			boardMetadata.setProjectBasicConfigId(projectConfig.getBasicProjectConfigId());
 			boardMetadata.setProjectToolConfigId(projectConfig.getProjectToolConfig().getId());
-			boardMetadata.setMetadataTemplateCode(projectConfig.getProjectToolConfig().getMetadataTemplateCode());
+			boardMetadata.setMetadataTemplateCode(projectConfig.getProjectToolConfig().getOriginalTemplateCode());
 			List<Metadata> fullMetaDataList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(fieldList)) {
 				fullMetaDataList.addAll(mapFields(fieldList, MetadataType.FIELDS.type()));
@@ -251,8 +252,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 
 	private FieldMapping mapFieldMapping(BoardMetadata boardMetadata, ProjectConfFieldMapping projectConfig) {
 		MetadataIdentifier metadataIdentifier = metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(
-				projectConfig.getProjectToolConfig().getMetadataTemplateCode(), JiraConstants.JIRA,
-				projectConfig.isKanban());
+				projectConfig.getProjectToolConfig().getOriginalTemplateCode(), JiraConstants.JIRA, projectConfig.isKanban());
 		String templateName = metadataIdentifier.getTemplateName();
 		Map<String, List<String>> valuesToIdentifyMap = new HashMap<>();
 		List<Identifier> issueList = metadataIdentifier.getIssues();
@@ -261,8 +261,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 		FieldMapping fieldMapping = null;
 		Map<String, String> allCustomField = new HashMap<>();
 		List<Metadata> metadataList = boardMetadata.getMetadata();
-		metadataList.forEach(
-				metadata -> metadata.getValue().stream().forEach(mv -> allCustomField.put(mv.getKey(), mv.getData())));
+		metadataList
+				.forEach(metadata -> metadata.getValue().stream().forEach(mv -> allCustomField.put(mv.getKey(), mv.getData())));
 
 		if (metadataIdentifier.getTool().equalsIgnoreCase(AZURE) || projectConfig.isKanban()) {
 			if (templateName.equalsIgnoreCase(STANDARD_TEMPLATE)) {
@@ -275,8 +275,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 
 			for (Metadata metadata : metadataList) {
 				if (metadata.getType().equals(CommonConstant.META_ISSUE_TYPE)) {
-					allIssueTypes = metadata.getValue().stream().map(MetadataValue::getData)
-							.collect(Collectors.toSet());
+					allIssueTypes = metadata.getValue().stream().map(MetadataValue::getData).collect(Collectors.toSet());
 				} else if (metadata.getType().equals(CommonConstant.META_WORKFLOW)) {
 					allWorkflow = metadata.getValue().stream().map(MetadataValue::getData).collect(Collectors.toSet());
 				}
@@ -328,16 +327,16 @@ public class CreateMetadataImpl implements CreateMetadata {
 
 		fieldMapping.setJiraIssueTypeNames(Optional.ofNullable(issueTypeMap.get(CommonConstant.JIRAISSUETYPENAMES))
 				.orElse(new ArrayList<>()).stream().filter(Objects::nonNull).toArray(String[]::new));
-		fieldMapping.setJiraIssueTypeNamesKPI161(
-				issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
-		fieldMapping.setJiraIssueTypeNamesKPI151(
-				issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
-		fieldMapping.setJiraIssueTypeNamesKPI152(
-				issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
-		fieldMapping.setJiraIssueTypeNamesKPI146(
-				issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
-		fieldMapping.setJiraIssueTypeNamesKPI148(
-				issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+		fieldMapping
+				.setJiraIssueTypeNamesKPI161(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+		fieldMapping
+				.setJiraIssueTypeNamesKPI151(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+		fieldMapping
+				.setJiraIssueTypeNamesKPI152(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+		fieldMapping
+				.setJiraIssueTypeNamesKPI146(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+		fieldMapping
+				.setJiraIssueTypeNamesKPI148(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
 		fieldMapping.setJiraSprintCapacityIssueTypeKpi46(
 				issueTypeMap.getOrDefault(CommonConstant.JIRASPRINTCAPACITYISSUETYPEKPI46, new ArrayList<>()));
 		fieldMapping.setJiraDefectCountlIssueTypeKPI28(
@@ -346,12 +345,11 @@ public class CreateMetadataImpl implements CreateMetadata {
 				issueTypeMap.getOrDefault(CommonConstant.JIRADEFECTCOUNTLISSUETYPEKPI36, new ArrayList<>()));
 		fieldMapping.setJiraDefectInjectionIssueTypeKPI14(
 				issueTypeMap.getOrDefault(CommonConstant.JIRADEFECTINJECTIONISSUETYPEKPI14, new ArrayList<>()));
-		fieldMapping
-				.setJiraIssueTypeKPI35(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPEKPI35, new ArrayList<>()));
+		fieldMapping.setJiraIssueTypeKPI35(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPEKPI35, new ArrayList<>()));
 		fieldMapping.setJiraTestAutomationIssueType(
 				issueTypeMap.getOrDefault(CommonConstant.JIRATESTAUTOMATIONISSUETYPE, new ArrayList<>()));
-		fieldMapping.setJiraQAKPI111IssueType(
-				issueTypeMap.getOrDefault(CommonConstant.JIRAQAKPI111ISSUETYPE, new ArrayList<>()));
+		fieldMapping
+				.setJiraQAKPI111IssueType(issueTypeMap.getOrDefault(CommonConstant.JIRAQAKPI111ISSUETYPE, new ArrayList<>()));
 		fieldMapping.setJiraStoryIdentificationKPI129(
 				issueTypeMap.getOrDefault(CommonConstant.JIRASTORYIDENTIFICATIONKPI129, new ArrayList<>()));
 		fieldMapping.setJiraStoryIdentificationKPI166(
@@ -360,32 +358,31 @@ public class CreateMetadataImpl implements CreateMetadata {
 				issueTypeMap.getOrDefault(CommonConstant.JIRASPRINTVELOCITYISSUETYPEKPI138, new ArrayList<>()));
 		fieldMapping.setJiraStoryIdentificationKpi40(
 				issueTypeMap.getOrDefault(CommonConstant.JIRASTORYIDENTIFICATIONKPI40, new ArrayList<>()));
-		fieldMapping.setJiraStoryCategoryKpi40(
-				issueTypeMap.getOrDefault(CommonConstant.JIRASTORYCATEGORYKPI40, new ArrayList<>()));
+		fieldMapping
+				.setJiraStoryCategoryKpi40(issueTypeMap.getOrDefault(CommonConstant.JIRASTORYCATEGORYKPI40, new ArrayList<>()));
 		fieldMapping.setJiraStoryIdentificationKPI164(
 				issueTypeMap.getOrDefault(CommonConstant.JIRA_STORY_IDENTIFICATION_KPI164, new ArrayList<>()));
 		fieldMapping.setJiraIssueEpicType(Optional.ofNullable(issueTypeMap.get(CommonConstant.JIRAISSUEEPICTYPE))
 				.orElse(new ArrayList<>()).stream().collect(Collectors.toList()));
 		fieldMapping.setJiraIssueRiskTypeKPI176(Optional.ofNullable(issueTypeMap.get(CommonConstant.JIRAISSUERISKTYPE))
 				.orElse(new ArrayList<>()).stream().collect(Collectors.toList()));
-		fieldMapping.setJiraIssueDependencyTypeKPI176(
-				Optional.ofNullable(issueTypeMap.get(CommonConstant.JIRAISSUEDEPENDENCYTYPE)).orElse(new ArrayList<>())
-						.stream().collect(Collectors.toList()));
-		fieldMapping.setJiraTechDebtIssueType(issueTypeMap.get(CommonConstant.JIRATECHDEBTISSUETYPE));
 		fieldMapping
-				.setJiraIssueTypeKPI3(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPEKPI3, new ArrayList<>()));
+				.setJiraIssueDependencyTypeKPI176(Optional.ofNullable(issueTypeMap.get(CommonConstant.JIRAISSUEDEPENDENCYTYPE))
+						.orElse(new ArrayList<>()).stream().collect(Collectors.toList()));
+		fieldMapping.setJiraTechDebtIssueType(issueTypeMap.get(CommonConstant.JIRATECHDEBTISSUETYPE));
+		fieldMapping.setJiraIssueTypeKPI3(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPEKPI3, new ArrayList<>()));
 		fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
 		fieldMapping.setJiraStatusToConsiderKPI127(Arrays.asList(CommonConstant.OPEN));
-		fieldMapping.setStoryFirstStatusKPI171(
-				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.STORYFIRSTSTATUSKPI3))
+		fieldMapping
+				.setStoryFirstStatusKPI171(CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.STORYFIRSTSTATUSKPI3))
 						? workflowMap.get(CommonConstant.STORYFIRSTSTATUSKPI3).get(0)
 						: CommonConstant.OPEN);
-		fieldMapping.setStoryFirstStatusKPI148(
-				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.STORYFIRSTSTATUSKPI148))
+		fieldMapping
+				.setStoryFirstStatusKPI148(CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.STORYFIRSTSTATUSKPI148))
 						? workflowMap.get(CommonConstant.STORYFIRSTSTATUSKPI148).get(0)
 						: CommonConstant.OPEN);
-		fieldMapping.setStoryFirstStatusKPI154(
-				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.STORYFIRSTSTATUSKPI154))
+		fieldMapping
+				.setStoryFirstStatusKPI154(CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.STORYFIRSTSTATUSKPI154))
 						? workflowMap.get(CommonConstant.STORYFIRSTSTATUSKPI154)
 						: Arrays.asList(CommonConstant.OPEN));
 		fieldMapping.setJiraIssueDeliverdStatusKPI138(
@@ -408,18 +405,17 @@ public class CreateMetadataImpl implements CreateMetadata {
 		fieldMapping.setJiraStatusStartDevelopmentKPI154(workflowMap.get(CommonConstant.JIRASTARTDEVKPI54));
 		fieldMapping.setJiraDodKPI155(workflowMap.get(CommonConstant.JIRADODKPI155));
 		fieldMapping.setJiraDodKPI163(workflowMap.get(CommonConstant.JIRADODKPI163));
-		fieldMapping.setJiraLiveStatusKPI152(
-				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRALIVESTATUSKPI152))
+		fieldMapping
+				.setJiraLiveStatusKPI152(CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRALIVESTATUSKPI152))
 						? workflowMap.get(CommonConstant.JIRALIVESTATUSKPI152).get(0)
 						: null);
-		fieldMapping.setJiraLiveStatusKPI151(
-				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRALIVESTATUSKPI151))
+		fieldMapping
+				.setJiraLiveStatusKPI151(CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRALIVESTATUSKPI151))
 						? workflowMap.get(CommonConstant.JIRALIVESTATUSKPI151).get(0)
 						: null);
-		fieldMapping
-				.setJiraLiveStatusKPI3(CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRALIVESTATUSKPI3))
-						? workflowMap.get(CommonConstant.JIRALIVESTATUSKPI3)
-						: null);
+		fieldMapping.setJiraLiveStatusKPI3(CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRALIVESTATUSKPI3))
+				? workflowMap.get(CommonConstant.JIRALIVESTATUSKPI3)
+				: null);
 		fieldMapping.setJiraDefectRemovalStatusKPI34(workflowMap.get(CommonConstant.JIRADEFECTREMOVALSTATUSKPI34));
 		fieldMapping.setJiraDorKPI171(CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRADORKPI3))
 				? workflowMap.get(CommonConstant.JIRADORKPI3)
@@ -502,8 +498,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 				workflowMap.getOrDefault(CommonConstant.ISSUESTATUSEXCLUMISSINGWORKKPI124, new ArrayList<>()));
 		fieldMapping.setJiraBlockedStatusKPI131(
 				workflowMap.getOrDefault(CommonConstant.JIRABLOCKEDSTATUSKPI131, new ArrayList<>()));
-		fieldMapping.setJiraWaitStatusKPI131(
-				workflowMap.getOrDefault(CommonConstant.JIRAWAITSTATUSKPI131, new ArrayList<>()));
+		fieldMapping
+				.setJiraWaitStatusKPI131(workflowMap.getOrDefault(CommonConstant.JIRAWAITSTATUSKPI131, new ArrayList<>()));
 		fieldMapping.setJiraStatusForInProgressKPI148(
 				workflowMap.getOrDefault(CommonConstant.JIRASTATUSFORINPROGRESSKPI148, new ArrayList<>()));
 		fieldMapping.setJiraStatusForInProgressKPI122(
@@ -543,36 +539,33 @@ public class CreateMetadataImpl implements CreateMetadata {
 		fieldMapping.setEpicWsjf(customField.get(CommonConstant.WSJF));
 		fieldMapping.setRootCauseIdentifier(JiraConstants.CUSTOM_FIELD);
 		fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
-		fieldMapping
-				.setJiraStoryPointsCustomField(customField.getOrDefault(CommonConstant.STORYPOINT, StringUtils.EMPTY));
+		fieldMapping.setJiraStoryPointsCustomField(customField.getOrDefault(CommonConstant.STORYPOINT, StringUtils.EMPTY));
 		fieldMapping.setCreatedDate(LocalDateTime.now());
 		fieldMapping.setEpicLink(customField.get(CommonConstant.EPICLINK));
 
-		if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE) || templateName.equalsIgnoreCase(DOJO_SAFE_TEMPLATE)
-				|| templateName.equalsIgnoreCase(DOJO_STUDIO_TEMPLATE)) {
+		if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE) || templateName.equalsIgnoreCase(DOJO_SAFE_TEMPLATE) ||
+				templateName.equalsIgnoreCase(DOJO_STUDIO_TEMPLATE)) {
 
 			populateFieldMappingData(issueTypeMap, workflowMap, projectConfig, templateName, fieldMapping);
 
 		} else {
 			fieldMapping.setJiradefecttype(issueTypeMap.get(CommonConstant.BUG));
 
+			fieldMapping.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
 			fieldMapping
-					.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
-			fieldMapping.setJiraIssueTypeNamesKPI161(
-					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
-			fieldMapping.setJiraIssueTypeNamesKPI151(
-					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
-			fieldMapping.setJiraIssueTypeNamesKPI152(
-					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
-			fieldMapping.setJiraIssueTypeNamesKPI146(
-					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
-			fieldMapping.setJiraIssueTypeNamesKPI148(
-					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
-			fieldMapping.setJiraIssueTypeNamesAVR(
-					issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
+					.setJiraIssueTypeNamesKPI161(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping
+					.setJiraIssueTypeNamesKPI151(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping
+					.setJiraIssueTypeNamesKPI152(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping
+					.setJiraIssueTypeNamesKPI146(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping
+					.setJiraIssueTypeNamesKPI148(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping
+					.setJiraIssueTypeNamesAVR(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
 
-			fieldMapping
-					.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
+			fieldMapping.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
 
 			List<String> firstStatusList = workflowMap.get(CommonConstant.FIRST_STATUS);
 
@@ -614,12 +607,12 @@ public class CreateMetadataImpl implements CreateMetadata {
 
 			fieldMapping.setJiraIssueTypeKPI35(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 
-			fieldMapping.setJiraDefectRemovalStatusKPI34(
-					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping.setJiraWaitStatusKPI131(
-					workflowMap.getOrDefault(CommonConstant.JIRA_WAIT_STATUS, new ArrayList<>()));
-			fieldMapping.setJiraBlockedStatusKPI131(
-					workflowMap.getOrDefault(CommonConstant.JIRA_BLOCKED_STATUS, new ArrayList<>()));
+			fieldMapping
+					.setJiraDefectRemovalStatusKPI34(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+			fieldMapping
+					.setJiraWaitStatusKPI131(workflowMap.getOrDefault(CommonConstant.JIRA_WAIT_STATUS, new ArrayList<>()));
+			fieldMapping
+					.setJiraBlockedStatusKPI131(workflowMap.getOrDefault(CommonConstant.JIRA_BLOCKED_STATUS, new ArrayList<>()));
 			fieldMapping.setJiraStatusForInProgressKPI148(
 					workflowMap.getOrDefault(CommonConstant.JIRA_IN_PROGRESS_STATUS, new ArrayList<>()));
 			fieldMapping.setJiraStatusForInProgressKPI122(
@@ -634,39 +627,31 @@ public class CreateMetadataImpl implements CreateMetadata {
 					workflowMap.getOrDefault(CommonConstant.JIRA_IN_PROGRESS_STATUS, new ArrayList<>()));
 			fieldMapping.setJiraStatusForInProgressKPI119(
 					workflowMap.getOrDefault(CommonConstant.JIRA_IN_PROGRESS_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTestAutomationIssueType(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping
-					.setJiraTestAutomationIssueType(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraSprintVelocityIssueTypeKPI138(
-					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraSprintCapacityIssueTypeKpi46(
-					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraDefectCountlIssueTypeKPI28(
-					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraDefectCountlIssueTypeKPI36(
-					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraIssueDeliverdStatusKPI138(
-					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping.setJiraIssueDeliverdStatusAVR(
-					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping.setJiraIssueDeliverdStatusKPI126(
-					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping.setJiraIssueDeliverdStatusKPI82(
-					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+					.setJiraSprintVelocityIssueTypeKPI138(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping
+					.setJiraSprintCapacityIssueTypeKpi46(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping
+					.setJiraDefectCountlIssueTypeKPI28(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping
+					.setJiraDefectCountlIssueTypeKPI36(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping
+					.setJiraIssueDeliverdStatusKPI138(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+			fieldMapping.setJiraIssueDeliverdStatusAVR(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+			fieldMapping
+					.setJiraIssueDeliverdStatusKPI126(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+			fieldMapping
+					.setJiraIssueDeliverdStatusKPI82(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
 			fieldMapping.setJiraIssueTypeKPI3(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentification(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraStoryIdentificationKPI129(
-					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraStoryIdentificationKPI166(
-					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraStoryIdentificationKpi40(
-					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraStoryIdentificationKPI129(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraStoryIdentificationKPI166(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraStoryIdentificationKpi40(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryCategoryKpi40(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraStoryIdentificationKPI164(
-					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraKPI82StoryIdentification(
-					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraKPI135StoryIdentification(
-					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraStoryIdentificationKPI164(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraKPI82StoryIdentification(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraKPI135StoryIdentification(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setRootCauseValue(valuesToIdentifyMap.get(CommonConstant.ROOT_CAUSE_VALUE));
 			fieldMapping.setResolutionTypeForRejectionAVR(
 					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
@@ -697,7 +682,6 @@ public class CreateMetadataImpl implements CreateMetadata {
 			if (projectConfig.isKanban()) {
 				populateKanbanFieldMappingData(fieldMapping, workflowMap, issueTypeMap, templateName);
 			}
-
 		}
 
 		return fieldMapping;
@@ -713,9 +697,9 @@ public class CreateMetadataImpl implements CreateMetadata {
 	private void populateKanbanFieldMappingData(FieldMapping fieldMapping, Map<String, List<String>> workflowMap,
 			Map<String, List<String>> issueTypeMap, String templateName) {
 
-		fieldMapping.setCreatedDate(null);// setting null until kpi config not done for kanban kpis
-		if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE) || templateName.equalsIgnoreCase(DOJO_SAFE_TEMPLATE)
-				|| templateName.equalsIgnoreCase(DOJO_STUDIO_TEMPLATE)) {
+		fieldMapping.setCreatedDate(null); // setting null until kpi config not done for kanban kpis
+		if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE) || templateName.equalsIgnoreCase(DOJO_SAFE_TEMPLATE) ||
+				templateName.equalsIgnoreCase(DOJO_STUDIO_TEMPLATE)) {
 
 			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
 			fieldMapping.setStoryFirstStatusKPI171(CommonConstant.OPEN);
@@ -723,67 +707,136 @@ public class CreateMetadataImpl implements CreateMetadata {
 			fieldMapping.setJiraStatusToConsiderKPI127(Arrays.asList(CommonConstant.OPEN));
 			fieldMapping.setJiraTicketResolvedStatus(
 					workflowMap.getOrDefault(CommonConstant.TICKET_RESOLVED_STATUS, new ArrayList<>()));
-			fieldMapping.setTicketDeliverdStatus(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping.setJiraTicketWipStatus(
-					workflowMap.getOrDefault(CommonConstant.TICKET_WIP_STATUS, new ArrayList<>()));
+			fieldMapping.setTicketDeliveredStatusKPI49(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+			fieldMapping
+					.setJiraTicketWipStatus(workflowMap.getOrDefault(CommonConstant.TICKET_WIP_STATUS, new ArrayList<>()));
 			fieldMapping.setJiraTicketTriagedStatus(
+					workflowMap.getOrDefault(CommonConstant.TICKET_TRIAGED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketTriagedStatusKPI53(
 					workflowMap.getOrDefault(CommonConstant.TICKET_TRIAGED_STATUS, new ArrayList<>()));
 			fieldMapping.setJiraTicketRejectedStatus(
 					workflowMap.getOrDefault(CommonConstant.TICKET_REJECTED_STATUS, new ArrayList<>()));
-			fieldMapping.setJiraTicketClosedStatus(
+			fieldMapping.setJiraTicketRejectedStatusKPI50(
+					workflowMap.getOrDefault(CommonConstant.TICKET_REJECTED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketRejectedStatusKPI151(
+					workflowMap.getOrDefault(CommonConstant.TICKET_REJECTED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketRejectedStatusKPI48(
+					workflowMap.getOrDefault(CommonConstant.TICKET_REJECTED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketRejectedStatusKPI997(
+					workflowMap.getOrDefault(CommonConstant.TICKET_REJECTED_STATUS, new ArrayList<>()));
+			fieldMapping
+					.setJiraTicketClosedStatus(workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketClosedStatusKPI48(
+					workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketClosedStatusKPI50(
+					workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketClosedStatusKPI51(
+					workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketClosedStatusKPI53(
+					workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketClosedStatusKPI54(
+					workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketClosedStatusKPI55(
+					workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketClosedStatusKPI997(
 					workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
 			fieldMapping.setJiraLiveStatusKPI151(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusKPI152(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusKPI3(workflowMap.getOrDefault(CommonConstant.CLOSED, new ArrayList<>()));
-			fieldMapping.setJiraLiveStatusLTK(CommonConstant.CLOSED);
-			fieldMapping.setJiraLiveStatusNOPK(CommonConstant.CLOSED);
-			fieldMapping.setJiraLiveStatusNORK(CommonConstant.CLOSED);
-			fieldMapping.setJiraLiveStatusNOSK(CommonConstant.CLOSED);
-			fieldMapping.setJiraLiveStatusOTA(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusKPI53(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusKPI50(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusKPI51(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusKPI48(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusKPI997(CommonConstant.CLOSED);
 
+			fieldMapping.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
 			fieldMapping
-					.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
-			fieldMapping.setJiraIssueTypeNamesAVR(
-					issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
+					.setJiraIssueTypeNamesAVR(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
 			fieldMapping.setTicketCountIssueType(
 					issueTypeMap.getOrDefault(CommonConstant.TICKET_COUNT_ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setKanbanRCACountIssueType(
-					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setJiraTicketVelocityIssueType(
+			fieldMapping.setTicketCountIssueTypeKPI50(
+					issueTypeMap.getOrDefault(CommonConstant.TICKET_COUNT_ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping.setTicketCountIssueTypeKPI48(
+					issueTypeMap.getOrDefault(CommonConstant.TICKET_COUNT_ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping.setTicketCountIssueTypeKPI997(
+					issueTypeMap.getOrDefault(CommonConstant.TICKET_COUNT_ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping.setTicketCountIssueTypeKPI54(
+					issueTypeMap.getOrDefault(CommonConstant.TICKET_COUNT_ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping.setTicketCountIssueTypeKPI55(
+					issueTypeMap.getOrDefault(CommonConstant.TICKET_COUNT_ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping.setKanbanRCACountIssueType(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping
+					.setKanbanRCACountIssueTypeKPI51(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping.setJiraTicketVelocityIssueTypeKPI49(
 					issueTypeMap.getOrDefault(CommonConstant.TICKET_VELOCITY_ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setKanbanCycleTimeIssueType(
 					issueTypeMap.getOrDefault(CommonConstant.KANBAN_CYCLE_TIME_ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping.setKanbanCycleTimeIssueTypeKPI53(
+					issueTypeMap.getOrDefault(CommonConstant.KANBAN_CYCLE_TIME_ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setKanbanJiraTechDebtIssueType(
 					issueTypeMap.getOrDefault(CommonConstant.KANBAN_TECH_DEBT_ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping
-					.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
+			fieldMapping.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
 
 		} else {
+			fieldMapping.setTicketCountIssueType(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping
-					.setTicketCountIssueType(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
+					.setTicketCountIssueTypeKPI50(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping
+					.setTicketCountIssueTypeKPI48(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping
+					.setTicketCountIssueTypeKPI997(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping
+					.setTicketCountIssueTypeKPI54(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping
+					.setTicketCountIssueTypeKPI55(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setKanbanRCACountIssueType(Arrays.asList(JiraConstants.ISSUE_TYPE_DEFECT));
-			fieldMapping.setJiraTicketVelocityIssueType(
+			fieldMapping.setKanbanRCACountIssueTypeKPI51(Arrays.asList(JiraConstants.ISSUE_TYPE_DEFECT));
+			fieldMapping.setJiraTicketVelocityIssueTypeKPI49(
 					issueTypeMap.getOrDefault(CommonConstant.TICKET_VELOCITY_ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setTicketDeliverdStatus(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping.setTicketReopenStatus(
-					workflowMap.getOrDefault(CommonConstant.TICKET_REOPEN_STATUS, new ArrayList<>()));
+			fieldMapping.setTicketDeliveredStatusKPI49(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+			fieldMapping
+					.setTicketReopenStatus(workflowMap.getOrDefault(CommonConstant.TICKET_REOPEN_STATUS, new ArrayList<>()));
 			fieldMapping.setJiraTicketTriagedStatus(
 					workflowMap.getOrDefault(CommonConstant.TICKET_TRIAGED_STATUS, new ArrayList<>()));
-			fieldMapping.setJiraTicketClosedStatus(
+			fieldMapping.setJiraTicketTriagedStatusKPI53(
+					workflowMap.getOrDefault(CommonConstant.TICKET_TRIAGED_STATUS, new ArrayList<>()));
+			fieldMapping
+					.setJiraTicketClosedStatus(workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketClosedStatusKPI48(
+					workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketClosedStatusKPI50(
+					workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketClosedStatusKPI51(
+					workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketClosedStatusKPI53(
+					workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketClosedStatusKPI54(
+					workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketClosedStatusKPI55(
+					workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketClosedStatusKPI997(
 					workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
 			fieldMapping.setJiraTicketRejectedStatus(
 					workflowMap.getOrDefault(CommonConstant.TICKET_REJECTED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketRejectedStatusKPI50(
+					workflowMap.getOrDefault(CommonConstant.TICKET_REJECTED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketRejectedStatusKPI151(
+					workflowMap.getOrDefault(CommonConstant.TICKET_REJECTED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketRejectedStatusKPI48(
+					workflowMap.getOrDefault(CommonConstant.TICKET_REJECTED_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraTicketRejectedStatusKPI997(
+					workflowMap.getOrDefault(CommonConstant.TICKET_REJECTED_STATUS, new ArrayList<>()));
 			fieldMapping.setJiraTicketResolvedStatus(
 					workflowMap.getOrDefault(CommonConstant.TICKET_RESOLVED_STATUS, new ArrayList<>()));
-			fieldMapping.setJiraTicketWipStatus(
-					workflowMap.getOrDefault(CommonConstant.TICKET_WIP_STATUS, new ArrayList<>()));
+			fieldMapping
+					.setJiraTicketWipStatus(workflowMap.getOrDefault(CommonConstant.TICKET_WIP_STATUS, new ArrayList<>()));
 			fieldMapping.setKanbanCycleTimeIssueType(
+					issueTypeMap.getOrDefault(CommonConstant.KANBAN_CYCLE_TIME_ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping.setKanbanCycleTimeIssueTypeKPI53(
 					issueTypeMap.getOrDefault(CommonConstant.KANBAN_CYCLE_TIME_ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setKanbanJiraTechDebtIssueType(
 					issueTypeMap.getOrDefault(CommonConstant.KANBAN_TECH_DEBT_ISSUE_TYPE, new ArrayList<>()));
-
 		}
-
 	}
 
 	private Map<String, List<String>> compareIssueType(List<Identifier> issueList, Set<String> allIssueTypes) {
@@ -834,91 +887,90 @@ public class CreateMetadataImpl implements CreateMetadata {
 		Map<String, List<String>> workflowMap = new HashMap<>();
 		for (Identifier identifier : workflowList) {
 			switch (identifier.getType()) {
-			case CommonConstant.DOR:
-				List<String> dorList = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.DOR, dorList);
-				break;
-			case CommonConstant.DOD:
-				List<String> dodList = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.DOD, dodList);
-				break;
-			case CommonConstant.DEVELOPMENT:
-				List<String> devList = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.DEVELOPMENT, devList);
-				break;
-			case CommonConstant.QA:
-				List<String> qaList = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.QA, qaList);
-				break;
-			case CommonConstant.FIRST_STATUS:
-				List<String> fList = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.FIRST_STATUS, fList);
-				break;
-			case CommonConstant.REJECTION:
-				List<String> rejList = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.REJECTION, rejList);
-				break;
-			case CommonConstant.DELIVERED:
-				List<String> delList = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.DELIVERED, delList);
-				break;
-			case CommonConstant.TICKET_CLOSED_STATUS:
-				List<String> closedList = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.TICKET_CLOSED_STATUS, closedList);
-				break;
-			case CommonConstant.TICKET_RESOLVED_STATUS: {
-				List<String> list = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.TICKET_RESOLVED_STATUS, list);
-				break;
-			}
-			case CommonConstant.TICKET_REOPEN_STATUS: {
-				List<String> list = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.TICKET_REOPEN_STATUS, list);
-				break;
-			}
-			case CommonConstant.TICKET_TRIAGED_STATUS: {
-				List<String> list = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.TICKET_TRIAGED_STATUS, list);
-				break;
-			}
-			case CommonConstant.TICKET_WIP_STATUS: {
-				List<String> list = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.TICKET_WIP_STATUS, list);
-				break;
-			}
-			case CommonConstant.TICKET_REJECTED_STATUS: {
-				List<String> list = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.TICKET_REJECTED_STATUS, list);
-				break;
-			}
-			case CommonConstant.JIRA_BLOCKED_STATUS: {
-				List<String> list = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.JIRA_BLOCKED_STATUS, list);
-				break;
-			}
-			case CommonConstant.REJECTION_RESOLUTION: {
-				List<String> list = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.REJECTION_RESOLUTION, list);
-				break;
-			}
-			case CommonConstant.JIRA_WAIT_STATUS: {
-				List<String> list = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.JIRA_WAIT_STATUS, list);
-				break;
-			}
-			case CommonConstant.JIRA_IN_PROGRESS_STATUS: {
-				List<String> list = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.JIRA_IN_PROGRESS_STATUS, list);
-				break;
-			}
-			default:
+				case CommonConstant.DOR :
+					List<String> dorList = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.DOR, dorList);
+					break;
+				case CommonConstant.DOD :
+					List<String> dodList = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.DOD, dodList);
+					break;
+				case CommonConstant.DEVELOPMENT :
+					List<String> devList = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.DEVELOPMENT, devList);
+					break;
+				case CommonConstant.QA :
+					List<String> qaList = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.QA, qaList);
+					break;
+				case CommonConstant.FIRST_STATUS :
+					List<String> fList = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.FIRST_STATUS, fList);
+					break;
+				case CommonConstant.REJECTION :
+					List<String> rejList = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.REJECTION, rejList);
+					break;
+				case CommonConstant.DELIVERED :
+					List<String> delList = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.DELIVERED, delList);
+					break;
+				case CommonConstant.TICKET_CLOSED_STATUS :
+					List<String> closedList = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.TICKET_CLOSED_STATUS, closedList);
+					break;
+				case CommonConstant.TICKET_RESOLVED_STATUS : {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.TICKET_RESOLVED_STATUS, list);
+					break;
+				}
+				case CommonConstant.TICKET_REOPEN_STATUS : {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.TICKET_REOPEN_STATUS, list);
+					break;
+				}
+				case CommonConstant.TICKET_TRIAGED_STATUS : {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.TICKET_TRIAGED_STATUS, list);
+					break;
+				}
+				case CommonConstant.TICKET_WIP_STATUS : {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.TICKET_WIP_STATUS, list);
+					break;
+				}
+				case CommonConstant.TICKET_REJECTED_STATUS : {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.TICKET_REJECTED_STATUS, list);
+					break;
+				}
+				case CommonConstant.JIRA_BLOCKED_STATUS : {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.JIRA_BLOCKED_STATUS, list);
+					break;
+				}
+				case CommonConstant.REJECTION_RESOLUTION : {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.REJECTION_RESOLUTION, list);
+					break;
+				}
+				case CommonConstant.JIRA_WAIT_STATUS : {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.JIRA_WAIT_STATUS, list);
+					break;
+				}
+				case CommonConstant.JIRA_IN_PROGRESS_STATUS : {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.JIRA_IN_PROGRESS_STATUS, list);
+					break;
+				}
+				default :
 			}
 		}
 		return workflowMap;
 	}
 
-	private Map<String, String> compareCustomField(List<Identifier> customFieldList,
-			Map<String, String> allCustomField) {
+	private Map<String, String> compareCustomField(List<Identifier> customFieldList, Map<String, String> allCustomField) {
 		Map<String, String> customFieldMap = new HashMap<>();
 		customFieldList.forEach(identifier -> {
 			if (!identifier.getValue().isEmpty()) {
@@ -937,5 +989,4 @@ public class CreateMetadataImpl implements CreateMetadata {
 		}
 		return issueList;
 	}
-
 }
