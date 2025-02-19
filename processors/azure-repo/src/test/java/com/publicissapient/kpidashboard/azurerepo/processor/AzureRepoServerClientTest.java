@@ -112,11 +112,9 @@ class AzureRepoServerClientTest {
 
 		CommitDetails azureRepoCommit = commits.get(0);
 		Assert.assertEquals("Merged PR 2: Updated test file master", azureRepoCommit.getCommitLog());
-
 	}
 
 	private String getServerResponse(String resource) throws Exception {
 		return IOUtils.toString(this.getClass().getResourceAsStream(resource), StandardCharsets.UTF_8);
 	}
-
 }

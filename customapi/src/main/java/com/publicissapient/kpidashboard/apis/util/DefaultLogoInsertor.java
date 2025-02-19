@@ -37,9 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Provides method to insert default logo.
- * 
- * @author prijain3
  *
+ * @author prijain3
  */
 @Service
 @Slf4j
@@ -51,9 +50,7 @@ public class DefaultLogoInsertor {
 	@Autowired
 	private CustomApiConfig customApiConfig;
 
-	/**
-	 * Inserts default image.
-	 */
+	/** Inserts default image. */
 	public void insertDefaultImage() {
 		log.info("Inside insertDefaultImage Default Logo uploaded successfully");
 
@@ -63,14 +60,13 @@ public class DefaultLogoInsertor {
 		String fileName = Constant.LOGO_FIL_NAME;
 		metaData.put("type", "image");
 
-		GridFSFile availableFile = gridOperations
-				.findOne(new Query().addCriteria(Criteria.where("filename").is(fileName)));
+		GridFSFile availableFile = gridOperations.findOne(new Query().addCriteria(Criteria.where("filename").is(fileName)));
 
 		if (null == availableFile) {
 
 			log.info("DefaultLogoInsertor: There is no image available in database");
-			try (InputStream imageInputStream = classLoader
-					.getResourceAsStream(customApiConfig.getApplicationDefaultLogo())) {
+			try (
+					InputStream imageInputStream = classLoader.getResourceAsStream(customApiConfig.getApplicationDefaultLogo())) {
 				if (null == imageInputStream) {
 					log.info("DefaultLogoInsertor: Input stream for default logo is null");
 				} else {
@@ -78,7 +74,6 @@ public class DefaultLogoInsertor {
 					log.info("DefaultLogoInsertor: Inserted default logo");
 
 					gridOperations.store(imageInputStream, fileName, "image/png", metaData);
-
 				}
 			} catch (IOException ex) {
 				log.error("Error fetching default logo");
@@ -89,5 +84,4 @@ public class DefaultLogoInsertor {
 
 		log.info("Exit: insertDefaultImage exit");
 	}
-
 }

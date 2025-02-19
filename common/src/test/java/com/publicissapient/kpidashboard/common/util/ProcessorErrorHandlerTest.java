@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.common.util;
 
 import static org.mockito.Mockito.mock;
@@ -29,19 +28,19 @@ import org.mockito.MockitoAnnotations;
 
 public class ProcessorErrorHandlerTest {
 
-    @InjectMocks
-    private ProcessorErrorHandler errorHandler;
+	@InjectMocks
+	private ProcessorErrorHandler errorHandler;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+	@BeforeEach
+	public void setUp() {
+		MockitoAnnotations.openMocks(this);
+	}
 
-    @Test
-    public void testHandleError() {
-        Throwable mockThrowable = mock(Throwable.class);
-        when(mockThrowable.getMessage()).thenReturn("Test error message");
-        when(mockThrowable.getCause()).thenReturn(new RuntimeException("Test cause"));
-        errorHandler.handleError(mockThrowable);
-    }
+	@Test
+	public void testHandleError() {
+		Throwable mockThrowable = mock(Throwable.class);
+		when(mockThrowable.getMessage()).thenReturn("Test error message");
+		when(mockThrowable.getCause()).thenReturn(new RuntimeException("Test cause"));
+		errorHandler.handleError(mockThrowable);
+	}
 }

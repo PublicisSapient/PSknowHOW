@@ -69,9 +69,7 @@ public class EditKpiConfigServiceImplTest {
 	@Mock
 	private AccountHierarchyRepository accountHierarchyRepository;
 
-	/**
-	 * method includes preprocesses for test cases
-	 */
+	/** method includes preprocesses for test cases */
 	@Before
 	public void setUp() {
 		List<String> typevalueList = new ArrayList<>();
@@ -89,7 +87,6 @@ public class EditKpiConfigServiceImplTest {
 		metadata.setValue(metaValueList);
 		metaList.add(metadata);
 		testBoardMetadata.setMetadata(metaList);
-
 	}
 
 	@After
@@ -100,7 +97,6 @@ public class EditKpiConfigServiceImplTest {
 	/**
 	 * 1. Input String projectconfigid is valid and data at this id doesnot exists
 	 * in the database.
-	 *
 	 */
 	@Test
 	public void testgetDataForType1() {
@@ -126,12 +122,10 @@ public class EditKpiConfigServiceImplTest {
 		testType = "Test";
 		List<BoardMetadata> testListBoardMetadata = new ArrayList<>();
 		testListBoardMetadata.add(testBoardMetadata);
-		when(configHelperService.getBoardMetaData(new ObjectId(testProjectconfigid)))
-				.thenReturn(testBoardMetadata);
+		when(configHelperService.getBoardMetaData(new ObjectId(testProjectconfigid))).thenReturn(testBoardMetadata);
 		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigIdAndReleaseStateOrderByEndDateDesc("release",
 				new ObjectId(testProjectconfigid), "Released")).thenReturn(ahlist);
 		Map<String, List<MetadataValue>> data = editKpiConfigServiceImpl.getDataForType(testProjectconfigid, "kpi150");
 		assertThat("Count : ", data.size(), equalTo(2));
-
 	}
 }

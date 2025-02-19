@@ -33,20 +33,18 @@ import com.publicissapient.kpidashboard.common.model.azureboards.iterations.Azur
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.AzureUpdatesModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.AzureWiqlModel;
 
-/**
- * The Interface AzureAdapter.
- */
+/** The Interface AzureAdapter. */
 public interface AzureAdapter {
 
 	/**
 	 * Gets the issues.
 	 *
 	 * @param pageStart
-	 *            the page start
+	 *          the page start
 	 * @param azureServer
-	 *            the azure server
+	 *          the azure server
 	 * @param workItemIds
-	 *            the work item ids
+	 *          the work item ids
 	 * @return the issues
 	 */
 	AzureBoardsWIModel getWorkItemInfoForIssues(int pageStart, AzureServer azureServer, List<Integer> workItemIds);
@@ -55,14 +53,13 @@ public interface AzureAdapter {
 	 * Gets the wiql model.
 	 *
 	 * @param azureServer
-	 *            the azure server
+	 *          the azure server
 	 * @param startTimesByIssueType
-	 *            the startTimesByIssueType
+	 *          the startTimesByIssueType
 	 * @param projectConfig
-	 *            the project config
+	 *          the project config
 	 * @param dataExist
-	 *            data exist in db
-	 * 
+	 *          data exist in db
 	 * @return the wiql model
 	 */
 	AzureWiqlModel getWiqlModel(AzureServer azureServer, Map<String, LocalDateTime> startTimesByIssueType,
@@ -72,7 +69,7 @@ public interface AzureAdapter {
 	 * Gets the iterations model.
 	 *
 	 * @param azureServer
-	 *            the azure server
+	 *          the azure server
 	 * @return the iterations model
 	 */
 	AzureIterationsModel getIterationsModel(AzureServer azureServer);
@@ -88,48 +85,47 @@ public interface AzureAdapter {
 	 * Get the changeLogs/Updates for a workItem.
 	 *
 	 * @param azureServer
-	 *            the azure server
+	 *          the azure server
 	 * @param issueId
-	 *            the issue id
+	 *          the issue id
 	 * @return the updates model
 	 */
 	AzureUpdatesModel getUpdates(AzureServer azureServer, String issueId);
 
 	/**
 	 * get IssueType from parsed workitemTypes
-	 * 
+	 *
 	 * @return list of issueTypes
 	 */
 	List<IssueType> getIssueType();
 
 	/**
 	 * get all fields from parsed workitem
-	 * 
+	 *
 	 * @return list of fields
 	 */
 	List<Field> getField();
 
 	/**
 	 * get Workflow status from parsed workitem
-	 * 
+	 *
 	 * @return list of status
 	 */
 	List<Status> getStatus();
 
 	/**
 	 * get IssueTypeLinks from parsed workitemlink
-	 * 
+	 *
 	 * @return list of issueLinkTypes
 	 */
 	List<IssuelinksType> getIssueLinkTypes();
 
 	/**
 	 * get all issues based on sprintId
-	 * 
+	 *
 	 * @param azureServer
 	 * @param sprintId
 	 * @return
 	 */
 	List<String> getIssuesBySprint(AzureServer azureServer, String sprintId);
-
 }

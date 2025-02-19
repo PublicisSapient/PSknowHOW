@@ -25,15 +25,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -70,9 +71,12 @@ public class JenkinsServiceR {
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
+	@Autowired
+	private CustomApiConfig customApiConfig;
+
 	private boolean referFromProjectCache = true;
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
 		log.info("[JENKINS][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),
@@ -83,13 +87,11 @@ public class JenkinsServiceR {
 		try {
 
 			Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
-			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(),
-					false);
+			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(), false);
 			if (null != groupName) {
 				kpiRequest.setLabel(groupName.toUpperCase());
 			}
-			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
-					groupName);
+			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest, groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
 				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
 
@@ -98,22 +100,15 @@ public class JenkinsServiceR {
 					return responseList;
 				}
 
-				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JENKINS.name(),
-						groupId, kpiRequest.getSprintIncluded());
-				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-						&& null != cachedData) {
-					log.info("[JENKINS][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
-							kpiRequest.getIds());
-					return (List<KpiElement>) cachedData;
-				}
+				List<KpiElement> cachedData = getCachedData(kpiRequest, groupId, projectKeyCache);
+				if (CollectionUtils.isNotEmpty(cachedData))
+					return cachedData;
 
 				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
-						filterHelperService.getHierarchyIdLevelMap(false)
-								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
+						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(), filterHelperService
+								.getHierarchyIdLevelMap(false).getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
 
-				ExecutorService executorService = Executors
-						.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+				ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 				List<CompletableFuture<Void>> futures = new ArrayList<>();
 				for (KpiElement kpiElement : kpiRequest.getKpiList()) {
@@ -130,9 +125,8 @@ public class JenkinsServiceR {
 				allFutures.join(); // Wait for all tasks to complete
 				executorService.shutdown();
 
-				List<KpiElement> missingKpis = origRequestedKpis.stream()
-						.filter(reqKpi -> responseList.stream()
-								.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
+				List<KpiElement> missingKpis = origRequestedKpis.stream().filter(
+						reqKpi -> responseList.stream().noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
 						.collect(Collectors.toList());
 				responseList.addAll(missingKpis);
 				setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
@@ -149,11 +143,26 @@ public class JenkinsServiceR {
 		return responseList;
 	}
 
+	private List<KpiElement> getCachedData(KpiRequest kpiRequest, Integer groupId, String[] projectKeyCache) {
+		Object cachedData = null;
+		if (!customApiConfig.getGroupIdsToExcludeFromCache().contains(groupId)) {
+			cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JENKINS.name(), groupId,
+					kpiRequest.getSprintIncluded());
+		}
+		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				null != cachedData) {
+			log.info("[JENKINS][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
+					kpiRequest.getIds());
+			return (List<KpiElement>) cachedData;
+		}
+		return new ArrayList<>();
+	}
+
 	/**
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @param filteredAccountDataList
-	 *            filteredAccountDataList
+	 *          filteredAccountDataList
 	 * @return List<AccountHierarchyData> list of hierarchy
 	 */
 	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
@@ -169,9 +178,9 @@ public class JenkinsServiceR {
 
 	/**
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @param filteredAccountDataList
-	 *            filteredAccountDataList
+	 *          filteredAccountDataList
 	 * @return array of string
 	 */
 	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
@@ -185,13 +194,12 @@ public class JenkinsServiceR {
 	}
 
 	/**
-	 * 
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @param kpiElement
-	 *            kpiElement
+	 *          kpiElement
 	 * @param treeAggregatorDetail
-	 *            treeAggregatorDetail
+	 *          treeAggregatorDetail
 	 * @return KpiElement kpiElement
 	 */
 	private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -208,8 +216,8 @@ public class JenkinsServiceR {
 			List<Node> projectNodes = treeAggregatorDetailClone.getMapOfListOfProjectNodes()
 					.get(CommonConstant.PROJECT.toLowerCase());
 
-			if (!projectNodes.isEmpty() && (projectNodes.size() > 1
-					|| kpiHelperService.isToolConfigured(kpi, kpiElement, projectNodes.get(0)))) {
+			if (!projectNodes.isEmpty() &&
+					(projectNodes.size() > 1 || kpiHelperService.isToolConfigured(kpi, kpiElement, projectNodes.get(0)))) {
 				kpiElement = jenkinsKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
 				kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
 				if (projectNodes.size() == 1) {
@@ -217,8 +225,7 @@ public class JenkinsServiceR {
 				}
 			}
 			long processTime = System.currentTimeMillis() - startTime;
-			log.info("[JENKINS-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-					processTime);
+			log.info("[JENKINS-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
 		} catch (ApplicationException exception) {
 			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
 			log.error("Kpi not found", exception);
@@ -228,27 +235,25 @@ public class JenkinsServiceR {
 			return kpiElement;
 		}
 		return kpiElement;
-
 	}
 
 	/**
-	 * 
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @param responseList
-	 *            responseList
+	 *          responseList
 	 * @param groupId
-	 *            groupId
+	 *          groupId
 	 * @param projectKeyCache
-	 *            projectKeyCache
+	 *          projectKeyCache
 	 */
 	private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
 			String[] projectKeyCache) {
 		Integer projectLevel = filterHelperService.getHierarchyIdLevelMap(false)
 				.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 
-		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& projectLevel >= kpiRequest.getLevel()) {
+		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				projectLevel >= kpiRequest.getLevel()) {
 
 			cacheService.setIntoApplicationCache(projectKeyCache, responseList, KPISource.JENKINS.name(), groupId,
 					kpiRequest.getSprintIncluded());
@@ -259,11 +264,11 @@ public class JenkinsServiceR {
 	 * This method is called when the request for kpi is done from exposed API
 	 *
 	 * @param kpiRequest
-	 *            Jenkins KPI request true if flow for precalculated, false for
-	 *            direct flow.
+	 *          Jenkins KPI request true if flow for precalculated, false for direct
+	 *          flow.
 	 * @return List of KPI data
 	 * @throws EntityNotFoundException
-	 *             EntityNotFoundException
+	 *           EntityNotFoundException
 	 */
 	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {
 		referFromProjectCache = false;

@@ -7,5 +7,4 @@ public class AuthenticationDTO {
 	private String username;
 	private String email;
 	private boolean approved;
-
 }

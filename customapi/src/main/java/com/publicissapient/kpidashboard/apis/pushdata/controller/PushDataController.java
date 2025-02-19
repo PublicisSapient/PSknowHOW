@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.apis.pushdata.controller;
 
 import java.util.List;
-
 import javax.validation.Valid;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -65,12 +64,11 @@ public class PushDataController {
 
 	/**
 	 * push data api for build tools
-	 * 
+	 *
 	 * @param request
 	 * @param pushBuildDeployDTO
 	 * @return
 	 */
-
 	@RequestMapping(value = "/build", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> savePushDataBuilds(HttpServletRequest request,
 			@RequestBody @Valid PushBuildDeployDTO pushBuildDeployDTO) {
@@ -94,5 +92,4 @@ public class PushDataController {
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
-
 }

@@ -35,6 +35,5 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 			AuthenticationException e) throws IOException, ServletException {
 
 		httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-
 	}
 }

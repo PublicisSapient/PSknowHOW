@@ -22,14 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-/**
- * object used to bind iteration kpi's value
- */
+/** object used to bind iteration kpi's value */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
@@ -48,5 +45,4 @@ public class IterationKpiModalValue extends IssueKpiModalValue {
 	private Set<String> subTask;
 	private Set<String> parentStory;
 	private boolean preClosed;
-
 }

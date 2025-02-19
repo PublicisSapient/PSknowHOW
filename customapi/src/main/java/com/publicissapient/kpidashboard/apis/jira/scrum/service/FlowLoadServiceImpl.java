@@ -86,8 +86,8 @@ public class FlowLoadServiceImpl extends JiraBacklogKPIService<Double, List<Obje
 
 			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueTypeNamesKPI148())) {
 				issuesHistory = getJiraIssuesCustomHistoryFromBaseClass();
-				issuesHistory = issuesHistory.stream().filter(
-						jiraIssue -> fieldMapping.getJiraIssueTypeNamesKPI148().contains(jiraIssue.getStoryType()))
+				issuesHistory = issuesHistory.stream()
+						.filter(jiraIssue -> fieldMapping.getJiraIssueTypeNamesKPI148().contains(jiraIssue.getStoryType()))
 						.collect(Collectors.toList());
 			}
 
@@ -119,8 +119,7 @@ public class FlowLoadServiceImpl extends JiraBacklogKPIService<Double, List<Obje
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNode, "", "", kpiRequest);
 
-		List<JiraIssueCustomHistory> jiraIssueCustomHistories = (List<JiraIssueCustomHistory>) resultMap
-				.get(ISSUE_HISTORY);
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = (List<JiraIssueCustomHistory>) resultMap.get(ISSUE_HISTORY);
 
 		Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate = new HashMap<>();
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -144,10 +143,10 @@ public class FlowLoadServiceImpl extends JiraBacklogKPIService<Double, List<Obje
 		// values after beginning will be incremented by one. Now as increment is only
 		// targeted only till the end of the range, the decrement on index endDate+1
 		// prevents that for every range present after endDate.
-		calculateStatusCountForEachDay(startDate, statusesWithStartAndEndDate, Math.toIntExact(totalDays), finalDateWithStatusCount);
-		dateWithStatusCount = dateWithStatusCount.entrySet().stream().sorted(Map.Entry.comparingByKey())
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
-						LinkedHashMap::new));
+		calculateStatusCountForEachDay(startDate, statusesWithStartAndEndDate, Math.toIntExact(totalDays),
+				finalDateWithStatusCount);
+		dateWithStatusCount = dateWithStatusCount.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(
+				Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
 
 		if (MapUtils.isNotEmpty(dateWithStatusCount)) {
 			populateTrendValueList(trendValueList, dateWithStatusCount);
@@ -158,7 +157,6 @@ public class FlowLoadServiceImpl extends JiraBacklogKPIService<Double, List<Obje
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.FLOW_LOAD.getColumns());
 		kpiElement.setTrendValueList(trendValueList);
-
 	}
 
 	private void calculateStatusCountForEachDay(LocalDate startDate,
@@ -199,8 +197,7 @@ public class FlowLoadServiceImpl extends JiraBacklogKPIService<Double, List<Obje
 		// If Issue is processed before startDate
 		if (size > 0 && statusChangeLog.get(size - 1).getUpdatedOn().toLocalDate().isBefore(startDate)) {
 			status = statusChangeLog.get(statusChangeLog.size() - 1).getChangedTo();
-			savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, startDate, endDate,
-					fieldMapping);
+			savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, startDate, endDate, fieldMapping);
 		}
 
 		// When issue is created after end date
@@ -222,8 +219,8 @@ public class FlowLoadServiceImpl extends JiraBacklogKPIService<Double, List<Obje
 			if (intervalStartDate.isAfter(endDate))
 				return;
 			LocalDate intervalEndDate = endDate;
-			savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, intervalStartDate,
-					intervalEndDate, fieldMapping);
+			savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, intervalStartDate, intervalEndDate,
+					fieldMapping);
 		}
 	}
 
@@ -251,17 +248,15 @@ public class FlowLoadServiceImpl extends JiraBacklogKPIService<Double, List<Obje
 		List<String> doneStatus = new ArrayList<>();
 		if (doneStatusMap != null)
 			doneStatus = doneStatusMap.values().stream().map(String::toLowerCase).collect(Collectors.toList());
-		return !doneStatus.contains(status.toLowerCase())
-				&& (fieldMapping.getStoryFirstStatusKPI148().equalsIgnoreCase(status)
-						|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI148())
-								&& fieldMapping.getJiraStatusForInProgressKPI148().contains(status))
-						|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForQaKPI148())
-								&& fieldMapping.getJiraStatusForQaKPI148().contains(status)));
-
+		return !doneStatus.contains(status.toLowerCase()) &&
+				(fieldMapping.getStoryFirstStatusKPI148().equalsIgnoreCase(status) ||
+						(CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI148()) &&
+								fieldMapping.getJiraStatusForInProgressKPI148().contains(status)) ||
+						(CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForQaKPI148()) &&
+								fieldMapping.getJiraStatusForQaKPI148().contains(status)));
 	}
 
-	private void populateTrendValueList(List<DataCount> dataList,
-			Map<String, Map<String, Integer>> dateWithStatusCount) {
+	private void populateTrendValueList(List<DataCount> dataList, Map<String, Map<String, Integer>> dateWithStatusCount) {
 		for (Map.Entry<String, Map<String, Integer>> entry : dateWithStatusCount.entrySet()) {
 			String date = entry.getKey();
 			Map<String, Integer> typeCountMap = entry.getValue();
@@ -274,8 +269,8 @@ public class FlowLoadServiceImpl extends JiraBacklogKPIService<Double, List<Obje
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
 			Map<String, Map<String, Integer>> dateWithStatusCount) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& !Objects.isNull(dateWithStatusCount)) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				!Objects.isNull(dateWithStatusCount)) {
 			KPIExcelUtility.populateFlowKPI(dateWithStatusCount, excelData);
 		}
 	}

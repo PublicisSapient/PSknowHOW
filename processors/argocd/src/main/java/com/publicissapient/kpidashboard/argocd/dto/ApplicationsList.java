@@ -23,11 +23,7 @@ import java.util.List;
 
 import lombok.Data;
 
-
-/**
- * ApplicationsList represents the list of ArgoCD Application
- *
- */
+/** ApplicationsList represents the list of ArgoCD Application */
 @Data
 public class ApplicationsList {
 	private List<Application> items = Collections.emptyList();

@@ -27,10 +27,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * Data count used for response of all the kpis having kpi level filters.
- */
-
+/** Data count used for response of all the kpis having kpi level filters. */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -42,9 +39,8 @@ public class DataCountGroup implements Serializable {
 	private String filter1;
 	private String filter2;
 	private List<DataCount> value;
-	//dora dashboard
+	// dora dashboard
 	private String aggregationValue;
 	// releaseBurnup kpi
 	private String duration;
-
 }

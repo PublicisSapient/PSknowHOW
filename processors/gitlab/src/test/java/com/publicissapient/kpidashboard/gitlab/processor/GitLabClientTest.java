@@ -103,5 +103,4 @@ public class GitLabClientTest {
 	private String getServerResponse(String resource) throws Exception {
 		return IOUtils.toString(this.getClass().getResourceAsStream(resource), StandardCharsets.UTF_8);
 	}
-
 }

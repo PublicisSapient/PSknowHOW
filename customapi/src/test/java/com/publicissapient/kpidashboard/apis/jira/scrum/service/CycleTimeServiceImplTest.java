@@ -22,7 +22,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -66,10 +65,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 
-/**
- *
- * author @shi6
- */
+/** author @shi6 */
 @RunWith(MockitoJUnitRunner.class)
 public class CycleTimeServiceImplTest {
 	private static final List<String> xAxisRange = Arrays.asList("< 16 Months", "< 3 Months", "< 1 Months", "< 2 Weeks",
@@ -115,7 +111,7 @@ public class CycleTimeServiceImplTest {
 		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory
 				.newInstance("/json/default/iteration/jira_issue_custom_history.json");
 		totalJiraIssueHistoryList = jiraIssueHistoryDataFactory.getUniqueJiraIssueCustomHistory();
-//		when(customApiConfig.getCycleTimeRange()).thenReturn(xAxisRange);
+		// when(customApiConfig.getCycleTimeRange()).thenReturn(xAxisRange);
 
 	}
 
@@ -124,10 +120,10 @@ public class CycleTimeServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(anyMap(), anyMap(),
-				anyString(), anyString())).thenReturn(totalJiraIssueHistoryList);
+		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(anyMap(), anyMap(), anyString(),
+				anyString())).thenReturn(totalJiraIssueHistoryList);
 		Map<String, Object> sprintDataListMap = cycleTimeService.fetchKPIDataFromDb(leafNodeList.get(0),
 				LocalDate.now().minusMonths(6).toString(), LocalDate.now().toString(), kpiRequest);
 		assertNotNull(sprintDataListMap);
@@ -142,7 +138,6 @@ public class CycleTimeServiceImplTest {
 		cycleTimeService.getCycleTime(totalJiraIssueHistoryList, fieldMapping, cycleTimeValidationDataList,
 				kpiRequest.getKpiList().get(0), trendValue);
 		assertEquals(39, cycleTimeValidationDataList.size());
-
 	}
 
 	@Test
@@ -151,11 +146,13 @@ public class CycleTimeServiceImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
-		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(anyMap(), anyMap(),
-				anyString(), anyString())).thenReturn(totalJiraIssueHistoryList);
+		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(anyMap(), anyMap(), anyString(),
+				anyString())).thenReturn(totalJiraIssueHistoryList);
 		String kpiRequestTrackerId = "Jira-Excel-5be544de025de212549176a9";
-//		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
-//				.thenReturn(kpiRequestTrackerId);
+		// when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY
+		// +
+		// KPISource.JIRA.name()))
+		// .thenReturn(kpiRequestTrackerId);
 
 		KpiElement responseKpiElement = cycleTimeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
@@ -168,5 +165,4 @@ public class CycleTimeServiceImplTest {
 	public void testGetQualifierType() {
 		assertThat(cycleTimeService.getQualifierType(), equalTo("CYCLE_TIME"));
 	}
-
 }

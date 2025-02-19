@@ -74,84 +74,84 @@ public class HierarchyLevelServiceImplTest {
 	}
 
 	@Test
-    public void testGetTopHierarchyLevels() {
-        when(hierarchyLevelRepository.findAllByOrderByLevel()).thenReturn(mockHierarchyLevels);
+	public void testGetTopHierarchyLevels() {
+		when(hierarchyLevelRepository.findAllByOrderByLevel()).thenReturn(mockHierarchyLevels);
 
-        // Calling the actual method
-        List<HierarchyLevel> result = hierarchyLevelService.getTopHierarchyLevels();
+		// Calling the actual method
+		List<HierarchyLevel> result = hierarchyLevelService.getTopHierarchyLevels();
 
-        // Verifying the interactions
-        verify(hierarchyLevelRepository, times(1)).findAllByOrderByLevel();
+		// Verifying the interactions
+		verify(hierarchyLevelRepository, times(1)).findAllByOrderByLevel();
 
-        // Asserting the result
-        assertEquals(mockHierarchyLevels, result);
-    }
-
-	@Test
-    public void testGetFullHierarchyLevels_Kanban() {
-        // Mocking data and dependencies
-        when(hierarchyLevelRepository.findAllByOrderByLevel()).thenReturn(mockHierarchyLevels);
-        when(filterCategoryLevelService.getAdditionalFilterCategories()).thenReturn(mockCategories);
-
-        // Calling the actual method
-        List<HierarchyLevel> result = hierarchyLevelService.getFullHierarchyLevels(true);
-
-        // Asserting the result
-        assertNotNull(result);
-        // Add more assertions based on your specific logic and expectations
-    }
+		// Asserting the result
+		assertEquals(mockHierarchyLevels, result);
+	}
 
 	@Test
-    public void testGetFullHierarchyLevels_NotKanban() {
-        // Mocking data and dependencies
-        when(hierarchyLevelRepository.findAllByOrderByLevel()).thenReturn(mockHierarchyLevels);
-        when(filterCategoryLevelService.getAdditionalFilterCategories()).thenReturn(Collections.emptyList());
+	public void testGetFullHierarchyLevels_Kanban() {
+		// Mocking data and dependencies
+		when(hierarchyLevelRepository.findAllByOrderByLevel()).thenReturn(mockHierarchyLevels);
+		when(filterCategoryLevelService.getAdditionalFilterCategories()).thenReturn(mockCategories);
 
-        // Calling the actual method
-        List<HierarchyLevel> result = hierarchyLevelService.getFullHierarchyLevels(false);
+		// Calling the actual method
+		List<HierarchyLevel> result = hierarchyLevelService.getFullHierarchyLevels(true);
 
-        // Asserting the result
-        assertNotNull(result);
-        // Add more assertions based on your specific logic and expectations
-    }
-
-	@Test
-    public void testGetProjectHierarchyLevel() {
-        // Mocking data and dependencies
-        when(hierarchyLevelRepository.findAllByOrderByLevel()).thenReturn(mockHierarchyLevels);
-
-        // Calling the actual method
-        HierarchyLevel result = hierarchyLevelService.getProjectHierarchyLevel();
-
-        // Asserting the result
-        assertNotNull(result);
-        // Add more assertions based on your specific logic and expectations
-    }
+		// Asserting the result
+		assertNotNull(result);
+		// Add more assertions based on your specific logic and expectations
+	}
 
 	@Test
-    public void testGetSprintHierarchyLevel() {
-        // Mocking data and dependencies
-        when(hierarchyLevelRepository.findAllByOrderByLevel()).thenReturn(mockHierarchyLevels);
+	public void testGetFullHierarchyLevels_NotKanban() {
+		// Mocking data and dependencies
+		when(hierarchyLevelRepository.findAllByOrderByLevel()).thenReturn(mockHierarchyLevels);
+		when(filterCategoryLevelService.getAdditionalFilterCategories())
+				.thenReturn(Collections.emptyList());
 
-        // Calling the actual method
-        HierarchyLevel result = hierarchyLevelService.getSprintHierarchyLevel();
+		// Calling the actual method
+		List<HierarchyLevel> result = hierarchyLevelService.getFullHierarchyLevels(false);
 
-        // Asserting the result
-        assertNotNull(result);
-        // Add more assertions based on your specific logic and expectations
-    }
+		// Asserting the result
+		assertNotNull(result);
+		// Add more assertions based on your specific logic and expectations
+	}
 
 	@Test
-    public void testGetReleaseHierarchyLevel() {
-        // Mocking data and dependencies
-        when(hierarchyLevelRepository.findAllByOrderByLevel()).thenReturn(mockHierarchyLevels);
+	public void testGetProjectHierarchyLevel() {
+		// Mocking data and dependencies
+		when(hierarchyLevelRepository.findAllByOrderByLevel()).thenReturn(mockHierarchyLevels);
 
-        // Calling the actual method
-        HierarchyLevel result = hierarchyLevelService.getReleaseHierarchyLevel();
+		// Calling the actual method
+		HierarchyLevel result = hierarchyLevelService.getProjectHierarchyLevel();
 
-        // Asserting the result
-        assertNotNull(result);
-        // Add more assertions based on your specific logic and expectations
-    }
+		// Asserting the result
+		assertNotNull(result);
+		// Add more assertions based on your specific logic and expectations
+	}
 
+	@Test
+	public void testGetSprintHierarchyLevel() {
+		// Mocking data and dependencies
+		when(hierarchyLevelRepository.findAllByOrderByLevel()).thenReturn(mockHierarchyLevels);
+
+		// Calling the actual method
+		HierarchyLevel result = hierarchyLevelService.getSprintHierarchyLevel();
+
+		// Asserting the result
+		assertNotNull(result);
+		// Add more assertions based on your specific logic and expectations
+	}
+
+	@Test
+	public void testGetReleaseHierarchyLevel() {
+		// Mocking data and dependencies
+		when(hierarchyLevelRepository.findAllByOrderByLevel()).thenReturn(mockHierarchyLevels);
+
+		// Calling the actual method
+		HierarchyLevel result = hierarchyLevelService.getReleaseHierarchyLevel();
+
+		// Asserting the result
+		assertNotNull(result);
+		// Add more assertions based on your specific logic and expectations
+	}
 }

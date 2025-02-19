@@ -73,7 +73,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * SonarProcessorJobExecutor that fetches sonar metrics information from Sonar.
- *
  */
 @Component
 @Slf4j
@@ -127,19 +126,17 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 	 * Instantiate SonarProcessorJobExecutor.
 	 *
 	 * @param scheduler
-	 *            the task scheduler
+	 *          the task scheduler
 	 */
 	@Autowired
 	public SonarProcessorJobExecutor(TaskScheduler scheduler) {
 		super(scheduler, ProcessorConstants.SONAR);
-
 	}
 
 	/**
 	 * Provides SonarProcessor.
 	 *
 	 * @return the SonarProcessor
-	 *
 	 */
 	@Override
 	public SonarProcessor getProcessor() {
@@ -170,7 +167,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 	 * Processes sonar data from Sonar server.
 	 *
 	 * @param processor
-	 *            the sonar processor
+	 *          the sonar processor
 	 */
 	@Override
 	public boolean execute(SonarProcessor processor) {
@@ -184,8 +181,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 		clearSelectedBasicProjectConfigIds();
 		AtomicReference<Integer> count = new AtomicReference<>(0);
 
-		List<SonarProcessorItem> existingProcessorItems = sonarProcessorItemRepository
-				.findByProcessorId(processor.getId());
+		List<SonarProcessorItem> existingProcessorItems = sonarProcessorItemRepository.findByProcessorId(processor.getId());
 
 		cleanUnusedProcessorItem(existingProcessorItems);
 
@@ -195,8 +191,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 					.findByToolAndBasicProjectConfigId(ProcessorConstants.SONAR, proBasicConfig.getId());
 
 			for (ProcessorToolConnection sonar : sonarServerList) {
-				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-						proBasicConfig.getId().toHexString());
+				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(proBasicConfig.getId().toHexString());
 				try {
 					processorToolConnectionService.validateConnectionFlag(sonar);
 					MDC.put(SONAR_URL, sonar.getUrl());
@@ -216,8 +211,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 					addNewProjects(toBeEnabledJob, existingProcessorItems, processor);
 					List<SonarProcessorItem> enableProjectList = sonarProcessorItemRepository
 							.findEnabledProjectsForTool(processor.getId(), sonar.getId(), sonar.getUrl());
-					int updatedCount = saveSonarDetails(enableProjectList, sonar, sonarClient,
-							sonarConfig.getMetrics().get(0));
+					int updatedCount = saveSonarDetails(enableProjectList, sonar, sonarClient, sonarConfig.getMetrics().get(0));
 					count.updateAndGet(v -> v + updatedCount);
 
 					saveSonarHistory(enableProjectList, sonar, sonarClient, sonarConfig.getMetrics().get(0));
@@ -228,9 +222,8 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 				} catch (Exception ex) {
 					isClientException(sonar, ex);
-					String errorMessage = "Exception in sonar project: url - " + sonar.getUrl() + ", user - "
-							+ sonar.getUsername() + ", toolId - " + sonar.getId() + ", Exception is - "
-							+ ex.getMessage();
+					String errorMessage = "Exception in sonar project: url - " + sonar.getUrl() + ", user - " +
+							sonar.getUsername() + ", toolId - " + sonar.getId() + ", Exception is - " + ex.getMessage();
 					executionStatus = false;
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(executionStatus);
@@ -256,15 +249,14 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 
 	/**
 	 * to check exception happening due to client Server
-	 * 
+	 *
 	 * @param sonar
-	 *            sonar
+	 *          sonar
 	 * @param ex
-	 *            ex
+	 *          ex
 	 */
 	private void isClientException(ProcessorToolConnection sonar, Exception ex) {
-		if (ex instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) ex).getStatusCode().is4xxClientError()) {
+		if (ex instanceof HttpClientErrorException && ((HttpClientErrorException) ex).getStatusCode().is4xxClientError()) {
 			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) ex).getStatusCode().value())
 					.getReasonPhrase();
 			processorToolConnectionService.updateBreakingConnection(sonar.getConnectionId(), errMsg);
@@ -277,7 +269,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 	}
 
 	private List<ProjectBasicConfig> getSelectedProjects() {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findActiveProjects(false);
 
 		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 
@@ -286,21 +278,20 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 			return allProjects;
 		}
 
-		return CollectionUtils.emptyIfNull(allProjects).stream().filter(
-				projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
+		return CollectionUtils.emptyIfNull(allProjects).stream()
+				.filter(projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
 				.collect(Collectors.toList());
-
 	}
 
 	/**
 	 * Update sonar projects active and set tool config.
 	 *
 	 * @param sonar
-	 *            the Sonar server configuration details
+	 *          the Sonar server configuration details
 	 * @param projects
-	 *            the list of Sonar project configuration
+	 *          the list of Sonar project configuration
 	 * @param toBeEnabledJob
-	 *            the enabled Sonar job
+	 *          the enabled Sonar job
 	 */
 	private void setActiveSonarProjects(ProcessorToolConnection sonar, List<SonarProcessorItem> projects,
 			List<SonarProcessorItem> toBeEnabledJob) {
@@ -324,13 +315,13 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 	 * Saves the latest sonar details.
 	 *
 	 * @param sonarProjects
-	 *            the list of Sonar project
+	 *          the list of Sonar project
 	 * @param sonarServer
-	 *            the Sonar server configuration
+	 *          the Sonar server configuration
 	 * @param sonarClient
-	 *            the Sonar client
+	 *          the Sonar client
 	 * @param metrics
-	 *            the metrics
+	 *          the metrics
 	 * @return count of data saved in db
 	 */
 	private int saveSonarDetails(List<SonarProcessorItem> sonarProjects, ProcessorToolConnection sonarServer,
@@ -365,8 +356,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 					new HttpEntity<>(SonarProcessorUtils.getHeaders(sonarServer.getAccessToken(), true)), metrics);
 		} else {
 			sonarDetailsMetrics = sonarClient.getLatestSonarDetails(project,
-					new HttpEntity<>(
-							SonarProcessorUtils.getHeaders(sonarServer.getUsername(), sonarServer.getPassword())),
+					new HttpEntity<>(SonarProcessorUtils.getHeaders(sonarServer.getUsername(), sonarServer.getPassword())),
 					metrics);
 		}
 		return sonarDetailsMetrics;
@@ -376,13 +366,13 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 	 * Saves sonar history data.
 	 *
 	 * @param sonarProjects
-	 *            the list of Sonar project
+	 *          the list of Sonar project
 	 * @param sonarServer
-	 *            the Sonar server configuration
+	 *          the Sonar server configuration
 	 * @param sonarClient
-	 *            the Sonar client
+	 *          the Sonar client
 	 * @param metrics
-	 *            the metrics
+	 *          the metrics
 	 * @return the count of code quality history data
 	 */
 	private int saveSonarHistory(List<SonarProcessorItem> sonarProjects, ProcessorToolConnection sonarServer,
@@ -393,8 +383,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 			Date date = new Date(ci.getUpdatedTime());
 			long diffInMillies = Math.abs(date.getTime() - new Date().getTime());
 			long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-			if (ci.getToolDetailsMap().get(INSTANCE_URL) == null || ci.getToolDetailsMap().get(KEY) == null
-					|| diff < 1) {
+			if (ci.getToolDetailsMap().get(INSTANCE_URL) == null || ci.getToolDetailsMap().get(KEY) == null || diff < 1) {
 				continue;
 			}
 
@@ -420,8 +409,8 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 
 		List<SonarHistory> sonarHistoryList;
 		if (sonarServer.isCloudEnv()) {
-			sonarHistoryList = sonarClient.getPastSonarDetails(ci,
-					new HttpEntity<>(SonarProcessorUtils.getHeaders(password)), metrics);
+			sonarHistoryList = sonarClient.getPastSonarDetails(ci, new HttpEntity<>(SonarProcessorUtils.getHeaders(password)),
+					metrics);
 
 		} else if (!sonarServer.isCloudEnv() && sonarServer.isAccessTokenEnabled()) {
 			sonarHistoryList = sonarClient.getPastSonarDetails(ci,
@@ -437,7 +426,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 	 * Decrypt jira password as plain text
 	 *
 	 * @param encryptedPassword
-	 *            encrypted password
+	 *          encrypted password
 	 * @return plain text password
 	 */
 	private String decryptPassword(String encryptedPassword) {
@@ -448,11 +437,11 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 	 * Adds new project in processor item collection.
 	 *
 	 * @param sonarDetailsList
-	 *            the list of Sonar project
+	 *          the list of Sonar project
 	 * @param existingProjectList
-	 *            the existing Sonar project
+	 *          the existing Sonar project
 	 * @param processor
-	 *            the processor
+	 *          the processor
 	 */
 	private void addNewProjects(List<SonarProcessorItem> sonarDetailsList, List<SonarProcessorItem> existingProjectList,
 			SonarProcessor processor) {
@@ -480,7 +469,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 	 * Checks if sonar data
 	 *
 	 * @param project
-	 *            the Sonar project
+	 *          the Sonar project
 	 * @return boolean
 	 */
 	private SonarDetails getExistingSonarData(SonarProcessorItem project) {
@@ -491,9 +480,9 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 	 * Cleans the cache in the Custom API
 	 *
 	 * @param cacheEndPoint
-	 *            the cache endpoint
+	 *          the cache endpoint
 	 * @param cacheName
-	 *            the cache name
+	 *          the cache name
 	 */
 	private void cacheRestClient(String cacheEndPoint, String cacheName) {
 		HttpHeaders headers = new HttpHeaders();
@@ -528,7 +517,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 	 * Removes toolConfigId and make enabled to false for unused jobs.
 	 *
 	 * @param existingProcessorItems
-	 *            the existing Sonar Project *
+	 *          the existing Sonar Project *
 	 */
 	private void cleanUnusedProcessorItem(List<SonarProcessorItem> existingProcessorItems) {
 
@@ -536,8 +525,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 				.findByTool(ProcessorConstants.SONAR);
 
 		List<SonarProcessorItem> abandonedProcessorItems = CollectionUtils.emptyIfNull(existingProcessorItems).stream()
-				.filter(processorItem -> isToolInfoNotExists(processorItem, existingSonarTools))
-				.collect(Collectors.toList());
+				.filter(processorItem -> isToolInfoNotExists(processorItem, existingSonarTools)).collect(Collectors.toList());
 
 		if (CollectionUtils.isNotEmpty(abandonedProcessorItems)) {
 			inactivateProcessorItems(abandonedProcessorItems);
@@ -559,9 +547,9 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 			return false;
 		}
 
-		return existingProcessorToolConnections.stream().noneMatch(
-				processorToolConnection -> processorToolConnection.getUrl().equals(processorItem.getInstanceUrl())
-						&& processorToolConnection.getProjectKey().equals(processorItem.getKey()));
+		return existingProcessorToolConnections.stream()
+				.noneMatch(processorToolConnection -> processorToolConnection.getUrl().equals(processorItem.getInstanceUrl()) &&
+						processorToolConnection.getProjectKey().equals(processorItem.getKey()));
 	}
 
 	private void clearSelectedBasicProjectConfigIds() {

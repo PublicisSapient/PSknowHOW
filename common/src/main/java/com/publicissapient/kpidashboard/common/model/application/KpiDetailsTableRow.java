@@ -22,14 +22,11 @@ import java.util.List;
 import lombok.Data;
 
 /**
- *
  * @author yasbano
- *
  */
 @Data
 public class KpiDetailsTableRow {
 
 	private String type;
 	private List<String> value;
-
 }

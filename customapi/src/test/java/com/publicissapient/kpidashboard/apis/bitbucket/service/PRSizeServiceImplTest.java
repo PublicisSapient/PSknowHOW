@@ -33,10 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
-import com.publicissapient.kpidashboard.common.model.jira.Assignee;
-import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,6 +45,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
@@ -69,166 +66,174 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PRSizeServiceImplTest {
 
-    private static Tool tool3;
-    public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-    public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-    Map<String, List<Tool>> toolGroup = new HashMap<>();
-    Map<String, Object> commitMap = new HashMap<String, Object>();
+	private static Tool tool3;
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	Map<String, List<Tool>> toolGroup = new HashMap<>();
+	Map<String, Object> commitMap = new HashMap<String, Object>();
 
-    List<Tool> toolList1;
-    List<Tool> toolList2;
-    List<Tool> toolList3;
+	List<Tool> toolList1;
+	List<Tool> toolList2;
+	List<Tool> toolList3;
 
-    private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
-    private List<FieldMapping> fieldMappingList = new ArrayList<>();
-    private Map<ObjectId, Map<String, List<Tool>>> toolMap = new HashMap<>();
-    private KpiElement kpiElement;
-    private KpiRequest kpiRequest;
-    private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-    private Map<String, List<DataCount>> trendValueMap = new HashMap<>();
-    private List<DataCount> trendValues = new ArrayList<>();
-    private List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+	private List<FieldMapping> fieldMappingList = new ArrayList<>();
+	private Map<ObjectId, Map<String, List<Tool>>> toolMap = new HashMap<>();
+	private KpiElement kpiElement;
+	private KpiRequest kpiRequest;
+	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+	private Map<String, List<DataCount>> trendValueMap = new HashMap<>();
+	private List<DataCount> trendValues = new ArrayList<>();
+	private List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
 
-    @InjectMocks
-    PRSizeServiceImpl prSizeService;
+	@InjectMocks
+	PRSizeServiceImpl prSizeService;
 
-    @Mock
-    private ConfigHelperService configHelperService;
-    @Mock
-    private CustomApiConfig customApiConfig;
-    @Mock
-    private RepoToolsConfigServiceImpl repoToolsConfigService;
-    @Mock
-    CacheService cacheService;
-    @Mock
-    private CommonService commonService;
-    @Mock
-    private AssigneeDetailsRepository assigneeDetailsRepository;
-    @Mock
-    private KpiHelperService kpiHelperService;
+	@Mock
+	private ConfigHelperService configHelperService;
+	@Mock
+	private CustomApiConfig customApiConfig;
+	@Mock
+	private RepoToolsConfigServiceImpl repoToolsConfigService;
+	@Mock
+	CacheService cacheService;
+	@Mock
+	private CommonService commonService;
+	@Mock
+	private AssigneeDetailsRepository assigneeDetailsRepository;
+	@Mock
+	private KpiHelperService kpiHelperService;
 
-    @Before
-    public void setup() {
-        setToolMap();
-        setTreadValuesDataCount();
+	@Before
+	public void setup() {
+		setToolMap();
+		setTreadValuesDataCount();
 
-        KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
-        kpiRequest = kpiRequestFactory.findKpiRequest("kpi11");
-        Map<String, List<String>> selectedMap = kpiRequest.getSelectedMap();
-        selectedMap.put(CommonConstant.date, Arrays.asList("DAYS"));
-        kpiRequest.setSelectedMap(selectedMap);
-        kpiRequest.setLabel("Project");
-        kpiElement = kpiRequest.getKpiList().get(0);
-        kpiRequest.setXAxisDataPoints(5);
-        kpiRequest.setDuration("DAYS");
+		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
+		kpiRequest = kpiRequestFactory.findKpiRequest("kpi11");
+		Map<String, List<String>> selectedMap = kpiRequest.getSelectedMap();
+		selectedMap.put(CommonConstant.date, Arrays.asList("DAYS"));
+		kpiRequest.setSelectedMap(selectedMap);
+		kpiRequest.setLabel("Project");
+		kpiElement = kpiRequest.getKpiList().get(0);
+		kpiRequest.setXAxisDataPoints(5);
+		kpiRequest.setDuration("DAYS");
 
-        AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
-                .newInstance();
-        accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
-        RepoToolsKpiRequestDataFactory repoToolsKpiRequestDataFactory = RepoToolsKpiRequestDataFactory.newInstance();
-        repoToolKpiMetricResponseList = repoToolsKpiRequestDataFactory.getRepoToolsKpiRequest();
-        repoToolKpiMetricResponseList.get(0).setDateLabel(LocalDate.now().minusDays(2).toString());
-        projectConfigList.forEach(projectConfig -> {
-            projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
-        });
-        fieldMappingList.forEach(fieldMapping -> {
-            fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
-        });
+		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
+				.newInstance();
+		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
+		RepoToolsKpiRequestDataFactory repoToolsKpiRequestDataFactory = RepoToolsKpiRequestDataFactory.newInstance();
+		repoToolKpiMetricResponseList = repoToolsKpiRequestDataFactory.getRepoToolsKpiRequest();
+		repoToolKpiMetricResponseList.get(0).setDateLabel(LocalDate.now().toString());
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
+		fieldMappingList.forEach(fieldMapping -> {
+			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
+		});
 
-        configHelperService.setProjectConfigMap(projectConfigMap);
-        configHelperService.setFieldMappingMap(fieldMappingMap);
+		configHelperService.setProjectConfigMap(projectConfigMap);
+		configHelperService.setFieldMappingMap(fieldMappingMap);
 
-        Mockito.when(cacheService.getFromApplicationCache(Mockito.anyString())).thenReturn("trackerid");
-        when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-        when(configHelperService.getToolItemMap()).thenReturn(toolMap);
-        String kpiRequestTrackerId = "Bitbucket-5be544de025de212549176a9";
-        when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
-                .thenReturn(kpiRequestTrackerId);
+		Mockito.when(cacheService.getFromApplicationCache(Mockito.anyString())).thenReturn("trackerid");
+		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
+		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
+		String kpiRequestTrackerId = "Bitbucket-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
+				.thenReturn(kpiRequestTrackerId);
 
-        AssigneeDetails assigneeDetails = new AssigneeDetails();
-        assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");
-        assigneeDetails.setSource("Jira");
-        Set<Assignee> assigneeSet = new HashSet<>();
-        assigneeSet.add(new Assignee("aks", "Akshat Shrivastava",
-                new HashSet<>(Arrays.asList("akshat.shrivastav@publicissapient.com"))));
-        assigneeSet.add(new Assignee("llid", "Hiren",
-                new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
-        assigneeDetails.setAssignee(assigneeSet);
-        when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
-        when(kpiHelperService.populateSCMToolsRepoList(anyMap())).thenReturn(toolList3);
+		AssigneeDetails assigneeDetails = new AssigneeDetails();
+		assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");
+		assigneeDetails.setSource("Jira");
+		Set<Assignee> assigneeSet = new HashSet<>();
+		assigneeSet.add(new Assignee("aks", "Akshat Shrivastava",
+				new HashSet<>(Arrays.asList("akshat.shrivastav@publicissapient.com"))));
+		assigneeSet
+				.add(new Assignee("llid", "Hiren", new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
+		assigneeDetails.setAssignee(assigneeSet);
+		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
+		when(kpiHelperService.populateSCMToolsRepoList(anyMap())).thenReturn(toolList3);
+	}
 
-    }
+	private void setToolMap() {
+		toolList3 = new ArrayList<>();
 
-    private void setToolMap() {
-        toolList3 = new ArrayList<>();
+		ProcessorItem processorItem = new ProcessorItem();
+		processorItem.setProcessorId(new ObjectId("63282180160f5b4eb2ac380b"));
+		processorItem.setId(new ObjectId("633ab3fb26878c56f03ebd36"));
 
-        ProcessorItem processorItem = new ProcessorItem();
-        processorItem.setProcessorId(new ObjectId("63282180160f5b4eb2ac380b"));
-        processorItem.setId(new ObjectId("633ab3fb26878c56f03ebd36"));
+		ProcessorItem processorItem1 = new ProcessorItem();
+		processorItem1.setProcessorId(new ObjectId("63378301e7d2665a7944f675"));
+		processorItem1.setId(new ObjectId("633abcd1e7d2665a7944f678"));
 
-        ProcessorItem processorItem1 = new ProcessorItem();
-        processorItem1.setProcessorId(new ObjectId("63378301e7d2665a7944f675"));
-        processorItem1.setId(new ObjectId("633abcd1e7d2665a7944f678"));
+		List<ProcessorItem> collectorItemList = new ArrayList<>();
+		collectorItemList.add(processorItem);
+		List<ProcessorItem> collectorItemList1 = new ArrayList<>();
+		collectorItemList1.add(processorItem1);
 
-        List<ProcessorItem> collectorItemList = new ArrayList<>();
-        collectorItemList.add(processorItem);
-        List<ProcessorItem> collectorItemList1 = new ArrayList<>();
-        collectorItemList1.add(processorItem1);
+		tool3 = createTool("url3", "Bitbucket", collectorItemList1);
 
-        tool3 = createTool("url3", "Bitbucket", collectorItemList1);
+		toolList3.add(tool3);
 
-        toolList3.add(tool3);
+		toolGroup.put(Constant.TOOL_BITBUCKET, toolList3);
+		toolGroup.put(Constant.TOOL_AZUREREPO, toolList1);
+		toolGroup.put(Constant.REPO_TOOLS, toolList2);
+		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
+	}
 
-        toolGroup.put(Constant.TOOL_BITBUCKET, toolList3);
-        toolGroup.put(Constant.TOOL_AZUREREPO, toolList1);
-        toolGroup.put(Constant.REPO_TOOLS, toolList2);
-        toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
+	private Tool createTool(String url, String toolType, List<ProcessorItem> collectorItemList) {
+		Tool tool = new Tool();
+		tool.setTool(toolType);
+		tool.setUrl(url);
+		tool.setBranch("master");
+		tool.setRepositoryName("PSknowHOW");
 
-    }
+		tool.setProcessorItemList(collectorItemList);
+		return tool;
+	}
 
-    private Tool createTool(String url, String toolType, List<ProcessorItem> collectorItemList) {
-        Tool tool = new Tool();
-        tool.setTool(toolType);
-        tool.setUrl(url);
-        tool.setBranch("master");
-        tool.setRepositoryName("PSknowHOW");
+	private void setTreadValuesDataCount() {
+		List<DataCount> dataCountList = new ArrayList<>();
+		DataCount dataCountValue = new DataCount();
+		dataCountValue.setData(String.valueOf(5L));
+		dataCountValue.setValue(5L);
+		dataCountList.add(dataCountValue);
+		DataCount dataCount = setDataCountValues("Scrum Project", "3", "4", dataCountList);
+		trendValues.add(dataCount);
+		trendValueMap.put("Overall#Overall", trendValues);
+		trendValueMap.put("Overall#Hiren", trendValues);
+	}
 
-        tool.setProcessorItemList(collectorItemList);
-        return tool;
-    }
+	private DataCount setDataCountValues(String data, String maturity, Object maturityValue, Object value) {
+		DataCount dataCount = new DataCount();
+		dataCount.setData(data);
+		dataCount.setMaturity(maturity);
+		dataCount.setMaturityValue(maturityValue);
+		dataCount.setValue(value);
+		return dataCount;
+	}
 
-    private void setTreadValuesDataCount() {
-        List<DataCount> dataCountList = new ArrayList<>();
-        DataCount dataCountValue = new DataCount();
-        dataCountValue.setData(String.valueOf(5L));
-        dataCountValue.setValue(5L);
-        dataCountList.add(dataCountValue);
-        DataCount dataCount = setDataCountValues("Scrum Project", "3", "4", dataCountList);
-        trendValues.add(dataCount);
-        trendValueMap.put("Overall#Overall", trendValues);
-        trendValueMap.put("Overall#Hiren", trendValues);
-    }
+	@Test
+	public void testGetQualifierType() {
+		assertThat("KPI name: ", prSizeService.getQualifierType(), equalTo("PR_SIZE"));
+	}
 
-    private DataCount setDataCountValues(String data, String maturity, Object maturityValue, Object value) {
-        DataCount dataCount = new DataCount();
-        dataCount.setData(data);
-        dataCount.setMaturity(maturity);
-        dataCount.setMaturityValue(maturityValue);
-        dataCount.setValue(value);
-        return dataCount;
-    }
-
-    @Test
-    public void testGetQualifierType() {
-        assertThat("KPI name: ", prSizeService.getQualifierType(), equalTo("PR_SIZE"));
-    }
-
-    @Test
-    public void testGetKpiData() throws ApplicationException {
+	@Test
+	public void testGetKpiData() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
@@ -240,8 +245,8 @@ public class PRSizeServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
 				.thenReturn(kpiRequestTrackerId);
 
-		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any())).thenReturn(
-				repoToolKpiMetricResponseList);
+		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any()))
+				.thenReturn(repoToolKpiMetricResponseList);
 		try {
 			KpiElement kpiElement = prSizeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
@@ -250,33 +255,31 @@ public class PRSizeServiceImplTest {
 		}
 	}
 
-    @Test
-    public void testGetKpiDataDays() throws ApplicationException {
-        kpiRequest.setDuration(Constant.DAYS);
-        TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-                accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-        try {
-            KpiElement kpiElement = prSizeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-                    treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
-            assertThat("Trend Size: ", ((List)kpiElement.getTrendValueList()).size(), equalTo(2));
-        } catch (ApplicationException e) {
-            e.printStackTrace();
-        }
-    }
+	@Test
+	public void testGetKpiDataDays() throws ApplicationException {
+		kpiRequest.setDuration(Constant.DAYS);
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		try {
+			KpiElement kpiElement = prSizeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
+			assertThat("Trend Size: ", ((List) kpiElement.getTrendValueList()).size(), equalTo(2));
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+		}
+	}
 
+	@Test
+	public void testFetchKPIDataFromDb() {
+	}
 
-    @Test
-    public void testFetchKPIDataFromDb() {
-    }
+	@Test
+	public void testCalculateKPIMetrics() {
+		assertThat("Value: ", prSizeService.calculateKPIMetrics(commitMap), equalTo(null));
+	}
 
-    @Test
-    public void testCalculateKPIMetrics() {
-        assertThat("Value: ", prSizeService.calculateKPIMetrics(commitMap), equalTo(null));
-    }
-
-    @Test
-    public void testCalculateKpiValue() {
-        assertThat("Value: ", prSizeService.calculateKPIMetrics(commitMap), equalTo(null));
-    }
-
+	@Test
+	public void testCalculateKpiValue() {
+		assertThat("Value: ", prSizeService.calculateKPIMetrics(commitMap), equalTo(null));
+	}
 }

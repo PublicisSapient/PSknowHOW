@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.repository.comments;//NOPMD
+package com.publicissapient.kpidashboard.common.repository.comments; // NOPMD
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -39,5 +39,4 @@ public class KpiCommentRepositoryImpl implements KpiCommentRepositoryCustom {
 		Query commentIdQuery = Query.query(Criteria.where("commentId").is(commentId));
 		mongoTemplate.updateMulti(query, new Update().pull("commentsInfo", commentIdQuery), KPIComments.class);
 	}
-
 }

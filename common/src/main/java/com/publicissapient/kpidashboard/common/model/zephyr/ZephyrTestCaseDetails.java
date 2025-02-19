@@ -31,9 +31,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents test case details collection.
- */
+/** Represents test case details collection. */
 // need to check used or not
 @Data
 @Builder
@@ -65,5 +63,4 @@ public class ZephyrTestCaseDetails extends BasicModel {
 	private String isAutomatable;
 
 	private String priority;
-
 }

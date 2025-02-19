@@ -71,11 +71,11 @@
               "optimization": false,
               "outputHashing": "all",
               "sourceMap": true,
-              "namedChunks": false,
-              "aot": true,
+              "namedChunks": true,
+              "aot": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true
+              "vendorChunk": true,
+              "buildOptimizer": false
             },
             "supervisor": {
               "fileReplacements": [
@@ -119,11 +119,11 @@
               "optimization": false,
               "outputHashing": "all",
               "sourceMap": true,
-              "namedChunks": false,
-              "aot": true,
+              "namedChunks": true,
+              "aot": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true
+              "vendorChunk": true,
+              "buildOptimizer": false
             },
             "local": {
               "optimization": false,

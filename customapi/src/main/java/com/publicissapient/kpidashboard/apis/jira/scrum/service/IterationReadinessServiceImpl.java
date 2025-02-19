@@ -51,7 +51,6 @@ import lombok.extern.slf4j.Slf4j;
  * Jira service class to fetch Iteration readiness kpi details
  *
  * @author aksshriv1
- *
  */
 @Slf4j
 @Component
@@ -69,9 +68,7 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 	@Autowired
 	private ConfigHelperService configHelperService;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
 			throws ApplicationException {
@@ -79,12 +76,9 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 		projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
 		log.info("Iteration Readiness Service impl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
-
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
@@ -113,9 +107,7 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 		return resultListMap;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public String getQualifierType() {
 		return KPICode.ITERATION_READINESS_KPI.name();
@@ -126,11 +118,11 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 	 * project wise.
 	 *
 	 * @param leafNode
-	 *            leafNodeList
+	 *          leafNodeList
 	 * @param kpiElement
-	 *            kpiElement
+	 *          kpiElement
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(Node leafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
@@ -152,12 +144,10 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 						.orElse(Collections.emptyList()).stream().map(String::toLowerCase).collect(Collectors.toList());
 				List<String> backlogRefinedStatus = Optional.ofNullable(fieldMapping.getJiraStatusForRefinedKPI161())
 						.orElse(Collections.emptyList()).stream().map(String::toLowerCase).collect(Collectors.toList());
-				List<String> backlogNotRefinedStatus = Optional
-						.ofNullable(fieldMapping.getJiraStatusForNotRefinedKPI161()).orElse(Collections.emptyList())
-						.stream().map(String::toLowerCase).collect(Collectors.toList());
+				List<String> backlogNotRefinedStatus = Optional.ofNullable(fieldMapping.getJiraStatusForNotRefinedKPI161())
+						.orElse(Collections.emptyList()).stream().map(String::toLowerCase).collect(Collectors.toList());
 
 				sprintList.forEach(sprint -> {
-
 					DataCount issueCountDc = new DataCount();
 					List<DataCount> dataCountList = new ArrayList<>();
 					DataCount storyPointDc = new DataCount();
@@ -176,8 +166,8 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 					// create drill down
 					long inProgressCount = inProgressJiraIssue.size();
 					double inProgressSize = KpiDataHelper.calculateStoryPoints(inProgressJiraIssue, fieldMapping);
-					createIssueCountDrillDown(inProgressJiraIssue, IN_PROGRESS, inProgressCount, inProgressSize,
-							dataCountList, fieldMapping);
+					createIssueCountDrillDown(inProgressJiraIssue, IN_PROGRESS, inProgressCount, inProgressSize, dataCountList,
+							fieldMapping);
 
 					long refinedIssuesCount = refinedJiraIssues.size();
 					double refinedIssuesSize = KpiDataHelper.calculateStoryPoints(refinedJiraIssues, fieldMapping);
@@ -185,10 +175,9 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 							dataCountList, fieldMapping);
 
 					long notRefinedIssuesCount = notRefinedJiraIssues.size();
-					double notRefinedIssuesSize = KpiDataHelper.calculateStoryPoints(notRefinedJiraIssues,
-							fieldMapping);
-					createIssueCountDrillDown(notRefinedJiraIssues, NOT_REFINED, notRefinedIssuesCount,
-							notRefinedIssuesSize, dataCountList, fieldMapping);
+					double notRefinedIssuesSize = KpiDataHelper.calculateStoryPoints(notRefinedJiraIssues, fieldMapping);
+					createIssueCountDrillDown(notRefinedJiraIssues, NOT_REFINED, notRefinedIssuesCount, notRefinedIssuesSize,
+							dataCountList, fieldMapping);
 
 					setDataCount(sprint, issueCountDc, storyPointDc);
 
@@ -198,7 +187,6 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 					storyPointDc.setValue(dataCountList);
 					issueCountDcList.add(issueCountDc);
 					storyPointDcList.add(storyPointDc);
-
 				});
 
 				IterationKpiValue issueCountIterationKpiValue = new IterationKpiValue();
@@ -221,7 +209,6 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 				log.info("Iteration Readiness Service Impl -> request id : {} future sprints jira Issues : {}",
 						requestTrackerId, filteredJiraIssue);
 			}
-
 		}
 		kpiElement.setTrendValueList(overAllIterationKpiValue);
 	}
@@ -231,8 +218,8 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 		List<DataCount> drillDownList = new ArrayList<>();
 		Map<String, List<JiraIssue>> issueCountStatusMap = jiraIssueList.stream()
 				.collect(Collectors.groupingBy(JiraIssue::getStatus));
-		issueCountStatusMap.forEach((status, issueList) -> drillDownList.add(new DataCount(status, issueList.size(),
-				KpiDataHelper.calculateStoryPoints(issueList, fieldMapping), null)));
+		issueCountStatusMap.forEach((status, issueList) -> drillDownList.add(
+				new DataCount(status, issueList.size(), KpiDataHelper.calculateStoryPoints(issueList, fieldMapping), null)));
 		DataCount definedStatusDc = new DataCount(definedStatus, definedStatusCount, issueSize, drillDownList);
 		dataCountList.add(definedStatusDc);
 	}
@@ -241,11 +228,11 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 	 * Sets data count
 	 *
 	 * @param sprint
-	 *            sprint
+	 *          sprint
 	 * @param issueCountDc
-	 *            issueCountDc
+	 *          issueCountDc
 	 * @param storyPointDc
-	 *            storyPointDc
+	 *          storyPointDc
 	 */
 	private static void setDataCount(String sprint, DataCount issueCountDc, DataCount storyPointDc) {
 		if (StringUtils.isNotEmpty(sprint)) {
@@ -265,36 +252,33 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 	 * Method to filter issues w.r.t sprint & status
 	 *
 	 * @param sprint
-	 *            sprint
+	 *          sprint
 	 * @param jiraIssues
-	 *            jiraIssues
+	 *          jiraIssues
 	 * @param statusList
-	 *            statusList
+	 *          statusList
 	 * @return List<JiraIssue>
 	 */
 	private List<JiraIssue> filterByStatus(String sprint, List<JiraIssue> jiraIssues, List<String> statusList) {
 		return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getSprintName().equalsIgnoreCase(sprint))
-				.filter(jiraIssue -> statusList.contains(jiraIssue.getStatus().toLowerCase()))
-				.collect(Collectors.toList());
+				.filter(jiraIssue -> statusList.contains(jiraIssue.getStatus().toLowerCase())).collect(Collectors.toList());
 	}
 
 	/**
-	 *
 	 * @param requestTrackerId
-	 *            requestTrackerId
+	 *          requestTrackerId
 	 * @param excelData
-	 *            excelData
+	 *          excelData
 	 * @param jiraIssueList
-	 *            jiraIssueList
+	 *          jiraIssueList
 	 * @param fieldMapping
-	 *            fieldMapping
+	 *          fieldMapping
 	 */
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
 			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				CollectionUtils.isNotEmpty(jiraIssueList)) {
 			KPIExcelUtility.populateIterationReadinessExcelData(jiraIssueList, excelData, fieldMapping);
 		}
 	}
-
 }

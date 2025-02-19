@@ -10,8 +10,11 @@ import { Menu } from 'primeng/menu';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CommentsV2Component } from 'src/app/component/comments-v2/comments-v2.component';
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
+import { MessageService } from 'primeng/api';
 import * as d3 from 'd3';
 import { Subject } from 'rxjs';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
+
 
 @Component({
   selector: 'app-kpi-card-v2',
@@ -87,14 +90,15 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   copyCardData: any;
   currentChartData;
   KpiCategory;
-  colorPalette = ['#FBCF5F', '#6079C5', '#A4F6A5'];//d3.schemeCategory10;//['#167a26', '#4ebb1a', '#f53535'];
+  colorPalette = ['#FBCF5F', '#6079C5', '#A4F6A5'];
   selectedButtonValue;
   cardData;
+  reportModuleEnabled: boolean = false;
 
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
     private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService, private kpiHelperService: KpiHelperService,
-    private helperService: HelperService) { }
+    private helperService: HelperService, private messageService: MessageService, private featureFlagService: FeatureFlagsService) { }
 
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
@@ -132,7 +136,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             }
           }
         }
-        if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && (this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' || this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'multitypefilters') ) {
+        if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && (this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' || this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'multitypefilters')) {
           if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
             this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]?.hasOwnProperty('filter1') ? (this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'multitypefilters' ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter2'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0]) : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
           }
@@ -141,13 +145,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.selectedTab = this.service.getSelectedTab() ? this.service.getSelectedTab().toLowerCase() : '';
     }));
     /** assign 1st value to radio button by default */
-    // if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length && this.dropdownArr[0]?.options.length) {
-    //   console.log('default first radio')
-    //   this.radioOption = this.dropdownArr[0]?.options[0];
-    // }
   }
 
-  initializeMenu() {
+  async initializeMenu() {
     this.menuItems = [
       {
         label: 'Settings',
@@ -180,32 +180,46 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           this.showComments = true;
           this.openCommentModal();
         },
-      }
+      },
     ];
+
+    this.reportModuleEnabled = await this.featureFlagService.isFeatureEnabled('REPORTS');
+
+    if (this.reportModuleEnabled) {
+      this.menuItems.push({
+        label: 'Add to Report',
+        icon: 'pi pi-briefcase',
+        command: ($event) => {
+          this.addToReport();
+        },
+      });
+    }
   }
 
-/**
-   * Handles various actions based on the event type.
-   * Prepares data, opens dialogs, exports data, or shows comments as needed.
-   *
-   * @param {any} event - The event object containing action indicators.
-   * @returns {void}
-   */
-  handleAction(event:any){
-     if (event.listView) {
-          this.prepareData();
-        } else if (event.setting) {
-          this.onOpenFieldMappingDialog();
-        } else if (event.explore) {
-          if(event.kpiId){
-            this.exportToExcel(event.kpiId);
-          }else{
-            this.exportToExcel();
-          }
-        } else if (event.comment) {
-          this.showComments = true;
-          this.openCommentModal();
-        }
+  /**
+     * Handles various actions based on the event type.
+     * Prepares data, opens dialogs, exports data, or shows comments as needed.
+     *
+     * @param {any} event - The event object containing action indicators.
+     * @returns {void}
+     */
+  handleAction(event: any) {
+    if (event.listView) {
+      this.prepareData();
+    } else if (event.setting) {
+      this.onOpenFieldMappingDialog();
+    } else if (event.explore) {
+      if (event.kpiId) {
+        this.exportToExcel(event.kpiId);
+      } else {
+        this.exportToExcel();
+      }
+    } else if (event.comment) {
+      this.showComments = true;
+      this.openCommentModal();
+    } else if (event.report) {
+      this.addToReport();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -248,7 +262,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.currentChartData = this.prepareChartData(
         this.cardData,
         this.colorPalette,
-        this.cardData.kpiId === "kpi128"?this.cardData?.categoryData?.categoryGroup[0]?.categoryName:''
+        this.cardData.kpiId === "kpi128" ? this.cardData?.categoryData?.categoryGroup[0]?.categoryName : ''
       );
     }
 
@@ -306,9 +320,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     if (typeof value === 'object') {
       value = value?.value;
     }
-    if(this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'multitypefilters'){
-      if(value && type?.toLowerCase() === 'radio'){
-        this.filterOptions['filter'+(filterIndex+1)] = [value];
+    if (this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'multitypefilters') {
+      if (value && type?.toLowerCase() === 'radio') {
+        this.filterOptions['filter' + (filterIndex + 1)] = [value];
       }
     }
     if (value && type?.toLowerCase() == 'radio' && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() !== 'multitypefilters') {
@@ -339,7 +353,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         }
       }
       this.optionSelected.emit(['Overall']);
-    }else if(this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() !== 'multitypefilters'){
+    } else if (this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() !== 'multitypefilters') {
       this.filterOptions[event] = [];
       this.optionSelected.emit(this.filterOptions);
     } else {
@@ -455,15 +469,15 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     return this.service.getProcessorLogDetails().find(ptl => sourceArray.includes(ptl['processorName'].toLowerCase()));
   }
 
-  exportToExcel(KpiId?:any) {
-    if(!!this.cardData){
+  exportToExcel(KpiId?: any) {
+    if (!!this.cardData) {
       let exportData = this.cardData['issueData'];
       // const uniqueCategory = [[...new Set(exportData.map(item => item.Category))]];
       // console.log(uniqueCategory)
-      if(KpiId === 'kpi176'){
+      if (KpiId === 'kpi176') {
         exportData = exportData.filter(x => x['Issue Type'].includes('Dependency') || x['Issue Type'].includes('Risk'));
       }
-      this.service.kpiExcelSubject.next({markerInfo:this.cardData?.dataGroup?.markerInfo,columns:this.cardData['modalHeads'],excelData:exportData})
+      this.service.kpiExcelSubject.next({ markerInfo: this.cardData?.dataGroup?.markerInfo, columns: this.cardData['modalHeads'], excelData: exportData })
     }
 
     this.downloadExcel.emit(true);
@@ -498,7 +512,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
 
     else if ((data === '200' || data === '201' || data === '203') && (this.kpiData?.kpiId === 'kpi171')) {
-      if (this.trendValueList[0]?.data?.length > 0) {
+      if (this.trendValueList && this.trendValueList[0] && this.trendValueList[0]?.data?.length > 0) {
         return true;
       } else {
         return false;
@@ -519,7 +533,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
     return this.colorCssClassArray[index];
   }
-  
+
 
   hasData(field: string): boolean {
     return this.sprintDetailsList[this.selectedTabIndex]['hoverList'].some(rowData => rowData[field] !== null && rowData[field] !== undefined);
@@ -587,46 +601,46 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
   //#region new card
 
-/**
-     * Handles changes in filter selection, updates the issue data based on the selected filters,
-     * and prepares the chart data accordingly. It distinguishes between cases where the selected
-     * key object has a specific category value.
-     *
-     * @param event - The event object containing filter selection details.
-     * @returns void
-     * @throws None
-     */
-onFilterChange(event) {
-  const { selectedKeyObj, selectedKey, ...updatedEvent } = event;
+  /**
+       * Handles changes in filter selection, updates the issue data based on the selected filters,
+       * and prepares the chart data accordingly. It distinguishes between cases where the selected
+       * key object has a specific category value.
+       *
+       * @param event - The event object containing filter selection details.
+       * @returns void
+       * @throws None
+       */
+  onFilterChange(event) {
+    const { selectedKeyObj, selectedKey, ...updatedEvent } = event;
 
-  // Dynamically determine the exclusion value
-  const exclusionValue = selectedKeyObj?.Category;
+    // Dynamically determine the exclusion value
+    const exclusionValue = selectedKeyObj?.Category;
 
-  const filters = [
-    ...Object.entries({ ...updatedEvent, ...selectedKeyObj }).map(([key, value]) => ({ [key]: value }))
-  ];
+    const filters = [
+      ...Object.entries({ ...updatedEvent, ...selectedKeyObj }).map(([key, value]) => ({ [key]: value }))
+    ];
 
-  // Apply dynamic filters
-  const filterIssues = this.applyDynamicfilter(this.cardData.issueData, filters.filter(item => !(item.Category && item.Category === exclusionValue)));
+    // Apply dynamic filters
+    const filterIssues = this.applyDynamicfilter(this.cardData.issueData, filters.filter(item => !(item.Category && item.Category === exclusionValue)));
 
-  // Update filtered data
-  this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
+    // Update filtered data
+    this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
 
-  // Prepare chart data using the appropriate key
-  const chartKey = selectedKeyObj?.Category !== exclusionValue ? selectedKey : exclusionValue;
-  this.currentChartData = this.prepareChartData(this.copyCardData, this.colorPalette, chartKey);
+    // Prepare chart data using the appropriate key
+    const chartKey = selectedKeyObj?.Category !== exclusionValue ? selectedKey : exclusionValue;
+    this.currentChartData = this.prepareChartData(this.copyCardData, this.colorPalette, chartKey);
 
-  // Update selected button value
-  this.selectedButtonValue = selectedKeyObj;
-}
+    // Update selected button value
+    this.selectedButtonValue = selectedKeyObj;
+  }
 
-/**
-     * Resets the filter by restoring the original issue data and preparing the chart data.
-     *
-     * @param {void} No parameters are accepted.
-     * @returns {void} This function does not return a value.
-     * @throws {Error} Throws an error if chart data preparation fails.
-     */
+  /**
+       * Resets the filter by restoring the original issue data and preparing the chart data.
+       *
+       * @param {void} No parameters are accepted.
+       * @returns {void} This function does not return a value.
+       * @throws {Error} Throws an error if chart data preparation fails.
+       */
   onFilterClear() {
     const filterIssues = this.cardData.issueData;
     this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
@@ -660,14 +674,14 @@ onFilterChange(event) {
   }
 
   // cleanup empty or null or undefined props
-/**
-     * Recursively sanitizes an array or object by removing null, undefined,
-     * and empty objects, returning a cleaned version of the input.
-     *
-     * @param input - The array or object to sanitize.
-     * @returns A sanitized array or object, or null if the input is empty.
-     * @throws No exceptions are thrown.
-     */
+  /**
+       * Recursively sanitizes an array or object by removing null, undefined,
+       * and empty objects, returning a cleaned version of the input.
+       *
+       * @param input - The array or object to sanitize.
+       * @returns A sanitized array or object, or null if the input is empty.
+       * @throws No exceptions are thrown.
+       */
   sanitizeArray(input) {
     // Recursive function to handle nested structures
     function sanitize(item) {
@@ -693,13 +707,13 @@ onFilterChange(event) {
     return this.kpiHelperService.getChartDataSet(inputData, this.kpiData.kpiDetail.chartType, color, key);
   }
 
-/**
-   * Calculates the total sum of numeric values associated with a specified key in an array of issue data.
-   * @param issueData - An array of objects representing issues, each containing various key-value pairs.
-   * @param key - The key whose numeric values will be summed.
-   * @returns The total sum as a string.
-   * @throws No exceptions are explicitly thrown, but non-numeric values are ignored in the sum.
-   */
+  /**
+     * Calculates the total sum of numeric values associated with a specified key in an array of issue data.
+     * @param issueData - An array of objects representing issues, each containing various key-value pairs.
+     * @param key - The key whose numeric values will be summed.
+     * @returns The total sum as a string.
+     * @throws No exceptions are explicitly thrown, but non-numeric values are ignored in the sum.
+     */
   calculateValue(issueData, key: string): string {
     const total = issueData.reduce((sum, issue) => {
       const value = issue[key];
@@ -709,24 +723,24 @@ onFilterChange(event) {
     return total.toString(); // Convert to string for display
   }
 
-/**
-   * Converts a given value to hours if the specified unit represents time.
-   * @param val - The value to be converted.
-   * @param unit - The unit of the value, which determines if conversion is necessary.
-   * @returns The converted value in days/hours (unit).
-   */
+  /**
+     * Converts a given value to hours if the specified unit represents time.
+     * @param val - The value to be converted.
+     * @param unit - The unit of the value, which determines if conversion is necessary.
+     * @returns The converted value in days/hours (unit).
+     */
   convertToHoursIfTime(val, unit) {
     return this.kpiHelperService.convertToHoursIfTime(val, unit)
   }
 
-/**
-   * Calculates and returns the cumulative value based on the chart type and selected button value.
-   * It converts the total count to hours if the chart type is 'stacked-bar' or 'stacked-bar-chart'.
-   * Returns the total count or a calculated value based on the selected button value otherwise.
-   *
-   * @returns {number} The cumulative value or total count.
-   * @throws {Error} Throws an error if the data structure is not as expected.
-   */
+  /**
+     * Calculates and returns the cumulative value based on the chart type and selected button value.
+     * It converts the total count to hours if the chart type is 'stacked-bar' or 'stacked-bar-chart'.
+     * Returns the total count or a calculated value based on the selected button value otherwise.
+     *
+     * @returns {number} The cumulative value or total count.
+     * @throws {Error} Throws an error if the data structure is not as expected.
+     */
   showCummalative() {
     if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar') {
       return this.kpiHelperService.convertToHoursIfTime(this.currentChartData.totalCount, 'day')
@@ -747,13 +761,52 @@ onFilterChange(event) {
 
   //#endregion
 
-/**
- * Checks for the presence of a filter group in the provided filter data.
- * @param filterData - An object containing filter information, which may include a filterGroup property.
- * @returns The filterGroup property if it exists; otherwise, undefined.
- * @throws No exceptions are thrown.
- */
+  /**
+   * Checks for the presence of a filter group in the provided filter data.
+   * @param filterData - An object containing filter information, which may include a filterGroup property.
+   * @returns The filterGroup property if it exists; otherwise, undefined.
+   * @throws No exceptions are thrown.
+   */
   checkFilterPresence(filterData) {
     return filterData?.filterGroup;
+  }
+
+  addToReport() {
+    let reportObj = {
+      kpiId: this.kpiData.kpiId,
+      chartData: this.currentChartData?.chartData ? this.currentChartData?.chartData : this.kpiChartData[this.kpiData?.kpiId],
+      kpiDetail: this.kpiData.kpiDetail,
+      kpiDataStatusCode: this.kpiDataStatusCode,
+      chartType: this.kpiData.kpiDetail.chartType,
+      colors: this.getColorList(this.colors)
+    };
+
+    let storedReportData = localStorage.getItem('reportData');
+    if (!storedReportData) {
+      storedReportData = JSON.stringify([reportObj]);
+      localStorage.setItem('reportData', storedReportData);
+      this.messageService.add({ severity: 'success', summary: 'KPI added to default report' });
+    } else {
+      let parsedData = JSON.parse(storedReportData);
+      let kpiIndex = parsedData.findIndex(x => x.kpiId === reportObj.kpiId);
+      if (kpiIndex === -1) {
+        parsedData.push(reportObj);
+        localStorage.setItem('reportData', JSON.stringify(parsedData));
+        this.messageService.add({ severity: 'success', summary: 'KPI added to default report' });
+      } else {
+        parsedData = parsedData.filter(x => x.kpiId !== reportObj.kpiId);
+        parsedData.push(reportObj);
+        localStorage.setItem('reportData', JSON.stringify(parsedData));
+        this.messageService.add({ severity: 'warn', summary: 'KPI updated and added to default report' });
+      }
+    }
+  }
+
+  getColorList(colorObj) {
+    let result = [];
+    Object.keys(colorObj).forEach(key => {
+      result.push(colorObj[key].color);
+    });
+    return result;
   }
 }

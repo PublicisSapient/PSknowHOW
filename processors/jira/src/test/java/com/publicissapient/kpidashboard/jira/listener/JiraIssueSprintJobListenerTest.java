@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.listener;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -28,9 +27,6 @@ import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertTrue;
 
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,9 +37,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
+import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JiraIssueSprintJobListenerTest {
@@ -82,8 +81,8 @@ public class JiraIssueSprintJobListenerTest {
 		// Mocking the repository's findFirstBySprintId method
 		SprintTraceLog fetchDetails = new SprintTraceLog();
 		fetchDetails.setSprintId(sprintId);
-        fetchDetails.setLastSyncDateTime(endTime);
-        when(sprintTraceLogRepository.findFirstBySprintId(any())).thenReturn(fetchDetails);
+		fetchDetails.setLastSyncDateTime(endTime);
+		when(sprintTraceLogRepository.findFirstBySprintId(any())).thenReturn(fetchDetails);
 
 		// Act
 		listener.afterJob(jobExecution);
@@ -95,7 +94,7 @@ public class JiraIssueSprintJobListenerTest {
 		assertTrue(fetchDetails.isFetchSuccessful());
 
 		// Verify that the cache is cleared
-		verify(processorCacheEvictor, times(2)).evictCache(anyString(), anyString());
+		verify(processorCacheEvictor, times(3)).evictCache(anyString(), anyString());
 
 		// Verify that the sprint trace log is saved
 		verify(sprintTraceLogRepository, times(1)).save(fetchDetails);

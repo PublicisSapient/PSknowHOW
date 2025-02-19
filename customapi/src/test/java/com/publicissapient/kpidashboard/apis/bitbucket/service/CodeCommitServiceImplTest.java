@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -74,10 +72,7 @@ import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
 import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
 
 /**
- * 
- * 
  * @author prigupta8
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class CodeCommitServiceImplTest {
@@ -156,9 +151,17 @@ public class CodeCommitServiceImplTest {
 		MergeRequestDataFactory mergeRequestDataFactory = MergeRequestDataFactory.newInstance();
 		mergeList = mergeRequestDataFactory.getMergeRequestList();
 
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		});
@@ -167,7 +170,6 @@ public class CodeCommitServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
 		Mockito.when(cacheService.getFromApplicationCache(Mockito.anyString())).thenReturn("trackerid");
-
 	}
 
 	private void setToolMap() {
@@ -196,7 +198,6 @@ public class CodeCommitServiceImplTest {
 		toolGroup.put(Constant.TOOL_BITBUCKET, toolList1);
 		toolGroup.put(Constant.TOOL_AZUREREPO, toolList2);
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
-
 	}
 
 	private Tool createTool(String apiKeys, String jobName, String url, String toolType, String username,
@@ -245,12 +246,9 @@ public class CodeCommitServiceImplTest {
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 		}
-
 	}
 
-	/**
-	 * excel request
-	 */
+	/** excel request */
 	@Test
 	public void testGetCommitCountPerDayExcel() throws ApplicationException {
 
@@ -266,14 +264,10 @@ public class CodeCommitServiceImplTest {
 					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		} catch (ApplicationException e) {
 			e.printStackTrace();
-
 		}
-
 	}
 
-	/**
-	 * 1. Repo list empty
-	 */
+	/** 1. Repo list empty */
 	@Test
 	public void testGetCommitCountPerDayEmptyList() throws ApplicationException {
 
@@ -329,7 +323,6 @@ public class CodeCommitServiceImplTest {
 	@Test
 	public void testCalculateKPIMetrics() {
 		assertThat("Value: ", codeCommitServiceImpl.calculateKPIMetrics(commitMap), equalTo(null));
-
 	}
 
 	@Test
@@ -359,5 +352,4 @@ public class CodeCommitServiceImplTest {
 		dataCount.setValue(value);
 		return dataCount;
 	}
-
 }

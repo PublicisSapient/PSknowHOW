@@ -32,6 +32,6 @@ public interface ZephyrDBService {
 	 * @param processorToolConnection
 	 * @param isZephyrCloud
 	 */
-	void processTestCaseInfoToDB(final List<ZephyrTestCaseDTO> testCases,
-			ProcessorToolConnection processorToolConnection, boolean isKanban, boolean isZephyrCloud);
+	void processTestCaseInfoToDB(final List<ZephyrTestCaseDTO> testCases, ProcessorToolConnection processorToolConnection,
+			boolean isKanban, boolean isZephyrCloud);
 }

@@ -26,21 +26,18 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.web.client.RestTemplate;
 
-/**
- * ArgoCDProcessorApplication configuration and bootstrap.
- * 
- */
+/** ArgoCDProcessorApplication configuration and bootstrap. */
 @SpringBootApplication
 @EnableCaching
-@ComponentScan({ "com.publicissapient" })
+@ComponentScan({"com.publicissapient"})
 @EnableMongoRepositories(basePackages = "com.publicissapient.**.repository")
 public class ArgoCDProcessorApplication {
 
 	/**
 	 * Main thread from where ArgoCDProcessorApplication starts.
-	 * 
+	 *
 	 * @param args
-	 *            the command line argument
+	 *          the command line argument
 	 */
 	public static void main(String[] args) {
 		SpringApplication.run(ArgoCDProcessorApplication.class, args);
@@ -48,7 +45,7 @@ public class ArgoCDProcessorApplication {
 
 	/**
 	 * Bean for RestTemplate
-	 * 
+	 *
 	 * @return RestTemplate
 	 */
 	@Bean

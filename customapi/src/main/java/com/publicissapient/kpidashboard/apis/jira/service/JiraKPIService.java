@@ -18,6 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.publicissapient.kpidashboard.apis.common.service.ApplicationKPIService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.ToolsKPIService;
@@ -27,22 +33,17 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * This class is extention of ApplicationKPIService. All Jira KPIs service have
  * to implement this class {@link ApplicationKPIService}
  *
  * @param <R>
- *            KPIs calculated value type
+ *          KPIs calculated value type
  * @param <S>
- *            Maturity Value Type not applicable in every case
+ *          Maturity Value Type not applicable in every case
  * @param <T>
- *            Bind DB data with type
+ *          Bind DB data with type
  * @author tauakram
  */
 public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> implements ApplicationKPIService<R, S, T> {
@@ -103,7 +104,6 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 			lastMonth = lastMonth.minusMonths(1);
 			String lastMonthStr = lastMonth.getYear() + Constant.DASH + lastMonth.getMonthOfYear();
 			lastNMonth.put(lastMonthStr, 0.0);
-
 		}
 		return lastNMonth;
 	}
@@ -117,5 +117,4 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	public double roundingOff(double value) {
 		return (double) Math.round(value * 100) / 100;
 	}
-
 }

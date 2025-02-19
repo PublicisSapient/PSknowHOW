@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.bamboo.service;
 
 import static org.junit.Assert.assertEquals;
@@ -33,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -53,6 +51,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
@@ -102,9 +101,13 @@ public class BambooServiceImplTest {
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
 		when(restAPIUtils.getHeaders("tst-ll-SystemAdmin", "decryptPassword")).thenReturn(header);
 		when(restTemplate.exchange(
-				"https://test.server.com/bamboo/rest/api/latest/search/deployments.json?max-result=2000",
-				HttpMethod.GET, httpEntity, String.class)).thenReturn(
-						new ResponseEntity<>(getServerResponseFromJson("bambooDeploymentJson.json"), HttpStatus.OK));
+						"https://test.server.com/bamboo/rest/api/latest/search/deployments.json?max-result=2000",
+						HttpMethod.GET,
+						httpEntity,
+						String.class))
+				.thenReturn(
+						new ResponseEntity<>(
+								getServerResponseFromJson("bambooDeploymentJson.json"), HttpStatus.OK));
 
 		responseProjectList.add(createJsonObject("Chat bot web", "18120708"));
 		responseProjectList.add(createJsonObject(" Deploy_akka-profile-microservice", "61898790"));
@@ -112,7 +115,8 @@ public class BambooServiceImplTest {
 		responseProjectList.add(createJsonObject(" Deploy_Assembler", "61898783"));
 		when(restAPIUtils.convertToString(any(), eq("projectName"))).thenReturn("Chat bot web");
 		when(restAPIUtils.convertToString(any(), eq("key"))).thenReturn("18120708");
-		Assert.assertEquals(bambooToolConfigService.getDeploymentProjectList(connectionId).size(),
+		Assert.assertEquals(
+				bambooToolConfigService.getDeploymentProjectList(connectionId).size(),
 				responseProjectList.size());
 	}
 
@@ -127,7 +131,8 @@ public class BambooServiceImplTest {
 		header.add("Authorization", "base64str");
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
 		when(restAPIUtils.getHeaders("tst-ll-SystemAdmin", "decryptPassword")).thenReturn(header);
-		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
+		when(restTemplate.exchange(
+						anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
 				.thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
 		doNothing().when(connectionService).updateBreakingConnection(eq(connection), anyString());
 		bambooToolConfigService.getDeploymentProjectList(connectionId);
@@ -150,11 +155,16 @@ public class BambooServiceImplTest {
 		jsonObject.put("id", "1");
 		jsonArray.add(jsonObject);
 		when(restTemplate.exchange(
-				"https://test.server.com/bamboo/rest/api/latest/plan/COOP-CC/branch.json?max-result=2000",
-				HttpMethod.GET, httpEntity, String.class)).thenReturn(
-						new ResponseEntity<>(getServerResponseFromJson("bambooBranchListJson.json"), HttpStatus.OK));
+						"https://test.server.com/bamboo/rest/api/latest/plan/COOP-CC/branch.json?max-result=2000",
+						HttpMethod.GET,
+						httpEntity,
+						String.class))
+				.thenReturn(
+						new ResponseEntity<>(
+								getServerResponseFromJson("bambooBranchListJson.json"), HttpStatus.OK));
 		when(restAPIUtils.getJsonArrayFromJSONObj(any(), anyString())).thenReturn(jsonArray);
-		Assert.assertEquals(1, bambooToolConfigService.getBambooBranchesNameAndKeys(connectionId, "COOP-CC").size());
+		Assert.assertEquals(
+				1, bambooToolConfigService.getBambooBranchesNameAndKeys(connectionId, "COOP-CC").size());
 	}
 
 	@Test
@@ -168,11 +178,13 @@ public class BambooServiceImplTest {
 		header.add("Authorization", "base64str");
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
 		when(restAPIUtils.getHeaders("tst-ll-SystemAdmin", "decryptPassword")).thenReturn(header);
-		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
+		when(restTemplate.exchange(
+						anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
 				.thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
 		doNothing().when(connectionService).updateBreakingConnection(eq(connection), anyString());
 		bambooToolConfigService.getBambooBranchesNameAndKeys(connectionId, "COOP-CC");
 	}
+
 	@Test
 	public void getProjectsAndPlanKeyListSuccess() throws IOException, ParseException {
 		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
@@ -190,9 +202,13 @@ public class BambooServiceImplTest {
 		jsonObject.put("id", "1");
 		jsonArray.add(jsonObject);
 		when(restTemplate.exchange(
-				"https://test.server.com/bamboo/rest/api/latest/plan.json?expand=plans&max-result=2000", HttpMethod.GET,
-				httpEntity, String.class)).thenReturn(
-						new ResponseEntity<>(getServerResponseFromJson("bambooPlanListJson.json"), HttpStatus.OK));
+						"https://test.server.com/bamboo/rest/api/latest/plan.json?expand=plans&max-result=2000",
+						HttpMethod.GET,
+						httpEntity,
+						String.class))
+				.thenReturn(
+						new ResponseEntity<>(
+								getServerResponseFromJson("bambooPlanListJson.json"), HttpStatus.OK));
 		when(restAPIUtils.getJsonArrayFromJSONObj(any(), anyString())).thenReturn(jsonArray);
 		Assert.assertEquals(1, bambooToolConfigService.getProjectsAndPlanKeyList(connectionId).size());
 	}
@@ -207,7 +223,8 @@ public class BambooServiceImplTest {
 		header.add("Authorization", "base64str");
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
 		when(restAPIUtils.getHeaders("tst-ll-SystemAdmin", "decryptPassword")).thenReturn(header);
-		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
+		when(restTemplate.exchange(
+						anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
 				.thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
 		doNothing().when(connectionService).updateBreakingConnection(eq(connection), anyString());
 		bambooToolConfigService.getProjectsAndPlanKeyList(connectionId);
@@ -224,5 +241,4 @@ public class BambooServiceImplTest {
 		String filePath = "src/test/resources/json/toolConfig/" + fileName;
 		return new String(Files.readAllBytes(Paths.get(filePath)));
 	}
-
 }

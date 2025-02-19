@@ -59,14 +59,13 @@ public class AdditionalFilterHelper {
 				if (additionalFilterCategoryMap.get(additionalFilterConfig.getFilterId()) != null) {
 					AdditionalFilter additionalFilter = new AdditionalFilter();
 					additionalFilter.setFilterId(additionalFilterConfig.getFilterId());
-					List<AdditionalFilterValue> additionalFilterValues = getAdditionalFilterValues(issue,
-							additionalFilterConfig, basicProjectConfigId);
+					List<AdditionalFilterValue> additionalFilterValues = getAdditionalFilterValues(issue, additionalFilterConfig,
+							basicProjectConfigId);
 					additionalFilter.setFilterValues(additionalFilterValues);
 					if (CollectionUtils.isNotEmpty(additionalFilterValues)) {
 						additionalFilters.add(additionalFilter);
 					}
 				}
-
 			}
 		}
 
@@ -74,8 +73,8 @@ public class AdditionalFilterHelper {
 	}
 
 	private String createAdditionalFilterValueId(String value, String filterId, String basicProjectConfigId) {
-		return value + CommonConstant.ADDITIONAL_FILTER_VALUE_ID_SEPARATOR + filterId
-				+ CommonConstant.ADDITIONAL_FILTER_VALUE_ID_SEPARATOR + basicProjectConfigId;
+		return value + CommonConstant.ADDITIONAL_FILTER_VALUE_ID_SEPARATOR + filterId +
+				CommonConstant.ADDITIONAL_FILTER_VALUE_ID_SEPARATOR + basicProjectConfigId;
 	}
 
 	private List<AdditionalFilterValue> getAdditionalFilterValues(Issue issue,
@@ -83,14 +82,14 @@ public class AdditionalFilterHelper {
 
 		List<AdditionalFilterValue> values = new ArrayList<>();
 
-		if (CommonConstant.LABELS.equals(additionalFilterConfig.getIdentifyFrom())
-				&& CollectionUtils.isNotEmpty(issue.getLabels())) {
+		if (CommonConstant.LABELS.equals(additionalFilterConfig.getIdentifyFrom()) &&
+				CollectionUtils.isNotEmpty(issue.getLabels())) {
 			Set<String> labels = getLabels(issue, additionalFilterConfig);
 			labels.forEach(label -> {
 				AdditionalFilterValue additionalFilterValue = new AdditionalFilterValue();
 				additionalFilterValue.setValue(label);
-				additionalFilterValue.setValueId(createAdditionalFilterValueId(label,
-						additionalFilterConfig.getFilterId(), basicProjectConfigId));
+				additionalFilterValue.setValueId(
+						createAdditionalFilterValueId(label, additionalFilterConfig.getFilterId(), basicProjectConfigId));
 				values.add(additionalFilterValue);
 			});
 
@@ -136,8 +135,8 @@ public class AdditionalFilterHelper {
 		Set<BasicComponent> common = new HashSet<>();
 
 		for (BasicComponent basicComponent : componentList) {
-			if (CollectionUtils.isNotEmpty(configuredComponentNames)
-					&& configuredComponentNames.contains(basicComponent.getName())) {
+			if (CollectionUtils.isNotEmpty(configuredComponentNames) &&
+					configuredComponentNames.contains(basicComponent.getName())) {
 				common.add(basicComponent);
 			}
 		}
@@ -150,8 +149,8 @@ public class AdditionalFilterHelper {
 		Set<String> values = new HashSet<>();
 		String customField = additionalFilterConfig.getIdentificationField();
 
-		if (null != fields.get(customField)
-				&& StringUtils.isNotEmpty(JiraProcessorUtil.deodeUTF8String(fields.get(customField).getValue()))) {
+		if (null != fields.get(customField) &&
+				StringUtils.isNotEmpty(JiraProcessorUtil.deodeUTF8String(fields.get(customField).getValue()))) {
 			try {
 				if (fields.get(customField).getValue() instanceof JSONObject) {
 					JSONObject jsonObject = (JSONObject) fields.get(customField).getValue();
@@ -185,7 +184,5 @@ public class AdditionalFilterHelper {
 				}
 			}
 		}
-
 	}
-
 }

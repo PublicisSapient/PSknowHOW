@@ -84,12 +84,11 @@ public class ProcessorController {
 			log.warn("Did not get successful reponse from the service: {}", response);
 		}
 		return ResponseEntity.status(responseStatus).body(response);
-
 	}
 
 	/**
 	 * Triggers the processor to run the job to fetch the latest data from the tool
-	 * 
+	 *
 	 * @return {@code ResponseEntity<ServiceResponse>} with true is triggered
 	 *         successfully success
 	 */
@@ -110,7 +109,6 @@ public class ProcessorController {
 			log.warn("Did not get successful reponse from the service: {}", response);
 		}
 		return ResponseEntity.status(responseStatus).body(response);
-
 	}
 
 	@GetMapping("/tracelog")
@@ -123,13 +121,11 @@ public class ProcessorController {
 		ServiceResponse response = new ServiceResponse(true, "Processor trace logs", traceLogs);
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
-
 	}
 
 	@PostMapping(path = "/fetchSprint/{sprintId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasPermission(#sprintId, 'TRIGGER_SPRINT_FETCH')")
 	public ResponseEntity<ServiceResponse> triggerSprintFetch(@PathVariable String sprintId) {
-
 
 		ServiceResponse response = processorService.fetchActiveSprint(sprintId);
 
@@ -139,15 +135,15 @@ public class ProcessorController {
 			log.warn("Did not get successful response from the service: {} ", response);
 		}
 		return ResponseEntity.status(responseStatus).body(response);
-
 	}
 
 	/**
 	 * to be hit by repo tool platform to save repo tool tracelogs
+	 *
 	 * @param request
-	 * 			http request with api key
+	 *          http request with api key
 	 * @param repoToolsStatusResponse
-	 * 			status to be saved in trace logs
+	 *          status to be saved in trace logs
 	 * @return {@code ResponseEntity<>} with HttpStatus OK if authorized
 	 */
 	@PostMapping(path = "/saveRepoToolsStatus", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -163,7 +159,7 @@ public class ProcessorController {
 	}
 
 	@PostMapping(path = "/metadata/step/{projectBasicConfigId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasPermission(#projectBasicConfigIds, 'TRIGGER_PROCESSOR')")
+	@PreAuthorize("hasPermission(#projectBasicConfigId, 'TRIGGER_PROCESSOR')")
 	public ResponseEntity<ServiceResponse> triggerMetaDataStep(@PathVariable String projectBasicConfigId) {
 		ServiceResponse response = processorService.runMetadataStep(projectBasicConfigId);
 		HttpStatus responseStatus = HttpStatus.OK;
@@ -172,7 +168,5 @@ public class ProcessorController {
 			log.warn("Did not get successful response from the service: {} ", response);
 		}
 		return ResponseEntity.status(responseStatus).body(response);
-
 	}
-
 }

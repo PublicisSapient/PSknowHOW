@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -33,19 +32,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "id", "rev", "fields", "relations", "url" })
+@JsonPropertyOrder({"id", "rev", "fields", "relations", "url"})
 public class Value {
 
 	@JsonProperty("id")
 	private Integer id;
+
 	@JsonProperty("rev")
 	private Integer rev;
+
 	@JsonProperty("fields")
 	private Fields fields;
+
 	@JsonProperty("relations")
 	private List<Relation> relations = null;
+
 	@JsonProperty("url")
 	private String url;
+
 	@JsonIgnore
 	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -115,5 +119,4 @@ public class Value {
 				.append("relations", relations).append("url", url).append("additionalProperties", additionalProperties)
 				.toString();
 	}
-
 }

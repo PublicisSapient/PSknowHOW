@@ -25,9 +25,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The Zephyr test case step.
- */
+/** The Zephyr test case step. */
 @Data
 @Builder
 @Getter
@@ -40,5 +38,4 @@ public class ZephyrTestCaseStep {
 	private int index;
 	private String description;
 	private int id;
-
 }

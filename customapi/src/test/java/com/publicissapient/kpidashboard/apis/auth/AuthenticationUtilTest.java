@@ -25,7 +25,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.publicissapient.kpidashboard.common.constant.AuthType;
@@ -34,8 +33,7 @@ public class AuthenticationUtilTest {
 
 	@Before
 	public void setup() {
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("user",
-				"password");
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("user", "password");
 		authentication.setDetails(AuthType.STANDARD.name());
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
@@ -65,11 +63,9 @@ public class AuthenticationUtilTest {
 
 	@Test
 	public void getAuthTypeFromContext() {
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("user",
-				"password");
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("user", "password");
 		authentication.setDetails(AuthType.STANDARD);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		AuthenticationUtil.getAuthTypeFromContext();
 	}
-
 }

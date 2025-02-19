@@ -51,98 +51,90 @@ import com.publicissapient.kpidashboard.common.repository.connection.ConnectionR
 @ExtendWith(SpringExtension.class)
 public class ProcessorToolConnectionServiceImplTest {
 
-    public MockMvc mockMvc;
-    @InjectMocks
-    ProcessorToolConnectionServiceImpl processorToolConnectionServiceImpl;
-    @Mock
-    private ProjectToolConfigRepository projectToolConfigRepository;
-    @Mock
-    private ConnectionRepository connectionRepository;
-    private List<Connection> connectionList = Lists.newArrayList();
+	public MockMvc mockMvc;
+	@InjectMocks
+	ProcessorToolConnectionServiceImpl processorToolConnectionServiceImpl;
+	@Mock
+	private ProjectToolConfigRepository projectToolConfigRepository;
+	@Mock
+	private ConnectionRepository connectionRepository;
+	private List<Connection> connectionList = Lists.newArrayList();
 
-    private List<ProjectToolConfig> projectToolList = Lists.newArrayList();
+	private List<ProjectToolConfig> projectToolList = Lists.newArrayList();
 
-    /**
-     * method includes pre processes for test cases
-     */
-    @BeforeEach
-    public void before() {
-        mockMvc = MockMvcBuilders.standaloneSetup(processorToolConnectionServiceImpl).build();
+	/** method includes pre processes for test cases */
+	@BeforeEach
+	public void before() {
+		mockMvc = MockMvcBuilders.standaloneSetup(processorToolConnectionServiceImpl).build();
 
-        Connection c1 = new Connection();
-        c1.setId(new ObjectId("5f9014743cb73ce896167658"));
-        c1.setConnectionName("dummy");
-        c1.setType("jsa");
-        c1.setBaseUrl("");
-        c1.setUsername("does");
-        c1.setPassword("dummyPassword");
-        Connection c2 = new Connection();
-        c2.setId(new ObjectId("5f9014743cb73ce896167659"));
-        c2.setConnectionName("dummy2");
-        c2.setType("aj");
-        c2.setBaseUrl("");
-        c2.setUsername("does");
-        c2.setPassword("dummyPassword1");
-        connectionList.add(c1);
-        connectionList.add(c2);
+		Connection c1 = new Connection();
+		c1.setId(new ObjectId("5f9014743cb73ce896167658"));
+		c1.setConnectionName("dummy");
+		c1.setType("jsa");
+		c1.setBaseUrl("");
+		c1.setUsername("does");
+		c1.setPassword("dummyPassword");
+		Connection c2 = new Connection();
+		c2.setId(new ObjectId("5f9014743cb73ce896167659"));
+		c2.setConnectionName("dummy2");
+		c2.setType("aj");
+		c2.setBaseUrl("");
+		c2.setUsername("does");
+		c2.setPassword("dummyPassword1");
+		connectionList.add(c1);
+		connectionList.add(c2);
 
-        ProjectToolConfig t1 = new ProjectToolConfig();
-        t1.setId(new ObjectId());
-        t1.setToolName("Jira");
-        t1.setBasicProjectConfigId(new ObjectId("5f9014743cb73ce896167659"));
-        t1.setConnectionId(new ObjectId("5f9014743cb73ce896167658"));
-        t1.setJobName("dsa");
-        ProjectToolConfig t2 = new ProjectToolConfig();
-        t2.setToolName("Jira");
-        t2.setBasicProjectConfigId(new ObjectId("5f9014743cb73ce896167658"));
-        t2.setConnectionId(new ObjectId("5f9014743cb73ce896167659"));
-        t2.setJobName("dsab");
-        projectToolList.add(t1);
-        projectToolList.add(t2);
-    }
+		ProjectToolConfig t1 = new ProjectToolConfig();
+		t1.setId(new ObjectId());
+		t1.setToolName("Jira");
+		t1.setBasicProjectConfigId(new ObjectId("5f9014743cb73ce896167659"));
+		t1.setConnectionId(new ObjectId("5f9014743cb73ce896167658"));
+		t1.setJobName("dsa");
+		ProjectToolConfig t2 = new ProjectToolConfig();
+		t2.setToolName("Jira");
+		t2.setBasicProjectConfigId(new ObjectId("5f9014743cb73ce896167658"));
+		t2.setConnectionId(new ObjectId("5f9014743cb73ce896167659"));
+		t2.setJobName("dsab");
+		projectToolList.add(t1);
+		projectToolList.add(t2);
+	}
 
-    /**
-     * method includes post processes for test cases
-     */
-    @AfterEach
-    public void after() {
-        mockMvc = null;
-    }
+	/** method includes post processes for test cases */
+	@AfterEach
+	public void after() {
+		mockMvc = null;
+	}
 
-    /**
-     * method test successful return of processorToolConnection list
-     */
-    @Test
-    public void findByToolTest_success() {
-        when(projectToolConfigRepository.findByToolName(any())).thenReturn(projectToolList);
-        when(connectionRepository.findByIdIn(connectionIdSet())).thenReturn(connectionList);
-        List<ProcessorToolConnection> projectToolConnectionList = processorToolConnectionServiceImpl.findByTool(any());
-        MatcherAssert.assertThat(projectToolConnectionList.size(), equalTo(2));
-    }
+	/** method test successful return of processorToolConnection list */
+	@Test
+	public void findByToolTest_success() {
+		when(projectToolConfigRepository.findByToolName(any())).thenReturn(projectToolList);
+		when(connectionRepository.findByIdIn(connectionIdSet())).thenReturn(connectionList);
+		List<ProcessorToolConnection> projectToolConnectionList =
+				processorToolConnectionServiceImpl.findByTool(any());
+		MatcherAssert.assertThat(projectToolConnectionList.size(), equalTo(2));
+	}
 
-    /**
-     * method test for null project tool case
-     */
-    @Test
-    public void findByToolTest_nullProjectTool_success() {
-        when(projectToolConfigRepository.findByToolName(any())).thenReturn(null);
-        List<ProcessorToolConnection> projectToolConnectionList = processorToolConnectionServiceImpl.findByTool("Jira");
-        MatcherAssert.assertThat(projectToolConnectionList.size(), equalTo(0));
-    }
+	/** method test for null project tool case */
+	@Test
+	public void findByToolTest_nullProjectTool_success() {
+		when(projectToolConfigRepository.findByToolName(any())).thenReturn(null);
+		List<ProcessorToolConnection> projectToolConnectionList =
+				processorToolConnectionServiceImpl.findByTool("Jira");
+		MatcherAssert.assertThat(projectToolConnectionList.size(), equalTo(0));
+	}
 
-    /**
-     * method test for null connections
-     */
-    @Test
-    public void findByToolTest_nullConnection_success() {
-        when(projectToolConfigRepository.findByToolName(any())).thenReturn(projectToolList);
-        when(connectionRepository.findByIdIn(connectionIdSet())).thenReturn(null);
-        List<ProcessorToolConnection> projectToolConnectionList = processorToolConnectionServiceImpl.findByTool(any());
-        MatcherAssert.assertThat(projectToolConnectionList.size(), equalTo(0));
-    }
+	/** method test for null connections */
+	@Test
+	public void findByToolTest_nullConnection_success() {
+		when(projectToolConfigRepository.findByToolName(any())).thenReturn(projectToolList);
+		when(connectionRepository.findByIdIn(connectionIdSet())).thenReturn(null);
+		List<ProcessorToolConnection> projectToolConnectionList =
+				processorToolConnectionServiceImpl.findByTool(any());
+		MatcherAssert.assertThat(projectToolConnectionList.size(), equalTo(0));
+	}
 
-    private Set<ObjectId> connectionIdSet() {
-        return Sets.newHashSet(new ObjectId("5f9014743cb73ce896167658"), new ObjectId("5f9014743cb73ce896167659"));
-    }
-
+	private Set<ObjectId> connectionIdSet() {
+		return Sets.newHashSet(new ObjectId("5f9014743cb73ce896167658"), new ObjectId("5f9014743cb73ce896167659"));
+	}
 }

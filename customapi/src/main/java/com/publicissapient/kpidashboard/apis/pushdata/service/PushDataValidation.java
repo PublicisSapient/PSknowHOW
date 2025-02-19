@@ -31,14 +31,15 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 public class PushDataValidation {
 
-	private static final String COMMA= " ,";
-	private static final String SHOULD_BE_AMONG= " should be among ";
+	private static final String COMMA = " ,";
+	private static final String SHOULD_BE_AMONG = " should be among ";
 
-	private PushDataValidation(){}
+	private PushDataValidation() {
+	}
 
 	/**
 	 * check the Blank
-	 * 
+	 *
 	 * @param parameter
 	 * @param literal
 	 * @param errors
@@ -52,22 +53,21 @@ public class PushDataValidation {
 
 	/**
 	 * check if input is numeric
-	 * 
+	 *
 	 * @param parameter
 	 * @param number
 	 * @param errors
 	 */
 	public static void checkNumeric(String parameter, String number, Map<String, String> errors) {
 		if (!StringUtils.isNumeric(number)) {
-			errors.computeIfPresent(parameter,
-					(param, error) -> error.concat(COMMA + parameter + " should be in digits"));
+			errors.computeIfPresent(parameter, (param, error) -> error.concat(COMMA + parameter + " should be in digits"));
 			errors.putIfAbsent(parameter, parameter + " should be in digits");
 		}
 	}
 
 	/**
 	 * check if status is among Build Statuses
-	 * 
+	 *
 	 * @param parameter
 	 * @param status
 	 * @param errors
@@ -80,12 +80,11 @@ public class PushDataValidation {
 					(param, error) -> error.concat(COMMA + parameter + SHOULD_BE_AMONG + getAllBuildValues()));
 			errors.putIfAbsent(parameter, parameter + SHOULD_BE_AMONG + getAllBuildValues());
 		}
-
 	}
 
 	/**
 	 * check if status among Deployments Statuses
-	 * 
+	 *
 	 * @param parameter
 	 * @param status
 	 * @param errors
@@ -118,7 +117,7 @@ public class PushDataValidation {
 
 	/**
 	 * check for time details and duration
-	 * 
+	 *
 	 * @param startTime
 	 * @param endTime
 	 * @param duration
@@ -136,5 +135,4 @@ public class PushDataValidation {
 			}
 		}
 	}
-
 }

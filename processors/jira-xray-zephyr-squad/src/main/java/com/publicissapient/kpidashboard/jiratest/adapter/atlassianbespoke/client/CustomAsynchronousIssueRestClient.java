@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.jiratest.adapter.atlassianbespoke.clien
 
 import java.net.URI;
 import java.util.EnumSet;
-
 import javax.ws.rs.core.UriBuilder;
 
 import com.atlassian.httpclient.api.HttpClient;
@@ -56,5 +55,4 @@ public class CustomAsynchronousIssueRestClient extends AsynchronousIssueRestClie
 				String.join(",", Iterables.transform(expands, EXPANDO_TO_PARAM)));
 		return getAndParse(uriBuilder.build(), issueJsonParser);
 	}
-
 }

@@ -132,7 +132,6 @@ export class SharedService {
   selectedFilterArray: any = [];
   selectedFilters: any = {};
   selectedUrlFilters: string = '{}';
-  refreshCounter: number = 0;
 
   openAIModel = new EventEmitter();
 
@@ -146,7 +145,6 @@ export class SharedService {
     // For additional filters
     this.populateAdditionalFilters = new EventEmitter();
     this.triggerAdditionalFilters = new EventEmitter();
-    // this.selectedTrendsEvent = new EventEmitter();
 
     this.selectedTrendsEventSubject = new Subject<any>();
     // Observable to subscribe to
@@ -178,7 +176,9 @@ export class SharedService {
 
   setSelectedBoard(selectedBoard) {
     this.selectedTab = selectedBoard;
-    this.onTabSwitch.next({ selectedBoard });
+    if (selectedBoard) {
+      this.onTabSwitch.next({ selectedBoard });
+    }
   }
 
   setSelectedTab(selectedTab) {
@@ -374,7 +374,13 @@ export class SharedService {
 
   private tempStateFilters = null;
   setBackupOfFilterSelectionState(selectedFilterObj) {
-    if (selectedFilterObj && Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj)[0] === 'selected_type') {
+    const routerUrl = decodeURIComponent(this.router.url).split('?')[0];
+    const segments = typeof routerUrl === 'string' && routerUrl?.split('/');
+    const hasConfig = segments && segments.includes('Config');
+    const hasHelp = segments && segments.includes('Help');
+    const hasError = segments && segments.includes('Error');
+
+    if (selectedFilterObj && Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj).includes('selected_type')) {
       this.selectedFilters = { ...selectedFilterObj };
     } else if (selectedFilterObj) {
       this.selectedFilters = { ...this.selectedFilters, ...selectedFilterObj };
@@ -382,22 +388,37 @@ export class SharedService {
       this.selectedFilters = null;
     }
 
-    if (this.refreshCounter === 0) {
-      this.refreshCounter++;
-    }
-
     // Navigate and update query parameters
     const stateFilterEnc = btoa(JSON.stringify(this.selectedFilters || {}));
     this.setBackupOfUrlFilters(JSON.stringify(this.selectedFilters || {}));
 
     // NOTE: Do not navigate if the state filters are same as previous, this is to reduce the number of navigation calls, hence refactoring the code
-    if (this.tempStateFilters !== stateFilterEnc) {
-      this.router.navigate([], {
-        queryParams: { 'stateFilters': stateFilterEnc },
-        relativeTo: this.route
-      });
+    if ((this.tempStateFilters !== stateFilterEnc) && (!hasConfig && !hasError && !hasHelp)) {
       this.tempStateFilters = stateFilterEnc;
+      setTimeout(() => {
+        this.router.navigate([], {
+          queryParams: { 'stateFilters': stateFilterEnc, 'selectedTab': this.selectedTab, 'selectedType': this.selectedtype },
+          relativeTo: this.route
+        });
+      });
     }
+  }
+
+  isObjectArrayEmpty(value) {
+    if (value === null || value === undefined) {
+      return true;
+    }
+    if (Array.isArray(value)) {
+      return value.length === 0 || value.every(x => this.isObjectArrayEmpty(x)); // Recursively check all elements
+    }
+    if (typeof value === 'object') {
+      const keys = Object.keys(value);
+      if (keys.length === 0) {
+        return true; // Empty object
+      }
+      return false; // Not empty if it has other keys
+    }
+    return false; // For other data types like numbers, strings, booleans
   }
 
   getBackupOfFilterSelectionState(prop = null) {
@@ -424,10 +445,16 @@ export class SharedService {
   removeQueryParams() {
     this.router.navigate([], {
       queryParams: {}, // Clear query params
+      relativeTo: this.route
     });
   }
 
   setKpiSubFilterObj(value: any) {
+    const routerUrl = decodeURIComponent(this.router.url).split('?')[0];
+    const segments = routerUrl?.split('/');
+    const hasConfig = segments.includes('Config');
+    const hasHelp = segments.includes('Help');
+    const hasError = segments.includes('Error');
     if (!value) {
       this.selectedKPIFilterObj = {};
     } else if (Object.keys(value)?.length && Object.keys(value)[0].indexOf('kpi') !== -1) {
@@ -437,12 +464,12 @@ export class SharedService {
     }
     const kpiFilterParamStr = btoa(Object.keys(this.selectedKPIFilterObj).length ? JSON.stringify(this.selectedKPIFilterObj) : '');
 
-    this.router.navigate([], {
-      queryParams: { 'stateFilters': this.tempStateFilters, 'kpiFilters': kpiFilterParamStr }, // Pass the object here
-      relativeTo: this.route,
-      queryParamsHandling: 'merge'
-    });
-
+    if (!hasConfig && !hasError && !hasHelp) {
+      this.router.navigate([], {
+        queryParams: { 'stateFilters': this.tempStateFilters, 'kpiFilters': kpiFilterParamStr, 'selectedTab': this.selectedTab, 'selectedType': this.selectedtype }, // Pass the object here
+        relativeTo: this.route,
+      });
+    }
     this.selectedFilterOption.next(value);
   }
 
@@ -504,7 +531,6 @@ export class SharedService {
       }
     });
     this.selectedTrends = values;
-    // this.selectedTrendsEvent.emit(values);
     this.selectedTrendsEventSubject.next(values);
   }
   getSelectedTrends() {
@@ -652,6 +678,36 @@ export class SharedService {
     this.isRecommendationsEnabledSubject.next(value);
   }
 
+  getProjectWithHierarchy(){
+    return JSON.parse(localStorage.getItem('projectWithHierarchy') || '[]');
+  }
+
+  extractHierarchyData(hierarchyArray) {
+    let result = {};
+    if (!Array.isArray(hierarchyArray)) {
+        console.error("Invalid input: hierarchyArray should be an array.");
+        return result; // Return empty object if input is not an array
+    }
+    hierarchyArray.forEach(item => {
+        if (item && typeof item === 'object' && item.hierarchyLevel && item.value) {
+            if (item.hierarchyLevel.hierarchyLevelName) {
+                result[item.hierarchyLevel.hierarchyLevelName] = item.value;
+            } else {
+                console.warn("Missing hierarchyLevelName in:", item);
+            }
+        } else {
+            console.warn("Invalid item structure:", item);
+        }
+    });
+    return result;
+  }
+
+  getTooltipTextFromObject(tooltipData): string {
+    return Object?.entries(tooltipData)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join('\n');
+  }
+
   //#region  can be remove after iteraction component removal
 
   isTrendValueListValid(trendValueList: any[]): boolean {
@@ -696,7 +752,7 @@ export class SharedService {
     ];
   }
 
-  setUserDetailsAsBlankObj(){
+  setUserDetailsAsBlankObj() {
     this.currentUserDetails = {}
   }
 

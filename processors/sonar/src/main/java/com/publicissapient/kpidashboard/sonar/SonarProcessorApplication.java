@@ -24,20 +24,18 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-/**
- * SonarProcessorApplication configuration and bootstrap.
- */
+/** SonarProcessorApplication configuration and bootstrap. */
 @SpringBootApplication
 @EnableCaching
-@ComponentScan({ "com.publicissapient" })
-@EnableMongoRepositories(basePackages = { "com.publicissapient.**.repository" })
+@ComponentScan({"com.publicissapient"})
+@EnableMongoRepositories(basePackages = {"com.publicissapient.**.repository"})
 public class SonarProcessorApplication {
 	/**
 	 * Main thread of operation that runs the Spring Boot processor application.
-	 * 
+	 *
 	 * @param args
-	 *            Any command line arguments that need to be captured at runtime
-	 *            (currently, none are used)
+	 *          Any command line arguments that need to be captured at runtime
+	 *          (currently, none are used)
 	 */
 	public static void main(String[] args) {
 		SpringApplication.run(SonarProcessorApplication.class, args);

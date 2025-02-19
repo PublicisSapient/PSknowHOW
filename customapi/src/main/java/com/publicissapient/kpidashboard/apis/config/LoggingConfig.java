@@ -27,9 +27,7 @@ import com.publicissapient.kpidashboard.apis.logging.KeyValueLoggingCondition;
 import com.publicissapient.kpidashboard.apis.logging.KeyValueLoggingFilter;
 import com.publicissapient.kpidashboard.apis.logging.LoggingFilter;
 
-/**
- * Provides Logging config.
- */
+/** Provides Logging config. */
 @Configuration
 public class LoggingConfig {
 
@@ -54,5 +52,4 @@ public class LoggingConfig {
 	public LoggingFilter loggingFilter() {
 		return new LoggingFilter();
 	}
-
 }

@@ -59,8 +59,7 @@ public class JiraClient {
 
 	private ProcessorJiraRestClient restClient;
 
-	public ProcessorJiraRestClient getClient(ProjectConfFieldMapping projectConfFieldMapping,
-			KerberosClient krb5Client) {
+	public ProcessorJiraRestClient getClient(ProjectConfFieldMapping projectConfFieldMapping, KerberosClient krb5Client) {
 		Optional<Connection> connectionOptional = projectConfFieldMapping.getJira().getConnection();
 		if (connectionOptional.isPresent()) {
 			Connection connection = connectionOptional.get();
@@ -118,16 +117,15 @@ public class JiraClient {
 			saveAccessToken(projectConfFieldMapping);
 			jiraOAuthProperties.setAccessToken(conn.getAccessToken());
 
-			client = getJiraOAuthClient(JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
-					.password(password).jiraConfigAccessToken(conn.getAccessToken()).jiraConfigProxyUrl(null)
-					.jiraConfigProxyPort(null).build());
+			client = getJiraOAuthClient(
+					JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username).password(password)
+							.jiraConfigAccessToken(conn.getAccessToken()).jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
 
 		} else {
 
-			client = getJiraClient(JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
-					.password(password).jiraConfigProxyUrl(null).jiraConfigProxyPort(null)
-					.bearerToken(conn.isBearerToken()).build());
-
+			client = getJiraClient(
+					JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username).password(password)
+							.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).bearerToken(conn.isBearerToken()).build());
 		}
 		return client;
 	}
@@ -154,10 +152,10 @@ public class JiraClient {
 				jiraUri = this.createJiraConnection(jiraConfigBaseUrl, proxyUri + ":" + proxyPort, username, password);
 			}
 
-			InetAddress.getByName(jiraUri.getHost());// NOSONAR
+			InetAddress.getByName(jiraUri.getHost()); // NOSONAR
 			if (jiraInfo.isBearerToken()) {
-				client = new ProcessorAsynchJiraRestClientFactory().createWithBearerTokenAuthentication(jiraUri,
-						password, jiraProcessorConfig);
+				client = new ProcessorAsynchJiraRestClientFactory().createWithBearerTokenAuthentication(jiraUri, password,
+						jiraProcessorConfig);
 			} else {
 				client = new ProcessorAsynchJiraRestClientFactory().createWithBasicHttpAuthentication(jiraUri, username,
 						password, jiraProcessorConfig);
@@ -192,9 +190,9 @@ public class JiraClient {
 				jiraUri = this.createJiraConnection(jiraConfigBaseUrl, proxyUri + ":" + proxyPort, username, password);
 			}
 
-			InetAddress.getByName(jiraUri.getHost());// NOSONAR
+			InetAddress.getByName(jiraUri.getHost()); // NOSONAR
 			client = new ProcessorAsynchJiraRestClientFactory().create(jiraUri, jiraOAuthClient, jiraProcessorConfig);
-			
+
 		} catch (UnknownHostException | URISyntaxException e) {
 			log.error("The Jira host name is invalid. Further jira collection cannot proceed.");
 
@@ -214,8 +212,8 @@ public class JiraClient {
 				URL baseUrl = new URL(jiraBaseUri);
 				if (StringUtils.isNotEmpty(fullProxyUrl)) {
 					URL proxyUrl = new URL(fullProxyUrl);
-					URI proxyUri = new URI(proxyUrl.getProtocol(), proxyUrl.getUserInfo(), proxyUrl.getHost(),
-							proxyUrl.getPort(), proxyUrl.getPath(), proxyUrl.getQuery(), null);
+					URI proxyUri = new URI(proxyUrl.getProtocol(), proxyUrl.getUserInfo(), proxyUrl.getHost(), proxyUrl.getPort(),
+							proxyUrl.getPath(), proxyUrl.getQuery(), null);
 					proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUri.getHost(), proxyUri.getPort()));
 					connection = baseUrl.openConnection(proxy);
 
@@ -234,8 +232,7 @@ public class JiraClient {
 					connection = baseUrl.openConnection();
 				}
 			} else {
-				log.error(
-						"The response from Jira was blank or non existant - please check your property configurations");
+				log.error("The response from Jira was blank or non existant - please check your property configurations");
 				return null;
 			}
 
@@ -291,5 +288,4 @@ public class JiraClient {
 			}
 		}
 	}
-
 }

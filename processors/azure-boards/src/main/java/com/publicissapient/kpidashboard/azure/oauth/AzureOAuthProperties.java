@@ -25,7 +25,6 @@ import lombok.Setter;
 
 /**
  * @author vijkumar18
- *
  */
 @Getter
 @Setter
@@ -36,5 +35,4 @@ public class AzureOAuthProperties {
 	private String consumerKey;
 	private String privateKey;
 	private String accessToken;
-
 }

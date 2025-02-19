@@ -18,16 +18,16 @@
 package com.publicissapient.kpidashboard.apis.model;
 
 import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfigDTO;
+
 import lombok.Data;
 
 /**
  * DTO of userboardconfigdto and ConfigDetails
  *
  * @author purgupta2
- *
  */
 @Data
 public class UserBoardDTO {
-    private UserBoardConfigDTO userBoardConfigDTO;
-    private ConfigDetails configDetails;
+	private UserBoardConfigDTO userBoardConfigDTO;
+	private ConfigDetails configDetails;
 }

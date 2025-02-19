@@ -29,9 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents the ConnectionDTO data.
- */
+/** Represents the ConnectionDTO data. */
 @Data
 @Builder
 @Getter
@@ -64,10 +62,10 @@ public class ConnectionDTO {
 	private String offlineFilePath;
 	private String createdBy;
 	private String createdAt;
-	private boolean sharedConnection;// shared with everyone
+	private boolean sharedConnection; // shared with everyone
 	private String updatedBy;
 	private List<String> connectionUsers;
-	private boolean vault;// GS requirement
+	private boolean vault; // GS requirement
 	private boolean bearerToken; // Kurig requirement
 	private String jiraAuthType;
 	private boolean jaasKrbAuth;
@@ -93,7 +91,7 @@ public class ConnectionDTO {
 	 * Checks if the parameter object is equal to the class object
 	 *
 	 * @param obj
-	 *            object
+	 *          object
 	 * @return boolean true or false
 	 */
 	@Override
@@ -126,5 +124,4 @@ public class ConnectionDTO {
 		result = prime * result + ((connectionName == null) ? 0 : connectionName.hashCode());
 		return result;
 	}
-
 }

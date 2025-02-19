@@ -33,6 +33,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { KpiHelperService } from '../../services/kpi-helper.service';
 import { of } from 'rxjs';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { MessageService } from 'primeng/api';
 
 describe('KpiCardV2Component', () => {
   let component: KpiCardV2Component;
@@ -78,7 +79,7 @@ describe('KpiCardV2Component', () => {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserAnimationsModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
-      providers: [SharedService, GetAuthService, HttpService, HelperService, CommonModule, DatePipe, DialogService, KpiHelperService,
+      providers: [SharedService, GetAuthService, HttpService, HelperService, CommonModule, DatePipe, DialogService, KpiHelperService, MessageService,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
     })
@@ -100,6 +101,7 @@ describe('KpiCardV2Component', () => {
       kpiDetail: { kpiFilter: 'radioButton' }
     };
     component.dropdownArr = [{ options: ['option1', 'option2'] }];
+    component.kpimenu = jasmine.createSpyObj('Menu', ['toggle']);
     fixture.detectChanges();
   });
 
@@ -1655,5 +1657,37 @@ describe('KpiCardV2Component', () => {
         expect(result).toBe('166h 40m');
       });
     });
+
   });
+
+  describe('getColorList', () => {
+    it('should return an array of colors', () => {
+      const colorObj = {
+        key1: { color: 'red' },
+        key2: { color: 'blue' },
+        key3: { color: 'green' }
+      };
+
+      const result = component.getColorList(colorObj);
+      expect(result).toEqual(['red', 'blue', 'green']);
+    });
+
+    it('should return an empty array if colorObj is empty', () => {
+      const colorObj = {};
+      const result = component.getColorList(colorObj);
+      expect(result).toEqual([]);
+    });
+
+    it('should not modify the original object', () => {
+      const colorObj = {
+        key1: { color: 'red' },
+        key2: { color: 'blue' }
+      };
+
+      const originalCopy = JSON.stringify(colorObj);
+      component.getColorList(colorObj);
+      expect(JSON.stringify(colorObj)).toEqual(originalCopy);
+    });
+  });
+
 });

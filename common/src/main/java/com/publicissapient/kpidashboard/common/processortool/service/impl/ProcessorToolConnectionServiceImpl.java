@@ -54,9 +54,9 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 
 	/**
 	 * find all tools and map it with their respective connections
-	 * 
+	 *
 	 * @param toolName
-	 *            name of tool to retrieve
+	 *          name of tool to retrieve
 	 * @return List of ServerDetails
 	 */
 	@Override
@@ -74,37 +74,35 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 
 	/**
 	 * mapping method for ProjectToolConfig and Connections Details
-	 * 
+	 *
 	 * @param projectToolList
-	 *            all toolConfig related to tool
+	 *          all toolConfig related to tool
 	 * @return {@link ProcessorToolConnection} object
 	 */
 	private List<ProcessorToolConnection> getProcessorConnectionList(List<ProjectToolConfig> projectToolList) {
 		List<ProcessorToolConnection> toolConfigConnectionList = new LinkedList<>();
 		if (Optional.ofNullable(projectToolList).isPresent() && !projectToolList.isEmpty()) {
-			List<Connection> connectionList = connectionRepository.findByIdIn(
-					projectToolList.stream().map(ProjectToolConfig::getConnectionId).collect(Collectors.toSet()));
+			List<Connection> connectionList = connectionRepository
+					.findByIdIn(projectToolList.stream().map(ProjectToolConfig::getConnectionId).collect(Collectors.toSet()));
 			if (Optional.ofNullable(connectionList).isPresent() && !connectionList.isEmpty()) {
 				Map<ObjectId, Connection> connectionMap = connectionList.stream()
 						.collect(Collectors.toMap(Connection::getId, Function.identity()));
 				projectToolList.stream()
-						.filter(projectTool -> Optional.ofNullable(connectionMap.get(projectTool.getConnectionId()))
-								.isPresent())
-						.forEach(projectTool -> toolConfigConnectionList.add(createProcessorToolConnectionObject(
-								projectTool, connectionMap.get(projectTool.getConnectionId()))));
+						.filter(projectTool -> Optional.ofNullable(connectionMap.get(projectTool.getConnectionId())).isPresent())
+						.forEach(projectTool -> toolConfigConnectionList.add(
+								createProcessorToolConnectionObject(projectTool, connectionMap.get(projectTool.getConnectionId()))));
 			}
-
 		}
 		return toolConfigConnectionList;
 	}
 
 	/**
 	 * create ProcessorToolConnection object
-	 * 
+	 *
 	 * @param toolConfig
-	 *            {@link ProjectToolConfig} object
+	 *          {@link ProjectToolConfig} object
 	 * @param connection
-	 *            {@link Connection} object
+	 *          {@link Connection} object
 	 * @return ServerDetails object
 	 */
 	private ProcessorToolConnection createProcessorToolConnectionObject(ProjectToolConfig toolConfig,
@@ -187,9 +185,8 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 	}
 
 	/**
-	 *
 	 * @param toolConnection
-	 *            toolConnection
+	 *          toolConnection
 	 */
 	public void validateConnectionFlag(ProcessorToolConnection toolConnection) {
 		if (toolConnection.isBrokenConnection()) {
@@ -200,9 +197,9 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 	/**
 	 * Method to validate the broken connection and update the flag for Jira and
 	 * Azure
-	 * 
+	 *
 	 * @param toolConnection
-	 *            toolConnection
+	 *          toolConnection
 	 */
 	public void validateJiraAzureConnFlag(ProjectToolConfig toolConnection) {
 		updateBreakingConnection(toolConnection.getConnectionId(), null);
@@ -210,11 +207,11 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 
 	/**
 	 * update breaking connection detail
-	 * 
+	 *
 	 * @param connection
-	 *            connection
+	 *          connection
 	 * @param conErrorMsg
-	 *            conErrorMsg
+	 *          conErrorMsg
 	 */
 	@Override
 	public void updateBreakingConnection(ObjectId connection, String conErrorMsg) {
@@ -233,8 +230,6 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 				}
 				connectionRepository.save(existingConnection);
 			}
-
 		}
 	}
-
 }

@@ -37,15 +37,14 @@ public class CODKpiFieldMapping {
 	public static final String ISSUE_TYPES_TO_CONSIDER_KPI_113 = "issueTypesToConsiderKpi113";
 	public static final String CLOSED_ISSUE_STATUS_TO_CONSIDER_KPI_113 = "closedIssueStatusToConsiderKpi113";
 
-    private final MongoTemplate mongoTemplate;
+	private final MongoTemplate mongoTemplate;
 
-    public CODKpiFieldMapping(MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
-    }
-
+	public CODKpiFieldMapping(MongoTemplate mongoTemplate) {
+		this.mongoTemplate = mongoTemplate;
+	}
 
 	@Execution
-    public void execution() {
+	public void execution() {
 		mongoTemplate.getCollection("field_mapping_structure")
 				.deleteMany(Filters.or(Filters.eq(FIELD_NAME, ISSUE_TYPES_TO_CONSIDER_KPI_113),
 						Filters.eq(FIELD_NAME, CLOSED_ISSUE_STATUS_TO_CONSIDER_KPI_113)));
@@ -58,30 +57,20 @@ public class CODKpiFieldMapping {
 
 	@RollbackExecution
 	public void rollback() {
-		Document issueTypeFieldMapping = new Document()
-				.append(FIELD_NAME, ISSUE_TYPES_TO_CONSIDER_KPI_113)
-				.append("fieldLabel", "Issue types to consider")
-				.append("fieldType", "chips")
-				.append("fieldCategory", "Issue_Type")
-				.append("section", "Issue Types Mapping")
-				.append("processorCommon", false)
+		Document issueTypeFieldMapping = new Document().append(FIELD_NAME, ISSUE_TYPES_TO_CONSIDER_KPI_113)
+				.append("fieldLabel", "Issue types to consider").append("fieldType", "chips")
+				.append("fieldCategory", "Issue_Type").append("section", "Issue Types Mapping").append("processorCommon", false)
 				.append("tooltip", new Document("definition", "All issue types used for epics or features"))
-				.append("fieldDisplayOrder", 1)
-				.append("sectionOrder", 1)
-				.append("mandatory", true)
+				.append("fieldDisplayOrder", 1).append("sectionOrder", 1).append("mandatory", true)
 				.append("nodeSpecific", false);
 
-		Document issueStatusFieldMapping = new Document()
-				.append(FIELD_NAME, CLOSED_ISSUE_STATUS_TO_CONSIDER_KPI_113)
-				.append("fieldLabel", "Status to identify completed issues")
-				.append("fieldType", "chips")
-				.append("section", "WorkFlow Status Mapping")
-				.append("fieldCategory", "workflow")
+		Document issueStatusFieldMapping = new Document().append(FIELD_NAME, CLOSED_ISSUE_STATUS_TO_CONSIDER_KPI_113)
+				.append("fieldLabel", "Status to identify completed issues").append("fieldType", "chips")
+				.append("section", "WorkFlow Status Mapping").append("fieldCategory", "workflow")
 				.append("processorCommon", false)
-				.append("tooltip", new Document("definition", "All workflow statuses to identify completed issues. If multiple statuses are specified, the first status an issue transitions to will be considered"))
-				.append("fieldDisplayOrder", 1)
-				.append("sectionOrder", 1)
-				.append("mandatory", true)
+				.append("tooltip", new Document("definition",
+						"All workflow statuses to identify completed issues. If multiple statuses are specified, the first status an issue transitions to will be considered"))
+				.append("fieldDisplayOrder", 1).append("sectionOrder", 1).append("mandatory", true)
 				.append("nodeSpecific", false);
 
 		mongoTemplate.getCollection("field_mapping_structure")

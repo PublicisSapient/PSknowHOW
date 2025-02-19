@@ -34,11 +34,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * Class representing user_info collection.
- */
+/** Class representing user_info collection. */
 @Document(collection = "user_info")
-@CompoundIndexes({ @CompoundIndex(name = "username_authType", def = "{'username' : 1, 'authType': 1}") })
+@CompoundIndexes({@CompoundIndex(name = "username_authType", def = "{'username' : 1, 'authType': 1}")})
 @Data
 @Getter
 @Setter
@@ -58,5 +56,4 @@ public class UserInfo {
 	private String emailAddress;
 	private List<ProjectsAccess> projectsAccess;
 	private Map<String, Boolean> notificationEmail;
-
 }

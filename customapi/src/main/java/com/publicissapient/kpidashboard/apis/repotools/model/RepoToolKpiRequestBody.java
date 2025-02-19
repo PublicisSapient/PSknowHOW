@@ -18,26 +18,26 @@
 
 package com.publicissapient.kpidashboard.apis.repotools.model;
 
+import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class RepoToolKpiRequestBody {
 
-    private List<String> projects;
+	private List<String> projects;
 
-    @SerializedName("start_date")
-    private String startDate;
+	@SerializedName("start_date")
+	private String startDate;
 
-    @SerializedName("end_date")
-    private String endDate;
+	@SerializedName("end_date")
+	private String endDate;
 
-    private String frequency;
-
+	private String frequency;
 }

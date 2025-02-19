@@ -170,8 +170,7 @@ public class JiraClientTest {
 
 	@Test
 	public void getJiraOAuthClientURIExceptionTest() throws URISyntaxException {
-		JiraInfo jiraInfo = getJiraInfo("uName", "password", "baseUrlNotValid", "baseUrlNotValid", "proxyport", "",
-				true);
+		JiraInfo jiraInfo = getJiraInfo("uName", "password", "baseUrlNotValid", "baseUrlNotValid", "proxyport", "", true);
 		assertNotNull(jiraClient.getJiraOAuthClient(jiraInfo));
 	}
 
@@ -190,10 +189,9 @@ public class JiraClientTest {
 
 	private JiraInfo getJiraInfo(String userName, String password, String jiraConfigBaseUrl, String jiraConfigProxyUrl,
 			String jiraConfigProxyPort, String jiraConfigAccessToken, boolean bearerToken) {
-		JiraInfo jiraInfo = JiraInfo.builder().username(userName).password(password)
-				.jiraConfigBaseUrl(jiraConfigBaseUrl).jiraConfigProxyUrl(jiraConfigProxyUrl)
-				.jiraConfigProxyPort(jiraConfigProxyPort).jiraConfigAccessToken(jiraConfigAccessToken)
-				.bearerToken(bearerToken).build();
+		JiraInfo jiraInfo = JiraInfo.builder().username(userName).password(password).jiraConfigBaseUrl(jiraConfigBaseUrl)
+				.jiraConfigProxyUrl(jiraConfigProxyUrl).jiraConfigProxyPort(jiraConfigProxyPort)
+				.jiraConfigAccessToken(jiraConfigAccessToken).bearerToken(bearerToken).build();
 		return jiraInfo;
 	}
 }

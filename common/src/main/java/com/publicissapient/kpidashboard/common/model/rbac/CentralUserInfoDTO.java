@@ -2,8 +2,6 @@ package com.publicissapient.kpidashboard.common.model.rbac;
 
 import java.util.List;
 
-import org.joda.time.DateTime;
-
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 
 import lombok.AllArgsConstructor;
@@ -32,5 +30,4 @@ public class CentralUserInfoDTO {
 	private String email;
 	private boolean approved;
 	private String samlEmail;
-
 }

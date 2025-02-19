@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MultiSelect } from 'primeng/multiselect';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
@@ -26,6 +26,7 @@ export class PrimaryFilterComponent implements OnChanges {
   @Output() onPrimaryFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
   applyFilters: boolean = false;
+  preventClose: boolean;
 
   constructor(public service: SharedService, public helperService: HelperService) {
     // This is required speecifically when filter is removed from removeFilter fn on filter-new
@@ -42,7 +43,8 @@ export class PrimaryFilterComponent implements OnChanges {
     const selectedTypeChanged = changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange;
     const selectedTabChanged = changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab'].previousValue && !changes['selectedTab']?.firstChange;
 
-    if (selectedLevelChanged || primaryFilterConfigChanged || selectedTypeChanged || selectedTabChanged) {
+    if (selectedLevelChanged || primaryFilterConfigChanged || selectedTypeChanged) // || selectedTabChanged) 
+    {
       this.applyDefaultFilters();
       return;
     }
@@ -56,7 +58,7 @@ export class PrimaryFilterComponent implements OnChanges {
     this.populateFilters();
     setTimeout(() => {
       this.stateFilters = (this.service.getBackupOfUrlFilters() && JSON.parse(this.service.getBackupOfUrlFilters())['primary_level']) ? JSON.parse(this.service.getBackupOfUrlFilters()) : this.service.getBackupOfFilterSelectionState();
-      if (Object.keys(this.stateFilters).length > 0 && this.primaryFilterConfig &&
+      if (this.stateFilters && Object.keys(this.stateFilters).length > 0 && this.primaryFilterConfig &&
         this.primaryFilterConfig['defaultLevel'] && this.primaryFilterConfig['defaultLevel']['labelName']) {
         if (this.filters?.length && this.filters[0] && this.filters[0]?.labelName.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() ||
           this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName.toLowerCase())) {
@@ -118,6 +120,9 @@ export class PrimaryFilterComponent implements OnChanges {
         }
         // PROBLEM AREA END
         this.applyPrimaryFilters({});
+      } else {
+        // this.selectedFilters = [this.filters[0]];
+        // this.applyPrimaryFilters({});
       }
     }, 100);
   }
@@ -214,7 +219,8 @@ export class PrimaryFilterComponent implements OnChanges {
           this.applyFilters = false;
 
           if (this.selectedFilters[0]?.labelName?.toLowerCase() === 'sprint' || this.selectedFilters[0]?.labelName?.toLowerCase() === 'release') {
-             this.service.setSelectedTrends(this.filterData['Project'].filter(x => this.selectedFilters.map(s=>s.parentId).includes(x.nodeId)));
+            this.service.setSelectedTrends(this.filterData['Project'].filter(x => this.selectedFilters.map(s=>s.parentId).includes(x.nodeId)));
+            // this.service.setSelectedTrends(this.selectedFilters);
           } else if (this.selectedFilters[0]?.labelName?.toLowerCase() === 'project') {
             this.service.setSelectedTrends(this.selectedFilters);
           }
@@ -224,7 +230,11 @@ export class PrimaryFilterComponent implements OnChanges {
       if (this.multiSelect?.overlayVisible) {
         this.multiSelect.close(event);
       }
-    }
+    } 
+    // else {
+    //   this.onPrimaryFilterChange.emit([...this.selectedFilters]);
+    //   this.service.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] });
+    // }
   }
 
   compareObjects(obj1, obj2) {
@@ -316,5 +326,46 @@ export class PrimaryFilterComponent implements OnChanges {
 
     return retValue;
   }
+
+  getImmediateParentDisplayName(child) {
+    let completeHiearchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType.toLowerCase()];
+    let selectedLevelNode = completeHiearchyData?.filter(x => x.hierarchyLevelName === this.selectedLevel);
+    let level = selectedLevelNode[0].level;
+    if (level > 1) {
+      let parentLevel = level - 1;
+      let parentLevelNode = completeHiearchyData?.filter(x => x.level === parentLevel);
+      let parentLevelName = parentLevelNode[0].hierarchyLevelName;
+
+      let immediateParent = this.filterData[parentLevelName].find(x => x.nodeId === child.parentId);
+      return immediateParent?.nodeDisplayName;
+    }
+    return undefined;
+  }
+
+  preventDropdownClose(event: Event) {
+    // event.stopPropagation();
+    console.log('preventDropdownClose');
+    this.preventClose = true;
+  }
+
+  handleBlur() {
+    // Logic when panel loses focus, if needed
+    this.preventClose = false; // Reset flag on blur
+  }
+
+  handlePanelHide() {
+    if (this.preventClose) {
+      this.preventClose = false; // Reset flag after handling
+      return false; // Prevent closing
+    }
+    return true; // Allow closing
+  }
+
+  handleFooterKeydown(event: KeyboardEvent) {
+    if (event.key === 'Tab') {
+      this.preventClose = true; // Prevent close when tabbing within panel
+    }
+  }
+
 
 }

@@ -64,17 +64,16 @@ public class GitHubActionURIBuilder {
 
 	private String getBuildPath() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("/repos/" + gitHubActionToolConnection.getUsername() + "/"
-				+ gitHubActionToolConnection.getRepositoryName() + "/actions/workflows/"
-				+ gitHubActionToolConnection.getWorkflowID() + "/runs");
+		sb.append(
+				"/repos/" + gitHubActionToolConnection.getUsername() + "/" + gitHubActionToolConnection.getRepositoryName() +
+						"/actions/workflows/" + gitHubActionToolConnection.getWorkflowID() + "/runs");
 		return sb.toString();
 	}
 
 	private String getDeployPath() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("/repos/" + gitHubActionToolConnection.getUsername() + "/"
-				+ gitHubActionToolConnection.getRepositoryName() + "/deployments");
+		sb.append("/repos/" + gitHubActionToolConnection.getUsername() + "/" +
+				gitHubActionToolConnection.getRepositoryName() + "/deployments");
 		return sb.toString();
 	}
-
 }

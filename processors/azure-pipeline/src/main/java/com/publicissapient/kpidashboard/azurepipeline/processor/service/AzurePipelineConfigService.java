@@ -26,10 +26,7 @@ import org.springframework.stereotype.Service;
 import com.publicissapient.kpidashboard.azurepipeline.config.AzurePipelineConfig;
 import com.publicissapient.kpidashboard.common.util.PropertyUtils;
 
-/**
- * Service for trimming property file.
- *
- */
+/** Service for trimming property file. */
 @Service
 public class AzurePipelineConfigService {
 
@@ -38,12 +35,9 @@ public class AzurePipelineConfigService {
 	@Autowired
 	private PropertyUtils propertyUtils;
 
-	/**
-	 * Update setting object.
-	 */
+	/** Update setting object. */
 	@PostConstruct
 	public void updateSettingsObject() {
 		propertyUtils.trimProps(azurePipelineConfig.getClass().getDeclaredFields(), azurePipelineConfig);
 	}
-
 }

@@ -54,10 +54,6 @@ export class KpiHelperService {
       unit = selectedDataGroup?.unit;
     }
 
-    // if (!dataGroup1 || dataGroup1.length === 0) {
-    //   throw new Error('Invalid data: Missing dataGroup1');
-    // }
-
     if (!dataGroup1 || dataGroup1.length === 0) {
       return { chartData: [], totalCount: 0 };
     }
@@ -202,40 +198,42 @@ export class KpiHelperService {
         } else if (dataGroupElem.aggregation === 'sum') {
           value = issueDataCopy.reduce((acc: number, issue: any) => {
             return acc + (issue[dataGroupElem.key] || 0); // Use the key from the data group
-        }, 0);
-        if (dataGroupElem.unit && dataGroupElem.unit === 'day') {
-          value = value / (60 * 8);
+          }, 0);
+          if (dataGroupElem.unit && dataGroupElem.unit === 'day') {
+            value = value / (60 * 8);
+          }
         }
-      }
-      test['value' + i] = value;
-      test['category' + i] = dataGroupElem.name;
-      test['color' + i] = dataColor;
+        test['value' + i] = value;
+        test['category' + i] = dataGroupElem.name;
+        test['color' + i] = dataColor;
+      });
       test['color'] = color;
-      if(filter==='Unplanned'){
+      if (filter === 'Unplanned') {
         test['summaryValue'] = 'NA'
-      }else{
+      } else {
+        const data2 = json.dataGroup.dataGroup2[0];
+
         test['summaryValue'] = issueDataCopy.reduce((acc: number, issue: any) => {
-          if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] > 0) {
-            return acc + issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
-          } else if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] <= 0) {
-            return acc - issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
+          if (issue.hasOwnProperty(data2.key)) {
+            let value2 = issue[data2.key];
+            if (data2.multipleValue) {
+              value2 = issue[data2.key][filter];
+            }
+            if (value2 > 0) {
+              return acc + value2 / (60 * 8);
+            } else {
+              return acc - value2 / (60 * 8);
+            }
           } else {
             return acc;
           }
-        }, 0) + ' ' + dataGroupElem.unit;
-      }    });
-      chartData['data'].push(test);  });
-      chartData['categoryData'] = categoryGroup;
-      chartData['summaryHeader'] = json?.dataGroup?.dataGroup2[0]?.name;
-      // chartData['summaryValue'] = issueDataCopy.reduce((acc: number, issue: any) => {
-      //   if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] > 0) {
-      //     return acc + issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
-      //   } else if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] <= 0) {
-      //     return acc - issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
-      //   } else {
-      //     return acc;
-      //   }
-      // }, 0);
+        }, 0) + ' ' + data2.unit;
+      }
+      chartData['data'].push(test);
+    });
+    chartData['categoryData'] = categoryGroup;
+    chartData['summaryHeader'] = json?.dataGroup?.dataGroup2[0]?.name;
+
     return { chartData: chartData };
   }
 

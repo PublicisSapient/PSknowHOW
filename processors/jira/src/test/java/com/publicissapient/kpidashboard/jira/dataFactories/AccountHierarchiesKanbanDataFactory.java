@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -79,22 +78,26 @@ public class AccountHierarchiesKanbanDataFactory {
 			mapper.registerModule(new JavaTimeModule());
 			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
 		}
 	}
 
+	public List<KanbanAccountHierarchy> getAccountHierarchies() {
+		return accountHierarchies;
+	}
 
-    public List<KanbanAccountHierarchy> getAccountHierarchies() {
-        return accountHierarchies;
-    }
+	public List<KanbanAccountHierarchy> findByBasicProjectConfigId(String basicProjectConfigId) {
+		return accountHierarchies.stream()
+				.filter(
+						accountHierarchy -> accountHierarchy.getBasicProjectConfigId().toHexString().equals(basicProjectConfigId))
+				.collect(Collectors.toList());
+	}
 
-    public List<KanbanAccountHierarchy> findByBasicProjectConfigId(String basicProjectConfigId){
-        return accountHierarchies.stream().filter(accountHierarchy -> accountHierarchy.getBasicProjectConfigId()
-                .toHexString().equals(basicProjectConfigId)).collect(Collectors.toList());
-    }
-
-	public List<KanbanAccountHierarchy> findByLabelNameAndBasicProjectConfigId(String labelName, String basicProjectConfigId){
-		return accountHierarchies.stream().filter(accountHierarchy -> accountHierarchy.getBasicProjectConfigId()
-				.toHexString().equals(basicProjectConfigId)&&accountHierarchy.getLabelName().equals(labelName)).collect(Collectors.toList());
+	public List<KanbanAccountHierarchy> findByLabelNameAndBasicProjectConfigId(String labelName,
+			String basicProjectConfigId) {
+		return accountHierarchies.stream()
+				.filter(
+						accountHierarchy -> accountHierarchy.getBasicProjectConfigId().toHexString().equals(basicProjectConfigId) &&
+								accountHierarchy.getLabelName().equals(labelName))
+				.collect(Collectors.toList());
 	}
 }

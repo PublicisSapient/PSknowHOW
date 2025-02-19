@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
@@ -48,7 +49,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,11 +61,11 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
-	private ProjectReleaseRepo projectReleaseRepo;
+	private KpiDataCacheService kpiDataCacheService;
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 		List<DataCount> trendValueList = Lists.newArrayList();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
@@ -74,7 +74,6 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 			if (Filters.PROJECT == filters) {
 				projectWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, getRequestTrackerId(), kpiRequest);
 			}
-
 		});
 
 		log.debug("[PROJECT-RELEASE-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
@@ -100,9 +99,12 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 
 		Map<String, Object> resultListMap = new HashMap<>();
 		List<ObjectId> basicProjectConfigIds = new ArrayList<>();
+		List<ProjectRelease> releaseList = new ArrayList<>();
 
 		leafNodeList.forEach(leaf -> basicProjectConfigIds.add(leaf.getProjectFilter().getBasicProjectConfigId()));
-		resultListMap.put(PROJECT_RELEASE_DETAIL, projectReleaseRepo.findByConfigIdIn(basicProjectConfigIds));
+		basicProjectConfigIds.forEach(basicProjectConfigId -> releaseList.addAll(
+				kpiDataCacheService.fetchProjectReleaseData(basicProjectConfigId, KPICode.PROJECT_RELEASES.getKpiId())));
+		resultListMap.put(PROJECT_RELEASE_DETAIL, releaseList);
 		return resultListMap;
 	}
 
@@ -115,13 +117,13 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 	 * Calculate KPI value for selected project nodes.
 	 *
 	 * @param projectLeafNodeList
-	 *            list of sprint leaf nodes
+	 *          list of sprint leaf nodes
 	 * @param trendValueList
-	 *            list containing data to show on KPI
+	 *          list containing data to show on KPI
 	 * @param kpiElement
-	 *            kpiElement
+	 *          kpiElement
 	 * @param kpiRequest
-	 *            KpiRequest
+	 *          KpiRequest
 	 */
 	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> projectLeafNodeList,
@@ -137,10 +139,8 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 
 			ProjectRelease releaseDetail = filterWiseDataMap.get(currentProjectId);
 			if (releaseDetail != null) {
-				setProjectNodeValue(mapTmp, node, releaseDetail, trendValueList, projectName, requestTrackerId,
-						excelData);
+				setProjectNodeValue(mapTmp, node, releaseDetail, trendValueList, projectName, requestTrackerId, excelData);
 			}
-
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.RELEASE_FREQUENCY.getColumns());
@@ -149,7 +149,6 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 	/**
 	 * Gets the KPI value for project node.
 	 *
-	 * @param kpiElement
 	 * @param projectRelease
 	 * @param trendValueList
 	 * @param projectName
@@ -180,7 +179,6 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			KPIExcelUtility.populateReleaseFreqExcelData(projectVersionList, projectName, excelData);
 		}
-
 	}
 
 	/**
@@ -221,5 +219,4 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI73(), KPICode.PROJECT_RELEASES.getKpiId());
 	}
-
 }

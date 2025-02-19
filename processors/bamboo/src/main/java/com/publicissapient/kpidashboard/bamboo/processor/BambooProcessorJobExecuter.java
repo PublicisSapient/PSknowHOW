@@ -31,6 +31,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.json.simple.parser.ParseException;
@@ -120,16 +121,14 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	 * {@link ProcessorJobExecutor}
 	 *
 	 * @param taskScheduler
-	 *            gets the configured scheduler from the properties file
+	 *          gets the configured scheduler from the properties file
 	 */
 	@Autowired
 	public BambooProcessorJobExecuter(TaskScheduler taskScheduler) {
 		super(taskScheduler, ProcessorConstants.BAMBOO);
 	}
 
-	/**
-	 * Provides a base processor instance of {@link BambooProcessor}
-	 */
+	/** Provides a base processor instance of {@link BambooProcessor} */
 	@Override
 	public BambooProcessor getProcessor() {
 		return BambooProcessor.prototype();
@@ -144,9 +143,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		return bambooProcessorRepository;
 	}
 
-	/**
-	 * Gets the Cron expression from the properties file
-	 */
+	/** Gets the Cron expression from the properties file */
 	@Override
 	public String getCron() {
 		return bambooConfig.getCron();
@@ -157,7 +154,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	 * or not. adds only new builds to the build collections.
 	 *
 	 * @param buildsByJobMap
-	 *            maps a {@link ObjectId} to a set of {@link Build}s.
+	 *          maps a {@link ObjectId} to a set of {@link Build}s.
 	 * @return count of new build info added in db
 	 */
 	private int addNewBuildsInfoToDb(BambooClient bambooClient, List<Build> activeBuildJobs,
@@ -175,8 +172,8 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 					build.setBuildJob(buildInfo.getBuildJob());
 					buildsToSave.add(build);
 					count++;
-					log.info("Saving build info for jobName {}, jobId: {}, buildNumber() : {} in DB.",
-							bambooserver.getJobName(), bambooserver.getId(), buildInfo.getNumber());
+					log.info("Saving build info for jobName {}, jobId: {}, buildNumber() : {} in DB.", bambooserver.getJobName(),
+							bambooserver.getId(), buildInfo.getNumber());
 				}
 			}
 		}
@@ -192,7 +189,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	 * Null check safety for the builds collection
 	 *
 	 * @param builds
-	 *            builds info
+	 *          builds info
 	 * @return builds or a new empty set
 	 */
 	private Set<Build> nullSafe(Set<Build> builds) {
@@ -204,9 +201,9 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	 * BuildNumber. projectToolConfigId refer only one job for tool.
 	 *
 	 * @param jobId
-	 *            Bamboo jobId
+	 *          Bamboo jobId
 	 * @param buildNumber
-	 *            Bamboo build Number
+	 *          Bamboo build Number
 	 * @return true if build not already present in repo
 	 */
 	private boolean isNewBuild(ObjectId jobId, String buildNumber) {
@@ -232,8 +229,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 			List<ProjectBasicConfig> projectConfigList = getSelectedProjects();
 			clearSelectedBasicProjectConfigIds();
 
-			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs = getAllInformationfromDeployment(
-					processorId);
+			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs = getAllInformationfromDeployment(processorId);
 
 			List<Build> activeBuildJobs = new ArrayList<>();
 			List<Deployment> activeDeployJobs = new ArrayList<>();
@@ -276,6 +272,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	private void processEachBambooJobOnJobType(List<ProcessorToolConnection> bambooJobList,
 			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, List<Build> activeBuildJobs,
 			List<Deployment> activeDeployJobs, ObjectId processorId, ProjectBasicConfig proBasicConfig) {
+		int count = 0;
 		for (ProcessorToolConnection bambooJobConfig : bambooJobList) {
 			processorToolConnectionService.validateConnectionFlag(bambooJobConfig);
 			String jobType = bambooJobConfig.getJobType();
@@ -283,19 +280,19 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 					bambooJobConfig.getBasicProjectConfigId().toHexString());
 			processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 			MDC.put("bambooInstanceUrl", bambooJobConfig.getUrl());
-			MDC.put("JobName", BUILD.equalsIgnoreCase(jobType) ? bambooJobConfig.getJobName()
-					: bambooJobConfig.getDeploymentProjectId());
+			MDC.put("JobName",
+					BUILD.equalsIgnoreCase(jobType) ? bambooJobConfig.getJobName() : bambooJobConfig.getDeploymentProjectId());
 			bambooJobConfig.setPassword(decryptPassword(bambooJobConfig.getPassword()));
 			try {
 				BambooClient bambooClient = bambooClientFactory.getBambooClient(jobType);
 				if (BUILD.equalsIgnoreCase(jobType)) {
-					newBuildCount = processBuildJob(bambooClient, bambooJobConfig, processorExecutionTraceLog,
-							activeBuildJobs, newBuildCount, processorId, proBasicConfig);
+					count = processBuildJob(bambooClient, bambooJobConfig, processorExecutionTraceLog, activeBuildJobs, count,
+							processorId, proBasicConfig);
 				} else {
 					processDeployJob(bambooClient, existingDeployJobs, bambooJobConfig, processorExecutionTraceLog,
 							activeDeployJobs, processorId, proBasicConfig);
 				}
-
+				newBuildCount += count;
 			} catch (MalformedURLException | ParseException rcp) {
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 				processorExecutionTraceLog.setExecutionSuccess(false);
@@ -307,6 +304,10 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 				MDC.remove("JobName");
 				MDC.remove("bambooInstanceUrl");
 			}
+		}
+		if (count > 0 || !activeDeployJobs.isEmpty()) {
+			cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, proBasicConfig.getId().toString(),
+					CommonConstant.JENKINS);
 		}
 	}
 
@@ -324,8 +325,8 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	private Map<Pair<ObjectId, String>, List<Deployment>> getAllInformationfromDeployment(ObjectId processorId) {
 		List<Deployment> allDeployments = deploymentRepository.findAll();
 		return allDeployments.stream().filter(deployment -> deployment.getProcessorId().compareTo(processorId) == 0)
-				.collect(Collectors
-						.groupingBy(deployment -> Pair.of(deployment.getProjectToolConfigId(), deployment.getJobId())));
+				.collect(
+						Collectors.groupingBy(deployment -> Pair.of(deployment.getProjectToolConfigId(), deployment.getJobId())));
 	}
 
 	private void processDeployJob(BambooClient bambooClient,
@@ -335,8 +336,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		Map<Pair<ObjectId, String>, Set<Deployment>> deployJobsFromBamboo = bambooClient
 				.getDeployJobsFromServer(bambooJobConfig, proBasicConfig);
 
-		Set<Deployment> deployments = addNewBambooDeploysJobsToDb(deployJobsFromBamboo, existingDeployJobs,
-				proBasicConfig);
+		Set<Deployment> deployments = addNewBambooDeploysJobsToDb(deployJobsFromBamboo, existingDeployJobs, proBasicConfig);
 		Set<Deployment> saveDeployments = new HashSet<>();
 		deployments.stream().forEach(deployment -> {
 			if (checkDeploymentConditionsNotNull(deployment)) {
@@ -352,8 +352,8 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	}
 
 	private boolean checkDeploymentConditionsNotNull(Deployment deployment) {
-		if (deployment.getEnvName() == null || deployment.getStartTime() == null || deployment.getEndTime() == null
-				|| deployment.getDeploymentStatus() == null) {
+		if (deployment.getEnvName() == null || deployment.getStartTime() == null || deployment.getEndTime() == null ||
+				deployment.getDeploymentStatus() == null) {
 			log.error("deployments conditions not satisfied so that data is not saved in db {}", deployment);
 			return false;
 		} else {
@@ -366,31 +366,24 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 			deployments.forEach(deployment -> {
 				deployment.setProcessorId(processorId);
 				deploymentRepository.save(deployment);
-				log.info("Saving deploy info for jobName {}, jobId: {}, releaseNumber() : {} in DB.",
-						deployment.getJobName(), deployment.getId(), deployment.getNumber());
-
+				log.info("Saving deploy info for jobName {}, jobId: {}, releaseNumber() : {} in DB.", deployment.getJobName(),
+						deployment.getId(), deployment.getNumber());
 			});
-
 		}
 	}
 
-	private Set<Deployment> addNewBambooDeploysJobsToDb(
-			Map<Pair<ObjectId, String>, Set<Deployment>> deployJobsFromBamboo,
+	private Set<Deployment> addNewBambooDeploysJobsToDb(Map<Pair<ObjectId, String>, Set<Deployment>> deployJobsFromBamboo,
 			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, ProjectBasicConfig proBasicConfig) {
 		Set<Deployment> finalDataToSave = new HashSet<>();
 		deployJobsFromBamboo.forEach((key, value) -> {
-
 			if (existingDeployJobs.containsKey(key)) {
-				finalDataToSave
-						.addAll(checkForExistingEnvironmentRelease(key, value, existingDeployJobs, proBasicConfig));
+				finalDataToSave.addAll(checkForExistingEnvironmentRelease(key, value, existingDeployJobs, proBasicConfig));
 			} else {
 				// directly push all the values
 				finalDataToSave.addAll(value);
 			}
-
 		});
 		return finalDataToSave;
-
 	}
 
 	private Set<Deployment> checkForExistingEnvironmentRelease(Pair<ObjectId, String> key, Set<Deployment> value,
@@ -408,8 +401,8 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 				deploy.add(deployment);
 			}
 			existingdeployments.forEach(deployments -> {
-				if (proBasicConfig.isSaveAssigneeDetails() && deployments.getDeployedBy() == null
-						&& deployment.getDeployedBy() != null) {
+				if (proBasicConfig.isSaveAssigneeDetails() && deployments.getDeployedBy() == null &&
+						deployment.getDeployedBy() != null) {
 					deployments.setDeployedBy(deployment.getDeployedBy());
 					deploy.add(deployments);
 				}
@@ -422,15 +415,14 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	private boolean checkForCombination(List<Deployment> existingdeployments, Deployment deployment) {
 		LocalDateTime bambooStart;
 		LocalDateTime bambooEnd;
-		if (!checkRepeatedJobs(existingdeployments, deployment)
-				&& !(DeploymentStatus.IN_PROGRESS.equals(deployment.getDeploymentStatus()))) {
+		if (!checkRepeatedJobs(existingdeployments, deployment) &&
+				!(DeploymentStatus.IN_PROGRESS.equals(deployment.getDeploymentStatus()))) {
 			List<Deployment> sortedOnEnd = existingdeployments.stream()
 					.sorted((c1, c2) -> DateUtil.stringToLocalDateTime(c2.getEndTime(), DateUtil.TIME_FORMAT)
 							.compareTo(DateUtil.stringToLocalDateTime(c1.getEndTime(), DateUtil.TIME_FORMAT)))
 					.collect(Collectors.toList());
 			LocalDateTime endDb = DateUtil.stringToLocalDateTime(sortedOnEnd.get(0).getEndTime(), DateUtil.TIME_FORMAT);
-			LocalDateTime startDb = DateUtil.stringToLocalDateTime(sortedOnEnd.get(0).getStartTime(),
-					DateUtil.TIME_FORMAT);
+			LocalDateTime startDb = DateUtil.stringToLocalDateTime(sortedOnEnd.get(0).getStartTime(), DateUtil.TIME_FORMAT);
 			try {
 				bambooStart = DateUtil.stringToLocalDateTime(deployment.getStartTime(), DateUtil.TIME_FORMAT);
 				bambooEnd = DateUtil.stringToLocalDateTime(deployment.getEndTime(), DateUtil.TIME_FORMAT);
@@ -457,7 +449,6 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		}
 
 		return repeat;
-
 	}
 
 	/**
@@ -506,9 +497,9 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	 * Cleans the cache in the Custom API
 	 *
 	 * @param cacheEndPoint
-	 *            the cache endpoint
+	 *          the cache endpoint
 	 * @param cacheName
-	 *            the cache name
+	 *          the cache name
 	 */
 	private void cacheRestClient(String cacheEndPoint, String cacheName) {
 		HttpHeaders headers = new HttpHeaders();
@@ -537,16 +528,57 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		}
 	}
 
+	/**
+	 * Cleans the cache in the Custom API
+	 *
+	 * @param cacheEndPoint
+	 *          the cache endpoint
+	 * @param param1
+	 *          parameter 1
+	 * @param param2
+	 *          parameter 2
+	 */
+	private void cacheRestClient(String cacheEndPoint, String param1, String param2) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+		if (StringUtils.isNoneEmpty(param1)) {
+			cacheEndPoint = cacheEndPoint.replace("param1", param1);
+		}
+		if (StringUtils.isNoneEmpty(param2)) {
+			cacheEndPoint = cacheEndPoint.replace("param2", param2);
+		}
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(bambooConfig.getCustomApiBaseUrl());
+		uriBuilder.path("/");
+		uriBuilder.path(cacheEndPoint);
+
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
+		} catch (RestClientException e) {
+			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service {}", e);
+		}
+
+		if (null != response && response.getStatusCode().is2xxSuccessful()) {
+			log.info("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache for: {} and {} ", param1, param2);
+		} else {
+			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache for: {} and {} ", param1, param2);
+		}
+	}
+
 	private List<ProjectBasicConfig> getSelectedProjects() {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findActiveProjects(false);
 		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
 		if (CollectionUtils.isEmpty(selectedProjectsBasicIds)) {
 			return allProjects;
 		}
-		return CollectionUtils.emptyIfNull(allProjects).stream().filter(
-				projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
+		return CollectionUtils.emptyIfNull(allProjects).stream()
+				.filter(projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
 				.collect(Collectors.toList());
 	}
 
@@ -560,11 +592,9 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BAMBOO, basicProjectConfigId);
-		existingTraceLogOptional.ifPresent(
-				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
-						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
+		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> processorExecutionTraceLog
+				.setLastEnableAssigneeToggleState(existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 
 		return processorExecutionTraceLog;
 	}
-
 }

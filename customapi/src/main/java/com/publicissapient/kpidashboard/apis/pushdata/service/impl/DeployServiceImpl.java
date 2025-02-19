@@ -59,7 +59,6 @@ public class DeployServiceImpl {
 	PushDataValidationServiceImpl buildValidationService;
 
 	/**
-	 *
 	 * @param basicProjectConfigId
 	 * @param deployList
 	 * @param deploymentList
@@ -68,8 +67,7 @@ public class DeployServiceImpl {
 	 * @return
 	 */
 	public int checkandCreateDeployment(ObjectId basicProjectConfigId, Set<PushDeploy> deployList,
-			List<Deployment> deploymentList, List<PushErrorData> deployErrorList,
-			List<PushDataDetail> pushDataDetails) {
+			List<Deployment> deploymentList, List<PushErrorData> deployErrorList, List<PushDataDetail> pushDataDetails) {
 		AtomicInteger failedRecords = new AtomicInteger();
 		if (CollectionUtils.isNotEmpty(deployList)) {
 			deployList.forEach(pushDeploy -> {
@@ -79,20 +77,19 @@ public class DeployServiceImpl {
 				Map<String, String> errorMap = createErrorMap(pushDeploy);
 				if (MapUtils.isNotEmpty(errorMap)) {
 					failedRecords.getAndIncrement();
-					log.error("Errors in deploy for jobNumber " + pushDeploy.getNumber() + " jobName "
-							+ pushDeploy.getJobName() + " are ", errorMap);
+					log.error("Errors in deploy for jobNumber " + pushDeploy.getNumber() + " jobName " + pushDeploy.getJobName() +
+							" are ", errorMap);
 					pushErrorData.setErrors(errorMap);
 				} else {
 					// if no errors are present in the input job then it will create Deployment List
-					deploymentList.add(createDeployment(basicProjectConfigId, pushDeploy,
-							checkExisitingJob(pushDeploy, basicProjectConfigId)));
+					deploymentList.add(
+							createDeployment(basicProjectConfigId, pushDeploy, checkExisitingJob(pushDeploy, basicProjectConfigId)));
 				}
 				pushDataDetails.add(createTraceLog(pushErrorData));
 				deployErrorList.add(pushErrorData);
 			});
 		}
 		return failedRecords.get();
-
 	}
 
 	private PushDataDetail createTraceLog(PushErrorData pushErrorData) {
@@ -110,7 +107,7 @@ public class DeployServiceImpl {
 
 	/**
 	 * create Deployment Object based on the existence in collection
-	 * 
+	 *
 	 * @param basicProjectConfigId
 	 * @param pushDeploy
 	 * @param checkExisitingDeployment
@@ -128,8 +125,9 @@ public class DeployServiceImpl {
 		deployment.setDuration(pushDeploy.getDuration());
 		deployment.setDeploymentStatus(DeploymentStatus.fromString(pushDeploy.getDeploymentStatus()));
 		deployment.setCreatedAt(StringUtils.isEmpty(deployment.getCreatedAt())
-				? DateUtil.dateTimeFormatter(Instant.ofEpochMilli(System.currentTimeMillis())
-						.atZone(ZoneId.systemDefault()).toLocalDateTime(), DateUtil.TIME_FORMAT)
+				? DateUtil.dateTimeFormatter(
+						Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.systemDefault()).toLocalDateTime(),
+						DateUtil.TIME_FORMAT)
 				: deployment.getCreatedAt());
 		deployment.setUpdatedTime(DateUtil.dateTimeFormatter(
 				Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.systemDefault()).toLocalDateTime(),
@@ -139,7 +137,7 @@ public class DeployServiceImpl {
 
 	/**
 	 * check existing job on the basis of jobName/jobNumber/basicprojectConfigId
-	 * 
+	 *
 	 * @param pushDeploy
 	 * @param basicProjectObjectConfigId
 	 * @return
@@ -155,7 +153,7 @@ public class DeployServiceImpl {
 
 	/**
 	 * validation data and creating error map for each validation
-	 * 
+	 *
 	 * @param pushDeploy
 	 * @return
 	 */
@@ -168,11 +166,8 @@ public class DeployServiceImpl {
 		validations.put(Pair.of("envName", pushDeploy.getEnvName()), Arrays.asList(PushValidationType.BLANK));
 		validations.put(Pair.of("startTime", pushDeploy.getStartTime().toString()),
 				Arrays.asList(PushValidationType.BLANK));
-		validations.put(Pair.of("endTime", pushDeploy.getEndTime().toString()),
-				Arrays.asList(PushValidationType.BLANK));
-		validations.put(Pair.of("duration", pushDeploy.getDuration().toString()),
-				Arrays.asList(PushValidationType.BLANK));
+		validations.put(Pair.of("endTime", pushDeploy.getEndTime().toString()), Arrays.asList(PushValidationType.BLANK));
+		validations.put(Pair.of("duration", pushDeploy.getDuration().toString()), Arrays.asList(PushValidationType.BLANK));
 		return buildValidationService.createBuildDeployErrorMap(validations);
 	}
-
 }

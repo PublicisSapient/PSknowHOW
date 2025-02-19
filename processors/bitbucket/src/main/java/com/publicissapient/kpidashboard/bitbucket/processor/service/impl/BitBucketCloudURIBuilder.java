@@ -30,12 +30,11 @@ import com.publicissapient.kpidashboard.bitbucket.config.BitBucketConfig;
 import com.publicissapient.kpidashboard.bitbucket.model.BitbucketRepo;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 
-/**
- * The Class BitBucketServerURIBuilder.
- */
+/** The Class BitBucketServerURIBuilder. */
 public class BitBucketCloudURIBuilder {
 
 	private static final int PATH_LENGTH_LIMIT_FOR_SCM_REMOVAL = 5;
+
 	/** The repo. */
 	private final BitbucketRepo repo;
 
@@ -49,11 +48,11 @@ public class BitBucketCloudURIBuilder {
 	 * Instantiates a new bit bucket server URI builder.
 	 *
 	 * @param repo
-	 *            the repo
+	 *          the repo
 	 * @param config
-	 *            the config
+	 *          the config
 	 * @param bitBucketServerInfo
-	 *            the bitBucketServerInfo
+	 *          the bitBucketServerInfo
 	 */
 	public BitBucketCloudURIBuilder(BitbucketRepo repo, BitBucketConfig config,
 			ProcessorToolConnection bitBucketServerInfo) {
@@ -67,9 +66,9 @@ public class BitBucketCloudURIBuilder {
 	 *
 	 * @return the string
 	 * @throws URISyntaxException
-	 *             uri syntax exception
+	 *           uri syntax exception
 	 * @throws URISyntaxException
-	 *             the URISyntaxException
+	 *           the URISyntaxException
 	 */
 	public String build() throws URISyntaxException {
 		final URIBuilder builder = new URIBuilder();
@@ -89,7 +88,7 @@ public class BitBucketCloudURIBuilder {
 	/**
 	 * @return URL
 	 * @throws URISyntaxException
-	 *             the URISyntaxException
+	 *           the URISyntaxException
 	 */
 	public String buildMergeReqURL() throws URISyntaxException {
 		final URIBuilder builder = new URIBuilder();

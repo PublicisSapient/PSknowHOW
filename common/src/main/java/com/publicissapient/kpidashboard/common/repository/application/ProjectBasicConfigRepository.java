@@ -39,7 +39,7 @@ public interface ProjectBasicConfigRepository extends MongoRepository<ProjectBas
 	 * Returns ProjectBasicConfig from persistence store by id
 	 *
 	 * @param id
-	 *            id
+	 *          id
 	 * @return {@link ProjectBasicConfig} object if exist
 	 */
 	Optional<ProjectBasicConfig> findById(ObjectId id);
@@ -48,17 +48,26 @@ public interface ProjectBasicConfigRepository extends MongoRepository<ProjectBas
 	 * Returns ProjectBasicConfig from persistence store by project name
 	 *
 	 * @param projectName
-	 *            ProjectName
+	 *          ProjectName
 	 * @return {@link ProjectBasicConfig} object if exist
 	 */
 	ProjectBasicConfig findByProjectName(String projectName);
+
+	/**
+	 * Returns ProjectBasicConfig from persistence store by projectNodeId
+	 *
+	 * @param projectNodeId
+	 *          ProjectName
+	 * @return {@link ProjectBasicConfig} object if exist
+	 */
+	ProjectBasicConfig findByProjectNodeId(String projectNodeId);
 
 	/**
 	 * Returns ProjectBasicConfig from persistence store by project name with
 	 * different id than provided
 	 *
 	 * @param projectName
-	 *            ProjectName
+	 *          ProjectName
 	 * @return {@link ProjectBasicConfig} object if exist
 	 */
 	ProjectBasicConfig findByProjectNameAndIdNot(String projectName, ObjectId id);
@@ -74,8 +83,12 @@ public interface ProjectBasicConfigRepository extends MongoRepository<ProjectBas
 	@Query("{ 'hierarchy' : { $elemMatch: { 'hierarchyLevel.hierarchyLevelId' : ?0 }} , 'hierarchy.value' : { $in : ?1 } }")
 	List<ProjectBasicConfig> findByHierarchyLevelIdAndValues(String accessLevel, List<String> hierarchyLevelValues);
 
-    List<ProjectBasicConfig> findByKanban(boolean isKanban);
-
 	@Query("{'id': ?0}")
 	Optional<ProjectBasicConfig> findByStringId(String id);
+
+	@Query("{ 'projectOnHold': ?0 }")
+	List<ProjectBasicConfig> findActiveProjects(Boolean projectOnHold);
+
+	@Query("{ 'kanban': ?0, 'projectOnHold': ?1 }")
+	List<ProjectBasicConfig> findByKanbanAndProjectOnHold(boolean isKanban, boolean projectOnHold);
 }

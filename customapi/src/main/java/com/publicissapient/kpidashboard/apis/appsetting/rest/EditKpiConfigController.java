@@ -41,7 +41,6 @@ import lombok.extern.slf4j.Slf4j;
  * Controller for edit KPI Config.
  *
  * @author jagmongr
- *
  */
 @Slf4j
 @RestController
@@ -55,8 +54,7 @@ public class EditKpiConfigController {
 	 * Gets KPI configuration data for the environment by type.
 	 *
 	 * @param projectBasicConfigId
-	 *            for project config id
-	 * 
+	 *          for project config id
 	 * @return responseEntity with data,message and status
 	 */
 	@RequestMapping(value = "/jira/editKpi/{projectBasicConfigId}/{kpiCode}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR

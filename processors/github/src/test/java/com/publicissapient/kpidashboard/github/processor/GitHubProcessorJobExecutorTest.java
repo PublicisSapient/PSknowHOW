@@ -3,6 +3,7 @@ package com.publicissapient.kpidashboard.github.processor;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -50,7 +51,6 @@ import com.publicissapient.kpidashboard.github.repository.GitHubProcessorReposit
 
 /**
  * @author narsingh9
- *
  */
 @ExtendWith(SpringExtension.class)
 public class GitHubProcessorJobExecutorTest {
@@ -135,16 +135,16 @@ public class GitHubProcessorJobExecutorTest {
 		processorExecutionTraceLog.setBasicProjectConfigId("624d5c9ed837fc14d40b3039");
 		pl.add(processorExecutionTraceLog);
 		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
-		doReturn(getProjectConfigList()).when(projectConfigRepository).findAll();
+		doReturn(getProjectConfigList()).when(projectConfigRepository).findActiveProjects(anyBoolean());
 		doReturn(getProcessorItemList().get(0)).when(gitHubProcessorItemRepository).save(ArgumentMatchers.any());
 
 		doReturn(getProcessorToolConnectionList()).when(processorToolConnectionService)
 				.findByToolAndBasicProjectConfigId(ArgumentMatchers.anyString(), ArgumentMatchers.any(ObjectId.class));
-		doReturn(getCommitDetailsList()).when(gitHubClient).fetchAllCommits(ArgumentMatchers.any(),
-				ArgumentMatchers.anyBoolean(), ArgumentMatchers.any(), ArgumentMatchers.any());
+		doReturn(getCommitDetailsList()).when(gitHubClient).fetchAllCommits(ArgumentMatchers.any(), anyBoolean(),
+				ArgumentMatchers.any(), ArgumentMatchers.any());
 
-		doReturn(getMergeDetailsList()).when(gitHubClient).fetchMergeRequests(ArgumentMatchers.any(),
-				ArgumentMatchers.anyBoolean(), ArgumentMatchers.any(), ArgumentMatchers.any());
+		doReturn(getMergeDetailsList()).when(gitHubClient).fetchMergeRequests(ArgumentMatchers.any(), anyBoolean(),
+				ArgumentMatchers.any(), ArgumentMatchers.any());
 		doReturn("http://customapi:8080/").when(gitHubConfig).getCustomApiBaseUrl();
 		doReturn(Arrays.asList(requests)).when(mergReqRepo).findByProcessorItemIdAndRevisionNumberIn(any(), anySet());
 		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.GITHUB,
@@ -164,16 +164,16 @@ public class GitHubProcessorJobExecutorTest {
 		processorExecutionTraceLog.setBasicProjectConfigId("624d5c9ed837fc14d40b3039");
 		pl.add(processorExecutionTraceLog);
 		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
-		doReturn(getProjectConfigList()).when(projectConfigRepository).findAll();
+		doReturn(getProjectConfigList()).when(projectConfigRepository).findActiveProjects(anyBoolean());
 		doReturn(getProcessorItemList().get(0)).when(gitHubProcessorItemRepository).save(ArgumentMatchers.any());
 
 		doReturn(getProcessorToolConnectionList()).when(processorToolConnectionService)
 				.findByToolAndBasicProjectConfigId(ArgumentMatchers.anyString(), ArgumentMatchers.any(ObjectId.class));
-		doReturn(getCommitDetailsList()).when(gitHubClient).fetchAllCommits(ArgumentMatchers.any(),
-				ArgumentMatchers.anyBoolean(), ArgumentMatchers.any(), ArgumentMatchers.any());
+		doReturn(getCommitDetailsList()).when(gitHubClient).fetchAllCommits(ArgumentMatchers.any(), anyBoolean(),
+				ArgumentMatchers.any(), ArgumentMatchers.any());
 
-		doReturn(getMergeDetailsList()).when(gitHubClient).fetchMergeRequests(ArgumentMatchers.any(),
-				ArgumentMatchers.anyBoolean(), ArgumentMatchers.any(), ArgumentMatchers.any());
+		doReturn(getMergeDetailsList()).when(gitHubClient).fetchMergeRequests(ArgumentMatchers.any(), anyBoolean(),
+				ArgumentMatchers.any(), ArgumentMatchers.any());
 		doReturn("http://customapi:8080/").when(gitHubConfig).getCustomApiBaseUrl();
 		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.GITHUB,
 				"624d5c9ed837fc14d40b3039")).thenReturn(optionalProcessorExecutionTraceLog);
@@ -192,7 +192,7 @@ public class GitHubProcessorJobExecutorTest {
 		processorExecutionTraceLog.setBasicProjectConfigId("624d5c9ed837fc14d40b3039");
 		pl.add(processorExecutionTraceLog);
 		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
-		doReturn(getProjectConfigList()).when(projectConfigRepository).findAll();
+		doReturn(getProjectConfigList()).when(projectConfigRepository).findActiveProjects(anyBoolean());
 		boolean executed = gitHubProcessorJobExecutor.execute(gitHubProcessor);
 		assertTrue(executed);
 	}
@@ -208,13 +208,13 @@ public class GitHubProcessorJobExecutorTest {
 		processorExecutionTraceLog.setBasicProjectConfigId("624d5c9ed837fc14d40b3039");
 		pl.add(processorExecutionTraceLog);
 		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
-		doReturn(getProjectConfigList()).when(projectConfigRepository).findAll();
+		doReturn(getProjectConfigList()).when(projectConfigRepository).findActiveProjects(anyBoolean());
 		doReturn(getProcessorItemList().get(0)).when(gitHubProcessorItemRepository).save(ArgumentMatchers.any());
 
 		doReturn(getProcessorToolConnectionList()).when(processorToolConnectionService)
 				.findByToolAndBasicProjectConfigId(ArgumentMatchers.anyString(), ArgumentMatchers.any(ObjectId.class));
-		doThrow(FetchingCommitException.class).when(gitHubClient).fetchAllCommits(ArgumentMatchers.any(),
-				ArgumentMatchers.anyBoolean(), ArgumentMatchers.any(), ArgumentMatchers.any());
+		doThrow(FetchingCommitException.class).when(gitHubClient).fetchAllCommits(ArgumentMatchers.any(), anyBoolean(),
+				ArgumentMatchers.any(), ArgumentMatchers.any());
 		boolean executed = gitHubProcessorJobExecutor.execute(gitHubProcessor);
 		assertFalse(executed);
 	}
@@ -258,5 +258,4 @@ public class GitHubProcessorJobExecutorTest {
 		mergeRequestsList.add(mergeRequests);
 		return mergeRequestsList;
 	}
-
 }

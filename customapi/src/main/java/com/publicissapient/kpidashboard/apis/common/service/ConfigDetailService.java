@@ -22,17 +22,15 @@ import com.publicissapient.kpidashboard.apis.model.ConfigDetails;
 
 /**
  * Contract to get kpi wise aggregation type
- * 
- * @author pkum34
  *
+ * @author pkum34
  */
 public interface ConfigDetailService {
 
 	/**
 	 * Gets kpi wise aggregation type.
-	 * 
+	 *
 	 * @return kpi wise aggregation type
 	 */
 	ConfigDetails getConfigDetails();
-
 }

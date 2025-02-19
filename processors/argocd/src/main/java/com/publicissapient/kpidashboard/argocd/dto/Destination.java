@@ -20,9 +20,7 @@ package com.publicissapient.kpidashboard.argocd.dto;
 
 import lombok.Data;
 
-/**
- * Destination represents the destination details for an ArgoCD Application.
- */
+/** Destination represents the destination details for an ArgoCD Application. */
 @Data
 public class Destination {
 	private String server;

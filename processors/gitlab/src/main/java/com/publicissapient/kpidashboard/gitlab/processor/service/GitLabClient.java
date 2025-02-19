@@ -25,25 +25,22 @@ import com.publicissapient.kpidashboard.gitlab.customexception.FetchingCommitExc
 import com.publicissapient.kpidashboard.gitlab.model.GitLabInfo;
 import com.publicissapient.kpidashboard.gitlab.model.GitLabRepo;
 
-/**
- * GitLabClient for getting all commits from GitLab
- */
+/** GitLabClient for getting all commits from GitLab */
 public interface GitLabClient {
 
 	/**
 	 * Get all commits.
 	 *
 	 * @param gitLabRepo
-	 *            the gitLabRepo
+	 *          the gitLabRepo
 	 * @param firstTimeRun
-	 *            the first time run
+	 *          the first time run
 	 * @param gitLabInfo
-	 *            tool and connections info
+	 *          tool and connections info
 	 * @return the list
 	 * @throws FetchingCommitException
-	 *             the exception
+	 *           the exception
 	 */
 	List<CommitDetails> fetchAllCommits(GitLabRepo gitLabRepo, boolean firstTimeRun, GitLabInfo gitLabInfo)
 			throws FetchingCommitException;
-
 }

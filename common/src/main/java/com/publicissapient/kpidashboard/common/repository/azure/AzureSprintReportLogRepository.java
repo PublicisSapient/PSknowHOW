@@ -33,21 +33,20 @@ import com.publicissapient.kpidashboard.common.model.azure.AzureSprintReportLog;
 public interface AzureSprintReportLogRepository extends MongoRepository<AzureSprintReportLog, ObjectId> {
 	/**
 	 * find by basic project config id and sprint id
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basic project config id
+	 *          basic project config id
 	 * @param sprintId
-	 *            sprint id
+	 *          sprint id
 	 * @return azure sprint report log
 	 */
-	Optional<AzureSprintReportLog> findByBasicProjectConfigIdAndSprintId(ObjectId basicProjectConfigId,
-			String sprintId);
+	Optional<AzureSprintReportLog> findByBasicProjectConfigIdAndSprintId(ObjectId basicProjectConfigId, String sprintId);
 
 	/**
 	 * find by basic project config id
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basic project config id
+	 *          basic project config id
 	 * @return list of azure sprint report log
 	 */
 	List<AzureSprintReportLog> findByBasicProjectConfigId(ObjectId basicProjectConfigId);

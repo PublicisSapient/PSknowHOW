@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -35,10 +37,12 @@ import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.Project
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.Filters;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevelSuggestion;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.MaturityLevel;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
@@ -47,9 +51,11 @@ import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardCo
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingStructureRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FiltersRepository;
-import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelSuggestionRepository;
+import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
+import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.impl.ProjectToolConfigRepositoryCustom;
 import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
@@ -81,7 +87,9 @@ public class ConfigHelperService {
 	@Autowired
 	private KpiMasterRepository kpiMasterRepository;
 	@Autowired
-	private HierarchyLevelSuggestionRepository hierarchyLevelSuggestionRepository;
+	private OrganizationHierarchyRepository organizationHierarchyRepository;
+	@Autowired
+	private ProjectHierarchyRepository projectHierarchyRepository;
 	@Autowired
 	private ProjectBasicConfigService projectBasicConfigService;
 	@Autowired
@@ -92,14 +100,15 @@ public class ConfigHelperService {
 	private FiltersRepository filtersRepository;
 
 	@Autowired
+	private HierarchyLevelRepository hierarchyLevelRepository;
+
+	@Autowired
 	private FieldMappingStructureRepository fieldMappingStructureRepository;
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private Map<ObjectId, BoardMetadata> boardMetaDataMap = new HashMap<>();
 	private Map<ObjectId, Map<String, List<ProjectToolConfig>>> projectToolConfMap = new HashMap<>();
 
-	/**
-	 * Load project config list.
-	 */
+	/** Load project config list. */
 	public void loadConfigData() {
 		log.info("loadConfigData - loading project config, field mapping and tool_config");
 		projectConfigMap.clear();
@@ -108,20 +117,23 @@ public class ConfigHelperService {
 		List<ProjectBasicConfig> projectList = projectConfigRepository.findAll();
 		List<FieldMapping> fieldMappingList = fieldMappingRepository.findAll();
 
+		List<HierarchyLevel> hierarchyLevels = hierarchyLevelRepository.findAllByOrderByLevel();
+
 		projectList.forEach(projectConfig -> {
+			// AN: This is to make sure UI doesn't break, to be removed after migration
+			if (CollectionUtils.isEmpty(projectConfig.getHierarchy())) {
+				projectConfig
+						.setHierarchy(projectBasicConfigService.getHierarchy(hierarchyLevels, projectConfig.getProjectNodeId()));
+			}
 			projectConfigMap.put(projectConfig.getId().toString(), projectConfig);
 			FieldMapping mapping = fieldMappingList.stream()
-					.filter(x -> null != x.getBasicProjectConfigId()
-							&& x.getBasicProjectConfigId().equals(projectConfig.getId()))
+					.filter(x -> null != x.getBasicProjectConfigId() && x.getBasicProjectConfigId().equals(projectConfig.getId()))
 					.findAny().orElse(new FieldMapping());
 			fieldMappingMap.put(projectConfig.getId(), mapping);
 		});
-
 	}
 
-	/**
-	 * Load project board meta data.
-	 */
+	/** Load project board meta data. */
 	public void loadBoardMetaData() {
 		log.info("loading project board meta data");
 		boardMetaDataMap.clear();
@@ -130,12 +142,9 @@ public class ConfigHelperService {
 
 		boardMetaDataMap = boardMetaDataList.stream()
 				.collect(Collectors.toMap(BoardMetadata::getProjectBasicConfigId, Function.identity()));
-
 	}
 
-	/**
-	 * This method load toolConfigMap
-	 */
+	/** This method load toolConfigMap */
 	public void loadToolConfig() {
 		toolItemMap.clear();
 		List<Tool> toolList = toolConfigRepository.getToolList();
@@ -144,9 +153,7 @@ public class ConfigHelperService {
 				project.getValue().stream().collect(Collectors.groupingBy(Tool::getTool))));
 	}
 
-	/**
-	 * This method load toolConfigMap
-	 */
+	/** This method load toolConfigMap */
 	public void loadProjectToolConfig() {
 		projectToolConfMap.clear();
 		List<ProjectToolConfig> toolList = projectToolConfigRepository.findAll();
@@ -160,7 +167,7 @@ public class ConfigHelperService {
 	 * Gets tool item map. Map containing key as projectId and value as Map
 	 * containing kay as Tool Name and value as List of configurations of that tool.
 	 *
-	 * @return the tool item map {@code  Map<ObjectId, Map<String, List<Tool>>>}
+	 * @return the tool item map {@code Map<ObjectId, Map<String, List<Tool>>>}
 	 */
 	public Map<ObjectId, Map<String, List<Tool>>> getToolItemMap() {
 		return (Map<ObjectId, Map<String, List<Tool>>>) cacheService.cacheToolConfigMapData();
@@ -172,7 +179,7 @@ public class ConfigHelperService {
 	 * configurations of project tools.
 	 *
 	 * @return the project tool config map
-	 *         {@code  Map<ObjectId, Map<String, List<Tool>>>}
+	 *         {@code Map<ObjectId, Map<String, List<Tool>>>}
 	 */
 	public Map<ObjectId, Map<String, List<ProjectToolConfig>>> getProjectToolConfigMap() {
 		return (Map<ObjectId, Map<String, List<ProjectToolConfig>>>) cacheService.cacheProjectToolConfigMapData();
@@ -182,7 +189,7 @@ public class ConfigHelperService {
 	 * Gets project config.
 	 *
 	 * @param key
-	 *            the key
+	 *          the key
 	 * @return the project config
 	 */
 	public ProjectBasicConfig getProjectConfig(String key) {
@@ -190,10 +197,22 @@ public class ConfigHelperService {
 	}
 
 	/**
+	 * Gets project config.
+	 *
+	 * @param projectNodeId
+	 *          the uniqueNodeId
+	 * @return the project config
+	 */
+	public ProjectBasicConfig getProjectNodeIdWiseProjectConfig(String projectNodeId) {
+		return getProjectConfigMap().values().stream()
+				.collect(Collectors.toMap(ProjectBasicConfig::getProjectNodeId, e1 -> e1)).get(projectNodeId);
+	}
+
+	/**
 	 * Gets field mapping.
 	 *
 	 * @param key
-	 *            the key
+	 *          the key
 	 * @return the field mapping
 	 */
 	public FieldMapping getFieldMapping(ObjectId key) {
@@ -204,7 +223,7 @@ public class ConfigHelperService {
 	 * Gets Project Board metadata.
 	 *
 	 * @param key
-	 *            the key
+	 *          the key
 	 * @return the Board Meta data
 	 */
 	public BoardMetadata getBoardMetaData(ObjectId key) {
@@ -224,7 +243,7 @@ public class ConfigHelperService {
 	 * Sets project config map.
 	 *
 	 * @param projectConfigMap
-	 *            the project config map
+	 *          the project config map
 	 */
 	public void setProjectConfigMap(Map<String, ProjectBasicConfig> projectConfigMap) {
 		this.projectConfigMap = projectConfigMap;
@@ -243,7 +262,7 @@ public class ConfigHelperService {
 	 * Sets field mapping map.
 	 *
 	 * @param fieldMappingMap
-	 *            the field mapping map
+	 *          the field mapping map
 	 */
 	public void setFieldMappingMap(Map<ObjectId, FieldMapping> fieldMappingMap) {
 		this.fieldMappingMap = fieldMappingMap;
@@ -262,7 +281,7 @@ public class ConfigHelperService {
 	 * Sets board meta data map.
 	 *
 	 * @param boardMetaDataMap
-	 *            the field mapping map
+	 *          the field mapping map
 	 */
 	public void setBoardMetaDataMap(Map<ObjectId, BoardMetadata> boardMetaDataMap) {
 		this.boardMetaDataMap = boardMetaDataMap;
@@ -276,18 +295,16 @@ public class ConfigHelperService {
 	 */
 	public Object getConfigMapData(String key) {
 		return switch (key) {
-		case CommonConstant.CACHE_PROJECT_CONFIG_MAP -> projectConfigMap;
-		case CommonConstant.CACHE_FIELD_MAPPING_MAP -> fieldMappingMap;
-		case CommonConstant.CACHE_BOARD_META_DATA_MAP -> boardMetaDataMap;
-		case CommonConstant.CACHE_TOOL_CONFIG_MAP -> toolItemMap;
-		case CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP -> projectToolConfMap;
-		default -> null;
+			case CommonConstant.CACHE_PROJECT_CONFIG_MAP -> projectConfigMap;
+			case CommonConstant.CACHE_FIELD_MAPPING_MAP -> fieldMappingMap;
+			case CommonConstant.CACHE_BOARD_META_DATA_MAP -> boardMetaDataMap;
+			case CommonConstant.CACHE_TOOL_CONFIG_MAP -> toolItemMap;
+			case CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP -> projectToolConfMap;
+			default -> null;
 		};
 	}
 
-	/**
-	 * Load business unit Map.
-	 */
+	/** Load business unit Map. */
 	@Cacheable(CommonConstant.CACHE_KPI_MASTER)
 	public Iterable<KpiMaster> loadKpiMaster() {
 		log.info("loading KPI Master data");
@@ -304,13 +321,12 @@ public class ConfigHelperService {
 
 		// for LeadTimeKanban we require the maturity level to be used in the kpi
 		// calculation
-		masterList.stream().filter(
-				d -> d.getMaturityLevel() != null && d.getKpiId().equalsIgnoreCase(KPICode.LEAD_TIME_KANBAN.getKpiId()))
+		masterList.stream()
+				.filter(d -> d.getMaturityLevel() != null && d.getKpiId().equalsIgnoreCase(KPICode.LEAD_TIME_KANBAN.getKpiId()))
 				.forEach(master -> kpiIdRangeMap.putAll(master.getMaturityLevel().stream()
 						.collect(Collectors.toMap(MaturityLevel::getLevel, MaturityLevel::getRange))));
 
 		return kpiIdRangeMap;
-
 	}
 
 	@Cacheable(CommonConstant.CACHE_AGG_CRITERIA)
@@ -333,19 +349,7 @@ public class ConfigHelperService {
 		return projectBasicConfigService.getBasicConfigTree();
 	}
 
-	/**
-	 * Load cache hierarchy level value Map.
-	 */
-	@Cacheable(CommonConstant.CACHE_HIERARCHY_LEVEL_VALUE)
-	public List<HierarchyLevelSuggestion> loadHierarchyLevelSuggestion() {
-		log.info("loading hierarchy level Master data");
-		return hierarchyLevelSuggestionRepository.findAll();
-	}
-
-	/**
-	 * Load KPI Field Mapping.
-	 */
-
+	/** Load KPI Field Mapping. */
 	@Cacheable(CommonConstant.CACHE_FIELD_MAPPING_STUCTURE)
 	public Object loadFieldMappingStructure() {
 		log.info("loading FieldMappingStucture data");
@@ -353,9 +357,11 @@ public class ConfigHelperService {
 	}
 
 	@Cacheable(CommonConstant.CACHE_USER_BOARD_CONFIG)
-	public List<UserBoardConfig> loadUserBoardConfig() {
+	public Map<Pair<String, String>, UserBoardConfig> loadUserBoardConfig() {
 		log.info("loading UserBoarConfig");
-		return userBoardConfigRepository.findAll();
+		return userBoardConfigRepository.findAll().stream()
+				.collect(Collectors.toMap(config -> Pair.of(config.getUsername(), config.getBasicProjectConfigId()),
+						Function.identity(), (existing, replacement) -> existing));
 	}
 
 	@Cacheable(CommonConstant.CACHE_PROJECT_TOOL_CONFIG)
@@ -368,5 +374,28 @@ public class ConfigHelperService {
 	public List<Filters> loadAllFilters() {
 		log.info("loading AllFilters");
 		return filtersRepository.findAll();
+	}
+
+	@Cacheable(CommonConstant.CACHE_ORGANIZATION_HIERARCHY)
+	public List<OrganizationHierarchy> loadAllOrganizationHierarchy() {
+		log.debug("loading cache organization Hierarchies");
+		return organizationHierarchyRepository.findAll();
+	}
+
+	/**
+	 * this method will update projectConfigMap and update cache object
+	 *
+	 * @param projectBasicConfig
+	 */
+	public void updateCacheProjectBasicConfig(ProjectBasicConfig projectBasicConfig) {
+		projectConfigMap.put(projectBasicConfig.getId().toString(), projectBasicConfig);
+		cacheService.updateCacheProjectConfigMapData();
+		cacheService.updateAllCacheProjectConfigMapData();
+	}
+
+	public List<ObjectId> getProjectHierarchyProjectConfigMap(List<String> uniqueId) {
+		return cacheService.getAllProjectHierarchy().stream()
+				.filter(projectHierarchy -> uniqueId.contains(projectHierarchy.getNodeId()))
+				.map(ProjectHierarchy::getBasicProjectConfigId).toList();
 	}
 }

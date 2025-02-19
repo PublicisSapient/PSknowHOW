@@ -19,5 +19,4 @@ public class BranchMergeReqCount {
 
 	private String branchName;
 	private List<MergeReqCount> weekWiseData;
-
 }

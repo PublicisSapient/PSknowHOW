@@ -29,5 +29,4 @@ import com.publicissapient.kpidashboard.common.model.azure.AzureStateCategory;
 public interface AzureStateCategoryRepository extends MongoRepository<AzureStateCategory, ObjectId> {
 
 	AzureStateCategory findByBasicProjectConfigId(String basicProjectConfigId);
-
 }

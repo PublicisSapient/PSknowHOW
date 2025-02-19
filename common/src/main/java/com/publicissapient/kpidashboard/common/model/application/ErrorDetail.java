@@ -21,15 +21,15 @@ import lombok.Data;
 
 @Data
 public class ErrorDetail {
-    private int status;
-    private String url;
-    private String impact;
-    private String error;
+	private int status;
+	private String url;
+	private String impact;
+	private String error;
 
-    public ErrorDetail(int status, String url, String error, String impact) {
-        this.status = status;
-        this.url = url;
-        this.impact = impact;
-        this.error = error;
-    }
+	public ErrorDetail(int status, String url, String error, String impact) {
+		this.status = status;
+		this.url = url;
+		this.impact = impact;
+		this.error = error;
+	}
 }

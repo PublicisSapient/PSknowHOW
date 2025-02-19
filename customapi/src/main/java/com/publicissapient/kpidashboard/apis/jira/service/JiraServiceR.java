@@ -94,13 +94,13 @@ public class JiraServiceR {
 	 * in multiple thread.
 	 *
 	 * @param kpiRequest
-	 *            JIRA KPI request true if flow for precalculated, false for direct
-	 *            flow.
+	 *          JIRA KPI request true if flow for precalculated, false for direct
+	 *          flow.
 	 * @return List of KPI data
 	 * @throws EntityNotFoundException
-	 *             EntityNotFoundException
+	 *           EntityNotFoundException
 	 */
-	@SuppressWarnings({ "PMD.AvoidCatchingGenericException", "unchecked" })
+	@SuppressWarnings({"PMD.AvoidCatchingGenericException", "unchecked"})
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
 		log.info("Processing KPI calculation for data {}", kpiRequest.getKpiList());
@@ -109,36 +109,29 @@ public class JiraServiceR {
 		String[] projectKeyCache = null;
 		try {
 			Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
-			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(),
-					false);
+			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(), false);
 			if (null != groupName) {
 				kpiRequest.setLabel(groupName.toUpperCase());
 			} else {
 				log.error("label name for selected hierarchy not found");
 			}
-			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
-					groupName);
+			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest, groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
 				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList,
 						referFromProjectCache);
 
-				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest,
-						filteredAccountDataList, referFromProjectCache);
+				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest, filteredAccountDataList,
+						referFromProjectCache);
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
-				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(),
-						groupId, kpiRequest.getSprintIncluded());
-				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-						&& null != cachedData && isLeadTimeDuration(kpiRequest.getKpiList())) {
-					log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
-					return (List<KpiElement>) cachedData;
-				}
+				List<KpiElement> cachedData = getCachedData(kpiRequest, groupId, projectKeyCache);
+				if (CollectionUtils.isNotEmpty(cachedData))
+					return cachedData;
 
 				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
-						filterHelperService.getHierarchyIdLevelMap(false)
-								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
+						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(), filterHelperService
+								.getHierarchyIdLevelMap(false).getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
 
 				updateTreeAggregatorDetail(kpiRequest, treeAggregatorDetail);
 
@@ -155,11 +148,14 @@ public class JiraServiceR {
 				}
 
 				ForkJoinTask.invokeAll(listOfTask);
-				List<KpiElement> missingKpis = origRequestedKpis.stream().filter(reqKpi -> responseList.stream()
-						.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId()))).toList();
+				List<KpiElement> missingKpis = origRequestedKpis.stream().filter(
+						reqKpi -> responseList.stream().noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
+						.toList();
 				responseList.addAll(missingKpis);
 
-				kpiHelperService.setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
+				if (!customApiConfig.getGroupIdsToExcludeFromCache().contains(groupId)) {
+					kpiHelperService.setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
+				}
 			} else {
 				responseList.addAll(origRequestedKpis);
 			}
@@ -172,6 +168,20 @@ public class JiraServiceR {
 		return responseList;
 	}
 
+	private List<KpiElement> getCachedData(KpiRequest kpiRequest, Integer groupId, String[] projectKeyCache) {
+		Object cachedData = null;
+		if (!customApiConfig.getGroupIdsToExcludeFromCache().contains(groupId)) {
+			cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(), groupId,
+					kpiRequest.getSprintIncluded());
+		}
+		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				null != cachedData && isLeadTimeDuration(kpiRequest.getKpiList())) {
+			log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
+			return (List<KpiElement>) cachedData;
+		}
+		return new ArrayList<>();
+	}
+
 	private boolean isLeadTimeDuration(List<KpiElement> kpiList) {
 		return kpiList.size() != 1 || !kpiList.get(0).getKpiId().equalsIgnoreCase("kpi171");
 	}
@@ -182,28 +192,27 @@ public class JiraServiceR {
 	 * filter out the sprint by sprintCountForKpiCalculation property
 	 *
 	 * @param kpiRequest
-	 *            KpiRequest object containing the selectedMap.
+	 *          KpiRequest object containing the selectedMap.
 	 * @param treeAggregatorDetail
-	 *            The TreeAggregatorDetail object to be updated.
+	 *          The TreeAggregatorDetail object to be updated.
 	 */
 	private void updateTreeAggregatorDetail(KpiRequest kpiRequest, TreeAggregatorDetail treeAggregatorDetail) {
-		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())
-				&& CollectionUtils.isEmpty(kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))
-				&& MapUtils.isNotEmpty(treeAggregatorDetail.getMapOfListOfLeafNodes())) {
+		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap()) &&
+				CollectionUtils.isEmpty(kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) &&
+				MapUtils.isNotEmpty(treeAggregatorDetail.getMapOfListOfLeafNodes())) {
 			List<Node> sprintList = new ArrayList<>();
-			if (CollectionUtils.isNotEmpty(
-					treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
+			if (CollectionUtils
+					.isNotEmpty(treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
 				treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT).stream()
 						.collect(Collectors.groupingBy(Node::getParentId)).forEach((proj, sprints) -> {
 							if (sprints.size() > customApiConfig.getSprintCountForKpiCalculation()) {
-								sprintList.addAll(new ArrayList<>(
-										sprints.subList(0, customApiConfig.getSprintCountForKpiCalculation())));
+								sprintList
+										.addAll(new ArrayList<>(sprints.subList(0, customApiConfig.getSprintCountForKpiCalculation())));
 							} else {
 								sprintList.addAll(sprints);
 							}
 						});
-				treeAggregatorDetail.getMapOfListOfLeafNodes().put(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
-						sprintList);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().put(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, sprintList);
 			}
 		}
 	}
@@ -239,9 +248,7 @@ public class JiraServiceR {
 			this.treeAggregatorDetail = treeAggregatorDetail;
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
+		/** {@inheritDoc} */
 		@SuppressWarnings("PMD.AvoidCatchingGenericException")
 		@Override
 		public void compute() {
@@ -253,11 +260,11 @@ public class JiraServiceR {
 		 * method of these KPIs
 		 *
 		 * @param kpiRequest
-		 *            JIRA KPI request
+		 *          JIRA KPI request
 		 * @param kpiElement
-		 *            kpiElement object
+		 *          kpiElement object
 		 * @param treeAggregatorDetail
-		 *            filter tree object
+		 *          filter tree object
 		 * @return KpiElement kpiElement
 		 */
 		@SuppressWarnings("PMD.AvoidCatchingGenericException")
@@ -278,8 +285,8 @@ public class JiraServiceR {
 							.clone(treeAggregatorDetail);
 					List<Node> projectNodes = treeAggregatorDetailClone.getMapOfListOfProjectNodes()
 							.get(CommonConstant.PROJECT.toLowerCase());
-					if (!projectNodes.isEmpty() && (projectNodes.size() > 1
-							|| kpiHelperService.isToolConfigured(kpi, kpiElement, projectNodes.get(0)))) {
+					if (!projectNodes.isEmpty() &&
+							(projectNodes.size() > 1 || kpiHelperService.isToolConfigured(kpi, kpiElement, projectNodes.get(0)))) {
 						kpiElement = jiraKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
 						kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
 						if (projectNodes.size() == 1) {
@@ -287,9 +294,7 @@ public class JiraServiceR {
 						}
 					}
 					long processTime = System.currentTimeMillis() - startTime;
-					log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-							processTime);
-
+					log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
 				}
 			} catch (ApplicationException exception) {
 				kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
@@ -307,11 +312,11 @@ public class JiraServiceR {
 	 * This method is called when the request for kpi is done from exposed API
 	 *
 	 * @param kpiRequest
-	 *            JIRA KPI request true if flow for precalculated, false for direct
-	 *            flow.
+	 *          JIRA KPI request true if flow for precalculated, false for direct
+	 *          flow.
 	 * @return List of KPI data
 	 * @throws EntityNotFoundException
-	 *             EntityNotFoundException
+	 *           EntityNotFoundException
 	 */
 	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {
 		referFromProjectCache = false;
@@ -319,5 +324,4 @@ public class JiraServiceR {
 		referFromProjectCache = true;
 		return kpiElementList;
 	}
-
 }

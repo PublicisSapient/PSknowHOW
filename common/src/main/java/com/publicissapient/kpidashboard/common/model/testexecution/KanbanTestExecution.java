@@ -16,10 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
-
+/** */
 package com.publicissapient.kpidashboard.common.model.testexecution;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -35,7 +32,6 @@ import lombok.Setter;
 
 /**
  * @author sansharm13
- *
  */
 @Data
 @Builder

@@ -107,7 +107,7 @@ public class TokenAuthenticationServiceImplTest {
 	@Mock
 	private CustomApiConfig customApiConfig;
 	@Mock
-    UsersSessionService usersSessionService;
+	UsersSessionService usersSessionService;
 
 	@Mock
 	UserTokenAuthenticationDTO userTokenAuthenticationDTO;
@@ -116,15 +116,18 @@ public class TokenAuthenticationServiceImplTest {
 	public void setup() {
 		MockitoAnnotations.openMocks(this);
 		SecurityContextHolder.clearContext();
-		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
-				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
+		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class)))
+				.thenReturn(new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
 	}
 
 	@Test
 	public void testValidateAuthentication() {
 		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
-		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
-				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
+		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class)))
+				.thenReturn(
+						new Cookie(
+								"authCookie",
+								AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
 		service.validateAuthentication(request, response);
 		Assert.assertNotNull(authentication);
 	}
@@ -134,8 +137,8 @@ public class TokenAuthenticationServiceImplTest {
 		HttpServletResponse response = mock(HttpServletResponse.class);
 		when(tokenAuthProperties.getExpirationTime()).thenReturn(0l);
 		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
-		when(cookieUtil.createAccessTokenCookie(any())).thenReturn(
-				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
+		when(cookieUtil.createAccessTokenCookie(any()))
+				.thenReturn(new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
 		service.addAuthentication(response, AuthenticationFixture.getAuthentication(USERNAME));
 		verify(response).addHeader(eq(AUTH_RESPONSE_HEADER), anyString());
 	}
@@ -143,8 +146,11 @@ public class TokenAuthenticationServiceImplTest {
 	@Test
 	public void testGetAuthenticationWhenTokenNotProvided() {
 		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
-		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
-				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
+		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class)))
+				.thenReturn(
+						new Cookie(
+								"authCookie",
+								AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
 		Authentication authentication = service.getAuthentication(request, response);
 		Assert.assertNotNull(authentication);
 		assertTrue(authentication.isAuthenticated());
@@ -172,7 +178,6 @@ public class TokenAuthenticationServiceImplTest {
 		parList.add(par);
 		accessItem = new AccessItem();
 		accessItem.setItemId("itemId");
-		accessItem.setItemName("itemName");
 		accessItems.add(accessItem);
 
 		accessNodes = new AccessNode();
@@ -204,7 +209,6 @@ public class TokenAuthenticationServiceImplTest {
 
 		accessItem = new AccessItem();
 		accessItem.setItemId("itemId");
-		accessItem.setItemName("itemName");
 		accessItems.add(accessItem);
 
 		accessNodes = new AccessNode();
@@ -261,5 +265,4 @@ public class TokenAuthenticationServiceImplTest {
 		when(userInfoService.getOrSaveUserInfo(USERNAME, AuthType.STANDARD, new ArrayList<>())).thenReturn(testUser);
 		assertEquals(service.getOrSaveUserByToken(request, authentication), jsonObject);
 	}
-
 }

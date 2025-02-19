@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.azure.adapter.helper;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -40,11 +41,11 @@ public class AzureRestClientFactory {
 
 	/**
 	 * Cleans the cache in th Custom API
-	 * 
+	 *
 	 * @param cacheEndPoint
-	 *            URL end point where Custom API cache is created
+	 *          URL end point where Custom API cache is created
 	 * @param cacheName
-	 *            Name of the Custom API cache
+	 *          Name of the Custom API cache
 	 */
 	public void cacheRestClient(String cacheEndPoint, String cacheName) {
 		HttpHeaders headers = new HttpHeaders();
@@ -70,6 +71,47 @@ public class AzureRestClientFactory {
 			log.info("[AZURE-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache {}", cacheName);
 		} else {
 			log.error("[AZURE-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache {}", cacheName);
+		}
+	}
+
+	/**
+	 * Cleans the cache in th Custom API
+	 *
+	 * @param cacheEndPoint
+	 *          URL end point where Custom API cache is created
+	 * @param param1
+	 *          parameter 1
+	 * @param param2
+	 *          parameter 2
+	 */
+	public void cacheRestClient(String cacheEndPoint, String param1, String param2) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+		if (StringUtils.isNoneEmpty(param1)) {
+			cacheEndPoint = cacheEndPoint.replace("param1", param1);
+		}
+		if (StringUtils.isNoneEmpty(param2)) {
+			cacheEndPoint = cacheEndPoint.replace("param2", param2);
+		}
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(azureProcessorConfig.getCustomApiBaseUrl());
+		uriBuilder.path("/");
+		uriBuilder.path(cacheEndPoint);
+
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
+		} catch (RuntimeException e) {
+			log.error("[AZURE-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service {}", e.getMessage());
+		}
+
+		if (null != response && response.getStatusCode().is2xxSuccessful()) {
+			log.info("[AZURE-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache for {} and {}", param1, param2);
+		} else {
+			log.error("[AZURE-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache for {} and {}", param1, param2);
 		}
 	}
 }

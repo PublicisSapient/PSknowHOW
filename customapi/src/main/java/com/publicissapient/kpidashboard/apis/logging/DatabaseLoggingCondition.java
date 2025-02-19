@@ -24,21 +24,17 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * Implements Condition interface and provide implementation for its methods.
- * 
- * @author prijain3
  *
+ * @author prijain3
  */
 public class DatabaseLoggingCondition implements Condition {
 
 	protected static final String LOG_REQUEST = "logRequest";
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		String logRequest = context.getEnvironment().getProperty(LOG_REQUEST);
 		return logRequest != null && Boolean.parseBoolean(logRequest);
 	}
-
 }

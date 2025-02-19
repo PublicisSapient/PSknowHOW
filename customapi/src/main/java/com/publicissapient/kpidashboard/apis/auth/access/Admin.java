@@ -25,10 +25,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * An Admin user.
- */
-@Target({ ElementType.METHOD, ElementType.TYPE })
+/** An Admin user. */
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
@@ -36,5 +34,4 @@ import java.lang.annotation.Target;
 public @interface Admin {
 
 	String HAS_ROLE_ROLE_ADMIN = "hasRole('ROLE_ADMIN')";
-
 }

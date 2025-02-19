@@ -40,11 +40,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.BuildDataFactory;
@@ -62,22 +64,20 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
-import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 
 /**
  * Jenkins KPI - CodeBuildTime Test class
- * 
- * @author prigupta8
  *
+ * @author prigupta8
  */
 @RunWith(MockitoJUnitRunner.class)
 public class CodeBuildTimeServiceImplTest {
 
 	Map<String, List<Tool>> toolGroup = new HashMap<>();
 	@Mock
-	BuildRepository buildRepository;
+	KpiDataCacheService kpiDataCacheService;
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -127,17 +127,22 @@ public class CodeBuildTimeServiceImplTest {
 		buildList = buildDataFactory.getbuildDataList();
 		buildList.forEach(
 				build -> build.setStartTime(LocalDateTime.now().minusDays(2).toInstant(ZoneOffset.UTC).toEpochMilli()));
-
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		});
 
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-
 	}
 
 	private void setTreadValuesDataCount() {
@@ -163,7 +168,7 @@ public class CodeBuildTimeServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(buildList);
+		when(kpiDataCacheService.fetchBuildFrequencyData(any(), any(), any(), any())).thenReturn(buildList);
 		String kpiRequestTrackerId = "Excel-Jenkins-5be544de025de212549176a9";
 
 		try {
@@ -174,7 +179,6 @@ public class CodeBuildTimeServiceImplTest {
 			assertThat("Code Build Time :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
 		} catch (Exception enfe) {
 		}
-
 	}
 
 	@Test
@@ -201,7 +205,6 @@ public class CodeBuildTimeServiceImplTest {
 		} catch (Exception enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -215,15 +218,14 @@ public class CodeBuildTimeServiceImplTest {
 		Map<ObjectId, List<Build>> buildList = new HashMap<ObjectId, List<Build>>();
 		Map<String, Object> subCategoryMap = new HashMap<>();
 		Long count = codeBuildTimeServiceImpl.calculateKPIMetrics(buildList);
-
 	}
 
 	@Test
 	public void getQualifierType() {
 		Map<String, Object> subCategoryMap = new HashMap<>();
 		String qualifierType = codeBuildTimeServiceImpl.getQualifierType();
-
 	}
+
 	@Test
 	public void testGetJobNameWithPipelineName() {
 		List<Build> buildList = new ArrayList<>();

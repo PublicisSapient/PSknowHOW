@@ -77,6 +77,7 @@ public final class GitLabConstants {
 
 	/** MergeRequests Constants */
 	public static final String RESP_TITLE = "title";
+
 	public static final String RESP_STATE = "state";
 	public static final String RESP_OPEN = "open";
 	public static final String RESP_CLOSED = "closed";
@@ -91,9 +92,7 @@ public final class GitLabConstants {
 	public static final String WEB_URL = "web_url";
 	public static final String RESP_MERGED_AT = "merged_at";
 
-	/**
-	 * Instantiates a new bit bucket constants.
-	 */
+	/** Instantiates a new bit bucket constants. */
 	private GitLabConstants() {
 	}
 }

@@ -85,11 +85,9 @@ public class UserTokenDeletionControllerApplicationTest extends Mockito {
 		ResponseCookie foo11 = ResponseCookie.from("foo1", "bar1").build();
 		when(cookieUtil.deleteAccessTokenCookie()).thenReturn(foo11);
 		request.setAttribute("Authorization", "Bearer abcde");
-		mockMvc.perform(get("/userlogout").cookie(new Cookie("foo1", "bar1")))
-				.andExpect(status().isOk());
-
-
+		mockMvc.perform(get("/userlogout").cookie(new Cookie("foo1", "bar1"))).andExpect(status().isOk());
 	}
+
 	@Test
 	public void testDeleteUserToken_WhenCentralUserLogout() throws Exception {
 		HttpServletRequest request = mock(HttpServletRequest.class);
@@ -97,9 +95,6 @@ public class UserTokenDeletionControllerApplicationTest extends Mockito {
 		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(authCookie);
 		when(userInfoService.getCentralAuthUserDeleteUserToken(authCookie.getValue())).thenReturn(true);
 		request.setAttribute("Authorization", "Bearer abcde");
-		mockMvc.perform(get("/centralUserlogout").cookie(new Cookie("foo1", "bar1")))
-				.andExpect(status().isOk());
+		mockMvc.perform(get("/centralUserlogout").cookie(new Cookie("foo1", "bar1"))).andExpect(status().isOk());
 	}
-
-
 }

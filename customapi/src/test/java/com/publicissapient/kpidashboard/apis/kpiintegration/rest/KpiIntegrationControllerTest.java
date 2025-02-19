@@ -29,9 +29,6 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,8 +38,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author kunkambl
@@ -50,60 +51,62 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 @RunWith(MockitoJUnitRunner.class)
 public class KpiIntegrationControllerTest {
 
-    @InjectMocks
-    KpiIntegrationController kpiIntegrationController;
+	@InjectMocks
+	KpiIntegrationController kpiIntegrationController;
 
-    @Mock
-    KpiIntegrationServiceImpl maturityService;
+	@Mock
+	KpiIntegrationServiceImpl maturityService;
 
-    @Mock
-    CustomApiConfig customApiConfig;
+	@Mock
+	CustomApiConfig customApiConfig;
 
-    @Mock
-    private HttpServletRequest httpServletRequest;
+	@Mock
+	private HttpServletRequest httpServletRequest;
 
-    @Before
-    public void setUp() {
-        when(customApiConfig.getxApiKey()).thenReturn("valid-token");
-    }
+	@Before
+	public void setUp() {
+		when(customApiConfig.getxApiKey()).thenReturn("valid-token");
+	}
 
-    @Test
-    public void getMaturityValuesUnauthorized() {
+	@Test
+	public void getMaturityValuesUnauthorized() {
 
-        KpiRequest kpiRequest = new KpiRequest();
-        when(httpServletRequest.getHeader("X-Api-Key")).thenReturn("invalid-token");
-        ResponseEntity<List<KpiElement>> responseEntity = kpiIntegrationController.getMaturityValues(httpServletRequest,
-                kpiRequest);
+		KpiRequest kpiRequest = new KpiRequest();
+		when(httpServletRequest.getHeader("X-Api-Key")).thenReturn("invalid-token");
+		ResponseEntity<List<KpiElement>> responseEntity = kpiIntegrationController.getMaturityValues(httpServletRequest,
+				kpiRequest);
 
-        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
-        assertTrue(responseEntity.getBody().isEmpty());
-        verify(maturityService, never()).getKpiResponses(any());
-    }
+		assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+		assertTrue(responseEntity.getBody().isEmpty());
+		verify(maturityService, never()).getKpiResponses(any());
+	}
 
-    @Test
-    public void testGetMaturityValuesSuccess() {
-        KpiRequest kpiRequest = new KpiRequest();
-        when(httpServletRequest.getHeader("X-Api-Key")).thenReturn("valid-token");
-        when(maturityService.getKpiResponses(kpiRequest)).thenReturn(Collections.singletonList(new KpiElement()));
+	@Test
+	public void testGetMaturityValuesSuccess() {
+		KpiRequest kpiRequest = new KpiRequest();
+		when(httpServletRequest.getHeader("X-Api-Key")).thenReturn("valid-token");
+		when(maturityService.getKpiResponses(kpiRequest)).thenReturn(Collections.singletonList(new KpiElement()));
 
-        ResponseEntity<List<KpiElement>> responseEntity = kpiIntegrationController.getMaturityValues(httpServletRequest, kpiRequest);
+		ResponseEntity<List<KpiElement>> responseEntity = kpiIntegrationController.getMaturityValues(httpServletRequest,
+				kpiRequest);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertFalse(responseEntity.getBody().isEmpty());
-        verify(maturityService).getKpiResponses(kpiRequest);
-    }
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+		assertFalse(responseEntity.getBody().isEmpty());
+		verify(maturityService).getKpiResponses(kpiRequest);
+	}
 
-    @Test
-    public void testGetMaturityValuesForbidden() {
-        KpiRequest kpiRequest = new KpiRequest();
-        when(httpServletRequest.getHeader("X-Api-Key")).thenReturn("valid-token");
-        when(maturityService.getKpiResponses(kpiRequest)).thenReturn(Collections.singletonList(new KpiElement()));
-        when(maturityService.getKpiResponses(kpiRequest)).thenReturn(Collections.emptyList());
+	@Test
+	public void testGetMaturityValuesForbidden() {
+		KpiRequest kpiRequest = new KpiRequest();
+		when(httpServletRequest.getHeader("X-Api-Key")).thenReturn("valid-token");
+		when(maturityService.getKpiResponses(kpiRequest)).thenReturn(Collections.singletonList(new KpiElement()));
+		when(maturityService.getKpiResponses(kpiRequest)).thenReturn(Collections.emptyList());
 
-        ResponseEntity<List<KpiElement>> responseEntity = kpiIntegrationController.getMaturityValues(httpServletRequest, kpiRequest);
+		ResponseEntity<List<KpiElement>> responseEntity = kpiIntegrationController.getMaturityValues(httpServletRequest,
+				kpiRequest);
 
-        assertEquals(HttpStatus.FORBIDDEN, responseEntity.getStatusCode());
-        assertTrue(responseEntity.getBody().isEmpty());
-        verify(maturityService).getKpiResponses(kpiRequest);
-    }
+		assertEquals(HttpStatus.FORBIDDEN, responseEntity.getStatusCode());
+		assertTrue(responseEntity.getBody().isEmpty());
+		verify(maturityService).getKpiResponses(kpiRequest);
+	}
 }

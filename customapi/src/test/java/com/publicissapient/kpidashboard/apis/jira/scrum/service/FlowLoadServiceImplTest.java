@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -106,7 +105,6 @@ public class FlowLoadServiceImplTest {
 		issueBacklogHistoryDataList = JiraIssueHistoryDataFactory.newInstance().getJiraIssueCustomHistory();
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(issueBacklogHistoryDataList);
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(new JiraIssueReleaseStatus());
-
 	}
 
 	@Test
@@ -118,15 +116,19 @@ public class FlowLoadServiceImplTest {
 	public void getKpiData() throws ApplicationException {
 		when(customApiConfig.getFlowKpiMonthCount()).thenReturn(12);
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+		when(cacheService.getFromApplicationCache(
+						Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		List<JiraIssueCustomHistory> expectedResult = new ArrayList<>();
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put(ISSUE_BACKLOG_HISTORY, issueBacklogHistoryDataList);
 		List<Map<String, Object>> typeCountMap = new ArrayList<>();
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		KpiElement responseKpiElement = flowLoadService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
+		KpiElement responseKpiElement =
+				flowLoadService.getKpiData(
+						kpiRequest,
+						kpiRequest.getKpiList().get(0),
+						treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 
 		assertNotNull(responseKpiElement);
 		assertNotNull(responseKpiElement.getTrendValueList());

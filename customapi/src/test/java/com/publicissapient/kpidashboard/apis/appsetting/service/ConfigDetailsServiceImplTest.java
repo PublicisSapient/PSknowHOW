@@ -102,5 +102,4 @@ public class ConfigDetailsServiceImplTest {
 		configDetails.setGitlabToolFieldFlag(false);
 		return configDetails;
 	}
-
 }

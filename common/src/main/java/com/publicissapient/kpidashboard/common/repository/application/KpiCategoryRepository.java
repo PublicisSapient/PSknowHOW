@@ -8,5 +8,4 @@ import com.publicissapient.kpidashboard.common.model.application.KpiCategory;
 
 @Repository
 public interface KpiCategoryRepository extends MongoRepository<KpiCategory, ObjectId> {
-
 }
