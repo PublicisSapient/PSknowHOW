@@ -63,7 +63,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 
-	private static final String SPRINT_DETAILS = "sprints";
+	private static final String SPRINT_DETAILS = "sprintDetails";
 	private static final String HAPPINESS_INDEX_DETAILS = "happinessIndexDetails";
 	@Autowired
 	private SprintRepository sprintRepository;
