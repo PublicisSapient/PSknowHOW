@@ -233,6 +233,9 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 		}
 		data.setCategoryWiseDelay(new HashMap<>());
 		data.setMarker(Constant.BLANK);
+		data.setDevDelayInDays(Constant.BLANK);
+		data.setPotentialDelay(Constant.BLANK);
+		data.setPredictedCompletionDate(Constant.BLANK);
 	}
 
 	/**
@@ -775,14 +778,12 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 				jiraIssueModalObject.setDevDelayInDays(Constant.BLANK);
 			}
 		}
-		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
+		if (StringUtils.isNotEmpty(jiraIssue.getDueDate()) && issueWiseDelay.containsKey(jiraIssue.getNumber())
+				&& issueWiseDelay.get(jiraIssue.getNumber()).isMaxMarker()) {
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
 			jiraIssueModalObject.setPotentialDelay(iterationPotentialDelay.getPotentialDelay() + "d");
 			jiraIssueModalObject.setPredictedCompletionDate(DateUtil.dateTimeConverter(
 					iterationPotentialDelay.getPredictedCompletedDate(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
-		} else {
-			jiraIssueModalObject.setPotentialDelay(Constant.BLANK);
-			jiraIssueModalObject.setPredictedCompletionDate(Constant.BLANK);
 		}
 	}
 }
