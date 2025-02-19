@@ -17,8 +17,11 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,59 +29,56 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JiraClientServiceTest {
 
-    @Mock
-    ProcessorJiraRestClient restClient;
+	@Mock
+	ProcessorJiraRestClient restClient;
 
-    @Mock
-    KerberosClient kerberosClient;
+	@Mock
+	KerberosClient kerberosClient;
 
-    @InjectMocks
-    private JiraClientService jiraClientService;
+	@InjectMocks
+	private JiraClientService jiraClientService;
 
-    @Before
-    public void setUp() {
-    }
+	@Before
+	public void setUp() {
+	}
 
-    @Test
-    public void testRestClientOperations() {
-        String projectId = "project123";
+	@Test
+	public void testRestClientOperations() {
+		String projectId = "project123";
 
-        assertFalse(jiraClientService.isContainRestClient(projectId));
+		assertFalse(jiraClientService.isContainRestClient(projectId));
 
-        jiraClientService.setRestClientMap(projectId, restClient);
+		jiraClientService.setRestClientMap(projectId, restClient);
 
-        assertTrue(jiraClientService.isContainRestClient(projectId));
-        assertEquals(restClient, jiraClientService.getRestClientMap(projectId));
+		assertTrue(jiraClientService.isContainRestClient(projectId));
+		assertEquals(restClient, jiraClientService.getRestClientMap(projectId));
 
-        jiraClientService.removeRestClientMapClientForKey(projectId);
+		jiraClientService.removeRestClientMapClientForKey(projectId);
 
-        assertFalse(jiraClientService.isContainRestClient(projectId));
-        assertNull(jiraClientService.getRestClientMap(projectId));
-    }
+		assertFalse(jiraClientService.isContainRestClient(projectId));
+		assertNull(jiraClientService.getRestClientMap(projectId));
+	}
 
-    @Test
-    public void testKerberosClientOperations() {
-        String projectId = "project456";
+	@Test
+	public void testKerberosClientOperations() {
+		String projectId = "project456";
 
-        assertFalse(jiraClientService.isContainKerberosClient(projectId));
+		assertFalse(jiraClientService.isContainKerberosClient(projectId));
 
-        jiraClientService.setKerberosClientMap(projectId, kerberosClient);
+		jiraClientService.setKerberosClientMap(projectId, kerberosClient);
 
-        assertTrue(jiraClientService.isContainKerberosClient(projectId));
-        assertEquals(kerberosClient, jiraClientService.getKerberosClientMap(projectId));
+		assertTrue(jiraClientService.isContainKerberosClient(projectId));
+		assertEquals(kerberosClient, jiraClientService.getKerberosClientMap(projectId));
 
-        jiraClientService.removeKerberosClientMapClientForKey(projectId);
+		jiraClientService.removeKerberosClientMapClientForKey(projectId);
 
-        assertFalse(jiraClientService.isContainKerberosClient(projectId));
-        assertNull(jiraClientService.getKerberosClientMap(projectId));
-    }
+		assertFalse(jiraClientService.isContainKerberosClient(projectId));
+		assertNull(jiraClientService.getKerberosClientMap(projectId));
+	}
 }

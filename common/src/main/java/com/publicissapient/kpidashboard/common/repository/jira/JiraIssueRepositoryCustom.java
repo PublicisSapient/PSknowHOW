@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.repository.jira;//NOPMD
+package com.publicissapient.kpidashboard.common.repository.jira; // NOPMD
 
 import java.util.List;
 import java.util.Map;
@@ -28,18 +28,16 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 
-/**
- * Repository for FeatureCollector with custom methods.
- */
+/** Repository for FeatureCollector with custom methods. */
 @Repository
-public interface JiraIssueRepositoryCustom {// NOPMD
+public interface JiraIssueRepositoryCustom { // NOPMD
 	// to avoid tooManyMethods
 
 	/**
 	 * Find defect count by rca list.
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @return the list
 	 */
 	List<JiraIssue> findDefectCountByRCA(Map<String, List<String>> mapOfFilters);
@@ -48,13 +46,13 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * Find issues group by sprint list.
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @param uniqueProjectMap
-	 *            the unique project map
+	 *          the unique project map
 	 * @param filterToShowOnTrend
-	 *            the filter to show on trend
+	 *          the filter to show on trend
 	 * @param individualDevOrQa
-	 *            the individual dev or qa
+	 *          the individual dev or qa
 	 * @return key as sprint and list of Story id
 	 */
 	List<SprintWiseStory> findIssuesGroupBySprint(Map<String, List<String>> mapOfFilters,
@@ -68,11 +66,11 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * Find issue by story number list.
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @param storyNumber
-	 *            the story number
+	 *          the story number
 	 * @param uniqueProjectMapFolder
-	 *            the unique project map folder
+	 *          the unique project map folder
 	 * @return UAT defects or total defects based on uatDefect parameter.
 	 */
 	List<JiraIssue> findIssueByStoryNumber(Map<String, List<String>> mapOfFilters, List<String> storyNumber,
@@ -82,9 +80,9 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * Find issues by sprint and type list.
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @param uniqueProjectMap
-	 *            the unique project map
+	 *          the unique project map
 	 * @return list of feature
 	 */
 	List<JiraIssue> findIssuesBySprintAndType(Map<String, List<String>> mapOfFilters,
@@ -94,11 +92,11 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * Find issues by sprint and type list.
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @param uniqueProjectMap
-	 *            the unique project map
+	 *          the unique project map
 	 * @param uniqueProjectMapNotIn
-	 *            for not in query
+	 *          for not in query
 	 * @return list of feature
 	 */
 	List<JiraIssue> findIssuesBySprintAndType(Map<String, List<String>> mapOfFilters,
@@ -108,26 +106,26 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * Find issues by type list.
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @return list of feature
 	 */
 	List<JiraIssue> findIssuesByType(Map<String, List<String>> mapOfFilters);
 
 	/**
 	 * Find issues with boolean field
-	 * 
+	 *
 	 * @param mapOfFilters
-	 *            mapOfFilters
+	 *          mapOfFilters
 	 * @param fieldName
-	 *            fieldName
+	 *          fieldName
 	 * @param dateFrom
-	 *            dateFrom
+	 *          dateFrom
 	 * @param dateTo
-	 *            dateTo
+	 *          dateTo
 	 * @return List<JiraIssue>
 	 */
-	List<JiraIssue> findIssuesWithBoolean(Map<String, List<String>> mapOfFilters, String fieldName, boolean flag, String dateFrom,
-										  String dateTo);
+	List<JiraIssue> findIssuesWithBoolean(Map<String, List<String>> mapOfFilters, String fieldName, boolean flag,
+			String dateFrom, String dateTo);
 
 	List<JiraIssue> findUnassignedIssues(String startDate, String endDate, Map<String, List<String>> mapOfFilters);
 
@@ -135,13 +133,13 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * Find stories by type list.
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @param uniqueProjectMap
-	 *            the unique project map
+	 *          the unique project map
 	 * @param filterToShowOnTrend
-	 *            the filter to show on trend
+	 *          the filter to show on trend
 	 * @param individualDevOrQa
-	 *            the individual dev or qa
+	 *          the individual dev or qa
 	 * @return list of PredictabilityFeature
 	 */
 	List<SprintWiseStory> findStoriesByType(Map<String, List<String>> mapOfFilters,
@@ -151,7 +149,7 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * Find defect linked with sprint list.
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @return list of defects not linked with stories but sprint is tagged
 	 */
 	List<JiraIssue> findDefectLinkedWithSprint(Map<String, List<String>> mapOfFilters);
@@ -160,9 +158,9 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * This method is used to find stories for a given list of sprints
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @param storyNumber
-	 *            the story number
+	 *          the story number
 	 * @return list the feature
 	 */
 	List<JiraIssue> findStoriesBySprints(Map<String, List<String>> mapOfFilters, List<String> storyNumber);
@@ -171,7 +169,7 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * Find costOfDelay by type list.
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @return list of feature
 	 */
 	List<JiraIssue> findCostOfDelayByType(Map<String, List<String>> mapOfFilters);
@@ -179,11 +177,11 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	/**
 	 * Updates multi objects that matches with basicProjectConfigId and unsets the
 	 * fields provided.
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            config id
+	 *          config id
 	 * @param fieldsToUnset
-	 *            list of fields to unset
+	 *          list of fields to unset
 	 */
 	void updateByBasicProjectConfigId(String basicProjectConfigId, List<String> fieldsToUnset);
 
@@ -192,9 +190,9 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * Automation
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @param uniqueProjectMap
-	 *            the unique project map
+	 *          the unique project map
 	 * @return list the list
 	 */
 	List<JiraIssue> findNonRegressionTestCases(Map<String, List<String>> mapOfFilters,
@@ -204,22 +202,21 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * Find defects without story link.
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @param uniqueProjectMapNotIn
-	 *            for not in query
+	 *          for not in query
 	 * @return list of feature
 	 */
-
 	List<JiraIssue> findDefectsWithoutStoryLink(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMapNotIn);
 
 	/**
 	 * Find issues filtered by map of filters, type name and defectStoryIds
-	 * 
+	 *
 	 * @param typeName
-	 *            story type
+	 *          story type
 	 * @param defectStoryIds
-	 *            stories of the defects
+	 *          stories of the defects
 	 * @return list of jira issues
 	 */
 	List<JiraIssue> findByTypeNameAndDefectStoryIDIn(String typeName, List<String> defectStoryIds);
@@ -253,16 +250,15 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * @return
 	 */
 	List<JiraIssue> findLinkedDefects(Map<String, List<String>> mapOfFilters, Set<String> defectsStoryIds,
-
 			Map<String, Map<String, Object>> uniqueProjectMap);
 
 	/**
 	 * Find issues filtered by map of filters, type name and defectStoryIds
-	 * 
+	 *
 	 * @param mapOfFilters
-	 *            filters
+	 *          filters
 	 * @param uniqueProjectMap
-	 *            project map filters
+	 *          project map filters
 	 * @return list of jira issues
 	 */
 	List<JiraIssue> findIssuesByFilterAndProjectMapFilter(Map<String, List<String>> mapOfFilters,
@@ -273,28 +269,27 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 
 	/**
 	 * find unique Release Version Name group by type name
-	 * 
+	 *
 	 * @param mapOfFilters
 	 * @param @return
 	 */
-
 	List<ReleaseWisePI> findUniqueReleaseVersionByUniqueTypeName(Map<String, List<String>> mapOfFilters);
 
-
 	List<JiraIssue> findIssueByNumberWithAdditionalFilter(Set<String> storyNumber,
-										  Map<String, Map<String, Object>> uniqueProjectMap);
+			Map<String, Map<String, Object>> uniqueProjectMap);
 
 	/**
 	 * Finds Jira issues by either their number or parent story ID and applies
 	 * project-specific filters.
 	 *
 	 * @param storyNumber
-	 *            a set of story numbers and/or parent story IDs to match against.
+	 *          a set of story numbers and/or parent story IDs to match against.
 	 * @param uniqueProjectMap
-	 *            a map where the key is the project configuration ID and the value
-	 *            is another map containing filter criteria such as issue types,
-	 *            each mapped to a list of patterns.
+	 *          a map where the key is the project configuration ID and the value is
+	 *          another map containing filter criteria such as issue types, each
+	 *          mapped to a list of patterns.
 	 * @return a list of Jira issues that match the specified criteria.
 	 */
 	List<JiraIssue> findIssueByNumberOrParentStoryIdAndType(Set<String> storyNumber,
-			Map<String, Map<String, Object>> uniqueProjectMap, String findBy);}
+			Map<String, Map<String, Object>> uniqueProjectMap, String findBy);
+}

@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
@@ -42,6 +40,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -70,7 +69,6 @@ import com.publicissapient.kpidashboard.common.repository.sonar.SonarHistoryRepo
 
 /**
  * @author prigupta8
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SonarViolationsServiceImplTest {
@@ -115,10 +113,16 @@ public class SonarViolationsServiceImplTest {
 
 		SonarHistoryDataFactory sonarHistoryDataFactory = SonarHistoryDataFactory.newInstance();
 		sonarHistoryData = sonarHistoryDataFactory.getSonarHistoryList();
-
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
@@ -127,7 +131,6 @@ public class SonarViolationsServiceImplTest {
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONAR.name()))
 				.thenReturn(kpiRequestTrackerId);
-
 	}
 
 	private void setToolMap() {
@@ -167,7 +170,6 @@ public class SonarViolationsServiceImplTest {
 
 	@After
 	public void cleanup() {
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -196,7 +198,7 @@ public class SonarViolationsServiceImplTest {
 
 	/**
 	 * agg criteria percentile
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -227,7 +229,7 @@ public class SonarViolationsServiceImplTest {
 
 	/**
 	 * agg criteria median
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -259,7 +261,7 @@ public class SonarViolationsServiceImplTest {
 
 	/**
 	 * agg criteria average
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -292,7 +294,7 @@ public class SonarViolationsServiceImplTest {
 
 	/**
 	 * agg criteria sum
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -315,10 +317,8 @@ public class SonarViolationsServiceImplTest {
 			KpiElement kpiElement = svServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			Map<String, Object> dataMap = (Map<String, Object>) kpiElement.getValue();
-			assertSame(((List<DataCount>) dataMap.get(Constant.AGGREGATED_VALUE)).get(0).getData(),
-					vioList.get(0).getData());
-			assertThat("Count :", ((List<DataCount>) dataMap.get(Constant.AGGREGATED_VALUE)).get(0).getCount(),
-					equalTo(96));
+			assertSame(((List<DataCount>) dataMap.get(Constant.AGGREGATED_VALUE)).get(0).getData(), vioList.get(0).getData());
+			assertThat("Count :", ((List<DataCount>) dataMap.get(Constant.AGGREGATED_VALUE)).get(0).getCount(), equalTo(96));
 		} catch (Exception enfe) {
 
 		}
@@ -326,7 +326,7 @@ public class SonarViolationsServiceImplTest {
 
 	/**
 	 * agg criteria percentile
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -397,5 +397,4 @@ public class SonarViolationsServiceImplTest {
 
 		svServiceImpl.getSonarKpiData(projectList, treeAggregatorDetail.getMapTmp(), kpiElement);
 	}
-
 }

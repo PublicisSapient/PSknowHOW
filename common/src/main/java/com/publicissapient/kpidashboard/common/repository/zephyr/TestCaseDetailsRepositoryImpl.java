@@ -45,7 +45,6 @@ public class TestCaseDetailsRepositoryImpl implements TestCaseDetailsRepositoryC
 	private MongoTemplate operations;
 
 	/**
-	 * 
 	 * @param mapOfFilters
 	 * @param criteria
 	 * @return
@@ -78,7 +77,6 @@ public class TestCaseDetailsRepositoryImpl implements TestCaseDetailsRepositoryC
 				} else {
 					projectCriteria.and(subk).in((List<Pattern>) subv);
 				}
-
 			});
 			projectCriteriaList.add(projectCriteria);
 		});

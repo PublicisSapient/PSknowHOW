@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * This class is used to hold the build frequency info lists.
- * 
+ *
  * @author aksshriv1
  */
 public class BuildFrequencyInfo {
@@ -42,7 +42,7 @@ public class BuildFrequencyInfo {
 
 	/**
 	 * add build job name
-	 * 
+	 *
 	 * @param jobName
 	 */
 	public void addBuildJobNameList(String jobName) {
@@ -53,7 +53,7 @@ public class BuildFrequencyInfo {
 	 * Add buid url.
 	 *
 	 * @param buildUrl
-	 *            the build url
+	 *          the build url
 	 */
 	public void addBuildUrl(String buildUrl) {
 		buildUrlList.add(buildUrl);
@@ -63,7 +63,7 @@ public class BuildFrequencyInfo {
 	 * Add buidbuild start time.
 	 *
 	 * @param startTime
-	 *            the start time
+	 *          the start time
 	 */
 	public void addBuildStartTime(String startTime) {
 		buildStartDate.add(startTime);
@@ -82,7 +82,7 @@ public class BuildFrequencyInfo {
 	 * Sets build job list.
 	 *
 	 * @param buildJobNameList
-	 *            the build job list
+	 *          the build job list
 	 */
 	public void setBuildJobList(List<String> buildJobNameList) {
 		this.buildJobNameList = buildJobNameList;
@@ -101,7 +101,7 @@ public class BuildFrequencyInfo {
 	 * Sets build url list.
 	 *
 	 * @param buildUrlList
-	 *            the build url list
+	 *          the build url list
 	 */
 	public void setBuildUrlList(List<String> buildUrlList) {
 		this.buildUrlList = buildUrlList;
@@ -120,14 +120,13 @@ public class BuildFrequencyInfo {
 	 * Sets build start time list.
 	 *
 	 * @param buildStartDate
-	 *            the build start time list
+	 *          the build start time list
 	 */
 	public void setBuildStartTimeList(List<String> buildStartDate) {
 		this.buildStartDate = buildStartDate;
 	}
 
 	/**
-	 *
 	 * @return week list
 	 */
 	public List<String> getWeeksList() {
@@ -138,7 +137,7 @@ public class BuildFrequencyInfo {
 	 * set week list
 	 *
 	 * @param weeksList
-	 *            weeksList
+	 *          weeksList
 	 */
 	public void setWeeksList(List<String> weeksList) {
 		this.weeksList = weeksList;
@@ -146,11 +145,10 @@ public class BuildFrequencyInfo {
 
 	/**
 	 * add weeks
-	 * 
+	 *
 	 * @param week
 	 */
 	public void addWeeks(String week) {
 		weeksList.add(week);
 	}
-
 }

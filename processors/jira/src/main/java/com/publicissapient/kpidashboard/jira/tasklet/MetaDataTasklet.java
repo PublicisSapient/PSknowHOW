@@ -19,7 +19,6 @@ package com.publicissapient.kpidashboard.jira.tasklet;
 
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -32,6 +31,7 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
+import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -71,12 +71,12 @@ public class MetaDataTasklet implements Tasklet {
 
 	/**
 	 * @param sc
-	 *            StepContribution
+	 *          StepContribution
 	 * @param cc
-	 *            ChunkContext
+	 *          ChunkContext
 	 * @return RepeatStatus
 	 * @throws Exception
-	 *             Exception
+	 *           Exception
 	 */
 	@TrackExecutionTime
 	@Override
@@ -89,14 +89,13 @@ public class MetaDataTasklet implements Tasklet {
 			Connection connection = connectionOptional.get();
 			krb5Client = new KerberosClient(connection.getJaasConfigFilePath(), connection.getKrb5ConfigFilePath(),
 					connection.getJaasUser(), connection.getSamlEndPoint(), connection.getBaseUrl());
-			jiraClientService.setKerberosClientMap(projectId,krb5Client);
+			jiraClientService.setKerberosClientMap(projectId, krb5Client);
 		}
 		ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);
-        jiraClientService.setRestClientMap(projectId,client);
+		jiraClientService.setRestClientMap(projectId, client);
 		if (jiraProcessorConfig.isFetchMetadata()) {
 			createMetadata.collectMetadata(projConfFieldMapping, client, isScheduler);
 		}
 		return RepeatStatus.FINISHED;
 	}
-
 }

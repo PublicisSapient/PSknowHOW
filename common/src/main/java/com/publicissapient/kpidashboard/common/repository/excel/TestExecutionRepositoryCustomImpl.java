@@ -16,7 +16,6 @@ import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution
 
 /**
  * @author narsingh9
- *
  */
 public class TestExecutionRepositoryCustomImpl implements TestExecutionRepositoryCustom {
 	private static final String CONF_ID = "basicProjectConfigId";

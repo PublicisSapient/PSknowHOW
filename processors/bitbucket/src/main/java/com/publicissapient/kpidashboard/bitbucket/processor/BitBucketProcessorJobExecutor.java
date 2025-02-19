@@ -72,7 +72,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * BitBucketProcessorJobExecutor represents a class which holds all the
  * configuration and BitBucket execution process.
- * 
+ *
  * @see BitbucketProcessor
  */
 @Slf4j
@@ -126,9 +126,9 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 	 * Creates the processor item.
 	 *
 	 * @param tool
-	 *            the tool
+	 *          the tool
 	 * @param processorId
-	 *            the processor id
+	 *          the processor id
 	 * @return the processor item
 	 */
 	private BitbucketRepo createProcessorItem(ProcessorToolConnection tool, ObjectId processorId) {
@@ -148,7 +148,7 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 	 * Checks if is new commitDetails.
 	 *
 	 * @param bitRepo
-	 *            the bit repo
+	 *          the bit repo
 	 * @return true, if is new commit
 	 */
 	private boolean isNewCommit(BitbucketRepo bitRepo, CommitDetails commitDetails) {
@@ -159,9 +159,9 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 
 	/**
 	 * Checks if is new mergeRequests.
-	 * 
+	 *
 	 * @param bitRepo
-	 *            the bit repo
+	 *          the bit repo
 	 * @return true, if is new merge Request
 	 */
 	private boolean isNewMergeReq(BitbucketRepo bitRepo, MergeRequests mergeRequests) {
@@ -174,7 +174,7 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 	 * Execute.
 	 *
 	 * @param processor
-	 *            the processor
+	 *          the processor
 	 */
 	@Override
 	public boolean execute(BitbucketProcessor processor) {
@@ -196,26 +196,23 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 			List<ProcessorToolConnection> bitbucketJobsFromConfig = processorToolConnectionService
 					.findByToolAndBasicProjectConfigId(ProcessorConstants.BITBUCKET, proBasicConfig.getId());
 			for (ProcessorToolConnection tool : bitbucketJobsFromConfig) {
-				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-						proBasicConfig.getId().toHexString());
+				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(proBasicConfig.getId().toHexString());
 				try {
 					processorToolConnectionService.validateConnectionFlag(tool);
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					BitbucketRepo bitRepo = getBitbucketRepo(tool, processor.getId());
-					if (proBasicConfig.isSaveAssigneeDetails()
-							&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+					if (proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 						bitRepo.setLastUpdatedCommit(null);
 					}
 					boolean firstTimeRun = (bitRepo.getLastUpdatedCommit() == null);
-					MDC.put("BitbucketReposDataCollectionStarted",
-							"Bitbucket Processor started collecting data for Url: " + tool.getUrl() + ", branch : "
-									+ tool.getBranch() + " and repo : " + tool.getRepoSlug());
+					MDC.put("BitbucketReposDataCollectionStarted", "Bitbucket Processor started collecting data for Url: " +
+							tool.getUrl() + ", branch : " + tool.getBranch() + " and repo : " + tool.getRepoSlug());
 					BitBucketClient bitBucketClient = bitBucketClientFactory.getBitbucketClient(tool.isCloudEnv());
 					List<CommitDetails> commitDetailList = bitBucketClient.fetchAllCommits(bitRepo, firstTimeRun, tool,
 							proBasicConfig);
 					updateAssigneeForCommit(proBasicConfig, processorExecutionTraceLog, bitRepo, commitDetailList);
-					List<CommitDetails> unsavedCommits = commitDetailList.stream()
-							.filter(commit -> isNewCommit(bitRepo, commit)).collect(Collectors.toList());
+					List<CommitDetails> unsavedCommits = commitDetailList.stream().filter(commit -> isNewCommit(bitRepo, commit))
+							.collect(Collectors.toList());
 					unsavedCommits.forEach(commit -> commit.setProcessorItemId(bitRepo.getId()));
 					commitsRepo.saveAll(unsavedCommits);
 					commitsCount += unsavedCommits.size();
@@ -223,8 +220,8 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 						bitRepo.setLastUpdatedCommit(commitDetailList.get(0).getRevisionNumber());
 					}
 
-					List<MergeRequests> mergeRequestsList = bitBucketClient.fetchMergeRequests(bitRepo, firstTimeRun,
-							tool, proBasicConfig);
+					List<MergeRequests> mergeRequestsList = bitBucketClient.fetchMergeRequests(bitRepo, firstTimeRun, tool,
+							proBasicConfig);
 					updateAssigneeForMerge(proBasicConfig, processorExecutionTraceLog, bitRepo, mergeRequestsList);
 					List<MergeRequests> unsavedMergeRequests = mergeRequestsList.stream()
 							.filter(mergReq -> isNewMergeReq(bitRepo, mergReq)).collect(Collectors.toList());
@@ -234,8 +231,8 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 
 					bitRepo.setLastUpdatedTime(Calendar.getInstance().getTime());
 					bitBucketRepository.save(bitRepo);
-					MDC.put("BitbucketReposDataCollectionCompleted", "Bitbucket Processor collected data for Url: "
-							+ tool.getUrl() + ", branch : " + tool.getBranch() + " and repo : " + tool.getRepoSlug());
+					MDC.put("BitbucketReposDataCollectionCompleted", "Bitbucket Processor collected data for Url: " +
+							tool.getUrl() + ", branch : " + tool.getBranch() + " and repo : " + tool.getRepoSlug());
 					reposCount++;
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
@@ -277,11 +274,11 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 
 	/**
 	 * this method check for the client exception
-	 * 
+	 *
 	 * @param tool
-	 *            tool
+	 *          tool
 	 * @param cause
-	 *            cause
+	 *          cause
 	 */
 	private void isClientException(ProcessorToolConnection tool, HttpClientErrorException cause) {
 		if (cause != null && cause.getStatusCode().is4xxClientError()) {
@@ -330,8 +327,7 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 	}
 
 	private BitbucketRepo getBitbucketRepo(ProcessorToolConnection tool, ObjectId processorId) {
-		List<BitbucketRepo> bitRepoList = bitBucketRepository.findByProcessorIdAndToolConfigId(processorId,
-				tool.getId());
+		List<BitbucketRepo> bitRepoList = bitBucketRepository.findByProcessorIdAndToolConfigId(processorId, tool.getId());
 		BitbucketRepo bitRepo;
 		if (CollectionUtils.isNotEmpty(bitRepoList)) {
 			bitRepo = bitRepoList.get(0);
@@ -347,9 +343,8 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BITBUCKET, basicProjectConfigId);
-		existingTraceLogOptional.ifPresent(
-				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
-						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
+		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> processorExecutionTraceLog
+				.setLastEnableAssigneeToggleState(existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 		return processorExecutionTraceLog;
 	}
 
@@ -375,11 +370,11 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 
 	/**
 	 * Cleans the cache in the Custom API
-	 * 
+	 *
 	 * @param cacheEndPoint
-	 *            the cache endpoint
+	 *          the cache endpoint
 	 * @param cacheName
-	 *            the cache name
+	 *          the cache name
 	 */
 	private void cacheRestClient(String cacheEndPoint, String cacheName) {
 		HttpHeaders headers = new HttpHeaders();
@@ -413,13 +408,12 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 	/**
 	 * Return List of selected ProjectBasicConfig id if null then return all
 	 * ProjectBasicConfig ids
-	 * 
+	 *
 	 * @return List of projects
 	 */
 	private List<ProjectBasicConfig> getSelectedProjects() {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll().stream()
-				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isDeveloperKpiEnabled()))
-				.toList();
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findActiveProjects(false).stream()
+				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isDeveloperKpiEnabled())).toList();
 		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
@@ -427,13 +421,12 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 			return allProjects;
 		}
 		return CollectionUtils.emptyIfNull(allProjects).stream()
-				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isDeveloperKpiEnabled())
-						&& selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
+				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isDeveloperKpiEnabled()) &&
+						selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
 				.toList();
 	}
 
 	private void clearSelectedBasicProjectConfigIds() {
 		setProjectsBasicConfigIds(null);
 	}
-
 }

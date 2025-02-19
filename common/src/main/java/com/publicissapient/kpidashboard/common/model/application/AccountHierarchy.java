@@ -34,9 +34,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The Account hierarchy.
- */
+/** The Account hierarchy. */
 @Data
 @Builder
 @Getter
@@ -46,10 +44,9 @@ import lombok.Setter;
 @Document(collection = "account_hierarchy")
 public class AccountHierarchy extends BasicModel implements Serializable {
 
-	/**
-	 * 
-	 */
+	/** */
 	private static final long serialVersionUID = 1L;
+
 	private String nodeId;
 	private String nodeName;
 	private String labelName;
@@ -71,13 +68,12 @@ public class AccountHierarchy extends BasicModel implements Serializable {
 			return false;
 		}
 		AccountHierarchy other = (AccountHierarchy) obj;
-		if (obj instanceof AccountHierarchy && this.nodeId.equals(other.nodeId)
-				&& (null == this.path || this.path.equals(other.path))
-				&& (null == this.beginDate || this.beginDate.split("[.]")[0].equals(other.beginDate.split("[.]")[0]))
-				&& (null == this.endDate || this.endDate.split("[.]")[0].equals(other.endDate.split("[.]")[0]))
-				&& (null == this.releaseState || this.releaseState.equals(other.releaseState))) {
+		if (obj instanceof AccountHierarchy && this.nodeId.equals(other.nodeId) &&
+				(null == this.path || this.path.equals(other.path)) &&
+				(null == this.beginDate || this.beginDate.split("[.]")[0].equals(other.beginDate.split("[.]")[0])) &&
+				(null == this.endDate || this.endDate.split("[.]")[0].equals(other.endDate.split("[.]")[0])) &&
+				(null == this.releaseState || this.releaseState.equals(other.releaseState))) {
 			isEqual = true;
-
 		}
 		return isEqual;
 	}
@@ -86,5 +82,4 @@ public class AccountHierarchy extends BasicModel implements Serializable {
 	public int hashCode() {
 		return Objects.hash(this.nodeId, this.path, this.beginDate, this.endDate, this.releaseState);
 	}
-
 }

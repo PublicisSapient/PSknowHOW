@@ -12,7 +12,7 @@ import lombok.Setter;
 
 /**
  * Class to hold request data for save action policy.
- * 
+ *
  * @author aksshriv1
  */
 @Getter

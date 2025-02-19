@@ -3,9 +3,10 @@ import { HttpService } from '../../services/http.service';
 import { MenuItem } from 'primeng/api';
 import { SharedService } from 'src/app/services/shared.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
-import { Router } from '@angular/router';
+import { Router,NavigationEnd } from '@angular/router';
 import { HelperService } from 'src/app/services/helper.service';
 import { environment } from 'src/environments/environment';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 @Component({
   selector: 'app-header',
@@ -34,15 +35,25 @@ export class HeaderComponent implements OnInit {
   isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
   userRole: string = '';
   noToolsConfigured: boolean;
+  reportModuleEnabled: boolean = false;
+  isNotConfigPage : boolean = false;
 
   constructor(
     private httpService: HttpService,
     public sharedService: SharedService,
     private getAuthorizationService: GetAuthorizationService,
     public router: Router,
-    private helperService: HelperService) { }
+    private helperService: HelperService,
+    private featureFlagService: FeatureFlagsService) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        // Get the current URL and check if 'Config' is present
+        this.isNotConfigPage = !this.router.url.split('?')[0].includes('Config');
+      }
+    });
+  
     this.getNotification();
     this.items = [
       { label: 'Dashboard', icon: '' },
@@ -74,7 +85,7 @@ export class HeaderComponent implements OnInit {
         label: 'Settings',
         icon: 'fas fa-cog',
         command: () => {
-          if(!window.location.hash.split('?')[0].includes('Config')){
+          if (!window.location.hash.split('?')[0].includes('Config')) {
             this.lastVisitedFromUrl = window.location.hash.substring(1);
           }
           this.router.navigate(['/dashboard/Config/ProjectList']);
@@ -121,6 +132,8 @@ export class HeaderComponent implements OnInit {
     this.sharedService.passEventToNav.subscribe(() => {
       this.getNotification();
     })
+
+    this.reportModuleEnabled = await this.featureFlagService.isFeatureEnabled('REPORTS');
   }
 
   // when user would want to give access on project from notification list

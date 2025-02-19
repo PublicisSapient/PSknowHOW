@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.util;
 
 import static org.junit.Assert.assertFalse;
@@ -44,10 +43,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.atlassian.jira.rest.client.api.domain.*;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -192,65 +189,54 @@ public class JiraIssueClientUtilTest {
 		assertEquals(field2, result.get("id2"), "Retrieved value should match field2");
 	}
 
-    @Test
-    public void testSortChangeLogGroup_NullChangelog() {
-        Issue issue = Mockito.mock(Issue.class);
-        Mockito.when(issue.getChangelog()).thenReturn(null);
-
-        List<ChangelogGroup> result = jiraIssueClientUtil.sortChangeLogGroup(issue);
-
-        assertNotNull(result, "");
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    public void testSortChangeLogGroup_EmptyChangelog() {
-        Issue issue = Mockito.mock(Issue.class);
-        Mockito.when(issue.getChangelog()).thenReturn(new ArrayList<>());
-
-        List<ChangelogGroup> result = jiraIssueClientUtil.sortChangeLogGroup(issue);
-
-        assertNotNull(result,"");
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    public void testSortChangeLogGroup_SortedChangelog() throws URISyntaxException {
-        ChangelogGroup changelogGroup;
-        List<ChangelogGroup> changeLogList = new ArrayList<>();
-        changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "n1", "", ""),
-                new DateTime("2023-03-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.JIRA, "status",
-                "10003", "In Development", "15752", "Code Review")));
-        changeLogList.add(changelogGroup);
-        changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "n2", "", ""),
-                new DateTime("2023-03-29T03:57:59.000+0000"),
-                Arrays.asList(new ChangelogItem(FieldType.JIRA, "priority", "10003", "P1", "15752", "P2")));
-        changeLogList.add(changelogGroup);
-        changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "n3", "", ""),
-                new DateTime("2023-03-30T03:57:59.000+0000"),
-                Arrays.asList(new ChangelogItem(FieldType.JIRA, "assignee", "10003", "Harsh", "15752", "Akshat")));
-        changeLogList.add(changelogGroup);
-        Issue issue = Mockito.mock(Issue.class);
-        Mockito.when(issue.getChangelog()).thenReturn(changeLogList);
-
-        List<ChangelogGroup> result = jiraIssueClientUtil.sortChangeLogGroup(issue);
-
-        assertNotNull(result,"");
-        assertFalse(result.isEmpty());
-        assertEquals(changeLogList.get(0), result.get(0));
-        assertEquals(changeLogList.get(1), result.get(1));
-        assertEquals(changeLogList.get(2), result.get(2));
-    }
-
 	@Test
-	public void testGetAccountHierarchy_EmptyRepository() {
-		AccountHierarchyRepository accountHierarchyRepository = Mockito.mock(AccountHierarchyRepository.class);
-		when(accountHierarchyRepository.findAll()).thenReturn(new ArrayList<>());
+	public void testSortChangeLogGroup_NullChangelog() {
+		Issue issue = Mockito.mock(Issue.class);
+		Mockito.when(issue.getChangelog()).thenReturn(null);
 
-		Map<Pair<String, String>, AccountHierarchy> result = jiraIssueClientUtil.getAccountHierarchy(accountHierarchyRepository);
+		List<ChangelogGroup> result = jiraIssueClientUtil.sortChangeLogGroup(issue);
 
 		assertNotNull(result, "");
 		assertTrue(result.isEmpty());
+	}
+
+	@Test
+	public void testSortChangeLogGroup_EmptyChangelog() {
+		Issue issue = Mockito.mock(Issue.class);
+		Mockito.when(issue.getChangelog()).thenReturn(new ArrayList<>());
+
+		List<ChangelogGroup> result = jiraIssueClientUtil.sortChangeLogGroup(issue);
+
+		assertNotNull(result, "");
+		assertTrue(result.isEmpty());
+	}
+
+	@Test
+	public void testSortChangeLogGroup_SortedChangelog() throws URISyntaxException {
+		ChangelogGroup changelogGroup;
+		List<ChangelogGroup> changeLogList = new ArrayList<>();
+		changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "n1", "", ""),
+				new DateTime("2023-03-28T03:57:59.000+0000"),
+				Arrays.asList(new ChangelogItem(FieldType.JIRA, "status", "10003", "In Development", "15752", "Code Review")));
+		changeLogList.add(changelogGroup);
+		changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "n2", "", ""),
+				new DateTime("2023-03-29T03:57:59.000+0000"),
+				Arrays.asList(new ChangelogItem(FieldType.JIRA, "priority", "10003", "P1", "15752", "P2")));
+		changeLogList.add(changelogGroup);
+		changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "n3", "", ""),
+				new DateTime("2023-03-30T03:57:59.000+0000"),
+				Arrays.asList(new ChangelogItem(FieldType.JIRA, "assignee", "10003", "Harsh", "15752", "Akshat")));
+		changeLogList.add(changelogGroup);
+		Issue issue = Mockito.mock(Issue.class);
+		Mockito.when(issue.getChangelog()).thenReturn(changeLogList);
+
+		List<ChangelogGroup> result = jiraIssueClientUtil.sortChangeLogGroup(issue);
+
+		assertNotNull(result, "");
+		assertFalse(result.isEmpty());
+		assertEquals(changeLogList.get(0), result.get(0));
+		assertEquals(changeLogList.get(1), result.get(1));
+		assertEquals(changeLogList.get(2), result.get(2));
 	}
 
 	@Test
@@ -258,11 +244,13 @@ public class JiraIssueClientUtilTest {
 		KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo = Mockito.mock(KanbanAccountHierarchyRepository.class);
 		when(kanbanAccountHierarchyRepo.findAll()).thenReturn(new ArrayList<>());
 
-		Map<Pair<String, String>, KanbanAccountHierarchy> result = jiraIssueClientUtil.getKanbanAccountHierarchy(kanbanAccountHierarchyRepo);
+		Map<Pair<String, String>, KanbanAccountHierarchy> result = jiraIssueClientUtil
+				.getKanbanAccountHierarchy(kanbanAccountHierarchyRepo);
 
 		assertNotNull(result, "");
 		assertTrue(result.isEmpty());
 	}
+
 	private void createIssuefieldsList() throws JSONException {
 		Map<String, Object> map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
@@ -272,7 +260,5 @@ public class JiraIssueClientUtilTest {
 		IssueField issueField = new IssueField("customfield_12121", "UAT", null,
 				new org.codehaus.jettison.json.JSONObject(map));
 		issueFieldList.add(issueField);
-
 	}
-
 }

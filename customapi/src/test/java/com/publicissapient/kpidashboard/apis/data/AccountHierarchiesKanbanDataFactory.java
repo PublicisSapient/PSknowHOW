@@ -78,7 +78,6 @@ public class AccountHierarchiesKanbanDataFactory {
 			mapper.registerModule(new JavaTimeModule());
 			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
 		}
 	}
 
@@ -87,7 +86,9 @@ public class AccountHierarchiesKanbanDataFactory {
 	}
 
 	public List<KanbanAccountHierarchy> findByBasicProjectConfigId(String basicProjectConfigId) {
-		return accountHierarchies.stream().filter(accountHierarchy -> accountHierarchy.getBasicProjectConfigId()
-				.toHexString().equals(basicProjectConfigId)).collect(Collectors.toList());
+		return accountHierarchies.stream()
+				.filter(
+						accountHierarchy -> accountHierarchy.getBasicProjectConfigId().toHexString().equals(basicProjectConfigId))
+				.collect(Collectors.toList());
 	}
 }

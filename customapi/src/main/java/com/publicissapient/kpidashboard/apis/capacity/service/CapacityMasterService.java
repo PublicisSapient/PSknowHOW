@@ -8,13 +8,12 @@ import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
 
 /**
  * @author narsingh9
- *
  */
 public interface CapacityMasterService {
 
 	/**
 	 * This method process the capacity data.
-	 * 
+	 *
 	 * @param capacityMaster
 	 * @return CapacityMaster object
 	 */

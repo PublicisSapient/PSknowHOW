@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.jira.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -42,7 +41,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
-import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraNonTrendKPIServiceR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceKanbanR;
@@ -59,10 +57,9 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * This controller class handles Jira KPIs request. It handles all KPIs of Scrum
  * and Kanban.
- * 
+ *
  * @author tauakram
  */
-
 @Slf4j
 @RestController
 public class JiraController {
@@ -87,7 +84,7 @@ public class JiraController {
 
 	/**
 	 * This method handles Jira Scrum KPIs request.
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @return List of KPIs with trend and aggregated data.
 	 * @throws Exception
@@ -95,7 +92,7 @@ public class JiraController {
 	@RequestMapping(value = "/jira/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
 	public ResponseEntity<List<KpiElement>> getJiraAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
-			throws Exception {// NOSONAR
+			throws Exception { // NOSONAR
 
 		MDC.put(JIRASCRUMKPIREQ, kpiRequest.getRequestTrackerId());
 		log.info("Received Jira KPI request {}", kpiRequest);
@@ -123,7 +120,7 @@ public class JiraController {
 
 	/**
 	 * This method handles Jira Kanban KPIs request.
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @return List of KPIs with trend and aggregated data.
 	 * @throws Exception
@@ -175,7 +172,7 @@ public class JiraController {
 
 	@RequestMapping(value = "/jira/nonTrend/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<List<KpiElement>> getJiraIterationMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
-			throws Exception {// NOSONAR
+			throws Exception { // NOSONAR
 
 		MDC.put(JIRASCRUMKPIREQ, kpiRequest.getRequestTrackerId());
 		log.info("Received Jira KPI request for iteration{}", kpiRequest);

@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.jira.kanban.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,6 +42,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -65,6 +65,7 @@ import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -90,6 +91,8 @@ public class NetOpenTicketCountByRCAServiceImplTest {
 
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 
 	@Before
 	public void setup() {
@@ -97,6 +100,18 @@ public class NetOpenTicketCountByRCAServiceImplTest {
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi50");
 		kpiRequest.setLabel("PROJECT");
 		kpiRequest.setDuration("WEEKS");
+
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335368249794a18e8a4479f"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Kanban Project");
+		projectBasicConfig.setProjectNodeId("Kanban Project_6335368249794a18e8a4479f");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 
 		AccountHierarchyKanbanFilterDataFactory accountHierarchyKanbanFilterDataFactory = AccountHierarchyKanbanFilterDataFactory
 				.newInstance();
@@ -114,13 +129,10 @@ public class NetOpenTicketCountByRCAServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		when(cacheService.getFullKanbanHierarchyLevel()).thenReturn(hierachyLevelFactory.getHierarchyLevels());
-
-
 	}
 
 	@After
 	public void cleanup() {
-
 	}
 
 	private void setTreadValuesDataCount() {
@@ -158,8 +170,8 @@ public class NetOpenTicketCountByRCAServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(ticketRCAServiceImpl.getKanbanRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-		List<KanbanIssueCustomHistory> kanbanIssueCustomHistoryDataList = KanbanIssueCustomHistoryDataFactory
-				.newInstance().getKanbanIssueCustomHistoryDataList();
+		List<KanbanIssueCustomHistory> kanbanIssueCustomHistoryDataList = KanbanIssueCustomHistoryDataFactory.newInstance()
+				.getKanbanIssueCustomHistoryDataList();
 
 		Map<String, List<String>> projectWiseDoneStatus = new HashMap<>();
 		projectWiseDoneStatus.put("6335368249794a18e8a4479f", Arrays.asList("Closed"));
@@ -174,23 +186,21 @@ public class NetOpenTicketCountByRCAServiceImplTest {
 			KpiElement kpiElement = ticketRCAServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(dc -> {
-
 				String rootCause = dc.getFilter();
 				switch (rootCause) {
-				case "Code Issue":
-					assertThat("Ticket RCA Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "Environment Issue":
-					assertThat("Ticket RCA Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "Functionality Not Clear":
-					assertThat("Ticket RCA Count Value :", dc.getValue().size(), equalTo(1));
-					break;
+					case "Code Issue" :
+						assertThat("Ticket RCA Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "Environment Issue" :
+						assertThat("Ticket RCA Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "Functionality Not Clear" :
+						assertThat("Ticket RCA Count Value :", dc.getValue().size(), equalTo(1));
+						break;
 
-				default:
-					break;
+					default :
+						break;
 				}
-
 			});
 		} catch (ApplicationException e) {
 			e.printStackTrace();
@@ -218,5 +228,4 @@ public class NetOpenTicketCountByRCAServiceImplTest {
 		projectWiseJiraHistoryRCAAndDateWiseIssueMap.put("6335368249794a18e8a4479f", jiraHistoryRCAAndDateWiseIssueMap);
 		return projectWiseJiraHistoryRCAAndDateWiseIssueMap;
 	}
-
 }

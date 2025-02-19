@@ -52,21 +52,22 @@ public class CommitRepositoryCustomImpl implements CommitRepositoryCustom {
 	public List<CommitDetails> findCommitList(List<ObjectId> collectorItemIdList, Long startDate, Long endDate,
 			BasicDBList filterList) {
 		List<BasicDBObject> pipeline;
-		Object[] array = { new Date(0), IDENT_SCM_COMMIT_TIMESTAMP };
+		Object[] array = {new Date(0), IDENT_SCM_COMMIT_TIMESTAMP};
 		pipeline = Arrays.asList(
 				new BasicDBObject("$match",
 						new BasicDBObject("$or", filterList).append(SCM_COMMIT_TIMESTAMP,
 								new BasicDBObject("$gte", startDate).append("$lte", endDate))),
 				new BasicDBObject(IDENT_PROJECT,
-						new BasicDBObject(SCM_COMMIT_TIMESTAMP, new BasicDBObject("$add", array))
-								.append(PROCESSOR_ITEM_ID, 1)),
-				new BasicDBObject("$group", new BasicDBObject(ID, new BasicDBObject(DATE,
-						new BasicDBObject("$dateToString",
-								new BasicDBObject("format", "%Y-%m-%d").append(DATE, IDENT_SCM_COMMIT_TIMESTAMP)))
-						.append(PROCESSOR_ITEM_ID, "$processorItemId")).append(COUNT, new BasicDBObject("$sum", 1))),
-				new BasicDBObject(IDENT_PROJECT,
-						new BasicDBObject(ID, 0).append(DATE, "$_id.date")
-								.append(PROCESSOR_ITEM_ID, "$_id.processorItemId").append(COUNT, 1)),
+						new BasicDBObject(SCM_COMMIT_TIMESTAMP, new BasicDBObject("$add", array)).append(PROCESSOR_ITEM_ID, 1)),
+				new BasicDBObject("$group",
+						new BasicDBObject(ID,
+								new BasicDBObject(DATE,
+										new BasicDBObject("$dateToString",
+												new BasicDBObject("format", "%Y-%m-%d").append(DATE, IDENT_SCM_COMMIT_TIMESTAMP)))
+										.append(PROCESSOR_ITEM_ID, "$processorItemId"))
+								.append(COUNT, new BasicDBObject("$sum", 1))),
+				new BasicDBObject(IDENT_PROJECT, new BasicDBObject(ID, 0).append(DATE, "$_id.date")
+						.append(PROCESSOR_ITEM_ID, "$_id.processorItemId").append(COUNT, 1)),
 				new BasicDBObject("$sort", new BasicDBObject(DATE, 1)));
 		AggregateIterable<Document> cursor = operations.getCollection("commit_details").aggregate(pipeline);
 		MongoCursor<Document> itr = cursor.iterator();
@@ -78,5 +79,4 @@ public class CommitRepositoryCustomImpl implements CommitRepositoryCustom {
 		}
 		return returnList;
 	}
-
 }

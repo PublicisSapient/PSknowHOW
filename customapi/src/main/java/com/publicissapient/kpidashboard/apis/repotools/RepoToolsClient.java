@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.repotools;
 
 import java.net.URI;
 
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,14 +32,13 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.Gson;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConfig;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnModel;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiBulkMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiRequestBody;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * rest template for repo tools
- */
+/** rest template for repo tools */
 @Slf4j
 @Component
 public class RepoToolsClient {
@@ -52,7 +50,7 @@ public class RepoToolsClient {
 
 	/**
 	 * enroll project
-	 * 
+	 *
 	 * @param repoToolConfig
 	 * @param repoToolsUrl
 	 * @param apiKey
@@ -70,8 +68,7 @@ public class RepoToolsClient {
 		return response.getStatusCode().value();
 	}
 
-	public void updateConnection(RepoToolConnModel repoToolConnectionDetails, String connectionUpdateURL,
-			String apiKey) {
+	public void updateConnection(RepoToolConnModel repoToolConnectionDetails, String connectionUpdateURL, String apiKey) {
 		setHttpHeaders(apiKey);
 		Gson gson = new Gson();
 		String payload = gson.toJson(repoToolConnectionDetails);
@@ -84,7 +81,7 @@ public class RepoToolsClient {
 
 	/**
 	 * scann a project
-	 * 
+	 *
 	 * @param projectKey
 	 * @param repoToolsUrl
 	 * @param apiKey
@@ -97,12 +94,11 @@ public class RepoToolsClient {
 		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 		ResponseEntity<String> response = restTemplate.exchange(triggerScanUrl, HttpMethod.GET, entity, String.class);
 		return response.getStatusCode().value();
-
 	}
 
 	/**
 	 * get kpi data of a project
-	 * 
+	 *
 	 * @param repoToolsUrl
 	 * @param apiKey
 	 * @param repoToolKpiRequestBody
@@ -118,12 +114,11 @@ public class RepoToolsClient {
 		ResponseEntity<RepoToolKpiBulkMetricResponse> response = restTemplate.exchange(URI.create(repoToolsUrl),
 				HttpMethod.POST, entity, RepoToolKpiBulkMetricResponse.class);
 		return response.getBody();
-
 	}
 
 	/**
 	 * delete a project
-	 * 
+	 *
 	 * @param repoToolsUrl
 	 * @param apiKey
 	 * @return http status
@@ -139,7 +134,7 @@ public class RepoToolsClient {
 
 	/**
 	 * delete repository of the project
-	 * 
+	 *
 	 * @param deleteRepoUrl
 	 * @param apiKey
 	 * @return http status
@@ -151,19 +146,18 @@ public class RepoToolsClient {
 		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
 		return response.getStatusCode().value();
-
 	}
 
 	/**
 	 * fetch repotool project member's email
 	 *
 	 * @param membersUrl
-	 * 		url to fetch members
+	 *          url to fetch members
 	 * @param apiKey
-	 * 		api key for url
+	 *          api key for url
 	 * @return list of email
 	 */
-	public JsonNode fetchProjectRepoToolMembers(String membersUrl, String apiKey){
+	public JsonNode fetchProjectRepoToolMembers(String membersUrl, String apiKey) {
 		setHttpHeaders(apiKey);
 		log.info("get repoTool project members {}", membersUrl);
 		URI url = URI.create(membersUrl);
@@ -174,7 +168,7 @@ public class RepoToolsClient {
 
 	/**
 	 * set headers for api call
-	 * 
+	 *
 	 * @param apiKey
 	 */
 	public void setHttpHeaders(String apiKey) {
@@ -182,5 +176,4 @@ public class RepoToolsClient {
 		httpHeaders.set(X_API_KEY, apiKey);
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 	}
-
 }

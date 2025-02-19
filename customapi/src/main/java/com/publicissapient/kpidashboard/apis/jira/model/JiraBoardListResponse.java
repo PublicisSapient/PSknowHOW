@@ -4,10 +4,7 @@ import java.util.List;
 
 import lombok.Data;
 
-/**
- * Search in board list response data.
- *
- */
+/** Search in board list response data. */
 @Data
 public class JiraBoardListResponse {
 

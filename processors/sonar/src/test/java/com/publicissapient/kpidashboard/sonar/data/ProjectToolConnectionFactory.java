@@ -31,9 +31,7 @@ import com.publicissapient.kpidashboard.common.model.processortool.ProcessorTool
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- *
- */
+/** */
 @Slf4j
 public class ProjectToolConnectionFactory {
 	private static final String FILE_PATH_BASIC_CONFIG = "/json/processor_tool_connection.json";
@@ -77,11 +75,9 @@ public class ProjectToolConnectionFactory {
 			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		}
-
 	}
 
 	public List<ProcessorToolConnection> getProcessorToolConnectionList() {
 		return processorToolConnectionList;
 	}
-
 }

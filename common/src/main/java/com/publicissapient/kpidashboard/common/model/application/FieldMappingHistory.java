@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application;//NOPMD
+package com.publicissapient.kpidashboard.common.model.application; // NOPMD
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,9 +28,8 @@ import lombok.Setter;
 
 /**
  * The History of each FieldMapping
- * 
+ *
  * @author shi6
- * 
  */
 @SuppressWarnings("PMD.TooManyFields")
 @Getter
@@ -462,9 +461,9 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI185;
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI186;
 
-	/** kanban kpis threshold fields history starts **/
-
+	/** kanban kpis threshold fields history starts * */
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI51;
+
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI55;
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI54;
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI50;
@@ -486,10 +485,11 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI184;
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI183;
 
-	/** kanban kpi threshold fields history ends **/
+	/** kanban kpi threshold fields history ends * */
 
 	// Production Incident Mapping
 	private List<ConfigurationHistoryChangeLog> historyjiraProductionIncidentIdentification;
+
 	private List<ConfigurationHistoryChangeLog> historyjiraProdIncidentRaisedByCustomField;
 	private List<ConfigurationHistoryChangeLog> historyjiraProdIncidentRaisedByValue;
 

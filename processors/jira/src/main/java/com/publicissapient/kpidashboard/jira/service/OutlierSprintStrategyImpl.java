@@ -52,7 +52,7 @@ public class OutlierSprintStrategyImpl implements OutlierSprintStrategy {
 	 * Finds outlier sprints for a given project ID.
 	 *
 	 * @param basicProjectConfigId
-	 *            the project configuration ID
+	 *          the project configuration ID
 	 * @return a map of SprintDetails to a list of issue numbers
 	 */
 	@Override
@@ -81,8 +81,7 @@ public class OutlierSprintStrategyImpl implements OutlierSprintStrategy {
 			LocalDateTime nextStartDate = DateUtil.stringToLocalDateTime(nextSprint.getStartDate(),
 					DateUtil.TIME_FORMAT_WITH_SEC);
 
-			if (!currentEndDate.toLocalDate().isEqual(nextStartDate.toLocalDate())
-					&& currentEndDate.isAfter(nextStartDate)) {
+			if (!currentEndDate.toLocalDate().isEqual(nextStartDate.toLocalDate()) && currentEndDate.isAfter(nextStartDate)) {
 				overlappingSprints.add(currentSprint);
 				overlappingSprints.add(nextSprint);
 				log.info("Overlapping sprints detected: {} and {} for projectId: {}", currentSprint.getSprintName(),
@@ -98,9 +97,9 @@ public class OutlierSprintStrategyImpl implements OutlierSprintStrategy {
 	 * ID.
 	 *
 	 * @param overlappingSprints
-	 *            the list of overlapping sprints
+	 *          the list of overlapping sprints
 	 * @param basicProjectConfigId
-	 *            the project configuration ID
+	 *          the project configuration ID
 	 * @return a map of SprintDetails to a list of issue numbers
 	 */
 	private Map<String, List<String>> getIssueTaggedToSprint(List<SprintDetails> overlappingSprints,
@@ -117,8 +116,8 @@ public class OutlierSprintStrategyImpl implements OutlierSprintStrategy {
 				basicProjectConfigId.toString());
 
 		// Group issues by sprint ID
-		Map<String, List<String>> issuesBySprintId = issues.stream().collect(Collectors
-				.groupingBy(JiraIssue::getSprintID, Collectors.mapping(JiraIssue::getNumber, Collectors.toList())));
+		Map<String, List<String>> issuesBySprintId = issues.stream().collect(
+				Collectors.groupingBy(JiraIssue::getSprintID, Collectors.mapping(JiraIssue::getNumber, Collectors.toList())));
 
 		// Map outlier sprints to their respective issue numbers
 		Map<String, List<String>> outlierSprintIssuesMap = new HashMap<>();
@@ -134,7 +133,7 @@ public class OutlierSprintStrategyImpl implements OutlierSprintStrategy {
 	 * Prints a table of sprint issues for email format
 	 *
 	 * @param outlierSprintIssueMap
-	 *            the map containing sprint names and their corresponding issue keys
+	 *          the map containing sprint names and their corresponding issue keys
 	 * @return a formatted string representing the sprint issues table
 	 */
 	@Override

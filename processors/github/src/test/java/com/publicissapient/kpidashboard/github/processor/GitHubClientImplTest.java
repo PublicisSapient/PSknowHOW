@@ -30,7 +30,6 @@ import com.publicissapient.kpidashboard.github.processor.service.impl.GitHubClie
 
 /**
  * @author narsingh9
- *
  */
 @ExtendWith(SpringExtension.class)
 public class GitHubClientImplTest {
@@ -50,8 +49,8 @@ public class GitHubClientImplTest {
 		doReturn("abcd").when(gitLabConfig).getAesEncryptionKey();
 		doReturn("test").when(aesEncryptionService).decrypt(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 		doReturn(new ResponseEntity<>(serverResponse, HttpStatus.OK)).when(restTemplate).exchange(
-				ArgumentMatchers.eq(restURI), ArgumentMatchers.eq(HttpMethod.GET),
-				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(restURI), ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
+				ArgumentMatchers.eq(String.class));
 		List<CommitDetails> commits = gitHubClient.fetchAllCommits(new GitHubProcessorItem(), true, getToolConnection(),
 				new ProjectBasicConfig());
 		assertEquals(11, commits.size());
@@ -64,8 +63,8 @@ public class GitHubClientImplTest {
 		doReturn("abcd").when(gitLabConfig).getAesEncryptionKey();
 		doReturn("test").when(aesEncryptionService).decrypt(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 		doReturn(new ResponseEntity<>(serverResponse, HttpStatus.OK)).when(restTemplate).exchange(
-				ArgumentMatchers.eq(restURI), ArgumentMatchers.eq(HttpMethod.GET),
-				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(restURI), ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
+				ArgumentMatchers.eq(String.class));
 		List<MergeRequests> mergeRequests = gitHubClient.fetchMergeRequests(new GitHubProcessorItem(), true,
 				getToolConnection(), new ProjectBasicConfig());
 		assertEquals(1, mergeRequests.size());

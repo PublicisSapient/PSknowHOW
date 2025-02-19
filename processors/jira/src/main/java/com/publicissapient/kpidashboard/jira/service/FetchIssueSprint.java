@@ -26,18 +26,17 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 public interface FetchIssueSprint {
 
 	/**
-	 *
 	 * @param projectConfig
-	 *            projectConfig
+	 *          projectConfig
 	 * @param client
-	 *            client
+	 *          client
 	 * @param pageNumber
-	 *            pageNumber
+	 *          pageNumber
 	 * @param sprintId
-	 *            sprintId
+	 *          sprintId
 	 * @return List of Issue
 	 * @throws InterruptedException
-	 *             InterruptedException
+	 *           InterruptedException
 	 */
 	List<Issue> fetchIssuesSprintBasedOnJql(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client,
 			int pageNumber, String sprintId) throws InterruptedException;

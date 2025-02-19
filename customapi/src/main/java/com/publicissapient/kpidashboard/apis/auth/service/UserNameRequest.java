@@ -18,9 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.auth.service;
 
-import lombok.Data;
-
 import javax.validation.constraints.NotNull;
+
+import lombok.Data;
 
 @Data
 public class UserNameRequest {

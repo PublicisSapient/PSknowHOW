@@ -38,10 +38,9 @@ public class AzurePipelineFactory {
 	 * Instantiate AzurePipelineFactory .
 	 *
 	 * @param azurePipelineBuildClient
-	 *            Azure Pipeline Build Client
+	 *          Azure Pipeline Build Client
 	 * @param azurePipelineDeploymentClient
-	 *            Azure Pipeline Deployment Client
-	 * 
+	 *          Azure Pipeline Deployment Client
 	 */
 	@Autowired
 	public AzurePipelineFactory(DefaultAzurePipelineClient azurePipelineBuildClient,
@@ -52,7 +51,6 @@ public class AzurePipelineFactory {
 	}
 
 	/**
-	 *
 	 * @param jobType
 	 * @return
 	 */
@@ -68,5 +66,4 @@ public class AzurePipelineFactory {
 
 		return azurePipelineClient;
 	}
-
 }

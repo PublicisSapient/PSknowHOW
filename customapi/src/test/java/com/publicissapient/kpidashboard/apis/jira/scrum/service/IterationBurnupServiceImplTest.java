@@ -101,7 +101,7 @@ public class IterationBurnupServiceImplTest {
 		SprintWiseStoryDataFactory sprintWiseStoryDataFactory = SprintWiseStoryDataFactory.newInstance();
 		sprintWiseStoryList = sprintWiseStoryDataFactory.getSprintWiseStories();
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
-				.newInstance();
+				.newInstance("/json/default/project_hierarchy_filter_data.json");
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		filterLevelMap = new LinkedHashMap<>();
 		filterLevelMap.put("PROJECT", Filters.PROJECT);
@@ -111,8 +111,9 @@ public class IterationBurnupServiceImplTest {
 		jiraIssues = jiraIssueDataFactory.getJiraIssues();
 		SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory
 				.newInstance("/json/default/iteration/sprint_details.json");
-		sprintDetailsList = sprintDetailsDataFactory.getSprintDetails().stream().filter(sprintDetails -> sprintDetails
-				.getBasicProjectConfigId().equals(new ObjectId("63d9280d5ce3ee7d77551313")))
+		sprintDetailsList = sprintDetailsDataFactory.getSprintDetails().stream()
+				.filter(
+						sprintDetails -> sprintDetails.getBasicProjectConfigId().equals(new ObjectId("63d9280d5ce3ee7d77551313")))
 				.collect(Collectors.toList());
 		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory
 				.newInstance("/json/default/iteration/jira_issue_custom_history_new_structure.json");
@@ -140,15 +141,15 @@ public class IterationBurnupServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetailsList.get(0));
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> defectDataListMap = iterationBurnupService.fetchKPIDataFromDb(leafNodeList.get(0),
-				startDate, endDate, kpiRequest);
+		Map<String, Object> defectDataListMap = iterationBurnupService.fetchKPIDataFromDb(leafNodeList.get(0), startDate,
+				endDate, kpiRequest);
 		assertNotNull(defectDataListMap);
 	}
 
@@ -174,12 +175,10 @@ public class IterationBurnupServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
 	public void testGetQualifierType() {
 		assertThat(iterationBurnupService.getQualifierType(), equalTo(KPICode.ITERATION_BURNUP.name()));
 	}
-
 }

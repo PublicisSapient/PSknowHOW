@@ -28,9 +28,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * For Excel Column Info
- */
+/** For Excel Column Info */
 @Data
 @Builder
 @Getter

@@ -1808,4 +1808,35 @@ describe('DailyScrumComponent', () => {
     });
   });
 
+  it('should return "-" when value is "-"', () => {
+    const result = component.convertToHoursIfTime('-', 'hours');
+    expect(result).toBe('-');
+  });
+
+  it('should return the original value when value is NaN', () => {
+    const result = component.convertToHoursIfTime(NaN, 'hours');
+    expect(result).toBeNaN();
+  });
+
+  it('should not return "-" when value is a valid number', () => {
+    const result = component.convertToHoursIfTime(10, 'hours');
+    expect(result).not.toBe('-');
+  });
+
+  it('should prefix "-" when isLessThanZero is true', () => {
+    spyOn(component, 'convertToDays').and.returnValue('2d'); // Mocking the dependency
+
+    const result = component.convertToHoursIfTime(-120, 'hours'); // -120 minutes (2 hours)
+    
+    expect(result).toBe('-120'); // Expected output should have "-" prefixed
+  });
+
+  it('should not modify value when isLessThanZero is false', () => {
+    spyOn(component, 'convertToDays').and.returnValue('2d'); // Mocking the dependency
+
+    const result = component.convertToHoursIfTime(120, 'hours'); // 120 minutes (2 hours)
+    
+    expect(result).toBe(120); // Expected output should NOT have "-"
+  });
+
 });

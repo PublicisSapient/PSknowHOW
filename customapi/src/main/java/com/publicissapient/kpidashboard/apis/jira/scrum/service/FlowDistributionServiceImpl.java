@@ -81,7 +81,7 @@ public class FlowDistributionServiceImpl extends JiraBacklogKPIService<Double, L
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
 			throws ApplicationException {
 		List<DataCount> trendValueList = new ArrayList<>();
-			projectWiseLeafNodeValue(projectNode, trendValueList, kpiElement, kpiRequest);
+		projectWiseLeafNodeValue(projectNode, trendValueList, kpiElement, kpiRequest);
 
 		log.info("FlowDistributionServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
@@ -101,9 +101,8 @@ public class FlowDistributionServiceImpl extends JiraBacklogKPIService<Double, L
 
 			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueTypeNamesKPI146())) {
 				jiraIssueCustomHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
-				jiraIssueCustomHistoryList = jiraIssueCustomHistoryList.stream()
-						.filter(jiraIssueCustomHistory -> fieldMapping.getJiraIssueTypeNamesKPI146()
-								.contains(jiraIssueCustomHistory.getStoryType()))
+				jiraIssueCustomHistoryList = jiraIssueCustomHistoryList.stream().filter(jiraIssueCustomHistory -> fieldMapping
+						.getJiraIssueTypeNamesKPI146().contains(jiraIssueCustomHistory.getStoryType()))
 						.collect(Collectors.toList());
 			}
 
@@ -121,7 +120,8 @@ public class FlowDistributionServiceImpl extends JiraBacklogKPIService<Double, L
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Node leafNode, List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node leafNode, List<DataCount> trendValueList, KpiElement kpiElement,
+			KpiRequest kpiRequest) {
 
 		// this method fetch dates for past history data
 		CustomDateRange dateRange = KpiDataHelper.getMonthsForPastDataHistory(customApiConfig.getFlowKpiMonthCount());
@@ -142,8 +142,7 @@ public class FlowDistributionServiceImpl extends JiraBacklogKPIService<Double, L
 
 			Map<String, Map<String, Integer>> groupByDateAndTypeCount = jiraIssueCustomHistories.stream()
 					.collect(Collectors.groupingBy(issue -> issue.getCreatedDate().toString().split("T")[0],
-							Collectors.groupingBy(issue -> combineType(issue.getStoryType()),
-									Collectors.summingInt(issue -> 1))));
+							Collectors.groupingBy(issue -> combineType(issue.getStoryType()), Collectors.summingInt(issue -> 1))));
 
 			// Sort the groupByDateAndTypeCount map by date in ascending order
 			TreeMap<String, Map<String, Integer>> sortedByDateTypeCountMap = new TreeMap<>(groupByDateAndTypeCount);
@@ -198,15 +197,15 @@ public class FlowDistributionServiceImpl extends JiraBacklogKPIService<Double, L
 	 */
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
 			Map<String, Map<String, Integer>> dateTypeCountMap) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& !Objects.isNull(dateTypeCountMap)) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				!Objects.isNull(dateTypeCountMap)) {
 			KPIExcelUtility.populateFlowKPI(dateTypeCountMap, excelData);
 		}
 	}
 
 	/**
 	 * Method to create cumulative type count from start date to end date
-	 * 
+	 *
 	 * @param startDate
 	 * @param endDate
 	 * @param sortedByDateTypeCountMap
@@ -242,7 +241,7 @@ public class FlowDistributionServiceImpl extends JiraBacklogKPIService<Double, L
 
 	/**
 	 * For fetching start date backlog type count
-	 * 
+	 *
 	 * @param startDate
 	 * @param sortedByDateTypeCountMap
 	 * @return
@@ -259,15 +258,15 @@ public class FlowDistributionServiceImpl extends JiraBacklogKPIService<Double, L
 				break;
 			}
 			// Otherwise, add up the type count for this date
-			typeCountMap.forEach(
-					(type, count) -> startDateTypeCount.put(type, startDateTypeCount.getOrDefault(type, 0) + count));
+			typeCountMap
+					.forEach((type, count) -> startDateTypeCount.put(type, startDateTypeCount.getOrDefault(type, 0) + count));
 		}
 		return startDateTypeCount;
 	}
 
 	/**
 	 * Adding start date type count
-	 * 
+	 *
 	 * @param startDate
 	 * @param sortedByDateTypeCountMap
 	 * @param tillStartDateTypeCount
@@ -286,5 +285,4 @@ public class FlowDistributionServiceImpl extends JiraBacklogKPIService<Double, L
 			sortedByDateTypeCountMap.put(startDate, tillStartDateTypeCount);
 		}
 	}
-
 }

@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -102,13 +101,12 @@ public class ReleaseDefectCountByAssigneeServiceImpl extends JiraReleaseKPIServi
 
 				Set<String> finalJiraDodKPI144LowerCase = jiraDodKPI144LowerCase;
 				List<JiraIssue> openDefects = totalDefects.stream()
-						.filter(jiraIssue -> StringUtils.isNotEmpty(jiraIssue.getStatus())
-								&& !finalJiraDodKPI144LowerCase.isEmpty()
-								&& !finalJiraDodKPI144LowerCase.contains(jiraIssue.getStatus().toLowerCase()))
+						.filter(
+								jiraIssue -> StringUtils.isNotEmpty(jiraIssue.getStatus()) && !finalJiraDodKPI144LowerCase.isEmpty() &&
+										!finalJiraDodKPI144LowerCase.contains(jiraIssue.getStatus().toLowerCase()))
 						.collect(Collectors.toList());
 
-				Map<String, Map<String, List<JiraIssue>>> assigneeWiseList = getAssigneeWiseList(totalDefects,
-						openDefects);
+				Map<String, Map<String, List<JiraIssue>>> assigneeWiseList = getAssigneeWiseList(totalDefects, openDefects);
 				log.info("ReleaseDefectCountByAssigneeServiceImpl -> assigneeWiseList ->  : {}", assigneeWiseList);
 				List<IterationKpiValue> sortedFilterDataList = new ArrayList<>();
 				List<DataCount> dataCountListForAllAssignee = new ArrayList<>();
@@ -130,8 +128,7 @@ public class ReleaseDefectCountByAssigneeServiceImpl extends JiraReleaseKPIServi
 					middleOverallData.setValue(dataCountList);
 					middleTrendValueListForAssignee.add(middleOverallData);
 
-					IterationKpiValue filterData = new IterationKpiValue(entry.getKey(),
-							middleTrendValueListForAssignee);
+					IterationKpiValue filterData = new IterationKpiValue(entry.getKey(), middleTrendValueListForAssignee);
 					filterDataList.add(filterData);
 				}
 
@@ -146,10 +143,9 @@ public class ReleaseDefectCountByAssigneeServiceImpl extends JiraReleaseKPIServi
 					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_ASSIGNEE_RELEASE.getColumns());
 					kpiElement.setExcelData(excelData);
 					sortedFilterDataList.add(filterDataList.stream()
-							.filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OPEN_DEFECT))
-							.findFirst().orElse(new IterationKpiValue()));
-					filterDataList.removeIf(
-							iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OPEN_DEFECT));
+							.filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OPEN_DEFECT)).findFirst()
+							.orElse(new IterationKpiValue()));
+					filterDataList.removeIf(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OPEN_DEFECT));
 					sortListByKey(filterDataList);
 					sortedFilterDataList.addAll(filterDataList);
 					kpiElement.setTrendValueList(sortedFilterDataList);
@@ -235,7 +231,7 @@ public class ReleaseDefectCountByAssigneeServiceImpl extends JiraReleaseKPIServi
 
 	/**
 	 * populate excel data
-	 * 
+	 *
 	 * @param requestTrackerId
 	 * @param excelData
 	 * @param jiraIssueList
@@ -243,8 +239,8 @@ public class ReleaseDefectCountByAssigneeServiceImpl extends JiraReleaseKPIServi
 	 */
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
 			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				CollectionUtils.isNotEmpty(jiraIssueList)) {
 			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
 		}
 	}

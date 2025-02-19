@@ -69,10 +69,10 @@ public class SonarServiceKanbanR {
 	 * Process Sonar KPI request
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @return {@code List<KpiElement>}
 	 */
-	@SuppressWarnings({ "unchecked", "PMD.AvoidCatchingGenericException" })
+	@SuppressWarnings({"unchecked", "PMD.AvoidCatchingGenericException"})
 	public List<KpiElement> process(KpiRequest kpiRequest) {
 
 		log.info("[SONAR KANBAN][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),
@@ -80,20 +80,18 @@ public class SonarServiceKanbanR {
 		List<KpiElement> responseList = new ArrayList<>();
 		String[] kanbanProjectKeyCache = null;
 		try {
-			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(),
-					true);
+			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(), true);
 			if (null != groupName) {
 				kpiRequest.setLabel(groupName.toUpperCase());
 			} else {
 				log.error("label name for selected hierarchy not found");
 			}
-			List<AccountHierarchyDataKanban> filteredAccountDataList = filterHelperService
-					.getFilteredBuildsKanban(kpiRequest, groupName);
+			List<AccountHierarchyDataKanban> filteredAccountDataList = filterHelperService.getFilteredBuildsKanban(kpiRequest,
+					groupName);
 
 			kpiHelperService.kpiResolution(kpiRequest.getKpiList());
 			if (!authorizedProjectsService.ifSuperAdminUser()) {
-				kanbanProjectKeyCache = authorizedProjectsService.getKanbanProjectKey(filteredAccountDataList,
-						kpiRequest);
+				kanbanProjectKeyCache = authorizedProjectsService.getKanbanProjectKey(filteredAccountDataList, kpiRequest);
 
 				filteredAccountDataList = authorizedProjectsService.filterKanbanProjects(filteredAccountDataList);
 
@@ -101,8 +99,7 @@ public class SonarServiceKanbanR {
 					return responseList;
 				}
 			} else {
-				kanbanProjectKeyCache = authorizedProjectsService.getKanbanProjectKey(filteredAccountDataList,
-						kpiRequest);
+				kanbanProjectKeyCache = authorizedProjectsService.getKanbanProjectKey(filteredAccountDataList, kpiRequest);
 			}
 
 			Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
@@ -114,8 +111,8 @@ public class SonarServiceKanbanR {
 			}
 
 			TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, null,
-					filteredAccountDataList, filterHelperService.getFirstHierarachyLevel(), filterHelperService
-							.getHierarchyIdLevelMap(false).getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, 0));
+					filteredAccountDataList, filterHelperService.getFirstHierarachyLevel(),
+					filterHelperService.getHierarchyIdLevelMap(false).getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, 0));
 			for (KpiElement kpiEle : kpiRequest.getKpiList()) {
 
 				responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, treeAggregatorDetail));
@@ -135,11 +132,11 @@ public class SonarServiceKanbanR {
 	 * Calculates all KPI aggregated metrics
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @param kpiElement
-	 *            kpiElement
+	 *          kpiElement
 	 * @param treeAggregatorDetail
-	 *            treeAggregatorDetail
+	 *          treeAggregatorDetail
 	 * @return kpielement
 	 */
 	private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -158,8 +155,8 @@ public class SonarServiceKanbanR {
 			List<Node> projectNodes = treeAggregatorDetailClone.getMapOfListOfProjectNodes()
 					.get(CommonConstant.PROJECT.toLowerCase());
 
-			if (!projectNodes.isEmpty() && (projectNodes.size() > 1
-					|| kpiHelperService.isToolConfigured(kpi, kpiElement, projectNodes.get(0)))) {
+			if (!projectNodes.isEmpty() &&
+					(projectNodes.size() > 1 || kpiHelperService.isToolConfigured(kpi, kpiElement, projectNodes.get(0)))) {
 				kpiElement = sonarKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
 				kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
 				if (projectNodes.size() == 1) {
@@ -167,8 +164,8 @@ public class SonarServiceKanbanR {
 				}
 			}
 			if (log.isInfoEnabled()) {
-				log.info("[SONAR-KANBAN-{}-TIME][{}]. CODEQUALITY took {} ms", kpi.name(),
-						kpiRequest.getRequestTrackerId(), System.currentTimeMillis() - startTime);
+				log.info("[SONAR-KANBAN-{}-TIME][{}]. CODEQUALITY took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
+						System.currentTimeMillis() - startTime);
 			}
 		} catch (ApplicationException exception) {
 			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
@@ -180,37 +177,36 @@ public class SonarServiceKanbanR {
 			return kpiElement;
 		}
 		return kpiElement;
-
 	}
 
 	/**
 	 * Sets KPI reponse List into application Cache
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @param responseList
-	 *            responseList
+	 *          responseList
 	 * @param groupId
-	 *            groupId
+	 *          groupId
 	 * @param kanbanProjectKeyCache
-	 *            kanbanProjectKeyCache
+	 *          kanbanProjectKeyCache
 	 */
 	private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
 			String[] kanbanProjectKeyCache) {
 		Integer projectLevel = filterHelperService.getHierarchyIdLevelMap(true)
 				.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
-		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& projectLevel >= kpiRequest.getLevel()) {
-			cacheService.setIntoApplicationCache(kanbanProjectKeyCache, responseList, KPISource.SONARKANBAN.name(),
-					groupId, null);
+		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				projectLevel >= kpiRequest.getLevel()) {
+			cacheService.setIntoApplicationCache(kanbanProjectKeyCache, responseList, KPISource.SONARKANBAN.name(), groupId,
+					null);
 		}
 	}
 
 	private List<KpiElement> getCachedData(KpiRequest kpiRequest, String[] kanbanProjectKeyCache, Integer groupId) {
 		Object cachedData = cacheService.getFromApplicationCache(kanbanProjectKeyCache, KPISource.SONARKANBAN.name(),
 				groupId, null);
-		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& null != cachedData) {
+		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				null != cachedData) {
 			log.info("[SONAR KANBAN][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
 					kpiRequest.getIds());
 			return (List<KpiElement>) cachedData;

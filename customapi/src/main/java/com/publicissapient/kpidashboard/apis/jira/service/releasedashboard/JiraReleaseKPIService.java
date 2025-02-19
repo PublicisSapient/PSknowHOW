@@ -78,8 +78,8 @@ public abstract class JiraReleaseKPIService implements NonTrendKPIService {
 			filteredJiraIssue = subtaskDefects;
 		}
 
-		if (fieldMapping != null && CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype())
-				&& CollectionUtils.isNotEmpty(jiraIssuesForCurrentRelease)) {
+		if (fieldMapping != null && CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) &&
+				CollectionUtils.isNotEmpty(jiraIssuesForCurrentRelease)) {
 			defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
 			defectType.addAll(fieldMapping.getJiradefecttype());
 			filteredJiraIssue.addAll(jiraIssuesForCurrentRelease.stream()
@@ -100,5 +100,4 @@ public abstract class JiraReleaseKPIService implements NonTrendKPIService {
 	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryFromBaseClass() {
 		return jiraService.getJiraIssuesCustomHistoryForCurrentRelease();
 	}
-
 }

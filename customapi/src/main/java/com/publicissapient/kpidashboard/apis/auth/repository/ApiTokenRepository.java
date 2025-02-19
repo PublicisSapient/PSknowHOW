@@ -25,13 +25,11 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.publicissapient.kpidashboard.apis.auth.model.ApiToken;
 
-/**
- * Repository for api token
- */
+/** Repository for api token */
 public interface ApiTokenRepository extends CrudRepository<ApiToken, ObjectId> {
 	/**
 	 * Find api token by user and expiration date
-	 * 
+	 *
 	 * @param apiUser
 	 * @param expirationDt
 	 * @return api token
@@ -40,7 +38,7 @@ public interface ApiTokenRepository extends CrudRepository<ApiToken, ObjectId> {
 
 	/**
 	 * Find api token by user and api key
-	 * 
+	 *
 	 * @param apiUser
 	 * @param apiKey
 	 * @return api token
@@ -49,7 +47,7 @@ public interface ApiTokenRepository extends CrudRepository<ApiToken, ObjectId> {
 
 	/**
 	 * Returns List of api tokens by user
-	 * 
+	 *
 	 * @param apiUser
 	 * @return
 	 */

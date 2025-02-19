@@ -33,9 +33,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Represents the user role data.
- */
+/** Represents the user role data. */
 @Data
 @Builder
 @Getter
@@ -77,5 +75,4 @@ public class UserRoleData {
 		this.setLastModifiedDate(new Date());
 		roles = new ArrayList<>();
 	}
-
 }

@@ -55,22 +55,19 @@ public class DoraKanbanChangeUnit {
 
 	public void insertDoraKanban() {
 		List<Document> kpiDocuments = List.of(
-				new Document().append(KPI_ID, "kpi184").append("kpiName", "Change Failure Rate")
-						.append("isDeleted", "False").append("defaultOrder", 19).append("kpiCategory", "Dora")
-						.append("kpiUnit", "%").append("chartType", "line").append("upperThresholdBG", "red")
-						.append("lowerThresholdBG", "white").append("xAxisLabel", "Weeks")
+				new Document().append(KPI_ID, "kpi184").append("kpiName", "Change Failure Rate").append("isDeleted", "False")
+						.append("defaultOrder", 19).append("kpiCategory", "Dora").append("kpiUnit", "%").append("chartType", "line")
+						.append("upperThresholdBG", "red").append("lowerThresholdBG", "white").append("xAxisLabel", "Weeks")
 						.append("yAxisLabel", "Percentage").append("showTrend", true).append("isPositiveTrend", false)
-						.append("calculateMaturity", true).append("hideOverallFilter", true)
-						.append("kpiSource", "Jenkins").append("maxValue", "100").append("thresholdValue", "30")
-						.append("kanban", true).append("groupId", 5)
-						.append("kpiInfo", new Document().append("definition",
-								"Measures the proportion of builds that have failed over a given period of time")
-								.append("formula",
-										List.of(new Document().append("lhs", "Change Failure Rate")
-												.append("operator", "division")
-												.append("operands",
-														List.of("Total number of failed Builds",
-																"Total number of Builds"))))
+						.append("calculateMaturity", true).append("hideOverallFilter", true).append("kpiSource", "Jenkins")
+						.append("maxValue", "100").append("thresholdValue", "30").append("kanban", true).append("groupId", 5)
+						.append("kpiInfo", new Document()
+								.append("definition", "Measures the proportion of builds that have failed over a given period of time")
+								.append(
+										"formula",
+										List.of(new Document()
+												.append("lhs", "Change Failure Rate").append("operator", "division")
+												.append("operands", List.of("Total number of failed Builds", "Total number of Builds"))))
 								.append("details", List.of(new Document().append("type", "link").append("kpiLinkDetail",
 										new Document().append("text", "Detailed Information at").append("link",
 												"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71958608/DORA+Change+Failure+Rate"))))
@@ -79,27 +76,21 @@ public class DoraKanbanChangeUnit {
 						.append("aggregationCircleCriteria", "average").append("isTrendCalculative", false)
 						.append("isAdditionalFilterSupport", false)
 						.append("maturityRange", List.of("-60", "60-45", "45-30", "30-15", "15-"))
-						.append("maturityLevel", List.of(
-								new Document().append(LEVEL, "M5").append(BG_COLOR, "#167a26").append(DISPLAY_RANGE,
-										"0-15 %"),
-								new Document()
-										.append(LEVEL, "M4").append(BG_COLOR, "#4ebb1a")
-										.append(DISPLAY_RANGE, "15-30 %"),
-								new Document()
-										.append(LEVEL, "M3").append(BG_COLOR, "#ef7643")
-										.append(DISPLAY_RANGE, "30-45 %"),
-								new Document().append(LEVEL, "M2").append(BG_COLOR, "#f53535").append(DISPLAY_RANGE,
-										"45-60 %"),
-								new Document().append(LEVEL, "M1").append(BG_COLOR, "#c91212").append(DISPLAY_RANGE,
-										"60 % and Above")))
+						.append("maturityLevel",
+								List.of(new Document().append(LEVEL, "M5").append(BG_COLOR, "#167a26").append(DISPLAY_RANGE, "0-15 %"),
+										new Document().append(LEVEL, "M4").append(BG_COLOR, "#4ebb1a").append(DISPLAY_RANGE, "15-30 %"),
+										new Document().append(LEVEL, "M3").append(BG_COLOR, "#ef7643").append(DISPLAY_RANGE, "30-45 %"),
+										new Document().append(LEVEL, "M2").append(BG_COLOR, "#f53535").append(DISPLAY_RANGE, "45-60 %"),
+										new Document().append(LEVEL, "M1").append(BG_COLOR, "#c91212").append(DISPLAY_RANGE,
+												"60 % and Above")))
 						.append("combinedKpiSource", "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"),
-				new Document().append(KPI_ID, "kpi183").append("kpiName", "Deployment Frequency")
-						.append("isDeleted", "False").append("defaultOrder", 20).append("kpiCategory", "Dora")
-						.append("kpiUnit", "Number").append("chartType", "line").append("upperThresholdBG", "white")
-						.append("lowerThresholdBG", "red").append("xAxisLabel", "Weeks").append("yAxisLabel", "Count")
-						.append("showTrend", true).append("isPositiveTrend", true).append("calculateMaturity", true)
-						.append("hideOverallFilter", false).append("kpiSource", "Jenkins").append("maxValue", "100")
-						.append("thresholdValue", "6").append("kanban", true).append("groupId", 5)
+				new Document().append(KPI_ID, "kpi183").append("kpiName", "Deployment Frequency").append("isDeleted", "False")
+						.append("defaultOrder", 20).append("kpiCategory", "Dora").append("kpiUnit", "Number")
+						.append("chartType", "line").append("upperThresholdBG", "white").append("lowerThresholdBG", "red")
+						.append("xAxisLabel", "Weeks").append("yAxisLabel", "Count").append("showTrend", true)
+						.append("isPositiveTrend", true).append("calculateMaturity", true).append("hideOverallFilter", false)
+						.append("kpiSource", "Jenkins").append("maxValue", "100").append("thresholdValue", "6")
+						.append("kanban", true).append("groupId", 5)
 						.append("kpiInfo", new Document()
 								.append("definition", "Measures how often code is deployed to production in a period")
 								.append("details", List.of(new Document().append("type", "link").append("kpiLinkDetail",
@@ -111,16 +102,17 @@ public class DoraKanbanChangeUnit {
 						.append("isAdditionalFilterSupport", false)
 						.append("maturityRange", List.of("0-2", "2-4", "4-6", "6-8", "8-"))
 						.append("maturityLevel",
-								List.of(new Document().append(LEVEL, "M5").append(BG_COLOR, "#167a26")
-										.append(LABEL, ">= 2 per week").append(DISPLAY_RANGE, "8 and Above"),
-										new Document().append(LEVEL, "M4").append(BG_COLOR, "#4ebb1a")
-												.append(LABEL, "Once per week").append(DISPLAY_RANGE, "6,7"),
-										new Document().append(LEVEL, "M3").append(BG_COLOR, "#ef7643")
-												.append(LABEL, "Once in 2 weeks").append(DISPLAY_RANGE, "4,5"),
-										new Document().append(LEVEL, "M2").append(BG_COLOR, "#f53535")
-												.append(LABEL, "Once in 4 weeks").append(DISPLAY_RANGE, "2,3"),
-										new Document().append(LEVEL, "M1").append(BG_COLOR, "#c91212")
-												.append(LABEL, "< Once in 8 weeks").append(DISPLAY_RANGE, "0,1")))
+								List.of(
+										new Document().append(LEVEL, "M5").append(BG_COLOR, "#167a26").append(LABEL, ">= 2 per week")
+												.append(DISPLAY_RANGE, "8 and Above"),
+										new Document().append(LEVEL, "M4").append(BG_COLOR, "#4ebb1a").append(LABEL, "Once per week")
+												.append(DISPLAY_RANGE, "6,7"),
+										new Document().append(LEVEL, "M3").append(BG_COLOR, "#ef7643").append(LABEL, "Once in 2 weeks")
+												.append(DISPLAY_RANGE, "4,5"),
+										new Document().append(LEVEL, "M2").append(BG_COLOR, "#f53535").append(LABEL, "Once in 4 weeks")
+												.append(DISPLAY_RANGE, "2,3"),
+										new Document().append(LEVEL, "M1").append(BG_COLOR, "#c91212").append(LABEL, "< Once in 8 weeks")
+												.append(DISPLAY_RANGE, "0,1")))
 						.append("combinedKpiSource", "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"));
 
 		mongoTemplate.getCollection("kpi_master").insertMany(kpiDocuments);
@@ -128,11 +120,11 @@ public class DoraKanbanChangeUnit {
 
 	/**
 	 * Moving dora to scrum, kanban thus changing the boardId
-	 * 
+	 *
 	 * @param oldBoardId
-	 *            older board id
+	 *          older board id
 	 * @param newBoardId
-	 *            new board id
+	 *          new board id
 	 */
 	private void updateFilterBoardId(int oldBoardId, int newBoardId) {
 		mongoTemplate.getCollection("filters").updateMany(new Document(BOARD_ID, oldBoardId),
@@ -158,5 +150,4 @@ public class DoraKanbanChangeUnit {
 		mongoTemplate.getCollection("kpi_master")
 				.deleteMany(new Document(KPI_ID, new Document("$in", List.of("kpi184", "kpi183"))));
 	}
-
 }

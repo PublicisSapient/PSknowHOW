@@ -26,5 +26,4 @@ public interface NotificationFailedMsgHandlerService {
 	void handleFailedMessage(ConsumerRecord<String, EmailEvent> consumerRecord);
 
 	void handleRecoverableMessage(ConsumerRecord<String, EmailEvent> consumerRecord);
-
 }

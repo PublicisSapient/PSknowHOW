@@ -16,19 +16,21 @@
  */
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1000;
 
-import com.publicissapient.kpidashboard.apis.mongock.data.FiltersDataFactory;
-import com.publicissapient.kpidashboard.apis.util.MongockUtil;
-import com.publicissapient.kpidashboard.common.model.application.Filters;
-import io.mongock.api.annotations.ChangeUnit;
-import io.mongock.api.annotations.Execution;
-import io.mongock.api.annotations.RollbackExecution;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
-import java.util.List;
+import com.publicissapient.kpidashboard.apis.mongock.data.FiltersDataFactory;
+import com.publicissapient.kpidashboard.apis.util.MongockUtil;
+import com.publicissapient.kpidashboard.common.model.application.Filters;
+
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author purgupta2
@@ -83,7 +85,6 @@ public class FiltersTable {
 		}
 	}
 
-
 	@RollbackExecution
 	public void rollback() {
 		// We are inserting the documents through DDL, no rollback to any collections.
@@ -118,5 +119,4 @@ public class FiltersTable {
 			mongoTemplate.updateFirst(query, update, KPI_MASTER);
 		}
 	}
-
 }

@@ -21,9 +21,6 @@ package com.publicissapient.kpidashboard.azurerepo.repository;
 import com.publicissapient.kpidashboard.azurerepo.model.AzureRepoProcessor;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 
-/**
- * The Interface BitbucketProcessorRepository.
- */
+/** The Interface BitbucketProcessorRepository. */
 public interface AzureRepoProcessorRepository extends ProcessorRepository<AzureRepoProcessor> {
-
 }

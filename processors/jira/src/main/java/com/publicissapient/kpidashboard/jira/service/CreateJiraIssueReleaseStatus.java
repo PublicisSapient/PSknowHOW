@@ -21,14 +21,13 @@ import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 
 /**
  * @author pankumar8
- *
  */
 public interface CreateJiraIssueReleaseStatus {
 	/**
 	 * @param client
-	 *            client
+	 *          client
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 */
 	void processAndSaveProjectStatusCategory(ProcessorJiraRestClient client, String basicProjectConfigId);
 }

@@ -16,6 +16,8 @@
  */
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_930;
 
+import java.util.Arrays;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -24,8 +26,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
-
-import java.util.Arrays;
 
 /**
  * @author kunkambl
@@ -53,7 +53,6 @@ public class UpdateBuildFrequency {
 		update.set("maturityRange", Arrays.asList("-1", "2-4", "5-8", "8-10", "10-"));
 		mongoTemplate.updateFirst(getQueryByKpiId(), update, "kpi_master");
 	}
-
 
 	private Query getQueryByKpiId() {
 		Query query = new Query();

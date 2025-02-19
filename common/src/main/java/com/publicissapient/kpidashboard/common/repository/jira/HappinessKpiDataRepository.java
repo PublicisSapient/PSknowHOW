@@ -31,9 +31,9 @@ public interface HappinessKpiDataRepository extends MongoRepository<HappinessKpi
 
 	/**
 	 * Find all which matches provided ids
-	 * 
+	 *
 	 * @param sprintIDs
-	 *            sprint ids
+	 *          sprint ids
 	 * @return list of HappinessKpiData details
 	 */
 	List<HappinessKpiData> findBySprintIDIn(List<String> sprintIDs);

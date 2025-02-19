@@ -18,14 +18,16 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssueReleaseStatus;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
+
+import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssueReleaseStatus;
 
 /**
  * @author kunkambl
  */
 public interface KanbanJiraIssueReleaseStatusRepository
-		extends MongoRepository<KanbanJiraIssueReleaseStatus, ObjectId> {
+		extends
+			MongoRepository<KanbanJiraIssueReleaseStatus, ObjectId> {
 	KanbanJiraIssueReleaseStatus findByBasicProjectConfigId(String basicProjectConfigId);
 }

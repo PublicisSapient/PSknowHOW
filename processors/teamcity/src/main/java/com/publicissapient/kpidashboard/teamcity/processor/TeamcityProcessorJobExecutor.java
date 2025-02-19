@@ -59,10 +59,7 @@ import com.publicissapient.kpidashboard.teamcity.repository.TeamcityProcessorRep
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * ProcessorJobExecutor that fetches Build log information from Teamcity.
- */
-
+/** ProcessorJobExecutor that fetches Build log information from Teamcity. */
 @Component
 @Slf4j
 public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityProcessor> {
@@ -99,19 +96,18 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 
 	/**
 	 * Provides Teamcity TaskScheduler.
-	 * 
+	 *
 	 * @param taskScheduler
-	 *            the task scheduler
+	 *          the task scheduler
 	 */
 	@Autowired
 	public TeamcityProcessorJobExecutor(TaskScheduler taskScheduler) {
 		super(taskScheduler, ProcessorConstants.TEAMCITY);
-
 	}
 
 	/**
 	 * Provides Processor.
-	 * 
+	 *
 	 * @return the TeamcityProcessor
 	 */
 	@Override
@@ -121,9 +117,8 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 
 	/**
 	 * Provides Processor Repository.
-	 * 
-	 * @return the ProcessorRepository
 	 *
+	 * @return the ProcessorRepository
 	 */
 	@Override
 	public ProcessorRepository<TeamcityProcessor> getProcessorRepository() {
@@ -132,7 +127,7 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 
 	/**
 	 * Provides cron expression.
-	 * 
+	 *
 	 * @return the cron expression
 	 */
 	@Override
@@ -142,9 +137,9 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 
 	/**
 	 * Processes Teamcity build data.
-	 * 
+	 *
 	 * @param processor
-	 *            the teamcity processor instance
+	 *          the teamcity processor instance
 	 */
 	@Override
 	public boolean execute(TeamcityProcessor processor) {
@@ -174,8 +169,7 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 				teamcityServer.setPassword(decryptPassword(teamcityServer.getPassword()));
 				String instanceUrl = teamcityServer.getUrl();
 				MDC.put(INSTANCE_URL, instanceUrl);
-				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-						proBasicConfig.getId().toHexString());
+				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(proBasicConfig.getId().toHexString());
 				try {
 					processorToolConnectionService.validateConnectionFlag(teamcityServer);
 					processorExecutionTraceLog.setExecutionStartedAt(startTime);
@@ -201,7 +195,6 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 					log.error(String.format("Error getting jobs for: %s", instanceUrl), exception);
 				}
-
 			}
 		}
 		MDC.put(TOTAL_UPDATED_COUNT, String.valueOf(count));
@@ -218,17 +211,17 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 
 	/**
 	 * to check client exception
-	 * 
+	 *
 	 * @param teamcityServer
-	 *            teamcityServer
+	 *          teamcityServer
 	 * @param exception
-	 *            exception
+	 *          exception
 	 */
 	private void isClientException(ProcessorToolConnection teamcityServer, RestClientException exception) {
-		if (exception instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ClientErrorMessageEnum
-					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+		if (exception instanceof HttpClientErrorException &&
+				((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) exception).getStatusCode().value())
+					.getReasonPhrase();
 			processorToolConnectionService.updateBreakingConnection(teamcityServer.getConnectionId(), errMsg);
 		}
 	}
@@ -244,9 +237,8 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.TEAMCITY, basicProjectConfigId);
-		existingTraceLogOptional.ifPresent(
-				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
-						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
+		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> processorExecutionTraceLog
+				.setLastEnableAssigneeToggleState(existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 		return processorExecutionTraceLog;
 	}
 
@@ -254,11 +246,11 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 	 * Iterates over fetched build jobs and adds new builds to the database.
 	 *
 	 * @param savedTotalBuilds
-	 *            the list of builds total for each projects
+	 *          the list of builds total for each projects
 	 * @param buildsByJob
-	 *            the build by job
+	 *          the build by job
 	 * @param teamcityServer
-	 *            the teamcity server
+	 *          the teamcity server
 	 * @param proBasicConfig
 	 * @return adds new build
 	 */
@@ -285,8 +277,8 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 					count++;
 				}
 			} else {
-				if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null
-						&& buildSummary.getStartedBy() != null) {
+				if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null &&
+						buildSummary.getStartedBy() != null) {
 					buildData.setStartedBy(buildSummary.getStartedBy());
 					buildsToSave.add(buildData);
 				}
@@ -303,9 +295,9 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 
 	/**
 	 * Checks if builds is null or not.
-	 * 
+	 *
 	 * @param builds
-	 *            the build list
+	 *          the build list
 	 * @return builds if not null
 	 */
 	private Set<Build> nullSafe(Set<Build> builds) {
@@ -317,15 +309,15 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 	}
 
 	private List<ProjectBasicConfig> getSelectedProjects() {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findActiveProjects(false);
 		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
 		if (CollectionUtils.isEmpty(selectedProjectsBasicIds)) {
 			return allProjects;
 		}
-		return CollectionUtils.emptyIfNull(allProjects).stream().filter(
-				projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
+		return CollectionUtils.emptyIfNull(allProjects).stream()
+				.filter(projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
 				.collect(Collectors.toList());
 	}
 

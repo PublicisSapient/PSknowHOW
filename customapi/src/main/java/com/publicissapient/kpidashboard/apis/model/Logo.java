@@ -18,9 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.model;
 
-/**
- * Represents data for Logo.
- */
+/** Represents data for Logo. */
 public class Logo {
 
 	private byte[] image;
@@ -38,10 +36,9 @@ public class Logo {
 	 * Sets image.
 	 *
 	 * @param image
-	 *            the image
+	 *          the image
 	 */
 	public void setImage(byte[] image) {
 		this.image = image == null ? null : image.clone();
 	}
-
 }

@@ -79,7 +79,7 @@ describe('PrimaryFilterComponent', () => {
     );
 
     component.selectedType = 'newtype';
-
+    component.selectedTab = 'my-knowhow';
     spyOn(sharedService, 'selectedTrendsEvent').and.returnValue([]);
     fixture.detectChanges();
   });
@@ -688,6 +688,7 @@ describe('PrimaryFilterComponent', () => {
       component.hierarchyLevels = ['Level 1', 'Level 2'];
       component.selectedLevel = 'Level 1';
       component.filterData = { 'Level 1': [{ nodeId: 1, labelName: 'Level 1' }] }
+      component.selectedTab = 'iteration';
 
       component.primaryFilterConfig = {
         defaultLevel: { labelName: 'Level 1' },

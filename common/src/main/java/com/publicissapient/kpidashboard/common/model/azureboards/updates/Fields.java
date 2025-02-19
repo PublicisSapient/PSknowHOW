@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -32,22 +31,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "System.IterationId", "System.State", "System.Reason", "System.CreatedDate", "System.ChangedDate",
-		"System.IterationPath" })
+@JsonPropertyOrder({"System.IterationId", "System.State", "System.Reason", "System.CreatedDate", "System.ChangedDate",
+		"System.IterationPath"})
 public class Fields {
 
 	@JsonProperty("System.IterationId")
 	private SystemIterationId systemIterationId;
+
 	@JsonProperty("System.State")
 	private SystemState systemState;
+
 	@JsonProperty("System.Reason")
 	private SystemReason systemReason;
+
 	@JsonProperty("System.CreatedDate")
 	private SystemCreatedDate systemCreatedDate;
+
 	@JsonProperty("System.ChangedDate")
 	private SystemChangedDate systemChangedDate;
+
 	@JsonProperty("System.IterationPath")
 	private SystemIterationPath systemIterationPath;
+
 	@JsonIgnore
 	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -123,11 +128,9 @@ public class Fields {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this).append("systemIterationId", systemIterationId)
-				.append("systemState", systemState).append("systemReason", systemReason)
-				.append("systemCreatedDate", systemCreatedDate).append("systemChangedDate", systemChangedDate)
-				.append("systemIterationPath", systemIterationPath).append("additionalProperties", additionalProperties)
-				.toString();
+		return new ToStringBuilder(this).append("systemIterationId", systemIterationId).append("systemState", systemState)
+				.append("systemReason", systemReason).append("systemCreatedDate", systemCreatedDate)
+				.append("systemChangedDate", systemChangedDate).append("systemIterationPath", systemIterationPath)
+				.append("additionalProperties", additionalProperties).toString();
 	}
-
 }

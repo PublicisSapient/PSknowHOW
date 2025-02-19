@@ -50,8 +50,7 @@ public class KpiColumnConfigController {
 	@GetMapping(value = "/{basicProjectConfigId}/{kpiId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getKpiColumnConfiguration(@PathVariable String basicProjectConfigId,
 			@PathVariable String kpiId) {
-		KpiColumnConfigDTO kpiColumnConfigDTO = kpiColumnConfigService.getByKpiColumnConfig(basicProjectConfigId,
-				kpiId);
+		KpiColumnConfigDTO kpiColumnConfigDTO = kpiColumnConfigService.getByKpiColumnConfig(basicProjectConfigId, kpiId);
 
 		ServiceResponse response = new ServiceResponse(false, "No data found", null);
 		if (null != kpiColumnConfigDTO) {
@@ -59,6 +58,7 @@ public class KpiColumnConfigController {
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
+
 	/**
 	 * Api to save kpi column config
 	 *
@@ -68,7 +68,6 @@ public class KpiColumnConfigController {
 	@PostMapping(value = "/kpiColumnConfig", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> saveKpiColumnConfig(
 			@Valid @RequestBody KpiColumnConfigDTO kpiColumnConfigDTO) {
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(kpiColumnConfigService.saveKpiColumnConfig(kpiColumnConfigDTO));
+		return ResponseEntity.status(HttpStatus.OK).body(kpiColumnConfigService.saveKpiColumnConfig(kpiColumnConfigDTO));
 	}
 }

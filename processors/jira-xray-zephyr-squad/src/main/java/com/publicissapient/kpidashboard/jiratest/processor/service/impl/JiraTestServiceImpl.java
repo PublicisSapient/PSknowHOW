@@ -28,9 +28,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
-import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
-import com.publicissapient.kpidashboard.common.processortool.service.impl.ProcessorToolConnectionServiceImpl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -57,11 +54,13 @@ import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
+import com.publicissapient.kpidashboard.common.processortool.service.impl.ProcessorToolConnectionServiceImpl;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
@@ -127,7 +126,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 	 * MongoDB from those calls.
 	 *
 	 * @param projectConfig
-	 *            Project Configuration Mapping
+	 *          Project Configuration Mapping
 	 * @return Count of Jira Issues processed for scrum project
 	 */
 	@Override
@@ -162,8 +161,8 @@ public class JiraTestServiceImpl implements JiraTestService {
 			String userTimeZone = getUserTimeZone(projectConfig);
 
 			for (int i = 0; hasMore; i += pageSize) {
-				SearchResult searchResult = getIssues(projectConfig, maxChangeDatesByIssueTypeWithAddedTime,
-						userTimeZone, i, dataExist, client);
+				SearchResult searchResult = getIssues(projectConfig, maxChangeDatesByIssueTypeWithAddedTime, userTimeZone, i,
+						dataExist, client);
 				List<Issue> issues = getIssuesFromResult(searchResult);
 				if (total == 0) {
 					total = getTotal(searchResult);
@@ -248,14 +247,9 @@ public class JiraTestServiceImpl implements JiraTestService {
 				.collect(Collectors.groupingBy(TestCaseDetails::getOriginalTypeName));
 
 		issuesByType.forEach((typeName, issues) -> {
-			TestCaseDetails firstTestCase = issues
-					.stream().sorted(
-							Comparator
-									.comparing(
-											(TestCaseDetails testCase) -> LocalDateTime.parse(testCase.getUpdateDate(),
-													DateTimeFormatter
-															.ofPattern(JiraConstants.TEST_CASE_CHANGE_DATE_FORMAT)))
-									.reversed())
+			TestCaseDetails firstTestCase = issues.stream()
+					.sorted(Comparator.comparing((TestCaseDetails testCase) -> LocalDateTime.parse(testCase.getUpdateDate(),
+							DateTimeFormatter.ofPattern(JiraConstants.TEST_CASE_CHANGE_DATE_FORMAT))).reversed())
 					.findFirst().orElse(null);
 			if (firstTestCase != null) {
 				LocalDateTime currentIssueDate = LocalDateTime.parse(firstTestCase.getUpdateDate(),
@@ -281,9 +275,9 @@ public class JiraTestServiceImpl implements JiraTestService {
 	 * Purges list of issues provided in input
 	 *
 	 * @param purgeIssuesList
-	 *            List of issues to be purged
+	 *          List of issues to be purged
 	 * @param projectConfig
-	 *            Project Configuration Mapping
+	 *          Project Configuration Mapping
 	 */
 	@Override
 	public void purgeJiraIssues(List<Issue> purgeIssuesList, ProjectConfFieldMapping projectConfig) {
@@ -297,7 +291,6 @@ public class JiraTestServiceImpl implements JiraTestService {
 			if (testCaseDetail != null) {
 				testCaseDetailsList.add(testCaseDetail);
 			}
-
 		});
 		testCaseDetailsRepository.deleteAll(testCaseDetailsList);
 	}
@@ -306,11 +299,11 @@ public class JiraTestServiceImpl implements JiraTestService {
 	 * Saves jira issues details
 	 *
 	 * @param currentPagedJiraRs
-	 *            List of Jira issue in current page call
+	 *          List of Jira issue in current page call
 	 * @param projectConfig
-	 *            Project Configuration Mapping
+	 *          Project Configuration Mapping
 	 * @throws JSONException
-	 *             Error If JSON is invalid
+	 *           Error If JSON is invalid
 	 */
 	public List<TestCaseDetails> prepareTestCaseDetails(List<Issue> currentPagedJiraRs,
 			ProjectConfFieldMapping projectConfig) throws JSONException {
@@ -337,8 +330,8 @@ public class JiraTestServiceImpl implements JiraTestService {
 
 			IssueType issueType = issue.getIssueType();
 
-			if (testCaseTypeNames.contains(
-					JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault()))) {
+			if (testCaseTypeNames
+					.contains(JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault()))) {
 				log.debug(String.format("[%-12s] %s", JiraProcessorUtil.deodeUTF8String(issue.getKey()),
 						JiraProcessorUtil.deodeUTF8String(issue.getSummary())));
 
@@ -385,7 +378,6 @@ public class JiraTestServiceImpl implements JiraTestService {
 			return testCaseDetails.get(0);
 		}
 		return null;
-
 	}
 
 	public void processJiraIssueData(TestCaseDetails testCaseDetail, Issue issue) {
@@ -395,8 +387,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 		String changeDate = issue.getUpdateDate().toString();
 		testCaseDetail.setNumber(JiraProcessorUtil.deodeUTF8String(issue.getKey()));
 		testCaseDetail.setTestCaseStatus(JiraProcessorUtil.deodeUTF8String(status));
-		testCaseDetail
-				.setCreatedDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(createdDate)));
+		testCaseDetail.setCreatedDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(createdDate)));
 		testCaseDetail.setUpdateDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(changeDate)));
 
 		// Label
@@ -416,26 +407,25 @@ public class JiraTestServiceImpl implements JiraTestService {
 			Map<String, String> finalLabelMap = null;
 			Map<String, String> finalCustomFieldMap = null;
 			for (Map.Entry<String, List<String>> entrySet : identifierMap.entrySet()) {
-				if (entrySet.getKey().equalsIgnoreCase(JiraConstants.LABELS)
-						&& CollectionUtils.isNotEmpty(entrySet.getValue())) {
+				if (entrySet.getKey().equalsIgnoreCase(JiraConstants.LABELS) &&
+						CollectionUtils.isNotEmpty(entrySet.getValue())) {
 					finalLabelMap = processLabels(entrySet.getValue(), issue, jiraTestToolInfo);
 				}
-				if (entrySet.getKey().equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
-						&& CollectionUtils.isNotEmpty(entrySet.getValue())) {
+				if (entrySet.getKey().equalsIgnoreCase(JiraConstants.CUSTOM_FIELD) &&
+						CollectionUtils.isNotEmpty(entrySet.getValue())) {
 					finalCustomFieldMap = processCustomField(entrySet.getValue(), jiraTestToolInfo, fields);
 				}
-
 			}
 			Map<String, String> finalMap = processMap(finalLabelMap, finalCustomFieldMap);
 			if (finalMap.get(TEST_AUTOMATED_FLAG) != null) {
-				testCaseDetail.setTestAutomatedDate(JiraProcessorUtil
-						.getFormattedDate(JiraProcessorUtil.deodeUTF8String(issue.getCreationDate().toString())));
+				testCaseDetail.setTestAutomatedDate(
+						JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(issue.getCreationDate().toString())));
 			}
-			testCaseDetail.setTestAutomated(finalMap.getOrDefault(AUTOMATED_VALUE, testAutomated));// THE VALUE
-			testCaseDetail.setIsTestAutomated(finalMap.getOrDefault(TEST_AUTOMATED_FLAG, testAutomatedValue));// THE
-																											  // VALUE
-			testCaseDetail.setIsTestCanBeAutomated(
-					finalMap.getOrDefault(TEST_CAN_BE_AUTOMATED_FLAG, testCanBeAutomatedValue));
+			testCaseDetail.setTestAutomated(finalMap.getOrDefault(AUTOMATED_VALUE, testAutomated)); // THE VALUE
+			testCaseDetail.setIsTestAutomated(finalMap.getOrDefault(TEST_AUTOMATED_FLAG, testAutomatedValue)); // THE
+			// VALUE
+			testCaseDetail
+					.setIsTestCanBeAutomated(finalMap.getOrDefault(TEST_CAN_BE_AUTOMATED_FLAG, testCanBeAutomatedValue));
 
 			setRegressionLabel(jiraTestToolInfo, fields, testCaseDetail);
 		} catch (Exception e) {
@@ -448,17 +438,17 @@ public class JiraTestServiceImpl implements JiraTestService {
 
 		List<String> identiferLabel = new ArrayList<>();
 		List<String> identiferCustomField = new ArrayList<>();
-		if (jiraTestToolInfo.getTestAutomatedIdentification() != null
-				&& jiraTestToolInfo.getTestAutomatedIdentification().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
+		if (jiraTestToolInfo.getTestAutomatedIdentification() != null &&
+				jiraTestToolInfo.getTestAutomatedIdentification().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
 			identiferLabel.add(JiraConstants.CAN_BE_AUTOMATED);
 		}
-		if (jiraTestToolInfo.getTestAutomationCompletedIdentification() != null && jiraTestToolInfo
-				.getTestAutomationCompletedIdentification().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
+		if (jiraTestToolInfo.getTestAutomationCompletedIdentification() != null &&
+				jiraTestToolInfo.getTestAutomationCompletedIdentification().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
 			identiferLabel.add(JiraConstants.AUTOMATION);
 		}
 		identifierMap.put(JiraConstants.LABELS, identiferLabel);
-		if (jiraTestToolInfo.getTestAutomatedIdentification() != null && jiraTestToolInfo
-				.getTestAutomatedIdentification().trim().equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)) {
+		if (jiraTestToolInfo.getTestAutomatedIdentification() != null &&
+				jiraTestToolInfo.getTestAutomatedIdentification().trim().equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)) {
 			identiferCustomField.add(JiraConstants.CAN_BE_AUTOMATED);
 		}
 		if (jiraTestToolInfo.getTestAutomationCompletedIdentification() != null && jiraTestToolInfo
@@ -477,13 +467,13 @@ public class JiraTestServiceImpl implements JiraTestService {
 		String automatedValue = null;
 
 		for (String identifier : value) {
-			if (identifier.equalsIgnoreCase(JiraConstants.AUTOMATION)
-					&& hasAtLeastOneCommonElement(issue.getLabels(), jiraTestToolInfo.getJiraAutomatedTestValue())) {
+			if (identifier.equalsIgnoreCase(JiraConstants.AUTOMATION) &&
+					hasAtLeastOneCommonElement(issue.getLabels(), jiraTestToolInfo.getJiraAutomatedTestValue())) {
 				automatedValue = jiraTestToolInfo.getJiraAutomatedTestValue().get(0);
 				testAutomatedFlag = NormalizedJira.YES_VALUE.getValue();
 			}
-			if (identifier.equalsIgnoreCase(JiraConstants.CAN_BE_AUTOMATED) && hasAtLeastOneCommonElement(
-					issue.getLabels(), jiraTestToolInfo.getJiraCanBeAutomatedTestValue())) {
+			if (identifier.equalsIgnoreCase(JiraConstants.CAN_BE_AUTOMATED) &&
+					hasAtLeastOneCommonElement(issue.getLabels(), jiraTestToolInfo.getJiraCanBeAutomatedTestValue())) {
 				testCanBeAutomatedFlag = NormalizedJira.YES_VALUE.getValue();
 			}
 		}
@@ -506,7 +496,6 @@ public class JiraTestServiceImpl implements JiraTestService {
 				if (testAutomatedFlag.equalsIgnoreCase(NormalizedJira.YES_VALUE.getValue())) {
 					automatedValue = jiraTestToolInfo.getJiraAutomatedTestValue().get(0);
 				}
-
 			}
 			if (identifier.equalsIgnoreCase(JiraConstants.CAN_BE_AUTOMATED)) {
 				testCanBeAutomatedFlag = processJson(jiraTestToolInfo.getTestAutomated(), fields,
@@ -674,8 +663,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 		String username = "";
 		String password = "";
 		if (processorToolConnection.isVault()) {
-			ToolCredential toolCredential = toolCredentialProvider
-					.findCredential(processorToolConnection.getUsername());
+			ToolCredential toolCredential = toolCredentialProvider.findCredential(processorToolConnection.getUsername());
 			if (toolCredential != null) {
 				username = toolCredential.getUsername();
 				password = toolCredential.getPassword();
@@ -695,17 +683,16 @@ public class JiraTestServiceImpl implements JiraTestService {
 			generateAndSaveAccessToken(processorToolConnection);
 			jiraOAuthProperties.setAccessToken(processorToolConnection.getAccessToken());
 
-			client = jiraRestClientFactory.getJiraOAuthClient(
-					JiraInfo.builder().jiraConfigBaseUrl(processorToolConnection.getUrl()).username(username)
+			client = jiraRestClientFactory
+					.getJiraOAuthClient(JiraInfo.builder().jiraConfigBaseUrl(processorToolConnection.getUrl()).username(username)
 							.password(password).jiraConfigAccessToken(processorToolConnection.getAccessToken())
 							.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
 
 		} else {
 
-			client = jiraRestClientFactory.getJiraClient(
-					JiraInfo.builder().jiraConfigBaseUrl(processorToolConnection.getUrl()).username(username)
+			client = jiraRestClientFactory
+					.getJiraClient(JiraInfo.builder().jiraConfigBaseUrl(processorToolConnection.getUrl()).username(username)
 							.password(password).jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
-
 		}
 		return client;
 	}
@@ -765,7 +752,6 @@ public class JiraTestServiceImpl implements JiraTestService {
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
 					String dateTimeStr = zonedDateTime.format(formatter);
 					startDateTimeStrByIssueType.put(type, dateTimeStr);
-
 				});
 
 				query = JiraProcessorUtil.createJql(projectConfig.getProjectKey(), startDateTimeStrByIssueType);
@@ -806,10 +792,9 @@ public class JiraTestServiceImpl implements JiraTestService {
 	 * Gets the timeZone of user who is logged in jira
 	 *
 	 * @param projectConfig
-	 *            user provided project configuration
+	 *          user provided project configuration
 	 * @return String of UserTimeZone
 	 */
-
 	public String getUserTimeZone(ProjectConfFieldMapping projectConfig) {
 		String userTimeZone = StringUtils.EMPTY;
 		try {
@@ -841,10 +826,10 @@ public class JiraTestServiceImpl implements JiraTestService {
 	 * Gets Url constructed using user provided details
 	 *
 	 * @param processorToolConnection
-	 *            user provided project tool configure
+	 *          user provided project tool configure
 	 * @return URL
 	 * @throws MalformedURLException
-	 *             when URL not constructed properly
+	 *           when URL not constructed properly
 	 */
 	private URL getUrl(ProcessorToolConnection processorToolConnection) throws MalformedURLException {
 
@@ -857,9 +842,8 @@ public class JiraTestServiceImpl implements JiraTestService {
 		String baseUrl = processorToolConnection.getUrl();
 		String apiEndPoint = processorToolConnection.getApiEndPoint();
 
-		return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + apiEndPoint
-				+ (apiEndPoint.endsWith("/") ? "" : "/") + serverURL + processorToolConnection.getUsername());
-
+		return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + apiEndPoint + (apiEndPoint.endsWith("/") ? "" : "/") +
+				serverURL + processorToolConnection.getUsername());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -915,22 +899,21 @@ public class JiraTestServiceImpl implements JiraTestService {
 	 * Sets the regression labels..
 	 *
 	 * @param jiraTestToolInfo
-	 *            processorToolConnection
+	 *          processorToolConnection
 	 * @param customFieldMap
-	 *            map of custom fields
+	 *          map of custom fields
 	 * @param testCaseDetails
-	 *            scrum test case
+	 *          scrum test case
 	 */
 	private void setRegressionLabel(ProcessorToolConnection jiraTestToolInfo, Map<String, IssueField> customFieldMap,
 			TestCaseDetails testCaseDetails) {
-		if (CollectionUtils.isNotEmpty(jiraTestToolInfo.getJiraRegressionTestValue())
-				&& (jiraTestToolInfo.getTestRegressionByCustomField() != null)) {
+		if (CollectionUtils.isNotEmpty(jiraTestToolInfo.getJiraRegressionTestValue()) &&
+				(jiraTestToolInfo.getTestRegressionByCustomField() != null)) {
 			String regressionLabels = processJsonForCustomFields(jiraTestToolInfo.getTestRegressionByCustomField(),
 					customFieldMap, jiraTestToolInfo.getJiraRegressionTestValue());
 			if (StringUtils.isNotEmpty(regressionLabels)) {
 				Set<String> regressionCustomValueList = new HashSet<>(Arrays.asList(regressionLabels.split(", ")));
-				if (CollectionUtils.containsAny(jiraTestToolInfo.getJiraRegressionTestValue(),
-						regressionCustomValueList)) {
+				if (CollectionUtils.containsAny(jiraTestToolInfo.getJiraRegressionTestValue(), regressionCustomValueList)) {
 					if (CollectionUtils.isNotEmpty(testCaseDetails.getLabels())) {
 						regressionCustomValueList.addAll(testCaseDetails.getLabels());
 					}

@@ -18,19 +18,17 @@
 
 package com.publicissapient.kpidashboard.apis.auth.service;
 
-import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.http.ResponseEntity;
 
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 
-import java.util.List;
-
-/**
- * An Interface to provide authentication service.
- */
+/** An Interface to provide authentication service. */
 public interface AuthenticationService {
 
 	/**
@@ -44,7 +42,7 @@ public interface AuthenticationService {
 	 * Fetches an AuthenticationObject.
 	 *
 	 * @param id
-	 *            authentication unique identifier
+	 *          authentication unique identifier
 	 * @return Authentication instance
 	 */
 	Authentication get(ObjectId id);
@@ -53,7 +51,7 @@ public interface AuthenticationService {
 	 * Creates a new Users and saves it to the store.
 	 *
 	 * @param username
-	 *            new Authentication to createCollectorItem
+	 *          new Authentication to createCollectorItem
 	 * @return newly created Authentication object
 	 */
 	org.springframework.security.core.Authentication create(String username, String password, String email);
@@ -62,7 +60,7 @@ public interface AuthenticationService {
 	 * Updates an existing quthentication instance.
 	 *
 	 * @param username
-	 *            Authentication to update
+	 *          Authentication to update
 	 * @return updated Authentication instance
 	 */
 	String update(String username, String password);
@@ -71,17 +69,14 @@ public interface AuthenticationService {
 	 * Deletes an existing Authentication instance.
 	 *
 	 * @param id
-	 *            unique identifier of authentication to delete
+	 *          unique identifier of authentication to delete
 	 */
 	void delete(ObjectId id);
 
-	/**
-	 * Deletes an existing authentication instance
-	 */
+	/** Deletes an existing authentication instance */
 	void delete(String username);
 
 	/**
-	 * 
 	 * @param username
 	 * @param password
 	 * @return
@@ -90,7 +85,7 @@ public interface AuthenticationService {
 
 	/**
 	 * update failed attempt and date
-	 * 
+	 *
 	 * @param userName
 	 * @param unsuccessAttemptTime
 	 * @return status
@@ -99,14 +94,14 @@ public interface AuthenticationService {
 
 	/**
 	 * reset user attempt and date
-	 * 
+	 *
 	 * @param userName
 	 */
 	void resetFailAttempts(String userName);
 
 	/**
 	 * get user attempts
-	 * 
+	 *
 	 * @param userName
 	 * @return
 	 */
@@ -114,7 +109,7 @@ public interface AuthenticationService {
 
 	/**
 	 * check email is exist in db
-	 * 
+	 *
 	 * @param email
 	 * @return
 	 */
@@ -122,87 +117,87 @@ public interface AuthenticationService {
 
 	/**
 	 * Checks if username already exists in db
-	 * 
+	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @return true if username already exists in db
 	 */
 	boolean isUsernameExists(String username);
 
 	/**
 	 * Checks if username already exists in USERINFO collection
-	 * 
+	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @return true if username already exists in db
 	 */
 	boolean isUsernameExistsInUserInfo(String username);
 
 	/**
 	 * Check if valid old Password
-	 * 
+	 *
 	 * @param email
-	 *            email id
+	 *          email id
 	 * @param oldPassword
-	 *            password
+	 *          password
 	 * @return true/false
 	 */
 	boolean checkIfValidOldPassword(String email, String oldPassword);
 
 	/**
 	 * Change password and saves it to the store
-	 * 
+	 *
 	 * @param email
-	 *            email of user
+	 *          email of user
 	 * @param password
-	 *            password of user
+	 *          password of user
 	 * @return newly created Authentication object
 	 */
 	org.springframework.security.core.Authentication changePassword(String email, String password);
 
 	/**
 	 * Gets authentication object
-	 * 
+	 *
 	 * @param username
-	 *            username
+	 *          username
 	 * @return authentication
 	 */
 	Authentication getAuthentication(String username);
 
 	/**
 	 * Update email id of the user
-	 * 
+	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @param email
-	 *            the email
+	 *          the email
 	 * @return true if successfully updated
 	 */
 	boolean updateEmail(String username, String email);
 
 	/**
 	 * check new password is not same as old password
-	 * 
+	 *
 	 * @param oldPassword
-	 *            oldpassword
+	 *          oldpassword
 	 * @param newPassword
-	 *            newpassword
+	 *          newpassword
 	 * @return true if new password is not same as old password
 	 */
 	boolean isPasswordIdentical(String oldPassword, String newPassword);
 
 	/**
 	 * Gets logged in user's username
-	 * 
+	 *
 	 * @return logged in user
 	 */
 	String getLoggedInUser();
 
 	/**
 	 * Gets username from authentication object
-	 * 
+	 *
 	 * @param authentication
-	 *            authentication object
+	 *          authentication object
 	 * @return username
 	 */
 	String getUsername(org.springframework.security.core.Authentication authentication);

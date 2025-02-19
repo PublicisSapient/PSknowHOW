@@ -16,9 +16,9 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.model;//NOPMD
+package com.publicissapient.kpidashboard.apis.model; // NOPMD
 
-//Do not remove NOPMD comment. This will ignore ExcessivePublicCount Violations
+// Do not remove NOPMD comment. This will ignore ExcessivePublicCount Violations
 // these are just getter and setter methods and required
 
 import java.io.Serializable;
@@ -28,10 +28,7 @@ import org.bson.types.ObjectId;
 
 import lombok.Data;
 
-/**
- * The Account hierarchy data.
- */
-
+/** The Account hierarchy data. */
 @Data
 public class AccountHierarchyData implements Serializable {
 	// Do not remove NOPMD comment. It ignores TooManyFields violation.
@@ -46,5 +43,4 @@ public class AccountHierarchyData implements Serializable {
 	private ObjectId basicProjectConfigId;
 
 	private List<Node> node;
-
 }

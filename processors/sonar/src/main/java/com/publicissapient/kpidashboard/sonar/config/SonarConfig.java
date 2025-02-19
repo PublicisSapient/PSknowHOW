@@ -29,9 +29,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Sonar configuration properties.
- */
+/** Sonar configuration properties. */
 @Component
 @ConfigurationProperties(prefix = "sonarprocessor")
 @Builder
@@ -46,5 +44,4 @@ public class SonarConfig {
 
 	@Value("${aesEncryptionKey}")
 	private String aesEncryptionKey;
-
 }

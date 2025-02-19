@@ -31,5 +31,4 @@ public class KeyValueLoggingCondition implements Condition {
 		String logRequestKeyValue = context.getEnvironment().getProperty(LOG_REQUEST_KEY_VALUE);
 		return logRequestKeyValue != null && Boolean.parseBoolean(logRequestKeyValue);
 	}
-
 }

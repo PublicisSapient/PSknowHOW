@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.jira;//NOPMD
+package com.publicissapient.kpidashboard.common.model.jira; // NOPMD
 
 import java.util.List;
 

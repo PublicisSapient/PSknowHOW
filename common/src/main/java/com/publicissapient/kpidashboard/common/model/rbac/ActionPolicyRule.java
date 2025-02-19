@@ -37,9 +37,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents the permissions data used in roleData.
- */
+/** Represents the permissions data used in roleData. */
 @Data
 @Builder
 @Getter
@@ -76,12 +74,10 @@ public class ActionPolicyRule extends BasicModel {
 	public Expression getRoleActionCheck() {
 		ExpressionParser parser = new SpelExpressionParser();
 		return parser.parseExpression(roleActionCheck);
-
 	}
 
 	public Expression getCondition() {
 		ExpressionParser parser = new SpelExpressionParser();
 		return parser.parseExpression(condition);
-
 	}
 }

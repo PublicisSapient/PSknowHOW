@@ -21,9 +21,7 @@ package com.publicissapient.kpidashboard.jira.service;
 import com.atlassian.httpclient.api.Request;
 import com.atlassian.jira.rest.client.api.AuthenticationHandler;
 
-/**
- * Custom SPNEGO Authentication handler for jira HTTP request
- */
+/** Custom SPNEGO Authentication handler for jira HTTP request */
 public class SpnegoAuthenticationHandler implements AuthenticationHandler {
 
 	private static final String COOKIE_HEADER = "Cookie";
@@ -32,9 +30,9 @@ public class SpnegoAuthenticationHandler implements AuthenticationHandler {
 
 	/**
 	 * Constructor for authentication handler
-	 * 
+	 *
 	 * @param authCookies
-	 *            authCookies
+	 *          authCookies
 	 */
 	public SpnegoAuthenticationHandler(final String authCookies) {
 		this.authCookies = authCookies;
@@ -42,9 +40,9 @@ public class SpnegoAuthenticationHandler implements AuthenticationHandler {
 
 	/**
 	 * overridden configure method
-	 * 
+	 *
 	 * @param builder
-	 *            builder
+	 *          builder
 	 */
 	@Override
 	public void configure(Request.Builder builder) {

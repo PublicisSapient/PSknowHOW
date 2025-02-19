@@ -32,15 +32,18 @@ import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
  * {@link ProcessorItem} implementation.
  *
  * @param <T>
- *            Class that extends {@link ProcessorItem}
+ *          Class that extends {@link ProcessorItem}
  */
-public interface ProcessorItemRepository<T extends ProcessorItem> extends PagingAndSortingRepository<T, ObjectId> , CrudRepository<T,ObjectId> {
+public interface ProcessorItemRepository<T extends ProcessorItem>
+		extends
+			PagingAndSortingRepository<T, ObjectId>,
+			CrudRepository<T, ObjectId> {
 
 	/**
 	 * Finds all {@link ProcessorItem}s that match the provided id's.
 	 *
 	 * @param ids
-	 *            {@link Collection} of ids
+	 *          {@link Collection} of ids
 	 * @return list of {@link ProcessorItem}s
 	 */
 	List<T> findByProcessorIdIn(Collection<ObjectId> ids);
@@ -49,25 +52,25 @@ public interface ProcessorItemRepository<T extends ProcessorItem> extends Paging
 	 * Finds all {@link ProcessorItem}s that match the provided id.
 	 *
 	 * @param processorId
-	 *            the processor id
+	 *          the processor id
 	 * @return list of {@link ProcessorItem}s
 	 */
 	List<T> findByProcessorId(ObjectId processorId);
 
 	/**
 	 * Find by toolConfigId
-	 * 
+	 *
 	 * @param toolConfigId
-	 *            tool config id
+	 *          tool config id
 	 * @return list of items
 	 */
 	List<T> findByToolConfigId(ObjectId toolConfigId);
 
 	/**
 	 * Delete by toolConfigId
-	 * 
+	 *
 	 * @param toolConfigId
-	 *            toolConfigId
+	 *          toolConfigId
 	 */
 	void deleteByToolConfigId(ObjectId toolConfigId);
 
@@ -79,5 +82,4 @@ public interface ProcessorItemRepository<T extends ProcessorItem> extends Paging
 	 * @return
 	 */
 	List<T> findByProcessorIdAndToolConfigId(ObjectId processorId, ObjectId toolConfigId);
-
 }

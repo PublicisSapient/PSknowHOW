@@ -1,13 +1,13 @@
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
-
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
-
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
-
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.service.AssigneeDetailsServiceImpl;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,6 +69,7 @@ import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.service.AssigneeDetailsServiceImpl;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PRDeclineRateServiceImplTest {
@@ -136,9 +136,16 @@ public class PRDeclineRateServiceImplTest {
 		RepoToolsKpiRequestDataFactory repoToolsKpiRequestDataFactory = RepoToolsKpiRequestDataFactory.newInstance();
 		repoToolKpiMetricResponseList = repoToolsKpiRequestDataFactory.getRepoToolsKpiRequest();
 
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		});
@@ -159,13 +166,13 @@ public class PRDeclineRateServiceImplTest {
 		Set<Assignee> assigneeSet = new HashSet<>();
 		assigneeSet.add(new Assignee("aks", "Akshat Shrivastava",
 				new HashSet<>(Arrays.asList("akshat.shrivastav@publicissapient.com"))));
-		assigneeSet.add(new Assignee("llid", "Hiren",
-				new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
+		assigneeSet
+				.add(new Assignee("llid", "Hiren", new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
 		assigneeDetails.setAssignee(assigneeSet);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
 		when(kpiHelperService.populateSCMToolsRepoList(anyMap())).thenReturn(toolList3);
-
 	}
+
 	@Test
 	public void getQualifierType() {
 		assertThat("KPI name: ", declineRateService.getQualifierType(), equalTo("PR_DECLINE_RATE"));
@@ -183,12 +190,12 @@ public class PRDeclineRateServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
 				.thenReturn(kpiRequestTrackerId);
 
-		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any())).thenReturn(
-				repoToolKpiMetricResponseList);
+		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any()))
+				.thenReturn(repoToolKpiMetricResponseList);
 		try {
 			KpiElement kpiElement = declineRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
-			assertThat("Trend Size: ", ((List)kpiElement.getTrendValueList()).size(), equalTo(1));
+			assertThat("Trend Size: ", ((List) kpiElement.getTrendValueList()).size(), equalTo(1));
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 		}
@@ -207,12 +214,12 @@ public class PRDeclineRateServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
 				.thenReturn(kpiRequestTrackerId);
 
-		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any())).thenReturn(
-				repoToolKpiMetricResponseList);
+		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any()))
+				.thenReturn(repoToolKpiMetricResponseList);
 		try {
 			KpiElement kpiElement = declineRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
-			assertThat("Trend Size: ", ((List)kpiElement.getTrendValueList()).size(), equalTo(1));
+			assertThat("Trend Size: ", ((List) kpiElement.getTrendValueList()).size(), equalTo(1));
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 		}
@@ -226,7 +233,7 @@ public class PRDeclineRateServiceImplTest {
 		try {
 			KpiElement kpiElement = declineRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
-			assertThat("Trend Size: ", ((List)kpiElement.getTrendValueList()).size(), equalTo(1));
+			assertThat("Trend Size: ", ((List) kpiElement.getTrendValueList()).size(), equalTo(1));
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 		}
@@ -266,7 +273,6 @@ public class PRDeclineRateServiceImplTest {
 		toolGroup.put(Constant.TOOL_AZUREREPO, toolList2);
 		toolGroup.put(Constant.REPO_TOOLS, toolList3);
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
-
 	}
 
 	private Tool createTool(String url, String toolType, List<ProcessorItem> collectorItemList) {
@@ -298,7 +304,6 @@ public class PRDeclineRateServiceImplTest {
 		return dataCount;
 	}
 
-
 	@Test
 	public void testCalculateKpiValue() {
 		List<Double> valueList = Arrays.asList(1.0, 2.0, 3.0);
@@ -315,11 +320,10 @@ public class PRDeclineRateServiceImplTest {
 		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setThresholdValueKPI160(String.valueOf(5.0));
 
-		Double expectedValue = declineRateService.calculateThresholdValue(fieldMapping.getThresholdValueKPI181(), KPICode.PR_DECLINE_RATE.getKpiId());
+		Double expectedValue = declineRateService.calculateThresholdValue(fieldMapping.getThresholdValueKPI181(),
+				KPICode.PR_DECLINE_RATE.getKpiId());
 		Double actualValue = declineRateService.calculateThresholdValue(fieldMapping);
 
 		assertThat("Calculated Threshold Value: ", actualValue, equalTo(expectedValue));
 	}
-
-
 }

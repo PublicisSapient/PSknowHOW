@@ -28,7 +28,7 @@ import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemR
 
 /**
  * AzurerepoRepoRepository is used for to process AzurerepoRepo.
- * 
+ *
  * @see AzureRepoModel
  */
 public interface AzureRepoRepository extends ProcessorItemRepository<AzureRepoModel> {
@@ -38,10 +38,9 @@ public interface AzureRepoRepository extends ProcessorItemRepository<AzureRepoMo
 	 * AzurerepoRepo.
 	 *
 	 * @param processorId
-	 *            the processor id
+	 *          the processor id
 	 * @return AzurerepoRepo list of AzurerepoRepo
 	 */
 	@Query("{ 'processorId' : ?0, 'isActive': true}")
 	List<AzureRepoModel> findActiveRepos(ObjectId processorId);
-
 }

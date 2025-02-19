@@ -20,14 +20,14 @@ package com.publicissapient.kpidashboard.githubaction.util;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @ExtendWith(SpringExtension.class)
 class ProcessorUtilsTest {
@@ -69,5 +69,4 @@ class ProcessorUtilsTest {
 		obj.put("workflow_id", array);
 		assertEquals(array, ProcessorUtils.getJsonArray(obj, "workflow_id"));
 	}
-
 }

@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,6 +60,7 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
 
@@ -66,8 +68,8 @@ import com.publicissapient.kpidashboard.common.repository.application.TestExecut
 public class TestExecutionServiceImplTest {
 
 	private static final String TEST_EXECUTION_DETAIL = "testExecutionDetail";
-	private final static String TESTCASEKEY = "testCaseData";
-	private final static String AUTOMATEDTESTCASEKEY = "automatedTestCaseData";
+	private static final String TESTCASEKEY = "testCaseData";
+	private static final String AUTOMATEDTESTCASEKEY = "automatedTestCaseData";
 	@Mock
 	ConfigHelperService configHelperService;
 	@Mock
@@ -78,6 +80,11 @@ public class TestExecutionServiceImplTest {
 	TestExecutionRepository testExecutionRepository;
 	private List<TestExecution> testExecutionList = new ArrayList<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
+
+	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
@@ -97,6 +104,19 @@ public class TestExecutionServiceImplTest {
 		kpiRequest.setLabel("PROJECT");
 		kpiElement = kpiRequest.getKpiList().get(0);
 		kpiWiseAggregation.put("testExecutionPercentage", "average");
+
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
+
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
@@ -139,7 +159,6 @@ public class TestExecutionServiceImplTest {
 		Map<String, Object> outputMap = new HashMap<>();
 		outputMap.put(TEST_EXECUTION_DETAIL, testExecutionList);
 		assertThat("fetch KPI data from DB :", defectDataListMap, equalTo(outputMap));
-
 	}
 
 	@Test
@@ -166,8 +185,7 @@ public class TestExecutionServiceImplTest {
 			KpiElement kpiElement = testExecutionServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			assertThat("Test Exceution Value :",
-					((List<DataCount>) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(),
-					equalTo(5));
+					((List<DataCount>) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(), equalTo(5));
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 		}
@@ -178,5 +196,4 @@ public class TestExecutionServiceImplTest {
 		Double kpiValue = testExecutionServiceImpl.calculateKpiValue(Arrays.asList(1.0, 2.0), "kpi70");
 		assertThat("Kpi value  :", kpiValue, equalTo(0.0));
 	}
-
 }

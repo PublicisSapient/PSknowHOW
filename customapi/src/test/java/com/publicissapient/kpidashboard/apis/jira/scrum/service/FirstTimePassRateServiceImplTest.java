@@ -46,6 +46,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -116,19 +117,32 @@ public class FirstTimePassRateServiceImplTest {
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+
 	@Before
 	public void setup() {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi82");
 		kpiRequest.setLabel("PROJECT");
 
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
+
 		/// set aggregation criteria kpi wise
 		kpiWiseAggregation.put(KPICode.FIRST_TIME_PASS_RATE.getKpiId(), "average");
 		when(configHelperService.calculateCriteria()).thenReturn(kpiWiseAggregation);
 
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
-		maturityRangeMap.put(KPICode.FIRST_TIME_PASS_RATE.name(),
-				Arrays.asList("-25", "25-50", "50-75", "75-90", "90-"));
+		maturityRangeMap.put(KPICode.FIRST_TIME_PASS_RATE.name(), Arrays.asList("-25", "25-50", "50-75", "75-90", "90-"));
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
@@ -138,11 +152,6 @@ public class FirstTimePassRateServiceImplTest {
 		filterLevelMap = new LinkedHashMap<>();
 		filterLevelMap.put("PROJECT", Filters.PROJECT);
 		filterLevelMap.put("SPRINT", Filters.SPRINT);
-
-		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
-		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
-		projectConfig.setProjectName("Scrum Project");
-		projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
@@ -167,8 +176,8 @@ public class FirstTimePassRateServiceImplTest {
 
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 
-		List<JiraIssue> issues = jiraIssueDataFactory.getJiraIssues().stream().filter(
-				jiraIssue -> jiraIssue.getJiraStatus().equals("Closed") && jiraIssue.getTypeName().equals("Story"))
+		List<JiraIssue> issues = jiraIssueDataFactory.getJiraIssues().stream()
+				.filter(jiraIssue -> jiraIssue.getJiraStatus().equals("Closed") && jiraIssue.getTypeName().equals("Story"))
 				.collect(Collectors.toList());
 
 		Set<String> stories = issues.stream().map(JiraIssue::getNumber).collect(Collectors.toSet());
@@ -187,8 +196,9 @@ public class FirstTimePassRateServiceImplTest {
 		priorityMap.put(P4, Stream.of("p4", "p4 - minor", "minor", "4", "low").collect(Collectors.toList()));
 		priorityMap.put(P5, Stream.of("p5 - trivial", "5", "trivial").collect(Collectors.toList()));
 
-		List<String> resultSet = Stream.of("p1", "P1 - Blocker", "blocker", "1", "0", "p0", "urgent", "p2", "critical",
-				"P2 - Critical", "2", "high").collect(Collectors.toList());
+		List<String> resultSet = Stream
+				.of("p1", "P1 - Blocker", "blocker", "1", "0", "p0", "urgent", "p2", "critical", "P2 - Critical", "2", "high")
+				.collect(Collectors.toList());
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(customApiSetting.getPriority()).thenReturn(priorityMap);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
@@ -214,12 +224,10 @@ public class FirstTimePassRateServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
 	public void calculateKPIMetrics() {
 		assertThat(firstTimePassRateService.calculateKPIMetrics(new HashMap<>()), equalTo(0.0));
 	}
-
 }

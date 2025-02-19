@@ -23,10 +23,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -92,9 +88,11 @@ public class JenkinsServiceRTest {
 	private CodeBuildTimeServiceImpl codeBuildTimeServiceImpl;
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
+
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<JenkinsKPIService> services;
+
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
 	private String[] projectKey;
@@ -158,10 +156,12 @@ public class JenkinsServiceRTest {
 
 		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
-		when(filterHelperService.getFilteredBuilds(kpiRequest, "project")).thenReturn(accountHierarchyDataList);
+		when(filterHelperService.getFilteredBuilds(kpiRequest, "project"))
+				.thenReturn(accountHierarchyDataList);
 		List<KpiElement> resultList = jenkinsServiceR.process(kpiRequest);
 		assertThat("Kpi Name :", resultList.get(0).getKpiName(), equalTo("CODE_BUILD_TIME"));
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
+		assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
 	}
 
 	@Test
@@ -169,10 +169,13 @@ public class JenkinsServiceRTest {
 
 		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
-		when(codeBuildTimeServiceImpl.getKpiData(any(), any(),any())).thenThrow(ApplicationException.class);
-		when(filterHelperService.getFilteredBuilds(kpiRequest, "project")).thenReturn(accountHierarchyDataList);
+		when(codeBuildTimeServiceImpl.getKpiData(any(), any(), any()))
+				.thenThrow(ApplicationException.class);
+		when(filterHelperService.getFilteredBuilds(kpiRequest, "project"))
+				.thenReturn(accountHierarchyDataList);
 		List<KpiElement> resultList = jenkinsServiceR.process(kpiRequest);
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+		assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
 	}
 
 	@Test
@@ -181,13 +184,16 @@ public class JenkinsServiceRTest {
 		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 
-		when(codeBuildTimeServiceImpl.getKpiData(any(), any(),any())).thenThrow(NullPointerException.class);
-		when(filterHelperService.getFilteredBuilds(kpiRequest, "project")).thenReturn(accountHierarchyDataList);
+		when(codeBuildTimeServiceImpl.getKpiData(any(), any(), any()))
+				.thenThrow(NullPointerException.class);
+		when(filterHelperService.getFilteredBuilds(kpiRequest, "project"))
+				.thenReturn(accountHierarchyDataList);
 
-		List<KpiElement> resultList= jenkinsServiceR.process(kpiRequest);
+		List<KpiElement> resultList = jenkinsServiceR.process(kpiRequest);
 
 		assertThat("Kpi Name :", resultList.get(0).getKpiName(), equalTo("CODE_BUILD_TIME"));
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+		assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -200,7 +206,6 @@ public class JenkinsServiceRTest {
 		when(filterHelperService.getFilteredBuilds(any(), Mockito.anyString()))
 				.thenThrow(HttpMessageNotWritableException.class);
 		jenkinsServiceR.process(kpiRequest);
-
 	}
 
 	@Test
@@ -208,20 +213,17 @@ public class JenkinsServiceRTest {
 
 		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 		when(filterHelperService.getFilteredBuilds(kpiRequest, "project")).thenReturn(accountHierarchyDataList);
-		when(cacheService.getFromApplicationCache(any(), any(), any(), any()))
-				.thenReturn(Arrays.asList(buildKpiElement));
+		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(Arrays.asList(buildKpiElement));
 
 		List<KpiElement> resultList = jenkinsServiceR.process(kpiRequest);
 		assertThat("Kpi list :", resultList.size(), equalTo(1));
-
 	}
 
 	@Test
 	public void processWithExposedApiToken() throws EntityNotFoundException {
 		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 		when(filterHelperService.getFilteredBuilds(kpiRequest, "project")).thenReturn(accountHierarchyDataList);
-		when(cacheService.getFromApplicationCache(any(), any(), any(), any()))
-				.thenReturn(Arrays.asList(buildKpiElement));
+		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(Arrays.asList(buildKpiElement));
 		List<KpiElement> resultList = jenkinsServiceR.processWithExposedApiToken(kpiRequest);
 		assertEquals(1, resultList.size());
 	}
@@ -230,11 +232,11 @@ public class JenkinsServiceRTest {
 		KpiRequest kpiRequest = new KpiRequest();
 		List<KpiElement> kpiList = new ArrayList<>();
 
-		addKpiElement(kpiList, KPICode.CODE_BUILD_TIME.getKpiId(), KPICode.CODE_BUILD_TIME.name(), "Productivity",
-				"mins", source);
+		addKpiElement(kpiList, KPICode.CODE_BUILD_TIME.getKpiId(), KPICode.CODE_BUILD_TIME.name(), "Productivity", "mins",
+				source);
 		kpiRequest.setLevel(level);
 		kpiRequest.setLabel("project");
-		kpiRequest.setIds(new String[] { "Scrum Project_6335363749794a18e8a4479b" });
+		kpiRequest.setIds(new String[]{"Scrum Project_6335363749794a18e8a4479b"});
 		kpiRequest.setKpiList(kpiList);
 		kpiRequest.setRequestTrackerId();
 		return kpiRequest;
@@ -264,7 +266,5 @@ public class JenkinsServiceRTest {
 
 	@After
 	public void cleanup() {
-
 	}
-
 }

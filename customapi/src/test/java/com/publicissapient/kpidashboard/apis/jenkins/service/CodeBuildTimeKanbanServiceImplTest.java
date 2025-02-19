@@ -24,7 +24,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -66,9 +65,8 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 
 /**
  * Jenkins KPI - CodeBuildTime Test class
- * 
- * @author Hiren Babariya
  *
+ * @author Hiren Babariya
  */
 @RunWith(MockitoJUnitRunner.class)
 public class CodeBuildTimeKanbanServiceImplTest {
@@ -135,13 +133,12 @@ public class CodeBuildTimeKanbanServiceImplTest {
 		String kpiRequestTrackerId = "Excel-Jenkins-5be544de025de212549176a9";
 
 		try {
-			KpiElement kpiElement = codeBuildTimeKanbanServiceImpl.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0), treeAggregatorDetail);
+			KpiElement kpiElement = codeBuildTimeKanbanServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
 			assertThat("Code Build Time :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
 		} catch (Exception enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -149,14 +146,14 @@ public class CodeBuildTimeKanbanServiceImplTest {
 
 		String result = codeBuildTimeKanbanServiceImpl.getQualifierType();
 		assertEquals(result, KPICode.CODE_BUILD_TIME_KANBAN.name());
-
 	}
 
 	@Test
 	public void testCalculateMaturity() {
 		when(commonService.getMaturityLevel(any(), any(), any())).thenReturn("3");
-		String maturity = codeBuildTimeKanbanServiceImpl.calculateMaturity(new ArrayList<>(),
-				KPICode.CODE_BUILD_TIME_KANBAN.getKpiId(), "3");
+		String maturity =
+				codeBuildTimeKanbanServiceImpl.calculateMaturity(
+						new ArrayList<>(), KPICode.CODE_BUILD_TIME_KANBAN.getKpiId(), "3");
 		assertThat("maturity: ", maturity, equalTo("3"));
 	}
 

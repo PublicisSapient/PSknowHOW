@@ -24,9 +24,7 @@ package com.publicissapient.kpidashboard.common.util;
 public class UnsafeDeleteException extends RuntimeException {
 	private static final long serialVersionUID = -664077740219817001L;
 
-	/**
-	 * Instantiates a new unsafe delete exception.
-	 */
+	/** Instantiates a new unsafe delete exception. */
 	public UnsafeDeleteException() {
 		super();
 	}
@@ -35,7 +33,7 @@ public class UnsafeDeleteException extends RuntimeException {
 	 * Instantiates a new unsafe delete exception.
 	 *
 	 * @param str
-	 *            the str
+	 *          the str
 	 */
 	public UnsafeDeleteException(String str) {
 		super(str);
@@ -45,9 +43,9 @@ public class UnsafeDeleteException extends RuntimeException {
 	 * Instantiates a new unsafe delete exception.
 	 *
 	 * @param str
-	 *            the str
+	 *          the str
 	 * @param throwable
-	 *            the throwable
+	 *          the throwable
 	 */
 	public UnsafeDeleteException(String str, Throwable throwable) {
 		super(str, throwable);
@@ -57,10 +55,9 @@ public class UnsafeDeleteException extends RuntimeException {
 	 * Instantiates a new unsafe delete exception.
 	 *
 	 * @param throwable
-	 *            the throwable
+	 *          the throwable
 	 */
 	public UnsafeDeleteException(Throwable throwable) {
 		super(throwable);
 	}
-
 }

@@ -8,9 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * DSR data to show in excel.
- */
+/** DSR data to show in excel. */
 @Data
 @Builder
 @Getter
@@ -22,5 +20,4 @@ public class DSRValidationData {
 
 	private String issueNumber;
 	private String label;
-
 }

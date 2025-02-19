@@ -26,16 +26,15 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
  * Comparator utility class for handling comparisons of Super Features (epics)
  * to other Super Features. This is used when manipulating results of MongoDB
  * repository responses and sorting them in an efficient manner within memory.
- * 
+ *
  * @author kfk884
- * 
  */
 public class JiraIssueComparator implements Comparator<JiraIssue> {
 
 	/**
 	 * Compares two feature object models and sorts based on their subsequent epic
 	 * IDs, as a string comparator
-	 * 
+	 *
 	 * @return A list of Features sorted by EpicID, descending
 	 */
 	@Override
@@ -48,5 +47,4 @@ public class JiraIssueComparator implements Comparator<JiraIssue> {
 			return 0;
 		}
 	}
-
 }

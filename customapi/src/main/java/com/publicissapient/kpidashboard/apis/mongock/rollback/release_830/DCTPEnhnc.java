@@ -46,9 +46,8 @@ public class DCTPEnhnc {
 	@Execution
 	public void execution() {
 		MongoCollection<Document> fieldMappingStructure = mongoTemplate.getCollection("field_mapping_structure");
-		fieldMappingStructure.deleteMany(
-				new Document(FIELD_NAME, new Document("$in", Collections.singletonList("excludeRCAFromKPI163"))));
-
+		fieldMappingStructure
+				.deleteMany(new Document(FIELD_NAME, new Document("$in", Collections.singletonList("excludeRCAFromKPI163"))));
 	}
 
 	@RollbackExecution

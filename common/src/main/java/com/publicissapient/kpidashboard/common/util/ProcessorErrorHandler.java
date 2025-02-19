@@ -29,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * This class prints error log containg information of applicationName, module,
  * error message and the cause.
- *
  */
 @Slf4j
 @Component
@@ -42,5 +41,4 @@ public class ProcessorErrorHandler implements ErrorHandler {
 	public void handleError(Throwable th) {
 		log.error(ErrorProcessorItem.getErrorItem(applicationName, applicationName, th.getMessage(), th.getCause()));
 	}
-
 }

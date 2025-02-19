@@ -1,5 +1,7 @@
 package com.publicissapient.kpidashboard.common.model.application;
 
+import java.util.Set;
+
 import com.google.common.base.Objects;
 import com.publicissapient.kpidashboard.common.constant.Role;
 
@@ -10,7 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import java.util.Set;
 
 @Data
 @Builder
@@ -19,7 +20,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-
 public class AssigneeCapacity {
 	private String userId;
 	private String userName;
@@ -44,5 +44,4 @@ public class AssigneeCapacity {
 	public int hashCode() {
 		return Objects.hashCode(userId, role);
 	}
-
 }

@@ -29,14 +29,12 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.web.client.RestTemplate;
 
-/**
- * AzurePipelineApplication configuration and bootstrap.
- */
+/** AzurePipelineApplication configuration and bootstrap. */
 @SpringBootApplication
 @EnableCaching
-@EnableMongoRepositories(basePackages = { "com.publicissapient.kpidashboard.azurepipeline.repository",
-		"com.publicissapient.kpidashboard.common.repository.*" })
-@ComponentScan(basePackages = { "com.publicissapient.kpidashboard.*" })
+@EnableMongoRepositories(basePackages = {"com.publicissapient.kpidashboard.azurepipeline.repository",
+		"com.publicissapient.kpidashboard.common.repository.*"})
+@ComponentScan(basePackages = {"com.publicissapient.kpidashboard.*"})
 public class AzurePipelineProcessorApplication {
 
 	@Value("${azurepipeline.defaultHostnameVerifier:true}")
@@ -49,12 +47,11 @@ public class AzurePipelineProcessorApplication {
 
 	/**
 	 * Instantiate RestTemplate.
-	 * 
+	 *
 	 * @return the RestTemplate
 	 */
 	@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
-
 }

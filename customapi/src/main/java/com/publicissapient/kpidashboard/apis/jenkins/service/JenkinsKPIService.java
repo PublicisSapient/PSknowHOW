@@ -34,14 +34,15 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
  * Common Abstract class for all jenkins services.
  *
  * @param <R>
- *            the type parameter
+ *          the type parameter
  * @param <S>
- *            the type parameter
+ *          the type parameter
  * @param <T>
- *            the type parameter
+ *          the type parameter
  */
 public abstract class JenkinsKPIService<R, S, T> extends ToolsKPIService<R, S>
-		implements ApplicationKPIService<R, S, T> {
+		implements
+			ApplicationKPIService<R, S, T> {
 
 	@Autowired
 	private CacheService cacheService;
@@ -70,22 +71,21 @@ public abstract class JenkinsKPIService<R, S, T> extends ToolsKPIService<R, S>
 	 * @return kanban request tracker id
 	 */
 	protected String getKanbanRequestTrackerId() {
-		return cacheService
-				.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINSKANBAN.name());
+		return cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINSKANBAN.name());
 	}
 
 	/**
 	 * Calculates the number of commits per day.
 	 *
 	 * @param kpiRequest
-	 *            the kpi request
+	 *          the kpi request
 	 * @param kpiElement
-	 *            the kpi element
+	 *          the kpi element
 	 * @param treeAggregatorDetail
-	 *            the tree aggregator detail
+	 *          the tree aggregator detail
 	 * @return kpi data
 	 * @throws ApplicationException
-	 *             the application exception
+	 *           the application exception
 	 */
 	public abstract KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException;

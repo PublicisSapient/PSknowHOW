@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.auth;
 
 import java.util.List;
 import java.util.UUID;
-
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -33,14 +32,12 @@ import com.publicissapient.kpidashboard.common.constant.AuthType;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * This class maps authentication properties to object
- */
+/** This class maps authentication properties to object */
 @Slf4j
 @Component
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "auth")
-public class AuthProperties {// NOPMD
+public class AuthProperties { // NOPMD
 	// do not remove NOPMD comment. This is for ignoring TooManyFields.
 	// fields are required for standard and Crowd sso
 
@@ -84,7 +81,7 @@ public class AuthProperties {// NOPMD
 	 * Sets expiration time.
 	 *
 	 * @param expirationTime
-	 *            the expiration time
+	 *          the expiration time
 	 */
 	public void setExpirationTime(Long expirationTime) {
 		this.expirationTime = expirationTime;
@@ -103,7 +100,7 @@ public class AuthProperties {// NOPMD
 	 * Sets secret.
 	 *
 	 * @param secret
-	 *            the secret
+	 *          the secret
 	 */
 	public void setSecret(String secret) {
 		this.secret = secret;
@@ -122,7 +119,7 @@ public class AuthProperties {// NOPMD
 	 * Sets authentication providers.
 	 *
 	 * @param authenticationProviders
-	 *            the authentication providers
+	 *          the authentication providers
 	 */
 	public void setAuthenticationProviders(List<AuthType> authenticationProviders) {
 		this.authenticationProviders = authenticationProviders;
@@ -141,7 +138,7 @@ public class AuthProperties {// NOPMD
 	 * Sets providers.
 	 *
 	 * @param providers
-	 *            the providers
+	 *          the providers
 	 */
 	public void setProviders(String providers) {
 		this.providers = providers;
@@ -160,7 +157,7 @@ public class AuthProperties {// NOPMD
 	 * Sets account locked threshold.
 	 *
 	 * @param accountLockedThreshold
-	 *            the account locked threshold
+	 *          the account locked threshold
 	 */
 	public void setAccountLockedThreshold(Integer accountLockedThreshold) {
 		this.accountLockedThreshold = accountLockedThreshold;
@@ -179,7 +176,7 @@ public class AuthProperties {// NOPMD
 	 * Sets account locked period.
 	 *
 	 * @param accountLockedPeriod
-	 *            the account locked period
+	 *          the account locked period
 	 */
 	public void setAccountLockedPeriod(int accountLockedPeriod) {
 		this.accountLockedPeriod = accountLockedPeriod;
@@ -214,7 +211,7 @@ public class AuthProperties {// NOPMD
 
 	/**
 	 * get resource Name
-	 * 
+	 *
 	 * @return resourceName
 	 */
 	public String getResourceName() {
@@ -232,7 +229,7 @@ public class AuthProperties {// NOPMD
 
 	/**
 	 * get central auth userinfo url
-	 * 
+	 *
 	 * @return
 	 */
 	public String getFetchUserDetailsEndPoint() {
@@ -250,7 +247,7 @@ public class AuthProperties {// NOPMD
 
 	/**
 	 * get central auth update user approval url
-	 * 
+	 *
 	 * @return
 	 */
 	public String getUpdateUserApprovalStatus() {
@@ -290,7 +287,7 @@ public class AuthProperties {// NOPMD
 
 	/**
 	 * get resourceAPIKey
-	 * 
+	 *
 	 * @return
 	 */
 	public String getResourceAPIKey() {
@@ -299,7 +296,7 @@ public class AuthProperties {// NOPMD
 
 	/**
 	 * get user logout end point for central auth
-	 * 
+	 *
 	 * @return
 	 */
 	public String getUserLogoutEndPoint() {
@@ -312,6 +309,7 @@ public class AuthProperties {// NOPMD
 
 	/**
 	 * delete user for central auth
+	 *
 	 * @return
 	 */
 	public String getDeleteUserEndpoint() {
@@ -355,9 +353,7 @@ public class AuthProperties {// NOPMD
 		this.whiteListDomainForEmail = whiteListDomainForEmail;
 	}
 
-	/**
-	 * Apply defaults if needed.
-	 */
+	/** Apply defaults if needed. */
 	@PostConstruct
 	public void applyDefaultsIfNeeded() {
 		if (getSecret() == null) {
@@ -376,12 +372,10 @@ public class AuthProperties {// NOPMD
 			} else {
 				if (STANDARD.equalsIgnoreCase(providers)) {
 					authenticationProviders.add(AuthType.STANDARD);
-				}  else if (CROWDSSO.equalsIgnoreCase(providers)) {
+				} else if (CROWDSSO.equalsIgnoreCase(providers)) {
 					authenticationProviders.add(AuthType.CROWDSSO);
 				}
 			}
-
 		}
 	}
-
 }

@@ -64,11 +64,7 @@ import com.publicissapient.kpidashboard.common.repository.application.FieldMappi
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
-/**
- * For testing of missing work log service impl
- * 
- *
- */
+/** For testing of missing work log service impl */
 @RunWith(MockitoJUnitRunner.class)
 public class MissingWorkLogsServiceImplTest {
 
@@ -112,14 +108,12 @@ public class MissingWorkLogsServiceImplTest {
 				.newInstance("/json/filters/extra_jira_issues.json");
 		totalStoryList = jiraIssueDataFactory.findIssueInTypeNames(Arrays.asList("Story"));
 
-		storyList = totalStoryList.stream()
-				.filter(filter -> !Arrays.asList("Open", "Dropped").contains(filter.getStatus()))
+		storyList = totalStoryList.stream().filter(filter -> !Arrays.asList("Open", "Dropped").contains(filter.getStatus()))
 				.collect(Collectors.toList());
 
 		setMockProjectConfig();
 		setMockFieldMapping();
 		sprintDetails = SprintDetailsDataFactory.newInstance().getSprintDetails().get(0);
-
 	}
 
 	private void setMockProjectConfig() {
@@ -137,9 +131,7 @@ public class MissingWorkLogsServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 	}
 
-	/**
-	 * Project to show on trend line.
-	 */
+	/** Project to show on trend line. */
 	@Test
 	public void testGetKpiDataProject() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
@@ -159,16 +151,11 @@ public class MissingWorkLogsServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
-	/**
-	 * delete all data saved in jira issue repository.
-	 */
+	/** delete all data saved in jira issue repository. */
 	@After
 	public void cleanup() {
 		jiraIssueRepository.deleteAll();
-
 	}
-
 }

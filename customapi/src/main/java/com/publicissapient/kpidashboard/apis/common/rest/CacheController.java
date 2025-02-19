@@ -43,20 +43,16 @@ public class CacheController {
 	 * Clear Specified cache.
 	 *
 	 * @param cacheName
-	 *            the cache name
+	 *          the cache name
 	 */
 	@RequestMapping(value = "/cache/clearCache/{cacheName}", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public void clearCache(@PathVariable String cacheName) {
 		service.clearCache(cacheName);
-
 	}
 
-	/**
-	 * Clear all cache.
-	 */
+	/** Clear all cache. */
 	@RequestMapping(value = "/cache/clearAllCache", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public void clearAllCache() {
 		service.clearAllCache();
 	}
-
 }

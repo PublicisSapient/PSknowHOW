@@ -49,5 +49,4 @@ public class CustomSearchResultJsonParser extends SearchResultJsonParser {
 		}
 		return new SearchResult(startAt, maxResults, total, issues);
 	}
-
 }

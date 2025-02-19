@@ -16,22 +16,20 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.dataFactories;
 
-import com.atlassian.jira.rest.client.api.domain.Issue;
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author hiren babariya
@@ -40,7 +38,7 @@ import java.util.List;
 public class IssueDataFactory {
 
 	private static final String FILE_PATH_JIRA_ISSUES = "/json/default/issues.json";
-	//private List<Issue> issues;
+	// private List<Issue> issues;
 	private List<Object> issueObjects;
 	private ObjectMapper mapper = null;
 
@@ -65,14 +63,13 @@ public class IssueDataFactory {
 
 			String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_JIRA_ISSUES : filePath;
 			// Read the JSON file as a List<Object> and then convert each object to Issue
-			issueObjects = mapper.readValue(
-					TypeReference.class.getResourceAsStream(resultPath),
+			issueObjects = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
 					new TypeReference<List<Object>>() {
 					});
 
 			// Convert each object to Issue
-//			issues = mapper.convertValue(issueObjects, new TypeReference<List<Issue>>() {
-//			});
+			// issues = mapper.convertValue(issueObjects, new TypeReference<List<Issue>>() {
+			// });
 		} catch (IOException e) {
 			log.error("Error in reading kpi request from file = " + filePath, e);
 		}

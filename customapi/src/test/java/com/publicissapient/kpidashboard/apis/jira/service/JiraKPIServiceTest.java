@@ -136,7 +136,5 @@ public class JiraKPIServiceTest {
 		public Object fetchKPIDataFromDb(List leafNodeList, String startDate, String endDate, KpiRequest kpiRequest) {
 			return null;
 		}
-
 	}
-
 }

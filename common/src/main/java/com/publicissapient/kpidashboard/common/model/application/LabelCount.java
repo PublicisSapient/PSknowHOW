@@ -32,6 +32,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LabelCount {
-    String labelValue;
-    Integer countValue;
+	String labelValue;
+	Integer countValue;
 }

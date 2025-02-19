@@ -72,7 +72,6 @@ public class ErrorResponse {
 	}
 
 	/**
-	 *
 	 * @return error.
 	 */
 	public String getError() {
@@ -89,7 +88,6 @@ public class ErrorResponse {
 	}
 
 	/**
-	 *
 	 * @return code
 	 */
 	public int getCode() {
@@ -106,7 +104,6 @@ public class ErrorResponse {
 	}
 
 	/**
-	 *
 	 * @return globalErrors
 	 */
 	public Map<String, List<String>> getGlobalErrors() {
@@ -114,7 +111,6 @@ public class ErrorResponse {
 	}
 
 	/**
-	 *
 	 * @return fieldErrors
 	 */
 	public Map<String, List<String>> getFieldErrors() {

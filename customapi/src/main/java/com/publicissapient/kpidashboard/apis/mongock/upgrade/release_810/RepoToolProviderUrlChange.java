@@ -17,13 +17,14 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_810;
 
-import io.mongock.api.annotations.ChangeUnit;
-import io.mongock.api.annotations.Execution;
-import io.mongock.api.annotations.RollbackExecution;
+import java.util.Arrays;
+
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.util.Arrays;
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
 
 /**
  * @author kunkambl
@@ -67,13 +68,11 @@ public class RepoToolProviderUrlChange {
 
 		mongoTemplate.getCollection("kpi_master").updateOne(new Document("kpiId", "kpi162"),
 				new Document("$set", new Document("calculateMaturity", false)));
-
 	}
 
 	public void updateThresholds() {
 		mongoTemplate.getCollection("kpi_master").updateMany(
 				new Document("kpiId", new Document("$in", Arrays.asList("kpi160", "kpi158"))),
-
 				new Document("$set", new Document("upperThresholdBG", "red").append("lowerThresholdBG", "white")));
 	}
 
@@ -86,7 +85,7 @@ public class RepoToolProviderUrlChange {
 
 	@RollbackExecution
 	public void rollback() {
-        changeRepoToolProviderTestApiUrlsRollback();
+		changeRepoToolProviderTestApiUrlsRollback();
 		changePRSizeMaturityRollback();
 		updateThresholdsRollback();
 		updateKpi162Rollback();
@@ -95,14 +94,13 @@ public class RepoToolProviderUrlChange {
 	public void changeRepoToolProviderTestApiUrlsRollback() {
 		Document filterBb = new Document("toolName", "bitbucket");
 		Document updateBb = new Document("$set", new Document()
-				.append("testServerApiUrl", "https://api.bitbucket.org/2.0/repositories/")
-				.append("testApiUrl", ""));
+				.append("testServerApiUrl", "https://api.bitbucket.org/2.0/repositories/").append("testApiUrl", ""));
 
 		mongoTemplate.getCollection("repo_tools_provider").updateOne(filterBb, updateBb);
 
 		Document filter = new Document("toolName", "gitlab");
-		Document update = new Document("$set", new Document()
-				.append("testApiUrl", "https://gitlab.com/api/v4/projects/").append("repoToolProvider", ""));
+		Document update = new Document("$set",
+				new Document().append("testApiUrl", "https://gitlab.com/api/v4/projects/").append("repoToolProvider", ""));
 
 		mongoTemplate.getCollection("repo_tools_provider").updateOne(filter, update);
 	}
@@ -111,13 +109,11 @@ public class RepoToolProviderUrlChange {
 
 		mongoTemplate.getCollection("kpi_master").updateOne(new Document("kpiId", "kpi162"),
 				new Document("$set", new Document("calculateMaturity", true)));
-
 	}
 
 	public void updateThresholdsRollback() {
 		mongoTemplate.getCollection("kpi_master").updateMany(
 				new Document("kpiId", new Document("$in", Arrays.asList("kpi160", "kpi158"))),
-
 				new Document("$set", new Document("upperThresholdBG", "").append("lowerThresholdBG", "")));
 	}
 
@@ -126,5 +122,4 @@ public class RepoToolProviderUrlChange {
 		Document update = new Document("$set", new Document("calculateMaturity", true).append("showTrend", true));
 		mongoTemplate.getCollection("kpi_master").updateOne(filter, update);
 	}
-
 }

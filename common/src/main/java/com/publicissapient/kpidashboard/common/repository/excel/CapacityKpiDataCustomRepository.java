@@ -35,9 +35,9 @@ public interface CapacityKpiDataCustomRepository {
 	 * Find by filters list.
 	 *
 	 * @param mapofFilters
-	 *            the mapof filters
+	 *          the mapof filters
 	 * @param uniqueProjectMap
-	 *            the unique project map
+	 *          the unique project map
 	 * @return list
 	 */
 	List<CapacityKpiData> findByFilters(Map<String, Object> mapofFilters,

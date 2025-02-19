@@ -54,7 +54,6 @@ public class BacklogCountByStatusAndIterationReadiness {
 		updateFieldMappingField(fieldMapping);
 		MongoCollection<Document> fieldMappingStructure = mongoTemplate.getCollection("field_mapping_structure");
 		updateFieldMappingstructure(fieldMappingStructure);
-
 	}
 
 	private static void updateFieldMappingstructure(MongoCollection<Document> fieldMappingStructure) {
@@ -104,5 +103,4 @@ public class BacklogCountByStatusAndIterationReadiness {
 		Document update = new Document("$set", new Document(FIELD_TYPE, TEXT));
 		fieldMappingStructure.updateOne(filter, update);
 	}
-
 }

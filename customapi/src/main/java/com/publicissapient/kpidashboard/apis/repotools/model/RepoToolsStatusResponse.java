@@ -16,15 +16,14 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.repotools.model;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serial;
-import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
@@ -39,6 +38,4 @@ public class RepoToolsStatusResponse implements Serializable {
 	private String source;
 	private String status;
 	private Long timestamp;
-
-
 }

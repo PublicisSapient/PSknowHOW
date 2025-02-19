@@ -57,7 +57,6 @@ public class JiraProcessorUtilTest {
 	public void deodeUTF8StringNull() {
 		Object jiraResponse = null;
 		assertNotNull(JiraProcessorUtil.deodeUTF8String(jiraResponse));
-
 	}
 
 	@Test
@@ -80,14 +79,12 @@ public class JiraProcessorUtilTest {
 		Object jiraResponse = "Some UTF-8 String"; // Replace with your test input
 		String result = JiraProcessorUtil.deodeUTF8String(jiraResponse);
 		assertTrue(!result.isEmpty());
-
 	}
 
 	@Test
 	public void getFormattedDate() {
 		String date = "07-09-2021";
 		assertNotNull(JiraProcessorUtil.getFormattedDate(date));
-
 	}
 
 	@Test
@@ -98,15 +95,10 @@ public class JiraProcessorUtilTest {
 
 	@Test
 	public void setSprintDetailsFromString() {
-		String str = "\n"
-				+"\"values\": ["+"id= 31227,"+"state= closed,"
-				+"name= Test|PI_5|ITR_6|9 Jun-29Jun,"
-				+"startDate= 2021-06-09T08:38:00.000Z,"
-				+"endDate= 2021-06-29T08:38:00.000Z,"
-				+"completeDate= 2021-06-30T05:27:26.503Z,"
-				+"activatedDate= 2021-06-09T08:38:16.563Z,"
-				+"originBoardId= 11856,"
-				+"goal=1 " + "    ]";
+		String str = "\n" + "\"values\": [" + "id= 31227," + "state= closed," + "name= Test|PI_5|ITR_6|9 Jun-29Jun," +
+				"startDate= 2021-06-09T08:38:00.000Z," + "endDate= 2021-06-29T08:38:00.000Z," +
+				"completeDate= 2021-06-30T05:27:26.503Z," + "activatedDate= 2021-06-09T08:38:16.563Z," +
+				"originBoardId= 11856," + "goal=1 " + "    ]";
 		assertNull(JiraProcessorUtil.setSprintDetailsFromString(str, sprintDetails));
 	}
 
@@ -126,7 +118,6 @@ public class JiraProcessorUtilTest {
 		Object data = array;
 
 		assertNotNull(JiraProcessorUtil.processSprintDetail(data));
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -145,7 +136,6 @@ public class JiraProcessorUtilTest {
 		Object data = array;
 
 		assertNotNull(JiraProcessorUtil.processSprintDetail(data));
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -164,7 +154,6 @@ public class JiraProcessorUtilTest {
 		Object data = array;
 
 		assertNotNull(JiraProcessorUtil.processSprintDetail(data));
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -183,7 +172,6 @@ public class JiraProcessorUtilTest {
 		Object data = array;
 
 		assertNotNull(JiraProcessorUtil.processSprintDetail(data));
-
 	}
 
 	@Test
@@ -201,15 +189,16 @@ public class JiraProcessorUtilTest {
 
 	@Test
 	public void testSaveChunkProgressInTrace_StepContextIsNull() {
-		ProcessorExecutionTraceLog result = JiraProcessorUtil.saveChunkProgressInTrace(new ProcessorExecutionTraceLog(), null);
-        assertNull(result);
+		ProcessorExecutionTraceLog result = JiraProcessorUtil.saveChunkProgressInTrace(new ProcessorExecutionTraceLog(),
+				null);
+		assertNull(result);
 	}
 
 	@Test
 	public void testSaveChunkProgressInTrace_ProcessorExecutionTraceLogIsNull() {
 		StepContext stepContext = mock(StepContext.class);
 		ProcessorExecutionTraceLog result = JiraProcessorUtil.saveChunkProgressInTrace(null, stepContext);
-        assertNull(result);
+		assertNull(result);
 	}
 
 	@Test
@@ -226,7 +215,8 @@ public class JiraProcessorUtilTest {
 		when(jobExecution.getExecutionContext()).thenReturn(new ExecutionContext());
 
 		// Call the method
-		ProcessorExecutionTraceLog result = JiraProcessorUtil.saveChunkProgressInTrace(processorExecutionTraceLog, stepContext);
+		ProcessorExecutionTraceLog result = JiraProcessorUtil.saveChunkProgressInTrace(processorExecutionTraceLog,
+				stepContext);
 
 		// Verify the result
 		List<ProgressStatus> progressStatusList = result.getProgressStatusList();
@@ -234,6 +224,7 @@ public class JiraProcessorUtilTest {
 		assertEquals("Process Issues 0 to 0 out of 0", progressStatusList.get(0).getStepName());
 		assertEquals(BatchStatus.COMPLETED.toString(), progressStatusList.get(0).getStatus());
 	}
+
 	@Test
 	public void testGenerateLogMessage_withExceptionMessage() {
 		Throwable exception = new Throwable("java.lang.NullPointerException: null");
@@ -241,13 +232,16 @@ public class JiraProcessorUtilTest {
 		String actualMessage = JiraProcessorUtil.generateLogMessage(exception);
 		assertEquals(expectedMessage, actualMessage);
 	}
+
 	@Test
 	public void testGenerateLogMessage_withErrorCollection() {
-		Throwable exception = new Throwable("org.codehaus.jettison.json.JSONException: A JSONObject text must begin with '{'");
+		Throwable exception = new Throwable(
+				"org.codehaus.jettison.json.JSONException: A JSONObject text must begin with '{'");
 		String expectedMessage = "An unexpected error has occurred. Please contact the KnowHow Support for assistance.";
 		String actualMessage = JiraProcessorUtil.generateLogMessage(exception);
 		assertEquals(expectedMessage, actualMessage);
 	}
+
 	@Test
 	public void testGenerateLogMessage_withErrorStatusCode401() {
 		Throwable exception = new Throwable("[ErrorCollection{status=401, errors={}, errorMessages=[]}]");
@@ -255,6 +249,7 @@ public class JiraProcessorUtilTest {
 		String actualMessage = JiraProcessorUtil.generateLogMessage(exception);
 		assertEquals(expectedMessage, actualMessage);
 	}
+
 	@Test
 	public void testGenerateLogMessage_withErrorStatusCode403() {
 		Throwable exception = new Throwable("[ErrorCollection{status=403, errors={}, errorMessages=[]}]");
@@ -262,6 +257,7 @@ public class JiraProcessorUtilTest {
 		String actualMessage = JiraProcessorUtil.generateLogMessage(exception);
 		assertEquals(expectedMessage, actualMessage);
 	}
+
 	@Test
 	public void testGenerateLogMessage_withErrorStatusCode429() {
 		Throwable exception = new Throwable("[ErrorCollection{status=429, errors={}, errorMessages=[]}]");
@@ -269,6 +265,7 @@ public class JiraProcessorUtilTest {
 		String actualMessage = JiraProcessorUtil.generateLogMessage(exception);
 		assertEquals(expectedMessage, actualMessage);
 	}
+
 	@Test
 	public void testGenerateLogMessage_noMatchingPattern() {
 		Throwable exception = new Throwable("Some random exception message");

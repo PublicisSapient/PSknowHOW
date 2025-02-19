@@ -16,7 +16,7 @@ public interface JiraTestService {
 	 * MongoDB from those calls.
 	 *
 	 * @param projectConfig
-	 *            Project Configuration Mapping
+	 *          Project Configuration Mapping
 	 */
 	int processesJiraIssues(ProjectConfFieldMapping projectConfig);
 
@@ -24,9 +24,9 @@ public interface JiraTestService {
 	 * Purges the issues provided
 	 *
 	 * @param purgeIssuesList
-	 *            List of issues to be purged
+	 *          List of issues to be purged
 	 * @param projectConfig
-	 *            Project Configuration Mapping
+	 *          Project Configuration Mapping
 	 */
 	void purgeJiraIssues(List<Issue> purgeIssuesList, ProjectConfFieldMapping projectConfig);
 
@@ -34,15 +34,15 @@ public interface JiraTestService {
 	 * Gets all issues from JIRA
 	 *
 	 * @param projectConfig
-	 *            projectConfig Object
+	 *          projectConfig Object
 	 * @param startDateTimeByIssueType
-	 *            map of start dataTime of issue types
+	 *          map of start dataTime of issue types
 	 * @param userTimeZone
-	 *            user timezone
+	 *          user timezone
 	 * @param pageStart
-	 *            page start
+	 *          page start
 	 * @param dataExist
-	 *            data exist in db or not
+	 *          data exist in db or not
 	 * @return list of issues
 	 */
 	SearchResult getIssues(ProjectConfFieldMapping projectConfig, Map<String, LocalDateTime> startDateTimeByIssueType,
@@ -59,8 +59,7 @@ public interface JiraTestService {
 	 * Gets the timeZone of user who is logged in jira
 	 *
 	 * @param projectConfig
-	 *            user provided project configuration
+	 *          user provided project configuration
 	 * @return String of UserTimeZone
 	 */
-
 }

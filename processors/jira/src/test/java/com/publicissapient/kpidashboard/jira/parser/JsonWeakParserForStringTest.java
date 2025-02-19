@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.parser;
 
 import org.codehaus.jettison.json.JSONException;
@@ -49,6 +48,7 @@ public class JsonWeakParserForStringTest {
 		Integer nonStringInput = 123;
 
 		jsonWeakParserForString.parse(nonStringInput);
-		// If the code reaches this point, the test should fail because it should throw a JSONException.
+		// If the code reaches this point, the test should fail because it should throw
+		// a JSONException.
 	}
 }

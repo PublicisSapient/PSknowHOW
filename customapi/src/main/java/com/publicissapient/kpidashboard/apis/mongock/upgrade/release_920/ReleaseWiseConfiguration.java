@@ -68,7 +68,6 @@ public class ReleaseWiseConfiguration {
 
 		// Execute the update operation on the collection
 		mappingStructure.updateMany(filter, update);
-
 	}
 
 	@RollbackExecution
@@ -84,5 +83,4 @@ public class ReleaseWiseConfiguration {
 		// Execute the rollback update operation on the collection
 		field.updateMany(filter, rollback);
 	}
-
 }

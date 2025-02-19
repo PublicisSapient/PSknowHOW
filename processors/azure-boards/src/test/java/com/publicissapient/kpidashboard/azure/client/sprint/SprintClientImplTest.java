@@ -149,8 +149,7 @@ public class SprintClientImplTest {
 		when(azureAdapter.getIssuesBySprint(prepareAzureServer(), "testSprint_TestAzure_5ba8e182d3735010e7f1fa45"))
 				.thenReturn(issueItemList);
 
-		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(anyList(), anyString()))
-				.thenReturn(jiraIssueList);
+		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(anyList(), anyString())).thenReturn(jiraIssueList);
 		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
 		when(sprintRepository.findByBasicProjectConfigId(any())).thenReturn(new ArrayList<>(sprintDetailsSet));
 
@@ -172,8 +171,7 @@ public class SprintClientImplTest {
 		when(azureAdapter.getIssuesBySprint(prepareAzureServer(), "testSprint_TestAzure_5ba8e182d3735010e7f1fa45"))
 				.thenReturn(issueItemList);
 
-		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(anyList(), anyString()))
-				.thenReturn(jiraIssueList);
+		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(anyList(), anyString())).thenReturn(jiraIssueList);
 		projectToolConfig.setAzureRefreshActiveSprintReport(true);
 		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
 		when(sprintRepository.findByBasicProjectConfigId(any())).thenReturn(new ArrayList<>(sprintDetailsSet));
@@ -194,8 +192,7 @@ public class SprintClientImplTest {
 		issueItemList.add("89");
 		issueItemList.add("90");
 		when(azureAdapter.getIssuesBySprint(prepareAzureServer(), "sprint1")).thenReturn(issueItemList);
-		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(anyList(), anyString()))
-				.thenReturn(jiraIssueList);
+		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(anyList(), anyString())).thenReturn(jiraIssueList);
 
 		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
 		when(sprintRepository.findByBasicProjectConfigId(any())).thenReturn(new ArrayList<>(sprintDetailsSet));
@@ -210,7 +207,6 @@ public class SprintClientImplTest {
 		azureServer.setApiVersion("5.1");
 		azureServer.setUsername("");
 		return azureServer;
-
 	}
 
 	@Test
@@ -226,5 +222,4 @@ public class SprintClientImplTest {
 			sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, azureServer);
 		});
 	}
-
 }

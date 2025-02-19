@@ -33,14 +33,16 @@ import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
  * @author anisingh4
  */
 public interface SonarHistoryRepository
-		extends CrudRepository<SonarHistory, ObjectId>, QuerydslPredicateExecutor<SonarHistory> {
+		extends
+			CrudRepository<SonarHistory, ObjectId>,
+			QuerydslPredicateExecutor<SonarHistory> {
 
 	/**
 	 * Finds the {@link SonarHistory} data point for a list of
 	 * {@link ProcessorItem}.
 	 *
 	 * @param processorItemIdList
-	 *            processor item id list
+	 *          processor item id list
 	 * @return a {@link SonarHistory}
 	 */
 	List<SonarHistory> findByProcessorItemIdIn(List<ObjectId> processorItemIdList);
@@ -50,16 +52,16 @@ public interface SonarHistoryRepository
 	 * {@link ProcessorItem}.
 	 *
 	 * @param processorItemId
-	 *            processor item id
+	 *          processor item id
 	 * @return a {@link SonarHistory}
 	 */
 	SonarHistory findByProcessorItemId(ObjectId processorItemId);
 
 	/**
 	 * delete all documents with matching ids
-	 * 
+	 *
 	 * @param processorItemIds
-	 *            processor item id
+	 *          processor item id
 	 */
 	void deleteByProcessorItemIdIn(List<ObjectId> processorItemIds);
 
@@ -68,12 +70,10 @@ public interface SonarHistoryRepository
 	 * {@link ProcessorItem}.
 	 *
 	 * @param processorItemIdList
-	 *            processor item id list
+	 *          processor item id list
 	 * @param timestamp
-	 *            timestamp
+	 *          timestamp
 	 * @return a {@link SonarHistory}
 	 */
-	List<SonarHistory> findByProcessorItemIdInAndTimestampGreaterThan(List<ObjectId> processorItemIdList,
-			Long timestamp);
-
+	List<SonarHistory> findByProcessorItemIdInAndTimestampGreaterThan(List<ObjectId> processorItemIdList, Long timestamp);
 }

@@ -35,8 +35,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
 
 /*
-	@author shi6
- */
+@author shi6
+*/
 @RunWith(MockitoJUnitRunner.class)
 public class SonarAPIUtilsTest {
 	@InjectMocks
@@ -89,5 +89,4 @@ public class SonarAPIUtilsTest {
 		assertEquals("someValue", result);
 		assertNull(result2);
 	}
-
 }

@@ -31,8 +31,8 @@ public class ZephyrDataCleanUpService implements ToolDataCleanUpService {
 		ProjectToolConfig tool = projectToolConfigRepository.findById(projectToolConfigId);
 		deleteTestCaseDetails(tool);
 		// delete processors trace logs
-		processorExecutionTraceLogRepository.deleteByBasicProjectConfigIdAndProcessorName(
-				tool.getBasicProjectConfigId().toHexString(), tool.getToolName());
+		processorExecutionTraceLogRepository
+				.deleteByBasicProjectConfigIdAndProcessorName(tool.getBasicProjectConfigId().toHexString(), tool.getToolName());
 		clearCache();
 	}
 

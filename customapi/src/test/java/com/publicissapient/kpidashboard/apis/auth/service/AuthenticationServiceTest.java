@@ -26,11 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
-import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalException;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Assertions;
@@ -40,18 +35,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
-import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-/**
- *
- */
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
+import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalException;
+import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
+import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+
+/** */
 @ExtendWith(SpringExtension.class)
 public class AuthenticationServiceTest {
 
@@ -155,15 +151,15 @@ public class AuthenticationServiceTest {
 	}
 
 	@Test
-	public void updateFailAttemptsWhenUserNotFound(){
+	public void updateFailAttemptsWhenUserNotFound() {
 		when(authRepo.findByUsername("Test")).thenReturn(null);
-		Assertions.assertFalse(authService.updateFailAttempts("Test",new DateTime()));
+		Assertions.assertFalse(authService.updateFailAttempts("Test", new DateTime()));
 	}
 
 	@Test
-	public void updateFailAttemptsWhenUserFound(){
+	public void updateFailAttemptsWhenUserFound() {
 		when(authRepo.findByUsername("Test")).thenReturn(authentication);
-		Assertions.assertTrue(authService.updateFailAttempts("Test",new DateTime()));
+		Assertions.assertTrue(authService.updateFailAttempts("Test", new DateTime()));
 	}
 
 	@Test
@@ -174,21 +170,20 @@ public class AuthenticationServiceTest {
 	}
 
 	@Test
-	public void resetFailAttemptsTest(){
+	public void resetFailAttemptsTest() {
 		when(authRepo.findByUsername("Test")).thenReturn(authentication);
 		authService.resetFailAttempts("Test");
 		Assertions.assertNotNull(authentication);
-
 	}
 
 	@Test
-	public void getUserAttemptsTest(){
+	public void getUserAttemptsTest() {
 		when(authRepo.findByUsername("Test")).thenReturn(null);
 		Assertions.assertNull(authService.getUserAttempts("Test"));
 	}
 
 	@Test
-	public void getUserAttemptsWhenUserFound(){
+	public void getUserAttemptsWhenUserFound() {
 		when(authRepo.findByUsername("Test")).thenReturn(authentication);
 		authService.getUserAttempts("Test");
 		Assertions.assertNotNull(authentication);
@@ -203,7 +198,6 @@ public class AuthenticationServiceTest {
 		} catch (PendingApprovalException e) {
 			Assertions.assertEquals(pendingApprovalMsg, e.getMessage());
 		}
-
 	}
 
 	@Test
@@ -217,7 +211,6 @@ public class AuthenticationServiceTest {
 		} catch (LockedException e) {
 			Assertions.assertEquals(lockedExceptionMsg, e.getMessage());
 		}
-
 	}
 
 	@Test
@@ -283,21 +276,21 @@ public class AuthenticationServiceTest {
 	}
 
 	@Test
-	public void getAuthenticationTest(){
+	public void getAuthenticationTest() {
 		when(authRepo.findByUsername("test")).thenReturn(authentication);
 		Assertions.assertNotNull(authService.getAuthentication("test").getUsername());
 	}
 
 	@Test
-	public void updateEmailTest(){
+	public void updateEmailTest() {
 		when(authRepo.findByUsername("test")).thenReturn(authentication);
-		Assertions.assertTrue(authService.updateEmail("test","ps@test.com"));
+		Assertions.assertTrue(authService.updateEmail("test", "ps@test.com"));
 	}
 
 	@Test
-	public void updateEmailWhenUserNotFound(){
+	public void updateEmailWhenUserNotFound() {
 		when(authRepo.findByUsername("test")).thenReturn(null);
-		Assertions.assertFalse(authService.updateEmail("test","ps@test.com"));
+		Assertions.assertFalse(authService.updateEmail("test", "ps@test.com"));
 	}
 
 	@Test
@@ -307,8 +300,8 @@ public class AuthenticationServiceTest {
 
 	@Test
 	public void getUsernameTest() {
-		org.springframework.security.core.Authentication authentication1 = new UsernamePasswordAuthenticationToken(
-				"test", "TestP");
+		org.springframework.security.core.Authentication authentication1 = new UsernamePasswordAuthenticationToken("test",
+				"TestP");
 		Assertions.assertFalse(authService.getUsername(authentication1).isEmpty());
 	}
 
@@ -323,6 +316,4 @@ public class AuthenticationServiceTest {
 		when(authProperties.getWhiteListDomainForEmail()).thenReturn(new ArrayList<>(List.of("example.com")));
 		Assertions.assertNotNull(authService.getAuthenticationByApproved(false));
 	}
-
-
 }

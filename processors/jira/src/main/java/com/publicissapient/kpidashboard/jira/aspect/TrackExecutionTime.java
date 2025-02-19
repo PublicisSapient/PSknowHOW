@@ -24,7 +24,6 @@ import java.lang.annotation.Target;
 
 /**
  * @author pankumar8
- *
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

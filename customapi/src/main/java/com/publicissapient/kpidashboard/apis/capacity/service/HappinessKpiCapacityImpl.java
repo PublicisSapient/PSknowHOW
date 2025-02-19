@@ -66,14 +66,13 @@ public class HappinessKpiCapacityImpl implements HappinessKpiCapacity {
 
 		if (!valid(happinessKpiData)) {
 			log.info("happinessKpiData is not valid");
-			return new ServiceResponse(false,
-					"BasicProjectConfigId, Sprint Id or userRatingList cannot be empty or null", null);
+			return new ServiceResponse(false, "BasicProjectConfigId, Sprint Id or userRatingList cannot be empty or null",
+					null);
 		}
 
 		HappinessKpiData existingForSameDay = happinessKpiDataRepository
-				.findExistingByBasicProjectConfigIdAndSprintIDAndDateOfSubmission(
-						happinessKpiData.getBasicProjectConfigId(), happinessKpiData.getSprintID(),
-						happinessKpiData.getDateOfSubmission());
+				.findExistingByBasicProjectConfigIdAndSprintIDAndDateOfSubmission(happinessKpiData.getBasicProjectConfigId(),
+						happinessKpiData.getSprintID(), happinessKpiData.getDateOfSubmission());
 		if (existingForSameDay != null) {
 			happinessKpiData.setId(existingForSameDay.getId());
 			happinessKpiDataRepository.save(happinessKpiData);

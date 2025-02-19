@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.sonar.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -52,7 +51,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author tauakram
  */
-
 @RestController
 @Slf4j
 public class SonarController {
@@ -69,7 +67,7 @@ public class SonarController {
 
 	/**
 	 * Gets Sonar Aggregate Metrics for Scrum projects
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @return {@code ResponseEntity<List<KpiElement>>}
 	 * @throws Exception
@@ -94,12 +92,11 @@ public class SonarController {
 		} else {
 			return ResponseEntity.ok().body(responseList);
 		}
-
 	}
 
 	/**
 	 * Gets Sonar Aggregate Metrics for Kanban projects
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @return {@code ResponseEntity<List<KpiElement>>}
 	 * @throws Exception
@@ -123,7 +120,6 @@ public class SonarController {
 		} else {
 			return ResponseEntity.ok().body(responseList);
 		}
-
 	}
 
 	/**
@@ -141,9 +137,9 @@ public class SonarController {
 	 * Provides the list of Sonar Project's Key.
 	 *
 	 * @param connectionId
-	 *            the Sonar connection details
+	 *          the Sonar connection details
 	 * @param organizationKey
-	 *            in case of Sonar Cloud
+	 *          in case of Sonar Cloud
 	 * @return @{@code ServiceResponse}
 	 */
 	@GetMapping(value = "/sonar/project/{connectionId}/{organizationKey}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -151,11 +147,9 @@ public class SonarController {
 			@PathVariable String organizationKey) {
 		List<String> projectKeyList = sonarToolConfigService.getSonarProjectKeyList(connectionId, organizationKey);
 		if (CollectionUtils.isEmpty(projectKeyList)) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body(new ServiceResponse(false, "No projects found", null));
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ServiceResponse(false, "No projects found", null));
 		} else {
-			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ServiceResponse(true, FETCHED_SUCCESSFULLY, projectKeyList));
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, FETCHED_SUCCESSFULLY, projectKeyList));
 		}
 	}
 
@@ -164,11 +158,11 @@ public class SonarController {
 	 * supported.
 	 *
 	 * @param connectionId
-	 *            the Sonar server connection details
+	 *          the Sonar server connection details
 	 * @param version
-	 *            the Sonar server api version
+	 *          the Sonar server api version
 	 * @param projectKey
-	 *            the Sonar server project's key
+	 *          the Sonar server project's key
 	 * @return @{@code ServiceResponse}
 	 */
 	@GetMapping(value = "/sonar/branch/{connectionId}/{version}/{projectKey}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -183,5 +177,4 @@ public class SonarController {
 		}
 		return ResponseEntity.status(httpStatus).body(response);
 	}
-
 }

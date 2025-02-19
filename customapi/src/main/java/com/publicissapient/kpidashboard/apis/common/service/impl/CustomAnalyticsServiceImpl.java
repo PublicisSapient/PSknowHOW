@@ -61,7 +61,6 @@ import lombok.extern.slf4j.Slf4j;
  * Implements CustomAnalyticsService interface.
  *
  * @author prijain3
- *
  */
 @Service
 @Slf4j
@@ -95,10 +94,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 
 	final ModelMapper modelMapper = new ModelMapper();
 
-
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject addAnalyticsData(HttpServletResponse httpServletResponse, String username) {
@@ -131,19 +127,18 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 
 		log.info("Successfully added Google Analytics data to Response.");
 		return json;
-
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Map<String, Object> addAnalyticsDataAndSaveCentralUser(HttpServletResponse httpServletResponse, String username,
-			String authToken) {
+	public Map<String, Object> addAnalyticsDataAndSaveCentralUser(HttpServletResponse httpServletResponse,
+			String username, String authToken) {
 		Map<String, Object> userMap = new HashMap<>();
 		httpServletResponse.setContentType("application/json");
 		UserInfo userinfoKnowHow = userInfoRepository.findByUsername(username);
 		httpServletResponse.setCharacterEncoding("UTF-8");
 		if (Objects.isNull(userinfoKnowHow)) {
-			CentralUserInfoDTO centralUserInfoDTO = userInfoService.getCentralAuthUserInfoDetails(username , authToken);
+			CentralUserInfoDTO centralUserInfoDTO = userInfoService.getCentralAuthUserInfoDetails(username, authToken);
 			UserInfo centralUserInfo = new UserInfo();
 			if (Objects.nonNull(centralUserInfoDTO)) {
 				setUserDetailsFromCentralAuth(username, centralUserInfoDTO, centralUserInfo);
@@ -155,7 +150,8 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		Authentication authentication = authenticationRepository.findByUsername(username);
 		userMap.put(USER_NAME, username);
 		if (Objects.nonNull(userinfoKnowHow)) {
-			String email = authentication == null ? userinfoKnowHow.getEmailAddress().toLowerCase()
+			String email = authentication == null
+					? userinfoKnowHow.getEmailAddress().toLowerCase()
 					: authentication.getEmail().toLowerCase();
 			userMap.put(USER_EMAIL, email);
 			userMap.put(USER_ID, userinfoKnowHow.getId().toString());
@@ -168,18 +164,15 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 			} else {
 				userMap.put(PROJECTS_ACCESS, new JSONArray());
 			}
-			usersSessionService.createUsersSessionInfo(userinfoKnowHow, AuthenticationEvent.LOGIN,
-					Status.SUCCESS);
+			usersSessionService.createUsersSessionInfo(userinfoKnowHow, AuthenticationEvent.LOGIN, Status.SUCCESS);
 		}
 		userMap.put(AUTH_RESPONSE_HEADER, httpServletResponse.getHeader(AUTH_RESPONSE_HEADER));
 
 		log.info("Successfully added Google Analytics data to Response.");
 		return userMap;
-
 	}
 
 	/**
-	 *
 	 * @param username
 	 * @param centralUserInfoDTO
 	 * @param centralUserInfo
@@ -208,5 +201,4 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		json.put("analyticsSwitch", settings.isAnalyticsSwitch());
 		return json;
 	}
-
 }

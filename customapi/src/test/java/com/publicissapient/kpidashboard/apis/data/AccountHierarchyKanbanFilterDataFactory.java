@@ -33,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author sansharm13
- *
  */
 @Slf4j
 public class AccountHierarchyKanbanFilterDataFactory {
@@ -85,5 +84,4 @@ public class AccountHierarchyKanbanFilterDataFactory {
 	public List<AccountHierarchyDataKanban> getAccountHierarchyKanbanDataList() {
 		return accountHierarchyDataKanban;
 	}
-
 }

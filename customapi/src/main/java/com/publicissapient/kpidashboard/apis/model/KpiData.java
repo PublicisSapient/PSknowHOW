@@ -37,4 +37,5 @@ public class KpiData {
 	private String value1;
 	private Double kpiValue1;
 	private boolean showDenominator;
+	private boolean isMultipleValue;
 }

@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -32,15 +31,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "referenceName", "name", "url" })
+@JsonPropertyOrder({"referenceName", "name", "url"})
 public class Field {
 
 	@JsonProperty("referenceName")
 	private String referenceName;
+
 	@JsonProperty("name")
 	private String name;
+
 	@JsonProperty("url")
 	private String url;
+
 	@JsonIgnore
 	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -89,5 +91,4 @@ public class Field {
 		return new ToStringBuilder(this).append("referenceName", referenceName).append("name", name).append("url", url)
 				.append("additionalProperties", additionalProperties).toString();
 	}
-
 }

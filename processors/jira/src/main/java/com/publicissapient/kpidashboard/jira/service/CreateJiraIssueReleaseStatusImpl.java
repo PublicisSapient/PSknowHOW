@@ -36,7 +36,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
- *
  */
 @Slf4j
 @Service
@@ -78,5 +77,4 @@ public class CreateJiraIssueReleaseStatusImpl implements CreateJiraIssueReleaseS
 			log.info("project status category is already in db for the project : {} ", basicProjectConfigId);
 		}
 	}
-
 }

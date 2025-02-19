@@ -71,5 +71,4 @@ public class BitBucketServerURIBuilderTests {
 		String expected = "http://localhost:9999/rest/api/1.0/projects/testproject/repos/testRepoSlug/commits?limit=25&until=release%2Fcore-r4.4";
 		Assert.assertEquals(expected, url);
 	}
-
 }

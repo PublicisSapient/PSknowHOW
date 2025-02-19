@@ -67,9 +67,8 @@ public class RolesHelperServiceImpl implements RolesHelperService {
 
 	/**
 	 * Fetch a role by id.
-	 * 
-	 * @param id
 	 *
+	 * @param id
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -92,15 +91,13 @@ public class RolesHelperServiceImpl implements RolesHelperService {
 			log.info("Roles Db returned null");
 			return new ServiceResponse(false, "role@" + id + " does not exist", null);
 		}
-
 	}
 
 	/**
 	 * Modify/Update a role by id.
-	 * 
+	 *
 	 * @param id,
-	 *            RoleData
-	 * 
+	 *          RoleData
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -131,7 +128,6 @@ public class RolesHelperServiceImpl implements RolesHelperService {
 	 * Create a role in the database.
 	 *
 	 * @param role
-	 *
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -155,18 +151,16 @@ public class RolesHelperServiceImpl implements RolesHelperService {
 	 * Permissions
 	 *
 	 * @param role
-	 *
 	 * @return Boolean
 	 */
 	private Boolean isRoleDataValid(RoleData role) {
 
-		if (StringUtils.isEmpty(role.getRoleName()) || StringUtils.isEmpty(role.getRoleDescription())
-				|| CollectionUtils.isEmpty(role.getPermissions())) {
+		if (StringUtils.isEmpty(role.getRoleName()) || StringUtils.isEmpty(role.getRoleDescription()) ||
+				CollectionUtils.isEmpty(role.getPermissions())) {
 			log.info("Mandatory fields need to filled");
 			return false;
 		}
 		log.info("Valid role object");
 		return true;
 	}
-
 }

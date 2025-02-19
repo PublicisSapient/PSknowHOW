@@ -23,7 +23,6 @@ public class HierarchyLevelSuggestionsServiceImpl implements HierarchyLevelSugge
 		return hierarchyLevelSuggestionRepository.findAll();
 	}
 
-
 	@Override
 	public HierarchyLevelSuggestion addIfNotPresent(String hierarchyLevelId, String hierarchyValue) {
 
@@ -39,7 +38,6 @@ public class HierarchyLevelSuggestionsServiceImpl implements HierarchyLevelSugge
 			suggestions.add(normalizeHierarchyValue);
 			hierarchyLevelSuggestion.setValues(suggestions);
 			addedHierarchyLevel = hierarchyLevelSuggestionRepository.save(hierarchyLevelSuggestion);
-
 		}
 
 		if (Objects.nonNull(existingHierarchyLevel) && CollectionUtils.isNotEmpty(existingHierarchyLevel.getValues())) {

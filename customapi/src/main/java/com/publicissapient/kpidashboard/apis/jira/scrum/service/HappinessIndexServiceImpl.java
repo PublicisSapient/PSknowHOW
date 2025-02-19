@@ -84,19 +84,17 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 	 * @throws ApplicationException
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-
 			Filters filters = Filters.getFilter(k);
 			if (Filters.SPRINT == filters) {
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
-
 		});
 
 		log.debug("[HAPPINESS-INDEX-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
@@ -104,7 +102,8 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.HAPPINESS_INDEX_RATE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.HAPPINESS_INDEX_RATE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.HAPPINESS_INDEX_RATE);
 		kpiElement.setTrendValueList(trendValues);
 
 		return kpiElement;
@@ -129,8 +128,8 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 		String startDate;
 		String endDate;
 
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
+		sprintLeafNodeList.sort(
+				(node1, node2) -> node1.getSprintFilter().getStartDate().compareTo(node2.getSprintFilter().getStartDate()));
 
 		startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
@@ -146,15 +145,13 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 
 				// Finding total ratings for a particular project and sprint
 				List<Integer> totalRatings = happinessKpiDataList.stream()
-						.filter(data -> data.getBasicProjectConfigId().toString().equals(
-								sd.getBasicProjectConfigId().toString()) && data.getSprintID().equals(sd.getSprintID()))
-						.flatMap(filteredData -> filteredData.getUserRatingList().stream()
-								.map(UserRatingData::getRating))
+						.filter(data -> data.getBasicProjectConfigId().toString().equals(sd.getBasicProjectConfigId().toString()) &&
+								data.getSprintID().equals(sd.getSprintID()))
+						.flatMap(filteredData -> filteredData.getUserRatingList().stream().map(UserRatingData::getRating))
 						.filter(Objects::nonNull).collect(Collectors.toList());
 
 				sprintWiseHappinessIndexNumbers.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
 						totalRatings);
-
 			});
 		}
 
@@ -165,8 +162,8 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 			// Leaf node wise data
 			String trendLineName = node.getProjectFilter().getName();
 			String currentSprintComponentId = node.getSprintFilter().getId();
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
+			Pair<String, String> currentNodeIdentifier = Pair.of(node.getProjectFilter().getBasicProjectConfigId().toString(),
+					currentSprintComponentId);
 			Double happinessIndexValue = 0.0;
 
 			if (CollectionUtils.isNotEmpty(sprintWiseHappinessIndexNumbers.get(currentNodeIdentifier))) {
@@ -190,12 +187,10 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 			dataCount.setHoverValue(new HashMap<>());
 			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
 			trendValueList.add(dataCount);
-
 		}
 
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.HAPPINESS_INDEX_RATE.getColumns());
-
 	}
 
 	/**
@@ -216,7 +211,6 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 					.filter(data -> data.getSprintID().equals(sprintId)).collect(Collectors.toList());
 			KPIExcelUtility.populateHappinessIndexExcelData(sprintName, excelData, happinessKpiSprintDataList);
 		}
-
 	}
 
 	/**
@@ -254,8 +248,8 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
 		List<HappinessKpiData> happinessKpiDataList = happinessKpiDataRepository.findBySprintIDIn(sprintList);
 		// filtering rating of 0 i.e not entered any rating
-		happinessKpiDataList.forEach(happinessKpiData -> happinessKpiData.getUserRatingList().removeIf(
-				userRatingData -> userRatingData.getRating() == null || userRatingData.getRating().equals(0)));
+		happinessKpiDataList.forEach(happinessKpiData -> happinessKpiData.getUserRatingList()
+				.removeIf(userRatingData -> userRatingData.getRating() == null || userRatingData.getRating().equals(0)));
 		resultListMap.put(SPRINT_DETAILS, sprintDetails);
 		resultListMap.put(HAPPINESS_INDEX_DETAILS, happinessKpiDataList);
 
@@ -271,5 +265,4 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI149(), KPICode.HAPPINESS_INDEX_RATE.getKpiId());
 	}
-
 }

@@ -27,9 +27,7 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 
-/**
- * Interface FeatureHistoryCustomQueryRepository.
- */
+/** Interface FeatureHistoryCustomQueryRepository. */
 @Repository
 public interface JiraIssueHistoryCustomQueryRepository {
 
@@ -37,13 +35,13 @@ public interface JiraIssueHistoryCustomQueryRepository {
 	 * Find feature custom history story project wise list.
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @param uniqueProjectMap
-	 *            the unique project map
+	 *          the unique project map
 	 * @return the list
 	 */
 	List<JiraIssueCustomHistory> findFeatureCustomHistoryStoryProjectWise(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap , Sort.Direction sortMethod);
+			Map<String, Map<String, Object>> uniqueProjectMap, Sort.Direction sortMethod);
 
 	/**
 	 * find jira issue based on filter and date
@@ -63,23 +61,22 @@ public interface JiraIssueHistoryCustomQueryRepository {
 	 * @param mapOfFilters
 	 * @param uniqueProjectMap
 	 * @return List<JiraIssueCustomHistory>
-	 *
 	 */
 	List<JiraIssueCustomHistory> findByFilterAndFromStatusMap(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap);
 
 	List<JiraIssueCustomHistory> findByFilterAndFromReleaseMap(List<String> basicProjectConfigId,
 			List<Pattern> releaseList);
+
 	/**
-	 *  find jira issue based on filter and date
+	 * find jira issue based on filter and date
+	 *
 	 * @param mapOfFilters
 	 * @param uniqueProjectMap
 	 * @param dateFrom
 	 * @param dateTo
 	 * @return
 	 */
-
 	List<JiraIssueCustomHistory> findByFilterAndFromStatusMapWithDateFilter(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo);
-
 }

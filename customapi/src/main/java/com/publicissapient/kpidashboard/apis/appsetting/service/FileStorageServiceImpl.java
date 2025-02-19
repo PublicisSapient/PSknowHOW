@@ -52,7 +52,6 @@ import lombok.extern.slf4j.Slf4j;
  * class managing all requests to the Excel based MVP on executive dash board.
  *
  * @author pkum34
- *
  */
 @Slf4j
 @Service
@@ -65,7 +64,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 	private static final String INVALID_UPLOAD_TYPE = "202";
 	private static final String FILE_SAVE_ERROR = "203";
 	private static final ModelMapper modelMapper = new ModelMapper();
-	private static final long MAX_FILE_SIZE = 100000;// Maximum file size in bytes
+	private static final long MAX_FILE_SIZE = 100000; // Maximum file size in bytes
 	@Autowired
 	CustomApiConfig customApiConfig;
 	@Autowired
@@ -73,9 +72,9 @@ public class FileStorageServiceImpl implements FileStorageService {
 
 	/**
 	 * Uploads <tt>Logo</tt> file
-	 * 
+	 *
 	 * @param multifile
-	 *            ``
+	 *          ``
 	 * @return baseResponse with success message if file uploads successfully.
 	 */
 	@Override
@@ -86,7 +85,8 @@ public class FileStorageServiceImpl implements FileStorageService {
 			multipartFile = modelMapper.map(multifile, MultiPartFileDTO.class);
 			writeToFile(multipartFile.getOriginalFilename(), multipartFile.getBytes());
 			String extension = multipartFile.getOriginalFilename();
-			boolean isValidFileExtension = (null != extension) && (extension.matches(".*\\.(pg|PG|png|PNG|JPEG|jpeg|jpg|JPG|gif|GIF|bmp|BMP)$"));
+			boolean isValidFileExtension = (null != extension) &&
+					(extension.matches(".*\\.(pg|PG|png|PNG|JPEG|jpeg|jpg|JPG|gif|GIF|bmp|BMP)$"));
 			if (!isValidFileExtension) {
 				return new ServiceResponse(false, "Invalid upload type", INVALID_UPLOAD_TYPE);
 			}
@@ -141,8 +141,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 
 	private boolean isValidFile(MultiPartFileDTO multipartFile) {
 		String extension = multipartFile.getOriginalFilename();
-		boolean isValidFileExtension = (null != extension)
-				&& (extension.endsWith(".xlsx") || extension.endsWith(".XLSX"));
+		boolean isValidFileExtension = (null != extension) && (extension.endsWith(".xlsx") || extension.endsWith(".XLSX"));
 		boolean isValidFormat = false;
 		try {
 			isValidFormat = true;
@@ -154,7 +153,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 
 	/**
 	 * Writes to file from <tt>content</tt>
-	 * 
+	 *
 	 * @param fileName
 	 * @param content
 	 * @throws IOException
@@ -167,7 +166,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 
 	/**
 	 * Gets Logo from MongoDB GridFS which matches with the <tt>FILE_NAME</tt>
-	 * 
+	 *
 	 * @return logo
 	 */
 	@Override
@@ -186,9 +185,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 			} catch (IOException ioException) {
 
 				log.error("Exception while writing logo image:", ioException);
-
 			}
-
 		});
 
 		return logo;
@@ -196,7 +193,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 
 	/**
 	 * Deletes <tt>Logo</tt> file which matches <tt>FILE_NAME</tt> in the query
-	 * 
+	 *
 	 * @return true after Logo is deleted
 	 */
 	@Override
@@ -205,5 +202,4 @@ public class FileStorageServiceImpl implements FileStorageService {
 		gridOperations.delete(new Query().addCriteria(Criteria.where(FILE_NAME).is(fileName)));
 		return true;
 	}
-
 }

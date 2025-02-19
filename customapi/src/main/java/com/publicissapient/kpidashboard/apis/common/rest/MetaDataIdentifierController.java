@@ -20,7 +20,7 @@ public class MetaDataIdentifierController {
 	@Autowired
 	private MetaDataIdentifierService metaDataIdentifierService;
 
-	@GetMapping(value = { "/{basicConfigId}" })
+	@GetMapping(value = {"/{basicConfigId}"})
 	public ResponseEntity<List<MetadataIdentifierDTO>> getTemplateNames(@PathVariable String basicConfigId) {
 		return new ResponseEntity<>(metaDataIdentifierService.getTemplateDetails(), HttpStatus.OK);
 	}

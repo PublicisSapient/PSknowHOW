@@ -30,9 +30,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * The type Project version.
- */
+/** The type Project version. */
 @Data
 @Builder
 @Getter
@@ -53,12 +51,10 @@ public class ProjectVersion {
 	public boolean equals(Object obj) {
 		if (obj instanceof ProjectVersion) {
 			ProjectVersion that = (ProjectVersion) obj;
-			return Objects.equal(this.id, that.id) && Objects.equal(this.name, that.name)
-					&& Objects.equal(this.description, that.description)
-					&& Objects.equal(this.isArchived, that.isArchived)
-					&& Objects.equal(this.isReleased, that.isReleased)
-					&& Objects.equal(this.releaseDate, that.releaseDate)
-					&& Objects.equal(this.startDate, that.startDate);
+			return Objects.equal(this.id, that.id) && Objects.equal(this.name, that.name) &&
+					Objects.equal(this.description, that.description) && Objects.equal(this.isArchived, that.isArchived) &&
+					Objects.equal(this.isReleased, that.isReleased) && Objects.equal(this.releaseDate, that.releaseDate) &&
+					Objects.equal(this.startDate, that.startDate);
 		}
 		return false;
 	}
@@ -67,5 +63,4 @@ public class ProjectVersion {
 	public int hashCode() {
 		return Objects.hashCode(id, name, description, isArchived, isReleased, releaseDate, startDate);
 	}
-
 }

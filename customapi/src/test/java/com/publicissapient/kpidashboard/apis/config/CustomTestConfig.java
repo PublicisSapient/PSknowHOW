@@ -33,9 +33,7 @@ import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 
-/**
- * Spring context configuration for Testing purposes
- */
+/** Spring context configuration for Testing purposes */
 @Configuration
 @PropertySource("classpath:/application.properties")
 public class CustomTestConfig {
@@ -69,5 +67,4 @@ public class CustomTestConfig {
 		cacheManager.setCacheNames(caches);
 		return cacheManager;
 	}
-
 }

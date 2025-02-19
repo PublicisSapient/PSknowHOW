@@ -30,5 +30,4 @@ public class SSOController {
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
-
 }

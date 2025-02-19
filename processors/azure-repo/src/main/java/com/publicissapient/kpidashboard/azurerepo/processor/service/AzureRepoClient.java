@@ -27,21 +27,18 @@ import com.publicissapient.kpidashboard.common.model.processortool.ProcessorTool
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
 
-/**
- * AzureRepoClient for getting all commits from AzureRepo
- */
+/** AzureRepoClient for getting all commits from AzureRepo */
 public interface AzureRepoClient {
 
 	/**
 	 * Get all commits.
 	 *
-	 * 
 	 * @param azurerepoRepo
-	 *            azurerepoRepo
+	 *          azurerepoRepo
 	 * @param firstTimeRun
-	 *            firstTimeRun
+	 *          firstTimeRun
 	 * @param azureRepoProcessorInfo
-	 *            azureRepoProcessorInfo
+	 *          azureRepoProcessorInfo
 	 * @return list
 	 * @throws FetchingCommitException
 	 */
@@ -50,7 +47,5 @@ public interface AzureRepoClient {
 			throws FetchingCommitException;
 
 	List<MergeRequests> fetchAllMergeRequest(AzureRepoModel azurerepoRepo, boolean firstTimeRun,
-			ProcessorToolConnection azureRepoProcessorInfo, ProjectBasicConfig proBasicConfig)
-			throws FetchingCommitException;
-
+			ProcessorToolConnection azureRepoProcessorInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException;
 }

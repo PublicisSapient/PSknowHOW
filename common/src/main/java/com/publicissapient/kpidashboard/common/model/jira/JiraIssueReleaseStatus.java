@@ -43,5 +43,4 @@ public class JiraIssueReleaseStatus extends BasicModel {
 	private Map<Long, String> toDoList;
 	private Map<Long, String> inProgressList;
 	private Map<Long, String> closedList;
-
 }

@@ -25,9 +25,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Represents defect aging response.
- */
+/** Represents defect aging response. */
 @Data
 @Builder
 @AllArgsConstructor

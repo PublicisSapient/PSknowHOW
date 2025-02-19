@@ -21,6 +21,8 @@ package com.publicissapient.kpidashboard.apis.appsetting.service;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -31,9 +33,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.publicissapient.kpidashboard.apis.kpicolumnconfig.service.KpiColumnConfigService;
-import com.publicissapient.kpidashboard.common.model.application.KpiColumnConfigDTO;
-import com.publicissapient.kpidashboard.common.model.application.KpiColumnDetails;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -56,6 +55,7 @@ import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceKanba
 import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceKanbanR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.kpicolumnconfig.service.KpiColumnConfigService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelValidationDataResponse;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -65,7 +65,10 @@ import com.publicissapient.kpidashboard.apis.sonar.service.SonarServiceKanbanR;
 import com.publicissapient.kpidashboard.apis.sonar.service.SonarServiceR;
 import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrService;
 import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrServiceKanban;
+import com.publicissapient.kpidashboard.common.model.application.KpiColumnConfigDTO;
+import com.publicissapient.kpidashboard.common.model.application.KpiColumnDetails;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
 
@@ -152,7 +155,6 @@ public class KPIExcelDataServiceTest {
 			kpiMasterList.add(kpiMaster);
 		});
 		when(configHelperService.loadKpiMaster()).thenReturn(kpiMasterList);
-
 	}
 
 	private void createKpiElementList() {
@@ -219,7 +221,6 @@ public class KPIExcelDataServiceTest {
 		node.setGroupName(groupName);
 
 		return node;
-
 	}
 
 	private KpiElement setKpiElement(String kpiId, String kpiName, Object value,
@@ -233,7 +234,6 @@ public class KPIExcelDataServiceTest {
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
 
 		return kpiElement;
-
 	}
 
 	@After
@@ -256,44 +256,42 @@ public class KPIExcelDataServiceTest {
 		KpiRequest kpiRequest = createKpiRequestForSprint("kpi48", "", "Abcd");
 		when(kpiColumnConfigService.getByKpiColumnConfig(Mockito.any(), Mockito.any())).thenReturn(kpiColumnConfigDTO);
 		when(jiraServiceKanbanR.process(Mockito.any())).thenReturn(totalKpiElementList);
-		kpiExcelDataService
-				.process("kpi48", level, idList, acceptedFilterList, kpiRequest, true, false);
+		kpiExcelDataService.process("kpi48", level, idList, acceptedFilterList, kpiRequest, true, false);
 
 		KpiColumnConfigDTO kpiColumnConfigDTO1 = getKpiColumnConfigDTO("kpi61", new ObjectId("65118da7965fbb0d14bce23c"));
-		 createKpiRequestForRelease("kpi61", "", "release");
+		createKpiRequestForRelease("kpi61", "", "release");
 		when(kpiColumnConfigService.getByKpiColumnConfig(Mockito.any(), Mockito.any())).thenReturn(kpiColumnConfigDTO1);
 		when(sonarServiceKanbanR.process(Mockito.any())).thenReturn(totalKpiElementList);
-		kpiExcelDataService
-				.process("kpi61", level, idList, acceptedFilterList, kpiRequest, true, false);
+		kpiExcelDataService.process("kpi61", level, idList, acceptedFilterList, kpiRequest, true, false);
 
-		Assert.assertNotNull(kpiExcelDataService.process("kpi61", level, idList, acceptedFilterList, kpiRequest, true, false));
+		Assert.assertNotNull(
+				kpiExcelDataService.process("kpi61", level, idList, acceptedFilterList, kpiRequest, true, false));
 
 		KpiColumnConfigDTO kpiColumnConfigDTO2 = getKpiColumnConfigDTO("kpi63", new ObjectId("65118da7965fbb0d14bce23c"));
 		createKpiRequest("kpi63", "", "project");
 		when(kpiColumnConfigService.getByKpiColumnConfig(Mockito.any(), Mockito.any())).thenReturn(kpiColumnConfigDTO2);
 		when(zephyrServiceKanban.process(Mockito.any())).thenReturn(totalKpiElementList);
-		kpiExcelDataService
-				.process("kpi63", level, idList, acceptedFilterList, kpiRequest, true, false);
+		kpiExcelDataService.process("kpi63", level, idList, acceptedFilterList, kpiRequest, true, false);
 
-		Assert.assertNotNull(kpiExcelDataService.process("kpi63", level, idList, acceptedFilterList, kpiRequest, true, false));
+		Assert.assertNotNull(
+				kpiExcelDataService.process("kpi63", level, idList, acceptedFilterList, kpiRequest, true, false));
 
 		KpiColumnConfigDTO kpiColumnConfigDTO3 = getKpiColumnConfigDTO("kpi65", new ObjectId("65118da7965fbb0d14bce23c"));
 		createKpiRequest("kpi65", "", "project");
 		when(kpiColumnConfigService.getByKpiColumnConfig(Mockito.any(), Mockito.any())).thenReturn(kpiColumnConfigDTO3);
 		when(bitBucketServiceKanbanR.process(Mockito.any())).thenReturn(totalKpiElementList);
-		kpiExcelDataService
-				.process("kpi65", level, idList, acceptedFilterList, kpiRequest, true, false);
-		Assert.assertNotNull(kpiExcelDataService.process("kpi65", level, idList, acceptedFilterList, kpiRequest, true, false));
+		kpiExcelDataService.process("kpi65", level, idList, acceptedFilterList, kpiRequest, true, false);
+		Assert.assertNotNull(
+				kpiExcelDataService.process("kpi65", level, idList, acceptedFilterList, kpiRequest, true, false));
 
 		KpiColumnConfigDTO kpiColumnConfigDTO4 = getKpiColumnConfigDTO("kpi66", new ObjectId("65118da7965fbb0d14bce23c"));
 		createKpiRequest("kpi66", "", "project");
 		when(kpiColumnConfigService.getByKpiColumnConfig(Mockito.any(), Mockito.any())).thenReturn(kpiColumnConfigDTO4);
 		when(jenkinsServiceKanbanR.process(Mockito.any())).thenReturn(totalKpiElementList);
-		kpiExcelDataService
-				.process("kpi66", level, idList, acceptedFilterList, kpiRequest, true, false);
+		kpiExcelDataService.process("kpi66", level, idList, acceptedFilterList, kpiRequest, true, false);
 
-		Assert.assertNotNull(kpiExcelDataService.process("kpi48", level, idList, acceptedFilterList, kpiRequest, true, false));
-
+		Assert.assertNotNull(
+				kpiExcelDataService.process("kpi48", level, idList, acceptedFilterList, kpiRequest, true, false));
 	}
 
 	@Test
@@ -313,13 +311,21 @@ public class KPIExcelDataServiceTest {
 		kpiColumnConfigDTO.setSaveFlag(false);
 		kpiColumnConfigDTO.setKpiId("kpi48");
 		KpiRequest kpiRequest = createKpiRequestForSprint("kpi48", "", "sprint");
+
+		List<ObjectId> objectId = new ArrayList<>();
+		objectId.add(new ObjectId("65118da7965fbb0d14bce23c"));
+
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("65118da7965fbb0d14bce23c"));
+		projectBasicConfig.setProjectNodeId("projectId");
+		when(configHelperService.getProjectHierarchyProjectConfigMap(anyList())).thenReturn(objectId);
+		when(configHelperService.getProjectConfig(anyString())).thenReturn(projectBasicConfig);
 		when(kpiColumnConfigService.getByKpiColumnConfig(Mockito.any(), Mockito.any())).thenReturn(kpiColumnConfigDTO);
 		when(jiraServiceKanbanR.process(Mockito.any())).thenReturn(totalKpiElementList);
-		kpiExcelDataService
-				.process("kpi48", level, idList, acceptedFilterList, kpiRequest, true, false);
+		kpiExcelDataService.process("kpi48", level, idList, acceptedFilterList, kpiRequest, true, false);
 
-		Assert.assertNotNull(kpiExcelDataService.process("kpi48", level, idList, acceptedFilterList, kpiRequest, true, false));
-
+		Assert.assertNotNull(
+				kpiExcelDataService.process("kpi48", level, idList, acceptedFilterList, kpiRequest, true, false));
 	}
 
 	@Test
@@ -328,6 +334,16 @@ public class KPIExcelDataServiceTest {
 		level = 1;
 		idList.add("THPRO_THPRO");
 		acceptedFilterList.add(Filters.PROJECT.name());
+
+		List<ObjectId> objectId = new ArrayList<>();
+		objectId.add(new ObjectId("65118da7965fbb0d14bce23c"));
+
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("65118da7965fbb0d14bce23c"));
+		projectBasicConfig.setProjectNodeId("projectId");
+		when(configHelperService.getProjectHierarchyProjectConfigMap(anyList())).thenReturn(objectId);
+		when(configHelperService.getProjectConfig(anyString())).thenReturn(projectBasicConfig);
+		when(configHelperService.getProjectNodeIdWiseProjectConfig(anyString())).thenReturn(projectBasicConfig);
 
 		List<KpiElement> validationKpiElementList = new ArrayList<>();
 		validationKpiElementList.add(validationJiraKpiElement);
@@ -396,13 +412,12 @@ public class KPIExcelDataServiceTest {
 		idList.add("Test1");
 		idList.add("Test2");
 
-		Map<String, KpiRequest> kpiRequestSourceWiseMap = kpiExcelDataService.createKPIRequest(null, level, idList,
-				null, false);
+		Map<String, KpiRequest> kpiRequestSourceWiseMap = kpiExcelDataService.createKPIRequest(null, level, idList, null,
+				false);
 
 		assertArrayEquals(idList.parallelStream().toArray(String[]::new),
 				kpiRequestSourceWiseMap.get("EXCEL-SONAR").getIds());
 		assertThat("kpi request: ", kpiRequestSourceWiseMap.size(), equalTo(5));
-
 	}
 
 	@Test
@@ -420,7 +435,6 @@ public class KPIExcelDataServiceTest {
 		assertThat("kpi request: ", kpiRequestSourceWiseMap.get("EXCEL-JIRA").getKpiList().size(), equalTo(1));
 		assertThat("kpi request: ", kpiRequestSourceWiseMap.get("EXCEL-JIRA").getKpiList().get(0).getKpiId(),
 				equalTo("kpi14"));
-
 	}
 
 	private KpiRequest createKpiRequest(String kpiId, String kpiName, String label) {
@@ -435,13 +449,13 @@ public class KPIExcelDataServiceTest {
 		kpiElement.setChartType("gaugeChart");
 		kpiList.add(kpiElement);
 		kpiRequest.setLevel(2);
-		kpiRequest.setIds(new String[] { "7" });
+		kpiRequest.setIds(new String[]{"7"});
 		kpiRequest.setLabel(label);
 		// Hierarchy List created above is sent for processing.
 		kpiRequest.setKpiList(kpiList);
 		kpiRequest.setRequestTrackerId();
 		Map<String, List<String>> selectedMap = new HashMap<>();
-		if(label.equalsIgnoreCase("project")) {
+		if (label.equalsIgnoreCase("project")) {
 			selectedMap.put("project", Arrays.asList("THPRO_THPRO_65118da7965fbb0d14bce23c"));
 		} else if (label.equalsIgnoreCase("sprint")) {
 			selectedMap.put("sprint", Arrays.asList("345_THPRO_THPRO_65118da7965fbb0d14bce23c"));
@@ -467,7 +481,7 @@ public class KPIExcelDataServiceTest {
 		kpiElement.setChartType("gaugeChart");
 		kpiList.add(kpiElement);
 		kpiRequest.setLevel(2);
-		kpiRequest.setIds(new String[] { "7" });
+		kpiRequest.setIds(new String[]{"7"});
 		kpiRequest.setLabel(label);
 		// Hierarchy List created above is sent for processing.
 		kpiRequest.setKpiList(kpiList);
@@ -478,6 +492,7 @@ public class KPIExcelDataServiceTest {
 		kpiRequest.setSelectedMap(selectedMap);
 		return kpiRequest;
 	}
+
 	private KpiRequest createKpiRequestForRelease(String kpiId, String kpiName, String label) {
 		KpiRequest kpiRequest = new KpiRequest();
 		List<KpiElement> kpiList = new ArrayList<>();
@@ -490,7 +505,7 @@ public class KPIExcelDataServiceTest {
 		kpiElement.setChartType("gaugeChart");
 		kpiList.add(kpiElement);
 		kpiRequest.setLevel(2);
-		kpiRequest.setIds(new String[] { "7" });
+		kpiRequest.setIds(new String[]{"7"});
 		kpiRequest.setLabel(label);
 		// Hierarchy List created above is sent for processing.
 		kpiRequest.setKpiList(kpiList);
@@ -502,5 +517,4 @@ public class KPIExcelDataServiceTest {
 		kpiRequest.setSelectedMap(selectedMap);
 		return kpiRequest;
 	}
-
 }

@@ -15,14 +15,16 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1120;
 
-import com.mongodb.client.model.UpdateOptions;
-import io.mongock.api.annotations.ChangeUnit;
-import io.mongock.api.annotations.Execution;
-import io.mongock.api.annotations.RollbackExecution;
+import java.util.List;
+
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.util.List;
+import com.mongodb.client.model.UpdateOptions;
+
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
 
 @ChangeUnit(id = "dashboard_label_update", order = "11201", author = "kunkambl", systemVersion = "11.2.0")
 public class DashboardLabelUpdate {
@@ -46,10 +48,8 @@ public class DashboardLabelUpdate {
 
 	private void updateBoardNames(String oldBoardNameKnowHow, String newBoardNameKnowHow, String oldBoardNameMaturity,
 			String newBoardNameMaturity) {
-		Document query = new Document("$or",
-				List.of(new Document("scrum.boardName", oldBoardNameKnowHow),
-						new Document("kanban.boardName", oldBoardNameKnowHow),
-						new Document("others.boardName", oldBoardNameMaturity)));
+		Document query = new Document("$or", List.of(new Document("scrum.boardName", oldBoardNameKnowHow),
+				new Document("kanban.boardName", oldBoardNameKnowHow), new Document("others.boardName", oldBoardNameMaturity)));
 
 		Document update = new Document("$set",
 				new Document().append("scrum.$[scrumElem].boardName", newBoardNameKnowHow)
@@ -66,7 +66,6 @@ public class DashboardLabelUpdate {
 
 		mongoTemplate.getCollection("kpi_master").updateOne(new Document("kpiId", "kpi989"),
 				new Document("$set", new Document("kpiCategory", newBoardNameMaturity)));
-
 	}
 
 	@RollbackExecution
@@ -74,5 +73,4 @@ public class DashboardLabelUpdate {
 		updateBoardNames(NEW_BOARD_NAME_MY_KNOWHOW, OLD_BOARD_NAME_MY_KNOWHOW, NEW_BOARD_NAME_KPI_MATURITY,
 				OLD_BOARD_NAME_KPI_MATURITY);
 	}
-
 }

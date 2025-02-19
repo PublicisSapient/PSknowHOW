@@ -16,7 +16,7 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<p-toast [style]="{marginTop: '80px'}"></p-toast>
+<p-toast [style]="{ marginTop: '80px' }"></p-toast>
 <div class="main p-pl-6 p-pr-6 p-pb-1">
   <div class="p-d-flex p-p-0 p-flex-column">
     <div class="nav-container" *ngIf="clone === 'false'">
@@ -37,15 +37,20 @@
         <div class="p-col-6 p-p-0">
           <div class="p-grid">
             <div class="p-col-12">
-              <div class="p-d-flex p-align-center p-jc-center position-relative p-pb-3">
-                <h5 class="card__primary__title__text p-mb-0">Set Project Details</h5>
+              <div
+                class="p-d-flex p-align-center p-jc-center position-relative p-pb-3"
+              >
+                <h5 class="card__primary__title__text p-mb-0">
+                  Set Project Details
+                </h5>
               </div>
               <p-messages severity="info">
                 <ng-template pTemplate>
                   <em class="pi pi-info-circle" style="font-size: 2rem"></em>
                   <div class="p-ml-2">
-                    In case you do not see the preferred selection for any level in the dropdowns,
-                    please contact your organization system admin.
+                    In case you do not see the preferred selection for any level
+                    in the dropdowns, please contact your organization system
+                    admin.
                   </div>
                 </ng-template>
               </p-messages>
@@ -62,16 +67,30 @@
           </div>
 
           <form (ngSubmit)="onSubmit()" [formGroup]="form">
-            <div class="p-mb-3 p-mt-3 p-pl-1 form-container" *ngFor="let field of formData">
+            <div
+              class="p-mb-3 p-mt-3 p-pl-1 form-container"
+              *ngFor="let field of formData; let index=index"
+            >
               <div [ngSwitch]="field.inputType">
                 <div *ngSwitchCase="'switch'">
                   <div class="p-mb-3 p-mt-3 p-pl-1">
-                    <label for="{{ field.hierarchyLevelId }}" class="is-kanban-label">Select {{
-                      field.hierarchyLevelName
-                      }} :&nbsp;&nbsp;</label>
-                    <p-selectButton styleClass="p-d-inline" [options]="projectTypeOptions" optionLabel="name"
-                      optionValue="value" [multiple]="false" required id="{{ field.hierarchyLevelId }}"
-                      [formControlName]="field.hierarchyLevelId">
+                    <label
+                      for="{{ field.hierarchyLevelId }}"
+                      class="is-kanban-label"
+                      >Select
+                      {{ field.hierarchyLevelName }} :&nbsp;&nbsp;</label
+                    >
+                    <p-selectButton
+                      styleClass="p-d-inline"
+                      [options]="projectTypeOptions"
+                      optionLabel="name"
+                      optionValue="value"
+                      [multiple]="false"
+                      required
+                      [disabled] = 'field.disabled'
+                      id="{{ field.hierarchyLevelId }}"
+                      [formControlName]="field.hierarchyLevelId"
+                    >
                     </p-selectButton>
                   </div>
                 </div>
@@ -90,34 +109,54 @@
                   </div>
                 </div>
                 <div *ngSwitchCase="'boolean'" class="p-mb-3">
-                  <ng-container *ngIf="ifSuperUser === true || isProjectAdmin === true">
-                    <p-inputSwitch name="{{field.hierarchyLevelId}}" id="{{field.hierarchyLevelId}}"
-                      [formControlName]="field.hierarchyLevelId">
+                  <ng-container
+                    *ngIf="ifSuperUser === true || isProjectAdmin === true"
+                  >
+                    <p-inputSwitch
+                      name="{{ field.hierarchyLevelId }}"
+                      id="{{ field.hierarchyLevelId }}"
+                      [formControlName]="field.hierarchyLevelId"
+                    >
                     </p-inputSwitch>
-                    <label for="{{field.hierarchyLevelId}}">
-                      {{field.label1}}
+                    <label for="{{ field.hierarchyLevelId }}">
+                      {{ field.label1 }}
                     </label>
-                    <br>
-                    <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
-                      for="{{field.hierarchyLevelId}}"></span>
-                    <span for="{{field.hierarchyLevelId}}" style="font-size: small;color: #333;">
-                      {{field.label2}}
+                    <br />
+                    <span
+                      class="fa fa-info-circle kpi-info-icon"
+                      aria-hidden="true"
+                      for="{{ field.hierarchyLevelId }}"
+                    ></span>
+                    <span
+                      for="{{ field.hierarchyLevelId }}"
+                      style="font-size: small; color: #333"
+                    >
+                      {{ field.label2 }}
                     </span>
                   </ng-container>
                 </div>
                 <div *ngSwitchDefault>
                   <span class="p-float-label w-50 p-mr-3">
-                    <p-autoComplete id="{{ field.hierarchyLevelId }}" [formControlName]="field.hierarchyLevelId"
-                      [style]="{'width':'500px'}" [suggestions]="field.filteredSuggestions"
-                      (completeMethod)="search($event, field)" required="required" [dropdown]="true" field="name">
-                      <ng-template let-country pTemplate="item">
-                        <div class="country-item">
-                          <div>{{country.name}}</div>
+                    <p-autoComplete
+                      id="{{ field.hierarchyLevelId }}"
+                      [formControlName]="field.hierarchyLevelId"
+                      [style]="{ width: '500px' }"
+                      [suggestions]="(field.filteredSuggestions && field.filteredSuggestions.length) ? field.filteredSuggestions : field.list"
+                      (completeMethod)="search({ query: $event.query }, field, index)"
+                      required="required"
+                      [dropdown]="true"
+                      field="nodeDisplayName"
+                      [forceSelection]="isSpeedSuite === true ? true : false"
+                      (onSelect)="onSelectOfDropdown($event, field)"
+                      [(ngModel)]="selectedItems[field.hierarchyLevelId]"
+                    >
+                      <ng-template let-listItem pTemplate="item">
+                        <div class="listItem-item">
+                          <div>{{ listItem.nodeDisplayName }} <span class="parent_span">{{getNodeDisplayNameById(listItem.parentId, field)}}</span></div>
                         </div>
                       </ng-template>
                     </p-autoComplete>
-                    <label for="{{ field.hierarchyLevelId }}">Select {{ field.hierarchyLevelName
-                      }}</label>
+                    <label for="{{ field.hierarchyLevelId }}">Select {{ field.hierarchyLevelIdName }}</label>
                   </span>
                 </div>
               </div>
@@ -129,7 +168,6 @@
                 icon="pi pi-save" iconPos="left" [label]="getButtonLabel()" [disabled]="!form.valid"></button>
             </div>
           </form>
-
         </div>
       </ng-container>
       <ng-container *ngIf="isProjectCOmpletionPopup">
@@ -138,7 +176,7 @@
             <h5 *ngIf = "!getConeStatusFlag()" class="card__primary__title__text p-mb-0">
               Project “{{selectedProject?.['name']}}” successfully added. Connect Tools to sync KPI’s.</h5>
             <h5 *ngIf = "getConeStatusFlag()" class="card__primary__title__text p-mb-0">
-              Cloned project “{{selectedProject?.['name']}}” successfully added. 
+              Cloned project “{{selectedProject?.['name']}}” successfully added.
               Proceed to Project Configuration to review and make any necessary changes.
             </h5>
           </div>
@@ -152,7 +190,6 @@
             <label><a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject?.id]"
                 [queryParams]="{tab: 1}">Continue to Tool Connections</a></label>
           </div>
-
           <div *ngIf = "getConeStatusFlag()" class="p-d-flex p-jc-center p-pb-3">
             <label><a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject?.id]"
                       [queryParams]="{ type: selectedProject?.Type, tab: 2 }">

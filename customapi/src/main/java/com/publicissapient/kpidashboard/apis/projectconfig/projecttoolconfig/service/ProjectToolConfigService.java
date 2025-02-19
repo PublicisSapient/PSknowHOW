@@ -20,21 +20,21 @@ package com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.se
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
-import org.bson.types.ObjectId;
 
 /**
  * @author yasbano
  * @author dilipkr
- *
  */
 public interface ProjectToolConfigService {
 
 	/**
 	 * Get all tools.
-	 * 
+	 *
 	 * @return ServiceResponse with data object,message and status flag. Status flag
 	 *         is true, if data is found else false.
 	 */
@@ -42,7 +42,7 @@ public interface ProjectToolConfigService {
 
 	/**
 	 * Get tool by type.
-	 * 
+	 *
 	 * @param type
 	 * @return ServiceResponse with data object,message and status flag. Status flag
 	 *         is true, if data is found else false.
@@ -51,9 +51,8 @@ public interface ProjectToolConfigService {
 
 	/**
 	 * Creates and save proejectTool. *
-	 * 
+	 *
 	 * @param projectToolConfig*
-	 * 
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -62,10 +61,9 @@ public interface ProjectToolConfigService {
 	/**
 	 * Modifies a project_tool_configs. Finds by @param proejcToolId and replaces it
 	 * with @param projectToolConfig *
-	 * 
+	 *
 	 * @param projectToolConfig
-	 * @param proejcToolId
-	 *            *
+	 * @param proejcToolId *
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -73,9 +71,9 @@ public interface ProjectToolConfigService {
 
 	/**
 	 * Gets tools of the project
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            mongo id of
+	 *          mongo id of
 	 * @return list of tools
 	 */
 	List<ProjectToolConfigDTO> getProjectToolConfigs(String basicProjectConfigId);
@@ -84,7 +82,7 @@ public interface ProjectToolConfigService {
 
 	/**
 	 * Gets tools of the project filtered by type
-	 * 
+	 *
 	 * @param basicProjectConfigId
 	 * @param type
 	 * @return
@@ -94,5 +92,4 @@ public interface ProjectToolConfigService {
 	boolean deleteTool(String basicProjectConfigId, String projectToolId);
 
 	boolean cleanToolData(String basicProjectConfigId, String projectToolId);
-
 }

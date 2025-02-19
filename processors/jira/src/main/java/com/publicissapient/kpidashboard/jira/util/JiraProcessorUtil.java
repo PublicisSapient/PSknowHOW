@@ -30,7 +30,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.joda.time.DateTime;
@@ -86,13 +85,13 @@ public class JiraProcessorUtil {
 	private static final String UNAUTHORIZED = "Sorry, you are not authorized to access the requested resource.";
 	private static final String TO_MANY_REQUEST = "Too many request try after sometime.";
 	private static final String OTHER_CLIENT_ERRORS = "An unexpected error has occurred. Please contact the KnowHow Support for assistance.";
-	private static final String FORBIDDEN="Forbidden, check your credentials.";
+	private static final String FORBIDDEN = "Forbidden, check your credentials.";
 
 	/**
 	 * This method return UTF-8 decoded string response
 	 *
 	 * @param jiraResponse
-	 *            Object of the Jira Response
+	 *          Object of the Jira Response
 	 * @return Decoded String
 	 */
 	public static String deodeUTF8String(Object jiraResponse) {
@@ -119,7 +118,7 @@ public class JiraProcessorUtil {
 	 * Formats Input date using ISODateTimeFormatter
 	 *
 	 * @param date
-	 *            date to be formatted
+	 *          date to be formatted
 	 * @return formatted Date String
 	 */
 	public static String getFormattedDate(String date) {
@@ -139,12 +138,12 @@ public class JiraProcessorUtil {
 	 * Processes Sprint Data
 	 *
 	 * @param data
-	 *            Sprint Data object
+	 *          Sprint Data object
 	 * @return List of sprints
 	 * @throws ParseException
-	 *             ParseException
+	 *           ParseException
 	 * @throws JSONException
-	 *             JSONException
+	 *           JSONException
 	 */
 	public static List<SprintDetails> processSprintDetail(Object data) throws ParseException, JSONException {
 		List<SprintDetails> sprints = new ArrayList<>();
@@ -179,10 +178,9 @@ public class JiraProcessorUtil {
 	 * Process Single Sprint Data
 	 *
 	 * @param sprintData
-	 *            single sprint data
+	 *          single sprint data
 	 * @return Sprint object
 	 */
-
 	public static SprintDetails processSingleSprint(String sprintData) {
 
 		SprintDetails sprint = null;
@@ -193,7 +191,6 @@ public class JiraProcessorUtil {
 			} else {
 				setSprintDetailsFromString(sprintData, sprint);
 			}
-
 		}
 		return sprint;
 	}
@@ -208,52 +205,54 @@ public class JiraProcessorUtil {
 
 			// just in case logic changes above
 			if (equalIndex > 0) {
-				String key = splitString.charAt(0) == ',' ? splitString.substring(1, equalIndex)
+				String key = splitString.charAt(0) == ','
+						? splitString.substring(1, equalIndex)
 						: splitString.substring(0, equalIndex);
-				String valueAsStr = equalIndex == splitString.length() - 1 ? ""
+				String valueAsStr = equalIndex == splitString.length() - 1
+						? ""
 						: splitString.substring(equalIndex + 1, splitString.length());
 
 				if ("<null>".equalsIgnoreCase(valueAsStr)) {
 					valueAsStr = null;
 				}
 				switch (key) {
-				case ID:
-					sprint.setOriginalSprintId(valueAsStr);
-					sprint.setSprintID(valueAsStr);
-					break;
-				case STATE:
-					sprint.setState(valueAsStr);
-					break;
-				case RAPIDVIEWID:
-					List<String> rapidViewIdList = new ArrayList<>();
-					rapidViewIdList.add(valueAsStr);
-					sprint.setOriginBoardId(rapidViewIdList);
-					break;
-				case NAME:
-					sprint.setSprintName(valueAsStr);
-					break;
-				case STARTDATE:
-					sprint.setStartDate(getFormattedDateForSprintDetails(valueAsStr));
-					break;
-				case ENDDATE:
-					sprint.setEndDate(getFormattedDateForSprintDetails(valueAsStr));
-					break;
-				case COMPLETEDATE:
-					sprint.setCompleteDate(getFormattedDateForSprintDetails(valueAsStr));
-					break;
-				case ACTIVATEDDATE:
-					sprint.setActivatedDate(getFormattedDateForSprintDetails(valueAsStr));
-					break;
-				case GOAL:
-					sprint.setGoal(valueAsStr);
-					break;
-				case BOARDID:
-					List<String> boardList = new ArrayList<>();
-					boardList.add(valueAsStr);
-					sprint.setOriginBoardId(boardList);
-					break;
-				default:
-					break;
+					case ID :
+						sprint.setOriginalSprintId(valueAsStr);
+						sprint.setSprintID(valueAsStr);
+						break;
+					case STATE :
+						sprint.setState(valueAsStr);
+						break;
+					case RAPIDVIEWID :
+						List<String> rapidViewIdList = new ArrayList<>();
+						rapidViewIdList.add(valueAsStr);
+						sprint.setOriginBoardId(rapidViewIdList);
+						break;
+					case NAME :
+						sprint.setSprintName(valueAsStr);
+						break;
+					case STARTDATE :
+						sprint.setStartDate(getFormattedDateForSprintDetails(valueAsStr));
+						break;
+					case ENDDATE :
+						sprint.setEndDate(getFormattedDateForSprintDetails(valueAsStr));
+						break;
+					case COMPLETEDATE :
+						sprint.setCompleteDate(getFormattedDateForSprintDetails(valueAsStr));
+						break;
+					case ACTIVATEDDATE :
+						sprint.setActivatedDate(getFormattedDateForSprintDetails(valueAsStr));
+						break;
+					case GOAL :
+						sprint.setGoal(valueAsStr);
+						break;
+					case BOARDID :
+						List<String> boardList = new ArrayList<>();
+						boardList.add(valueAsStr);
+						sprint.setOriginBoardId(boardList);
+						break;
+					default :
+						break;
 				}
 			}
 		}
@@ -281,13 +280,15 @@ public class JiraProcessorUtil {
 			boardIdList.add(boardId);
 			sprint.setOriginBoardId(boardIdList);
 			sprint.setSprintName(jsonNode.get(NAME) == null ? null : jsonNode.get(NAME).asText());
-			sprint.setStartDate(jsonNode.get(STARTDATE) == null ? null
-					: getFormattedDateForSprintDetails(jsonNode.get(STARTDATE).asText()));
-			sprint.setEndDate(jsonNode.get(ENDDATE) == null ? null
-					: getFormattedDateForSprintDetails(jsonNode.get(ENDDATE).asText()));
-			sprint.setCompleteDate(jsonNode.get(COMPLETEDATE) == null ? null
+			sprint.setStartDate(
+					jsonNode.get(STARTDATE) == null ? null : getFormattedDateForSprintDetails(jsonNode.get(STARTDATE).asText()));
+			sprint.setEndDate(
+					jsonNode.get(ENDDATE) == null ? null : getFormattedDateForSprintDetails(jsonNode.get(ENDDATE).asText()));
+			sprint.setCompleteDate(jsonNode.get(COMPLETEDATE) == null
+					? null
 					: getFormattedDateForSprintDetails(jsonNode.get(COMPLETEDATE).asText()));
-			sprint.setActivatedDate(jsonNode.get(ACTIVATEDDATE) == null ? null
+			sprint.setActivatedDate(jsonNode.get(ACTIVATEDDATE) == null
+					? null
 					: getFormattedDateForSprintDetails(jsonNode.get(ACTIVATEDDATE).asText()));
 			sprint.setGoal(jsonNode.get(GOAL) == null ? null : jsonNode.get(GOAL).asText());
 
@@ -339,9 +340,9 @@ public class JiraProcessorUtil {
 	 * into traceLog.
 	 *
 	 * @param processorExecutionTraceLog
-	 *            processorTraceLog
+	 *          processorTraceLog
 	 * @param stepContext
-	 *            stepContext
+	 *          stepContext
 	 */
 	public static ProcessorExecutionTraceLog saveChunkProgressInTrace(
 			ProcessorExecutionTraceLog processorExecutionTraceLog, StepContext stepContext) {
@@ -359,8 +360,8 @@ public class JiraProcessorUtil {
 		int pageStart = jobExecution.getExecutionContext().getInt(JiraConstants.PAGE_START, 0);
 		String boardId = jobExecution.getExecutionContext().getString(JiraConstants.BOARD_ID, "");
 
-		List<ProgressStatus> progressStatusList = Optional
-				.ofNullable(processorExecutionTraceLog.getProgressStatusList()).orElseGet(ArrayList::new);
+		List<ProgressStatus> progressStatusList = Optional.ofNullable(processorExecutionTraceLog.getProgressStatusList())
+				.orElseGet(ArrayList::new);
 		ProgressStatus progressStatus = new ProgressStatus();
 
 		String stepMsg = MessageFormat.format("Process Issues {0} to {1} out of {2}", pageStart, processedIssues,
@@ -401,19 +402,18 @@ public class JiraProcessorUtil {
 			if (hasStatusCode) {
 				int statusCode = Integer.parseInt(matcher.group(1));
 				switch (statusCode) {
-				case 401:
-					return UNAUTHORIZED;
-				case 429:
-					return TO_MANY_REQUEST;
-				case 403:
-					return FORBIDDEN;
-				default:
-					return OTHER_CLIENT_ERRORS;
+					case 401 :
+						return UNAUTHORIZED;
+					case 429 :
+						return TO_MANY_REQUEST;
+					case 403 :
+						return FORBIDDEN;
+					default :
+						return OTHER_CLIENT_ERRORS;
 				}
 			}
 			return OTHER_CLIENT_ERRORS;
 		}
 		return null;
 	}
-
 }

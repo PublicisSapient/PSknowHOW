@@ -8,5 +8,4 @@ import lombok.Data;
 public class AdditionalFilter {
 	private String filterId;
 	private List<AdditionalFilterValue> filterValues;
-
 }

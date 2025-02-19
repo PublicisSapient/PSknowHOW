@@ -20,20 +20,20 @@ package com.publicissapient.kpidashboard.common.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.converter.ZonedDateTimeReadConverter;
-import com.publicissapient.kpidashboard.common.converter.ZonedDateTimeWriteConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 
 import com.publicissapient.kpidashboard.common.converter.DateToJodaDateTimeConverter;
+import com.publicissapient.kpidashboard.common.converter.ZonedDateTimeReadConverter;
+import com.publicissapient.kpidashboard.common.converter.ZonedDateTimeWriteConverter;
 
 @Configuration
 public class MongoConfig {
 	/**
 	 * Registering the Custom DateToJodaDateTimeConverter with mongo
-	 * 
+	 *
 	 * @return mongoCustomConversions
 	 */
 	@Bean
@@ -44,5 +44,4 @@ public class MongoConfig {
 		converters.add(new ZonedDateTimeWriteConverter());
 		return new MongoCustomConversions(converters);
 	}
-
 }

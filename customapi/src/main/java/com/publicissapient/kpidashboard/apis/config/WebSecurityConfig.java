@@ -58,13 +58,12 @@ import com.publicissapient.kpidashboard.common.constant.AuthType;
 import lombok.AllArgsConstructor;
 
 /**
- * Extension of {WebSecurityConfigurerAdapter} to provide configuration
- * for web security.
+ * Extension of {WebSecurityConfigurerAdapter} to provide configuration for web
+ * security.
  *
  * @author anisingh4
- *
- * @author pawkandp
- * Removed  the depricate WebSecurityConfigurerAdapter with new spring version 6+
+ * @author pawkandp Removed the depricate WebSecurityConfigurerAdapter with new
+ *         spring version 6+
  */
 @Configuration
 @EnableWebSecurity
@@ -73,129 +72,122 @@ import lombok.AllArgsConstructor;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig implements WebMvcConfigurer {
 
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+	private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private AuthenticationResultHandler authenticationResultHandler;
+	private AuthenticationResultHandler authenticationResultHandler;
 
-    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+	private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
-    private AuthenticationProvider standardAuthenticationProvider;
+	private AuthenticationProvider standardAuthenticationProvider;
 
-    private AuthProperties authProperties;
+	private AuthProperties authProperties;
 
-    private CustomApiConfig customApiConfig;
+	private CustomApiConfig customApiConfig;
 
-    private StandardAuthenticationManager authenticationManager;
+	private StandardAuthenticationManager authenticationManager;
 
-    public static Properties getProps() throws IOException {
-        Properties prop = new Properties();
-        try (InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("crowd.properties")) {
-            prop.load(in);
-        }
-        return prop;
-    }
+	public static Properties getProps() throws IOException {
+		Properties prop = new Properties();
+		try (InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("crowd.properties")) {
+			prop.load(in);
+		}
+		return prop;
+	}
 
-    /**
-     * Added below fixes for security scan: - commented the headers in the response
-     * - added CorsFilter in filter chain for endpoints mentioned in the method
-     *
-     * @param http - reference to HttpSecurity
-     */
-    @Bean
-    protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // Configure AuthenticationManagerBuilder
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        setAuthenticationProvider(authenticationManagerBuilder);
-        http.headers(headers -> headers.cacheControl(HeadersConfigurer.CacheControlConfig::disable)
+	/**
+	 * Added below fixes for security scan: - commented the headers in the response
+	 * - added CorsFilter in filter chain for endpoints mentioned in the method
+	 *
+	 * @param http
+	 *          - reference to HttpSecurity
+	 */
+	@Bean
+	protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		// Configure AuthenticationManagerBuilder
+		AuthenticationManagerBuilder authenticationManagerBuilder = http
+				.getSharedObject(AuthenticationManagerBuilder.class);
+		setAuthenticationProvider(authenticationManagerBuilder);
+		http.headers(headers -> headers.cacheControl(HeadersConfigurer.CacheControlConfig::disable)
 				.httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(customApiConfig.isIncludeSubDomains())
 						.maxAgeInSeconds(customApiConfig.getMaxAgeInSeconds())));
-        http.csrf(AbstractHttpConfigurer::disable);
-        http.authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/appinfo").permitAll().requestMatchers("/registerUser")
-                        .permitAll().requestMatchers("/changePassword").permitAll().requestMatchers("/login/captcha").permitAll()
-                        .requestMatchers("/login/captchavalidate").permitAll().requestMatchers("/login**").permitAll()
-                        .requestMatchers("/error").permitAll().requestMatchers("/authenticationProviders").permitAll()
-                        .requestMatchers("/auth-types-status").permitAll().requestMatchers("/pushData/*").permitAll()
-                        .requestMatchers("/getversionmetadata").permitAll()
-                        .requestMatchers("/kpiIntegrationValues").permitAll()
-						.requestMatchers("/processor/saveRepoToolsStatus").permitAll()
-                        .requestMatchers("/v1/kpi/{kpiID}").permitAll()
-                        .requestMatchers("/basicconfigs/hierarchyResponses").permitAll()
+		http.csrf(AbstractHttpConfigurer::disable);
+		http.authorizeHttpRequests(authz -> authz.requestMatchers("/appinfo").permitAll().requestMatchers("/registerUser")
+				.permitAll().requestMatchers("/changePassword").permitAll().requestMatchers("/login/captcha").permitAll()
+				.requestMatchers("/login/captchavalidate").permitAll().requestMatchers("/login**").permitAll()
+				.requestMatchers("/error").permitAll().requestMatchers("/authenticationProviders").permitAll()
+				.requestMatchers("/auth-types-status").permitAll().requestMatchers("/pushData/*").permitAll()
+				.requestMatchers("/getversionmetadata").permitAll().requestMatchers("/kpiIntegrationValues").permitAll()
+				.requestMatchers("/processor/saveRepoToolsStatus").permitAll().requestMatchers("/v1/kpi/{kpiID}").permitAll()
+				.requestMatchers("/basicconfigs/hierarchyResponses").permitAll()
 
-                        // management metrics
-                        .requestMatchers("/info").permitAll().requestMatchers("/health").permitAll().requestMatchers("/env").permitAll()
-                        .requestMatchers("/metrics").permitAll()
-                        .requestMatchers("/actuator/togglz**").permitAll()
-                        .requestMatchers("/togglz-console**").permitAll()
-                        .requestMatchers("hierarchy/migrate/**").permitAll()
-                        .requestMatchers("/actuator**").permitAll()
-                        .requestMatchers("/forgotPassword").permitAll()
-                        .requestMatchers("/validateEmailToken**").permitAll()
-                        .requestMatchers("/resetPassword").permitAll()
-                        .requestMatchers("/cache/**").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/analytics/switch").permitAll().anyRequest().authenticated())
-                .addFilterBefore(standardLoginRequestFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(corsFilter(), ChannelProcessingFilter.class)
-                .httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint()))
-                .exceptionHandling(Customizer.withDefaults());
-        return http.build();
-    }
+				// management metrics
+				.requestMatchers("/info").permitAll().requestMatchers("/health").permitAll().requestMatchers("/env").permitAll()
+				.requestMatchers("/metrics").permitAll().requestMatchers("/actuator/togglz**").permitAll()
+				.requestMatchers("/togglz-console**").permitAll().requestMatchers("hierarchy/migrate/**").permitAll()
+				.requestMatchers("/actuator**").permitAll().requestMatchers("/forgotPassword").permitAll()
+				.requestMatchers("/validateEmailToken**").permitAll().requestMatchers("/resetPassword").permitAll()
+				.requestMatchers("/cache/**").permitAll().requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+				.requestMatchers(HttpMethod.GET, "/analytics/switch").permitAll().requestMatchers("/stringShortener/shorten")
+				.permitAll().requestMatchers("/stringShortener/longString").permitAll().anyRequest().authenticated())
+				.addFilterBefore(standardLoginRequestFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+				.addFilterAfter(corsFilter(), ChannelProcessingFilter.class)
+				.httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint()))
+				.exceptionHandling(Customizer.withDefaults());
+		return http.build();
+	}
 
-    @Bean
-    protected CorsFilter corsFilter() {
-        return new CorsFilter();
-    }
+	@Bean
+	protected CorsFilter corsFilter() {
+		return new CorsFilter();
+	}
 
-    protected void setAuthenticationProvider(AuthenticationManagerBuilder auth) {
-        List<AuthType> authenticationProviders = authProperties.getAuthenticationProviders();
+	protected void setAuthenticationProvider(AuthenticationManagerBuilder auth) {
+		List<AuthType> authenticationProviders = authProperties.getAuthenticationProviders();
 
-        if (authenticationProviders.contains(AuthType.STANDARD)) {
-            auth.authenticationProvider(standardAuthenticationProvider);
-        }
-    }
+		if (authenticationProviders.contains(AuthType.STANDARD)) {
+			auth.authenticationProvider(standardAuthenticationProvider);
+		}
+	}
 
-    @Bean
-    protected StandardLoginRequestFilter standardLoginRequestFilter(AuthenticationManager authenticationManager){
-        return new StandardLoginRequestFilter("/login", authenticationManager, authenticationResultHandler,
-                customAuthenticationFailureHandler, customApiConfig);
-    }
+	@Bean
+	protected StandardLoginRequestFilter standardLoginRequestFilter(AuthenticationManager authenticationManager) {
+		return new StandardLoginRequestFilter("/login", authenticationManager, authenticationResultHandler,
+				customAuthenticationFailureHandler, customApiConfig);
+	}
 
-    @Bean
-    CorsConfigurationSource apiConfigurationSource() {
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        final CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(customApiConfig.getCorsFilterValidOrigin());
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("OPTIONS");
-        config.addAllowedMethod("HEAD");
-        config.addAllowedMethod("GET");
-        config.addAllowedMethod("PUT");
-        config.addAllowedMethod("POST");
-        config.addAllowedMethod("DELETE");
-        config.addAllowedMethod("PATCH");
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
+	@Bean
+	CorsConfigurationSource apiConfigurationSource() {
+		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		final CorsConfiguration config = new CorsConfiguration();
+		config.setAllowCredentials(true);
+		config.setAllowedOrigins(customApiConfig.getCorsFilterValidOrigin());
+		config.addAllowedHeader("*");
+		config.addAllowedMethod("OPTIONS");
+		config.addAllowedMethod("HEAD");
+		config.addAllowedMethod("GET");
+		config.addAllowedMethod("PUT");
+		config.addAllowedMethod("POST");
+		config.addAllowedMethod("DELETE");
+		config.addAllowedMethod("PATCH");
+		source.registerCorsConfiguration("/**", config);
+		return source;
+	}
 
-    @Bean
-    public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() {
-        return new CustomAuthenticationEntryPoint();
-    }
+	@Bean
+	public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() {
+		return new CustomAuthenticationEntryPoint();
+	}
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().requestMatchers("/v3/api-docs.yaml", "/v3/api-docs/**", "/swagger-ui/**");
-    }
+	@Bean
+	public WebSecurityCustomizer webSecurityCustomizer() {
+		return web -> web.ignoring().requestMatchers("/v3/api-docs.yaml", "/v3/api-docs/**", "/swagger-ui/**");
+	}
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/swagger.yaml")
-                .addResourceLocations("classpath:/static/swagger.yaml");
-        registry.addResourceHandler("/swagger-ui/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/springfox-swagger-ui/");
-    }
-
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/swagger.yaml").addResourceLocations("classpath:/static/swagger.yaml");
+		registry.addResourceHandler("/swagger-ui/**")
+				.addResourceLocations("classpath:/META-INF/resources/webjars/springfox-swagger-ui/");
+	}
 }

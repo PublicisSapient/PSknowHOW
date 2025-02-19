@@ -18,17 +18,15 @@
 
 package com.publicissapient.kpidashboard.azurerepo.util;
 
+import java.time.Duration;
+
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 
-import java.time.Duration;
-
-/**
- * The Class AzurerepoRestOperations.
- */
+/** The Class AzurerepoRestOperations. */
 @Component
 public class AzureRepoRestOperations implements RestOperationsFactory<RestOperations> {
 
@@ -39,8 +37,8 @@ public class AzureRepoRestOperations implements RestOperationsFactory<RestOperat
 	 */
 	@Override
 	public RestOperations getTypeInstance() {
-		//TODO:setReadTimeOut is depricated and removed from spring
-		return new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(20_000)).
-				setReadTimeout(Duration.ofSeconds(20_000)).build();
+		// TODO:setReadTimeOut is depricated and removed from spring
+		return new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(20_000))
+				.setReadTimeout(Duration.ofSeconds(20_000)).build();
 	}
 }

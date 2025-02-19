@@ -27,9 +27,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
-import com.atlassian.jira.rest.client.api.domain.BasicComponent;
-import com.atlassian.jira.rest.client.api.domain.IssueField;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -41,7 +38,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.atlassian.jira.rest.client.api.domain.BasicComponent;
 import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueField;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.service.AdditionalFilterCategoryService;
@@ -62,94 +62,143 @@ public class AdditionalFilterHelperTest {
 	AdditionalFilterHelper additionalFilterHelper;
 
 	@Test
-    public void getAdditionalFilterTest(){
-
-        when(projectConfig.getBasicProjectConfigId()).thenReturn(ObjectId.get());
-        AdditionalFilterConfig additionalFilterConfig1=getAdditionalFilterConfig("afOne","Labels","",getValueSet());
-        AdditionalFilterConfig additionalFilterConfig2=getAdditionalFilterConfig("","","",getValueSet());
-        when(projectConfig.getFieldMapping()).thenReturn(getFieldMapping(Arrays.asList(additionalFilterConfig1,additionalFilterConfig2)));
-		assertEquals(0,additionalFilterHelper.getAdditionalFilter(issue,projectConfig).size());
-
-    }
-
-	@Test
-	public void getAdditionalFilterOtherTest(){
+	public void getAdditionalFilterTest() {
 
 		when(projectConfig.getBasicProjectConfigId()).thenReturn(ObjectId.get());
-		AdditionalFilterConfig additionalFilterConfig1=getAdditionalFilterConfig("afOne","Labels","",getValueSet());
-		AdditionalFilterConfig additionalFilterConfig2=getAdditionalFilterConfig("","","",getValueSet());
-		when(projectConfig.getFieldMapping()).thenReturn(getFieldMapping(Arrays.asList(additionalFilterConfig1,additionalFilterConfig2)));
-		List<AdditionalFilterCategory> additionalFilterCategories =new ArrayList<>();
-		additionalFilterCategories.add(getAdditionalFilterCategory(1,"afOne","Teams"));
-		additionalFilterCategories.add(getAdditionalFilterCategory(2,"afOne1","Teams1"));
-		when(additionalFilterCategoryService.getAdditionalFilterCategories()).thenReturn(additionalFilterCategories);
-		assertEquals(0,additionalFilterHelper.getAdditionalFilter(issue,projectConfig).size());
-
+		AdditionalFilterConfig additionalFilterConfig1 =
+				getAdditionalFilterConfig("afOne", "Labels", "", getValueSet());
+		AdditionalFilterConfig additionalFilterConfig2 =
+				getAdditionalFilterConfig("", "", "", getValueSet());
+		when(projectConfig.getFieldMapping())
+				.thenReturn(
+						getFieldMapping(Arrays.asList(additionalFilterConfig1, additionalFilterConfig2)));
+		assertEquals(0, additionalFilterHelper.getAdditionalFilter(issue, projectConfig).size());
 	}
 
 	@Test
-	public void getAdditionalFilterLabelsTest(){
+	public void getAdditionalFilterOtherTest() {
 
 		when(projectConfig.getBasicProjectConfigId()).thenReturn(ObjectId.get());
-		AdditionalFilterConfig additionalFilterConfig1=getAdditionalFilterConfig("afOne","Labels","",getValueSet());
-		AdditionalFilterConfig additionalFilterConfig2=getAdditionalFilterConfig("","","",getValueSet());
-		when(projectConfig.getFieldMapping()).thenReturn(getFieldMapping(Arrays.asList(additionalFilterConfig1,additionalFilterConfig2)));
-		List<AdditionalFilterCategory> additionalFilterCategories =new ArrayList<>();
-		additionalFilterCategories.add(getAdditionalFilterCategory(1,"afOne","Teams"));
-		additionalFilterCategories.add(getAdditionalFilterCategory(2,"afOne1","Teams1"));
-		when(additionalFilterCategoryService.getAdditionalFilterCategories()).thenReturn(additionalFilterCategories);
-		when(issue.getLabels()).thenReturn(getLabels("UI","Prod_defect"));
-		assertEquals(1,additionalFilterHelper.getAdditionalFilter(issue,projectConfig).size());
-
+		AdditionalFilterConfig additionalFilterConfig1 =
+				getAdditionalFilterConfig("afOne", "Labels", "", getValueSet());
+		AdditionalFilterConfig additionalFilterConfig2 =
+				getAdditionalFilterConfig("", "", "", getValueSet());
+		when(projectConfig.getFieldMapping())
+				.thenReturn(
+						getFieldMapping(Arrays.asList(additionalFilterConfig1, additionalFilterConfig2)));
+		List<AdditionalFilterCategory> additionalFilterCategories = new ArrayList<>();
+		additionalFilterCategories.add(getAdditionalFilterCategory(1, "afOne", "Teams"));
+		additionalFilterCategories.add(getAdditionalFilterCategory(2, "afOne1", "Teams1"));
+		when(additionalFilterCategoryService.getAdditionalFilterCategories())
+				.thenReturn(additionalFilterCategories);
+		assertEquals(0, additionalFilterHelper.getAdditionalFilter(issue, projectConfig).size());
 	}
 
 	@Test
-	public void getAdditionalFilterComponentsTest(){
+	public void getAdditionalFilterLabelsTest() {
 
 		when(projectConfig.getBasicProjectConfigId()).thenReturn(ObjectId.get());
-		AdditionalFilterConfig additionalFilterConfig1=getAdditionalFilterConfig("afOne","Component","",getValueSet());
-		AdditionalFilterConfig additionalFilterConfig2=getAdditionalFilterConfig("","","",getValueSet());
-		when(projectConfig.getFieldMapping()).thenReturn(getFieldMapping(Arrays.asList(additionalFilterConfig1,additionalFilterConfig2)));
-		List<AdditionalFilterCategory> additionalFilterCategories =new ArrayList<>();
-		additionalFilterCategories.add(getAdditionalFilterCategory(1,"afOne","Teams"));
-		additionalFilterCategories.add(getAdditionalFilterCategory(2,"afOne1","Teams1"));
-		when(additionalFilterCategoryService.getAdditionalFilterCategories()).thenReturn(additionalFilterCategories);
-		Iterable<BasicComponent> components =getComponents();
+		AdditionalFilterConfig additionalFilterConfig1 =
+				getAdditionalFilterConfig("afOne", "Labels", "", getValueSet());
+		AdditionalFilterConfig additionalFilterConfig2 =
+				getAdditionalFilterConfig("", "", "", getValueSet());
+		when(projectConfig.getFieldMapping())
+				.thenReturn(
+						getFieldMapping(Arrays.asList(additionalFilterConfig1, additionalFilterConfig2)));
+		List<AdditionalFilterCategory> additionalFilterCategories = new ArrayList<>();
+		additionalFilterCategories.add(getAdditionalFilterCategory(1, "afOne", "Teams"));
+		additionalFilterCategories.add(getAdditionalFilterCategory(2, "afOne1", "Teams1"));
+		when(additionalFilterCategoryService.getAdditionalFilterCategories())
+				.thenReturn(additionalFilterCategories);
+		when(issue.getLabels()).thenReturn(getLabels("UI", "Prod_defect"));
+		assertEquals(1, additionalFilterHelper.getAdditionalFilter(issue, projectConfig).size());
+	}
+
+	@Test
+	public void getAdditionalFilterComponentsTest() {
+
+		when(projectConfig.getBasicProjectConfigId()).thenReturn(ObjectId.get());
+		AdditionalFilterConfig additionalFilterConfig1 =
+				getAdditionalFilterConfig("afOne", "Component", "", getValueSet());
+		AdditionalFilterConfig additionalFilterConfig2 =
+				getAdditionalFilterConfig("", "", "", getValueSet());
+		when(projectConfig.getFieldMapping())
+				.thenReturn(
+						getFieldMapping(Arrays.asList(additionalFilterConfig1, additionalFilterConfig2)));
+		List<AdditionalFilterCategory> additionalFilterCategories = new ArrayList<>();
+		additionalFilterCategories.add(getAdditionalFilterCategory(1, "afOne", "Teams"));
+		additionalFilterCategories.add(getAdditionalFilterCategory(2, "afOne1", "Teams1"));
+		when(additionalFilterCategoryService.getAdditionalFilterCategories())
+				.thenReturn(additionalFilterCategories);
+		Iterable<BasicComponent> components = getComponents();
 		when(issue.getComponents()).thenReturn(components);
-		assertEquals(1,additionalFilterHelper.getAdditionalFilter(issue,projectConfig).size());
-
+		assertEquals(1, additionalFilterHelper.getAdditionalFilter(issue, projectConfig).size());
 	}
 
 	@Test
 	public void getAdditionalFilterCustomfieldTest() throws JSONException, URISyntaxException {
 
 		when(projectConfig.getBasicProjectConfigId()).thenReturn(ObjectId.get());
-		AdditionalFilterConfig additionalFilterConfig1=getAdditionalFilterConfig("afOne","CustomField","",getValueSet());
+		AdditionalFilterConfig additionalFilterConfig1 =
+				getAdditionalFilterConfig("afOne", "CustomField", "", getValueSet());
 		additionalFilterConfig1.setIdentificationField("id1");
-		AdditionalFilterConfig additionalFilterConfig2=getAdditionalFilterConfig("","","",getValueSet());
-		when(projectConfig.getFieldMapping()).thenReturn(getFieldMapping(Arrays.asList(additionalFilterConfig1,additionalFilterConfig2)));
-		List<AdditionalFilterCategory> additionalFilterCategories =new ArrayList<>();
-		additionalFilterCategories.add(getAdditionalFilterCategory(1,"afOne","Teams"));
-		additionalFilterCategories.add(getAdditionalFilterCategory(2,"afOne1","Teams1"));
-		when(additionalFilterCategoryService.getAdditionalFilterCategories()).thenReturn(additionalFilterCategories);
-		Collection<IssueField> issueFields= Arrays.asList(new IssueField("id1","name1","type1",getJSONArray()),
-				new IssueField("id2","name2","type2",getJSONArray()));
-		//Issue issue1=spy(issue);
-		Issue issue1=new Issue("summary",new URI(""),"key",123l,null,null,null,"",
-				null,null,null,null,null,new DateTime(),new DateTime(),new DateTime(),
-				null,null,null,null,issueFields,null,null,
-				null,null,null,null,null,null,null,null,
-				null
-		);
-		assertEquals(1,additionalFilterHelper.getAdditionalFilter(issue1,projectConfig).size());
-
+		AdditionalFilterConfig additionalFilterConfig2 =
+				getAdditionalFilterConfig("", "", "", getValueSet());
+		when(projectConfig.getFieldMapping())
+				.thenReturn(
+						getFieldMapping(Arrays.asList(additionalFilterConfig1, additionalFilterConfig2)));
+		List<AdditionalFilterCategory> additionalFilterCategories = new ArrayList<>();
+		additionalFilterCategories.add(getAdditionalFilterCategory(1, "afOne", "Teams"));
+		additionalFilterCategories.add(getAdditionalFilterCategory(2, "afOne1", "Teams1"));
+		when(additionalFilterCategoryService.getAdditionalFilterCategories())
+				.thenReturn(additionalFilterCategories);
+		Collection<IssueField> issueFields =
+				Arrays.asList(
+						new IssueField("id1", "name1", "type1", getJSONArray()),
+						new IssueField("id2", "name2", "type2", getJSONArray()));
+		// Issue issue1=spy(issue);
+		Issue issue1 =
+				new Issue(
+						"summary",
+						new URI(""),
+						"key",
+						123l,
+						null,
+						null,
+						null,
+						"",
+						null,
+						null,
+						null,
+						null,
+						null,
+						new DateTime(),
+						new DateTime(),
+						new DateTime(),
+						null,
+						null,
+						null,
+						null,
+						issueFields,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null);
+		assertEquals(1, additionalFilterHelper.getAdditionalFilter(issue1, projectConfig).size());
 	}
 
 	@Test(expected = NullPointerException.class)
-    public void getAdditionalFilterFieldMappingNullTest(){
-        when(projectConfig.getBasicProjectConfigId()).thenReturn(ObjectId.get());
-        additionalFilterHelper.getAdditionalFilter(issue,projectConfig);
-    }
+	public void getAdditionalFilterFieldMappingNullTest() {
+		when(projectConfig.getBasicProjectConfigId()).thenReturn(ObjectId.get());
+		additionalFilterHelper.getAdditionalFilter(issue, projectConfig);
+	}
 
 	@Test(expected = NullPointerException.class)
 	public void getAdditionalFilterBasicProjectConfigIdNullTest() {
@@ -168,16 +217,15 @@ public class AdditionalFilterHelperTest {
 		Collection<IssueField> issueFields = Arrays.asList(
 				new IssueField("id1", "name1", "type1", getJSONObjectException("name1", "27", "77777")),
 				new IssueField("id2", "name2", "type2", getJSONObjectException("name1", "27", "77777")));
-		Issue issue1 = new Issue("summary", new URI(""), "key", 123l, null, null, null, "", null, null, null, null,
-				null, new DateTime(), new DateTime(), new DateTime(), null, null, null, null, issueFields, null, null,
-				null, null, null, null, null, null, null, null, null);
+		Issue issue1 = new Issue("summary", new URI(""), "key", 123l, null, null, null, "", null, null, null, null, null,
+				new DateTime(), new DateTime(), new DateTime(), null, null, null, null, issueFields, null, null, null, null,
+				null, null, null, null, null, null, null);
 
 		Set resultSet = (HashSet) method.invoke(additionalFilterHelper, issue1, additionalFilterConfig);
 
 		assertNotNull(resultSet);
 		assertEquals(1, resultSet.size());
 		assertTrue(resultSet.contains("name1"));
-
 	}
 
 	@Test
@@ -192,15 +240,14 @@ public class AdditionalFilterHelperTest {
 		Collection<IssueField> issueFields = Arrays.asList(new IssueField("id1", "name1", "type1", getJSONArray()),
 				new IssueField("id2", "name2", "type2", getJSONArray()));
 
-		Issue issue1 = new Issue("summary", new URI(""), "key", 123l, null, null, null, "", null, null, null, null,
-				null, new DateTime(), new DateTime(), new DateTime(), null, null, null, null, issueFields, null, null,
-				null, null, null, null, null, null, null, null, null);
+		Issue issue1 = new Issue("summary", new URI(""), "key", 123l, null, null, null, "", null, null, null, null, null,
+				new DateTime(), new DateTime(), new DateTime(), null, null, null, null, issueFields, null, null, null, null,
+				null, null, null, null, null, null, null);
 
 		Set resultSet = (HashSet) method.invoke(additionalFilterHelper, issue1, additionalFilterConfig);
 
 		assertNotNull(resultSet);
 		assertEquals(0, resultSet.size());
-
 	}
 
 	AdditionalFilterConfig getAdditionalFilterConfig(String filterId, String identifyFrom, String identificationField,
@@ -211,7 +258,6 @@ public class AdditionalFilterHelperTest {
 		additionalFilterConfig.setIdentificationField("");
 		additionalFilterConfig.setValues(valueSet);
 		return additionalFilterConfig;
-
 	}
 
 	private Set<String> getValueSet() {
@@ -231,8 +277,7 @@ public class AdditionalFilterHelperTest {
 		return fieldMapping;
 	}
 
-	AdditionalFilterCategory getAdditionalFilterCategory(int level, String filterCategoryId,
-			String filterCategoryName) {
+	AdditionalFilterCategory getAdditionalFilterCategory(int level, String filterCategoryId, String filterCategoryName) {
 		AdditionalFilterCategory additionalFilterCategory = new AdditionalFilterCategory();
 		additionalFilterCategory.setLevel(level);
 		additionalFilterCategory.setFilterCategoryId(filterCategoryId);

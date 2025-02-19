@@ -32,24 +32,22 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class NotificationEventConsumer {
 
-    @Autowired
-    NotificationConsumerConfig notificationConsumerConfig;
+	@Autowired
+	NotificationConsumerConfig notificationConsumerConfig;
 
-    @Autowired
-    NotificationService notificationService;
+	@Autowired
+	NotificationService notificationService;
 
-    @KafkaListener(topics = "#{'${kafka.mailtopic}'}")
-    public void onMessage(ConsumerRecord<String, EmailEvent> consumerRecord) {
+	@KafkaListener(topics = "#{'${kafka.mailtopic}'}")
+	public void onMessage(ConsumerRecord<String, EmailEvent> consumerRecord) {
 
-        String key = consumerRecord.key();
-        EmailEvent emailEvent = consumerRecord.value();
-        log.info("Message Received key :{} Subject :{}", key, emailEvent.getSubject());
-        if (!notificationConsumerConfig.isSendGridEnabled()) {
-            notificationService.sendMail(key, emailEvent);
-        } else {
-            notificationService.sendMailUsingSendGrid(key, emailEvent);
-        }
-
-    }
-
+		String key = consumerRecord.key();
+		EmailEvent emailEvent = consumerRecord.value();
+		log.info("Message Received key :{} Subject :{}", key, emailEvent.getSubject());
+		if (!notificationConsumerConfig.isSendGridEnabled()) {
+			notificationService.sendMail(key, emailEvent);
+		} else {
+			notificationService.sendMailUsingSendGrid(key, emailEvent);
+		}
+	}
 }

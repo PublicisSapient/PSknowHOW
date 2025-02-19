@@ -29,13 +29,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.web.client.RestTemplate;
 
-/**
- * JenkinsProcessorApplication configuration and bootstrap.
- */
+/** JenkinsProcessorApplication configuration and bootstrap. */
 @SpringBootApplication
 @EnableCaching
-@EnableMongoRepositories(basePackages = { "com.publicissapient.**.repository" })
-@ComponentScan(basePackages = { "com.publicissapient.kpidashboard.*" })
+@EnableMongoRepositories(basePackages = {"com.publicissapient.**.repository"})
+@ComponentScan(basePackages = {"com.publicissapient.kpidashboard.*"})
 public class JenkinsProcessorApplication {
 
 	@Value("${jenkins.defaultHostnameVerifier:true}")
@@ -48,12 +46,11 @@ public class JenkinsProcessorApplication {
 
 	/**
 	 * Instantiate RestTemplate.
-	 * 
+	 *
 	 * @return the RestTemplate
 	 */
 	@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
-
 }

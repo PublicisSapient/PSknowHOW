@@ -17,9 +17,7 @@
 
 package com.publicissapient.kpidashboard.azure.exception;
 
-/**
- * Exception thrown when there is an error in preparing the sprint report.
- */
+/** Exception thrown when there is an error in preparing the sprint report. */
 public class SprintReportException extends Exception {
 
 	public SprintReportException(String message) {
@@ -29,11 +27,11 @@ public class SprintReportException extends Exception {
 	/**
 	 * Constructs a new SprintReportException with the specified detail message and
 	 * cause
-	 * 
+	 *
 	 * @param message
-	 *            message
+	 *          message
 	 * @param cause
-	 *            cause
+	 *          cause
 	 */
 	public SprintReportException(String message, Throwable cause) {
 		super(message, cause);

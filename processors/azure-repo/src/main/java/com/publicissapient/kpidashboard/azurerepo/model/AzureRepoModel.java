@@ -24,7 +24,7 @@ import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 
 /**
  * AzurerepoRepo represents a class which contains AzurerepoRepo information .
- * 
+ *
  * @see ProcessorItem
  */
 public class AzureRepoModel extends ProcessorItem {
@@ -63,7 +63,7 @@ public class AzureRepoModel extends ProcessorItem {
 	 * Sets userId.
 	 *
 	 * @param userId
-	 *            the new user id
+	 *          the new user id
 	 */
 	public void setUserId(String userId) {
 		getToolDetailsMap().put(USERID, userId);
@@ -82,7 +82,7 @@ public class AzureRepoModel extends ProcessorItem {
 	 * Sets pat.
 	 *
 	 * @param pat
-	 *            the new pat
+	 *          the new pat
 	 */
 	public void setPat(String pat) {
 		getToolDetailsMap().put(PAT, pat);
@@ -101,7 +101,7 @@ public class AzureRepoModel extends ProcessorItem {
 	 * Sets repoUrl.
 	 *
 	 * @param instanceUrl
-	 *            the new repo url
+	 *          the new repo url
 	 */
 	public void setRepoUrl(String instanceUrl) {
 		getToolDetailsMap().put(URL, instanceUrl);
@@ -120,7 +120,7 @@ public class AzureRepoModel extends ProcessorItem {
 	 * Sets password.
 	 *
 	 * @param password
-	 *            the new password
+	 *          the new password
 	 */
 	public void setPassword(String password) {
 		getToolDetailsMap().put(PASSWORD, password);
@@ -139,7 +139,7 @@ public class AzureRepoModel extends ProcessorItem {
 	 * Sets branch.
 	 *
 	 * @param branch
-	 *            the new branch
+	 *          the new branch
 	 */
 	public void setBranch(String branch) {
 		getToolDetailsMap().put(REPO_BRANCH, branch);
@@ -159,7 +159,7 @@ public class AzureRepoModel extends ProcessorItem {
 	 * Sets lastUpdateTime.
 	 *
 	 * @param date
-	 *            the new last update time
+	 *          the new last update time
 	 */
 	public void setLastUpdatedTime(Date date) {
 		getToolDetailsMap().put(LAST_UPDATED_TIME, date);
@@ -178,10 +178,9 @@ public class AzureRepoModel extends ProcessorItem {
 	 * Sets lastUpdateCommit.
 	 *
 	 * @param sha
-	 *            the new last update commit
+	 *          the new last update commit
 	 */
 	public void setLastUpdatedCommit(String sha) {
 		getToolDetailsMap().put(LAST_UPDATED_COMMIT, sha);
 	}
-
 }

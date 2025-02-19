@@ -23,9 +23,8 @@ import lombok.Data;
 
 /**
  * DTO for boardkpis
- * 
- * @author narsingh9
  *
+ * @author narsingh9
  */
 @Data
 public class BoardKpisDTO {
@@ -39,7 +38,7 @@ public class BoardKpisDTO {
 
 	/**
 	 * getter for isEnabled
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public boolean getIsEnabled() {
@@ -48,9 +47,9 @@ public class BoardKpisDTO {
 
 	/**
 	 * setter for isEnabled
-	 * 
+	 *
 	 * @param isEnabled
-	 *            isEnabled
+	 *          isEnabled
 	 */
 	public void setIsEnabled(boolean isEnabled) {
 		this.isEnabled = isEnabled;

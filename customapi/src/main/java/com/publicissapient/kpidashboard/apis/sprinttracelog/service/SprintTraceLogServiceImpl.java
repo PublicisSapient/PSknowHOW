@@ -18,13 +18,15 @@
 
 package com.publicissapient.kpidashboard.apis.sprinttracelog.service;
 
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
-import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
+import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -40,8 +42,7 @@ public class SprintTraceLogServiceImpl implements SprintTraceLogService {
 			return new ServiceResponse(false, "sprintId cannot be empty", null);
 		}
 		// fetching the latest record from db
-		SprintTraceLog fetchRecord = sprintTraceLogRepository
-				.findFirstBySprintId(sprintId);
+		SprintTraceLog fetchRecord = sprintTraceLogRepository.findFirstBySprintId(sprintId);
 
 		// checking if fetchRecord is not null
 		if (fetchRecord != null) {
@@ -51,6 +52,5 @@ public class SprintTraceLogServiceImpl implements SprintTraceLogService {
 			log.info("fetchRecord is null");
 			return new ServiceResponse(true, "No sync record found.", null);
 		}
-
 	}
 }

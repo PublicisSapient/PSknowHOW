@@ -28,9 +28,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * object used to bind iteration kpi's value
- */
+/** object used to bind iteration kpi's value */
 @Data
 @Builder
 @Getter
@@ -42,5 +40,4 @@ public class IterationKpiModalColoumn implements Serializable {
 	private static final long serialVersionUID = 398405590574412201L;
 	private String number;
 	private String url;
-
 }

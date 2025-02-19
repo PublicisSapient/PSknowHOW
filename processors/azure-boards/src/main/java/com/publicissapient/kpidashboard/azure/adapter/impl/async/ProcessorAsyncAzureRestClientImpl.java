@@ -89,7 +89,7 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 	 * Creates HTTP Headers.
 	 *
 	 * @param userInfo
-	 *            the user info
+	 *          the user info
 	 * @return the HttpHeaders
 	 */
 	public static HttpHeaders createHeaders(final String userInfo) {
@@ -105,9 +105,9 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 	 * Check whether two urls have the same server info
 	 *
 	 * @param url1
-	 *            url1
+	 *          url1
 	 * @param url2
-	 *            url2
+	 *          url2
 	 * @return true if they have same server info else false
 	 */
 	public static boolean isSameServerInfo(String url1, String url2) {
@@ -135,10 +135,10 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 	 * Provides Domain name.
 	 *
 	 * @param url
-	 *            the URL
+	 *          the URL
 	 * @return the domain name
 	 * @throws URISyntaxException
-	 *             if there is any illegal character in URI
+	 *           if there is any illegal character in URI
 	 */
 	public static String extractDomain(String url) throws URISyntaxException {
 		URI uri = new URI(url);
@@ -149,10 +149,10 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 	 * Provides Port number.
 	 *
 	 * @param url
-	 *            the URL
+	 *          the URL
 	 * @return port the port number
 	 * @throws URISyntaxException
-	 *             if there is any illegal character in URI
+	 *           if there is any illegal character in URI
 	 */
 	public static int extractPort(String url) throws URISyntaxException {
 		URI uri = new URI(url);
@@ -202,11 +202,10 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 	 * Makes Rest Call.
 	 *
 	 * @param sUrl
-	 *            the rest call URL
+	 *          the rest call URL
 	 * @param azureInfo
-	 *            azureInfo
+	 *          azureInfo
 	 * @return the response entity
-	 *
 	 */
 	public ResponseEntity<String> doRestCall(String sUrl, AzureServer azureInfo) {
 		log.debug("Inside doRestCall {}", sUrl);
@@ -214,8 +213,7 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 		String userInfo = getUserInfo(sUrl, azureInfo);
 
 		if (StringUtils.isNotEmpty(userInfo)) {
-			return restOperations.exchange(theUri, HttpMethod.GET, new HttpEntity<>(createHeaders(userInfo)),
-					String.class);
+			return restOperations.exchange(theUri, HttpMethod.GET, new HttpEntity<>(createHeaders(userInfo)), String.class);
 		} else {
 			return restOperations.exchange(theUri, HttpMethod.GET, null, String.class);
 		}
@@ -239,9 +237,9 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 	 * Gets user info.
 	 *
 	 * @param sUrl
-	 *            the url
+	 *          the url
 	 * @param azureServer
-	 *            the azure server
+	 *          the azure server
 	 * @return userInfo info
 	 */
 	private String getUserInfo(String sUrl, AzureServer azureServer) {
@@ -256,7 +254,6 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 						"Credentials for the following url was not found. This could happen if the domain/subdomain/IP address in the build url returned by AzurePipeline and the AzurePipeline instance url in your configuration do not match: {} ",
 						sUrl);
 			}
-
 		}
 
 		return userInfo;
@@ -293,21 +290,20 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 		AzureWiqlModel azureWiqlModel = new AzureWiqlModel();
 		StringBuilder url = new StringBuilder(azureServer.getUrl());
 
-		if (projectConfig.getProjectToolConfig() != null
-				&& StringUtils.isNotEmpty(projectConfig.getProjectToolConfig().getTeam())) {
+		if (projectConfig.getProjectToolConfig() != null &&
+				StringUtils.isNotEmpty(projectConfig.getProjectToolConfig().getTeam())) {
 			url.append(AzureConstants.FORWARD_SLASH);
 			url.append(AzureProcessorUtil.encodeSpaceInUrl(projectConfig.getProjectToolConfig().getTeam()));
 		}
 		url = new StringBuilder(AzureProcessorUtil.joinURL(url.toString(), azureProcessorConfig.getApiEndpointWiql()));
 		url = AzureProcessorUtil.addParam(url, API_VERSION, azureServer.getApiVersion());
 
-		if (null != projectConfig.getFieldMapping().getJiraIssueTypeNames()
-				&& projectConfig.getFieldMapping().getJiraIssueTypeNames().length > 0) {
+		if (null != projectConfig.getFieldMapping().getJiraIssueTypeNames() &&
+				projectConfig.getFieldMapping().getJiraIssueTypeNames().length > 0) {
 			azureWiqlModel = prepareWiqlResponse(azureServer, projectConfig, startTimesByIssueType, url, dataExist);
 		}
 
 		return azureWiqlModel;
-
 	}
 
 	private AzureWiqlModel prepareWiqlResponse(AzureServer azureServer, ProjectConfFieldMapping projectConfig,
@@ -316,8 +312,7 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 		String finalQuery = null;
 
 		if (projectConfig.getAzure().isQueryEnabled()) {
-			finalQuery = processProvidedQuery(projectConfig.getAzure().getBoardQuery(), startTimesByIssueType,
-					dataExist);
+			finalQuery = processProvidedQuery(projectConfig.getAzure().getBoardQuery(), startTimesByIssueType, dataExist);
 		} else {
 			finalQuery = prepareDefaultQuery(projectConfig, startTimesByIssueType);
 		}
@@ -340,10 +335,9 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 
 		} else {
 			if (responseEntity.getStatusCode().is4xxClientError()) {
-				String errMsg = ClientErrorMessageEnum.fromValue(responseEntity.getStatusCode().value())
-						.getReasonPhrase();
-				processorToolConnectionService
-						.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
+				String errMsg = ClientErrorMessageEnum.fromValue(responseEntity.getStatusCode().value()).getReasonPhrase();
+				processorToolConnectionService.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(),
+						errMsg);
 			}
 
 			log.error("Response Error for Wiql API call ");
@@ -377,9 +371,9 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 
 	/**
 	 * @param azureServer
-	 *            for connection detail
+	 *          for connection detail
 	 * @param issueId
-	 *            for getting particular issue value
+	 *          for getting particular issue value
 	 * @return AzureUpdatesModel response
 	 */
 	@Override
@@ -401,12 +395,12 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 
 	/**
 	 * @param azureServer
-	 *            for connection detail
+	 *          for connection detail
 	 * @param metadataUrlPath
-	 *            for api endpoints
+	 *          for api endpoints
 	 * @param orgLevelApi
-	 *            for switching between project level and organisational level
-	 *            endpoint
+	 *          for switching between project level and organisational level
+	 *          endpoint
 	 * @return jsonObject response
 	 */
 	public JSONObject getMetadataJson(AzureServer azureServer, String metadataUrlPath, boolean orgLevelApi) {
@@ -430,7 +424,6 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 			log.error("Response Error for metadata API call ");
 		}
 		return response;
-
 	}
 
 	private String prepareDefaultQuery(ProjectConfFieldMapping projectConfig,
@@ -446,8 +439,8 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 			count++;
 			String type = entry.getKey();
 			String date = entry.getValue().toLocalDate().toString();
-			issueTypeQuery.append("([System.WorkItemType] ='" + type + "' AND [System.ChangedDate] >="
-					+ getFromattedQueryInput(date) + ") ");
+			issueTypeQuery.append(
+					"([System.WorkItemType] ='" + type + "' AND [System.ChangedDate] >=" + getFromattedQueryInput(date) + ") ");
 			if (count < size) {
 				issueTypeQuery.append(" OR ");
 			}
@@ -458,8 +451,8 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 		return query.toString();
 	}
 
-	private String processProvidedQuery(String userProvidedQuery,
-			Map<String, LocalDateTime> startDateTimeStrByIssueType, boolean dataExist) {
+	private String processProvidedQuery(String userProvidedQuery, Map<String, LocalDateTime> startDateTimeStrByIssueType,
+			boolean dataExist) {
 		StringBuilder finalQuery = new StringBuilder();
 		if (StringUtils.isEmpty(userProvidedQuery) || startDateTimeStrByIssueType == null) {
 			return finalQuery.toString();
@@ -472,8 +465,8 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 			count++;
 			String type = entry.getKey();
 			String date = entry.getValue().toLocalDate().toString();
-			issueTypeQuery.append("([System.WorkItemType] ='" + type + "' AND [System.ChangedDate] >="
-					+ getFromattedQueryInput(date) + ") ");
+			issueTypeQuery.append(
+					"([System.WorkItemType] ='" + type + "' AND [System.ChangedDate] >=" + getFromattedQueryInput(date) + ") ");
 			if (count < size) {
 				issueTypeQuery.append(" OR ");
 			}
@@ -499,7 +492,7 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 
 	/**
 	 * fetched all issues tag to sprint
-	 * 
+	 *
 	 * @param azureServer
 	 * @param sprintId
 	 * @return

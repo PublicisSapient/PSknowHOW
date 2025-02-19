@@ -1,7 +1,6 @@
 package com.publicissapient.kpidashboard.apis.feedback.rest;
 
 import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author sanbhand1
- *
  */
 @RestController
 @RequestMapping("/feedback")
 @Slf4j
 public class FeedbackController {
 
-	/**
-	 * Instantiates the SubmitFeedbackService
-	 */
+	/** Instantiates the SubmitFeedbackService */
 	@Autowired
 	private FeedbackService submitFeedbackService;
 
@@ -48,12 +44,11 @@ public class FeedbackController {
 		log.info("Fetching data for Feedback Categories");
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(new ServiceResponse(true, "Found all feedback categories", feedbackCategories));
-
 	}
 
 	/**
 	 * Create an method to submit feedback.
-	 * 
+	 *
 	 * @return responseEntity with message and status
 	 */
 	@PostMapping("/submitfeedback")
@@ -67,12 +62,11 @@ public class FeedbackController {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ServiceResponse(responseStatus, "Your request has been submitted", feedback));
 			} else {
-				return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(responseStatus,
-						"Email Not Sent ,check emailId and Subject configuration ", feedback));
+				return ResponseEntity.status(HttpStatus.OK).body(
+						new ServiceResponse(responseStatus, "Email Not Sent ,check emailId and Subject configuration ", feedback));
 			}
 		}
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(new ServiceResponse(false, "User is not Valid for feedback", feedback));
 	}
-
 }

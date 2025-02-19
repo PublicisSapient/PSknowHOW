@@ -25,38 +25,36 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 
-/**
- * Repository for {@link KanbanJiraIssue} with custom methods.
- */
+/** Repository for {@link KanbanJiraIssue} with custom methods. */
 @Repository
 public interface KanbanJiraIssueRepoCustom {
 
 	/**
 	 * Finds KanbanFeature objects for given filters and date range.
-	 * 
+	 *
 	 * @param mapOfFilters
-	 *            filters to apply
+	 *          filters to apply
 	 * @param dateFrom
-	 *            start date selected
+	 *          start date selected
 	 * @param dateTo
-	 *            end date selected
+	 *          end date selected
 	 * @return list of KanbanFeature
 	 */
 	List<KanbanJiraIssue> findIssuesByType(Map<String, List<String>> mapOfFilters, String dateFrom, String dateTo);
 
 	/**
 	 * Finds KanbanFeature objects for given filters and date.
-	 * 
+	 *
 	 * @param mapOfFilters
-	 *            filters to apply
+	 *          filters to apply
 	 * @param uniqueProjectMap
-	 *            project specific check
+	 *          project specific check
 	 * @param dateFrom
-	 *            start date
+	 *          start date
 	 * @param dateTo
-	 *            end date
+	 *          end date
 	 * @param range
-	 *            either range or less
+	 *          either range or less
 	 * @return list of KanbanFeature
 	 */
 	List<KanbanJiraIssue> findIssuesByDateAndType(Map<String, List<String>> mapOfFilters,
@@ -81,17 +79,16 @@ public interface KanbanJiraIssueRepoCustom {
 	 * Find costOfDelay by type list.
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @return list of feature
 	 */
 	List<KanbanJiraIssue> findCostOfDelayByType(Map<String, List<String>> mapOfFilters);
 
 	/**
 	 * unset fields based on basic project config id.
-	 * 
+	 *
 	 * @param basicProjectConfigId
 	 * @param fieldsToUnset
 	 */
 	void updateByBasicProjectConfigId(String basicProjectConfigId, List<String> fieldsToUnset);
-
 }

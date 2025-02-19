@@ -22,17 +22,14 @@ import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 
 /**
- *
  * @author dilip
- * 
  * @author jagmongr
  */
 public interface ConnectionService {
 
 	/**
 	 * Gets all connection.
-	 * 
-	 * 
+	 *
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -40,9 +37,9 @@ public interface ConnectionService {
 
 	/**
 	 * Gets all connection for this type.
-	 * 
+	 *
 	 * @param type
-	 *            for type of the connection.
+	 *          for type of the connection.
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -50,11 +47,9 @@ public interface ConnectionService {
 
 	/**
 	 * Creates and save a connection.
-	 * 
+	 *
 	 * @param conn
-	 *            for details.
-	 * 
-	 * 
+	 *          for details.
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -63,12 +58,11 @@ public interface ConnectionService {
 	/**
 	 * Modifies a connection. Finds connection by @param id and replaces it
 	 * with @param conn
-	 * 
+	 *
 	 * @param connection
-	 *            for details.
+	 *          for details.
 	 * @param id
-	 *            replaces the connection data present at id.
-	 * 
+	 *          replaces the connection data present at id.
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -76,22 +70,19 @@ public interface ConnectionService {
 
 	/**
 	 * deletes a connection. Finds connection by @param id and delete.
-	 * 
+	 *
 	 * @param id
-	 *            deleted the connection data present at id.
-	 * 
+	 *          deleted the connection data present at id.
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found.
 	 */
-
 	ServiceResponse deleteConnection(String id);
 
 	/**
-	 * 
 	 * @param connection
-	 *            connection
+	 *          connection
 	 * @param connectionErrorMsg
-	 *            connectionErrorMsg
+	 *          connectionErrorMsg
 	 */
 	void updateBreakingConnection(Connection connection, String connectionErrorMsg);
 
@@ -100,8 +91,7 @@ public interface ConnectionService {
 	 * except Jira and Azure
 	 *
 	 * @param connection
-	 *            connection
+	 *          connection
 	 */
 	void validateConnectionFlag(Connection connection);
-
 }

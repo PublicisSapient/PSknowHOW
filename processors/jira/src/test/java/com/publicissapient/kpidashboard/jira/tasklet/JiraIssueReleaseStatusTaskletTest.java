@@ -16,17 +16,11 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.tasklet;
 
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
-import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.service.CreateJiraIssueReleaseStatus;
-import com.publicissapient.kpidashboard.jira.service.CreateJiraIssueReleaseStatusImpl;
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,55 +31,58 @@ import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.repeat.RepeatStatus;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.service.CreateJiraIssueReleaseStatusImpl;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JiraIssueReleaseStatusTaskletTest {
 
-    @Mock
-    private FetchProjectConfiguration fetchProjectConfiguration;
+	@Mock
+	private FetchProjectConfiguration fetchProjectConfiguration;
 
-    @Mock
-    private JiraClientService jiraClientService;
+	@Mock
+	private JiraClientService jiraClientService;
 
-    @Mock
-    private CreateJiraIssueReleaseStatusImpl createJiraIssueReleaseStatus;
+	@Mock
+	private CreateJiraIssueReleaseStatusImpl createJiraIssueReleaseStatus;
 
-    @Mock
-    private JiraProcessorConfig jiraProcessorConfig;
+	@Mock
+	private JiraProcessorConfig jiraProcessorConfig;
 
-    @Mock
-    private StepContribution stepContribution;
+	@Mock
+	private StepContribution stepContribution;
 
-    @Mock
-    private ChunkContext chunkContext;
+	@Mock
+	private ChunkContext chunkContext;
 
-    @InjectMocks
-    private JiraIssueReleaseStatusTasklet jiraIssueReleaseStatusTasklet;
+	@InjectMocks
+	private JiraIssueReleaseStatusTasklet jiraIssueReleaseStatusTasklet;
 
-    @Before
-    public void setUp() {
-        // Mock any setup or common behavior needed before each test
-    }
+	@Before
+	public void setUp() {
+		// Mock any setup or common behavior needed before each test
+	}
 
-    @Test
-    public void testExecute() throws Exception {
-        // Arrange
-        String projectId = "5fd99f7bc8b51a7b55aec836";
-        ProjectConfFieldMapping projectConfFieldMapping= ProjectConfFieldMapping.builder().projectName("KnowHow").build();
+	@Test
+	public void testExecute() throws Exception {
+		// Arrange
+		String projectId = "5fd99f7bc8b51a7b55aec836";
+		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().projectName("KnowHow").build();
 
-        when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfFieldMapping);
+		when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfFieldMapping);
 
-        ProcessorJiraRestClient client = mock(ProcessorJiraRestClient.class);
-        when(jiraClientService.getRestClientMap(null)).thenReturn(client);
+		ProcessorJiraRestClient client = mock(ProcessorJiraRestClient.class);
+		when(jiraClientService.getRestClientMap(null)).thenReturn(client);
 
-            // Act
-            RepeatStatus result = jiraIssueReleaseStatusTasklet.execute(stepContribution, chunkContext);
+		// Act
+		RepeatStatus result = jiraIssueReleaseStatusTasklet.execute(stepContribution, chunkContext);
 
-            // Assert
-            verify(createJiraIssueReleaseStatus, times(1)).processAndSaveProjectStatusCategory(client, null);
-            assertEquals(RepeatStatus.FINISHED, result);
-        }
-
+		// Assert
+		verify(createJiraIssueReleaseStatus, times(1)).processAndSaveProjectStatusCategory(client, null);
+		assertEquals(RepeatStatus.FINISHED, result);
+	}
 }

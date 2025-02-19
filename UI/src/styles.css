@@ -1971,7 +1971,7 @@ p-dialog .p-button-cancel.p-button-secondary {
 ::ng-deep .p-multiselect:not(.p-multiselect-open) .p-multiselect-panel ,
 ::ng-deep .p-multiselect:not(.p-multiselect-open) .p-multiselect-items-wrapper{
   display: none;
-  pointer-events: none;
+  pointer-events: all;
 }
 
 .p-h-fit-content{

@@ -30,13 +30,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
-import com.publicissapient.kpidashboard.apis.jira.service.NonTrendServiceFactory;
-import com.publicissapient.kpidashboard.apis.model.ProjectWiseKpiRecommendation;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
-import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,21 +40,28 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
+import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.NonTrendServiceFactory;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.ProjectWiseKpiRecommendation;
 import com.publicissapient.kpidashboard.apis.sonar.service.SonarServiceR;
 import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrService;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
+import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * @author kunkambl
@@ -110,7 +110,7 @@ public class KpiIntegrationServiceImpl {
 	 * get kpi element list with maturity assuming req for hierarchy level 4
 	 *
 	 * @param kpiRequest
-	 * 		kpiRequest to fetch kpi data
+	 *          kpiRequest to fetch kpi data
 	 * @return list of KpiElement
 	 */
 	public List<KpiElement> getKpiResponses(KpiRequest kpiRequest) {
@@ -121,23 +121,23 @@ public class KpiIntegrationServiceImpl {
 		setKpiRequest(kpiRequest);
 		sourceWiseKpiList.forEach((source, kpiList) -> {
 			try {
-				kpiRequest.setKpiList(sourceWiseKpiList.get(source).stream().map(this::mapKpiMasterToKpiElement)
-						.collect(Collectors.toList()));
+				kpiRequest.setKpiList(
+						sourceWiseKpiList.get(source).stream().map(this::mapKpiMasterToKpiElement).collect(Collectors.toList()));
 				switch (source) {
-				case KPI_SOURCE_JIRA:
-					kpiElements.addAll(getJiraKpiMaturity(kpiRequest));
-					break;
-				case KPI_SOURCE_SONAR:
-					kpiElements.addAll(getSonarKpiMaturity(kpiRequest));
-					break;
-				case KPI_SOURCE_ZEPHYR:
-					kpiElements.addAll(getZephyrKpiMaturity(kpiRequest));
-					break;
-				case KPI_SOURCE_JENKINS:
-					kpiElements.addAll(getJenkinsKpiMaturity(kpiRequest));
-					break;
-				default:
-					log.error("Invalid Kpi");
+					case KPI_SOURCE_JIRA :
+						kpiElements.addAll(getJiraKpiMaturity(kpiRequest));
+						break;
+					case KPI_SOURCE_SONAR :
+						kpiElements.addAll(getSonarKpiMaturity(kpiRequest));
+						break;
+					case KPI_SOURCE_ZEPHYR :
+						kpiElements.addAll(getZephyrKpiMaturity(kpiRequest));
+						break;
+					case KPI_SOURCE_JENKINS :
+						kpiElements.addAll(getJenkinsKpiMaturity(kpiRequest));
+						break;
+					default :
+						log.error("Invalid Kpi");
 				}
 			} catch (Exception ex) {
 				log.error("Error while fetching kpi maturity data", ex);
@@ -150,8 +150,8 @@ public class KpiIntegrationServiceImpl {
 					List<DataCountGroup> dataCountGroups = (List<DataCountGroup>) trendValueList;
 
 					Optional<DataCount> firstMatchingDataCount = dataCountGroups.stream()
-							.filter(trend -> FILTER_LIST.contains(trend.getFilter()) || (FILTER_LIST.contains(
-									trend.getFilter1()) && FILTER_LIST.contains(trend.getFilter2())))
+							.filter(trend -> FILTER_LIST.contains(trend.getFilter()) ||
+									(FILTER_LIST.contains(trend.getFilter1()) && FILTER_LIST.contains(trend.getFilter2())))
 							.map(DataCountGroup::getValue).flatMap(List::stream).findFirst();
 
 					firstMatchingDataCount.ifPresent(dataCount -> {
@@ -173,7 +173,9 @@ public class KpiIntegrationServiceImpl {
 
 	/**
 	 * set kpi request parameters as per the request
-	 * @param kpiRequest received kpi request
+	 *
+	 * @param kpiRequest
+	 *          received kpi request
 	 */
 	public void setKpiRequest(KpiRequest kpiRequest) {
 		String[] hierarchyIdList = kpiRequest.getIds();
@@ -181,9 +183,9 @@ public class KpiIntegrationServiceImpl {
 				.filter(hierarchyLevel -> hierarchyLevel.getLevel() == kpiRequest.getLevel()).findFirst();
 		if (optionalHierarchyLevel.isPresent()) {
 			HierarchyLevel hierarchyLevel = optionalHierarchyLevel.get();
-			if (hierarchyIdList  == null) {
-				hierarchyIdList = new String[] { kpiRequest.getHierarchyName().concat(Constant.UNDERSCORE).concat(
-						hierarchyLevel.getHierarchyLevelId()) };
+			if (hierarchyIdList == null) {
+				hierarchyIdList = new String[]{
+						kpiRequest.getHierarchyName().concat(Constant.UNDERSCORE).concat(hierarchyLevel.getHierarchyLevelId())};
 			}
 			Map<String, List<String>> selectedMap = new HashMap<>();
 			selectedMap.put(hierarchyLevel.getHierarchyLevelId(),
@@ -193,17 +195,16 @@ public class KpiIntegrationServiceImpl {
 			kpiRequest.setSelectedMap(selectedMap);
 			kpiRequest.setSprintIncluded(Arrays.asList(SPRINT_CLOSED));
 		}
-
 	}
 
 	/**
 	 * get kpi data for source jira
 	 *
 	 * @param kpiRequest
-	 * 		kpiRequest to fetch kpi data
+	 *          kpiRequest to fetch kpi data
 	 * @return list of jira KpiElement
 	 * @throws EntityNotFoundException
-	 * 		entity not found exception for jira service method
+	 *           entity not found exception for jira service method
 	 */
 	private List<KpiElement> getJiraKpiMaturity(KpiRequest kpiRequest) throws EntityNotFoundException {
 		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId());
@@ -216,9 +217,9 @@ public class KpiIntegrationServiceImpl {
 		category.add(CommonConstant.BACKLOG);
 		List<KpiElement> responseList;
 		if (category.contains(kpiRequest.getKpiList().get(0).getKpiCategory())) {
-			//when request coming from ITERATION/RELEASE/BACKLOG board
+			// when request coming from ITERATION/RELEASE/BACKLOG board
 			responseList = serviceFactory.getService(kpiRequest.getKpiList().get(0).getKpiCategory())
-						.processWithExposedApiToken(kpiRequest);
+					.processWithExposedApiToken(kpiRequest);
 		} else {
 			responseList = jiraService.processWithExposedApiToken(kpiRequest);
 		}
@@ -231,7 +232,7 @@ public class KpiIntegrationServiceImpl {
 	 * get kpi data for source sonar
 	 *
 	 * @param kpiRequest
-	 * 		kpiRequest to fetch kpi data
+	 *          kpiRequest to fetch kpi data
 	 * @return list of sonar KpiElement
 	 */
 	private List<KpiElement> getSonarKpiMaturity(KpiRequest kpiRequest) {
@@ -249,10 +250,10 @@ public class KpiIntegrationServiceImpl {
 	 * get kpi data for source zephyr
 	 *
 	 * @param kpiRequest
-	 * 		kpiRequest to fetch kpi data
+	 *          kpiRequest to fetch kpi data
 	 * @return list of sonar KpiElement
 	 * @throws EntityNotFoundException
-	 * 		entity not found exception for zephyr service method
+	 *           entity not found exception for zephyr service method
 	 */
 	private List<KpiElement> getZephyrKpiMaturity(KpiRequest kpiRequest) throws EntityNotFoundException {
 		MDC.put("ZephyrKpiRequest", kpiRequest.getRequestTrackerId());
@@ -269,10 +270,10 @@ public class KpiIntegrationServiceImpl {
 	 * get kpi data for source jenkins
 	 *
 	 * @param kpiRequest
-	 * 		kpiRequest to fetch kpi data
+	 *          kpiRequest to fetch kpi data
 	 * @return list of sonar KpiElement
 	 * @throws EntityNotFoundException
-	 * 		entity not found exception for jenkins service method
+	 *           entity not found exception for jenkins service method
 	 */
 	private List<KpiElement> getJenkinsKpiMaturity(KpiRequest kpiRequest) throws EntityNotFoundException {
 		MDC.put("JenkinsKpiRequest", kpiRequest.getRequestTrackerId());
@@ -289,7 +290,7 @@ public class KpiIntegrationServiceImpl {
 	 * Map KpiMaster object to KpiElement
 	 *
 	 * @param kpiMaster
-	 * 		KpiMaster object fetched from db
+	 *          KpiMaster object fetched from db
 	 * @return KpiElement
 	 */
 	public KpiElement mapKpiMasterToKpiElement(KpiMaster kpiMaster) {
@@ -311,12 +312,13 @@ public class KpiIntegrationServiceImpl {
 		kpiElement.setGroupId(kpiMaster.getGroupId());
 		return kpiElement;
 	}
+
 	public List<ProjectWiseKpiRecommendation> getProjectWiseKpiRecommendation(KpiRequest kpiRequest) {
 		try {
-			Optional<String> sprintId = kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
-					.stream().findFirst();
-			Optional<String> projectId = kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
-					.stream().findFirst();
+			Optional<String> sprintId = kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT).stream()
+					.findFirst();
+			Optional<String> projectId = kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT).stream()
+					.findFirst();
 			String recommendationUrl = String.format(customApiConfig.getRnrRecommendationUrl(),
 					URLEncoder.encode(projectId.orElse(""), StandardCharsets.UTF_8),
 					URLEncoder.encode(sprintId.orElse(""), StandardCharsets.UTF_8),
@@ -325,8 +327,8 @@ public class KpiIntegrationServiceImpl {
 			httpHeaders.set(RNR_API_HEADER, customApiConfig.getRnrRecommendationApiKey());
 			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
-			ResponseEntity<List<ProjectWiseKpiRecommendation>> response = restTemplate.exchange(
-					URI.create(recommendationUrl), HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
+			ResponseEntity<List<ProjectWiseKpiRecommendation>> response = restTemplate.exchange(URI.create(recommendationUrl),
+					HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
 					});
 			return response.getBody();
 		} catch (Exception ex) {
@@ -334,6 +336,4 @@ public class KpiIntegrationServiceImpl {
 			return new ArrayList<>();
 		}
 	}
-
-
 }

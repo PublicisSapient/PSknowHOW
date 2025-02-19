@@ -52,9 +52,9 @@ public class PushDataException extends RuntimeException {
 	 * Instantiates a new unsafe delete exception.
 	 *
 	 * @param str
-	 *            the str
+	 *          the str
 	 * @param throwable
-	 *            the throwable
+	 *          the throwable
 	 */
 	public PushDataException(String str, Throwable throwable) {
 		super(str, throwable);
@@ -64,7 +64,7 @@ public class PushDataException extends RuntimeException {
 	 * Instantiates a new unsafe delete exception.
 	 *
 	 * @param throwable
-	 *            the throwable
+	 *          the throwable
 	 */
 	public PushDataException(Throwable throwable) {
 		super(throwable);
@@ -81,5 +81,4 @@ public class PushDataException extends RuntimeException {
 	public void setPushBuildDeployResponse(PushDataResponse pushDataResponse) {
 		this.pushDataResponse = pushDataResponse;
 	}
-
 }

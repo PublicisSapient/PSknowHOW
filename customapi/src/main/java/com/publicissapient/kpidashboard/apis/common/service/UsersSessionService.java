@@ -29,13 +29,13 @@ public interface UsersSessionService {
 
 	/**
 	 * Method to create user login history info
-	 * 
+	 *
 	 * @param userInfo
-	 *            user info
+	 *          user info
 	 * @param status
-	 *            event status {@link Status}
+	 *          event status {@link Status}
 	 * @param event
-	 *            authentication event {@link AuthenticationEvent}
+	 *          authentication event {@link AuthenticationEvent}
 	 * @return user login history
 	 */
 	UsersSession createUsersSessionInfo(UserInfo userInfo, AuthenticationEvent event, Status status);
@@ -44,15 +44,18 @@ public interface UsersSessionService {
 	 * Method to get last logout of user
 	 *
 	 * @param username
-	 *            username
+	 *          username
 	 * @return last login time
 	 */
 	LocalDateTime getLastLogoutTimeOfUser(String username);
 
 	/**
 	 * Method to audit the logout of user
-	 * @param userName username
-	 * @param status {@link Status}
+	 *
+	 * @param userName
+	 *          username
+	 * @param status
+	 *          {@link Status}
 	 */
 	void auditLogout(String userName, Status status);
 }

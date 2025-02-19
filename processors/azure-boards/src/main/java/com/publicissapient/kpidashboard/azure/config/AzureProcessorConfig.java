@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.azure.config;//NOPMD
+package com.publicissapient.kpidashboard.azure.config; // NOPMD
 
 import java.util.List;
 
@@ -30,10 +30,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Bean to hold settings specific to the Feature collector.
- */
-
+/** Bean to hold settings specific to the Feature collector. */
 @Getter
 @Setter
 @Component
@@ -54,8 +51,10 @@ public class AzureProcessorConfig {
 	private String estimationCriteria;
 	private int threadPoolSize;
 	private String projectWiseIssuesQuery;
+
 	@Value("${aesEncryptionKey}")
 	private String aesEncryptionKey;
+
 	private String apiEndpointWorkItems;
 	private String apiEndpointWiql;
 	private String apiEndpointIterations;
@@ -70,5 +69,4 @@ public class AzureProcessorConfig {
 	private List<String> excludeLinks;
 	private List<String> rcaValuesForCodeIssue;
 	private String azureDirectTicketLinkKey;
-
 }

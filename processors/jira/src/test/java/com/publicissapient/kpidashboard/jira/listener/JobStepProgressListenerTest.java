@@ -48,7 +48,6 @@ public class JobStepProgressListenerTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.openMocks(this);
-
 	}
 
 	@Test
@@ -78,7 +77,5 @@ public class JobStepProgressListenerTest {
 
 		// Assert
 		assertNull(exitStatus);
-
 	}
-
 }

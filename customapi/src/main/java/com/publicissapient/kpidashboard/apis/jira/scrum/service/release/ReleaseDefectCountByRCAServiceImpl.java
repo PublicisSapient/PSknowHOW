@@ -77,11 +77,11 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 
 	/**
 	 * @param latestRelease
-	 *            latestRelease data
+	 *          latestRelease data
 	 * @param kpiElement
-	 *            kpiElement
+	 *          kpiElement
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
 	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement, KpiRequest kpiRequest) {
@@ -101,20 +101,20 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 			}
 			Set<String> finalJiraDodKPI142LowerCase = jiraDodKPI142LowerCase;
 			List<JiraIssue> openDefects = totalDefects.stream()
-					.filter(jiraIssue -> StringUtils.isNotEmpty(jiraIssue.getStatus())
-							&& !finalJiraDodKPI142LowerCase.isEmpty()
-							&& !finalJiraDodKPI142LowerCase.contains(jiraIssue.getStatus().toLowerCase()))
+					.filter(
+							jiraIssue -> StringUtils.isNotEmpty(jiraIssue.getStatus()) && !finalJiraDodKPI142LowerCase.isEmpty() &&
+									!finalJiraDodKPI142LowerCase.contains(jiraIssue.getStatus().toLowerCase()))
 					.toList();
 			IterationKpiValue openDefectsIterationKpiValue = new IterationKpiValue();
 			List<DataCount> openDefectsValue = getDefectsDataCountList(openDefects, fieldMapping);
 			openDefectsIterationKpiValue.setFilter1(OPEN_DEFECT);
-			if(CollectionUtils.isNotEmpty(openDefectsValue))
+			if (CollectionUtils.isNotEmpty(openDefectsValue))
 				openDefectsIterationKpiValue.setValue(openDefectsValue);
 
 			IterationKpiValue totalDefectsIterationKpiValue = new IterationKpiValue();
 			List<DataCount> totalDefectsValue = getDefectsDataCountList(totalDefects, fieldMapping);
 			totalDefectsIterationKpiValue.setFilter1(TOTAL_DEFECT);
-			if(CollectionUtils.isNotEmpty(totalDefectsValue))
+			if (CollectionUtils.isNotEmpty(totalDefectsValue))
 				totalDefectsIterationKpiValue.setValue(totalDefectsValue);
 
 			overAllIterationKpiValue.add(openDefectsIterationKpiValue);
@@ -130,11 +130,11 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 
 	/**
 	 * get list of Jira associated with RCA and Testing Phase
-	 * 
+	 *
 	 * @param defects
-	 *            defect list
+	 *          defect list
 	 * @param fieldMapping
-	 *            fieldMapping
+	 *          fieldMapping
 	 * @return list of dataCount
 	 */
 	private List<DataCount> getDefectsDataCountList(List<JiraIssue> defects, FieldMapping fieldMapping) {
@@ -156,8 +156,8 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 						dataCount.setSize(KpiDataHelper.calculateStoryPoints(jiraIssue, fieldMapping));
 						dataCountRCA.add(dataCount);
 					});
-					defectsDataCount.setData(String.valueOf(dataCountRCA.stream()
-							.mapToInt(obj -> obj.getValue() != null ? (int) obj.getValue() : 0).sum()));
+					defectsDataCount.setData(String
+							.valueOf(dataCountRCA.stream().mapToInt(obj -> obj.getValue() != null ? (int) obj.getValue() : 0).sum()));
 				} else {
 					defectsDataCount.setData(String.valueOf(0));
 				}
@@ -189,18 +189,18 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 	 * populate excel data
 	 *
 	 * @param requestTrackerId
-	 *            requestTrackerId
+	 *          requestTrackerId
 	 * @param excelData
-	 *            excelData
+	 *          excelData
 	 * @param jiraIssueList
-	 *            jiraIssueList
+	 *          jiraIssueList
 	 * @param fieldMapping
-	 *            fieldMapping
+	 *          fieldMapping
 	 */
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
 			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				CollectionUtils.isNotEmpty(jiraIssueList)) {
 			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
 		}
 	}
@@ -214,12 +214,10 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 
 	private Set<String> findUniqueTestingPhases(List<JiraIssue> totalDefects) {
 		return totalDefects.stream()
-				.collect(
-						Collectors.groupingBy(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getEscapedDefectGroup())
-								? jiraIssue.getEscapedDefectGroup().stream().findFirst().orElse(UNDEFINED)
-								: UNDEFINED))
+				.collect(Collectors.groupingBy(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getEscapedDefectGroup())
+						? jiraIssue.getEscapedDefectGroup().stream().findFirst().orElse(UNDEFINED)
+						: UNDEFINED))
 				.keySet();
-
 	}
 
 	private Set<String> findUniqueRCAList(List<JiraIssue> totalDefects) {
@@ -234,8 +232,7 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 		return totalDefects.stream()
 				.filter(jiraIssue -> jiraIssue.getEscapedDefectGroup().stream().findFirst().orElse(UNDEFINED)
 						.equalsIgnoreCase(testingPhase))
-				.filter(jiraIssue -> jiraIssue.getRootCauseList().stream().findFirst().orElse(NONE)
-						.equalsIgnoreCase(rca))
+				.filter(jiraIssue -> jiraIssue.getRootCauseList().stream().findFirst().orElse(NONE).equalsIgnoreCase(rca))
 				.toList();
 	}
 
@@ -248,7 +245,5 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 				jiraIssue.setEscapedDefectGroup(Collections.singletonList(NONE));
 			}
 		});
-
 	}
-
 }

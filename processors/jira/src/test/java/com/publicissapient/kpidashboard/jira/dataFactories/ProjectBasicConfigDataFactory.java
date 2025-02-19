@@ -19,7 +19,6 @@ package com.publicissapient.kpidashboard.jira.dataFactories;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -74,11 +73,9 @@ public class ProjectBasicConfigDataFactory {
 			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		}
-
 	}
 
 	public List<ProjectBasicConfig> getProjectBasicConfigs() {
 		return projectBasicConfigs;
 	}
-
 }

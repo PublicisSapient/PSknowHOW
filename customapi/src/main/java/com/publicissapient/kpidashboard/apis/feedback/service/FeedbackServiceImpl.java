@@ -25,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author sanbhand1
- *
  */
 @Service
 @Slf4j
@@ -65,8 +64,8 @@ public class FeedbackServiceImpl implements FeedbackService {
 			log.error("Notification Event not sent : notification emailServer Details not found in db");
 		}
 		String feedbackNotificationSubjects = customApiConfig.getFeedbackEmailSubject();
-		if (CollectionUtils.isNotEmpty(emailAddresses) && (!(feedbackNotificationSubjects.isEmpty()))
-				&& (!feedback.getFeedback().isEmpty())) {
+		if (CollectionUtils.isNotEmpty(emailAddresses) && (!(feedbackNotificationSubjects.isEmpty())) &&
+				(!feedback.getFeedback().isEmpty())) {
 			String serverPath = "";
 			try {
 				serverPath = commonService.getApiHost();
@@ -78,12 +77,12 @@ public class FeedbackServiceImpl implements FeedbackService {
 			log.info("Notification message sent to kafka with key : {}", NOTIFICATION_KEY);
 			String templateKey = customApiConfig.getMailTemplate().getOrDefault(NOTIFICATION_KEY, "");
 			notificationService.sendNotificationEvent(emailAddresses, customData, feedbackNotificationSubjects,
-					NOTIFICATION_KEY, customApiConfig.getKafkaMailTopic(), customApiConfig.isNotificationSwitch(),
-					kafkaTemplate, templateKey, customApiConfig.isMailWithoutKafka());
+					NOTIFICATION_KEY, customApiConfig.getKafkaMailTopic(), customApiConfig.isNotificationSwitch(), kafkaTemplate,
+					templateKey, customApiConfig.isMailWithoutKafka());
 		} else {
 			status = false;
-			log.error("Notification Event not sent : No email address "
-					+ "or Property - notificationSubject.accessRequest not set in property file ");
+			log.error("Notification Event not sent : No email address " +
+					"or Property - notificationSubject.accessRequest not set in property file ");
 		}
 
 		return status;
@@ -105,5 +104,4 @@ public class FeedbackServiceImpl implements FeedbackService {
 	public List<String> getFeedBackCategories() {
 		return customApiConfig.getFeedbackCategories();
 	}
-
 }

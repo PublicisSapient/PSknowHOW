@@ -18,9 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.constant;
 
-/**
- * Enumeration of valid build statuses.
- */
+/** Enumeration of valid build statuses. */
 public enum BuildStatus {
 	SUCCESS, FAILURE, UNSTABLE, ABORTED, IN_PROGRESS, UNKNOWN;
 

@@ -23,9 +23,8 @@ import lombok.Data;
 
 /**
  * Board object
- * 
- * @author narsingh9
  *
+ * @author narsingh9
  */
 @Data
 public class Board {

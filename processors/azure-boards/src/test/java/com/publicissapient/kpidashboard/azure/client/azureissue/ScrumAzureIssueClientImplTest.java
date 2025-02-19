@@ -52,6 +52,7 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
@@ -59,6 +60,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 
 @ExtendWith(SpringExtension.class)
 public class ScrumAzureIssueClientImplTest {
@@ -118,8 +120,14 @@ public class ScrumAzureIssueClientImplTest {
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 	@Mock
 	private AssigneeDetailsRepository assigneeDetailsRepository;
+	@Mock
+	private ProjectHierarchyService projectHierarchyService;
+	@Mock
+	private ProcessorToolConnectionService processorToolConnectionService;
+
 	private ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 	private ProjectToolConfig projectToolConfig = new ProjectToolConfig();
+
 	// AzureUpdatesModel azureUpdatesModel=new AzureUpdatesModel();
 
 	@BeforeEach
@@ -146,16 +154,19 @@ public class ScrumAzureIssueClientImplTest {
 		when(jiraIssueRepository.findTopByBasicProjectConfigId(any())).thenReturn(null);
 		when(jiraIssueRepository.saveAll(any())).thenReturn(null);
 		when(jiraIssueCustomHistoryRepository.saveAll(any())).thenReturn(null);
-		when(azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE)).thenReturn(azureProcessor);
+		when(azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE))
+				.thenReturn(azureProcessor);
 		when(azureProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));
 		when(azureAdapter.getPageSize()).thenReturn(30);
-		when(jiraIssueCustomHistoryRepository.findByStoryIDAndBasicProjectConfigId(anyString(), anyString()))
+		when(jiraIssueCustomHistoryRepository.findByStoryIDAndBasicProjectConfigId(
+						anyString(), anyString()))
 				.thenReturn(jiraIssueCustomHistory);
 		when(azureAdapter.getIterationsModel(any())).thenReturn(azureIterationsModel);
 		when(azureAdapter.getWiqlModel(any(), any(), any(), anyBoolean())).thenReturn(azureWiqlModel);
 		when(azureProcessorConfig.getMinsToReduce()).thenReturn(30);
 		when(azureProcessorConfig.getStartDate()).thenReturn("2019-01-07T00:00:00.0000000");
-		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any())).thenReturn(null);
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any()))
+				.thenReturn(null);
 		createIssue();
 
 		WorkItem work = new WorkItem();
@@ -169,7 +180,8 @@ public class ScrumAzureIssueClientImplTest {
 		Set<SprintDetails> sprintDetailsSet = new LinkedHashSet<>();
 		when(azureWiqlModel.getWorkItems()).thenReturn(workItems);
 		when(processorAzureRestClient.getUpdatesResponse(any(), any())).thenReturn(azureUpdatesModel);
-		when(accountHierarchyRepo.findByLabelNameAndBasicProjectConfigId("Project", scrumProjectList.get(0).getId()))
+		when(accountHierarchyRepo.findByLabelNameAndBasicProjectConfigId(
+						"Project", scrumProjectList.get(0).getId()))
 				.thenReturn(Arrays.asList(accountHierarchy));
 
 		when(azureAdapter.getUpdates(any(), anyString())).thenReturn(azureUpdatesModel);
@@ -181,7 +193,6 @@ public class ScrumAzureIssueClientImplTest {
 		scrumIssueClientImpl.processesAzureIssues(projectConfFieldMapping, "TestKey", azureAdapter);
 		scrumIssueClientImpl.purgeAzureIssues(issues, projectConfFieldMapping);
 		scrumIssueClientImpl.saveAzureIssueDetails(issues, projectConfFieldMapping, sprintDetailsSet);
-
 	}
 
 	private void prepareProjectData() {
@@ -211,9 +222,8 @@ public class ScrumAzureIssueClientImplTest {
 		jiraType.add("Defect");
 		jiraType.add("story");
 		fieldMapping.setJiradefecttype(jiraType);
-		jiraType = new ArrayList<>(
-				Arrays.asList(new String[] { "Story", "Defect", "Pre Story", "Feature", "Enabler Story" }));
-		String[] jiraIssueType = new String[] { "Story", "Defect", "Pre Story", "Feature", "Enabler Story" };
+		jiraType = new ArrayList<>(Arrays.asList(new String[]{"Story", "Defect", "Pre Story", "Feature", "Enabler Story"}));
+		String[] jiraIssueType = new String[]{"Story", "Defect", "Pre Story", "Feature", "Enabler Story"};
 		fieldMapping.setJiraIssueTypeNames(jiraIssueType);
 		fieldMapping.setRootCause("customfield_19121");
 		fieldMapping.setRootCauseIdentifier("Labels");
@@ -273,7 +283,7 @@ public class ScrumAzureIssueClientImplTest {
 		jiraType.add("Feature");
 		fieldMapping.setJiraSprintVelocityIssueTypeKPI138(jiraType);
 
-		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Defect", "Pre Story", "Feature" }));
+		jiraType = new ArrayList<>(Arrays.asList(new String[]{"Story", "Defect", "Pre Story", "Feature"}));
 		fieldMapping.setJiraSprintCapacityIssueTypeKpi46(jiraType);
 
 		jiraType = new ArrayList<>();
@@ -289,7 +299,7 @@ public class ScrumAzureIssueClientImplTest {
 		fieldMapping.setRootCauseValues(Arrays.asList("Coding", "None"));
 		fieldMapping.setRootCause("Coding");
 
-		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Pre Story" }));
+		jiraType = new ArrayList<>(Arrays.asList(new String[]{"Story", "Pre Story"}));
 		fieldMapping.setJiraStoryIdentification(jiraType);
 
 		fieldMapping.setJiraDefectCreatedStatusKPI14("Open");
@@ -323,8 +333,8 @@ public class ScrumAzureIssueClientImplTest {
 		jiraType.add("Defect");
 		fieldMapping.setJiradefecttype(jiraType);
 
-		jiraIssueType = new String[] { "Support Request", "Incident", "Project Request", "Member Account Request",
-				"DOJO Consulting Request", "Test Case" };
+		jiraIssueType = new String[]{"Support Request", "Incident", "Project Request", "Member Account Request",
+				"DOJO Consulting Request", "Test Case"};
 		fieldMapping.setJiraIssueTypeNames(jiraIssueType);
 		fieldMapping.setStoryFirstStatus("Open");
 
@@ -357,8 +367,8 @@ public class ScrumAzureIssueClientImplTest {
 		fieldMapping.setJiraStoryPointsCustomField("customfield_56789");
 		fieldMapping.setJiraTechDebtIdentification("CustomField");
 
-		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Support Request", "Incident", "Project Request",
-				"Member Account Request", "DOJO Consulting Request", "Test Case" }));
+		jiraType = new ArrayList<>(Arrays.asList(new String[]{"Support Request", "Incident", "Project Request",
+				"Member Account Request", "DOJO Consulting Request", "Test Case"}));
 		fieldMapping.setTicketCountIssueType(jiraType);
 		fieldMapping.setJiraTicketVelocityIssueTypeKPI49(jiraType);
 		fieldMapping.setKanbanJiraTechDebtIssueType(jiraType);
@@ -406,7 +416,6 @@ public class ScrumAzureIssueClientImplTest {
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("segregationLabel");
 		fieldMappingList.add(fieldMapping);
-
 	}
 
 	private void setProjectConfigFieldMap() throws IllegalAccessException, InvocationTargetException {
@@ -415,7 +424,6 @@ public class ScrumAzureIssueClientImplTest {
 		projectConfFieldMapping.setBasicProjectConfigId(scrumProjectList.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
 		projectConfFieldMappingList.add(projectConfFieldMapping);
-
 	}
 
 	private void createIssue() throws URISyntaxException, JSONException {
@@ -442,5 +450,4 @@ public class ScrumAzureIssueClientImplTest {
 		issues.add(issue1);
 		issue1.setFields(fields);
 	}
-
 }

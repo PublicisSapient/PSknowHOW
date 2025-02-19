@@ -18,30 +18,31 @@
 
 package com.publicissapient.kpidashboard.common.config;
 
-import com.publicissapient.kpidashboard.common.util.ProcessorErrorHandler;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
+import com.publicissapient.kpidashboard.common.util.ProcessorErrorHandler;
 
 public class TaskSchedulerConfigurationTest {
 
-    private TaskSchedulerConfiguration taskSchedulerConfiguration;
+	private TaskSchedulerConfiguration taskSchedulerConfiguration;
 
-    @BeforeEach
-    public void setUp() {
-        ProcessorErrorHandler processorErrorHandler = mock(ProcessorErrorHandler.class);
-        taskSchedulerConfiguration = new TaskSchedulerConfiguration();
-    }
+	@BeforeEach
+	public void setUp() {
+		ProcessorErrorHandler processorErrorHandler = mock(ProcessorErrorHandler.class);
+		taskSchedulerConfiguration = new TaskSchedulerConfiguration();
+	}
 
-    @Test
-    public void testTaskSchedulerBean() {
-        TaskScheduler taskScheduler = taskSchedulerConfiguration.taskScheduler();
-        assertNotNull(taskScheduler);
-        assertTrue(taskScheduler instanceof ThreadPoolTaskScheduler);
-    }
+	@Test
+	public void testTaskSchedulerBean() {
+		TaskScheduler taskScheduler = taskSchedulerConfiguration.taskScheduler();
+		assertNotNull(taskScheduler);
+		assertTrue(taskScheduler instanceof ThreadPoolTaskScheduler);
+	}
 }

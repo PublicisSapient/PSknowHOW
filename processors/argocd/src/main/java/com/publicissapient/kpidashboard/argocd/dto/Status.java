@@ -23,10 +23,7 @@ import java.util.List;
 
 import lombok.Data;
 
-/**
- * Status represents the list of deployment details of ArgoCD Application
- *
- */
+/** Status represents the list of deployment details of ArgoCD Application */
 @Data
 public class Status {
 	private List<History> history = Collections.emptyList();

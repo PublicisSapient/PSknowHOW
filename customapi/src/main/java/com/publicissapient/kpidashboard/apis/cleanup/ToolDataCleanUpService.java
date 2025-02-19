@@ -24,16 +24,16 @@ package com.publicissapient.kpidashboard.apis.cleanup;
 public interface ToolDataCleanUpService {
 	/**
 	 * get tool category
-	 * 
+	 *
 	 * @return tool category eg. BUILD, SONAR_ANALYSIS, SCM
 	 */
 	String getToolCategory();
 
 	/**
 	 * Delete data related to the tool
-	 * 
+	 *
 	 * @param projectToolConfigId
-	 *            toolId
+	 *          toolId
 	 */
 	void clean(String projectToolConfigId);
 }

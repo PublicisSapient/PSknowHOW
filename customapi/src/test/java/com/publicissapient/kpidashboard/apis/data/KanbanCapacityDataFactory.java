@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.data;
 
 import java.io.IOException;
@@ -35,9 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author sansharm13
- *
  */
-
 @Slf4j
 public class KanbanCapacityDataFactory {
 	private static final String FILE_PATH = "/json/kanban/kanban_capacity.json";
@@ -87,5 +84,4 @@ public class KanbanCapacityDataFactory {
 	public List<KanbanCapacity> getKanbanCapacityDataList() {
 		return kanbanCapacity;
 	}
-
 }

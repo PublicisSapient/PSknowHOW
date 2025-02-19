@@ -32,9 +32,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Represents the role data.
- */
+/** Represents the role data. */
 @Data
 @Builder
 @Getter
@@ -67,9 +65,7 @@ public class RoleData {
 	@Field("displayName")
 	private String displayName;
 
-	/**
-	 * Creates a RoleData Object with id
-	 */
+	/** Creates a RoleData Object with id */
 	public RoleData() {
 		this.id = new ObjectId();
 		this.createdDate = new Date();
@@ -112,5 +108,4 @@ public class RoleData {
 		result = prime * result + ((roleName == null) ? 0 : roleName.hashCode());
 		return result;
 	}
-
 }

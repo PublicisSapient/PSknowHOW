@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.processor;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -28,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.jira.dataFactories.JiraIssueDataFactory;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +44,7 @@ import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.jira.dataFactories.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.jira.dataFactories.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -82,14 +81,16 @@ public class JiraIssueAssigneeProcessorImplTest {
 	@Test
 	public void setAssigneeDetails() {
 
-		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any())).thenReturn(assigneeDetails);
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any()))
+				.thenReturn(assigneeDetails);
 		createAssigneeDetails.createAssigneeDetails(createProjectConfig(), jiraIssue);
 	}
 
 	@Test
 	public void setAssigneeDetails2() {
 
-		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any())).thenReturn(null);
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any()))
+				.thenReturn(null);
 		createAssigneeDetails.createAssigneeDetails(createProjectConfig(), jiraIssue);
 	}
 
@@ -104,9 +105,8 @@ public class JiraIssueAssigneeProcessorImplTest {
 		return projectConfFieldMapping;
 	}
 
-    private JiraIssue getMockJiraIssue() {
-        JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance("/json/default/jira_issues.json");
-        return jiraIssueDataFactory.findTopByBasicProjectConfigId("63c04dc7b7617e260763ca4e");
-    }
-
+	private JiraIssue getMockJiraIssue() {
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance("/json/default/jira_issues.json");
+		return jiraIssueDataFactory.findTopByBasicProjectConfigId("63c04dc7b7617e260763ca4e");
+	}
 }

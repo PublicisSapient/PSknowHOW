@@ -24,10 +24,9 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.publicissapient.kpidashboard.common.model.rbac.UserRoleData;
 
-/**
- * Interface for user_roles collection
- */
+/** Interface for user_roles collection */
 public interface UserRolesRepository
-		extends MongoRepository<UserRoleData, ObjectId>, QuerydslPredicateExecutor<UserRoleData> {
-
+		extends
+			MongoRepository<UserRoleData, ObjectId>,
+			QuerydslPredicateExecutor<UserRoleData> {
 }

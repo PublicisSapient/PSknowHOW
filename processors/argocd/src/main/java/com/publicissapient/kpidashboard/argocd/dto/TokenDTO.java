@@ -20,10 +20,7 @@ package com.publicissapient.kpidashboard.argocd.dto;
 
 import lombok.Data;
 
-/**
- * TokenDTO represents the access token of the user
- *
- */
+/** TokenDTO represents the access token of the user */
 @Data
 public class TokenDTO {
 	private String token;

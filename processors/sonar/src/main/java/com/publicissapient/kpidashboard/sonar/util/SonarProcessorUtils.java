@@ -23,7 +23,6 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -34,14 +33,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestOperations;
 
-import com.publicissapient.kpidashboard.common.constant.SonarMetricStatus;
-
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Provides utility methods for Sonar Processor.
- *
- */
+/** Provides utility methods for Sonar Processor. */
 @Slf4j
 public final class SonarProcessorUtils {
 
@@ -54,18 +48,18 @@ public final class SonarProcessorUtils {
 
 	/**
 	 * Parses response body as JSON array.
-	 * 
+	 *
 	 * @param url
-	 *            the url
+	 *          the url
 	 * @param restOp
-	 *            the rest operation
+	 *          the rest operation
 	 * @param key
-	 *            the project key
+	 *          the project key
 	 * @param httpHeaders
-	 *            the http header
+	 *          the http header
 	 * @return JSONArray the JSON array
 	 * @throws ParseException
-	 *             if the given string doesn’t meet format
+	 *           if the given string doesn’t meet format
 	 */
 	public static JSONArray parseData(String url, RestOperations restOp, String key, HttpEntity<String> httpHeaders)
 			throws ParseException {
@@ -78,11 +72,11 @@ public final class SonarProcessorUtils {
 
 	/**
 	 * Provides timestamp.
-	 * 
+	 *
 	 * @param jsonData
-	 *            the json object data
+	 *          the json object data
 	 * @param key
-	 *            the project key
+	 *          the project key
 	 * @return the timestamp
 	 */
 	public static long getTimestamp(JSONObject jsonData, String key) {
@@ -99,11 +93,11 @@ public final class SonarProcessorUtils {
 
 	/**
 	 * Converts json object to string data.
-	 * 
+	 *
 	 * @param jsonData
-	 *            the json object
+	 *          the json object
 	 * @param key
-	 *            the project key
+	 *          the project key
 	 * @return the string data
 	 */
 	public static String convertToString(JSONObject jsonData, String key) {
@@ -113,11 +107,11 @@ public final class SonarProcessorUtils {
 
 	/**
 	 * Converts json object to string data safely.
-	 * 
+	 *
 	 * @param jsonData
-	 *            the json object
+	 *          the json object
 	 * @param key
-	 *            the project key
+	 *          the project key
 	 * @return the string data
 	 */
 	public static String convertToStringSafe(JSONObject jsonData, String key) {
@@ -127,11 +121,11 @@ public final class SonarProcessorUtils {
 
 	/**
 	 * Creates HTTP Headers.
-	 * 
+	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @param password
-	 *            the password
+	 *          the password
 	 * @return HttpHeaders the http header
 	 */
 	public static HttpHeaders getHeaders(String username, String password) {
@@ -170,9 +164,9 @@ public final class SonarProcessorUtils {
 
 	/**
 	 * Date formatter.
-	 * 
+	 *
 	 * @param duration
-	 *            the duration
+	 *          the duration
 	 * @return the data format as string
 	 */
 	public static String dateFormatter(String duration) {
@@ -191,5 +185,4 @@ public final class SonarProcessorUtils {
 
 		return SonarUtils.formatDuration(days, hours, minutes, isNegative);
 	}
-
 }

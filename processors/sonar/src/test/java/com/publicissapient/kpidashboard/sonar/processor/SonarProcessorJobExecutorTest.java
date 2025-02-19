@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.sonar.processor;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -151,14 +152,13 @@ public class SonarProcessorJobExecutorTest {
 		Mockito.when(sonarProcessorRepository.save(sonarProcessor)).thenReturn(sonarProcessor);
 		when(aesEncryptionService.decrypt(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
 				.thenReturn(PLAIN_TEXT_PASSWORD);
-		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(Mockito.any(), Mockito.any()))
 				.thenReturn(connList);
 		when(sonarProjectRepository.findEnabledProjectsForTool(any(), any(), anyString()))
 				.thenReturn(sonarProcessorItemList);
 		when(sonarConfig.getCustomApiBaseUrl()).thenReturn(CUSTOM_API_BASE_URL);
 		when(sonarConfig.getMetrics()).thenReturn(Arrays.asList(METRICS));
-
 	}
 
 	@Test
@@ -264,7 +264,6 @@ public class SonarProcessorJobExecutorTest {
 		projectList.add(project);
 
 		return projectList;
-
 	}
 
 	private SonarProcessorItem getProject() {
@@ -286,26 +285,26 @@ public class SonarProcessorJobExecutorTest {
 
 		SonarProcessorItem project = getProject();
 		String historyUrl = String.format(
-				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).toString(), project.getKey(),
-				METRICS, DEFAULT_DATE);
+				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).toString(), project.getKey(), METRICS,
+				DEFAULT_DATE);
 
 		doReturn(new ResponseEntity<>(historyJson, HttpStatus.OK)).when(rest).exchange(ArgumentMatchers.eq(historyUrl),
-				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 
 		when(sonarClientSelector.getSonarClient(Mockito.anyString())).thenReturn(sonar6And7Client);
 		when(sonarProjectRepository.findByProcessorIdIn(Mockito.any())).thenReturn(sonarProcessorItemList);
 		when(sonarConfig.getMetrics()).thenReturn(Arrays.asList(METRICS));
 		when(sonarConfig.getCustomApiBaseUrl()).thenReturn(CUSTOM_API_BASE_URL);
 
-		when(sonarProjectRepository.findEnabledProjectsForTool(Mockito.any(), Mockito.any(),
-				ArgumentMatchers.eq(SONAR_URL))).thenReturn(getProjects());
+		when(
+				sonarProjectRepository.findEnabledProjectsForTool(Mockito.any(), Mockito.any(), ArgumentMatchers.eq(SONAR_URL)))
+				.thenReturn(getProjects());
 
 		String cacheUrl = CUSTOM_API_BASE_URL + SONAR_CACHE_END_POINT;
 		String reponseBody = "{}";
 		doReturn(new ResponseEntity<>(reponseBody, HttpStatus.OK)).when(restTemplate).exchange(
-				ArgumentMatchers.eq(cacheUrl), ArgumentMatchers.eq(HttpMethod.GET),
-				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(cacheUrl), ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
+				ArgumentMatchers.eq(String.class));
 		try {
 			SonarDetails sonarDetails = new SonarDetails();
 			createSonarDetails(sonarDetails);

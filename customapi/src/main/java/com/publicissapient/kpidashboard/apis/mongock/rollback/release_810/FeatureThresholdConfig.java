@@ -33,7 +33,7 @@ import io.mongock.api.annotations.RollbackExecution;
 
 /**
  * provide rollback scripts
- * 
+ *
  * @author shi6
  */
 @ChangeUnit(id = "r_feature_threshold_config", order = "08101", author = "shi6", systemVersion = "8.1.0")
@@ -62,17 +62,15 @@ public class FeatureThresholdConfig {
 		Document filter = new Document("fieldName", new Document("$in", fieldNamesToDelete));
 		fieldMappingStructure.deleteMany(filter);
 		return true;
-
 	}
 
 	@RollbackExecution
 	public void rollback() {
-		//do not require the implementation
+		// do not require the implementation
 	}
 
 	@RollbackBeforeExecution
 	public void rollbackBeforeExecution() {
-		//do not require the implementation
+		// do not require the implementation
 	}
-
 }

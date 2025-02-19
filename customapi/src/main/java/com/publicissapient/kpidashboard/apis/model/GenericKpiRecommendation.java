@@ -42,5 +42,4 @@ public class GenericKpiRecommendation {
 	private String recommendationDetails;
 	private String recommendationType;
 	private String filter;
-
 }

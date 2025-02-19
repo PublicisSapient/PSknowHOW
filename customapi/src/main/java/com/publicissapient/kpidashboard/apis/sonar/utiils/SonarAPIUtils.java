@@ -13,26 +13,22 @@ import org.springframework.http.HttpHeaders;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Provides utility methods for Sonar.
- *
- */
+/** Provides utility methods for Sonar. */
 @Slf4j
 public class SonarAPIUtils {
 
-	private static final String AUTHORIZATION= "Authorization";
+	private static final String AUTHORIZATION = "Authorization";
 
 	private SonarAPIUtils() {
-
 	}
 
 	/**
 	 * Creates HTTP Headers.
 	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @param password
-	 *            the password
+	 *          the password
 	 * @return HttpHeaders the http header
 	 */
 	public static HttpHeaders getHeaders(String username, String password) {
@@ -65,9 +61,9 @@ public class SonarAPIUtils {
 	 * Converts json Array to string response body.
 	 *
 	 * @param responseBody
-	 *            the api response body string
+	 *          the api response body string
 	 * @param key
-	 *            the project key
+	 *          the project key
 	 * @return the string data
 	 */
 	public static JSONArray parseData(String responseBody, String key) throws ParseException {
@@ -80,9 +76,9 @@ public class SonarAPIUtils {
 	 * Converts String to json objects.
 	 *
 	 * @param jsonData
-	 *            the json object
+	 *          the json object
 	 * @param key
-	 *            the project key
+	 *          the project key
 	 * @return the string data
 	 */
 	public static String convertToString(JSONObject jsonData, String key) {
@@ -94,9 +90,9 @@ public class SonarAPIUtils {
 	 * Converts list of string to jsonArray.
 	 *
 	 * @param jsonArray
-	 *            the json object
+	 *          the json object
 	 * @param key
-	 *            the project key
+	 *          the project key
 	 * @return the string data
 	 */
 	public static List<String> convertListFromArray(JSONArray jsonArray, String key) {
@@ -110,5 +106,4 @@ public class SonarAPIUtils {
 		}
 		return list;
 	}
-
 }

@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 @Service
 public final class JiraConstants {
 
-	public static final Set<String> ISSUE_FIELD_SET = new HashSet<>();// NOSONAR
+	public static final Set<String> ISSUE_FIELD_SET = new HashSet<>(); // NOSONAR
 	public static final String STATUS = "status";
 	public static final String ASSIGNEE = "assignee";
 	public static final String PRIORITY = "priority";
@@ -48,7 +48,6 @@ public final class JiraConstants {
 	public static final String JIRA_ISSUE_CHANGE_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSS";
 	public static final String EMPTY_STR = "";
 	public static final String FALSE = "False";
-	public static final String COMBINE_IDS_SYMBOL = "_";
 	public static final String START_AT_ATTRIBUTE = "startAt";
 	public static final String MAX_RESULTS_ATTRIBUTE = "maxResults";
 	public static final int MAX_JQL_LENGTH_FOR_HTTP_GET = 3000;
@@ -94,6 +93,7 @@ public final class JiraConstants {
 	static {
 		ISSUE_FIELD_SET.add("*all,-attachment,-worklog,-comment,-votes,-watches");
 	}
-	
-	private JiraConstants(){ }
+
+	private JiraConstants() {
+	}
 }

@@ -21,9 +21,7 @@ package com.publicissapient.kpidashboard.jira.service;
 import com.atlassian.httpclient.api.Request;
 import com.atlassian.jira.rest.client.api.AuthenticationHandler;
 
-/**
- * Authentication handler for bearer token
- */
+/** Authentication handler for bearer token */
 public class BearerTokenAuthenticationHandler implements AuthenticationHandler {
 
 	private static final String AUTHORIZATION_HEADER = "Authorization";
@@ -43,7 +41,7 @@ public class BearerTokenAuthenticationHandler implements AuthenticationHandler {
 
 	/**
 	 * This method return bearer token
-	 * 
+	 *
 	 * @return token
 	 */
 	private String getBearerToken() {

@@ -61,8 +61,8 @@ import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepo
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
 
 /*
- author @shi6
- */
+author @shi6
+*/
 @ExtendWith(SpringExtension.class)
 public class MetaDataClientImplTest {
 	@Mock
@@ -93,11 +93,27 @@ public class MetaDataClientImplTest {
 		when(fieldMappingRepository.save(any())).thenReturn(new FieldMapping());
 
 		when(metadataIdentifierRepository.findByToolAndIsKanban(anyString(), anyBoolean()))
-				.thenReturn(new MetadataIdentifier("tool", "templateName", "templateCode", Boolean.TRUE, true,
-						new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
+				.thenReturn(
+						new MetadataIdentifier(
+								"tool",
+								"templateName",
+								"templateCode",
+								Boolean.TRUE,
+								true,
+								new ArrayList<>(),
+								new ArrayList<>(),
+								new ArrayList<>(),
+								new ArrayList<>(),
+								new ArrayList<>()));
 		when(azureStateCategoryRepository.findByBasicProjectConfigId(anyString()))
-				.thenReturn(new AzureStateCategory("basicProjectConfigId", Set.of("String"), Set.of("String"),
-						Set.of("String"), Set.of("String"), Set.of("String")));
+				.thenReturn(
+						new AzureStateCategory(
+								"basicProjectConfigId",
+								Set.of("String"),
+								Set.of("String"),
+								Set.of("String"),
+								Set.of("String"),
+								Set.of("String")));
 
 		ProjectConfFieldMapping projectConfFieldMapping = createProjectCongMapping();
 		boolean result = metaDataClientImpl.processMetadata(projectConfFieldMapping);
@@ -112,8 +128,18 @@ public class MetaDataClientImplTest {
 		when(fieldMappingRepository.save(any())).thenReturn(new FieldMapping());
 
 		when(metadataIdentifierRepository.findByToolAndIsKanban(anyString(), anyBoolean()))
-				.thenReturn(new MetadataIdentifier("tool", "templateName", "templateCode", Boolean.TRUE, true,
-						new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
+				.thenReturn(
+						new MetadataIdentifier(
+								"tool",
+								"templateName",
+								"templateCode",
+								Boolean.TRUE,
+								true,
+								new ArrayList<>(),
+								new ArrayList<>(),
+								new ArrayList<>(),
+								new ArrayList<>(),
+								new ArrayList<>()));
 		when(azureStateCategoryRepository.findByBasicProjectConfigId(anyString())).thenReturn(null);
 
 		ProjectConfFieldMapping projectConfFieldMapping = createProjectCongMapping();
@@ -130,8 +156,18 @@ public class MetaDataClientImplTest {
 
 		List<Identifier> identifier = createIdentifier();
 		when(metadataIdentifierRepository.findByToolAndIsKanban(anyString(), anyBoolean()))
-				.thenReturn(new MetadataIdentifier("tool", "templateName", "templateCode", Boolean.TRUE, true,
-						identifier, identifier, identifier, identifier, identifier));
+				.thenReturn(
+						new MetadataIdentifier(
+								"tool",
+								"templateName",
+								"templateCode",
+								Boolean.TRUE,
+								true,
+								identifier,
+								identifier,
+								identifier,
+								identifier,
+								identifier));
 		when(azureStateCategoryRepository.findByBasicProjectConfigId(anyString())).thenReturn(null);
 
 		ProjectConfFieldMapping projectConfFieldMapping = createProjectCongMapping();
@@ -149,8 +185,18 @@ public class MetaDataClientImplTest {
 
 		List<Identifier> identifier = createIdentifier();
 		when(metadataIdentifierRepository.findByToolAndIsKanban(anyString(), anyBoolean()))
-				.thenReturn(new MetadataIdentifier("tool", "templateName", "templateCode", Boolean.TRUE, true,
-						identifier, identifier, identifier, identifier, identifier));
+				.thenReturn(
+						new MetadataIdentifier(
+								"tool",
+								"templateName",
+								"templateCode",
+								Boolean.TRUE,
+								true,
+								identifier,
+								identifier,
+								identifier,
+								identifier,
+								identifier));
 		when(azureStateCategoryRepository.findByBasicProjectConfigId(anyString())).thenReturn(null);
 
 		ProjectConfFieldMapping projectConfFieldMapping = createProjectCongMapping();
@@ -187,9 +233,14 @@ public class MetaDataClientImplTest {
 	@Test
 	public void testProcessAndSaveStateCategory() throws Exception {
 		when(azureStateCategoryRepository.findByBasicProjectConfigId(anyString()))
-				.thenReturn(new AzureStateCategory("basicProjectConfigId", Set.of("String"), Set.of("String"),
-						Set.of("String"), Set.of("String"), Set.of("String")));
-
+				.thenReturn(
+						new AzureStateCategory(
+								"basicProjectConfigId",
+								Set.of("String"),
+								Set.of("String"),
+								Set.of("String"),
+								Set.of("String"),
+								Set.of("String")));
 	}
 
 	private List<Field> createField() {
@@ -220,11 +271,10 @@ public class MetaDataClientImplTest {
 				CommonConstant.ISSUE_TYPE, CommonConstant.UAT_DEFECT, CommonConstant.TICKET_VELOCITY_ISSUE_TYPE,
 				CommonConstant.TICKET_WIP_CLOSED_ISSUE_TYPE, CommonConstant.TICKET_THROUGHPUT_ISSUE_TYPE,
 				CommonConstant.KANBAN_CYCLE_TIME_ISSUE_TYPE, CommonConstant.TICKET_REOPEN_ISSUE_TYPE,
-				CommonConstant.KANBAN_TECH_DEBT_ISSUE_TYPE, CommonConstant.DOR, CommonConstant.DOD,
-				CommonConstant.DEVELOPMENT, CommonConstant.QA, CommonConstant.FIRST_STATUS, CommonConstant.REJECTION,
-				CommonConstant.DELIVERED, CommonConstant.TICKET_CLOSED_STATUS, CommonConstant.TICKET_RESOLVED_STATUS,
-				CommonConstant.TICKET_TRIAGED_STATUS, CommonConstant.TICKET_WIP_STATUS,
-				CommonConstant.TICKET_REJECTED_STATUS);
+				CommonConstant.KANBAN_TECH_DEBT_ISSUE_TYPE, CommonConstant.DOR, CommonConstant.DOD, CommonConstant.DEVELOPMENT,
+				CommonConstant.QA, CommonConstant.FIRST_STATUS, CommonConstant.REJECTION, CommonConstant.DELIVERED,
+				CommonConstant.TICKET_CLOSED_STATUS, CommonConstant.TICKET_RESOLVED_STATUS,
+				CommonConstant.TICKET_TRIAGED_STATUS, CommonConstant.TICKET_WIP_STATUS, CommonConstant.TICKET_REJECTED_STATUS);
 
 		for (String type : types) {
 			Identifier identifier = new Identifier();
@@ -233,6 +283,5 @@ public class MetaDataClientImplTest {
 			identifiers.add(identifier);
 		}
 		return identifiers;
-
 	}
 }

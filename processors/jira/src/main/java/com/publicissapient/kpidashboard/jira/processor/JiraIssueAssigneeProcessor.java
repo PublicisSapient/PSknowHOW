@@ -23,16 +23,14 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 /**
  * @author pankumar8
- *
  */
 public interface JiraIssueAssigneeProcessor {
 	/**
 	 * @param projectConfig
-	 *            projectConfig
+	 *          projectConfig
 	 * @param jiraIssue
-	 *            jiraIssue
+	 *          jiraIssue
 	 * @return AssigneeDetails
 	 */
 	AssigneeDetails createAssigneeDetails(ProjectConfFieldMapping projectConfig, JiraIssue jiraIssue);
-
 }

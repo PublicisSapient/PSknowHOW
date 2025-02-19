@@ -52,7 +52,6 @@ public interface ProcessorExecutionTraceLogRepository extends MongoRepository<Pr
 	Optional<ProcessorExecutionTraceLog> findByProcessorNameAndBasicProjectConfigIdAndProgressStatsTrue(
 			String processorName, String basicProjectConfigId);
 
-	List<ProcessorExecutionTraceLog> findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(
-			String processorName, String basicProjectConfigId);
-
+	List<ProcessorExecutionTraceLog> findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(String processorName,
+			String basicProjectConfigId);
 }

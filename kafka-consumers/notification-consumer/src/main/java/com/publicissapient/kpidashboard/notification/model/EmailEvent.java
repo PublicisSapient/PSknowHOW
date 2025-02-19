@@ -24,6 +24,7 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 /**
  * This class is represent kafka message format
  *
@@ -32,21 +33,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class EmailEvent  implements Serializable{
-	
-	/**
-	 * 
-	 */
+public class EmailEvent implements Serializable {
+
+	/** */
 	private static final long serialVersionUID = -1334987659830782650L;
-	
+
 	private String from;
 	private List<String> to;
 	private List<String> cc;
 	private List<String> bcc;
 	private String subject;
 	private String body;
-	private Map<String,String> customData;
+	private Map<String, String> customData;
 	private String emailHost;
 	private int emailPort;
-
 }

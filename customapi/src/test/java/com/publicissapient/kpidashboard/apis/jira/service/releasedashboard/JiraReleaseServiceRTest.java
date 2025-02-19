@@ -16,14 +16,12 @@ package com.publicissapient.kpidashboard.apis.jira.service.releasedashboard;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -34,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.hamcrest.MatcherAssert;
 import org.junit.Before;
@@ -61,6 +57,7 @@ import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueReleaseStatusDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.factory.JiraNonTrendKPIServiceFactory;
 import com.publicissapient.kpidashboard.apis.jira.scrum.service.release.ReleaseBurnUpServiceImpl;
@@ -68,6 +65,7 @@ import com.publicissapient.kpidashboard.apis.jira.service.NonTrendKPIService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -100,9 +98,11 @@ public class JiraReleaseServiceRTest {
 	private CacheService cacheService;
 	@Mock
 	private ReleaseBurnUpServiceImpl releaseBurnupService;
+
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<JiraReleaseKPIService> services;
+
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private String[] projectKey;
 	private List<HierarchyLevel> hierarchyLevels = new ArrayList<>();
@@ -152,8 +152,9 @@ public class JiraReleaseServiceRTest {
 
 		try (MockedStatic<JiraNonTrendKPIServiceFactory> utilities = Mockito
 				.mockStatic(JiraNonTrendKPIServiceFactory.class)) {
-			utilities.when((MockedStatic.Verification) JiraNonTrendKPIServiceFactory
-					.getJiraKPIService(KPICode.RELEASE_BURNUP.name())).thenReturn(releaseBurnupService);
+			utilities.when(
+					(MockedStatic.Verification) JiraNonTrendKPIServiceFactory.getJiraKPIService(KPICode.RELEASE_BURNUP.name()))
+					.thenReturn(releaseBurnupService);
 		}
 
 		Map<String, Integer> map = new HashMap<>();
@@ -180,8 +181,6 @@ public class JiraReleaseServiceRTest {
 				.newInstance("/json/default/jira_issue_release_status.json");
 		when(jiraIssueReleaseStatusRepository.findByBasicProjectConfigId((anyString())))
 				.thenReturn(jiraIssueReleaseStatusDataFactory.getJiraIssueReleaseStatusList().get(0));
-
-
 	}
 
 	@org.junit.Test
@@ -206,24 +205,28 @@ public class JiraReleaseServiceRTest {
 	public void TestProcess() throws Exception {
 		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		MatcherAssert.assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
+		MatcherAssert.assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
 	}
 
 	@Test
 	public void TestProcess_ApplicationException() throws Exception {
 		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
-		when(releaseBurnupService.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
+		when(releaseBurnupService.getKpiData(any(), any(), any()))
+				.thenThrow(ApplicationException.class);
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		MatcherAssert.assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+		MatcherAssert.assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
 	}
-
 
 	@Test
 	public void TestProcess_NPException() throws Exception {
 		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
-		when(releaseBurnupService.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
+		when(releaseBurnupService.getKpiData(any(), any(), any()))
+				.thenThrow(NullPointerException.class);
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		MatcherAssert.assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+		MatcherAssert.assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
 	}
 
 	@Test
@@ -237,17 +240,17 @@ public class JiraReleaseServiceRTest {
 	}
 
 	@Test
-	public void getJiraIssueReleaseForProject(){
+	public void getJiraIssueReleaseForProject() {
 		jiraServiceR.getJiraIssueReleaseForProject();
 	}
 
 	@Test
-	public void getReleaseList(){
+	public void getReleaseList() {
 		jiraServiceR.getReleaseList();
 	}
 
 	@Test
-	public void getSubTaskDefects(){
+	public void getSubTaskDefects() {
 		jiraServiceR.getSubTaskDefects();
 	}
 
@@ -267,7 +270,7 @@ public class JiraReleaseServiceRTest {
 
 		addKpiElement(kpiList, KPICode.RELEASE_BURNUP.getKpiId(), KPICode.RELEASE_BURNUP.name(), "Release", "");
 		kpiRequest.setLevel(level);
-		kpiRequest.setIds(new String[] { "38296_Scrum Project_6335363749794a18e8a4479b" });
+		kpiRequest.setIds(new String[]{"38296_Scrum Project_6335363749794a18e8a4479b"});
 		kpiRequest.setKpiList(kpiList);
 		kpiRequest.setRequestTrackerId();
 		kpiRequest.setLabel("release");
@@ -278,8 +281,7 @@ public class JiraReleaseServiceRTest {
 		return kpiRequest;
 	}
 
-	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category,
-			String kpiUnit) {
+	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category, String kpiUnit) {
 		KpiElement kpiElement = new KpiElement();
 		kpiElement.setKpiId(kpiId);
 		kpiElement.setKpiName(kpiName);
@@ -291,5 +293,4 @@ public class JiraReleaseServiceRTest {
 		kpiElement.setChartType("gaugeChart");
 		kpiList.add(kpiElement);
 	}
-
 }

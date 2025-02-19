@@ -27,7 +27,6 @@ import com.publicissapient.kpidashboard.common.model.application.Subproject;
 
 /**
  * @author sansharm13
- *
  */
 public interface SubProjectRepository extends MongoRepository<Subproject, ObjectId> {
 
@@ -42,5 +41,4 @@ public interface SubProjectRepository extends MongoRepository<Subproject, Object
 	 * @return List of SubProjects
 	 */
 	List<Subproject> findBybasicProjectConfigIdIn(List<ObjectId> projectConfiragrationIds);
-
 }

@@ -29,9 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents the kpiVideoLink data.
- */
+/** Represents the kpiVideoLink data. */
 @Data
 @Builder
 @Getter
@@ -45,5 +43,4 @@ public class KPIVideoLink extends BasicModel {
 	private String videoUrl;
 	private boolean disabled;
 	private String source;
-
 }

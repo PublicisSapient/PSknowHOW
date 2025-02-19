@@ -27,20 +27,17 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 public class ProcessorTaskTests {
@@ -102,17 +99,16 @@ public class ProcessorTaskTests {
 		verify(taskScheduler).schedule(any(TestProcessorJobExecutor.class), any(CronTrigger.class));
 	}
 
-	/*@Test
-	public void onShutdown() {
-		Processor c = new Processor();
-		c.setOnline(true);
-		when(processorRepository.findByProcessorName(COLLECTOR_NAME)).thenReturn(c);
-
-		task.onShutdown();
-
-		assertThat(c.isOnline(), is(false));
-		verify(processorRepository, times(1)).save(c);
-	}*/
+	/*
+	 * @Test public void onShutdown() { Processor c = new Processor();
+	 * c.setOnline(true);
+	 * when(processorRepository.findByProcessorName(COLLECTOR_NAME)).thenReturn(c);
+	 *
+	 * task.onShutdown();
+	 *
+	 * assertThat(c.isOnline(), is(false)); verify(processorRepository,
+	 * times(1)).save(c); }
+	 */
 
 	private final class TestProcessorJobExecutor extends ProcessorJobExecutor<Processor> {
 

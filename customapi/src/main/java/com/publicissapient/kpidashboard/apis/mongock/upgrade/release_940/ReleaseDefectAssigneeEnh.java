@@ -35,12 +35,11 @@ public class ReleaseDefectAssigneeEnh {
 	public void addFieldToFieldMappingStructure() {
 
 		Document thresholdValueMapping = new Document(FIELD_NAME, "jiraDodKPI143").append("fieldLabel", "DOD Status")
-				.append("fieldType", "chips").append("fieldCategory", "workflow")
-				.append("section", "WorkFlow Status Mapping").append("tooltip", new Document(DEFINITION,
+				.append("fieldType", "chips").append("fieldCategory", "workflow").append("section", "WorkFlow Status Mapping")
+				.append("tooltip", new Document(DEFINITION,
 						"Status/es that identify that an issue is completed based on Definition of Done (DoD)."));
 
 		mongoTemplate.getCollection("field_mapping_structure").insertOne(thresholdValueMapping);
-
 	}
 
 	@RollbackExecution

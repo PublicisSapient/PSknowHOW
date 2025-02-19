@@ -34,7 +34,6 @@ export class FieldMappingFormComponent implements OnInit {
   @Input() selectedToolConfig;
   @Input() thresholdUnit;
   @Output() reloadKPI = new EventEmitter();
-  //disableSave = false;
   populateDropdowns = true;
   selectedField = '';
   singleSelectionDropdown = false;
@@ -78,7 +77,6 @@ private setting = {
     this.initializeForm();
     this.generateFieldMappingConfiguration();
     this.form.valueChanges.subscribe(()=>{
-     //this.isFormDirty = true;
     })
   }
 
@@ -332,7 +330,6 @@ private setting = {
 
   /** Responsible for handle template popup */
   save() {
-    //this.disableSave = true;
     const finalList = [];
 
     this.formData.forEach(element => {

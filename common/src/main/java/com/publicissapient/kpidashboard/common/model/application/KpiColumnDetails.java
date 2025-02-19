@@ -45,5 +45,4 @@ public class KpiColumnDetails {
 	public void setIsDefault(boolean aDefault) {
 		isDefault = aDefault;
 	}
-
 }

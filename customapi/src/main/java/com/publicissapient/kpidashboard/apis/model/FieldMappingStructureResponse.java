@@ -17,5 +17,4 @@ public class FieldMappingStructureResponse {
 	private List<FieldMappingStructure> fieldConfiguration;
 	private String kpiSource;
 	private String projectToolConfigId;
-
 }

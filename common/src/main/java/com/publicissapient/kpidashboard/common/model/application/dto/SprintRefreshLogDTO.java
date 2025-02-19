@@ -21,7 +21,7 @@ import lombok.Data;
 
 /**
  * Dto for azure sprint refresh log.
- * 
+ *
  * @author shunaray
  */
 @Data

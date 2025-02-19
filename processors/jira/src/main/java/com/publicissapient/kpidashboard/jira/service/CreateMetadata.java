@@ -22,15 +22,14 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 /**
  * @author pankumar8
- *
  */
 public interface CreateMetadata {
 
 	/**
 	 * @param projectConfig
-	 *            projectConfig
+	 *          projectConfig
 	 * @param client
-	 *            client
+	 *          client
 	 */
 	void collectMetadata(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client, String isScheduler);
 }

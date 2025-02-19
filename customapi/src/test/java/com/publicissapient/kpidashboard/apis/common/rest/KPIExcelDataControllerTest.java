@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.common.rest;
 
 import static org.mockito.Mockito.when;
@@ -32,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,14 +43,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.KPIExcelDataService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelValidationDataResponse;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 
 /**
  * @author tauakram
- *
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class KPIExcelDataControllerTest {
 
@@ -83,7 +79,6 @@ public class KPIExcelDataControllerTest {
 		kpiValidationDataMap.put("Project1_Sprint1", validationData);
 
 		kpiExcelValidationDataResponse.setMapOfSprintAndData(kpiValidationDataMap);
-
 	}
 
 	@After
@@ -95,21 +90,22 @@ public class KPIExcelDataControllerTest {
 	@Test
 	public void testGetKpiValidationData() throws Exception {
 		// TODO GIRISH here discuss with team
-		String request = "{\n" + "  \"kpiList\": [\n" + "    {\n" + "      \"id\": \"5b753628d42937acd035b7ef\",\n"
-				+ "      \"kpiId\": \"kpi14\",\n" + "      \"kpiName\": \"Defect Injection Rate\",\n"
-				+ "      \"isDeleted\": \"False\",\n" + "      \"kpiCategory\": \"Quality\",\n"
-				+ "      \"kpiUnit\": \"Percentage\",\n" + "      \"kpiSource\": \"Jira\",\n"
-				+ "      \"maxValue\": \"\",\n" + "      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ],\n"
-				+ "  \"ids\": [\n" + "    \"GMA_GMA\"\n" + "  ],\n" + "  \"level\": 1\n" + "}";
+		String request = "{\n" + "  \"kpiList\": [\n" + "    {\n" + "      \"id\": \"5b753628d42937acd035b7ef\",\n" +
+				"      \"kpiId\": \"kpi14\",\n" + "      \"kpiName\": \"Defect Injection Rate\",\n" +
+				"      \"isDeleted\": \"False\",\n" + "      \"kpiCategory\": \"Quality\",\n" +
+				"      \"kpiUnit\": \"Percentage\",\n" + "      \"kpiSource\": \"Jira\",\n" + "      \"maxValue\": \"\",\n" +
+				"      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ],\n" + "  \"ids\": [\n" + "    \"GMA_GMA\"\n" +
+				"  ],\n" + "  \"level\": 1\n" + "}";
 		when(customApiConfig.getxApiKey()).thenReturn("testKey");
 		when(kpiExcelDataService.process(Mockito.anyString(), Mockito.anyInt(), Mockito.any(),
-				(List<String>) Mockito.isNull(), Mockito.any(), (Boolean) Mockito.isNull(),Mockito.any()))
-						.thenReturn((KPIExcelValidationDataResponse) kpiExcelValidationDataResponse);
+				(List<String>) Mockito.isNull(), Mockito.any(), (Boolean) Mockito.isNull(), Mockito.any()))
+				.thenReturn((KPIExcelValidationDataResponse) kpiExcelValidationDataResponse);
 
-		mockMvc.perform(post("/v1/kpi/kpi14").header("x-filter-level", 1)
-						.header("x-filter-id", Arrays.asList("GMA_GMA", "CIM_CIM")).header("X-Api-Key", "testKey")
-						.contentType(MediaType.APPLICATION_JSON).content(request)).andExpect(status().is2xxSuccessful())
-				.andDo(print());
+		mockMvc
+				.perform(
+						post("/v1/kpi/kpi14").header("x-filter-level", 1).header("x-filter-id", Arrays.asList("GMA_GMA", "CIM_CIM"))
+								.header("X-Api-Key", "testKey").contentType(MediaType.APPLICATION_JSON).content(request))
+				.andExpect(status().is2xxSuccessful()).andDo(print());
 	}
 
 	@Test
@@ -124,5 +120,4 @@ public class KPIExcelDataControllerTest {
 
 		mockMvc.perform(get("/v1/kpi").header("x-filter-level", 1)).andExpect(status().is4xxClientError());
 	}
-
 }

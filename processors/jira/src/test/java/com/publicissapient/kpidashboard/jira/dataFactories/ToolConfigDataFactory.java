@@ -82,9 +82,8 @@ public class ToolConfigDataFactory {
 
 	public List<ProjectToolConfig> findByToolNameAndBasicProjectConfigId(String toolName, String basicProjectConfigId) {
 		return projectToolConfigs.stream()
-				.filter(projectToolConfig -> (projectToolConfig.getToolName().equals(toolName)
-						&& projectToolConfig.getBasicProjectConfigId().toHexString().equals(basicProjectConfigId)))
+				.filter(projectToolConfig -> (projectToolConfig.getToolName().equals(toolName) &&
+						projectToolConfig.getBasicProjectConfigId().toHexString().equals(basicProjectConfigId)))
 				.collect(Collectors.toList());
 	}
-
 }

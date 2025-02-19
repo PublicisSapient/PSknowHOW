@@ -39,9 +39,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- *
- */
+/** */
 @Component
 @Slf4j
 public class CorsFilter extends OncePerRequestFilter {
@@ -49,7 +47,7 @@ public class CorsFilter extends OncePerRequestFilter {
 	@Autowired
 	private CustomApiConfig apiSettings;
 
-    @Override
+	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		// Added code to handle the CORS security
@@ -66,9 +64,7 @@ public class CorsFilter extends OncePerRequestFilter {
 	}
 
 	/**
-	 * <p>
 	 * This method checks whether the request is a valid CORS request
-	 * </p>
 	 *
 	 * @param request
 	 * @return Boolean
@@ -94,9 +90,7 @@ public class CorsFilter extends OncePerRequestFilter {
 	}
 
 	/**
-	 * <p>
 	 * This method validates the origin with whitelist of CORS valid addresses
-	 * </p>
 	 *
 	 * @param originWhiteList
 	 * @param theResult
@@ -119,9 +113,7 @@ public class CorsFilter extends OncePerRequestFilter {
 	}
 
 	/**
-	 * <p>
 	 * This method sets the headers in reponse to enable CORS
-	 * </p>
 	 *
 	 * @param request
 	 * @param response
@@ -146,6 +138,5 @@ public class CorsFilter extends OncePerRequestFilter {
 		executionLogContext.setRequestId(request.getHeader(CORSConstants.REQUEST_ID));
 		executionLogContext.setEnvironment(orign);
 		ExecutionLogContext.set(executionLogContext);
-
 	}
 }

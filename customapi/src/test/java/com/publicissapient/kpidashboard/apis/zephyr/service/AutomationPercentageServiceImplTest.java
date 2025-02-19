@@ -32,14 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
-import com.publicissapient.kpidashboard.apis.data.TestExecutionDataFactory;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
-import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
-import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,9 +47,11 @@ import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.TestCaseDetailsDataFactory;
+import com.publicissapient.kpidashboard.apis.data.TestExecutionDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -69,10 +63,15 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
+import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
@@ -83,8 +82,8 @@ import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetails
 @RunWith(MockitoJUnitRunner.class)
 public class AutomationPercentageServiceImplTest {
 
-	private final static String TESTCASEKEY = "testCaseData";
-	private final static String AUTOMATEDTESTCASEKEY = "automatedTestCaseData";
+	private static final String TESTCASEKEY = "testCaseData";
+	private static final String AUTOMATEDTESTCASEKEY = "automatedTestCaseData";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
@@ -118,6 +117,8 @@ public class AutomationPercentageServiceImplTest {
 	private KpiElement kpiElement;
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+
 	List<TestExecution> testExecutionList;
 
 	@Before
@@ -138,6 +139,18 @@ public class AutomationPercentageServiceImplTest {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		});
 
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
+
 		AdditionalFilterCategoryFactory additionalFilterCategoryFactory = AdditionalFilterCategoryFactory.newInstance();
 		List<AdditionalFilterCategory> additionalFilterCategoryList = additionalFilterCategoryFactory
 				.getAdditionalFilterCategoryList();
@@ -146,11 +159,11 @@ public class AutomationPercentageServiceImplTest {
 		when(cacheService.getAdditionalFilterHierarchyLevel()).thenReturn(additonalFilterMap);
 		when(filterHelperService.getAdditionalFilterHierarchyLevel()).thenReturn(additonalFilterMap);
 		testExecutionList = TestExecutionDataFactory.newInstance().getTestExecutionList();
-		testExecutionList.forEach(test->{
+		testExecutionList.forEach(test -> {
 			test.setAutomatableTestCases(1);
 			test.setAutomatedTestCases(1);
 		});
-		when(testExecutionRepository.findTestExecutionDetailByFilters(anyMap(),anyMap())).thenReturn(testExecutionList);
+		when(testExecutionRepository.findTestExecutionDetailByFilters(anyMap(), anyMap())).thenReturn(testExecutionList);
 	}
 
 	@Test
@@ -172,16 +185,15 @@ public class AutomationPercentageServiceImplTest {
 		});
 		List<SprintWiseStory> sprintWiseStories = JiraIssueDataFactory.newInstance().getSprintWiseStories();
 		sprintWiseStories.forEach(sprintWiseStory -> sprintWiseStory.setBasicProjectConfigId("6335363749794a18e8a4479b"));
-		when(featureRepository.findIssuesGroupBySprint(any(), any(), any(), any()))
-				.thenReturn(sprintWiseStories);
+		when(featureRepository.findIssuesGroupBySprint(any(), any(), any(), any())).thenReturn(sprintWiseStories);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap= new HashMap<>();
-		Map<String, List<ProjectToolConfig>> projectTool= new HashMap<>();
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap = new HashMap<>();
+		Map<String, List<ProjectToolConfig>> projectTool = new HashMap<>();
 
-		ProjectToolConfig zephyConfig= new ProjectToolConfig();
+		ProjectToolConfig zephyConfig = new ProjectToolConfig();
 		zephyConfig.setInSprintAutomationFolderPath(Arrays.asList("test1"));
 		projectTool.put(ProcessorConstants.ZEPHYR, Arrays.asList(zephyConfig));
-		ProjectToolConfig jiraTest= new ProjectToolConfig();
+		ProjectToolConfig jiraTest = new ProjectToolConfig();
 
 		jiraTest.setTestCaseStatus(Arrays.asList("test1"));
 		projectTool.put(ProcessorConstants.ZEPHYR, Arrays.asList(zephyConfig));
@@ -190,13 +202,11 @@ public class AutomationPercentageServiceImplTest {
 		projectTool.put(ProcessorConstants.ZEPHYR, Arrays.asList(zephyConfig));
 		projectTool.put(ProcessorConstants.JIRA_TEST, Arrays.asList(jiraTest));
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), projectTool);
-		when(cacheService
-				.cacheProjectToolConfigMapData()).thenReturn(toolMap);
+		when(cacheService.cacheProjectToolConfigMapData()).thenReturn(toolMap);
 
-		Map<String, Object> defectDataListMap = automationPercentageServiceImpl.fetchKPIDataFromDb(leafNodeList, null,
-				null, kpiRequest);
-		assertThat("Total Test Case value :", ((List<JiraIssue>) (defectDataListMap.get(TESTCASEKEY))).size(),
-				equalTo(0));
+		Map<String, Object> defectDataListMap = automationPercentageServiceImpl.fetchKPIDataFromDb(leafNodeList, null, null,
+				kpiRequest);
+		assertThat("Total Test Case value :", ((List<JiraIssue>) (defectDataListMap.get(TESTCASEKEY))).size(), equalTo(0));
 	}
 
 	@Test
@@ -212,17 +222,17 @@ public class AutomationPercentageServiceImplTest {
 				.thenReturn(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name());
 
 		testFetchKPIDataFromDbData();
-		when(testCaseDetailsRepository.findTestDetails(anyMap(),anyMap(),anyString())).thenReturn(totalTestCaseList);
+		when(testCaseDetailsRepository.findTestDetails(anyMap(), anyMap(), anyString())).thenReturn(totalTestCaseList);
 		try {
 			kpiElement = automationPercentageServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			assertThat("Automated Percentage Value :",
-					((ArrayList) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(),
-					equalTo(5));
+					((ArrayList) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(), equalTo(5));
 		} catch (ApplicationException enfe) {
 
 		}
 	}
+
 	@Test
 	public void getKpiDataTestUploadData() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
@@ -238,14 +248,12 @@ public class AutomationPercentageServiceImplTest {
 		selectedMap.put("SQD", Arrays.asList("dummysqd"));
 		kpiRequest.setSelectedMap(selectedMap);
 
-
 		testFetchKPIDataFromDbData();
 		try {
 			kpiElement = automationPercentageServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			assertThat("Automated Percentage Value :",
-					((ArrayList) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(),
-					equalTo(5));
+					((ArrayList) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(), equalTo(5));
 		} catch (ApplicationException enfe) {
 
 		}
@@ -277,8 +285,7 @@ public class AutomationPercentageServiceImplTest {
 			kpiElement = automationPercentageServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			assertThat("Automated Percentage Value :",
-					((ArrayList) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(),
-					equalTo(5));
+					((ArrayList) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(), equalTo(5));
 		} catch (ApplicationException enfe) {
 
 		}
@@ -331,7 +338,5 @@ public class AutomationPercentageServiceImplTest {
 		fieldMappingList.add(projectOne);
 		fieldMappingList.add(projectTwo);
 		fieldMappingList.add(projectThree);
-
 	}
-
 }

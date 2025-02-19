@@ -31,7 +31,8 @@ export class ParentFilterComponent implements OnChanges {
         this.filterLevels = Object.keys(this.filterData).map((item) => {
           return {
             nodeId: item,
-            nodeName: item
+            nodeName: item,
+            nodeDisplayName: item
           }
         });
         this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level.nodeName));
@@ -52,9 +53,11 @@ export class ParentFilterComponent implements OnChanges {
         this.filterLevels = this.filterData[this.parentFilterConfig['labelName']]?.map((item) => {
           return {
             nodeId: item.nodeId,
-            nodeName: item.nodeName
+            nodeName: item.nodeName,
+            nodeDisplayName: item.nodeDisplayName
           }
         });
+        console.log(this.filterLevels)
         this.filterLevels = this.helperService.sortAlphabetically(this.filterLevels);
 
         this.stateFilters = JSON.parse(this.service.getBackupOfUrlFilters())['primary_level'] || this.service.getBackupOfFilterSelectionState('primary_level');
@@ -131,7 +134,8 @@ export class ParentFilterComponent implements OnChanges {
  * @param {any} $event - The event object from the dropdown change.
  * @returns {void}
  */
-  onDropdownChange($event:any){
+  onDropdownChange($event: any) {
+    console.log('onDropdownChange', $event);
     if($event){
       localStorage.setItem('selectedTrend', JSON.stringify($event.value));
     }

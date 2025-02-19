@@ -31,17 +31,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "id", "workItemId", "rev", "fields" })
+@JsonPropertyOrder({"id", "workItemId", "rev", "fields"})
 public class Value {
 
 	@JsonProperty("id")
 	private Integer id;
+
 	@JsonProperty("workItemId")
 	private Integer workItemId;
+
 	@JsonProperty("rev")
 	private Integer rev;
+
 	@JsonProperty("fields")
 	private Fields fields;
+
 	@JsonIgnore
 	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -100,5 +104,4 @@ public class Value {
 		return new ToStringBuilder(this).append("id", id).append("workItemId", workItemId).append("rev", rev)
 				.append("fields", fields).append("additionalProperties", additionalProperties).toString();
 	}
-
 }

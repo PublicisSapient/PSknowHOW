@@ -32,16 +32,14 @@ import java.util.Set;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /*
 author @shi6
@@ -64,13 +62,11 @@ public class SprintRepositoryCustomImplTest {
 		List<String> sprintStatusList = Arrays.asList("ACTIVE", "CLOSED");
 
 		long limit = 5; // Set the desired limit
-		when(operations.aggregate(any(Aggregation.class), anyString(), any()))
-				.thenReturn(mock(AggregationResults.class));
+		when(operations.aggregate(any(Aggregation.class), anyString(), any())).thenReturn(mock(AggregationResults.class));
 
 		// Call the method and assert the result
 		List<SprintDetails> result = sprintRepositoryCustomImpl
-				.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigIds, sprintStatusList,
-						limit);
+				.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigIds, sprintStatusList, limit);
 
 		// Assert the result or perform further verifications
 		assertEquals(Collections.emptyList(), result);

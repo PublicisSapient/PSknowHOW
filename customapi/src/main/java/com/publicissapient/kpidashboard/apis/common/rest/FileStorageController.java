@@ -40,7 +40,6 @@ import lombok.extern.slf4j.Slf4j;
  * REST service managing all requests to File storage utilities
  *
  * @author pkum34
- *
  */
 @Validated
 @RestController
@@ -59,7 +58,7 @@ public class FileStorageController {
 
 	/**
 	 * Uploads image file as logo
-	 * 
+	 *
 	 * @param file
 	 * @return BaseResponse with <tt>message</tt> and
 	 *         <tt>success status(true or false)</tt> of upload
@@ -72,7 +71,7 @@ public class FileStorageController {
 
 	/**
 	 * Uploads image file as logo
-	 * 
+	 *
 	 * @param file
 	 * @return BaseResponse with <tt>message</tt> and
 	 *         <tt>success status(true or false)</tt> of upload
@@ -85,7 +84,7 @@ public class FileStorageController {
 
 	/**
 	 * Gets logo image file
-	 * 
+	 *
 	 * @return Logo
 	 */
 	@GetMapping("/file/logo")
@@ -96,7 +95,7 @@ public class FileStorageController {
 
 	/**
 	 * Deletes the logo image
-	 * 
+	 *
 	 * @return boolean
 	 */
 	@GetMapping("/file/delete")
@@ -104,6 +103,4 @@ public class FileStorageController {
 	public boolean deleteLogo() {
 		return fileStorageService.deleteLogo();
 	}
-
-
 }

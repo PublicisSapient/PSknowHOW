@@ -82,26 +82,25 @@ public class GithubActionToolConfigServiceImplTest {
 	}
 
 	@Test
-    public void testGetGitHubWorkFlowList_ValidInput_Success() {
-        
+	public void testGetGitHubWorkFlowList_ValidInput_Success() {
 
-        when(connectionRepository.findById(any())).thenReturn(Optional.of(new Connection()));
-        when(restTemplate.exchange(anyString(), any(), any(), eq(String.class)))
-                .thenReturn(new ResponseEntity<>(getMockGitHubApiResponse(), HttpStatus.OK));
-        JSONArray workflows = getMockWorkflowsArray();
-        when(restAPIUtils.getJsonArrayFromJSONObj(any(), eq("workflows")))
-                .thenReturn(workflows);
+		when(connectionRepository.findById(any())).thenReturn(Optional.of(new Connection()));
+		when(restTemplate.exchange(anyString(), any(), any(), eq(String.class)))
+				.thenReturn(new ResponseEntity<>(getMockGitHubApiResponse(), HttpStatus.OK));
+		JSONArray workflows = getMockWorkflowsArray();
+		when(restAPIUtils.getJsonArrayFromJSONObj(any(), eq("workflows"))).thenReturn(workflows);
 		when(restAPIUtils.convertToString((JSONObject) workflows.get(0), "id"))
 				.thenReturn(((JSONObject) workflows.get(0)).get("id").toString());
-        when(restAPIUtils.convertToString((JSONObject) workflows.get(0), "path"))
-                .thenReturn(((JSONObject) workflows.get(0)).get("path").toString());
+		when(restAPIUtils.convertToString((JSONObject) workflows.get(0), "path"))
+				.thenReturn(((JSONObject) workflows.get(0)).get("path").toString());
 
-        List<GithubActionWorkflowsDTO> result = githubActionToolConfigService.getGitHubWorkFlowList(connectionId, repoName);
+		List<GithubActionWorkflowsDTO> result =
+				githubActionToolConfigService.getGitHubWorkFlowList(connectionId, repoName);
 
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
-        assertEquals(1, result.size());
-    }
+		assertNotNull(result);
+		assertFalse(result.isEmpty());
+		assertEquals(1, result.size());
+	}
 
 	@Test
 	public void testGetGitHubWorkFlowListException() {
@@ -114,32 +113,34 @@ public class GithubActionToolConfigServiceImplTest {
 	}
 
 	@Test
-    public void testGetGitHubWorkFlowList_InvalidConnectionId_ReturnsEmptyList() {
+	public void testGetGitHubWorkFlowList_InvalidConnectionId_ReturnsEmptyList() {
 
-        when(connectionRepository.findById(any())).thenReturn(Optional.empty());
+		when(connectionRepository.findById(any())).thenReturn(Optional.empty());
 
-        List<GithubActionWorkflowsDTO> result = githubActionToolConfigService.getGitHubWorkFlowList(connectionId, repoName);
+		List<GithubActionWorkflowsDTO> result =
+				githubActionToolConfigService.getGitHubWorkFlowList(connectionId, repoName);
 
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
+		assertNotNull(result);
+		assertTrue(result.isEmpty());
+	}
 
 	private String getMockGitHubApiResponse() {
 		return "{ \"workflows\": [ { \"id\": \"123\", \"path\": \"/workflows/main.yml\" } ] }";
 	}
 
 	@Test
-    public void testGetGitHubWorkFlowList_GitHubApiError_LogsError() {
+	public void testGetGitHubWorkFlowList_GitHubApiError_LogsError() {
 
-        when(connectionRepository.findById(any())).thenReturn(Optional.of(new Connection()));
-        when(restTemplate.exchange(anyString(), any(), any(), eq(String.class)))
-                .thenReturn(new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR));
+		when(connectionRepository.findById(any())).thenReturn(Optional.of(new Connection()));
+		when(restTemplate.exchange(anyString(), any(), any(), eq(String.class)))
+				.thenReturn(new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR));
 
-        List<GithubActionWorkflowsDTO> result = githubActionToolConfigService.getGitHubWorkFlowList(connectionId, repoName);
+		List<GithubActionWorkflowsDTO> result =
+				githubActionToolConfigService.getGitHubWorkFlowList(connectionId, repoName);
 
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
+		assertNotNull(result);
+		assertTrue(result.isEmpty());
+	}
 
 	private JSONArray getMockWorkflowsArray() {
 		JSONArray workflowsArray = new JSONArray();

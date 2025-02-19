@@ -31,8 +31,8 @@ public class IterationPotentialDelay {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		IterationPotentialDelay that = (IterationPotentialDelay) o;
-		return issueId.equals(that.issueId) && dueDate.equals(that.dueDate) && potentialDelay == that.potentialDelay
-				&& predictedCompletedDate.equals(that.predictedCompletedDate) && assigneeId.equals(that.assigneeId);
+		return issueId.equals(that.issueId) && dueDate.equals(that.dueDate) && potentialDelay == that.potentialDelay &&
+				predictedCompletedDate.equals(that.predictedCompletedDate) && assigneeId.equals(that.assigneeId);
 	}
 
 	@Override

@@ -29,9 +29,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * object used to bind iteration kpi's value
- */
+/** object used to bind iteration kpi's value */
 @Data
 @Builder
 @Getter
@@ -81,5 +79,4 @@ public class IterationKpiData implements Serializable {
 		this.modalValues = modalValues;
 		this.expressions = expressions;
 	}
-
 }

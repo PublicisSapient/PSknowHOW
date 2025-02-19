@@ -45,15 +45,12 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
- *
- *
  * @author Daya Shankar
  */
 @Slf4j
@@ -104,7 +101,6 @@ public class ProductionDefectAgingServiceImpl extends JiraBacklogKPIService<Long
 					basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 			resultListMap.put(RANGE_TICKET_LIST, jiraIssueRepository.findIssuesByDateAndTypeAndStatus(mapOfFilters,
 					uniqueProjectMap, startDate, endDate, RANGE, IN, true));
-
 		}
 
 		return resultListMap;
@@ -175,15 +171,16 @@ public class ProductionDefectAgingServiceImpl extends JiraBacklogKPIService<Long
 		// past all tickets and given range ticket data fetch from db
 		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNode, startDate, endDate, kpiRequest);
 
-		List<JiraIssue> jiraIssueList = (List<JiraIssue>) resultMap.getOrDefault(RANGE_TICKET_LIST,new ArrayList<JiraIssue>());
+		List<JiraIssue> jiraIssueList = (List<JiraIssue>) resultMap.getOrDefault(RANGE_TICKET_LIST,
+				new ArrayList<JiraIssue>());
 		Map<String, List<JiraIssue>> projectWiseJiraIssue = jiraIssueList.stream()
 				.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
 
 		kpiWithFilter(projectWiseJiraIssue, mapTmp, leafNode, kpiElement);
 	}
 
-	private void kpiWithFilter(Map<String, List<JiraIssue>> projectWiseJiraIssueMap, Map<String, Node> mapTmp,
-			Node node, KpiElement kpiElement) {
+	private void kpiWithFilter(Map<String, List<JiraIssue>> projectWiseJiraIssueMap, Map<String, Node> mapTmp, Node node,
+			KpiElement kpiElement) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
 		List<String> xAxisRange = customApiConfig.getTotalDefectCountAgingXAxisRange();
@@ -194,8 +191,7 @@ public class ProductionDefectAgingServiceImpl extends JiraBacklogKPIService<Long
 		if (MapUtils.isNotEmpty(projectWiseJiraIssueMap)) {
 			String projectNodeId = node.getProjectFilter().getBasicProjectConfigId().toString();
 			String projectName = node.getProjectFilter().getName();
-			List<JiraIssue> projectWiseJiraIssueList = projectWiseJiraIssueMap.getOrDefault(projectNodeId,
-					new ArrayList<>());
+			List<JiraIssue> projectWiseJiraIssueList = projectWiseJiraIssueMap.getOrDefault(projectNodeId, new ArrayList<>());
 
 			if (CollectionUtils.isNotEmpty(projectWiseJiraIssueList)) {
 
@@ -213,14 +209,13 @@ public class ProductionDefectAgingServiceImpl extends JiraBacklogKPIService<Long
 				});
 
 				rangeWisePriorityCountMap
-						.forEach((rangeMonth, priorityCountMap) -> populateProjectFilterWiseDataMap(priorityCountMap,
-								priorityList, trendValueMap, projectName, rangeMonth));
+						.forEach((rangeMonth, priorityCountMap) -> populateProjectFilterWiseDataMap(priorityCountMap, priorityList,
+								trendValueMap, projectName, rangeMonth));
 
 				// Populates data in Excel for validation for tickets created
 				// before
 				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-					KPIExcelUtility.populateProductionDefectAgingExcelData(projectName, projectWiseJiraIssueList,
-							excelData);
+					KPIExcelUtility.populateProductionDefectAgingExcelData(projectName, projectWiseJiraIssueList, excelData);
 				}
 			}
 		}
@@ -290,7 +285,6 @@ public class ProductionDefectAgingServiceImpl extends JiraBacklogKPIService<Long
 			DataCount dcObj = getDataCountObject(value, projectName, rangeMonth, priority, hoverValueMap);
 			trendValueMap.computeIfAbsent(priority, k -> new ArrayList<>()).add(dcObj);
 		});
-
 	}
 
 	/**
@@ -344,8 +338,7 @@ public class ProductionDefectAgingServiceImpl extends JiraBacklogKPIService<Long
 		});
 	}
 
-	private Map<String, List<DataCount>> sortTrendValueMap(Map<String, List<DataCount>> trendMap,
-			List<String> keyOrder) {
+	private Map<String, List<DataCount>> sortTrendValueMap(Map<String, List<DataCount>> trendMap, List<String> keyOrder) {
 		Map<String, List<DataCount>> sortedMap = new LinkedHashMap<>();
 		keyOrder.forEach(order -> {
 			if (null != trendMap.get(order)) {
@@ -357,8 +350,7 @@ public class ProductionDefectAgingServiceImpl extends JiraBacklogKPIService<Long
 
 	private List<String> priorityTypes(boolean addOverall) {
 		if (addOverall) {
-			return Arrays.asList(CommonConstant.OVERALL, Constant.P1, Constant.P2, Constant.P3, Constant.P4,
-					Constant.MISC);
+			return Arrays.asList(CommonConstant.OVERALL, Constant.P1, Constant.P2, Constant.P3, Constant.P4, Constant.MISC);
 		} else {
 			return Arrays.asList(Constant.P1, Constant.P2, Constant.P3, Constant.P4, Constant.MISC);
 		}
@@ -369,5 +361,4 @@ public class ProductionDefectAgingServiceImpl extends JiraBacklogKPIService<Long
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI127(),
 				KPICode.PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING.getKpiId());
 	}
-
 }

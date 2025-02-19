@@ -17,7 +17,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.tasklet;
 
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -29,12 +28,11 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.service.FetchScrumReleaseData;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,22 +57,21 @@ public class ScrumReleaseDataTasklet implements Tasklet {
 
 	/**
 	 * @param sc
-	 *            StepContribution
+	 *          StepContribution
 	 * @param cc
-	 *            ChunkContext
+	 *          ChunkContext
 	 * @return RepeatStatus
 	 * @throws Exception
-	 *             Exception
+	 *           Exception
 	 */
 	@TrackExecutionTime
 	@Override
 	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
 		log.info("**** ReleaseData fetch started ****");
 		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-        KerberosClient krb5Client = jiraClientService.getKerberosClientMap(projectId);
+		KerberosClient krb5Client = jiraClientService.getKerberosClientMap(projectId);
 		fetchScrumReleaseData.processReleaseInfo(projConfFieldMapping, krb5Client);
 		log.info("**** ReleaseData fetch ended ****");
 		return RepeatStatus.FINISHED;
 	}
-
 }

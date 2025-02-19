@@ -82,7 +82,8 @@ public class DefaultTeamcityClientTests {
 		when(restOperationsFactory.getTypeInstance()).thenReturn(rest);
 		config = TeamcityConfig.builder().build();
 		config.setPageSize(PAGE_SIZE);
-		teamcityClient = defaultTeamcityClient = new DefaultTeamcityClient(restOperationsFactory, config);
+		teamcityClient =
+				defaultTeamcityClient = new DefaultTeamcityClient(restOperationsFactory, config);
 		TEAMCITY_SAMPLE_SERVER_TWO.setId(new ObjectId("63b40aea8ec44416b3ce96b5"));
 		TEAMCITY_SAMPLE_SERVER_ONE.setUrl("http://test@test.com");
 		TEAMCITY_SAMPLE_SERVER_ONE.setUsername("test");
@@ -92,7 +93,6 @@ public class DefaultTeamcityClientTests {
 		TEAMCITY_SAMPLE_SERVER_TWO.setUrl("http://server/");
 		TEAMCITY_SAMPLE_SERVER_TWO.setUsername("test");
 		TEAMCITY_SAMPLE_SERVER_TWO.setPassword("password");
-
 	}
 
 	@Test
@@ -102,7 +102,6 @@ public class DefaultTeamcityClientTests {
 
 		String u4 = ProcessorUtils.joinURL("http://test.com/", "app/rest/", "builds");
 		assertEquals("http://test.com/app/rest/builds", u4);
-
 	}
 
 	@Test
@@ -144,7 +143,7 @@ public class DefaultTeamcityClientTests {
 		// fails, need to investigate
 		// HttpEntity<HttpHeaders> headers = new
 		// HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("user:pass"));
-		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@SuppressWarnings({"rawtypes", "unchecked"})
 		HttpEntity headers = new HttpEntity(ProcessorUtils.createHeaders("user:pass"));
 		when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class)))
 				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
@@ -159,7 +158,7 @@ public class DefaultTeamcityClientTests {
 		// fails, need to investigate
 		// HttpEntity<HttpHeaders> headers = new
 		// HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("test:password"));
-		@SuppressWarnings({ "unchecked", "rawtypes" })
+		@SuppressWarnings({"unchecked", "rawtypes"})
 		HttpEntity headers = new HttpEntity(ProcessorUtils.createHeaders("test:password"));
 		when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class)))
 				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
@@ -170,7 +169,7 @@ public class DefaultTeamcityClientTests {
 
 	@Test
 	public void verifyGetLogUrl() throws Exception {
-		@SuppressWarnings({ "unchecked", "rawtypes" })
+		@SuppressWarnings({"unchecked", "rawtypes"})
 		HttpEntity headers = new HttpEntity(ProcessorUtils.createHeaders("test:password"));
 		when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class)))
 				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
@@ -182,7 +181,11 @@ public class DefaultTeamcityClientTests {
 
 	@Test
 	public void instanceJobs_emptyResponse_returnsEmptyMap() {
-		when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET), Mockito.any(HttpEntity.class), eq(String.class)))
+		when(rest.exchange(
+						Mockito.any(URI.class),
+						eq(HttpMethod.GET),
+						Mockito.any(HttpEntity.class),
+						eq(String.class)))
 				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 		Map<ObjectId, Set<Build>> jobs = teamcityClient.getInstanceJobs(TEAMCITY_SAMPLE_SERVER_ONE);
 
@@ -191,20 +194,34 @@ public class DefaultTeamcityClientTests {
 
 	@Test
 	public void instanceJobs_OneJobsOneBuilds() throws Exception {
-		when(rest.exchange(eq(URI.create("http://server/app/rest/projects")), eq(HttpMethod.GET),
-				Mockito.any(HttpEntity.class), eq(String.class)))
-						.thenReturn(new ResponseEntity<>(getJson("instance_jobs_2_jobs.json"), HttpStatus.OK));
+		when(rest.exchange(
+						eq(URI.create("http://server/app/rest/projects")),
+						eq(HttpMethod.GET),
+						Mockito.any(HttpEntity.class),
+						eq(String.class)))
+				.thenReturn(new ResponseEntity<>(getJson("instance_jobs_2_jobs.json"), HttpStatus.OK));
 
-		when(rest.exchange(eq(URI.create("http://server/app/rest/projects/id:Project2")), // http://server/app/rest/projects/id:Project2
-				eq(HttpMethod.GET), Mockito.any(HttpEntity.class), eq(String.class)))
-						.thenReturn(new ResponseEntity<>(getJson("instance_jobs_2_builds.json"), HttpStatus.OK));
+		when(rest.exchange(
+						eq(
+								URI.create(
+										"http://server/app/rest/projects/id:Project2")), // http://server/app/rest/projects/id:Project2
+						eq(HttpMethod.GET),
+						Mockito.any(HttpEntity.class),
+						eq(String.class)))
+				.thenReturn(new ResponseEntity<>(getJson("instance_jobs_2_builds.json"), HttpStatus.OK));
 
-		when(rest.exchange(eq(URI.create("http://server/app/rest/buildTypes/id:Project2_Build2/builds")),
-				eq(HttpMethod.GET), Mockito.any(HttpEntity.class), eq(String.class)))
-						.thenReturn(new ResponseEntity<>(getJson("builds_info_complete.json"), HttpStatus.OK));
-		when(rest.exchange(eq(URI.create("http://server/app/rest/buildTypes/id:Project2_Build3/builds")),
-				eq(HttpMethod.GET), Mockito.any(HttpEntity.class), eq(String.class)))
-						.thenReturn(new ResponseEntity<>(getJson("builds_info_complete.json"), HttpStatus.OK));
+		when(rest.exchange(
+						eq(URI.create("http://server/app/rest/buildTypes/id:Project2_Build2/builds")),
+						eq(HttpMethod.GET),
+						Mockito.any(HttpEntity.class),
+						eq(String.class)))
+				.thenReturn(new ResponseEntity<>(getJson("builds_info_complete.json"), HttpStatus.OK));
+		when(rest.exchange(
+						eq(URI.create("http://server/app/rest/buildTypes/id:Project2_Build3/builds")),
+						eq(HttpMethod.GET),
+						Mockito.any(HttpEntity.class),
+						eq(String.class)))
+				.thenReturn(new ResponseEntity<>(getJson("builds_info_complete.json"), HttpStatus.OK));
 
 		TEAMCITY_SAMPLE_SERVER_TWO.setJobName("Project-2");
 		Map<ObjectId, Set<Build>> jobs = teamcityClient.getInstanceJobs(TEAMCITY_SAMPLE_SERVER_TWO);
@@ -212,9 +229,9 @@ public class DefaultTeamcityClientTests {
 		assertThat(jobs.size(), is(1));
 
 		Iterator<Build> buildIt = jobs.get(new ObjectId("63c53ed169fa1a025c5f1244")).iterator();
-		assertBuild(buildIt.next(), "3", "http://server/app/rest/buildTypes/id:Project2_Build2/builds/");
+		assertBuild(
+				buildIt.next(), "3", "http://server/app/rest/buildTypes/id:Project2_Build2/builds/");
 		assertThat(buildIt.hasNext(), is(false));
-
 	}
 
 	@Test
@@ -226,15 +243,15 @@ public class DefaultTeamcityClientTests {
 
 		when(rest.exchange(eq(URI.create("http://server/app/rest/buildTypes/id:Project2_Build2/builds")),
 				eq(HttpMethod.GET), Mockito.any(HttpEntity.class), eq(String.class)))
-						.thenReturn(new ResponseEntity<>(getJson("builds_info_complete.json"), HttpStatus.OK));
+				.thenReturn(new ResponseEntity<>(getJson("builds_info_complete.json"), HttpStatus.OK));
 
 		when(rest.exchange(eq(URI.create("http://server/app/rest/builds/id:5")), eq(HttpMethod.GET),
 				Mockito.any(HttpEntity.class), eq(String.class)))
-						.thenReturn(new ResponseEntity<>(getJson("build_info_complete.json"), HttpStatus.OK));
+				.thenReturn(new ResponseEntity<>(getJson("build_info_complete.json"), HttpStatus.OK));
 
 		when(rest.exchange(eq(URI.create("http://server/app/rest/builds/id:5/statistics")), eq(HttpMethod.GET),
 				Mockito.any(HttpEntity.class), eq(String.class)))
-						.thenReturn(new ResponseEntity<>(getJson("build_info_stats.json"), HttpStatus.OK));
+				.thenReturn(new ResponseEntity<>(getJson("build_info_stats.json"), HttpStatus.OK));
 
 		Build build = teamcityClient.getBuildDetails("http://server/app/rest/buildTypes/id:Project2_Build2/",
 				"http://server", TEAMCITY_SAMPLE_SERVER_TWO, projectBasicConfig);

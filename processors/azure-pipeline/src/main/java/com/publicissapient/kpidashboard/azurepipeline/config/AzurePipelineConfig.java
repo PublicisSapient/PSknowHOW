@@ -27,9 +27,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Bean to hold settings specific to the AzurePipeline processor.
- */
+/** Bean to hold settings specific to the AzurePipeline processor. */
 @Component
 @ConfigurationProperties(prefix = "azurepipeline")
 @Builder
@@ -40,8 +38,10 @@ public class AzurePipelineConfig {
 
 	private String cron;
 	private String dockerHostIp;
+
 	@Value("${folderDepth:10}")
 	private int folderDepth;
+
 	private String customApiBaseUrl;
 
 	@Value("${aesEncryptionKey}")
@@ -51,12 +51,11 @@ public class AzurePipelineConfig {
 
 	/**
 	 * Provides the IP of Docker Localhost.
-	 * 
+	 *
 	 * @return the Localhost Docker IP
 	 */
 	public String getDockerHostIp() {
 
 		return dockerHostIp == null ? "" : dockerHostIp;
 	}
-
 }

@@ -23,9 +23,7 @@ import org.springframework.stereotype.Repository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 import com.publicissapient.kpidashboard.teamcity.model.TeamcityProcessor;
 
-/**
- * Processor repository for the TeamcityProcessor subclass.
- */
+/** Processor repository for the TeamcityProcessor subclass. */
 @Repository
 public interface TeamcityProcessorRepository extends ProcessorRepository<TeamcityProcessor> {
 }

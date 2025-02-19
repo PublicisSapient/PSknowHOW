@@ -24,7 +24,7 @@
       <p-multiSelect inputId="{{ field.hierarchyLevel.hierarchyLevelId }}" appendTo="body"
         [options]="hierarchyData[field.hierarchyLevel.hierarchyLevelId]"
         [(ngModel)]="selectedVal[field.hierarchyLevel.hierarchyLevelId]"
-        placeholder="Select {{ field.hierarchyLevel.hierarchyLevelName }}" optionLabel="code" filter="true"
+        placeholder="Select {{ field.hierarchyLevel.hierarchyLevelName }}" filter="true" optionLabel="name"
         class="multiselect-custom" [showToggleAll]="false">
         <ng-template let-value pTemplate="selectedItems">
           <div>
@@ -37,8 +37,9 @@
           </div>
         </ng-template>
         <ng-template let-hierarchy pTemplate="item">
-          <div class="option" (click)="filterData($event,field.hierarchyLevel.hierarchyLevelId, hierarchy.code)">
-            {{hierarchy.code}}
+          <div class="option" (click)="filterData($event,field.hierarchyLevel.hierarchyLevelId, hierarchy.code, hierarchy.name, hierarchy.parent)">
+            {{hierarchy.name}}
+            <span class="parent_item" style="color:green;"> {{ hierarchy.parent }} </span>
           </div>
         </ng-template>
       </p-multiSelect>
@@ -50,7 +51,13 @@
       <label for="project">Select Projects</label>
       <p-multiSelect *ngIf="resetDropdowns" class="multiselect-custom" appendTo="body" inputId="project"
         [style]="{'width':'100%','max-width': '100%'}" [options]="projects" [(ngModel)]="selectedValProjects"
-        defaultLabel="Select Projects" optionLabel="projectName" display="chip" (onChange)="projectSelected()">
+        defaultLabel="Select Projects" optionLabel="projectDisplayName" display="chip" (onChange)="projectSelected()">
+        <ng-template let-item pTemplate="item">
+          <div class="option">
+            {{item.projectDisplayName}}
+            <span class="parent_item" style="color:green;"> ({{ item.hierarchy[item.hierarchy.length - 1].value }}) </span>
+          </div>
+        </ng-template>
       </p-multiSelect>
     </div>
   </div>

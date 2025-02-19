@@ -16,17 +16,19 @@
  */
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_900;
 
+import org.bson.Document;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
 import com.mongodb.client.model.Filters;
+
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
-import org.bson.Document;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 /**
  * @author purgupta2
  */
-@ChangeUnit(id = "defectBy_field_mapping_changes", order ="9005" , author = "purgupta2", systemVersion = "9.0.0")
+@ChangeUnit(id = "defectBy_field_mapping_changes", order = "9005", author = "purgupta2", systemVersion = "9.0.0")
 public class ReleaseDefectByFieldMappingChanges {
 
 	public static final String FIELD_MAPPING_STRUCTURE = "field_mapping_structure";
@@ -75,11 +77,7 @@ public class ReleaseDefectByFieldMappingChanges {
 	}
 
 	private void deleteRCAAndPriorityFieldMappingRollback() {
-		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).deleteMany(
-				Filters.or(
-						Filters.eq(FIELD_NAME, DOD_STATUS_KPI142),
-						Filters.eq(FIELD_NAME, DOD_STATUS_KPI144)
-				)
-		);
+		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE)
+				.deleteMany(Filters.or(Filters.eq(FIELD_NAME, DOD_STATUS_KPI142), Filters.eq(FIELD_NAME, DOD_STATUS_KPI144)));
 	}
 }

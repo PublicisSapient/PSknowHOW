@@ -77,14 +77,13 @@ public class OnlineAdapter implements AzureAdapter {
 
 	/**
 	 * @param azureProcessorConfig
-	 *            azure processor configuration
+	 *          azure processor configuration
 	 * @param client
-	 *            ProcessorAzureRestClient instance
+	 *          ProcessorAzureRestClient instance
 	 */
 	public OnlineAdapter(AzureProcessorConfig azureProcessorConfig, ProcessorAzureRestClient client) {
 		this.azureProcessorConfig = azureProcessorConfig;
 		this.client = client;
-
 	}
 
 	public OnlineAdapter(AzureProcessorConfig azureProcessorConfig, ProcessorAzureRestClient client,
@@ -115,15 +114,14 @@ public class OnlineAdapter implements AzureAdapter {
 			try {
 				azureWiqlModel = client.getWiqlResponse(azureServer, startTimesByIssueType, projectConfig, dataExist);
 			} catch (RestClientException rce) {
-				if (rce instanceof HttpClientErrorException
-						&& ((HttpClientErrorException) rce).getStatusCode().is4xxClientError()) {
-					String errMsg = ClientErrorMessageEnum
-							.fromValue(((HttpClientErrorException) rce).getStatusCode().value()).getReasonPhrase();
+				if (rce instanceof HttpClientErrorException &&
+						((HttpClientErrorException) rce).getStatusCode().is4xxClientError()) {
+					String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) rce).getStatusCode().value())
+							.getReasonPhrase();
 					processorToolConnectionService
 							.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
 				}
 				log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, rce.getMessage());
-
 			}
 		}
 		return azureWiqlModel;
@@ -133,11 +131,11 @@ public class OnlineAdapter implements AzureAdapter {
 	 * Gets list of Azure issues.
 	 *
 	 * @param pageStart
-	 *            Index where to start the search query at
+	 *          Index where to start the search query at
 	 * @param azureServer
-	 *            the azure server
+	 *          the azure server
 	 * @param workItemIds
-	 *            the work item ids
+	 *          the work item ids
 	 * @return List of issues
 	 */
 	@Override
@@ -151,7 +149,6 @@ public class OnlineAdapter implements AzureAdapter {
 				azureBoardsWIModel = client.getWorkItemInfo(azureServer, workItemIds);
 			} catch (RestClientException rce) {
 				log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, rce.getMessage());
-
 			}
 		}
 
@@ -168,7 +165,6 @@ public class OnlineAdapter implements AzureAdapter {
 				azureIterationsModel = client.getIterationsResponse(azureServer);
 			} catch (RestClientException rce) {
 				log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, rce.getMessage());
-
 			}
 		}
 		return azureIterationsModel;
@@ -185,7 +181,6 @@ public class OnlineAdapter implements AzureAdapter {
 				azureUpdatesModel = client.getUpdatesResponse(azureServer, issueId);
 			} catch (RestClientException rce) {
 				log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, rce.getMessage());
-
 			}
 		}
 		return azureUpdatesModel;
@@ -207,7 +202,6 @@ public class OnlineAdapter implements AzureAdapter {
 
 			} catch (RestClientException rce) {
 				log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, rce.getMessage());
-
 			}
 		}
 		return issueType;
@@ -236,7 +230,6 @@ public class OnlineAdapter implements AzureAdapter {
 				} catch (Exception e) {
 					log.error("Some exception occured in parseWorkItemTypes ", e);
 				}
-
 			}
 		}
 
@@ -254,12 +247,10 @@ public class OnlineAdapter implements AzureAdapter {
 		} else {
 
 			try {
-				field = parseField(
-						client.getMetadataJson(azureServerObj, azureProcessorConfig.getApiFieldsEndPoint(), false));
+				field = parseField(client.getMetadataJson(azureServerObj, azureProcessorConfig.getApiFieldsEndPoint(), false));
 
 			} catch (RestClientException rce) {
 				log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, rce.getMessage());
-
 			}
 		}
 		return field;
@@ -280,7 +271,6 @@ public class OnlineAdapter implements AzureAdapter {
 				Field field = new Field(innerObject.get(AzureConstants.REFERENCENAME).toString(),
 						innerObject.get(AzureConstants.NAME).toString(), FieldType.JIRA, false, false, false, null);
 				fieldList.add(field);
-
 			}
 		}
 
@@ -301,7 +291,6 @@ public class OnlineAdapter implements AzureAdapter {
 
 			} catch (RestClientException rce) {
 				log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, rce.getMessage());
-
 			}
 		}
 		return status;
@@ -324,7 +313,6 @@ public class OnlineAdapter implements AzureAdapter {
 					Status field = new Status(null, 0L, innerObject.get(AzureConstants.NAME).toString(),
 							innerObject.get(AzureConstants.CATEGORY).toString(), null);
 					statusList.add(field);
-
 				}
 			}
 		}
@@ -343,12 +331,11 @@ public class OnlineAdapter implements AzureAdapter {
 		} else {
 
 			try {
-				issueLinksType = parseIssueLinkTypes(client.getMetadataJson(azureServerObj,
-						azureProcessorConfig.getApiEndpointWorkItemRelationTypes(), true));
+				issueLinksType = parseIssueLinkTypes(
+						client.getMetadataJson(azureServerObj, azureProcessorConfig.getApiEndpointWorkItemRelationTypes(), true));
 
 			} catch (RestClientException rce) {
 				log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, rce.getMessage());
-
 			}
 		}
 		return issueLinksType;
@@ -364,7 +351,6 @@ public class OnlineAdapter implements AzureAdapter {
 				sprintWiseItemIdList = client.getIssuesBySprintResponse(azureServer, sprintId);
 			} catch (RestClientException rce) {
 				log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, rce.getMessage());
-
 			}
 		}
 		return sprintWiseItemIdList;
@@ -382,14 +368,10 @@ public class OnlineAdapter implements AzureAdapter {
 			for (int i = 0; i < jsonArray.size(); i++) {
 
 				JSONObject innerObject = (JSONObject) jsonArray.get(i);
-				IssuelinksType issuelinksType = new IssuelinksType(
-						URI.create(innerObject.get(AzureConstants.URL).toString()),
-						innerObject.get(AzureConstants.REFERENCENAME).toString(),
-						innerObject.get(AzureConstants.NAME).toString(),
-						innerObject.get(AzureConstants.NAME).toString(),
-						innerObject.get(AzureConstants.NAME).toString());
+				IssuelinksType issuelinksType = new IssuelinksType(URI.create(innerObject.get(AzureConstants.URL).toString()),
+						innerObject.get(AzureConstants.REFERENCENAME).toString(), innerObject.get(AzureConstants.NAME).toString(),
+						innerObject.get(AzureConstants.NAME).toString(), innerObject.get(AzureConstants.NAME).toString());
 				issueLinkTypeList.add(issuelinksType);
-
 			}
 		}
 

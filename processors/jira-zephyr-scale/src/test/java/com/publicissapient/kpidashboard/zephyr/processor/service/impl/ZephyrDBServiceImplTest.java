@@ -108,8 +108,7 @@ public class ZephyrDBServiceImplTest {
 		when(testCaseDetailsRepository.findByNumberAndBasicProjectConfigId(anyString(), anyString()))
 				.thenReturn(testCaseDetailsList);
 		when(testCaseDetailsRepository.saveAll(anyList())).thenReturn(new ArrayList<>());
-		zephyrDBService.processTestCaseInfoToDB(testCases, projectConfigMapping.getProcessorToolConnection(), true,
-				false);
+		zephyrDBService.processTestCaseInfoToDB(testCases, projectConfigMapping.getProcessorToolConnection(), true, false);
 	}
 
 	@Test
@@ -200,7 +199,6 @@ public class ZephyrDBServiceImplTest {
 		when(testCaseDetailsRepository.findByNumberAndBasicProjectConfigId(anyString(), anyString()))
 				.thenReturn(testCaseDetailsList);
 		when(testCaseDetailsRepository.saveAll(anyList())).thenReturn(new ArrayList<>());
-		zephyrDBService.processTestCaseInfoToDB(testCases, projectConfigMapping.getProcessorToolConnection(), false,
-				true);
+		zephyrDBService.processTestCaseInfoToDB(testCases, projectConfigMapping.getProcessorToolConnection(), false, true);
 	}
 }

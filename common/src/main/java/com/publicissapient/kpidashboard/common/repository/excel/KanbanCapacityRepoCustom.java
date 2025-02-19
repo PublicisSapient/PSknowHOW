@@ -21,37 +21,33 @@ package com.publicissapient.kpidashboard.common.repository.excel;
 import java.util.List;
 import java.util.Map;
 
-import org.bson.types.ObjectId;
-
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 
-/**
- * The interface Kanban capacity repo custom.
- */
+/** The interface Kanban capacity repo custom. */
 public interface KanbanCapacityRepoCustom {
 
 	/**
 	 * Find issues by type list.
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @param uniqueProjectMap
-	 *            the unique project map
+	 *          the unique project map
 	 * @param dateFrom
-	 *            the date from
+	 *          the date from
 	 * @param dateTo
-	 *            the date to
+	 *          the date to
 	 * @return list of feature
 	 */
 	List<KanbanCapacity> findIssuesByType(Map<String, Object> mapOfFilters, String dateFrom, String dateTo);
 
 	/**
 	 * find already existing kanban capacity
-	 * 
+	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @param dateFrom
-	 *            the date from
+	 *          the date from
 	 * @return list of feature
 	 */
 	public List<KanbanCapacity> findByFilterMapAndDate(Map<String, String> mapOfFilters, String dateFrom);

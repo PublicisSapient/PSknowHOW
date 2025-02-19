@@ -26,10 +26,7 @@ import org.springframework.stereotype.Service;
 import com.publicissapient.kpidashboard.common.util.PropertyUtils;
 import com.publicissapient.kpidashboard.jenkins.config.JenkinsConfig;
 
-/**
- * Service for trimming property file.
- *
- */
+/** Service for trimming property file. */
 @Service
 public class JenkinsConfigService {
 
@@ -38,12 +35,9 @@ public class JenkinsConfigService {
 	@Autowired
 	private PropertyUtils propertyUtils;
 
-	/**
-	 * Update setting object.
-	 */
+	/** Update setting object. */
 	@PostConstruct
 	public void updateSettingsObject() {
 		propertyUtils.trimProps(jenkinsConfig.getClass().getDeclaredFields(), jenkinsConfig);
 	}
-
 }

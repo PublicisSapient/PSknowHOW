@@ -14,13 +14,11 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.service.releasedashboard;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertNotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -189,7 +187,5 @@ public class JiraReleaseKPIServiceTest {
 				KpiRequest kpiRequest) {
 			return null;
 		}
-
 	}
-
 }

@@ -29,19 +29,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KanbanJiraIssueDataFactory;
@@ -69,7 +70,7 @@ import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetails
 @RunWith(MockitoJUnitRunner.class)
 public class RegressionPercentageKanbanServiceImplTest {
 
-	private final static String TESTCASEKEY = "testCaseData";
+	private static final String TESTCASEKEY = "testCaseData";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	List<KanbanJiraIssue> totalTestCaseList = new ArrayList<>();
@@ -96,11 +97,26 @@ public class RegressionPercentageKanbanServiceImplTest {
 	@Mock
 	private CommonService commonService;
 
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+
 	@Before
 	public void setup() {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
+
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
+
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		totalTestCaseList = KanbanJiraIssueDataFactory.newInstance().getKanbanJiraIssueDataList();
 		testCaseDetailsList = TestCaseDetailsDataFactory.newInstance().getTestCaseDetailsList();
@@ -108,23 +124,21 @@ public class RegressionPercentageKanbanServiceImplTest {
 		kpiRequest.setLabel("PROJECT");
 		kpiElement = kpiRequest.getKpiList().get(0);
 		kpiWiseAggregation.put("defectInjectionRate", "average");
-		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap= new HashMap<>();
-		Map<String, List<ProjectToolConfig>> projectTool= new HashMap<>();
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap = new HashMap<>();
+		Map<String, List<ProjectToolConfig>> projectTool = new HashMap<>();
 
-		ProjectToolConfig zephyConfig= new ProjectToolConfig();
+		ProjectToolConfig zephyConfig = new ProjectToolConfig();
 		zephyConfig.setRegressionAutomationLabels(Arrays.asList("test1"));
 		zephyConfig.setTestRegressionValue(Arrays.asList("test1"));
 		zephyConfig.setRegressionAutomationFolderPath(Arrays.asList("test1"));
 		projectTool.put(ProcessorConstants.ZEPHYR, Arrays.asList(zephyConfig));
-		ProjectToolConfig jiraTest= new ProjectToolConfig();
+		ProjectToolConfig jiraTest = new ProjectToolConfig();
 		jiraTest.setJiraRegressionTestValue(Arrays.asList("test1"));
 		jiraTest.setTestCaseStatus(Arrays.asList("test1"));
 		projectTool.put(ProcessorConstants.ZEPHYR, Arrays.asList(zephyConfig));
 		projectTool.put(ProcessorConstants.JIRA_TEST, Arrays.asList(jiraTest));
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), projectTool);
-		when(cacheService
-				.cacheProjectToolConfigMapData()).thenReturn(toolMap);
-
+		when(cacheService.cacheProjectToolConfigMapData()).thenReturn(toolMap);
 	}
 
 	@Test
@@ -132,8 +146,7 @@ public class RegressionPercentageKanbanServiceImplTest {
 		Map<String, Object> filterComponentIdWiseDefectMap = new HashMap<>();
 		String kpiRequestTrackerId = "automationpercenttrack001";
 		filterComponentIdWiseDefectMap.put(TESTCASEKEY, totalTestCaseList);
-		Double automatedValue = regressionPercentageKanbanServiceImpl
-				.calculateKPIMetrics(filterComponentIdWiseDefectMap);
+		Double automatedValue = regressionPercentageKanbanServiceImpl.calculateKPIMetrics(filterComponentIdWiseDefectMap);
 		assertThat("Automated Percentage value :", automatedValue, equalTo(null));
 	}
 
@@ -160,7 +173,6 @@ public class RegressionPercentageKanbanServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -179,10 +191,10 @@ public class RegressionPercentageKanbanServiceImplTest {
 				leafNodeList.addAll(v);
 			}
 		});
-//		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		// when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(testCaseDetailsRepository.findTestDetails(any(), any(), any())).thenReturn(testCaseDetailsList);
-		Map<String, Object> defectDataListMap = regressionPercentageKanbanServiceImpl.fetchKPIDataFromDb(leafNodeList,
-				null, null, kpiRequest);
+		Map<String, Object> defectDataListMap = regressionPercentageKanbanServiceImpl.fetchKPIDataFromDb(leafNodeList, null,
+				null, kpiRequest);
 		assertThat("Total Test Case value :", (Arrays.asList(defectDataListMap.get(TESTCASEKEY)).size()), equalTo(1));
 	}
 

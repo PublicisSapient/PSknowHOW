@@ -32,55 +32,54 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class NotificationServiceImpl implements NotificationService  {
+public class NotificationServiceImpl implements NotificationService {
 
-    @Autowired
-    private NotificationEventProducer notificationEventProducer;
+	@Autowired
+	private NotificationEventProducer notificationEventProducer;
 
-    @Autowired
-    private GlobalConfigRepository globalConfigRepository;
+	@Autowired
+	private GlobalConfigRepository globalConfigRepository;
 
-    @Autowired
-    private SpringTemplateEngine templateEngine;
+	@Autowired
+	private SpringTemplateEngine templateEngine;
 
-    @Override
-    public void sendNotificationEvent(List<String> emailAddresses, Map<String, String> customData, String notSubject,
-                                      String notKey, String topic, boolean notificationSwitch, KafkaTemplate<String, Object> kafkaTemplate, String templateKey, boolean isMailWithoutKafka) {
+	@Override
+	public void sendNotificationEvent(List<String> emailAddresses, Map<String, String> customData, String notSubject,
+			String notKey, String topic, boolean notificationSwitch, KafkaTemplate<String, Object> kafkaTemplate,
+			String templateKey, boolean isMailWithoutKafka) {
 
-        if (!isMailWithoutKafka) {
-            if (StringUtils.isNotBlank(notSubject)) {
-                EmailServerDetail emailServerDetail = getEmailServerDetail();
-                if (emailServerDetail != null) {
-                    EmailEvent emailEvent = new EmailEvent(emailServerDetail.getFromEmail(), emailAddresses, null, null,
-                            notSubject, null, customData, emailServerDetail.getEmailHost(),
-                            emailServerDetail.getEmailPort());
-                    notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic, notificationSwitch, kafkaTemplate);
-                } else {
-                    log.error("Notification Event not sent : notification emailServer Details not found in db");
-                }
-            } else {
-                log.error("Notification Event not sent : notification subject for {} not found in properties file",
-                        notSubject);
-            }
-        }
-        //else if (isSendGridEnabled) {
-       // this else if can be used to send email via SendGrid when kafka is off and sendgrid is true
-        //}
-        else {
-            sendEmailWithoutKafka(emailAddresses, customData, notSubject, notKey, topic, notificationSwitch , templateKey );
-        }
+		if (!isMailWithoutKafka) {
+			if (StringUtils.isNotBlank(notSubject)) {
+				EmailServerDetail emailServerDetail = getEmailServerDetail();
+				if (emailServerDetail != null) {
+					EmailEvent emailEvent = new EmailEvent(emailServerDetail.getFromEmail(), emailAddresses, null, null,
+							notSubject, null, customData, emailServerDetail.getEmailHost(), emailServerDetail.getEmailPort());
+					notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic, notificationSwitch,
+							kafkaTemplate);
+				} else {
+					log.error("Notification Event not sent : notification emailServer Details not found in db");
+				}
+			} else {
+				log.error("Notification Event not sent : notification subject for {} not found in properties file", notSubject);
+			}
+		}
+		// else if (isSendGridEnabled) {
+		// this else if can be used to send email via SendGrid when kafka is off and
+		// sendgrid is true
+		// }
+		else {
+			sendEmailWithoutKafka(emailAddresses, customData, notSubject, notKey, topic, notificationSwitch, templateKey);
+		}
+	}
 
-    }
-
-    @Override
-	public void sendEmailWithoutKafka(List<String> emailAddresses, Map<String, String> additionalData,
-			String notSubject, String notKey, String topic, boolean notificationSwitch, String templateKey) {
+	@Override
+	public void sendEmailWithoutKafka(List<String> emailAddresses, Map<String, String> additionalData, String notSubject,
+			String notKey, String topic, boolean notificationSwitch, String templateKey) {
 		if (notificationSwitch) {
 			EmailServerDetail emailServerDetail = getEmailServerDetail();
 			if (StringUtils.isNotBlank(notSubject) && emailServerDetail != null) {
-				EmailEvent emailEvent = new EmailEvent(emailServerDetail.getFromEmail(), emailAddresses, null, null,
-						notSubject, null, additionalData, emailServerDetail.getEmailHost(),
-						emailServerDetail.getEmailPort());
+				EmailEvent emailEvent = new EmailEvent(emailServerDetail.getFromEmail(), emailAddresses, null, null, notSubject,
+						null, additionalData, emailServerDetail.getEmailHost(), emailServerDetail.getEmailPort());
 				JavaMailSenderImpl javaMailSender = getJavaMailSender(emailEvent);
 				MimeMessage message = javaMailSender.createMimeMessage();
 				try {
@@ -95,15 +94,14 @@ public class NotificationServiceImpl implements NotificationService  {
 				}
 			}
 		} else {
-			log.info(
-					"Notification Switch is Off. If want to send notification set true for notification.switch in property");
+			log.info("Notification Switch is Off. If want to send notification set true for notification.switch in property");
 		}
 	}
 
 	private void sentMailViaJavaMail(String templateKey, EmailEvent emailEvent, JavaMailSenderImpl javaMailSender,
 			MimeMessage message) throws MessagingException {
-		MimeMessageHelper helper = new MimeMessageHelper(message,
-				MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+		MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+				StandardCharsets.UTF_8.name());
 		Context context = new Context();
 		Map<String, String> customData = emailEvent.getCustomData();
 		if (MapUtils.isNotEmpty(customData)) {
@@ -123,23 +121,23 @@ public class NotificationServiceImpl implements NotificationService  {
 		}
 	}
 
-    private EmailServerDetail getEmailServerDetail() {
-        List<GlobalConfig> globalConfigs = globalConfigRepository.findAll();
-        GlobalConfig globalConfig = CollectionUtils.isEmpty(globalConfigs) ? null : globalConfigs.get(0);
-        return globalConfig == null ? null : globalConfig.getEmailServerDetail();
-    }
+	private EmailServerDetail getEmailServerDetail() {
+		List<GlobalConfig> globalConfigs = globalConfigRepository.findAll();
+		GlobalConfig globalConfig = CollectionUtils.isEmpty(globalConfigs) ? null : globalConfigs.get(0);
+		return globalConfig == null ? null : globalConfig.getEmailServerDetail();
+	}
 
-    private JavaMailSenderImpl getJavaMailSender(EmailEvent emailEvent) {
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost(emailEvent.getEmailHost());
-        mailSender.setPort(emailEvent.getEmailPort());
-        Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.auth", "false");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.ssl.trust", "*");
-        props.put("mail.debug", "true");
-        props.put("mail.smtp.ssl.checkserveridentity", "false");
-        return mailSender;
-    }
+	private JavaMailSenderImpl getJavaMailSender(EmailEvent emailEvent) {
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+		mailSender.setHost(emailEvent.getEmailHost());
+		mailSender.setPort(emailEvent.getEmailPort());
+		Properties props = mailSender.getJavaMailProperties();
+		props.put("mail.transport.protocol", "smtp");
+		props.put("mail.smtp.auth", "false");
+		props.put("mail.smtp.starttls.enable", "true");
+		props.put("mail.smtp.ssl.trust", "*");
+		props.put("mail.debug", "true");
+		props.put("mail.smtp.ssl.checkserveridentity", "false");
+		return mailSender;
+	}
 }

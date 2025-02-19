@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.common.repository.jira;
 import java.util.List;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -36,9 +35,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-/**
- * Repository for {@link SprintDetails} with custom methods implementation.
- */
+
+/** Repository for {@link SprintDetails} with custom methods implementation. */
 @Service
 public class SprintRepositoryCustomImpl implements SprintRepositoryCustom {
 
@@ -47,23 +45,24 @@ public class SprintRepositoryCustomImpl implements SprintRepositoryCustom {
 	@Autowired
 	private SprintRepository sprintRepository;
 
-	private static final String BASIC_PROJECT_CONFIG_ID ="basicProjectConfigId";
-	private static final String SPRINTS ="sprints";
-	private static final String STATE ="state";
-	private static final String END_DATE ="endDate";
-	private static final String SPRINT_ID ="sprintID";
-	private static final String NOT_COMPLETED_ISSUES ="notCompletedIssues";
-	private static final String COMPLETED_ISSUES ="completedIssues";
-	private static final String SPRINT_NAME ="sprintName";
-	private static final String START_DATE ="startDate";
-	private static final String COMPLETE_DATE ="completeDate";
-	private static final String TOTAL_ISSUES ="totalIssues";
-	private static final String SPRINT_DETAILS ="sprint_details";
+	private static final String BASIC_PROJECT_CONFIG_ID = "basicProjectConfigId";
+	private static final String SPRINTS = "sprints";
+	private static final String STATE = "state";
+	private static final String END_DATE = "endDate";
+	private static final String SPRINT_ID = "sprintID";
+	private static final String NOT_COMPLETED_ISSUES = "notCompletedIssues";
+	private static final String COMPLETED_ISSUES = "completedIssues";
+	private static final String SPRINT_NAME = "sprintName";
+	private static final String START_DATE = "startDate";
+	private static final String COMPLETE_DATE = "completeDate";
+	private static final String TOTAL_ISSUES = "totalIssues";
+	private static final String SPRINT_DETAILS = "sprint_details";
+
 	@Override
 	public List<SprintDetails> findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(
 			Set<ObjectId> basicProjectConfigIds, List<String> sprintStatusList, long limit) {
-		MatchOperation matchStage = Aggregation.match(
-				Criteria.where(BASIC_PROJECT_CONFIG_ID).in(basicProjectConfigIds).and(STATE).in(sprintStatusList));
+		MatchOperation matchStage = Aggregation
+				.match(Criteria.where(BASIC_PROJECT_CONFIG_ID).in(basicProjectConfigIds).and(STATE).in(sprintStatusList));
 
 		SortOperation sortStage = Aggregation.sort(Sort.Direction.DESC, END_DATE);
 
@@ -75,12 +74,11 @@ public class SprintRepositoryCustomImpl implements SprintRepositoryCustom {
 
 		ReplaceRootOperation replaceRootStage = Aggregation.replaceRoot(SPRINTS);
 		ProjectionOperation projectStage = Aggregation.project(SPRINT_ID, BASIC_PROJECT_CONFIG_ID, NOT_COMPLETED_ISSUES,
-				COMPLETED_ISSUES, SPRINT_NAME, START_DATE, END_DATE, COMPLETE_DATE, TOTAL_ISSUES,STATE);
+				COMPLETED_ISSUES, SPRINT_NAME, START_DATE, END_DATE, COMPLETE_DATE, TOTAL_ISSUES, STATE);
 
 		Aggregation aggregation = Aggregation.newAggregation(matchStage, sortStage, groupStage, sliceStage, unwindStage,
 				replaceRootStage, projectStage);
 
 		return operations.aggregate(aggregation, SPRINT_DETAILS, SprintDetails.class).getMappedResults();
 	}
-
 }

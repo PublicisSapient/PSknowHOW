@@ -18,16 +18,16 @@
 
 package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service;
 
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.common.model.application.FieldMappingMeta;
-import com.publicissapient.kpidashboard.common.model.application.FieldMappingResponse;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.FieldMappingMeta;
+import com.publicissapient.kpidashboard.common.model.application.FieldMappingResponse;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-
-import java.util.List;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 
 /**
  * @author anisingh4
@@ -42,16 +42,16 @@ public interface FieldMappingService {
 
 	/**
 	 * Gets ProjectBasicConfig object by its id.
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return ProjectBasicConfig
 	 */
 	ProjectBasicConfig getBasicProjectConfigById(ObjectId basicProjectConfigId);
 
 	/**
 	 * Checks if user has project access.
-	 * 
+	 *
 	 * @param projectToolConfigId
 	 * @return
 	 */
@@ -59,14 +59,13 @@ public interface FieldMappingService {
 
 	/**
 	 * Delete by basic project config id
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            id
+	 *          id
 	 */
 	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
 	/**
-	 *
 	 * @param kpi
 	 * @param projectToolConfigId
 	 * @param requestData
@@ -74,23 +73,23 @@ public interface FieldMappingService {
 	 * @throws NoSuchFieldException
 	 * @throws IllegalAccessException
 	 */
-	List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfigId, FieldMappingMeta requestData)
-			throws NoSuchFieldException, IllegalAccessException;
+	List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfigId,
+			FieldMappingMeta requestData) throws NoSuchFieldException, IllegalAccessException;
 
 	void updateSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfigId,
-										FieldMappingMeta fieldMappingMeta) throws NoSuchFieldException, IllegalAccessException;
+			FieldMappingMeta fieldMappingMeta) throws NoSuchFieldException, IllegalAccessException;
 
 	/**
-	 *
 	 * @param fieldMappingResponseList
-	 *            fieldMappingResponseList
+	 *          fieldMappingResponseList
 	 * @param fieldMapping
-	 *            fieldMapping
+	 *          fieldMapping
 	 * @return boolean
 	 * @throws IllegalAccessException
-	 *             IllegalAccessException
+	 *           IllegalAccessException
 	 */
-	boolean convertToFieldMappingAndCheckIsFieldPresent(List<FieldMappingResponse> fieldMappingResponseList, FieldMapping fieldMapping) throws IllegalAccessException;
+	boolean convertToFieldMappingAndCheckIsFieldPresent(List<FieldMappingResponse> fieldMappingResponseList,
+			FieldMapping fieldMapping) throws IllegalAccessException;
 
 	void saveFieldMapping(FieldMapping fieldMapping);
 }

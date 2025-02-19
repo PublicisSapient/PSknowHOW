@@ -111,5 +111,4 @@ public class ReleaseDefectCountByRCAServiceImplTest {
 		assertTrue(trendValueList.get(0).getFilter1().equalsIgnoreCase("Open Defects"));
 		assertTrue(trendValueList.get(1).getFilter1().equalsIgnoreCase("Total Defects"));
 	}
-
 }

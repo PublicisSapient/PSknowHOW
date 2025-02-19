@@ -39,14 +39,12 @@ public class ProcessorExecutionTraceLog {
 	private String processorName;
 	private String basicProjectConfigId;
 
-	/**
-	 * time in milliseconds
-	 */
+	/** time in milliseconds */
 	private long executionStartedAt;
-	/**
-	 * time in milliseconds
-	 */
+
+	/** time in milliseconds */
 	private long executionEndedAt;
+
 	private boolean executionSuccess;
 	private String lastSuccessfulRun;
 	private Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType;
@@ -59,7 +57,7 @@ public class ProcessorExecutionTraceLog {
 	private String errorMessage;
 	private String failureLog;
 	private List<ProgressStatus> progressStatusList;
-	//save any resource not found error
+	// save any resource not found error
 	private List<ErrorDetail> errorDetailList;
 	private boolean executionWarning;
 	private long executionResumesAt;

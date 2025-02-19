@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.service;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -30,7 +29,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,6 +53,7 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import com.publicissapient.kpidashboard.common.model.jira.Identifier;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataIdentifier;
+import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
@@ -126,8 +125,8 @@ public class CreateMetadataImplTest {
 		IssueType issueType5 = new IssueType(new URI("self"), 1l, "Defect", false, "desc", new URI("iconURI"));
 		IssueType issueType6 = new IssueType(new URI("self"), 1l, "Epic", false, "desc", new URI("iconURI"));
 		IssueType issueType7 = new IssueType(new URI("self"), 1l, "UAT Defect", false, "desc", new URI("iconURI"));
-		List<IssueType> issueTypes = Arrays.asList(issueType1, issueType2, issueType3, issueType4, issueType5,
-				issueType6, issueType7);
+		List<IssueType> issueTypes = Arrays.asList(issueType1, issueType2, issueType3, issueType4, issueType5, issueType6,
+				issueType7);
 
 		issueTypeItr = issueTypes;
 
@@ -168,7 +167,8 @@ public class CreateMetadataImplTest {
 		when(metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(any(), any(), any()))
 				.thenReturn(metadataIdentifier);
 
-		Assert.assertThrows(Exception.class, () -> createMetadata.collectMetadata(createProjectConfig(false), client,"false"));
+		Assert.assertThrows(Exception.class,
+				() -> createMetadata.collectMetadata(createProjectConfig(false), client, "false"));
 	}
 
 	@Test
@@ -177,7 +177,8 @@ public class CreateMetadataImplTest {
 		MetadataIdentifier metadataIdentifier = createMetaDataIdentifier(true);
 		when(metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(any(), any(), any()))
 				.thenReturn(metadataIdentifier);
-		Assert.assertThrows(Exception.class, () -> createMetadata.collectMetadata(createProjectConfig(true), client,"false"));
+		Assert.assertThrows(Exception.class,
+				() -> createMetadata.collectMetadata(createProjectConfig(true), client, "false"));
 	}
 
 	@Test
@@ -186,13 +187,13 @@ public class CreateMetadataImplTest {
 		MetadataIdentifier metadataIdentifier = createMetaDataIdentifier(false);
 		when(metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(any(), any(), any()))
 				.thenReturn(metadataIdentifier);
-		Assert.assertThrows(Exception.class, () -> createMetadata.collectMetadata(createProjectConfig(true), client, "false"));
+		Assert.assertThrows(Exception.class,
+				() -> createMetadata.collectMetadata(createProjectConfig(true), client, "false"));
 	}
 
 	@Test
 	public void collectMetadataWithBoardMetadata() throws Exception {
-		when(boardMetadataRepository.findByProjectBasicConfigId(any()))
-				.thenReturn(new BoardMetadata());
+		when(boardMetadataRepository.findByProjectBasicConfigId(any())).thenReturn(new BoardMetadata());
 		createMetadata.collectMetadata(createProjectConfig(true), client, "true");
 	}
 
@@ -216,7 +217,8 @@ public class CreateMetadataImplTest {
 		Identifier issue12 = createIdentifier("ticketCountIssueType", Arrays.asList("Change Request"));
 		Identifier issue13 = createIdentifier("jiraIssueRiskTypeKPI176", Arrays.asList("Risk"));
 		Identifier issue14 = createIdentifier("jiraIssueDependencyTypeKPI176", Arrays.asList("Dependency"));
-		List<Identifier> issuesIdentifier = Arrays.asList(issue1, issue2, issue3, issue4, issue5,issue6,issue7,issue8,issue9,issue10,issue11,issue12,issue13,issue14);
+		List<Identifier> issuesIdentifier = Arrays.asList(issue1, issue2, issue3, issue4, issue5, issue6, issue7, issue8,
+				issue9, issue10, issue11, issue12, issue13, issue14);
 
 		Identifier customField1 = createIdentifier("storypoint", Arrays.asList("storypoint"));
 		Identifier customField2 = createIdentifier("sprint", Arrays.asList("Sprint"));
@@ -252,16 +254,16 @@ public class CreateMetadataImplTest {
 		Identifier workflow16 = createIdentifier("jiraWaitStatus", Arrays.asList("Open"));
 		Identifier workflow17 = createIdentifier("jiraStatusForInProgress", Arrays.asList("Open"));
 		Identifier workflow18 = createIdentifier("development", Arrays.asList("Open"));
-		List<Identifier> workflowIdentifer = Arrays.asList(workflow1, workflow2, workflow3, workflow4, workflow5,
-				workflow6, workflow7,workflow8,workflow9,workflow10,workflow11,workflow12,workflow13,workflow14,workflow15,workflow16,workflow17,workflow18);
+		List<Identifier> workflowIdentifer = Arrays.asList(workflow1, workflow2, workflow3, workflow4, workflow5, workflow6,
+				workflow7, workflow8, workflow9, workflow10, workflow11, workflow12, workflow13, workflow14, workflow15,
+				workflow16, workflow17, workflow18);
 
 		Identifier valuestoidentify1 = createIdentifier("rootCauseValue", Arrays.asList("Coding"));
 		Identifier valuestoidentify2 = createIdentifier("rejectionResolution",
 				Arrays.asList("Invalid", "Duplicate", "Unrequired"));
 		Identifier valuestoidentify3 = createIdentifier("qaRootCause",
 				Arrays.asList("Coding", "Configuration", "Regression", "Data"));
-		List<Identifier> valuestoidentifyIdentifer = Arrays.asList(valuestoidentify1, valuestoidentify2,
-				valuestoidentify3);
+		List<Identifier> valuestoidentifyIdentifer = Arrays.asList(valuestoidentify1, valuestoidentify2, valuestoidentify3);
 
 		List<Identifier> issuelinkIdentifer = new ArrayList<>();
 		MetadataIdentifier metadataIdentifier;
@@ -320,8 +322,7 @@ public class CreateMetadataImplTest {
 	}
 
 	private Optional<Connection> getMockConnection() {
-		ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory
-				.newInstance("/json/default/connections.json");
+		ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory.newInstance("/json/default/connections.json");
 		return connectionDataFactory.findConnectionById("5fd99f7bc8b51a7b55aec836");
 	}
 
@@ -336,5 +337,4 @@ public class CreateMetadataImplTest {
 				.newInstance("/json/default/metadata_identifier.json");
 		return fieldMappingDataFactory.getMetadataIdentifiers();
 	}
-
 }

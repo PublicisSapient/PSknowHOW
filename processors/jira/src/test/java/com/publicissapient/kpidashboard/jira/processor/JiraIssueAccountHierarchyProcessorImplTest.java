@@ -16,15 +16,19 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.processor;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -44,12 +48,14 @@ import com.publicissapient.kpidashboard.common.model.application.AccountHierarch
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import com.publicissapient.kpidashboard.jira.dataFactories.AccountHierarchiesDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.ConnectionsDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.FieldMappingDataFactory;
@@ -80,6 +86,8 @@ public class JiraIssueAccountHierarchyProcessorImplTest {
 	private SprintDetails sprintDetails;
 	@InjectMocks
 	private JiraIssueAccountHierarchyProcessorImpl createAccountHierarchy;
+	@Mock
+	private ProjectHierarchyService projectHierarchyService;
 
 	@Before
 	public void setup() {
@@ -87,8 +95,8 @@ public class JiraIssueAccountHierarchyProcessorImplTest {
 		AccountHierarchiesDataFactory accountHierarchiesDataFactory = AccountHierarchiesDataFactory
 				.newInstance("/json/default/account_hierarchy.json");
 		accountHierarchyList = accountHierarchiesDataFactory.getAccountHierarchies();
-		accountHierarchies = accountHierarchiesDataFactory.findByLabelNameAndBasicProjectConfigId(
-				CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, "63c04dc7b7617e260763ca4e");
+		accountHierarchies = accountHierarchiesDataFactory
+				.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, "63c04dc7b7617e260763ca4e");
 		projectToolConfigs = getMockProjectToolConfig();
 		fieldMappingList = getMockFieldMapping();
 		connection = getMockConnection();
@@ -101,10 +109,46 @@ public class JiraIssueAccountHierarchyProcessorImplTest {
 	@Test
 	public void createAccountHierarchy() {
 		when(hierarchyLevelService.getFullHierarchyLevels(false)).thenReturn(hierarchyLevelList);
-		when(accountHierarchyRepository.findByBasicProjectConfigId(any())).thenReturn(accountHierarchyList);
-		Assert.assertEquals(2, createAccountHierarchy
-				.createAccountHierarchy(jiraIssues.get(0), createProjectConfig(), getSprintDetails())
-				.size());
+		Assert.assertEquals(
+				2,
+				createAccountHierarchy
+						.createAccountHierarchy(jiraIssues.get(0), createProjectConfig(), getSprintDetails())
+						.size());
+	}
+
+	@Test
+	public void testCreateAccountHierarchy_Success() {
+		when(hierarchyLevelService.getFullHierarchyLevels(false)).thenReturn(hierarchyLevelList);
+		Map<String, List<ProjectHierarchy>> map = new HashMap<>();
+		List<ProjectHierarchy> projectHierarchies = new ArrayList<>();
+		projectHierarchies.add(new ProjectHierarchy());
+		map.put("41409_NewJira_63c04dc7b7617e260763ca4e", projectHierarchies);
+		when(projectHierarchyService.getProjectHierarchyMapByConfig(anyString())).thenReturn(map);
+		Set<ProjectHierarchy> result =
+				createAccountHierarchy.createAccountHierarchy(
+						jiraIssues.get(0), createProjectConfig(), getSprintDetails());
+		assertNotNull(result);
+		assertFalse(result.isEmpty());
+		assertEquals(2, result.size());
+	}
+
+	@Test
+	public void testCreateAccountHierarchy_Success_1() {
+		when(hierarchyLevelService.getFullHierarchyLevels(false)).thenReturn(hierarchyLevelList);
+		Map<String, List<ProjectHierarchy>> map = new HashMap<>();
+		List<ProjectHierarchy> projectHierarchies = new ArrayList<>();
+		ProjectHierarchy projectHierarchy = new ProjectHierarchy();
+		projectHierarchy.setNodeId("41409_NewJira_63c04dc7b7617e260763ca4e");
+		projectHierarchy.setParentId("project_unique_003");
+		projectHierarchies.add(projectHierarchy);
+		map.put("41409_NewJira_63c04dc7b7617e260763ca4e", projectHierarchies);
+		when(projectHierarchyService.getProjectHierarchyMapByConfig(anyString())).thenReturn(map);
+		Set<ProjectHierarchy> result =
+				createAccountHierarchy.createAccountHierarchy(
+						jiraIssues.get(0), createProjectConfig(), getSprintDetails());
+		assertNotNull(result);
+		assertFalse(result.isEmpty());
+		assertEquals(2, result.size());
 	}
 
 	private List<HierarchyLevel> getMockHierarchyLevel() {
@@ -167,8 +211,7 @@ public class JiraIssueAccountHierarchyProcessorImplTest {
 	}
 
 	private Optional<Connection> getMockConnection() {
-		ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory
-				.newInstance("/json/default/connections.json");
+		ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory.newInstance("/json/default/connections.json");
 		return connectionDataFactory.findConnectionById("5fd99f7bc8b51a7b55aec836");
 	}
 
@@ -177,5 +220,4 @@ public class JiraIssueAccountHierarchyProcessorImplTest {
 				.newInstance("/json/default/field_mapping.json");
 		return fieldMappingDataFactory.getFieldMappings();
 	}
-
 }

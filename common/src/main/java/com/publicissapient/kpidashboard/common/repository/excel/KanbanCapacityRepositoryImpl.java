@@ -35,9 +35,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 
-/**
- * The type Kanban capacity repository.
- */
+/** The type Kanban capacity repository. */
 public class KanbanCapacityRepositoryImpl implements KanbanCapacityRepoCustom {
 
 	private static final String START_DATE = "startDate";
@@ -54,16 +52,15 @@ public class KanbanCapacityRepositoryImpl implements KanbanCapacityRepoCustom {
 		// map of common filters Project and Sprint
 		for (Map.Entry<String, Object> entry : mapOfFilters.entrySet()) {
 			String key = entry.getKey();
-			if (ObjectUtils.isNotEmpty(entry.getValue())
-					&& !key.equalsIgnoreCase("additionalFilterCapacityList.nodeCapacityList.additionalFilterId")
-					&& !key.equalsIgnoreCase("additionalFilterCapacityList.filterId")) {
+			if (ObjectUtils.isNotEmpty(entry.getValue()) &&
+					!key.equalsIgnoreCase("additionalFilterCapacityList.nodeCapacityList.additionalFilterId") &&
+					!key.equalsIgnoreCase("additionalFilterCapacityList.filterId")) {
 				if (entry.getValue() instanceof List<?>) {
 					List<ObjectId> value = (List<ObjectId>) entry.getValue();
 					criteria = criteria.and(key).in(value);
 				} else {
 					criteria = criteria.and(key).in(entry.getValue());
 				}
-
 			}
 		}
 		criteria = criteria.and(START_DATE).lte(endDateTime.withTime(0, 0, 0, 0));
@@ -76,13 +73,12 @@ public class KanbanCapacityRepositoryImpl implements KanbanCapacityRepoCustom {
 				if (CollectionUtils.isNotEmpty(capacityKpiData.getAdditionalFilterCapacityList())) {
 					List<String> additionalFilter = (List<String>) mapOfFilters
 							.get("additionalFilterCapacityList.nodeCapacityList.additionalFilterId");
-					List<String> upperCaseKey = ((List<String>) mapOfFilters
-							.get("additionalFilterCapacityList.filterId")).stream().map(String::toUpperCase).toList();
+					List<String> upperCaseKey = ((List<String>) mapOfFilters.get("additionalFilterCapacityList.filterId"))
+							.stream().map(String::toUpperCase).toList();
 					capacityKpiData.setCapacity(capacityKpiData.getAdditionalFilterCapacityList().stream()
 							.filter(additionalFilterCapacity -> upperCaseKey
 									.contains(additionalFilterCapacity.getFilterId().toUpperCase()))
-							.flatMap(
-									additionalFilterCapacity -> additionalFilterCapacity.getNodeCapacityList().stream())
+							.flatMap(additionalFilterCapacity -> additionalFilterCapacity.getNodeCapacityList().stream())
 							.filter(leaf -> additionalFilter.contains(leaf.getAdditionalFilterId()))
 							.mapToDouble(LeafNodeCapacity::getAdditionalFilterCapacity).sum());
 				} else {
@@ -91,7 +87,6 @@ public class KanbanCapacityRepositoryImpl implements KanbanCapacityRepoCustom {
 			});
 		}
 		return kanbanCapacityList;
-
 	}
 
 	@Override
@@ -109,6 +104,5 @@ public class KanbanCapacityRepositoryImpl implements KanbanCapacityRepoCustom {
 
 		Query query = new Query(criteria);
 		return operations.find(query, KanbanCapacity.class);
-
 	}
 }

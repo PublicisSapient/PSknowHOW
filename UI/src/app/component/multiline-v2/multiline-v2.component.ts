@@ -304,7 +304,7 @@ export class MultilineV2Component implements OnChanges {
           })
           .style('left', (d, i) => {
             let left = d.date || d.sortSprint;
-            if (viewType === 'large' || (board === 'dora' && viewType === 'chart')) {
+            if (viewType === 'large' || (board === 'dora' && viewType === 'chart') || this.kpiId === 'kpi997') {
               return xScale(left) + xScale.bandwidth() / 2 + 'px';
             } else {
               return xScale(i + 1) + xScale.bandwidth() / 2 + 'px';

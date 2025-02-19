@@ -26,7 +26,6 @@ import com.publicissapient.kpidashboard.common.model.sonar.SonarDetails;
  * @author anisingh4
  */
 public enum SonarAnalysisType {
-
 	STATIC_ANALYSIS(ProcessorType.SONAR_ANALYSIS), SECURITY_ANALYSIS(ProcessorType.STATIC_SECURITY_SCAN);
 
 	private final ProcessorType processorType;

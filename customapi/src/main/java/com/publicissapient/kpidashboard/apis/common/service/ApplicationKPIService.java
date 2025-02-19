@@ -27,41 +27,40 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 
 /**
  * This is generic service which every KPI has to implement.
- * 
- * @param <R>
- *            type of kpi value
- * @param <S>
- *            type of kpi trend object
- * @param <T>
- *            type of db object
- * @author tauakram
  *
+ * @param <R>
+ *          type of kpi value
+ * @param <S>
+ *          type of kpi trend object
+ * @param <T>
+ *          type of db object
+ * @author tauakram
  */
 @Component
 public interface ApplicationKPIService<R, S, T> {
 
 	/**
 	 * Calculates KPI Metrics
-	 * 
+	 *
 	 * @param t
-	 *            type of db object
+	 *          type of db object
 	 * @return KPI value
 	 */
-	R calculateKPIMetrics(T t);// NOPMD
+	R calculateKPIMetrics(T t); // NOPMD
 
 	/**
 	 * Calculates trend value of a KPI.
-	 * 
+	 *
 	 * @param t
 	 * @return null
 	 */
-	default S calculateTrendMetrics(T t) {// NOPMD
+	default S calculateTrendMetrics(T t) { // NOPMD
 		return null;
 	}
 
 	/**
 	 * Fetches KPI Data from DB
-	 * 
+	 *
 	 * @param leafNodeList
 	 * @param startDate
 	 * @param endDate

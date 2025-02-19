@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.helper;
 
 import static org.junit.Assert.*;
@@ -131,14 +130,14 @@ public class JiraHelperTest {
 	// Add more test methods for other methods in JiraHelper...
 
 	@Test
-    public void testSortChangeLogGroup() {
+	public void testSortChangeLogGroup() {
 
-        when(issue.getChangelog()).thenReturn(Arrays.asList(changelogGroup));
+		when(issue.getChangelog()).thenReturn(Arrays.asList(changelogGroup));
 
-        List<ChangelogGroup> sortedChangeLogList = JiraHelper.sortChangeLogGroup(issue);
+		List<ChangelogGroup> sortedChangeLogList = JiraHelper.sortChangeLogGroup(issue);
 
-        assertEquals(Arrays.asList(changelogGroup), sortedChangeLogList);
-    }
+		assertEquals(Arrays.asList(changelogGroup), sortedChangeLogList);
+	}
 
 	@Test
 	public void testGetIssuesFromResult() {
@@ -204,7 +203,6 @@ public class JiraHelperTest {
 		JiraHelper.exceptionBlockProcess(restClientException1);
 		RestClientException restClientException2 = new RestClientException(new Throwable(), 500);
 		JiraHelper.exceptionBlockProcess(restClientException2);
-
 	}
 
 	@Test

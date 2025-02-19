@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.model.application;
 
-
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
@@ -30,9 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents entity to store details of active itr data fetch
- */
+/** Represents entity to store details of active itr data fetch */
 @Data
 @Builder
 @Getter

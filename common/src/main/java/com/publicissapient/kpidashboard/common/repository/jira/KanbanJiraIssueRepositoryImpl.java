@@ -76,7 +76,6 @@ public class KanbanJiraIssueRepositoryImpl implements KanbanJiraIssueRepoCustom 
 
 		Query query = new Query(criteriaProjectLevelAdded);
 		return operations.find(query, KanbanJiraIssue.class);
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -109,7 +108,6 @@ public class KanbanJiraIssueRepositoryImpl implements KanbanJiraIssueRepoCustom 
 			projectCriteria.and(TICKET_PROJECT_ID_FIELD).is(project);
 			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
 			projectCriteriaList.add(projectCriteria);
-
 		});
 
 		Query query = new Query(criteria);
@@ -120,7 +118,6 @@ public class KanbanJiraIssueRepositoryImpl implements KanbanJiraIssueRepoCustom 
 			query = new Query(criteriaProjectLevelAdded);
 		}
 		return operations.find(query, KanbanJiraIssue.class);
-
 	}
 
 	@Override
@@ -169,7 +166,6 @@ public class KanbanJiraIssueRepositoryImpl implements KanbanJiraIssueRepoCustom 
 			query = new Query(criteriaProjectLevelAdded);
 		}
 		return operations.find(query, KanbanJiraIssue.class);
-
 	}
 
 	public List<KanbanJiraIssue> findCostOfDelayByType(Map<String, List<String>> mapOfFilters) {
@@ -185,7 +181,6 @@ public class KanbanJiraIssueRepositoryImpl implements KanbanJiraIssueRepoCustom 
 
 		Query query = new Query(criteria);
 		return operations.find(query, KanbanJiraIssue.class);
-
 	}
 
 	@Override
@@ -200,7 +195,5 @@ public class KanbanJiraIssueRepositoryImpl implements KanbanJiraIssueRepoCustom 
 
 			operations.updateMulti(query, update, KanbanJiraIssue.class);
 		}
-
 	}
-
 }

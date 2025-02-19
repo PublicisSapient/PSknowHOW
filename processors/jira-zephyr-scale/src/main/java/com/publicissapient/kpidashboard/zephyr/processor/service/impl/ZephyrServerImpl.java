@@ -81,8 +81,7 @@ public class ZephyrServerImpl implements ZephyrClient {
 				try {
 					if (!toolInfo.isBearerToken()) {
 						response = makeRestCall(queryBuilder.toString(), ZephyrTestCaseDTO[].class, HttpMethod.GET,
-								zephyrUtil.getCredentialsAsBase64String(toolInfo.getUsername(),
-										toolInfo.getPassword()));
+								zephyrUtil.getCredentialsAsBase64String(toolInfo.getUsername(), toolInfo.getPassword()));
 					} else {
 						response = restTemplate.exchange(queryBuilder.toString(), HttpMethod.GET,
 								zephyrUtil.buildBearerHeader(toolInfo.getPatOAuthToken()), ZephyrTestCaseDTO[].class);
@@ -92,15 +91,13 @@ public class ZephyrServerImpl implements ZephyrClient {
 					} else {
 						String statusCode = response.getStatusCode().toString();
 						log.error("Error while fetching projects from {}. with status {}", queryBuilder, statusCode);
-						throw new RestClientException(
-								"Got different status code: " + statusCode + " : " + response.getBody());
+						throw new RestClientException("Got different status code: " + statusCode + " : " + response.getBody());
 					}
 				} catch (Exception exception) {
 					isClientException(toolInfo, exception);
 					log.error("Error while fetching projects from {}", exception.getMessage());
 					throw new RestClientException("Error while fetching projects from {}", exception);
 				}
-
 			}
 		}
 		return testCaseList;
@@ -123,15 +120,15 @@ public class ZephyrServerImpl implements ZephyrClient {
 	 * to check client exception
 	 *
 	 * @param toolInfo
-	 *            toolInfo
+	 *          toolInfo
 	 * @param exception
-	 *            exception
+	 *          exception
 	 */
 	private void isClientException(ProcessorToolConnection toolInfo, Exception exception) {
-		if (exception instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ClientErrorMessageEnum
-					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+		if (exception instanceof HttpClientErrorException &&
+				((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) exception).getStatusCode().value())
+					.getReasonPhrase();
 			processorToolConnectionService.updateBreakingConnection(toolInfo.getConnectionId(), errMsg);
 		}
 	}

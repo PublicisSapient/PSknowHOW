@@ -22,9 +22,7 @@ import jakarta.validation.constraints.NotEmpty;
 
 public class ForgotPasswordRequest {
 
-	/**
-	 * email id, must not be empty
-	 */
+	/** email id, must not be empty */
 	@NotEmpty
 	private String email;
 
@@ -36,7 +34,6 @@ public class ForgotPasswordRequest {
 	}
 
 	/**
-	 * 
 	 * @param email
 	 */
 	public void setEmail(String email) {

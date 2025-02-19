@@ -29,9 +29,8 @@ import com.publicissapient.kpidashboard.apis.model.DateRangeFilter;
 
 /**
  * Implementation of {@link ConfigDetailService}
- * 
- * @author pkum34
  *
+ * @author pkum34
  */
 @Service
 public class ConfigDetailsServiceImpl implements ConfigDetailService {
@@ -55,5 +54,4 @@ public class ConfigDetailsServiceImpl implements ConfigDetailService {
 		configDetails.setSprintCountForKpiCalculation(customApiConfig.getSprintCountForKpiCalculation());
 		return configDetails;
 	}
-
 }

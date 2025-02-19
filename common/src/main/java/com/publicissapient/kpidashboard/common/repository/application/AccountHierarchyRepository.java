@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.common.repository.application;
 
 import java.time.LocalDateTime;
@@ -64,22 +62,22 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 
 	/**
 	 * Find by parentId and path
-	 * 
+	 *
 	 * @param parentId
-	 *            the parent id
+	 *          the parent id
 	 * @param path
-	 *            path
+	 *          path
 	 * @return list of AccountHierarchy
 	 */
 	List<AccountHierarchy> findByParentIdAndPath(String parentId, String path);
 
 	/**
 	 * Find by label and project config Id.
-	 * 
+	 *
 	 * @param labelName
-	 *            the label name
+	 *          the label name
 	 * @param basicProjectConfigId
-	 *            the basic project config id
+	 *          the basic project config id
 	 * @return the {@link AccountHierarchy} list
 	 */
 	List<AccountHierarchy> findByLabelNameAndBasicProjectConfigId(String labelName, ObjectId basicProjectConfigId);
@@ -88,11 +86,11 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 	 * Find by label and project configId and release state.
 	 *
 	 * @param labelName
-	 *            the label name
+	 *          the label name
 	 * @param basicProjectConfigId
-	 *            the basic project config id
+	 *          the basic project config id
 	 * @param releaseState
-	 *            the release state
+	 *          the release state
 	 * @return the {@link AccountHierarchy} list
 	 */
 	List<AccountHierarchy> findByLabelNameAndBasicProjectConfigIdAndReleaseStateOrderByEndDateDesc(String labelName,
@@ -102,36 +100,36 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 	 * Find by label and nodeId.
 	 *
 	 * @param labelName
-	 *            the label name
+	 *          the label name
 	 * @param nodeId
-	 *            the project Name
+	 *          the project Name
 	 * @return the {@link AccountHierarchy}
 	 */
 	List<AccountHierarchy> findByLabelNameAndNodeId(String labelName, String nodeId);
 
 	/**
 	 * find by node id and path
-	 * 
+	 *
 	 * @param nodeId
-	 *            the node id
+	 *          the node id
 	 * @param path
-	 *            the path
+	 *          the path
 	 * @return list of AccountHierarchy
 	 */
 	List<AccountHierarchy> findByNodeIdAndPath(String nodeId, String path);
 
 	/**
 	 * Find by node Id.
-	 * 
+	 *
 	 * @param nodeId
-	 *            the node id
+	 *          the node id
 	 * @return the {@link AccountHierarchy} list
 	 */
 	List<AccountHierarchy> findByNodeId(String nodeId);
 
 	/**
 	 * Finds all Account Hierarchy created post provided Datetime
-	 * 
+	 *
 	 * @param dateTime
 	 * @return
 	 */
@@ -140,33 +138,33 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 
 	/**
 	 * Deletes the documents for which path ends with given string.
-	 * 
+	 *
 	 * @param path
-	 *            path
+	 *          path
 	 */
 	void deleteByPathEndsWith(String path);
 
 	/**
 	 * Deletes the documents that matches with given node id and path.
-	 * 
+	 *
 	 * @param nodeId
-	 *            node id
+	 *          node id
 	 * @param path
-	 *            path
+	 *          path
 	 */
 	void deleteByNodeIdAndPath(String nodeId, String path);
 
 	/**
 	 * delete by basicProjectConfigId
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basic project config id
+	 *          basic project config id
 	 */
 	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
 	/**
 	 * delete by basicProjectConfigId and LabelName
-	 * 
+	 *
 	 * @param basicProjectConfigId
 	 * @param labelName
 	 */
@@ -174,7 +172,7 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 
 	/**
 	 * finds all List all AccountHierachies with provided label list
-	 * 
+	 *
 	 * @param labelList
 	 * @return List of accountHierachy
 	 */
@@ -183,21 +181,20 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 
 	/**
 	 * find list of the documents for path match.
-	 * 
+	 *
 	 * @param labelName
-	 *            the label name
+	 *          the label name
 	 * @param path
-	 *            path
-	 * 
+	 *          path
 	 * @return the {@link AccountHierarchy} list
 	 */
 	List<AccountHierarchy> findByLabelNameAndPath(String labelName, String path);
 
 	/**
 	 * Delete by ids
-	 * 
+	 *
 	 * @param ids
-	 *            list of ids to be deleted
+	 *          list of ids to be deleted
 	 */
 	void deleteByIdIn(List<ObjectId> ids);
 
@@ -207,7 +204,7 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 	 * find by basic config id
 	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return List of Hierarchies
 	 */
 	List<AccountHierarchy> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
@@ -217,26 +214,26 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 	 * list.
 	 *
 	 * @param basicProjectConfigId
-	 *            the basic project config ID
+	 *          the basic project config ID
 	 * @param nodeIds
-	 *            the list of node IDs to exclude
+	 *          the list of node IDs to exclude
 	 * @param labelName
-	 *            the hierarchy level ID
+	 *          the hierarchy level ID
 	 * @return the list of node IDs
 	 */
 	@Query(value = "{ 'basicProjectConfigId': ?0, 'nodeId': { $nin: ?1 }, 'labelName': ?2 }", fields = "{ 'nodeId': 1 }")
-	List<AccountHierarchy> findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(ObjectId basicProjectConfigId, List<String> nodeIds,
-			String labelName);
+	List<AccountHierarchy> findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(ObjectId basicProjectConfigId,
+			List<String> nodeIds, String labelName);
 
 	/**
 	 * Deletes documents by basic project config ID, node IDs, and label name.
 	 *
 	 * @param basicProjectConfigId
-	 *            the basic project config ID
+	 *          the basic project config ID
 	 * @param nodeIds
-	 *            the list of node IDs
+	 *          the list of node IDs
 	 * @param labelName
-	 *            the label name
+	 *          the label name
 	 */
 	void deleteByBasicProjectConfigIdAndNodeIdIn(ObjectId basicProjectConfigId, List<String> nodeIds, String labelName);
 }

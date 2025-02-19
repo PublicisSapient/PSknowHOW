@@ -1,6 +1,4 @@
-/**
- *
- */
+/** */
 package com.publicissapient.kpidashboard.apis.jira.kanban.service;
 
 import static org.junit.Assert.assertNull;
@@ -9,8 +7,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,12 +36,12 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 
 /**
  * @author swalamba
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectVersionKanbanServiceImplTest {
@@ -63,12 +64,28 @@ public class ProjectVersionKanbanServiceImplTest {
 	@Mock
 	private CacheService cacheService;
 
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+
+	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+
 	@Before
 	public void setUp() throws Exception {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance("/json/default/kanban_kpi_request.json");
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi74");
 		kpiRequest.setLabel("PROJECT");
 		kpiRequest.setDuration("MONTHS");
+
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 
 		AccountHierarchyKanbanFilterDataFactory accountHierarchyKanbanFilterDataFactory = AccountHierarchyKanbanFilterDataFactory
 				.newInstance();
@@ -102,8 +119,7 @@ public class ProjectVersionKanbanServiceImplTest {
 	public void testFetchKPIDataFromDbNoFilterData() {
 		List<Node> leafNodeList = new ArrayList<>();
 		Mockito.when(projectReleaseRepo.findByConfigIdIn(any())).thenReturn(null);
-		assertNull(projectVersionKanbanService.fetchKPIDataFromDb(leafNodeList, null, null, null)
-				.get("projectReleaseDetail"));
+		assertNull(
+				projectVersionKanbanService.fetchKPIDataFromDb(leafNodeList, null, null, null).get("projectReleaseDetail"));
 	}
-
 }

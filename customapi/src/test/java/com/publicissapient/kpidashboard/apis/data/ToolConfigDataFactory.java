@@ -85,9 +85,8 @@ public class ToolConfigDataFactory {
 	}
 
 	public ProjectToolConfig findById(String id) {
-		return projectToolConfigs.stream()
-				.filter(projectToolConfig -> projectToolConfig.getId().toHexString().equals(id)).findFirst()
-				.orElse(null);
+		return projectToolConfigs.stream().filter(projectToolConfig -> projectToolConfig.getId().toHexString().equals(id))
+				.findFirst().orElse(null);
 	}
 
 	public List<ProjectToolConfig> findByToolName(String toolName) {
@@ -96,8 +95,10 @@ public class ToolConfigDataFactory {
 	}
 
 	public List<ProjectToolConfig> findByBasicProjectConfigId(String basicProjectConfigId) {
-		return projectToolConfigs.stream().filter(projectToolConfig -> projectToolConfig.getBasicProjectConfigId()
-				.toHexString().equals(basicProjectConfigId)).collect(Collectors.toList());
+		return projectToolConfigs.stream()
+				.filter(
+						projectToolConfig -> projectToolConfig.getBasicProjectConfigId().toHexString().equals(basicProjectConfigId))
+				.collect(Collectors.toList());
 	}
 
 	public List<ProjectToolConfig> findByConnectionId(String connectionId) {
@@ -105,5 +106,4 @@ public class ToolConfigDataFactory {
 				.filter(projectToolConfig -> projectToolConfig.getConnectionId().toHexString().equals(connectionId))
 				.collect(Collectors.toList());
 	}
-
 }

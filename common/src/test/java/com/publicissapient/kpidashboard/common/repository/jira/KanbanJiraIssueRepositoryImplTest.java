@@ -154,8 +154,7 @@ public class KanbanJiraIssueRepositoryImplTest {
 
 		UpdateResult mock = mock(UpdateResult.class);
 		// Act
-		doReturn(mock).when(mongoOperations).updateMulti(any(Query.class), any(Update.class),
-				eq(KanbanJiraIssue.class));
+		doReturn(mock).when(mongoOperations).updateMulti(any(Query.class), any(Update.class), eq(KanbanJiraIssue.class));
 		kanbanJiraIssueRepository.updateByBasicProjectConfigId(basicProjectConfigId, fieldsToUnset);
 	}
 }

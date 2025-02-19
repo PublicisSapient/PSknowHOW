@@ -85,13 +85,11 @@ public class BackLogCountByStatusServiceImplTest {
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
-
 	}
 
 	@Test
 	public void getQualifierType() {
-		assertThat(backLogCountByStatusService.getQualifierType(),
-				equalTo(KPICode.BACKLOG_ISSUE_COUNT_BY_STATUS.name()));
+		assertThat(backLogCountByStatusService.getQualifierType(), equalTo(KPICode.BACKLOG_ISSUE_COUNT_BY_STATUS.name()));
 	}
 
 	@Test
@@ -112,5 +110,4 @@ public class BackLogCountByStatusServiceImplTest {
 
 		}
 	}
-
 }

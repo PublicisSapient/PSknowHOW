@@ -47,7 +47,6 @@ import lombok.extern.slf4j.Slf4j;
  * Rest Controller for all connection requests.
  *
  * @author dilip
- * 
  * @author jagmongr
  */
 @RestController
@@ -62,15 +61,12 @@ public class ConnectionController {
 	 * Fetch all connection data param type.
 	 *
 	 * @return the connection
-	 * 
 	 * @param type
-	 *            type
+	 *          type
 	 */
-
 	@GetMapping
 	@PreAuthorize("hasPermission(#type,'CONNECTION_ACCESS')")
-	public ResponseEntity<ServiceResponse> getAllConnection(
-			@RequestParam(name = "type", required = false) String type) {
+	public ResponseEntity<ServiceResponse> getAllConnection(@RequestParam(name = "type", required = false) String type) {
 		if (StringUtils.isEmpty(type)) {
 			log.info("Fetching all connection");
 			return ResponseEntity.status(HttpStatus.OK).body(connectionService.getAllConnection());
@@ -78,20 +74,16 @@ public class ConnectionController {
 		} else {
 			log.info("Fetching type@{}", type);
 			return ResponseEntity.status(HttpStatus.OK).body(connectionService.getConnectionByType(type));
-
 		}
 	}
 
 	/**
 	 * save/add Connection details
-	 * 
+	 *
 	 * @param connectionDTO
-	 *            request object that is created in the database.
-	 * 
-	 * 
+	 *          request object that is created in the database.
 	 * @return responseEntity with data,message and status
 	 */
-
 	@PostMapping
 	@PreAuthorize("hasPermission(#connectionDTO,'CONNECTION_ACCESS')")
 	public ResponseEntity<ServiceResponse> saveConnectionDetails(@RequestBody ConnectionDTO connectionDTO) {
@@ -105,10 +97,9 @@ public class ConnectionController {
 
 	/**
 	 * Modify/Update a connection by id.
-	 * 
-	 * @param connectionDTO
-	 *            request object that replaces the connection data present at id.
 	 *
+	 * @param connectionDTO
+	 *          request object that replaces the connection data present at id.
 	 * @return responseEntity with data,message and status
 	 */
 	@PutMapping("/{id}")
@@ -123,18 +114,15 @@ public class ConnectionController {
 
 	/**
 	 * delete a connection by id.
-	 * 
-	 * @param id
-	 *            deleted the connection data present at id.
 	 *
+	 * @param id
+	 *          deleted the connection data present at id.
 	 * @return responseEntity with data,message and status
 	 */
-
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasPermission(#id,'CONNECTION_ACCESS')")
 	public ResponseEntity<ServiceResponse> deleteConnection(@PathVariable String id) {
 
 		return ResponseEntity.status(HttpStatus.OK).body(connectionService.deleteConnection(id));
 	}
-
 }

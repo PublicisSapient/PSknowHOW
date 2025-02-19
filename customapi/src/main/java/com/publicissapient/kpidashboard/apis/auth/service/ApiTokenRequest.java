@@ -20,9 +20,7 @@ package com.publicissapient.kpidashboard.apis.auth.service;
 
 import javax.validation.constraints.NotNull;
 
-/**
- * represents api token request input
- */
+/** represents api token request input */
 public class ApiTokenRequest {
 
 	@NotNull
@@ -44,7 +42,7 @@ public class ApiTokenRequest {
 	 * Sets api user.
 	 *
 	 * @param apiUser
-	 *            the api user
+	 *          the api user
 	 */
 	public void setApiUser(String apiUser) {
 		this.apiUser = apiUser;
@@ -63,7 +61,7 @@ public class ApiTokenRequest {
 	 * Sets expiration dt.
 	 *
 	 * @param expirationDt
-	 *            the expiration dt
+	 *          the expiration dt
 	 */
 	public void setExpirationDt(Long expirationDt) {
 		this.expirationDt = expirationDt;

@@ -25,9 +25,8 @@ import lombok.Data;
  * List of project requested for userBoardConfig
  *
  * @author shunaray
- *
  */
 @Data
 public class ProjectListRequested {
-    private List<String> basicProjectConfigIds;
+	private List<String> basicProjectConfigIds;
 }

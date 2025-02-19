@@ -45,13 +45,11 @@ public class RCAInclusionChangeUnit {
 		rollbackRCADefectDensity();
 		rollbackRCAQualityFTPR();
 		rollbackRCAKPI135ItrFTPR();
-
 	}
 
 	public void rollbackRCAQualityFTPR() {
 		updateFieldMapping("includeRCAForKPI82", "Root cause values to be excluded",
-				"Root cause reasons for defects which are to be excluded from 'FTPR' calculation",
-				"excludeRCAFromKPI82");
+				"Root cause reasons for defects which are to be excluded from 'FTPR' calculation", "excludeRCAFromKPI82");
 	}
 
 	public void rollbackRCAKPI135ItrFTPR() {
@@ -123,5 +121,4 @@ public class RCAInclusionChangeUnit {
 				"Root cause reasons for defects which are to be included in 'Quality Status' calculation.",
 				"includeRCAForKPI133");
 	}
-
 }

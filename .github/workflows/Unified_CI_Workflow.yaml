@@ -1,4 +1,4 @@
-name: CI  # Define the name of the workflow
+name: Unified_CI_Workflow  # Define the name of the workflow
 
 # Define when the workflow should trigger
 on:
@@ -108,7 +108,7 @@ jobs:
           java-version: '17'
 
       - name: Cache Maven packages
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -147,7 +147,7 @@ jobs:
           java-version: '17'
 
       - name: Cache Maven packages
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}

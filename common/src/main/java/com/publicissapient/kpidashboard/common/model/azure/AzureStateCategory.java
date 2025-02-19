@@ -48,5 +48,4 @@ public class AzureStateCategory extends BasicModel {
 	private Set<String> inProgressList;
 	private Set<String> proposedList;
 	private Set<String> removedList;
-
 }

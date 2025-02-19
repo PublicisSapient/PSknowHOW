@@ -80,7 +80,6 @@ class AzurePipelineDeploymentClientTest {
 		proBasicConfig.setId(new ObjectId("629f47946000f87b2c5050b5"));
 		proBasicConfig.setSaveAssigneeDetails(true);
 		projectConfigList.add(proBasicConfig);
-
 	}
 
 	@Test
@@ -89,10 +88,10 @@ class AzurePipelineDeploymentClientTest {
 			HttpHeaders header = new HttpHeaders();
 			header.add("Authorization", "base64str");
 			when(restOperationsFactory.getTypeInstance().exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET),
-					ArgumentMatchers.any(HttpEntity.class), eq(String.class))).thenReturn(
-							new ResponseEntity<>(getServerResponseFromJson("deployments.json"), HttpStatus.OK));
-			Map<Deployment, Set<Deployment>> response = azurePipelineDeploymentClient
-					.getDeploymentJobs(azurePipelineServer, 0, proBasicConfig);
+					ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
+					.thenReturn(new ResponseEntity<>(getServerResponseFromJson("deployments.json"), HttpStatus.OK));
+			Map<Deployment, Set<Deployment>> response = azurePipelineDeploymentClient.getDeploymentJobs(azurePipelineServer,
+					0, proBasicConfig);
 			assertEquals(1, response.size());
 			Deployment deployment = response.values().stream().iterator().next().stream().iterator().next();
 			assertEquals("knowhow-release", deployment.getJobName());
@@ -107,6 +106,5 @@ class AzurePipelineDeploymentClientTest {
 	private String getServerResponseFromJson(String fileName) throws IOException {
 		String filePath = "src/test/resources/com/publicissapient/kpidashboard/processor/" + fileName;
 		return new String(Files.readAllBytes(Paths.get(filePath)));
-
 	}
 }

@@ -1,10 +1,7 @@
 package com.publicissapient.kpidashboard.common.constant;
 
-/**
- * Enumeration of valid deployment statuses.
- */
+/** Enumeration of valid deployment statuses. */
 public enum DeploymentStatus {
-
 	SUCCESS, FAILURE, UNSTABLE, ABORTED, IN_PROGRESS, UNKNOWN, INACTIVE;
 
 	public static DeploymentStatus fromString(String value) {

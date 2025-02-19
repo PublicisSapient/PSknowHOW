@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.jiratest.adapter.impl.async.impl;
 
 import java.net.URI;
-
 import javax.ws.rs.core.UriBuilder;
 
 import com.atlassian.jira.rest.client.api.IssueRestClient;
@@ -36,9 +35,9 @@ public class ProcessorAsynchJiraRestClient extends AsynchronousJiraRestClient im
 
 	/**
 	 * @param serverUri
-	 *            Jira server URI
+	 *          Jira server URI
 	 * @param httpClient
-	 *            Disposable Http client instance
+	 *          Disposable Http client instance
 	 */
 	public ProcessorAsynchJiraRestClient(final URI serverUri, final DisposableHttpClient httpClient) {
 		super(serverUri, httpClient);
@@ -60,5 +59,4 @@ public class ProcessorAsynchJiraRestClient extends AsynchronousJiraRestClient im
 	public SearchRestClient getProcessorSearchClient() {
 		return searchRestClient;
 	}
-
 }

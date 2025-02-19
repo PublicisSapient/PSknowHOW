@@ -19,26 +19,32 @@
 package com.publicissapient.kpidashboard.common.repository.excel;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 
-/**
- * The interface Kanban capacity repository.
- */
-public interface KanbanCapacityRepository extends CrudRepository<KanbanCapacity, ObjectId>,
-		QuerydslPredicateExecutor<KanbanCapacity>, KanbanCapacityRepoCustom {
+/** The interface Kanban capacity repository. */
+public interface KanbanCapacityRepository
+		extends
+			CrudRepository<KanbanCapacity, ObjectId>,
+			QuerydslPredicateExecutor<KanbanCapacity>,
+			KanbanCapacityRepoCustom {
 
 	List<KanbanCapacity> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
 	/**
 	 * delete capacity projectwise
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 */
 	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
+
+	@Query(value = "{ 'basicProjectConfigId': { $in: ?0 } }", fields = "{ '_id': 1 , 'basicProjectConfigId':1 }")
+	List<KanbanCapacity> findByBasicProjectConfigIdIn(Set<ObjectId> basicProjectConfigId);
 }

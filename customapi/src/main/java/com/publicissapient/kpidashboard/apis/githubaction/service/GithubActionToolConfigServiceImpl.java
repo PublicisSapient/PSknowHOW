@@ -58,7 +58,8 @@ public class GithubActionToolConfigServiceImpl {
 			String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
 			String repositoryName = repoName;
 			String repositoryOwner = connection.getUsername() == null ? null : connection.getUsername().trim();
-			String accessToken = connection.getAccessToken() == null ? null
+			String accessToken = connection.getAccessToken() == null
+					? null
 					: aesEncryptionService.decrypt(connection.getAccessToken(), customApiConfig.getAesEncryptionKey());
 
 			String url = baseUrl + "/repos/" + repositoryOwner + "/" + repositoryName + RESOURCE_JOBS_ENDPOINT;
@@ -97,19 +98,17 @@ public class GithubActionToolConfigServiceImpl {
 	}
 
 	/**
-	 * 
 	 * @param connection
-	 *            connection
+	 *          connection
 	 * @param exception
-	 *            exception
+	 *          exception
 	 */
 	private void isClientException(Connection connection, Exception exception) {
-		if (exception instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ClientErrorMessageEnum
-					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+		if (exception instanceof HttpClientErrorException &&
+				((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) exception).getStatusCode().value())
+					.getReasonPhrase();
 			connectionService.updateBreakingConnection(connection, errMsg);
-
 		}
 	}
 }

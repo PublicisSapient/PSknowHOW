@@ -71,5 +71,4 @@ public class SonarClientFactoryTest {
 		SonarClient sonarClient = factory.getSonarClient("8");
 		assertThat(sonarClient, instanceOf(Sonar8Client.class));
 	}
-
 }

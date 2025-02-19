@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -32,13 +31,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "field", "descending" })
+@JsonPropertyOrder({"field", "descending"})
 public class SortColumn {
 
 	@JsonProperty("field")
 	private Field field;
+
 	@JsonProperty("descending")
 	private Boolean descending;
+
 	@JsonIgnore
 	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -77,5 +78,4 @@ public class SortColumn {
 		return new ToStringBuilder(this).append("field", field).append("descending", descending)
 				.append("additionalProperties", additionalProperties).toString();
 	}
-
 }

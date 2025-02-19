@@ -36,8 +36,7 @@ public interface ProjectToolConfigRepository extends MongoRepository<ProjectTool
 	 * Find by toolType.
 	 *
 	 * @param tool
-	 *            the tool
-	 * 
+	 *          the tool
 	 * @return the list of ProjectToolConfig
 	 */
 	List<ProjectToolConfig> findByToolName(String tool);
@@ -46,7 +45,7 @@ public interface ProjectToolConfigRepository extends MongoRepository<ProjectTool
 	 * Finds by toolId.
 	 *
 	 * @param toolId
-	 *            the toolId
+	 *          the toolId
 	 * @return the ProjectToolConfig
 	 */
 	ProjectToolConfig findById(String toolId);
@@ -55,7 +54,7 @@ public interface ProjectToolConfigRepository extends MongoRepository<ProjectTool
 	 * Finds by connectionId.
 	 *
 	 * @param connectionId
-	 *            the connectionId
+	 *          the connectionId
 	 * @return the ProjectToolConfig
 	 */
 	List<ProjectToolConfig> findByConnectionId(ObjectId connectionId);
@@ -64,17 +63,16 @@ public interface ProjectToolConfigRepository extends MongoRepository<ProjectTool
 	 * Find by toolType.
 	 *
 	 * @param tool
-	 *            the tool
+	 *          the tool
 	 * @param basicProjectConfigId
-	 *            the project basic config id
-	 * 
+	 *          the project basic config id
 	 * @return the list of ProjectToolConfig
 	 */
 	List<ProjectToolConfig> findByToolNameAndBasicProjectConfigId(String tool, ObjectId basicProjectConfigId);
 
 	/**
 	 * Find tools of the project
-	 * 
+	 *
 	 * @param basicProjectConfigId
 	 * @return list of tools
 	 */
@@ -83,6 +81,6 @@ public interface ProjectToolConfigRepository extends MongoRepository<ProjectTool
 	List<ProjectToolConfig> findByBasicProjectConfigIdAndConnectionId(ObjectId basicProjectConfigId,
 			ObjectId connectionId);
 
-	List<ProjectToolConfig> findByToolNameAndQueryEnabledAndBasicProjectConfigIdIn(String toolName,
-			boolean queryEnabled, List<ObjectId> projectConfigsIds);
+	List<ProjectToolConfig> findByToolNameAndQueryEnabledAndBasicProjectConfigIdIn(String toolName, boolean queryEnabled,
+			List<ObjectId> projectConfigsIds);
 }

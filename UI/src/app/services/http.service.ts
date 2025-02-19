@@ -176,22 +176,19 @@ export class HttpService {
   private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
   private getShowHideKpiNewUIUrl = this.baseUrl + '/api/user-board-config/getBoardConfig';
   private recommendationsUrl = this.baseUrl + '/api/kpiRecommendation';
+  private urlShortener = this.baseUrl + '/api/stringShortener/shorten';
+  private urlRestore = this.baseUrl + '/api/stringShortener/longString';
 
   currentUserDetails = null;
   private saveMetaDataStepURL = this.baseUrl + '/api/processor/metadata/step/';
 
+  private organizationHierarchy = this.baseUrl + '/api/organizationHierarchy';
   constructor(
     private router: Router,
     private http: HttpClient,
     @Inject(APP_CONFIG) private config: IAppConfig,
     private sharedService: SharedService,
   ) {
-    // this.sharedService.currentUserDetailsObs.subscribe((details) => {
-    //   if (details) {
-    //     this.userName = details['user_name'];
-    //     this.userEmail = details['user_email'];
-    //   }
-    // });
   }
 
 
@@ -687,8 +684,8 @@ export class HttpService {
     return forkJoin([projectList]);
   }
 
-  getUserProjects(): Observable<any> {
-    return this.http.get(this.basicConfigUrl);
+  getUserProjects(queryParams?): Observable<any> {
+    return this.http.get(`${this.basicConfigUrl}?${queryParams}`);
   }
 
   /** add basic config */
@@ -1185,7 +1182,19 @@ export class HttpService {
     return this.http.post<object>(this.recommendationsUrl, data);
   }
 
+  getOrganizationHierarchy() {
+    return this.http.get<any>(this.organizationHierarchy);
+  }
+
   fetchJiramappingBE(basicConfigID){
     return this.http.post<object>(this.saveMetaDataStepURL + basicConfigID, {});
+  }
+
+  handleUrlShortener(payload: any): Observable<object> {
+    return this.http.post<any>(this.urlShortener, payload);
+  }
+
+  handleRestoreUrl(stateFilterData, kpiFilterData) {
+    return this.http.get<any>(`${this.urlRestore}?stateFilters=${stateFilterData}&kpiFilters=${kpiFilterData}`);
   }
 }

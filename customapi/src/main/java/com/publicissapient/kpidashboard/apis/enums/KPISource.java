@@ -27,72 +27,38 @@ import java.util.Arrays;
  */
 public enum KPISource {
 
-	/**
-	 * Jira kpi source.
-	 */
+	/** Jira kpi source. */
 	JIRA("JIRA"),
-	/**
-	 * Sonar kpi source.
-	 */
+	/** Sonar kpi source. */
 	SONAR("SONAR"),
-	/**
-	 * Bitbucket kpi source.
-	 */
+	/** Bitbucket kpi source. */
 	BITBUCKET("BITBUCKET"),
-	/**
-	 * Jenkins kpi source.
-	 */
+	/** Jenkins kpi source. */
 	JENKINS("JENKINS"),
-	/**
-	 * Zephyr kpi source.
-	 */
+	/** Zephyr kpi source. */
 	ZEPHYR("ZEPHYR"),
-	/**
-	 * Excel kpi source.
-	 */
+	/** Excel kpi source. */
 	EXCEL("EXCEL"),
-	/**
-	 * Bamboo kpi source.
-	 */
-
+	/** Bamboo kpi source. */
 	BAMBOO("BAMBOO"),
-	/**
-	 * Jirakanban kpi source.
-	 */
-
+	/** Jirakanban kpi source. */
 	JIRAKANBAN("JIRAKANBAN"),
-	/**
-	 * Zephyrkanban kpi source.
-	 */
+	/** Zephyrkanban kpi source. */
 	ZEPHYRKANBAN("ZEPHYRKANBAN"),
-	/**
-	 * Sonarkanban kpi source.
-	 */
+	/** Sonarkanban kpi source. */
 	SONARKANBAN("SONARKANBAN"),
-	/**
-	 * Bitbucketkanban kpi source.
-	 */
+	/** Bitbucketkanban kpi source. */
 	BITBUCKETKANBAN("BITBUCKETKANBAN"),
-	/**
-	 * Jenkinskanban kpi source.
-	 */
+	/** Jenkinskanban kpi source. */
 	JENKINSKANBAN("JENKINSKANBAN"),
-	/**
-	 * Teamcity kpi source
-	 */
+	/** Teamcity kpi source */
 	TEAMCITY("TEAMCITY"),
-	/**
-	 * TeamcityKanban kpi source
-	 */
+	/** TeamcityKanban kpi source */
 	TEAMCITYKANBAN("TEAMCITYKANBAN"),
-	/**
-	 * QADEFECTDENSITY kpi source.
-	 */
+	/** QADEFECTDENSITY kpi source. */
 	QADEFECTDENSITY("QADEFECTDENSITY"),
 
-	/**
-	 * Invalid.
-	 */
+	/** Invalid. */
 	INVALID("INVALID");
 
 	private String value;
@@ -102,8 +68,8 @@ public enum KPISource {
 	}
 
 	public static KPISource getKPISource(String value) {
-		return Arrays.asList(KPISource.values()).stream().filter(kpi -> kpi.getValue().equalsIgnoreCase(value))
-				.findAny().orElse(INVALID);
+		return Arrays.asList(KPISource.values()).stream().filter(kpi -> kpi.getValue().equalsIgnoreCase(value)).findAny()
+				.orElse(INVALID);
 	}
 
 	/**

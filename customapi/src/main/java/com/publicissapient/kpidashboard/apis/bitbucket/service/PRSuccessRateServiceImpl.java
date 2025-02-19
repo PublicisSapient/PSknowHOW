@@ -29,7 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.service.AssigneeDetailsServiceImpl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -56,13 +55,13 @@ import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolUserDetails
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.service.AssigneeDetailsServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -95,14 +94,14 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 	 * create data count
 	 *
 	 * @param kpiRequest
-	 *            kpi request
+	 *          kpi request
 	 * @param kpiElement
-	 *            kpi element
+	 *          kpi element
 	 * @param projectNode
-	 *            project node
+	 *          project node
 	 * @return kpi element
 	 * @throws ApplicationException
-	 *             application exception
+	 *           application exception
 	 */
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
@@ -148,13 +147,13 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 	 * project wise.
 	 *
 	 * @param kpiElement
-	 *            kpi element
+	 *          kpi element
 	 * @param mapTmp
-	 *            node map
+	 *          node map
 	 * @param projectLeafNode
-	 *            leaf node of project
+	 *          leaf node of project
 	 * @param kpiRequest
-	 *            kpi request
+	 *          kpi request
 	 */
 	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp, Node projectLeafNode,
@@ -173,7 +172,8 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 		ObjectId projectBasicConfigId = projectFilter == null ? null : projectFilter.getBasicProjectConfigId();
 		Map<String, List<Tool>> toolListMap = toolMap == null ? null : toolMap.get(projectBasicConfigId);
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = kpiHelperService.getRepoToolsKpiMetricResponse(
-				localEndDate, kpiHelperService.getScmToolJobs(toolListMap, projectLeafNode), projectLeafNode, duration, dataPoints, customApiConfig.getRepoToolPRSuccessRateUrl());
+				localEndDate, kpiHelperService.getScmToolJobs(toolListMap, projectLeafNode), projectLeafNode, duration,
+				dataPoints, customApiConfig.getRepoToolPRSuccessRateUrl());
 
 		if (CollectionUtils.isEmpty(repoToolKpiMetricResponseList)) {
 			log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}", projectLeafNode);
@@ -183,8 +183,7 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 		List<KPIExcelData> excelData = new ArrayList<>();
 		List<Tool> reposList = kpiHelperService.populateSCMToolsRepoList(toolListMap);
 		if (CollectionUtils.isEmpty(reposList)) {
-			log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}",
-					projectLeafNode.getProjectFilter());
+			log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}", projectLeafNode.getProjectFilter());
 			return;
 		}
 
@@ -206,23 +205,24 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 					.filter(value -> value.getDateLabel().equals(weekRange.getStartDate().toString())).findFirst();
 
 			reposList.forEach(repo -> {
-				if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
-						&& repo.getProcessorItemList().get(0).getId() != null) {
+				if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) &&
+						repo.getProcessorItemList().get(0).getId() != null) {
 					List<RepoToolUserDetails> repoToolUserDetailsList = new ArrayList<>();
 					String branchName = getBranchSubFilter(repo, projectName);
 					Double successRate = 0.0d;
 					String overallKpiGroup = branchName + "#" + Constant.AGGREGATED_VALUE;
 					if (repoToolKpiMetricResponse.isPresent()) {
 						Optional<Branches> matchingBranch = repoToolKpiMetricResponse.get().getRepositories().stream()
-								.filter(repository -> repository.getRepositoryName()!=null && repository.getRepositoryName().equals(repo.getRepositoryName()))
+								.filter(repository -> repository.getRepositoryName() != null &&
+										repository.getRepositoryName().equals(repo.getRepositoryName()))
 								.flatMap(repository -> repository.getBranches().stream())
 								.filter(branch -> branch.getName().equals(repo.getBranch())).findFirst();
 
 						successRate = matchingBranch.map(Branches::getBranchPercentage).orElse(0.0d);
 						repoToolUserDetailsList = matchingBranch.map(Branches::getUsers).orElse(new ArrayList<>());
 					}
-					repoToolValidationDataList.addAll(setUserDataCounts(overAllUsers, repoToolUserDetailsList,
-							assignees, repo, projectName, date, aggDataMap));
+					repoToolValidationDataList.addAll(
+							setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, repo, projectName, date, aggDataMap));
 					setDataCount(projectName, date, overallKpiGroup, successRate, aggDataMap);
 				}
 			});
@@ -240,20 +240,20 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 	 * fetch data from db
 	 *
 	 * @param leafNodeList
-	 *            leaf node list
+	 *          leaf node list
 	 * @param startDate
-	 *            start date
+	 *          start date
 	 * @param endDate
-	 *            end date
+	 *          end date
 	 * @param kpiRequest
-	 *            kpi request
+	 *          kpi request
 	 * @return map of data
 	 */
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		AssigneeDetails assigneeDetails = assigneeDetailsServiceImpl.findByBasicProjectConfigId(
-				leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId().toString());
+		AssigneeDetails assigneeDetails = assigneeDetailsServiceImpl
+				.findByBasicProjectConfigId(leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId().toString());
 		Set<Assignee> assignees = assigneeDetails != null ? assigneeDetails.getAssignee() : new HashSet<>();
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put(ASSIGNEE, assignees);
@@ -264,19 +264,19 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 	 * set data count for user filter
 	 *
 	 * @param overAllUsers
-	 *            list of user emails from repotool
+	 *          list of user emails from repotool
 	 * @param repoToolUserDetailsList
-	 *            list of repo tool user data
+	 *          list of repo tool user data
 	 * @param assignees
-	 *            assignee data
+	 *          assignee data
 	 * @param repo
-	 *            repo tool item
+	 *          repo tool item
 	 * @param projectName
-	 *            project name
+	 *          project name
 	 * @param date
-	 *            date
+	 *          date
 	 * @param dateUserWiseAverage
-	 *            total data map
+	 *          total data map
 	 * @return repotool validation data
 	 */
 	private List<RepoToolValidationData> setUserDataCounts(Set<String> overAllUsers,
@@ -286,8 +286,8 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 		overAllUsers.forEach(userEmail -> {
 			Optional<RepoToolUserDetails> repoToolUserDetails = repoToolUserDetailsList.stream()
 					.filter(user -> userEmail.equalsIgnoreCase(user.getEmail())).findFirst();
-			Optional<Assignee> assignee = assignees.stream().filter(
-					assign -> CollectionUtils.isNotEmpty(assign.getEmail()) && assign.getEmail().contains(userEmail))
+			Optional<Assignee> assignee = assignees.stream()
+					.filter(assign -> CollectionUtils.isNotEmpty(assign.getEmail()) && assign.getEmail().contains(userEmail))
 					.findFirst();
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Double userPRSuccessRate = repoToolUserDetails.map(RepoToolUserDetails::getPercentage).orElse(0.0d);
@@ -307,7 +307,6 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 			}
 
 			setDataCount(projectName, date, userKpiGroup, userPRSuccessRate, dateUserWiseAverage);
-
 		});
 		return repoToolValidationDataList;
 	}
@@ -316,15 +315,15 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 	 * set individual data count
 	 *
 	 * @param projectName
-	 *            project name
+	 *          project name
 	 * @param week
-	 *            date
+	 *          date
 	 * @param kpiGroup
-	 *            combined filter
+	 *          combined filter
 	 * @param value
-	 *            value
+	 *          value
 	 * @param dataCountMap
-	 *            data count map by filter
+	 *          data count map by filter
 	 */
 	private void setDataCount(String projectName, String week, String kpiGroup, Double value,
 			Map<String, List<DataCount>> dataCountMap) {
@@ -342,11 +341,11 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 	 * populate excel data
 	 *
 	 * @param requestTrackerId
-	 *            request tracker id
+	 *          request tracker id
 	 * @param repoToolUserDetails
-	 *            repo tool validation data
+	 *          repo tool validation data
 	 * @param validationDataMap
-	 *            excel data map
+	 *          excel data map
 	 */
 	private void populateExcelDataObject(String requestTrackerId, List<RepoToolValidationData> repoToolUserDetails,
 			List<KPIExcelData> validationDataMap) {

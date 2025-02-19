@@ -28,18 +28,19 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.application.Build;
 
-/**
- * Repository for {@link Build} data.
- */
+/** Repository for {@link Build} data. */
 @Repository
 public interface BuildRepository
-		extends CrudRepository<Build, ObjectId>, QuerydslPredicateExecutor<Build>, BuildRepositoryCustom {
+		extends
+			CrudRepository<Build, ObjectId>,
+			QuerydslPredicateExecutor<Build>,
+			BuildRepositoryCustom {
 
 	/**
 	 * Finds the list of {@link Build}
-	 * 
+	 *
 	 * @param projectToolConfigId
-	 *            processor tool config id
+	 *          processor tool config id
 	 * @return a list {@link Build}
 	 */
 	List<Build> findByProjectToolConfigIdAndBuildJob(ObjectId projectToolConfigId, String buildJob);
@@ -51,5 +52,4 @@ public interface BuildRepository
 	List<Build> findByProjectToolConfigIdAndNumberIn(ObjectId projectToolConfigId, Set<String> number);
 
 	Build findByNumberAndBuildJobAndBasicProjectConfigId(String number, String buildJob, ObjectId basicProjectConfigId);
-
 }

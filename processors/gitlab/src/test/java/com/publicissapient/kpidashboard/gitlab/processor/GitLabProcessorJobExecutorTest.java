@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.gitlab.processor;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -69,6 +70,7 @@ public class GitLabProcessorJobExecutorTest {
 
 	/** The processorid. */
 	private final ObjectId PROCESSORID = new ObjectId("5e2ac020e4b098db0edf5145");
+
 	@Mock
 	MergeRequestRepository mergReqRepo;
 	ProcessorToolConnection gitLabInfo = new ProcessorToolConnection();
@@ -92,8 +94,10 @@ public class GitLabProcessorJobExecutorTest {
 	private CommitRepository commitRepository;
 	@Mock
 	private GitLabProcessorRepository gitLabProcessorRepository;
+
 	@Mock
 	private com.publicissapient.kpidashboard.gitlab.processor.service.impl.GitLabClient gitLabClient;
+
 	@Mock
 	private GitLabRepo gitLabRepo;
 	@Mock
@@ -112,10 +116,10 @@ public class GitLabProcessorJobExecutorTest {
 
 	@BeforeEach
 	public void setUp() {
-		gitBucketProcessorJobExecutor = new GitLabProcessorJobExecutor(scheduler, gitLabProcessorRepository,
-				gitLabConfig, toolConfigRepository, connectionsRepository, gitLabRepository, gitLabClient,
-				processorItemRepository, commitRepository, processorToolConnectionService, mergReqRepo,
-				projectConfigRepository, processorExecutionTraceLogService, processorExecutionTraceLogRepository);
+		gitBucketProcessorJobExecutor = new GitLabProcessorJobExecutor(scheduler, gitLabProcessorRepository, gitLabConfig,
+				toolConfigRepository, connectionsRepository, gitLabRepository, gitLabClient, processorItemRepository,
+				commitRepository, processorToolConnectionService, mergReqRepo, projectConfigRepository,
+				processorExecutionTraceLogService, processorExecutionTraceLogRepository);
 	}
 
 	@Test
@@ -155,7 +159,7 @@ public class GitLabProcessorJobExecutorTest {
 		commitDetailList.add(commitDetails);
 		Mockito.when(gitLabRepository.findActiveRepos(PROCESSORID)).thenReturn(gitLabRepos);
 
-		doReturn(getProjectConfigList()).when(projectConfigRepository).findAll();
+		doReturn(getProjectConfigList()).when(projectConfigRepository).findActiveProjects(anyBoolean());
 
 		ProcessorToolConnection connectionDetail = new ProcessorToolConnection();
 		connectionDetail.setRepositoryName("release");
@@ -204,7 +208,6 @@ public class GitLabProcessorJobExecutorTest {
 
 		// Invoke the method
 		method.invoke(gitBucketProcessorJobExecutor, processor);
-
 	}
 
 	private List<ProjectBasicConfig> getProjectConfigList() {

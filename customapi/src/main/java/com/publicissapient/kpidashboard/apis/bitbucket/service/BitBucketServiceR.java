@@ -81,13 +81,11 @@ public class BitBucketServiceR {
 		String[] projectKeyCache = null;
 		try {
 			Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
-			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(),
-					false);
+			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(), false);
 			if (null != groupName) {
 				kpiRequest.setLabel(groupName.toUpperCase());
 			}
-			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
-					groupName);
+			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest, groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
 
 				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
@@ -96,10 +94,10 @@ public class BitBucketServiceR {
 					return responseList;
 				}
 
-				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.BITBUCKET.name(),
-						groupId, kpiRequest.getSprintIncluded());
-				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-						&& null != cachedData) {
+				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.BITBUCKET.name(), groupId,
+						kpiRequest.getSprintIncluded());
+				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+						null != cachedData) {
 					log.info("[BITBUCKET][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
 							kpiRequest.getIds());
 					return (List<KpiElement>) cachedData;
@@ -115,9 +113,8 @@ public class BitBucketServiceR {
 				}
 
 				ForkJoinTask.invokeAll(listOfTask);
-				List<KpiElement> missingKpis = origRequestedKpis.stream()
-						.filter(reqKpi -> responseList.stream()
-								.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
+				List<KpiElement> missingKpis = origRequestedKpis.stream().filter(
+						reqKpi -> responseList.stream().noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
 						.collect(Collectors.toList());
 				responseList.addAll(missingKpis);
 				setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
@@ -137,9 +134,9 @@ public class BitBucketServiceR {
 	private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
 		Node filteredNode = filteredAccountDataList.get(0).getNode().get(kpiRequest.getLevel() - 1);
 
-		if (null != filteredNode.getAccountHierarchy()) {
+		if (null != filteredNode.getProjectHierarchy()) {
 			filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getId(), filteredNode.getName(),
-					filteredNode.getAccountHierarchy().getBasicProjectConfigId()));
+					filteredNode.getProjectHierarchy().getBasicProjectConfigId()));
 		}
 
 		return filteredNode;
@@ -162,7 +159,6 @@ public class BitBucketServiceR {
 	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
 
 		return authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
-
 	}
 
 	/**
@@ -177,8 +173,8 @@ public class BitBucketServiceR {
 			String[] projectKeyCache) {
 		Integer projectLevel = filterHelperService.getHierarchyIdLevelMap(false)
 				.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
-		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& projectLevel >= kpiRequest.getLevel()) {
+		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				projectLevel >= kpiRequest.getLevel()) {
 
 			cacheService.setIntoApplicationCache(projectKeyCache, responseList, KPISource.BITBUCKET.name(), groupId,
 					kpiRequest.getSprintIncluded());
@@ -193,15 +189,14 @@ public class BitBucketServiceR {
 		private final Node filteredNode;
 
 		/**
-		 *
 		 * @param kpiRequest
-		 *            kpi request
+		 *          kpi request
 		 * @param responseList
-		 *            response list
+		 *          response list
 		 * @param kpiEle
-		 *            kpi element
+		 *          kpi element
 		 * @param filteredNode
-		 *            filtered project node
+		 *          filtered project node
 		 */
 		public ParallelBitBucketServices(KpiRequest kpiRequest, List<KpiElement> responseList, KpiElement kpiEle,
 				Node filteredNode) {
@@ -212,14 +207,11 @@ public class BitBucketServiceR {
 			this.filteredNode = filteredNode;
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
+		/** {@inheritDoc} */
 		@SuppressWarnings("PMD.AvoidCatchingGenericException")
 		@Override
 		public void compute() {
-				responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, filteredNode));
-
+			responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, filteredNode));
 		}
 
 		/**
@@ -227,11 +219,11 @@ public class BitBucketServiceR {
 		 * method of these KPIs
 		 *
 		 * @param kpiRequest
-		 *            Bitbucket KPI request
+		 *          Bitbucket KPI request
 		 * @param kpiElement
-		 *            kpiElement object
+		 *          kpiElement object
 		 * @param filteredAccountNode
-		 *            filter tree object
+		 *          filter tree object
 		 * @return Kpielement
 		 */
 		private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -245,16 +237,14 @@ public class BitBucketServiceR {
 				long startTime = System.currentTimeMillis();
 				Node nodeDataClone = (Node) SerializationUtils.clone(filteredAccountNode);
 
-				if (Objects.nonNull(nodeDataClone)
-						&& kpiHelperService.isToolConfigured(kpi, kpiElement, nodeDataClone)) {
+				if (Objects.nonNull(nodeDataClone) && kpiHelperService.isToolConfigured(kpi, kpiElement, nodeDataClone)) {
 					kpiElement = bitBucketKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone);
 					kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
 					kpiHelperService.isMandatoryFieldSet(kpi, kpiElement, nodeDataClone);
 				}
 
 				long processTime = System.currentTimeMillis() - startTime;
-				log.info("[BITBUCKET-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-						processTime);
+				log.info("[BITBUCKET-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
 			} catch (ApplicationException exception) {
 				kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
 				log.error("Kpi not found", exception);
@@ -265,6 +255,5 @@ public class BitBucketServiceR {
 			}
 			return kpiElement;
 		}
-
 	}
 }

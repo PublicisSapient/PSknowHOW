@@ -20,7 +20,7 @@ package com.publicissapient.kpidashboard.teamcity.config;
 
 /**
  * Module constants
- * 
+ *
  * @author anisingh4
  */
 public final class Constants {
@@ -36,5 +36,4 @@ public final class Constants {
 	private Constants() {
 		// to prevent object creation
 	}
-
 }

@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.data;
 
 import java.io.IOException;
@@ -35,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author sansharm13
- *
  */
 @Slf4j
 public class SonarHistoryDataFactory {
@@ -79,12 +77,10 @@ public class SonarHistoryDataFactory {
 			mapper.registerModule(new JavaTimeModule());
 			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
 		}
 	}
 
 	public List<SonarHistory> getSonarHistoryList() {
 		return sonarHistoryDataFactory;
 	}
-
 }

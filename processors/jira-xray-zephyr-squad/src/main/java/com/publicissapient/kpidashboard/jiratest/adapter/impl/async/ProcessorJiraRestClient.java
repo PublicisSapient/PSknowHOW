@@ -28,5 +28,4 @@ public interface ProcessorJiraRestClient extends JiraRestClient {
 	 * @return the com.atlassian.jira.rest.client.api handling search (e.g. JQL)
 	 */
 	SearchRestClient getProcessorSearchClient();
-
 }

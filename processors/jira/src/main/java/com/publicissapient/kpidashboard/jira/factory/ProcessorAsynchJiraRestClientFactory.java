@@ -36,11 +36,11 @@ public class ProcessorAsynchJiraRestClientFactory extends AsynchronousJiraRestCl
 	 * Creates JIRA Client
 	 *
 	 * @param serverUri
-	 *            Jira Server URI
+	 *          Jira Server URI
 	 * @param authenticationHandler
-	 *            Authentication handler instance
+	 *          Authentication handler instance
 	 * @param jiraProcessorConfig
-	 *            Jira processor config
+	 *          Jira processor config
 	 * @return ProcessorJiraRestClient
 	 */
 	public ProcessorJiraRestClient create(final URI serverUri, final AuthenticationHandler authenticationHandler,
@@ -54,13 +54,13 @@ public class ProcessorAsynchJiraRestClientFactory extends AsynchronousJiraRestCl
 	 * Creates JIRA client with Basic HTTP Authentication
 	 *
 	 * @param serverUri
-	 *            Jira Server URI
+	 *          Jira Server URI
 	 * @param username
-	 *            Jira login username
+	 *          Jira login username
 	 * @param password
-	 *            Jira Login password
+	 *          Jira Login password
 	 * @param jiraProcessorConfig
-	 *            Jira processor config
+	 *          Jira processor config
 	 * @return ProcessorJiraRestClient
 	 */
 	public ProcessorJiraRestClient createWithBasicHttpAuthentication(final URI serverUri, final String username,
@@ -72,28 +72,27 @@ public class ProcessorAsynchJiraRestClientFactory extends AsynchronousJiraRestCl
 	 * Creates JIRA client with Bearer Token Authentication
 	 *
 	 * @param serverUri
-	 *            Jira Server URI
+	 *          Jira Server URI
 	 * @param bearerToken
-	 *            Jira Login password
+	 *          Jira Login password
 	 * @param jiraProcessorConfig
-	 *            Jira processor config
+	 *          Jira processor config
 	 * @return ProcessorJiraRestClient
 	 */
 	public ProcessorJiraRestClient createWithBearerTokenAuthentication(final URI serverUri, final String bearerToken,
 			JiraProcessorConfig jiraProcessorConfig) {
 		return create(serverUri, new BearerTokenAuthenticationHandler(bearerToken), jiraProcessorConfig);
-
 	}
 
 	/**
 	 * Creates JIRA client with Basic HTTP Authentication
 	 *
 	 * @param serverUri
-	 *            Jira Server URI
+	 *          Jira Server URI
 	 * @param authCookies
-	 *            Authorization cookies
+	 *          Authorization cookies
 	 * @param jiraProcessorConfig
-	 *            Jira processor config
+	 *          Jira processor config
 	 * @return ProcessorJiraRestClient
 	 */
 	public ProcessorJiraRestClient createWithAuthenticationCookies(final URI serverUri, final String authCookies,

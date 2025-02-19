@@ -18,9 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.model;
 
-/**
- * The Base response.
- */
+/** The Base response. */
 public class BaseResponse {
 
 	private String message;
@@ -39,7 +37,7 @@ public class BaseResponse {
 	 * Sets message.
 	 *
 	 * @param message
-	 *            the message
+	 *          the message
 	 */
 	public void setMessage(String message) {
 		this.message = message;
@@ -58,10 +56,9 @@ public class BaseResponse {
 	 * Sets success.
 	 *
 	 * @param success
-	 *            the success
+	 *          the success
 	 */
 	public void setSuccess(Boolean success) {
 		this.success = success;
 	}
-
 }

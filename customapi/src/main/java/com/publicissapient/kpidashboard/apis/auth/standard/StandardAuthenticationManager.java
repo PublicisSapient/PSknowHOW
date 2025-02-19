@@ -1,10 +1,5 @@
 package com.publicissapient.kpidashboard.apis.auth.standard;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
-import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalException;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +8,13 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
+
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
+import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalException;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @AllArgsConstructor

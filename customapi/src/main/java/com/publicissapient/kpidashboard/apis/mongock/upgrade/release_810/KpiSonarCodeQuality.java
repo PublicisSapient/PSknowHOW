@@ -18,7 +18,6 @@ package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_810;
 
 import java.util.Arrays;
 
-import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -30,6 +29,7 @@ import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackBeforeExecution;
 import io.mongock.api.annotations.RollbackExecution;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author shi6
@@ -65,8 +65,8 @@ public class KpiSonarCodeQuality {
 	public void addSonarCodeQualityInKpiMaster() {
 		// Create the document to insert
 		Document document = new Document().append(KPI_ID, KPI_168).append("kpiName", "Sonar Code Quality")
-				.append("kpiUnit", "unit").append("maxValue", "90").append("isDeleted", "False")
-				.append("defaultOrder", 14).append("kpiSource", "Sonar").append("groupId", 1).append("kanban", false)
+				.append("kpiUnit", "unit").append("maxValue", "90").append("isDeleted", "False").append("defaultOrder", 14)
+				.append("kpiSource", "Sonar").append("groupId", 1).append("kanban", false)
 				.append("chartType", "bar-with-y-axis-group")
 				.append("kpiInfo", new Document().append("definition",
 						"Sonar Code Quality is graded based on the static and dynamic code analysis procedure built in Sonarqube that analyses code from multiple perspectives.")
@@ -80,8 +80,8 @@ public class KpiSonarCodeQuality {
 												"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Sonar-Code-Quality")))))
 				.append("xAxisLabel", "Months").append("yAxisLabel", "Code Quality").append("isPositiveTrend", true)
 				.append("showTrend", true).append("kpiFilter", "dropDown").append("aggregationCriteria", "average")
-				.append("isAdditionalFilterSupport", false).append("calculateMaturity", true)
-				.append("hideOverallFilter", true).append("maturityRange", Arrays.asList("5", "4", "3", "2", "1"))
+				.append("isAdditionalFilterSupport", false).append("calculateMaturity", true).append("hideOverallFilter", true)
+				.append("maturityRange", Arrays.asList("5", "4", "3", "2", "1"))
 				.append("yaxisOrder", new Document().append(String.valueOf(5), "E").append(String.valueOf(4), "D")
 						.append(String.valueOf(3), "C").append(String.valueOf(2), "B").append(String.valueOf(1), "A"));
 

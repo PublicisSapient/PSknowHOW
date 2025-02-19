@@ -30,5 +30,4 @@ import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog;
 public interface PushDataTraceLogRepository extends MongoRepository<PushDataTraceLog, ObjectId> {
 
 	List<PushDataTraceLog> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
-
 }

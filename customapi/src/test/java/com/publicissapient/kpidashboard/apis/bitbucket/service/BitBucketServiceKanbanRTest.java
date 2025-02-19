@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -56,6 +55,7 @@ import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDa
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
@@ -85,9 +85,11 @@ public class BitBucketServiceKanbanRTest {
 	private CodeCommitKanbanServiceImpl codeCommitKanbanServiceImpl;
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
+
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<BitBucketKPIService> services;
+
 	private List<AccountHierarchyDataKanban> accountHierarchyDataKanbanList = new ArrayList<>();
 	private String[] projectKey;
 	private Set<String> projects;
@@ -127,7 +129,6 @@ public class BitBucketServiceKanbanRTest {
 		commitKpiElement = setKpiElement(KPICode.NUMBER_OF_CHECK_INS.getKpiId(), "Code Commit Time");
 		when(filterHelperService.getFilteredBuildsKanban(Mockito.any(), Mockito.any()))
 				.thenReturn(accountHierarchyDataKanbanList);
-
 	}
 
 	private KpiElement setKpiElement(String kpiId, String kpiName) {
@@ -141,7 +142,6 @@ public class BitBucketServiceKanbanRTest {
 
 	@After
 	public void cleanup() {
-
 	}
 
 	@Test
@@ -164,7 +164,6 @@ public class BitBucketServiceKanbanRTest {
 					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())));
 		}
 		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
-
 	}
 
 	@Test
@@ -187,9 +186,7 @@ public class BitBucketServiceKanbanRTest {
 					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())));
 		}
 		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
-
 	}
-
 
 	@Test
 	public void testProcess_Application() throws Exception {
@@ -211,7 +208,6 @@ public class BitBucketServiceKanbanRTest {
 					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())));
 		}
 		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
-
 	}
 
 	@Test
@@ -221,17 +217,16 @@ public class BitBucketServiceKanbanRTest {
 
 		List<KpiElement> resultList = bitbucketServiceKanbanR.process(kpiRequest);
 		assertThat("Kpi list :", resultList.size(), equalTo(1));
-
 	}
 
 	private KpiRequest createKpiRequest(int level, String source) {
 		KpiRequest kpiRequest = new KpiRequest();
 		List<KpiElement> kpiList = new ArrayList<>();
 
-		addKpiElement(kpiList, KPICode.NUMBER_OF_CHECK_INS.getKpiId(), KPICode.NUMBER_OF_CHECK_INS.name(),
-				"Productivity", "", source);
+		addKpiElement(kpiList, KPICode.NUMBER_OF_CHECK_INS.getKpiId(), KPICode.NUMBER_OF_CHECK_INS.name(), "Productivity",
+				"", source);
 		kpiRequest.setLevel(level);
-		kpiRequest.setIds(new String[] { "5" });
+		kpiRequest.setIds(new String[]{"5"});
 		kpiRequest.setKpiList(kpiList);
 		Map<String, List<String>> selectedMap = new HashMap<>();
 		selectedMap.put("date", Arrays.asList("DATE"));

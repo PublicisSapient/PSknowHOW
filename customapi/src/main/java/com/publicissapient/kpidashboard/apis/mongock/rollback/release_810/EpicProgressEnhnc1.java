@@ -46,5 +46,4 @@ public class EpicProgressEnhnc1 {
 	public void rollbackMaster() {
 		// no implementation required
 	}
-
 }

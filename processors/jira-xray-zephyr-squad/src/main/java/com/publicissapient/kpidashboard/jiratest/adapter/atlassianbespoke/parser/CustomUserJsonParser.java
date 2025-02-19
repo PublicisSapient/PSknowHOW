@@ -72,5 +72,4 @@ public class CustomUserJsonParser extends UserJsonParser {
 		return new User(basicUser.getSelf(), basicUser.getName(), basicUser.getDisplayName(), emailAddress, true, groups,
 				avatarUris, timezone);
 	}
-
 }

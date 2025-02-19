@@ -36,13 +36,12 @@ import com.publicissapient.kpidashboard.gitlab.config.GitLabConfig;
 import com.publicissapient.kpidashboard.gitlab.constants.GitLabConstants;
 import com.publicissapient.kpidashboard.gitlab.model.GitLabRepo;
 
-/**
- * The Class GitLabURIBuilder.
- */
+/** The Class GitLabURIBuilder. */
 public class GitLabURIBuilder {
 	/** The repo. */
 	@Autowired
 	GitLabRepo repo;
+
 	/** The repo. */
 	@Autowired
 	ProcessorToolConnection gitLabInfo;
@@ -55,9 +54,9 @@ public class GitLabURIBuilder {
 	 * Instantiates a new gitlab URI builder.
 	 *
 	 * @param repo
-	 *            the repo
+	 *          the repo
 	 * @param config
-	 *            the config
+	 *          the config
 	 */
 	public GitLabURIBuilder(GitLabRepo repo, GitLabConfig config, ProcessorToolConnection gitLabInfo) {
 		this.repo = repo;
@@ -70,9 +69,9 @@ public class GitLabURIBuilder {
 	 *
 	 * @return the string
 	 * @throws URISyntaxException
-	 *             uri syntax exception
+	 *           uri syntax exception
 	 * @throws URISyntaxException
-	 *             the URISyntaxException
+	 *           the URISyntaxException
 	 */
 	public String build() throws URISyntaxException {
 		URI uri = getURI();
@@ -102,9 +101,10 @@ public class GitLabURIBuilder {
 
 	/**
 	 * build url te get repo details
+	 *
 	 * @return repo tool
 	 * @throws URISyntaxException
-	 * 				uri syntax exception
+	 *           uri syntax exception
 	 */
 	public String repoDetailsUrlBuild() throws URISyntaxException {
 		URI uri = getURI();
@@ -119,7 +119,6 @@ public class GitLabURIBuilder {
 		return builder.build().toString();
 	}
 
-
 	/**
 	 * Gets the params.
 	 *
@@ -131,8 +130,8 @@ public class GitLabURIBuilder {
 				StringUtils.isNotEmpty(gitLabInfo.getBranch()) ? gitLabInfo.getBranch().replace(" ", "%20") : "master");
 		if (StringUtils.isNotEmpty(repo.getLastCommitTimestamp())) {
 
-			ZonedDateTime zdt1 = ZonedDateTime
-					.ofInstant(Instant.ofEpochMilli(Long.valueOf(repo.getLastCommitTimestamp())), ZoneId.of("UTC"));
+			ZonedDateTime zdt1 = ZonedDateTime.ofInstant(Instant.ofEpochMilli(Long.valueOf(repo.getLastCommitTimestamp())),
+					ZoneId.of("UTC"));
 			String datetime = zdt1.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 			map.put("since", datetime);
 		}
@@ -153,7 +152,7 @@ public class GitLabURIBuilder {
 	 * Gets the path.
 	 *
 	 * @param uri
-	 *            the uri
+	 *          the uri
 	 * @return the path
 	 */
 	private String getPath() {
@@ -186,5 +185,4 @@ public class GitLabURIBuilder {
 		url = StringUtils.removeEnd(url, ".git");
 		return URI.create(url.replace(" ", "%20"));
 	}
-
 }

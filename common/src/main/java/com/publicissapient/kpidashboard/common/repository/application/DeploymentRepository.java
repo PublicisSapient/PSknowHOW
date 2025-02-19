@@ -14,7 +14,6 @@ import com.publicissapient.kpidashboard.common.model.application.Deployment;
  *
  * @author hiren babariya
  */
-
 @Repository
 public interface DeploymentRepository extends MongoRepository<Deployment, ObjectId>, DeploymentRepositoryCustom {
 
@@ -28,5 +27,4 @@ public interface DeploymentRepository extends MongoRepository<Deployment, Object
 			ObjectId basicProjectConfigId);
 
 	Deployment findByProjectToolConfigIdAndNumber(ObjectId projectToolConfigId, String number);
-
 }

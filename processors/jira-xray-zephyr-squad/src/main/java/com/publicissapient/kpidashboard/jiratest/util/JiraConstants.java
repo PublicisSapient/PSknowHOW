@@ -53,5 +53,4 @@ public final class JiraConstants {
 
 	private JiraConstants() {
 	}
-
 }

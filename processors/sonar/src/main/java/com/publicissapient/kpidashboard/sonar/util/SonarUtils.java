@@ -22,10 +22,7 @@ import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 
-/**
- * Utility class for common methods.
- *
- */
+/** Utility class for common methods. */
 public final class SonarUtils {
 
 	private static final char BLANK_SPACE = ' ';
@@ -34,14 +31,13 @@ public final class SonarUtils {
 	private static final String DAYS_FORMAT = "%sd";
 
 	private SonarUtils() {
-
 	}
 
 	/**
 	 * Adds space to message if needed.
 	 *
 	 * @param message
-	 *            the message
+	 *          the message
 	 */
 	public static void addSpaceIfNeeded(StringBuilder message) {
 		if (message.length() > 0) {
@@ -51,15 +47,15 @@ public final class SonarUtils {
 
 	/**
 	 * Format time duration.
-	 * 
+	 *
 	 * @param days
-	 *            the number of days
+	 *          the number of days
 	 * @param hours
-	 *            the numbers of hours
+	 *          the numbers of hours
 	 * @param minutes
-	 *            the number of minutes
+	 *          the number of minutes
 	 * @param isNegative
-	 *            the negative value
+	 *          the negative value
 	 * @return the formatted duration
 	 */
 	public static String formatDuration(int days, int hours, int minutes, boolean isNegative) {
@@ -73,19 +69,18 @@ public final class SonarUtils {
 		}
 		if (displayMinutes(days, hours, minutes)) {
 			addSpaceIfNeeded(message);
-			message.append(
-					String.format(MINUTES_FORMAT, isNegative && message.length() == 0 ? (-1 * minutes) : minutes));
+			message.append(String.format(MINUTES_FORMAT, isNegative && message.length() == 0 ? (-1 * minutes) : minutes));
 		}
 		return message.toString();
 	}
 
 	/**
 	 * Checks if hour should be displayed.
-	 * 
+	 *
 	 * @param days
-	 *            the number of days
+	 *          the number of days
 	 * @param hours
-	 *            the number of hours
+	 *          the number of hours
 	 * @return true if hour should be displayed
 	 */
 	private static boolean displayHours(int days, int hours) {
@@ -94,13 +89,13 @@ public final class SonarUtils {
 
 	/**
 	 * Checks if minutes should be displayed.
-	 * 
+	 *
 	 * @param days
-	 *            the number of days
+	 *          the number of days
 	 * @param hours
-	 *            the number of hours
+	 *          the number of hours
 	 * @param minutes
-	 *            the number of minutes
+	 *          the number of minutes
 	 * @return true if minutes should be displayed
 	 */
 	private static boolean displayMinutes(int days, int hours, int minutes) {
@@ -111,8 +106,7 @@ public final class SonarUtils {
 			ProcessorToolConnection sonarServer) {
 		ToolCredential toolCredential = new ToolCredential();
 		if (sonarServer.isVault()) {
-			ToolCredential toolCredentialFromProvider = toolCredentialProvider
-					.findCredential(sonarServer.getUsername());
+			ToolCredential toolCredentialFromProvider = toolCredentialProvider.findCredential(sonarServer.getUsername());
 			if (toolCredentialFromProvider != null) {
 				toolCredential.setUsername(toolCredentialFromProvider.getUsername());
 				toolCredential.setPassword(toolCredentialFromProvider.getPassword());
@@ -121,11 +115,9 @@ public final class SonarUtils {
 		} else {
 			toolCredential.setUsername(sonarServer.getUsername() == null ? null : sonarServer.getUsername().trim());
 			if (sonarServer.isCloudEnv()) {
-				toolCredential
-						.setPassword(sonarServer.getAccessToken() == null ? null : sonarServer.getAccessToken().trim());
+				toolCredential.setPassword(sonarServer.getAccessToken() == null ? null : sonarServer.getAccessToken().trim());
 			} else if (sonarServer.isAccessTokenEnabled()) {
-				toolCredential
-						.setPassword(sonarServer.getAccessToken() == null ? null : sonarServer.getAccessToken().trim());
+				toolCredential.setPassword(sonarServer.getAccessToken() == null ? null : sonarServer.getAccessToken().trim());
 			} else {
 				toolCredential.setPassword(sonarServer.getPassword() == null ? null : sonarServer.getPassword().trim());
 			}
@@ -133,5 +125,4 @@ public final class SonarUtils {
 
 		return toolCredential;
 	}
-
 }

@@ -29,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ProcessorUtils {
 
 	private ProcessorUtils() {
-
 	}
 
 	public static String getString(JSONObject json, String key) {
@@ -53,5 +52,4 @@ public class ProcessorUtils {
 		}
 		return getString(author, "name");
 	}
-
 }

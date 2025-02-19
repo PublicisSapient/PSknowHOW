@@ -42,9 +42,7 @@ import com.publicissapient.kpidashboard.jenkins.config.JenkinsConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Provides utility methods for Jenkins processor.
- */
+/** Provides utility methods for Jenkins processor. */
 @Component
 @Slf4j
 public final class ProcessorUtils {
@@ -54,11 +52,11 @@ public final class ProcessorUtils {
 
 	/**
 	 * Builds Job Query as a string.
-	 * 
+	 *
 	 * @param config
-	 *            the jenkins configuration details
+	 *          the jenkins configuration details
 	 * @param jobQuery
-	 *            the job query data
+	 *          the job query data
 	 * @return the build job query
 	 */
 	public static String buildJobQueryString(JenkinsConfig config, String jobQuery) {
@@ -74,12 +72,12 @@ public final class ProcessorUtils {
 
 	/**
 	 * Provides Domain name.
-	 * 
+	 *
 	 * @param url
-	 *            the URL
+	 *          the URL
 	 * @return the domain name
 	 * @throws URISyntaxException
-	 *             if there is any illegal character in URI
+	 *           if there is any illegal character in URI
 	 */
 	public static String extractDomain(String url) throws URISyntaxException {
 		URI uri = new URI(url);
@@ -88,12 +86,12 @@ public final class ProcessorUtils {
 
 	/**
 	 * Provides Port number.
-	 * 
+	 *
 	 * @param url
-	 *            the URL
+	 *          the URL
 	 * @return port the port number
 	 * @throws URISyntaxException
-	 *             if there is any illegal character in URI
+	 *           if there is any illegal character in URI
 	 */
 	public static int extractPort(String url) throws URISyntaxException {
 		URI uri = new URI(url);
@@ -102,9 +100,9 @@ public final class ProcessorUtils {
 
 	/**
 	 * Creates HTTP Headers.
-	 * 
+	 *
 	 * @param userInfo
-	 *            the user info
+	 *          the user info
 	 * @return the HttpHeaders
 	 */
 	public static HttpHeaders createHeaders(final String userInfo) {
@@ -118,11 +116,11 @@ public final class ProcessorUtils {
 
 	/**
 	 * Join URL.
-	 * 
+	 *
 	 * @param base
-	 *            the base
+	 *          the base
 	 * @param paths
-	 *            the path
+	 *          the path
 	 * @return the join URL
 	 */
 	public static String joinURL(String base, String... paths) {
@@ -140,9 +138,9 @@ public final class ProcessorUtils {
 	/**
 	 * Gathers repo urls, and the branch name from the last built revision. Filters
 	 * out the qualifiers from the branch name and sets the unqualified branch name.
-	 * 
+	 *
 	 * @param buildJson
-	 *            the build JSON
+	 *          the build JSON
 	 * @return the list of repository branch
 	 */
 	public static List<RepoBranch> getGitRepoBranch(JSONObject buildJson) {
@@ -170,13 +168,13 @@ public final class ProcessorUtils {
 
 	/**
 	 * add repo branches to the list
-	 * 
+	 *
 	 * @param list
-	 *            the list
+	 *          the list
 	 * @param branches
-	 *            branches
+	 *          branches
 	 * @param remoteUrls
-	 *            remote url
+	 *          remote url
 	 */
 	private static void addRepoBranchesToList(List<RepoBranch> list, JSONArray branches, JSONArray remoteUrls) {
 		if (CollectionUtils.isEmpty(branches)) {
@@ -192,38 +190,34 @@ public final class ProcessorUtils {
 					if (repoBranch != null) {
 						list.add(repoBranch);
 					}
-
 				}
 			}
 		}
-
 	}
 
 	/**
 	 * Gets RepoBranch
-	 * 
+	 *
 	 * @param branchName
-	 *            the branch name
+	 *          the branch name
 	 * @param url
-	 *            the url
+	 *          the url
 	 * @return RepoBranch object if branch name is not null
 	 */
 	private static RepoBranch createRepoBranch(String branchName, String url) {
 		if (branchName != null) {
 			String unqualifiedBranchName = getUnqualifiedBranch(branchName);
 			return new RepoBranch(url, unqualifiedBranchName, RepoBranch.RepoType.GIT);
-
 		}
 
 		return null;
-
 	}
 
 	/**
 	 * Removes Git Extension from URL.
-	 * 
+	 *
 	 * @param url
-	 *            the URL
+	 *          the URL
 	 * @return sUrl the rest call URL
 	 */
 	public static String removeGitExtensionFromUrl(String url) {
@@ -237,9 +231,9 @@ public final class ProcessorUtils {
 
 	/**
 	 * Provides the unqualified branch name.
-	 * 
+	 *
 	 * @param qualifiedBranch
-	 *            the full name of branch
+	 *          the full name of branch
 	 * @return the unqualified branch name
 	 */
 	public static String getUnqualifiedBranch(String qualifiedBranch) {
@@ -258,11 +252,11 @@ public final class ProcessorUtils {
 
 	/**
 	 * Converts JSONObject to String.
-	 * 
+	 *
 	 * @param json
-	 *            the json object
+	 *          the json object
 	 * @param key
-	 *            the key
+	 *          the key
 	 * @return the string data
 	 */
 	public static String getString(JSONObject json, String key) {
@@ -271,11 +265,11 @@ public final class ProcessorUtils {
 
 	/**
 	 * Provides JsonArray.
-	 * 
+	 *
 	 * @param json
-	 *            the json
+	 *          the json
 	 * @param key
-	 *            the key
+	 *          the key
 	 * @return the JSONArray
 	 */
 	public static JSONArray getJsonArray(JSONObject json, String key) {
@@ -287,7 +281,7 @@ public final class ProcessorUtils {
 	 * Provides first culprit.
 	 *
 	 * @param buildJson
-	 *            the build json
+	 *          the build json
 	 * @return the json string
 	 */
 	public static String firstCulprit(JSONObject buildJson) {
@@ -303,7 +297,7 @@ public final class ProcessorUtils {
 	 * Provides Full Name.
 	 *
 	 * @param jsonObject
-	 *            the json object
+	 *          the json object
 	 * @return the json data as string
 	 */
 	public static String getFullName(JSONObject jsonObject) {
@@ -314,7 +308,7 @@ public final class ProcessorUtils {
 	 * Provides Commit Author.
 	 *
 	 * @param jsonItem
-	 *            the json item
+	 *          the json item
 	 * @return the commit author
 	 */
 	public static String getCommitAuthor(JSONObject jsonItem) {
@@ -327,8 +321,7 @@ public final class ProcessorUtils {
 	 * Provides commit Timestamp.
 	 *
 	 * @param jsonItem
-	 *            the josn item
-	 *
+	 *          the josn item
 	 * @return the timestamp
 	 */
 	public static long getCommitTimestamp(JSONObject jsonItem) {
@@ -352,11 +345,11 @@ public final class ProcessorUtils {
 
 	/**
 	 * Checks if both urls are have same domain name and port number
-	 * 
+	 *
 	 * @param url1
-	 *            first url
+	 *          first url
 	 * @param url2
-	 *            second url
+	 *          second url
 	 * @return true if both domain and port is the same
 	 */
 	public static boolean isSameServerInfo(String url1, String url2) {
@@ -380,5 +373,4 @@ public final class ProcessorUtils {
 
 		return false;
 	}
-
 }

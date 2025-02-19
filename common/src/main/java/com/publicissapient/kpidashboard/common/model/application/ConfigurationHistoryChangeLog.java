@@ -35,19 +35,24 @@ import lombok.Setter;
 
 /**
  * maintains the data of fieldmapping history
+ *
  * @author shi6
  */
 public class ConfigurationHistoryChangeLog {
 
 	@JsonProperty("Changed From")
 	private Object changedFrom;
+
 	@JsonProperty("Changed To")
 	private Object changedTo;
+
 	@JsonProperty("Changed By")
 	private String changedBy;
+
 	@JsonProperty("Changed At")
 	private String updatedOn;
-	private String  releaseNodeId;
+
+	private String releaseNodeId;
 
 	public ConfigurationHistoryChangeLog(Object changedFrom, Object changedTo, String changedBy, String updatedOn) {
 		this.changedFrom = changedFrom;
@@ -55,7 +60,4 @@ public class ConfigurationHistoryChangeLog {
 		this.changedBy = changedBy;
 		this.updatedOn = updatedOn;
 	}
-
-
-
 }

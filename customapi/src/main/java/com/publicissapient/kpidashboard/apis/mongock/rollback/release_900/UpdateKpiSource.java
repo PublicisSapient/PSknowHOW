@@ -97,8 +97,7 @@ public class UpdateKpiSource {
 
 	private void rollbackCombinedKpiSourceForBitBucketWhenIsRepoToolKpiFalse() {
 		Document condition = new Document(KPI_SOURCE, BITBUCKET).append(IS_REPO_TOOL_KPI, false);
-		Document update = new Document(SET,
-				new Document(COMBINED_KPI_SOURCE, "Bitbucket/AzureRepository/GitHub/GitLab"));
+		Document update = new Document(SET, new Document(COMBINED_KPI_SOURCE, "Bitbucket/AzureRepository/GitHub/GitLab"));
 		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
 	}
 

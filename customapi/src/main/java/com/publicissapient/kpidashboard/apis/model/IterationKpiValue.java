@@ -31,9 +31,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * object used to bind iteration kpi's value
- */
+/** object used to bind iteration kpi's value */
 @Data
 @Getter
 @Setter
@@ -72,5 +70,4 @@ public class IterationKpiValue implements Serializable {
 		this.metaDataColumns = metaDataColumns;
 		this.markerInfo = markerInfo;
 	}
-
 }

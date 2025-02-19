@@ -68,13 +68,13 @@ public class NotificationHandler {
 
 	/**
 	 * send mail project admin/superadmin who had enabled notification preferences
-	 * 
+	 *
 	 * @param value
-	 *            value
+	 *          value
 	 * @param allFailureExceptions
-	 *            allFailureExceptions
+	 *          allFailureExceptions
 	 * @param projectBasicConfigId
-	 *            projectBasicConfigId
+	 *          projectBasicConfigId
 	 */
 	public void sendEmailToProjectAdminAndSuperAdmin(String value, String allFailureExceptions,
 			String projectBasicConfigId, String notificationSubjectKey, String mailTemplateKey) {
@@ -93,8 +93,7 @@ public class NotificationHandler {
 			customData.put(NOTIFICATION_ERROR, allFailureExceptions);
 			String subject = notificationSubjects.get(notificationSubjectKey);
 			log.info("Notification message sent to kafka with key : {}", mailTemplateKey);
-			String templateKey = jiraProcessorConfig.getMailTemplate()
-					.getOrDefault(mailTemplateKey, "");
+			String templateKey = jiraProcessorConfig.getMailTemplate().getOrDefault(mailTemplateKey, "");
 			notificationService.sendNotificationEvent(emailAddresses, customData, subject, mailTemplateKey,
 					jiraProcessorConfig.getKafkaMailTopic(), jiraProcessorConfig.isNotificationSwitch(), kafkaTemplate,
 					templateKey, jiraProcessorConfig.isMailWithoutKafka());
@@ -107,7 +106,7 @@ public class NotificationHandler {
 	 * find User List will all project admin who have access of that particular
 	 * project and that hierarchy and superadmin user and which users had enabled
 	 * notification alert
-	 * 
+	 *
 	 * @param projectConfigId
 	 * @return
 	 */
@@ -116,8 +115,8 @@ public class NotificationHandler {
 		List<UserInfo> usersList = userInfoRepository
 				.findByAuthoritiesIn(Arrays.asList(ROLE_PROJECT_ADMIN, ROLE_SUPERADMIN));
 		List<UserInfo> notificationEnableUsersList = usersList.stream()
-				.filter(userInfo -> userInfo.getNotificationEmail() != null
-						&& userInfo.getNotificationEmail().get(CommonConstant.ERROR_ALERT_NOTIFICATION))
+				.filter(userInfo -> userInfo.getNotificationEmail() != null &&
+						userInfo.getNotificationEmail().get(CommonConstant.ERROR_ALERT_NOTIFICATION))
 				.collect(Collectors.toList());
 		Map<String, String> projectMap = getHierarchyMap(projectConfigId);
 		if (CollectionUtils.isNotEmpty(notificationEnableUsersList)) {
@@ -131,8 +130,8 @@ public class NotificationHandler {
 						.filter(access -> access.getRole().equalsIgnoreCase(ROLE_PROJECT_ADMIN)).findAny();
 				if (projectAccess.isPresent()) {
 					projectAccess.get().getAccessNodes().stream().forEach(accessNode -> {
-						if (accessNode.getAccessItems().stream().anyMatch(item -> item.getItemId()
-								.equalsIgnoreCase(projectMap.get(accessNode.getAccessLevel())))) {
+						if (accessNode.getAccessItems().stream()
+								.anyMatch(item -> item.getItemId().equalsIgnoreCase(projectMap.get(accessNode.getAccessLevel())))) {
 							emailAddresses.add(userInfo.getEmailAddress());
 						}
 					});
@@ -149,8 +148,8 @@ public class NotificationHandler {
 		if (basicConfig.isPresent()) {
 			ProjectBasicConfig projectBasicConfig = basicConfig.get();
 			CollectionUtils.emptyIfNull(projectBasicConfig.getHierarchy()).stream()
-					.sorted(Comparator.comparing(
-							(HierarchyValue hierarchyValue) -> hierarchyValue.getHierarchyLevel().getLevel()))
+					.sorted(
+							Comparator.comparing((HierarchyValue hierarchyValue) -> hierarchyValue.getHierarchyLevel().getLevel()))
 					.forEach(hierarchyValue -> map.put(hierarchyValue.getHierarchyLevel().getHierarchyLevelId(),
 							hierarchyValue.getValue()));
 			map.put(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, projectBasicConfig.getId().toHexString());
@@ -158,5 +157,4 @@ public class NotificationHandler {
 
 		return map;
 	}
-
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2014 CapitalOne, LLC.
+ * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,23 +27,21 @@ import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
 import com.publicissapient.kpidashboard.github.customexception.FetchingCommitException;
 import com.publicissapient.kpidashboard.github.model.GitHubProcessorItem;
 
-/**
- * GithubClient for getting all commits and merge requests from github
- */
+/** GithubClient for getting all commits and merge requests from github */
 public interface GitHubClient {
 
 	/**
 	 * Get all commits.
 	 *
 	 * @param gitHubProcessorItem
-	 *            the gitHubProcessorItem
+	 *          the gitHubProcessorItem
 	 * @param firstTimeRun
-	 *            the first time run
+	 *          the first time run
 	 * @param processorToolConnection
-	 *            ProcessorToolConnection like url,userId
+	 *          ProcessorToolConnection like url,userId
 	 * @return the list
 	 * @throws FetchingCommitException
-	 *             the exception
+	 *           the exception
 	 */
 	List<CommitDetails> fetchAllCommits(GitHubProcessorItem gitHubProcessorItem, boolean firstTimeRun,
 			ProcessorToolConnection processorToolConnection, ProjectBasicConfig proBasicConfig)
@@ -51,17 +49,16 @@ public interface GitHubClient {
 
 	/**
 	 * @param gitHubProcessorItem
-	 *            the gitHubProcessorItem
+	 *          the gitHubProcessorItem
 	 * @param firstTimeRun
-	 *            the first time run
+	 *          the first time run
 	 * @param processorToolConnection
-	 *            processorToolConnection like url,userId
+	 *          processorToolConnection like url,userId
 	 * @return the list of merge request Detail
 	 * @throws FetchingCommitException
-	 *             the exception
+	 *           the exception
 	 */
 	List<MergeRequests> fetchMergeRequests(GitHubProcessorItem gitHubProcessorItem, boolean firstTimeRun,
 			ProcessorToolConnection processorToolConnection, ProjectBasicConfig proBasicConfig)
 			throws FetchingCommitException;
-
 }

@@ -81,25 +81,21 @@ public class IssueHygieneServiceImpl extends JiraIterationKPIService {
 				// to modify sprint details on the basis of configuration for the project
 				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
-				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
-						.collect(Collectors.toSet());
+				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toSet());
 
-				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
-						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI124(),
-						fieldMapping.getJiraIterationCompletionStatusKPI124(),
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+						fieldMapping.getJiraIterationIssuetypeKPI124(), fieldMapping.getJiraIterationCompletionStatusKPI124(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> jiraIssueList = IterationKpiHelper.getFilteredJiraIssue(totalIssues,
-							totalJiraIssueList);
-					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getTotalIssues(), jiraIssueList);
+					List<JiraIssue> jiraIssueList = IterationKpiHelper.getFilteredJiraIssue(totalIssues, totalJiraIssueList);
+					Set<JiraIssue> filtersIssuesList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
+							sprintDetails, sprintDetails.getTotalIssues(), jiraIssueList);
 					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueTypeExcludeKPI124())) {
-						Set<String> defectTypeSet = fieldMapping.getJiraIssueTypeExcludeKPI124().stream()
-								.map(String::toLowerCase).collect(Collectors.toSet());
+						Set<String> defectTypeSet = fieldMapping.getJiraIssueTypeExcludeKPI124().stream().map(String::toLowerCase)
+								.collect(Collectors.toSet());
 						filtersIssuesList = filtersIssuesList.stream()
 								.filter(jiraIssue -> !defectTypeSet.contains(jiraIssue.getTypeName().toLowerCase()))
 								.collect(Collectors.toCollection(HashSet::new));
@@ -139,8 +135,8 @@ public class IssueHygieneServiceImpl extends JiraIterationKPIService {
 				if (issue.getEstimate() == null || Double.valueOf(issue.getEstimate()).equals(0.0)) {
 					data.getCategory().add(ISSUES_WITHOUT_ESTIMATES);
 				}
-				if ((issue.getTimeSpentInMinutes() == null || issue.getTimeSpentInMinutes() == 0)
-						&& !checkStatus(issue, fieldMapping)) {
+				if ((issue.getTimeSpentInMinutes() == null || issue.getTimeSpentInMinutes() == 0) &&
+						!checkStatus(issue, fieldMapping)) {
 					data.getCategory().add(ISSUES_WITH_MISSING_WORKLOGS);
 				}
 			});
@@ -155,7 +151,7 @@ public class IssueHygieneServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates filter group.
-	 * 
+	 *
 	 * @return
 	 */
 	private FilterGroup createFilterGroup() {
@@ -170,7 +166,7 @@ public class IssueHygieneServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates individual filter object.
-	 * 
+	 *
 	 * @param type
 	 * @param name
 	 * @param key
@@ -195,10 +191,9 @@ public class IssueHygieneServiceImpl extends JiraIterationKPIService {
 		KpiDataGroup dataGroup = new KpiDataGroup();
 
 		List<KpiData> dataGroup1 = new ArrayList<>();
+		dataGroup1.add(createKpiData("", ISSUES_WITHOUT_ESTIMATES, 1, "count", "", "Category", ISSUES_WITHOUT_ESTIMATES));
 		dataGroup1
-				.add(createKpiData("", ISSUES_WITHOUT_ESTIMATES, 1, "count", "", "Category", ISSUES_WITHOUT_ESTIMATES));
-		dataGroup1.add(createKpiData("", ISSUES_WITH_MISSING_WORKLOGS, 2, "count", "", "Category",
-				ISSUES_WITH_MISSING_WORKLOGS));
+				.add(createKpiData("", ISSUES_WITH_MISSING_WORKLOGS, 2, "count", "", "Category", ISSUES_WITH_MISSING_WORKLOGS));
 
 		dataGroup.setDataGroup1(dataGroup1);
 		return dataGroup;
@@ -238,5 +233,4 @@ public class IssueHygieneServiceImpl extends JiraIterationKPIService {
 		}
 		return toDrop;
 	}
-
 }

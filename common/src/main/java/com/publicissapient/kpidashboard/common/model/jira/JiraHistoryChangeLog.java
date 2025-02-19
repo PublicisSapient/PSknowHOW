@@ -38,5 +38,4 @@ public class JiraHistoryChangeLog {
 	private String changedFrom;
 	private String changedTo;
 	private LocalDateTime updatedOn;
-
 }

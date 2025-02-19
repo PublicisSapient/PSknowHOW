@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.common.rest;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -58,5 +56,4 @@ public class VersionMetadataController {
 		VersionDetails versionDetails = versionMetadataService.getVersionMetadata();
 		return new ResponseEntity<>(versionDetails, HttpStatus.OK);
 	}
-
 }

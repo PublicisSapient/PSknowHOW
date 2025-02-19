@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.jira;//NOPMD
+package com.publicissapient.kpidashboard.common.model.jira; // NOPMD
 
 import java.util.List;
 
@@ -48,5 +48,4 @@ public class BoardMetadata extends BasicModel implements Cloneable {
 	public BoardMetadata clone() throws CloneNotSupportedException {
 		return (BoardMetadata) super.clone();
 	}
-
 }

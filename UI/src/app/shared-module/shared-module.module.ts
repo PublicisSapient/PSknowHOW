@@ -22,6 +22,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CalendarModule } from 'primeng/calendar';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { DropdownModule } from 'primeng/dropdown';
 import { ProjectFilterComponent } from './project-filter/project-filter.component';
 import { NamePipePipe } from './name-pipe.pipe';
@@ -49,6 +50,35 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { IsoDateFormatPipe } from './pipes/iso-date-format.pipe';
 
+import { StackedBarChartComponent } from 'src/app/component/stacked-bar-chart/stacked-bar-chart.component';
+import { PsKpiCardHeaderComponent } from 'src/app/component/kpi-card-v3/ps-kpi-card-header/ps-kpi-card-header.component';
+import { PsKpiCardFilterComponent } from 'src/app/component/kpi-card-v3/ps-kpi-card-filter/ps-kpi-card-filter.component';
+import { PsKpiCardChartRendererComponent } from 'src/app/component/kpi-card-v3/ps-kpi-card-chart-renderer/ps-kpi-card-chart-renderer.component';
+import { StackedBarComponent } from 'src/app/component/stacked-bar/stacked-bar.component';
+import { SemiCircleDonutChartComponent } from 'src/app/component/semi-circle-donut-chart/semi-circle-donut-chart.component';
+import { TabularKpiV2Component } from 'src/app/component/tabular-kpi-v2/tabular-kpi-v2.component';
+import { GroupedBarChartComponent } from 'src/app/component/grouped-bar-chart/grouped-bar-chart.component';
+import { TabularKpiWithDonutChartComponent } from 'src/app/component/tabular-kpi-with-donut-chart/tabular-kpi-with-donut-chart.component';
+import { BarchartComponent } from 'src/app/component/barchart/barchart.component';
+import { KpiHelperService } from '../services/kpi-helper.service';
+import { TabMenuModule } from 'primeng/tabmenu';
+import { MenuModule } from 'primeng/menu';
+import { ChartWithFiltersComponent } from '../component/chart-with-filters/chart-with-filters.component';
+import { KpiAdditionalFilterComponent } from '../component/kpi-additional-filter/kpi-additional-filter.component';
+import { MultilineComponent } from '../component/multiline/multiline.component';
+import { GroupedColumnPlusLineChartV2Component } from '../component/grouped-column-plus-line-chart-v2/grouped-column-plus-line-chart-v2.component';
+import { HorizontalPercentBarChartv2Component } from '../component/horizontal-percent-bar-chartv2/horizontal-percent-bar-chartv2.component';
+import { MultilineStyleV2Component } from '../component/multiline-style-v2/multiline-style-v2.component';
+import { MultilineV2Component } from '../component/multiline-v2/multiline-v2.component';
+import { TooltipV2Component } from '../component/tooltip-v2/tooltip-v2.component';
+import { TrendIndicatorV2Component } from '../dashboardv2/trend-indicator-v2/trend-indicator-v2.component';
+
+import { HeaderComponent } from '../dashboardv2/header-v2/header.component';
+
+import { RecentCommentsComponent } from '../component/recent-comments/recent-comments.component';
+import { CumulativeLineChartComponent } from '../component/cumulative-line-chart/cumulative-line-chart.component';
+
+
 @NgModule({
   imports: [
     CommonModule,
@@ -71,7 +101,10 @@ import { IsoDateFormatPipe } from './pipes/iso-date-format.pipe';
     InputSwitchModule,
     CarouselModule,
     InputNumberModule,
-    OverlayPanelModule
+    OverlayPanelModule,
+    SelectButtonModule,
+    MenuModule,
+    TabMenuModule
   ],
   exports: [
     NgSelectModule,
@@ -85,7 +118,28 @@ import { IsoDateFormatPipe } from './pipes/iso-date-format.pipe';
     FeatureFlagDirective,
     CarouselModule,
     ConditionalInputComponent,
-    IsoDateFormatPipe
+    IsoDateFormatPipe,
+    StackedBarChartComponent,
+    PsKpiCardHeaderComponent,
+    PsKpiCardFilterComponent,
+    PsKpiCardChartRendererComponent,
+    StackedBarComponent,
+    SemiCircleDonutChartComponent,
+    TabularKpiV2Component,
+    GroupedBarChartComponent,
+    TabularKpiWithDonutChartComponent,
+    BarchartComponent,
+    MultilineComponent,
+    MultilineV2Component,
+    TrendIndicatorV2Component,
+    GroupedColumnPlusLineChartV2Component,
+    MultilineStyleV2Component,
+    TooltipV2Component,
+    HorizontalPercentBarChartv2Component,
+    ChartWithFiltersComponent,
+    HeaderComponent,
+    RecentCommentsComponent,
+    CumulativeLineChartComponent
   ],
   declarations: [
     ProjectFilterComponent,
@@ -98,8 +152,31 @@ import { IsoDateFormatPipe } from './pipes/iso-date-format.pipe';
     AdditionalFilterFieldComponent,
     FeatureFlagDirective,
     ConditionalInputComponent,
-    IsoDateFormatPipe
+    IsoDateFormatPipe,
+    StackedBarChartComponent,
+    PsKpiCardHeaderComponent,
+    PsKpiCardFilterComponent,
+    PsKpiCardChartRendererComponent,
+    StackedBarComponent,
+    SemiCircleDonutChartComponent,
+    TabularKpiV2Component,
+    GroupedBarChartComponent,
+    TabularKpiWithDonutChartComponent,
+    BarchartComponent,
+    ChartWithFiltersComponent,
+    KpiAdditionalFilterComponent,
+    MultilineComponent,
+    MultilineV2Component,
+    TrendIndicatorV2Component,
+    GroupedColumnPlusLineChartV2Component,
+    MultilineStyleV2Component,
+    TooltipV2Component,
+    HorizontalPercentBarChartv2Component,
+    HeaderComponent,
+    RecentCommentsComponent,
+    CumulativeLineChartComponent
+
   ],
-  providers: [ConfirmationService]
+  providers: [ConfirmationService, KpiHelperService]
 })
 export class SharedModuleModule { }

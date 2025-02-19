@@ -56,7 +56,6 @@ public class EstimationHygieneEnhnc {
 
 		fieldMappingCollection.updateMany(new Document(FIELD_LABEL, ISSUE_TYPE_TO_BE_INCLUDED),
 				new Document("$set", new Document(FIELD_LABEL, ISSUE_TYPES_TO_CONSIDER_COMPLETED_STATUS)));
-
 	}
 
 	@RollbackExecution

@@ -31,13 +31,16 @@ import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
  *
  * @author anisingh4
  */
-public interface AuthenticationRepository extends PagingAndSortingRepository<Authentication, ObjectId>, CrudRepository<Authentication, ObjectId> {
+public interface AuthenticationRepository
+		extends
+			PagingAndSortingRepository<Authentication, ObjectId>,
+			CrudRepository<Authentication, ObjectId> {
 
 	/**
 	 * Find by username authentication.
 	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @return the authentication
 	 */
 	Authentication findByUsername(String username);
@@ -46,23 +49,20 @@ public interface AuthenticationRepository extends PagingAndSortingRepository<Aut
 	 * Find by email list.
 	 *
 	 * @param email
-	 *            the email
+	 *          the email
 	 * @return the list of authentication
 	 */
 	List<Authentication> findByEmail(String email);
 
 	/**
-	 * 
 	 * @param userName
 	 * @return the list of authentication object
 	 */
 	List<Authentication> findByUsernameIn(List<String> userName);
 
 	/**
-	 * 
 	 * @param approved
 	 * @return
 	 */
 	List<Authentication> findByApproved(Boolean approved);
-
 }

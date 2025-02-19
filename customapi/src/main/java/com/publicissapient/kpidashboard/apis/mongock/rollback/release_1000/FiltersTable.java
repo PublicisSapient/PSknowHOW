@@ -85,8 +85,6 @@ public class FiltersTable {
 		}
 	}
 
-
-
 	@RollbackExecution
 	public void rollback() {
 		// We are inserting the documents through DDL, no rollback to any collections.
@@ -121,5 +119,4 @@ public class FiltersTable {
 			mongoTemplate.updateFirst(query, update, KPI_MASTER);
 		}
 	}
-
 }

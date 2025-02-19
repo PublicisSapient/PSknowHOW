@@ -52,21 +52,20 @@ public class KanbanReleaseDataTasklet implements Tasklet {
 
 	/**
 	 * @param sc
-	 *            StepContribution
+	 *          StepContribution
 	 * @param cc
-	 *            ChunkContext
+	 *          ChunkContext
 	 * @return RepeatStatus
 	 * @throws Exception
-	 *             Exception
+	 *           Exception
 	 */
 	@Override
 	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
 		log.info("**** ReleaseData fetch started ****");
 		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-        KerberosClient krb5Client = jiraClientService.getKerberosClientMap(projectId);
+		KerberosClient krb5Client = jiraClientService.getKerberosClientMap(projectId);
 		fetchKanbanReleaseData.processReleaseInfo(projConfFieldMapping, krb5Client);
 		log.info("**** ReleaseData fetch ended ****");
 		return RepeatStatus.FINISHED;
 	}
-
 }

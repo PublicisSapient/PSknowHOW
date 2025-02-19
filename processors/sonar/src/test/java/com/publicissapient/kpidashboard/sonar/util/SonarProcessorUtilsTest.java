@@ -93,7 +93,6 @@ public class SonarProcessorUtilsTest {
 
 		// Testing the method
 		long timestamp = sonarProcessorUtils.getTimestamp(jsonData, "timestamp");
-
 	}
 
 	@Test
@@ -148,5 +147,4 @@ public class SonarProcessorUtilsTest {
 		// Asserting the result
 		assertEquals("3d", result);
 	}
-
 }

@@ -116,7 +116,7 @@ public class JenkinsBuildClientTests {
 		// fails, need to investigate
 		// HttpEntity<HttpHeaders> headers = new
 		// HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("user:pass"));
-		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@SuppressWarnings({"rawtypes", "unchecked"})
 		HttpEntity headers = new HttpEntity(ProcessorUtils.createHeaders("user:pass"));
 		when(rest.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class)))
 				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
@@ -131,7 +131,7 @@ public class JenkinsBuildClientTests {
 		// fails, need to investigate
 		// HttpEntity<HttpHeaders> headers = new
 		// HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("does:matter"));
-		@SuppressWarnings({ "unchecked", "rawtypes" })
+		@SuppressWarnings({"unchecked", "rawtypes"})
 		HttpEntity headers = new HttpEntity(ProcessorUtils.createHeaders("does:matter"));
 		when(rest.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class)))
 				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
@@ -142,7 +142,7 @@ public class JenkinsBuildClientTests {
 
 	@Test
 	public void verifyGetLogUrl() throws Exception {
-		@SuppressWarnings({ "unchecked", "rawtypes" })
+		@SuppressWarnings({"unchecked", "rawtypes"})
 		HttpEntity headers = new HttpEntity(ProcessorUtils.createHeaders("does:matter"));
 		when(rest.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class)))
 				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
@@ -154,22 +154,30 @@ public class JenkinsBuildClientTests {
 
 	@Test
 	public void instanceJobs_emptyResponse_returnsEmptyMap() {
-		when(rest.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
-		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE,
-				projectBasicConfig);
+		when(rest.exchange(
+						ArgumentMatchers.any(URI.class),
+						eq(HttpMethod.GET),
+						ArgumentMatchers.any(HttpEntity.class),
+						eq(String.class)))
+				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
+		Map<ObjectId, Set<Build>> jobs =
+				jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE, projectBasicConfig);
 
 		assertThat(jobs.size(), is(0));
 	}
 
 	@Test
 	public void testGetJobDetails() throws Exception {
-		when(rest.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				eq(String.class)))
-						.thenReturn(new ResponseEntity<>(getJson("instance_jobs_2_jobs_2_builds.json"), HttpStatus.OK));
+		when(rest.exchange(
+						ArgumentMatchers.any(URI.class),
+						eq(HttpMethod.GET),
+						ArgumentMatchers.any(HttpEntity.class),
+						eq(String.class)))
+				.thenReturn(
+						new ResponseEntity<>(getJson("instance_jobs_2_jobs_2_builds.json"), HttpStatus.OK));
 
-		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE,
-				projectBasicConfig);
+		Map<ObjectId, Set<Build>> jobs =
+				jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE, projectBasicConfig);
 
 		assertThat(jobs.size(), is(1));
 
@@ -182,17 +190,21 @@ public class JenkinsBuildClientTests {
 		assertThat(buildIt.hasNext(), is(false));
 
 		assertThat(jobIt.hasNext(), is(false));
-
 	}
 
 	@Test
 	public void testGetJobDetailsChild() throws Exception {
-		when(rest.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				eq(String.class))).thenReturn(
-						new ResponseEntity<>(getJson("instance_jobs_multibranch_pipeline.json"), HttpStatus.OK));
+		when(rest.exchange(
+						ArgumentMatchers.any(URI.class),
+						eq(HttpMethod.GET),
+						ArgumentMatchers.any(HttpEntity.class),
+						eq(String.class)))
+				.thenReturn(
+						new ResponseEntity<>(
+								getJson("instance_jobs_multibranch_pipeline.json"), HttpStatus.OK));
 
-		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE,
-				projectBasicConfig);
+		Map<ObjectId, Set<Build>> jobs =
+				jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE, projectBasicConfig);
 
 		assertThat(jobs.size(), is(1));
 
@@ -206,7 +218,6 @@ public class JenkinsBuildClientTests {
 		assertThat(buildIt.hasNext(), is(true));
 
 		assertThat(jobIt.hasNext(), is(false));
-
 	}
 
 	private void assertBuild(Build build, String number, String url) {
@@ -218,5 +229,4 @@ public class JenkinsBuildClientTests {
 		InputStream inputStream = JenkinsBuildClientTests.class.getResourceAsStream(fileName);
 		return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 	}
-
 }

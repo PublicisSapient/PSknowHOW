@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.service;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -55,30 +54,30 @@ import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationHandlerTest {
 
-    @Mock
-    private JiraProcessorConfig jiraProcessorConfig;
+	@Mock
+	private JiraProcessorConfig jiraProcessorConfig;
 
-    @Mock
-    private KafkaTemplate<String, Object> kafkaTemplate;
+	@Mock
+	private KafkaTemplate<String, Object> kafkaTemplate;
 
-    @Mock
-    private ProjectBasicConfigRepository projectBasicConfigRepository;
+	@Mock
+	private ProjectBasicConfigRepository projectBasicConfigRepository;
 
-    @Mock
-    private UserInfoRepository userInfoRepository;
+	@Mock
+	private UserInfoRepository userInfoRepository;
 
-    @Mock
-    private NotificationService notificationService;
+	@Mock
+	private NotificationService notificationService;
 
-    @InjectMocks
-    private NotificationHandler notificationHandler;
+	@InjectMocks
+	private NotificationHandler notificationHandler;
 
-    @Before
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+	@Before
+	public void setUp() {
+		MockitoAnnotations.openMocks(this);
+	}
 
-    @Test
+	@Test
 	public void testSendEmailToProjectAdmin() {
 		// Mock data
 		String value = "Test message";
@@ -92,7 +91,7 @@ public class NotificationHandlerTest {
 				.thenReturn(Collections.singletonMap("errorInJiraProcessor", "TestSubject"));
 		when(userInfoRepository.findByAuthoritiesIn(
 				Arrays.asList(NotificationHandler.ROLE_PROJECT_ADMIN, NotificationHandler.ROLE_SUPERADMIN)))
-						.thenReturn(Collections.singletonList(createMockUserInfo()));
+				.thenReturn(Collections.singletonList(createMockUserInfo()));
 		HierarchyLevel hierarchyLevel = new HierarchyLevel();
 		hierarchyLevel.setLevel(1);
 		hierarchyLevel.setHierarchyLevelId("level1");
@@ -113,7 +112,8 @@ public class NotificationHandlerTest {
 		when(projectBasicConfigRepository.findById(any())).thenReturn(Optional.of(projectBasicConfig));
 
 		// Call the method under test
-		notificationHandler.sendEmailToProjectAdminAndSuperAdmin(value, allFailureExceptions, projectBasicConfigId,"errorInJiraProcessor","Error_In_Jira_Processor");
+		notificationHandler.sendEmailToProjectAdminAndSuperAdmin(value, allFailureExceptions, projectBasicConfigId,
+				"errorInJiraProcessor", "Error_In_Jira_Processor");
 		Map<String, String> customData = new HashMap<>();
 		customData.put("Notification_Error", allFailureExceptions);
 		customData.put("Notification_Msg", value);
@@ -122,22 +122,22 @@ public class NotificationHandlerTest {
 				"Error_In_Jira_Processor", null, false, kafkaTemplate, "", false);
 	}
 
-    private UserInfo createMockUserInfo() {
-        Map<String, Boolean> notificationEmail = new HashMap<>();
-        notificationEmail.put("accessAlertNotification" , false);
-        notificationEmail.put("errorAlertNotification" , true);
-        UserInfo userInfo = new UserInfo();
-        userInfo.setEmailAddress("admin1@example.com");
-        ProjectsAccess projectsAccess = new ProjectsAccess();
-        projectsAccess.setRole(NotificationHandler.ROLE_PROJECT_ADMIN);
-        AccessNode accessNode = new AccessNode();
-        accessNode.setAccessLevel("project");
-        AccessItem accessItem = new AccessItem();
-        accessItem.setItemId("5fd99f7bc8b51a7b55aec836");
-        accessNode.setAccessItems(Collections.singletonList(accessItem));
-        projectsAccess.setAccessNodes(Collections.singletonList(accessNode));
-        userInfo.setProjectsAccess(Collections.singletonList(projectsAccess));
-        userInfo.setNotificationEmail(notificationEmail);
-        return userInfo;
-    }
+	private UserInfo createMockUserInfo() {
+		Map<String, Boolean> notificationEmail = new HashMap<>();
+		notificationEmail.put("accessAlertNotification", false);
+		notificationEmail.put("errorAlertNotification", true);
+		UserInfo userInfo = new UserInfo();
+		userInfo.setEmailAddress("admin1@example.com");
+		ProjectsAccess projectsAccess = new ProjectsAccess();
+		projectsAccess.setRole(NotificationHandler.ROLE_PROJECT_ADMIN);
+		AccessNode accessNode = new AccessNode();
+		accessNode.setAccessLevel("project");
+		AccessItem accessItem = new AccessItem();
+		accessItem.setItemId("5fd99f7bc8b51a7b55aec836");
+		accessNode.setAccessItems(Collections.singletonList(accessItem));
+		projectsAccess.setAccessNodes(Collections.singletonList(accessNode));
+		userInfo.setProjectsAccess(Collections.singletonList(projectsAccess));
+		userInfo.setNotificationEmail(notificationEmail);
+		return userInfo;
+	}
 }

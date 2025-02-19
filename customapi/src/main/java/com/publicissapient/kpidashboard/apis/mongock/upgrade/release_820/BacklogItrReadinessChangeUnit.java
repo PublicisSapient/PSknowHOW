@@ -64,8 +64,8 @@ public class BacklogItrReadinessChangeUnit {
 				MongockUtil.createFieldMapping("jiraStatusForRefinedKPI161", "Status to identify In Refined issues",
 						"WorkFlow Status Mapping", "workflow", "chips",
 						"All statuses that correspond to refined status of Iteration Readiness."),
-				MongockUtil.createFieldMapping("jiraStatusForNotRefinedKPI161",
-						"Status to identify In Not Refined issues", "WorkFlow Status Mapping", "workflow", "chips",
+				MongockUtil.createFieldMapping("jiraStatusForNotRefinedKPI161", "Status to identify In Not Refined issues",
+						"WorkFlow Status Mapping", "workflow", "chips",
 						"All statuses that correspond to not refined status of Iteration Readiness."));
 
 		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).insertMany(fieldMappings);
@@ -80,8 +80,9 @@ public class BacklogItrReadinessChangeUnit {
 	public void addKpiLink() {
 		Query kpiQuery = new Query(Criteria.where("kpiId").is(KPI_161));
 
-		Update kpiUpdate = new Update().push("kpiInfo.details", new Document("type", "link").append("kpiLinkDetail",
-				new Document("text", "Detailed Information at").append("link",
+		Update kpiUpdate = new Update().push("kpiInfo.details",
+				new Document("type", "link").append("kpiLinkDetail", new Document("text", "Detailed Information at").append(
+						"link",
 						"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Iteration-Readiness")));
 
 		mongoTemplate.updateFirst(kpiQuery, kpiUpdate, KpiMaster.class);
@@ -110,11 +111,11 @@ public class BacklogItrReadinessChangeUnit {
 	public void removeLinkDetail() {
 		Query kpiQuery = new Query(Criteria.where("kpiId").is(KPI_161));
 
-		Update kpiUpdate = new Update().pull("kpiInfo.details", new Document("type", "link").append("kpiLinkDetail",
-				new Document("text", "Detailed Information at").append("link",
+		Update kpiUpdate = new Update().pull("kpiInfo.details",
+				new Document("type", "link").append("kpiLinkDetail", new Document("text", "Detailed Information at").append(
+						"link",
 						"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Iteration-Readiness")));
 
 		mongoTemplate.updateFirst(kpiQuery, kpiUpdate, KpiMaster.class);
 	}
-
 }

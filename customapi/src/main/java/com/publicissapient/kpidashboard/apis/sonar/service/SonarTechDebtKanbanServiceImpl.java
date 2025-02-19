@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
@@ -34,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -55,6 +52,7 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -63,19 +61,16 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author shichand0
- *
  */
 @Component
 @Slf4j
 public class SonarTechDebtKanbanServiceImpl
-		extends SonarKPIService<Long, List<Object>, Map<String, List<SonarHistory>>> {
+		extends
+			SonarKPIService<Long, List<Object>, Map<Pair<String, String>, List<SonarHistory>>> {
 
 	private static final String SQALE_INDEX = "sqale_index";
 
-
-	/**
-	 * Gets KPICode's <tt>SONAR_TECH_DEBT_KANBAN</tt> enum
-	 */
+	/** Gets KPICode's <tt>SONAR_TECH_DEBT_KANBAN</tt> enum */
 	@Override
 	public String getQualifierType() {
 		return KPICode.SONAR_TECH_DEBT_KANBAN.name();
@@ -85,13 +80,13 @@ public class SonarTechDebtKanbanServiceImpl
 	 * @param sonarDetailsMap
 	 */
 	@Override
-	public Long calculateKPIMetrics(Map<String, List<SonarHistory>> sonarDetailsMap) {
+	public Long calculateKPIMetrics(Map<Pair<String, String>, List<SonarHistory>> sonarDetailsMap) {
 		return null;
 	}
 
 	/**
 	 * Gets KPI Data for Sonar Tech Debt for Kanban projects
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param kpiElement
 	 * @param treeAggregatorDetail
@@ -99,8 +94,8 @@ public class SonarTechDebtKanbanServiceImpl
 	 * @throws ApplicationException
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		log.info("SONAR-TECH-DEBT-KANBAN-", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
@@ -147,7 +142,6 @@ public class SonarTechDebtKanbanServiceImpl
 	 * @param leafNodeList
 	 * @param kpiElement
 	 * @param kpiRequest
-	 *
 	 */
 	private void dateWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> leafNodeList, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
@@ -159,17 +153,16 @@ public class SonarTechDebtKanbanServiceImpl
 		String startDate = dateRange.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		String endDate = dateRange.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-		Map<String, List<SonarHistory>> sonarDetailsForAllProjects = fetchKPIDataFromDb(leafNodeList, startDate,
-				endDate, kpiRequest);
+		Map<Pair<String, String>, List<SonarHistory>> sonarDetailsForAllProjects = fetchKPIDataFromDb(leafNodeList,
+				startDate, endDate, kpiRequest);
 
 		kpiWithFilter(sonarDetailsForAllProjects, mapTmp, kpiElement, kpiRequest);
-
 	}
 
-	private void kpiWithFilter(Map<String, List<SonarHistory>> sonarDetailsForAllProjects, Map<String, Node> mapTmp,
-			KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void kpiWithFilter(Map<Pair<String, String>, List<SonarHistory>> sonarDetailsForAllProjects,
+			Map<String, Node> mapTmp, KpiElement kpiElement, KpiRequest kpiRequest) {
 		List<KPIExcelData> excelData = new ArrayList<>();
-		sonarDetailsForAllProjects.forEach((projectName, projectData) -> {
+		sonarDetailsForAllProjects.forEach((projectNodePair, projectData) -> {
 			if (CollectionUtils.isNotEmpty(projectData)) {
 				List<String> projectList = new ArrayList<>();
 				List<String> debtList = new ArrayList<>();
@@ -180,20 +173,19 @@ public class SonarTechDebtKanbanServiceImpl
 				for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
 					CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate,
 							kpiRequest.getDuration());
-					Long startms = dateRange.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant()
-							.toEpochMilli();
+					Long startms = dateRange.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 					Long endms = dateRange.getEndDate().atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant()
 							.toEpochMilli();
 					Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms,
-							projectName);
+							projectNodePair.getRight());
 					String date = getRange(dateRange, kpiRequest);
-					prepareSqualeList(history, date, projectName, projectList, debtList, projectWiseDataMap,
+					prepareSqualeList(history, date, projectNodePair.getRight(), projectList, debtList, projectWiseDataMap,
 							versionDate);
 					currentDate = getNextRangeDate(kpiRequest, currentDate);
 				}
-				mapTmp.get(projectName).setValue(projectWiseDataMap);
+				mapTmp.get(projectNodePair.getLeft()).setValue(projectWiseDataMap);
 				if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-					KPIExcelUtility.populateSonarKpisExcelData(mapTmp.get(projectName).getProjectFilter().getName(),
+					KPIExcelUtility.populateSonarKpisExcelData(mapTmp.get(projectNodePair.getLeft()).getProjectFilter().getName(),
 							projectList, debtList, versionDate, excelData, KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId());
 				}
 			}
@@ -201,7 +193,6 @@ public class SonarTechDebtKanbanServiceImpl
 
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.SONAR_TECH_DEBT_KANBAN.getColumns());
-
 	}
 
 	private LocalDate getNextRangeDate(KpiRequest kpiRequest, LocalDate currentDate) {
@@ -217,7 +208,7 @@ public class SonarTechDebtKanbanServiceImpl
 
 	/**
 	 * Fetches KPI Data from DB
-	 * 
+	 *
 	 * @param leafNodeList
 	 * @param startDate
 	 * @param endDate
@@ -225,8 +216,8 @@ public class SonarTechDebtKanbanServiceImpl
 	 * @return {@code Map<ObjectId, List<SonarDetails>>}
 	 */
 	@Override
-	public Map<String, List<SonarHistory>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
+	public Map<Pair<String, String>, List<SonarHistory>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate,
+			String endDate, KpiRequest kpiRequest) {
 		return getSonarHistoryForAllProjects(leafNodeList, getKanbanCurrentDateToFetchFromDb(startDate));
 	}
 
@@ -243,27 +234,25 @@ public class SonarTechDebtKanbanServiceImpl
 		}
 
 		return techDebtValue;
-
 	}
 
 	/**
 	 * prepare Map after calculating squale data for each filter drop down
-	 * 
+	 *
 	 * @param history
 	 * @param date
-	 * @param projectNodeId
+	 * @param projectName
 	 * @param projectList
 	 * @param debtList
 	 * @param projectWiseDataMap
 	 * @param versionDate
 	 * @return
 	 */
-	private Map<String, Object> prepareSqualeList(Map<String, SonarHistory> history, String date, String projectNodeId,
+	private Map<String, Object> prepareSqualeList(Map<String, SonarHistory> history, String date, String projectName,
 			List<String> projectList, List<String> debtList, Map<String, List<DataCount>> projectWiseDataMap,
 			List<String> versionDate) {
 		Map<String, Object> key = new HashMap<>();
 		List<Long> dateWiseDebtList = new ArrayList<>();
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		history.forEach((keyName, sonarDetails) -> {
 			Map<String, Object> metricMap = sonarDetails.getMetrics().stream()
 					.filter(metricValue -> metricValue.getMetricValue() != null)
@@ -280,9 +269,8 @@ public class SonarTechDebtKanbanServiceImpl
 				debtList.add(String.valueOf(techDebtValueInDays));
 			}
 		});
-		DataCount dcObj = getDataCountObject(
-				calculateKpiValue(dateWiseDebtList, KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId()), new HashMap<>(),
-				projectName, date);
+		DataCount dcObj = getDataCountObject(calculateKpiValue(dateWiseDebtList, KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId()),
+				new HashMap<>(), projectName, date);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 
 		return key;
@@ -298,8 +286,8 @@ public class SonarTechDebtKanbanServiceImpl
 		String range = null;
 		if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
-					DateUtil.DISPLAY_DATE_FORMAT) + " to "
-					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to " +
+					DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
 							DateUtil.DISPLAY_DATE_FORMAT);
 		} else if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.MONTH)) {
 			range = dateRange.getStartDate().getMonth().toString() + " " + dateRange.getStartDate().getYear();
@@ -342,9 +330,7 @@ public class SonarTechDebtKanbanServiceImpl
 						.name(split[0]).metrics(metricsList).build();
 			}
 			map.put(key.getValue(), build);
-		}
-
-		);
+		});
 		return map;
 	}
 
@@ -353,10 +339,8 @@ public class SonarTechDebtKanbanServiceImpl
 		return calculateKpiValueForLong(valueList, kpiId);
 	}
 
-
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI67(),KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId());
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI67(), KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId());
 	}
-
 }

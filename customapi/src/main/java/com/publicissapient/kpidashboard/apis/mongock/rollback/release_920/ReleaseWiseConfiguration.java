@@ -66,7 +66,5 @@ public class ReleaseWiseConfiguration {
 
 		// Execute the update operation on the collection
 		mappingStructure.updateMany(filter, update);
-
 	}
-
 }

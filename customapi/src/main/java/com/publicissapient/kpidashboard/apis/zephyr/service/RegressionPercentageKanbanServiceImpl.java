@@ -77,9 +77,7 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 	@Autowired
 	private KpiHelperService kpiHelperService;
 
-	/**
-	 *
-	 */
+	/** */
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> filterComponentIdWiseDefectMap) {
 
@@ -105,8 +103,8 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 	 * @return KpiElement
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		log.info("[REGRESSION PASS PERCENTAGE-KANBAN-LEAF-NODE-VALUE][{}]", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
@@ -116,8 +114,7 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 
 		dateWiseLeafNodeValue(mapTmp, projectList, kpiElement, kpiRequest);
 
-		log.debug(
-				"[REGRESSION PASS PERCENTAGE-KANBAN-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
+		log.debug("[REGRESSION PASS PERCENTAGE-KANBAN-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
@@ -148,7 +145,7 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 	private void dateWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> leafNodeList, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
 
-		CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);// cs
+		CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest); // cs
 
 		String startDate = dateRange.getStartDate().format(DATE_FORMATTER);
 		String endDate = dateRange.getEndDate().format(DATE_FORMATTER);
@@ -156,7 +153,6 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, startDate, endDate, kpiRequest);
 
 		kpiWithoutFilter(resultMap, mapTmp, leafNodeList, kpiElement, kpiRequest);
-
 	}
 
 	private void kpiWithoutFilter(Map<String, Object> projectWiseJiraIssue, Map<String, Node> mapTmp,
@@ -168,9 +164,8 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 		Map<String, List<TestCaseDetails>> automated = (Map<String, List<TestCaseDetails>>) projectWiseJiraIssue
 				.get(AUTOMATED_TESTCASE_KEY);
 		leafNodeList.forEach(node -> {
-
 			String projectNodeId = node.getId();
-			String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
+			String projectName = node.getProjectFilter().getName();
 			String basicProjectConfId = node.getProjectFilter().getBasicProjectConfigId().toString();
 
 			List<TestCaseDetails> totalTest = total.get(basicProjectConfId);
@@ -189,20 +184,18 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 					List<TestCaseDetails> totalTestList = filterKanbanTotalDataBasedOnStartAndEndDate(totalTest,
 							dateRange.getEndDate());
 
-					List<TestCaseDetails> automatedTestList = filterKanbanAutomatedDataBasedOnStartAndEndDate(
-							automatedTest, dateRange.getEndDate());
+					List<TestCaseDetails> automatedTestList = filterKanbanAutomatedDataBasedOnStartAndEndDate(automatedTest,
+							dateRange.getEndDate());
 
 					setHoverMap(automatedTestList, totalTestList, hoverMap, AUTOMATED, TOTAL);
 
-					double automation = (double) Math
-							.round((100.0 * automatedTestList.size()) / (totalTestList.size()));
+					double automation = (double) Math.round((100.0 * automatedTestList.size()) / (totalTestList.size()));
 
 					String date = getRange(dateRange, kpiRequest);
 					DataCount dcObj = getDataCountObject(automation, projectName, date, projectNodeId, hoverMap);
 					dc.add(dcObj);
 
-					populateExcelDataObject(requestTrackerId, excelData, totalTestList, automatedTestList, projectName,
-							date);
+					populateExcelDataObject(requestTrackerId, excelData, totalTestList, automatedTestList, projectName, date);
 
 					if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 						currentDate = currentDate.minusWeeks(1);
@@ -238,8 +231,8 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 		String range = null;
 		if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
-					DateUtil.DISPLAY_DATE_FORMAT) + " to "
-					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to " +
+					DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
 							DateUtil.DISPLAY_DATE_FORMAT);
 		} else if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.MONTH)) {
 			range = dateRange.getStartDate().getMonth().toString();
@@ -252,16 +245,15 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 	private List<TestCaseDetails> filterKanbanTotalDataBasedOnStartAndEndDate(List<TestCaseDetails> tests,
 			LocalDate endDate) {
 		Predicate<TestCaseDetails> predicate = issue -> LocalDateTime
-				.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
-				.isBefore(endDate.atTime(23, 59, 59));
+				.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER).isBefore(endDate.atTime(23, 59, 59));
 		List<TestCaseDetails> filteredTests = tests.stream().filter(predicate).collect(Collectors.toList());
 		return filteredTests;
 	}
 
 	private List<TestCaseDetails> filterKanbanAutomatedDataBasedOnStartAndEndDate(List<TestCaseDetails> tests,
 			LocalDate endDate) {
-		Predicate<TestCaseDetails> predicate = issue -> StringUtils.isNotEmpty(issue.getTestAutomatedDate())
-				&& LocalDateTime.parse(issue.getTestAutomatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
+		Predicate<TestCaseDetails> predicate = issue -> StringUtils.isNotEmpty(issue.getTestAutomatedDate()) &&
+				LocalDateTime.parse(issue.getTestAutomatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
 						.isBefore(endDate.atTime(23, 59, 59));
 		List<TestCaseDetails> filteredTests = Optional.ofNullable(tests).orElse(Collections.emptyList()).stream()
 				.filter(predicate).collect(Collectors.toList());
@@ -284,7 +276,6 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 	}
 
 	/**
-	 *
 	 * @param mapTmp
 	 * @param leafNodeList
 	 * @param trendValueList
@@ -295,9 +286,7 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 	/**
 	 * populates the validation data node of the KPI element.
 	 *
-	 *
 	 * @param requestTrackerId
-	 *
 	 * @param totalTest
 	 * @param automatedTest
 	 * @param dateProjectKey
@@ -312,9 +301,8 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 				totalTest.stream().forEach(test -> totalTestCaseMap.putIfAbsent(test.getNumber(), test));
 			}
 
-			KPIExcelUtility.populateRegressionAutomationExcelData(dateProjectKey, totalTestCaseMap, automatedTest,
-					excelData, KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE.getKpiId(), date);
-
+			KPIExcelUtility.populateRegressionAutomationExcelData(dateProjectKey, totalTestCaseMap, automatedTest, excelData,
+					KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE.getKpiId(), date);
 		}
 	}
 
@@ -347,5 +335,4 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI63(),
 				KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE.getKpiId());
 	}
-
 }

@@ -39,7 +39,6 @@ public class AlphanumComparatorTest {
 	File fileOne;
 	@Mock
 	File fileTwo;
-	
 
 	@BeforeEach
 	public void setUp() throws Exception {
@@ -60,7 +59,6 @@ public class AlphanumComparatorTest {
 		when(fileOne.getName()).thenReturn("TEST_10102");
 		int result = alphanumComparator.compare(fileOne, fileTwo);
 		assertEquals(-1, result);
-
 	}
 
 	@Test
@@ -69,6 +67,5 @@ public class AlphanumComparatorTest {
 		when(fileOne.getName()).thenReturn("TEST_10102");
 		int result = alphanumComparator.compare(fileOne, fileTwo);
 		assertEquals(0, result);
-
 	}
 }

@@ -22,9 +22,7 @@ import java.util.List;
 import lombok.Data;
 
 /**
- *
  * @author yasbano
- *
  */
 @Data
 public class KpiFormula {

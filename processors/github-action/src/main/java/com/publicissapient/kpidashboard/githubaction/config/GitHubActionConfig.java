@@ -30,9 +30,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- *
  * GutHubActionConfig represents a class which holds GutHubActionConfig details.
- *
  */
 @Component
 @ConfigurationProperties(prefix = "githubaction")
@@ -45,8 +43,10 @@ import lombok.Setter;
 public class GitHubActionConfig {
 	private String host;
 	private String cron;
+
 	@Value("${aesEncryptionKey}")
 	private String aesEncryptionKey;
+
 	private String api;
 	private String customApiBaseUrl;
 	private int pageSize;

@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.jira.config;//NOPMD
+package com.publicissapient.kpidashboard.jira.config; // NOPMD
 
 import java.util.List;
 import java.util.Map;
@@ -28,10 +28,7 @@ import org.springframework.stereotype.Component;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Bean to hold settings specific to the Feature collector.
- */
-
+/** Bean to hold settings specific to the Feature collector. */
 @Getter
 @Setter
 @Component
@@ -45,8 +42,10 @@ public class JiraProcessorConfig {
 	private String customApiBaseUrl;
 	private Integer socketTimeOut;
 	private int threadPoolSize;
+
 	@Value("${aesEncryptionKey}")
 	private String aesEncryptionKey;
+
 	private String jiraCloudGetUserApi;
 	private String jiraServerGetUserApi;
 	private boolean fetchMetadata;
@@ -64,7 +63,9 @@ public class JiraProcessorConfig {
 
 	@Value("${kafka.mailtopic}")
 	private String kafkaMailTopic;
+
 	private Map<String, String> notificationSubject;
+
 	@Value("${notification.switch}")
 	private boolean notificationSwitch;
 

@@ -69,12 +69,12 @@ public class SprintScrumBoardTasklet implements Tasklet {
 
 	/**
 	 * @param sc
-	 *            StepContribution
+	 *          StepContribution
 	 * @param cc
-	 *            ChunkContext
+	 *          ChunkContext
 	 * @return RepeatStatus
 	 * @throws Exception
-	 *             Exception
+	 *           Exception
 	 */
 	@TrackExecutionTime
 	@Override
@@ -82,16 +82,15 @@ public class SprintScrumBoardTasklet implements Tasklet {
 		log.info("**** Sprint report for Scrum Board started * * *");
 		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
 		log.info("Fetching spring reports for the project : {}", projConfFieldMapping.getProjectName());
-        KerberosClient krb5Client = jiraClientService.getKerberosClientMap(projectId);
+		KerberosClient krb5Client = jiraClientService.getKerberosClientMap(projectId);
 		List<BoardDetails> boardDetailsList = projConfFieldMapping.getProjectToolConfig().getBoards();
 		for (BoardDetails boardDetails : boardDetailsList) {
-			List<SprintDetails> sprintDetailsList = fetchSprintReport
-					.createSprintDetailBasedOnBoard(projConfFieldMapping, krb5Client, boardDetails, new ObjectId(processorId));
+			List<SprintDetails> sprintDetailsList = fetchSprintReport.createSprintDetailBasedOnBoard(projConfFieldMapping,
+					krb5Client, boardDetails, new ObjectId(processorId));
 			sprintRepository.saveAll(sprintDetailsList);
 		}
 
 		log.info("**** Sprint report for Scrum Board ended * * *");
 		return RepeatStatus.FINISHED;
 	}
-
 }

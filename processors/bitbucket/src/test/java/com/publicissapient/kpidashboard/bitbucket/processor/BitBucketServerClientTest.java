@@ -104,7 +104,7 @@ public class BitBucketServerClientTest {
 
 		when(restTemplate.exchange(eq(URLDecoder.decode(restUri, "UTF-8")), eq(HttpMethod.GET),
 				ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
-						.thenReturn(new ResponseEntity<String>(serverResponse, HttpStatus.OK));
+				.thenReturn(new ResponseEntity<String>(serverResponse, HttpStatus.OK));
 		List<CommitDetails> commits = stashClient.fetchAllCommits(repo, true, connectionDetail, projectBasicConfig);
 		Assert.assertEquals(2, commits.size());
 
@@ -116,5 +116,4 @@ public class BitBucketServerClientTest {
 	private String getServerResponse(String resource) throws Exception {
 		return IOUtils.toString(this.getClass().getResourceAsStream(resource), StandardCharsets.UTF_8);
 	}
-
 }

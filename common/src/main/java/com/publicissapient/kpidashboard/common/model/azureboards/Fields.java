@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -32,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "System.AreaPath", "System.TeamProject", "System.IterationPath", "System.WorkItemType",
+@JsonPropertyOrder({"System.AreaPath", "System.TeamProject", "System.IterationPath", "System.WorkItemType",
 		"System.State", "System.Reason", "System.AssignedTo", "System.CreatedDate", "System.CreatedBy",
 		"System.ChangedDate", "System.ChangedBy", "System.CommentCount", "System.Title", "System.BoardColumn",
 		"System.BoardColumnDone", "Microsoft.VSTS.Scheduling.StoryPoints", "Microsoft.VSTS.Scheduling.RemainingWork",
@@ -40,70 +39,99 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 		"Microsoft.VSTS.Common.ResolvedReason", "Microsoft.VSTS.Common.Priority", "Microsoft.VSTS.Common.Severity",
 		"Microsoft.VSTS.Common.ValueArea", "WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column",
 		"WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column.Done", "Microsoft.VSTS.TCM.SystemInfo",
-		"Microsoft.VSTS.TCM.ReproSteps", "System.Tags", "Microsoft.VSTS.Common.DueDate" })
+		"Microsoft.VSTS.TCM.ReproSteps", "System.Tags", "Microsoft.VSTS.Common.DueDate"})
 public class Fields {
 
 	@JsonProperty("System.AreaPath")
 	private String systemAreaPath;
+
 	@JsonProperty("System.TeamProject")
 	private String systemTeamProject;
+
 	@JsonProperty("System.IterationPath")
 	private String systemIterationPath;
+
 	@JsonProperty("System.WorkItemType")
 	private String systemWorkItemType;
+
 	@JsonProperty("System.State")
 	private String systemState;
+
 	@JsonProperty("System.Reason")
 	private String systemReason;
+
 	@JsonProperty("System.AssignedTo")
 	private SystemAssignedTo systemAssignedTo;
+
 	@JsonProperty("System.CreatedDate")
 	private String systemCreatedDate;
+
 	@JsonProperty("System.CreatedBy")
 	private SystemCreatedBy systemCreatedBy;
+
 	@JsonProperty("System.ChangedDate")
 	private String systemChangedDate;
+
 	@JsonProperty("System.ChangedBy")
 	private SystemChangedBy systemChangedBy;
+
 	@JsonProperty("System.CommentCount")
 	private Integer systemCommentCount;
+
 	@JsonProperty("System.Title")
 	private String systemTitle;
+
 	@JsonProperty("System.BoardColumn")
 	private String systemBoardColumn;
+
 	@JsonProperty("System.BoardColumnDone")
 	private Boolean systemBoardColumnDone;
+
 	@JsonProperty("Microsoft.VSTS.Scheduling.StoryPoints")
 	private Double microsoftVSTSSchedulingStoryPoints;
+
 	@JsonProperty("Microsoft.VSTS.Scheduling.RemainingWork")
 	private Integer microsoftVSTSSchedulingRemainingWork;
+
 	@JsonProperty("Microsoft.VSTS.Scheduling.CompletedWork")
 	private Integer microsoftVSTSSchedulingCompletedWork;
+
 	@JsonProperty("Microsoft.VSTS.Scheduling.OriginalEstimate")
 	private Double microsoftVSTSSchedulingOriginalEstimate;
+
 	@JsonProperty("Microsoft.VSTS.Common.StateChangeDate")
 	private String microsoftVSTSCommonStateChangeDate;
+
 	@JsonProperty("Microsoft.VSTS.Common.ResolvedReason")
 	private String microsoftVSTSCommonResolvedReason;
+
 	@JsonProperty("Microsoft.VSTS.Common.Priority")
 	private Integer microsoftVSTSCommonPriority;
+
 	@JsonProperty("Microsoft.VSTS.Common.Severity")
 	private String microsoftVSTSCommonSeverity;
+
 	@JsonProperty("Microsoft.VSTS.Common.ValueArea")
 	private String microsoftVSTSCommonValueArea;
 
 	@JsonProperty("Microsoft.VSTS.Scheduling.DueDate")
 	private String microsoftVSTSSchedulingDueDate;
+
 	@JsonProperty("WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column")
 	private String wEFF17611F3F80E45D2AFC8D2A78F930BDEKanbanColumn;
+
 	@JsonProperty("WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column.Done")
 	private Boolean wEFF17611F3F80E45D2AFC8D2A78F930BDEKanbanColumnDone;
+
 	@JsonProperty("Microsoft.VSTS.TCM.SystemInfo")
 	private String microsoftVSTSTCMSystemInfo;
+
 	@JsonProperty("Microsoft.VSTS.TCM.ReproSteps")
 	private String microsoftVSTSTCMReproSteps;
+
 	@JsonProperty("System.Tags")
 	private String systemTags;
+
 	@JsonIgnore
 	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -435,13 +463,11 @@ public class Fields {
 				.append("microsoftVSTSCommonPriority", microsoftVSTSCommonPriority)
 				.append("microsoftVSTSCommonSeverity", microsoftVSTSCommonSeverity)
 				.append("microsoftVSTSCommonValueArea", microsoftVSTSCommonValueArea)
-				.append("wEFF17611F3F80E45D2AFC8D2A78F930BDEKanbanColumn",
-						wEFF17611F3F80E45D2AFC8D2A78F930BDEKanbanColumn)
+				.append("wEFF17611F3F80E45D2AFC8D2A78F930BDEKanbanColumn", wEFF17611F3F80E45D2AFC8D2A78F930BDEKanbanColumn)
 				.append("wEFF17611F3F80E45D2AFC8D2A78F930BDEKanbanColumnDone",
 						wEFF17611F3F80E45D2AFC8D2A78F930BDEKanbanColumnDone)
 				.append("microsoftVSTSTCMSystemInfo", microsoftVSTSTCMSystemInfo)
 				.append("microsoftVSTSTCMReproSteps", microsoftVSTSTCMReproSteps).append("systemTags", systemTags)
 				.append("additionalProperties", additionalProperties).toString();
 	}
-
 }

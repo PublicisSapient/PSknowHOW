@@ -16,18 +16,22 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { Router } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { MessageService } from 'primeng/api';
 @Component({
     selector: 'app-register',
     templateUrl: './register.component.html',
     styleUrls: ['../login/login.component.css']
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, OnDestroy {
 
     registorForm: UntypedFormGroup;
+    private destroy$ = new Subject<void>(); 
     loading = false;
     submitted = false;
     error = '';
@@ -35,7 +39,8 @@ export class RegisterComponent implements OnInit {
     constructor(
         private formBuilder: UntypedFormBuilder,
         private router: Router,
-        private httpService: HttpService) { }
+        private httpService: HttpService,
+    ) { }
     ngOnInit() {
         // Set validation for registration-form elements
         this.registorForm = this.formBuilder.group({
@@ -73,8 +78,14 @@ export class RegisterComponent implements OnInit {
         this.loading = true;
         this.error = '';
         this.success =  '';
+
+        // this.messageService.add({
+        //     severity: 'success',
+        //     summary: 'Your access request has been sent for approval',
+        //   });
         // call registration service
         this.httpService.register(this.f.username.value, this.f.password.value, this.f.email.value)
+        .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (data: any) => {
                     // stop spinner
@@ -100,4 +111,9 @@ export class RegisterComponent implements OnInit {
                 }
             );
     }
+
+    ngOnDestroy() {
+        this.destroy$.next();  
+        this.destroy$.complete();
+      }
 }

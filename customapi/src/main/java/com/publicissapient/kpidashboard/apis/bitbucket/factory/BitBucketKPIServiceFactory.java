@@ -21,15 +21,15 @@ package com.publicissapient.kpidashboard.apis.bitbucket.factory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
-import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.bitbucket.service.BitBucketKPIService;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+
+import lombok.Builder;
 
 /**
  * Factory to provide bit bucket service.
@@ -48,8 +48,7 @@ public class BitBucketKPIServiceFactory {
 	public static BitBucketKPIService getBitBucketKPIService(String type) throws ApplicationException {
 		BitBucketKPIService<?, ?, ?> service = BIT_BUCKET_SERVICE_CACHE.get(type);
 		if (service == null) {
-			throw new ApplicationException(BitBucketKPIServiceFactory.class,
-					"Bitbucket KPI Service Factory not initalized");
+			throw new ApplicationException(BitBucketKPIServiceFactory.class, "Bitbucket KPI Service Factory not initalized");
 		}
 		return service;
 	}
@@ -60,5 +59,4 @@ public class BitBucketKPIServiceFactory {
 			BIT_BUCKET_SERVICE_CACHE.put(service.getQualifierType(), service);
 		}
 	}
-
 }

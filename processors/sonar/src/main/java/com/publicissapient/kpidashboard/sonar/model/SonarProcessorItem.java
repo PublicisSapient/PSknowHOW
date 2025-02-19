@@ -20,9 +20,7 @@ package com.publicissapient.kpidashboard.sonar.model;
 
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 
-/**
- * Provides Sonar Project setup properties.
- */
+/** Provides Sonar Project setup properties. */
 public class SonarProcessorItem extends ProcessorItem {
 	private static final String INSTANCE_URL = "instanceUrl";
 	private static final String PROJECT_NAME = "projectName";
@@ -34,7 +32,7 @@ public class SonarProcessorItem extends ProcessorItem {
 
 	/**
 	 * Provides instance URL.
-	 * 
+	 *
 	 * @return the instance url from options
 	 */
 	public String getInstanceUrl() {
@@ -43,9 +41,9 @@ public class SonarProcessorItem extends ProcessorItem {
 
 	/**
 	 * Sets instance URL.
-	 * 
+	 *
 	 * @param instanceUrl
-	 *            the instance URL
+	 *          the instance URL
 	 */
 	public void setInstanceUrl(String instanceUrl) {
 		getToolDetailsMap().put(INSTANCE_URL, instanceUrl);
@@ -53,7 +51,7 @@ public class SonarProcessorItem extends ProcessorItem {
 
 	/**
 	 * Provides Project Id.
-	 * 
+	 *
 	 * @return the projectId from Options
 	 */
 	public String getProjectId() {
@@ -62,9 +60,9 @@ public class SonarProcessorItem extends ProcessorItem {
 
 	/**
 	 * Sets Project Id.
-	 * 
+	 *
 	 * @param id
-	 *            the project ID
+	 *          the project ID
 	 */
 	public void setProjectId(String id) {
 		getToolDetailsMap().put(PROJECT_ID, id);
@@ -72,7 +70,7 @@ public class SonarProcessorItem extends ProcessorItem {
 
 	/**
 	 * Provides Project Name.
-	 * 
+	 *
 	 * @return the project name from Options
 	 */
 	public String getProjectName() {
@@ -81,9 +79,9 @@ public class SonarProcessorItem extends ProcessorItem {
 
 	/**
 	 * Sets Project name.
-	 * 
+	 *
 	 * @param name
-	 *            the project name
+	 *          the project name
 	 */
 	public void setProjectName(String name) {
 		getToolDetailsMap().put(PROJECT_NAME, name);
@@ -91,7 +89,7 @@ public class SonarProcessorItem extends ProcessorItem {
 
 	/**
 	 * Get Project key.
-	 * 
+	 *
 	 * @return key the project key
 	 */
 	public String getKey() {
@@ -100,9 +98,9 @@ public class SonarProcessorItem extends ProcessorItem {
 
 	/**
 	 * Sets Project key.
-	 * 
+	 *
 	 * @param key
-	 *            the project key
+	 *          the project key
 	 */
 	public void setKey(String key) {
 		getToolDetailsMap().put(KEY, key);
@@ -110,7 +108,7 @@ public class SonarProcessorItem extends ProcessorItem {
 
 	/**
 	 * Provides latest version.
-	 * 
+	 *
 	 * @return the latest version
 	 */
 	public String getLatestVersion() {
@@ -119,9 +117,9 @@ public class SonarProcessorItem extends ProcessorItem {
 
 	/**
 	 * Sets latest version.
-	 * 
+	 *
 	 * @param key
-	 *            the project key
+	 *          the project key
 	 */
 	public void setLatestVersion(String key) {
 		getToolDetailsMap().put(LATEST_VERSION, key);
@@ -129,7 +127,7 @@ public class SonarProcessorItem extends ProcessorItem {
 
 	/**
 	 * Provides Timestamp.
-	 * 
+	 *
 	 * @return the timestamp
 	 */
 	public long getTimestamp() {
@@ -138,9 +136,9 @@ public class SonarProcessorItem extends ProcessorItem {
 
 	/**
 	 * Sets Timestamp.
-	 * 
+	 *
 	 * @param timestamp
-	 *            the timestamp
+	 *          the timestamp
 	 */
 	public void setTimestamp(Long timestamp) {
 		getToolDetailsMap().put(TIMESTAMP, timestamp);
@@ -148,7 +146,7 @@ public class SonarProcessorItem extends ProcessorItem {
 
 	/**
 	 * Provides branch.
-	 * 
+	 *
 	 * @return branch
 	 */
 	public String getBranch() {
@@ -157,7 +155,7 @@ public class SonarProcessorItem extends ProcessorItem {
 
 	/**
 	 * Sets branch.
-	 * 
+	 *
 	 * @param branch
 	 */
 	public void setBranch(String branch) {
@@ -166,7 +164,7 @@ public class SonarProcessorItem extends ProcessorItem {
 
 	/**
 	 * Overridden method of Object's equals method.
-	 * 
+	 *
 	 * @return boolean
 	 */
 	@Override
@@ -179,13 +177,13 @@ public class SonarProcessorItem extends ProcessorItem {
 		}
 
 		SonarProcessorItem that = (SonarProcessorItem) obj;
-		return getKey().equals(that.getKey()) && getInstanceUrl().equals(that.getInstanceUrl())
-				&& getToolConfigId().toString().equals(that.getToolConfigId().toString());
+		return getKey().equals(that.getKey()) && getInstanceUrl().equals(that.getInstanceUrl()) &&
+				getToolConfigId().toString().equals(that.getToolConfigId().toString());
 	}
 
 	/**
 	 * Overridden method of Object's hashCode method.
-	 * 
+	 *
 	 * @return hashcode
 	 */
 	@Override
@@ -195,13 +193,11 @@ public class SonarProcessorItem extends ProcessorItem {
 		return result;
 	}
 
-	/**
-	 * Provides Sonar Project properties details.
-	 */
+	/** Provides Sonar Project properties details. */
 	@Override
 	public String toString() {
-		return "SonarProject [getInstanceUrl()=" + getInstanceUrl() + ", getProjectName()=" + getProjectName()
-				+ ", getKey()=" + getKey() + ", getLatestVersion()=" + getLatestVersion() + ", getTimestamp()="
-				+ getTimestamp() + ", hashCode()=" + hashCode() + "]";
+		return "SonarProject [getInstanceUrl()=" + getInstanceUrl() + ", getProjectName()=" + getProjectName() +
+				", getKey()=" + getKey() + ", getLatestVersion()=" + getLatestVersion() + ", getTimestamp()=" + getTimestamp() +
+				", hashCode()=" + hashCode() + "]";
 	}
 }

@@ -38,7 +38,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author anisingh4
  */
-
 @Slf4j
 public class KpiRequestFactory {
 
@@ -51,7 +50,6 @@ public class KpiRequestFactory {
 	private List<KpiElement> kpiElements;
 
 	private KpiRequestFactory() {
-
 	}
 
 	public static KpiRequestFactory newInstance(String filePath) {
@@ -116,6 +114,5 @@ public class KpiRequestFactory {
 	private KpiElement findKpi(String kpiId) {
 		return CollectionUtils.emptyIfNull(kpiElements).stream().filter(kpi -> kpi.getKpiId().equals(kpiId)).findFirst()
 				.orElse(null);
-
 	}
 }

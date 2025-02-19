@@ -28,9 +28,10 @@ import com.publicissapient.kpidashboard.common.model.rbac.AccessRequestsData;
 import com.publicissapient.kpidashboard.common.model.rbac.ActionPolicyRule;
 
 public interface ActionPolicyRuleRepository
-		extends MongoRepository<ActionPolicyRule, ObjectId>, QuerydslPredicateExecutor<AccessRequestsData> {
+		extends
+			MongoRepository<ActionPolicyRule, ObjectId>,
+			QuerydslPredicateExecutor<AccessRequestsData> {
 	List<ActionPolicyRule> findByName(String name);
 
 	List<ActionPolicyRule> findAll();
-
 }

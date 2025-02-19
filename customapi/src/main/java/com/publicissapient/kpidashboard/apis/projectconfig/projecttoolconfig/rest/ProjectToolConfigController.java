@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.re
 
 import javax.validation.Valid;
 
-import com.publicissapient.kpidashboard.apis.util.ProjectAccessUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -39,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigService;
+import com.publicissapient.kpidashboard.apis.util.ProjectAccessUtil;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
 
@@ -47,7 +47,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author yasbano
  * @author dilipkr
- *
  */
 @RestController
 @Slf4j
@@ -59,9 +58,7 @@ public class ProjectToolConfigController {
 	@Autowired
 	private ProjectAccessUtil projectAccessUtil;
 
-	/**
-	 * Fetch all projectToolConfig
-	 */
+	/** Fetch all projectToolConfig */
 	@RequestMapping(value = "/basicconfigs/{basicConfigId}/tools", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getProjectTools(@PathVariable String basicConfigId,
 			@RequestParam(name = "toolType", required = false) String toolType) {
@@ -76,22 +73,18 @@ public class ProjectToolConfigController {
 			response = new ServiceResponse(true, "list of tools", toolService.getProjectToolConfigs(basicConfigId));
 		} else {
 			log.info("Fetching toolType ", toolType);
-			response = new ServiceResponse(true, "list of tools",
-					toolService.getProjectToolConfigs(basicConfigId, toolType));
+			response = new ServiceResponse(true, "list of tools", toolService.getProjectToolConfigs(basicConfigId, toolType));
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
 	/**
 	 * save/add ProjectToolConfig details *
-	 * 
+	 *
 	 * @param projectToolDTO
-	 *            request object that is created in the database.
-	 * 
-	 * 
+	 *          request object that is created in the database.
 	 * @return responseEntity with data,message and status
 	 */
-
 	@PreAuthorize("hasPermission(#basicProjectConfigId, 'SAVE_PROJECT_TOOL')")
 	@RequestMapping(value = "/basicconfigs/{basicProjectConfigId}/tools", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> saveToolDetails(@PathVariable String basicProjectConfigId,
@@ -106,11 +99,10 @@ public class ProjectToolConfigController {
 
 	/**
 	 * Modify/Update a projectToolDTO by projectToolId. *
-	 * 
-	 * @param projectToolDTO
-	 *            request object that replaces the project_tool_configs data present
-	 *            at object_id projectToolId.
 	 *
+	 * @param projectToolDTO
+	 *          request object that replaces the project_tool_configs data present
+	 *          at object_id projectToolId.
 	 * @return responseEntity with data,message and status
 	 */
 	@PreAuthorize("hasPermission(#basicProjectConfigId, 'UPDATE_PROJECT_TOOL')")

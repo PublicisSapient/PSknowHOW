@@ -22,7 +22,7 @@ import com.publicissapient.kpidashboard.apis.model.VersionDetails;
 
 /**
  * Contract to handle version metadata.
- * 
+ *
  * @author anisingh4
  */
 public interface VersionMetadataService {

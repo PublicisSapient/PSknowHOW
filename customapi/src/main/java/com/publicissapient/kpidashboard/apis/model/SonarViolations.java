@@ -23,14 +23,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The type Sonar violations.
- */
+/** The type Sonar violations. */
 @Getter
 @Setter
 @Data
 @NoArgsConstructor
-@SuppressWarnings({ "squid:S00100", "squid:S00117", "squid:S00116" }) // to avoid sonar for _class
+@SuppressWarnings({"squid:S00100", "squid:S00117", "squid:S00116"}) // to avoid sonar for _class
 public class SonarViolations {
 	private Long info;
 	private Long minor;
@@ -47,7 +45,7 @@ public class SonarViolations {
 	 * Instantiates a new Sonar violations.
 	 *
 	 * @param value
-	 *            the value
+	 *          the value
 	 */
 	public SonarViolations(Long value) {
 		this.info = value;
@@ -62,18 +60,16 @@ public class SonarViolations {
 	 *
 	 * @return SonarViloations object with
 	 *         <ul>
-	 *         <li>info</li>
-	 *         <li>minor</li>
-	 *         <li>major</li>
-	 *         <li>blocker</li>
-	 *         <li>critical</li>
+	 *         <li>info
+	 *         <li>minor
+	 *         <li>major
+	 *         <li>blocker
+	 *         <li>critical
 	 *         </ul>
 	 *         whenever toString() method is invoked
 	 */
 	@Override
 	public String toString() {
-		return "info=" + info + "\nminor=" + minor + "\nmajor=" + major + "\nblocker=" + blocker + "\ncritical="
-				+ critical;
+		return "info=" + info + "\nminor=" + minor + "\nmajor=" + major + "\nblocker=" + blocker + "\ncritical=" + critical;
 	}
-
 }

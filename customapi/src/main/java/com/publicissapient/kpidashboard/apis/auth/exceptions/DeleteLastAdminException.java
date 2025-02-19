@@ -20,20 +20,16 @@ package com.publicissapient.kpidashboard.apis.auth.exceptions;
 
 /**
  * Extends RuntimeException
- * 
- * @author prijain3
  *
+ * @author prijain3
  */
 public class DeleteLastAdminException extends RuntimeException {
 
 	private static final long serialVersionUID = -4670507474875127809L;
 	private static final String MESSAGE = "There must always be at least one admin";
 
-	/**
-	 * Constructor.
-	 */
+	/** Constructor. */
 	public DeleteLastAdminException() {
 		super(MESSAGE);
 	}
-
 }

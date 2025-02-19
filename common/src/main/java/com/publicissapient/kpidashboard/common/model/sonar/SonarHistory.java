@@ -34,9 +34,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The Code quality history collection.
- */
+/** The Code quality history collection. */
 @Data
 @Builder
 @Getter
@@ -59,5 +57,4 @@ public class SonarHistory extends BasicModel {
 	private String branch;
 
 	private List<SonarMetric> metrics = new ArrayList<>();
-
 }

@@ -67,12 +67,13 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	 * Instantiate DefaultAzurePipelineClient.
 	 *
 	 * @param restOperationsFactory
-	 *            the object supplier for RestOperations
+	 *          the object supplier for RestOperations
 	 * @param azurePipelineConfig
-	 *            the AzurePipeline configuration details
+	 *          the AzurePipeline configuration details
 	 */
 	@Autowired
 	RestOperationsFactory<RestOperations> restOperationsFactory;
+
 	@Autowired
 	private AzurePipelineConfig azurePipelineConfig;
 
@@ -80,10 +81,10 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	 * Provides Instance Jobs.
 	 *
 	 * @param azurePipelineServer
-	 *            the connection properties for AzurePipeline server
+	 *          the connection properties for AzurePipeline server
 	 * @param lastStartTimeOfBuilds
-	 *            the last updated time of the processor which is used for delta
-	 *            import
+	 *          the last updated time of the processor which is used for delta
+	 *          import
 	 * @param proBasicConfig
 	 * @return the map of azurePipeline jobs and set of builds
 	 */
@@ -95,8 +96,8 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 
 		try {
 			String minTime = AzurePipelineUtils.getDateFromTimeInMili(lastStartTimeOfBuilds);
-			StringBuilder url = new StringBuilder(
-					AzurePipelineUtils.joinURL(AzurePipelineUtils.encodeSpaceInUrl(azurePipelineServer.getUrl()), azurePipelineConfig.getApiEndPoint()));
+			StringBuilder url = new StringBuilder(AzurePipelineUtils.joinURL(
+					AzurePipelineUtils.encodeSpaceInUrl(azurePipelineServer.getUrl()), azurePipelineConfig.getApiEndPoint()));
 			url = AzurePipelineUtils.addParam(url, "api-version", azurePipelineServer.getApiVersion());
 			url = AzurePipelineUtils.addParam(url, "definitions", azurePipelineServer.getJobName());
 			if (!minTime.equals("1970-01-01T00:00:00.000Z")) {
@@ -128,11 +129,11 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	 * only the rest api call would change.
 	 *
 	 * @param azurePipelineServer
-	 *            the connection properties for AzurePipeline server
+	 *          the connection properties for AzurePipeline server
 	 * @param result
-	 *            the map of azurePipeline jobs and set of builds
+	 *          the map of azurePipeline jobs and set of builds
 	 * @param resJSON
-	 *            response body of rest api call
+	 *          response body of rest api call
 	 * @param proBasicConfig
 	 */
 	private void processResponse(ProcessorToolConnection azurePipelineServer, Map<ObjectId, Set<Build>> result,
@@ -151,7 +152,8 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 			}
 
 		} catch (ParseException e) {
-			log.error(String.format("Parsing jobs details on instance: %s", AzurePipelineUtils.encodeSpaceInUrl(azurePipelineServer.getUrl())), e);
+			log.error(String.format("Parsing jobs details on instance: %s",
+					AzurePipelineUtils.encodeSpaceInUrl(azurePipelineServer.getUrl())), e);
 		}
 	}
 
@@ -159,7 +161,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	 * Creates Build Object
 	 *
 	 * @param buildJson
-	 *            the build as JSON object
+	 *          the build as JSON object
 	 * @param proBasicConfig
 	 * @return the build object
 	 */
@@ -171,10 +173,8 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 		}
 		build.setBuildUrl(AzurePipelineUtils.getString(buildJson, "url"));
 		build.setNumber(String.valueOf(buildJson.get("id")));
-		Optional.ofNullable(AzurePipelineUtils.getString(buildJson, "startTime"))
-				.map(Instant::parse)
-				.map(Instant::toEpochMilli)
-				.ifPresent(build::setStartTime);
+		Optional.ofNullable(AzurePipelineUtils.getString(buildJson, "startTime")).map(Instant::parse)
+				.map(Instant::toEpochMilli).ifPresent(build::setStartTime);
 		if (StringUtils.isNotEmpty(AzurePipelineUtils.getString(buildJson, "finishTime"))) {
 			build.setEndTime(Instant.parse(AzurePipelineUtils.getString(buildJson, "finishTime")).toEpochMilli());
 		}
@@ -188,7 +188,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	 * Provides Build Status.
 	 *
 	 * @param buildJson
-	 *            the build as JSON object
+	 *          the build as JSON object
 	 * @return the build status
 	 */
 	private BuildStatus getBuildStatus(JSONObject buildJson) {
@@ -201,18 +201,18 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 			return BuildStatus.UNKNOWN;
 		}
 		switch (status) {
-		case "succeeded":
-			return BuildStatus.SUCCESS;
-		case "partiallySucceeded":
-			return BuildStatus.UNSTABLE;
-		case "failed":
-			return BuildStatus.FAILURE;
-		case "canceled":
-			return BuildStatus.ABORTED;
-		case "inProgress":
-			return BuildStatus.IN_PROGRESS;
-		default:
-			return BuildStatus.UNKNOWN;
+			case "succeeded" :
+				return BuildStatus.SUCCESS;
+			case "partiallySucceeded" :
+				return BuildStatus.UNSTABLE;
+			case "failed" :
+				return BuildStatus.FAILURE;
+			case "canceled" :
+				return BuildStatus.ABORTED;
+			case "inProgress" :
+				return BuildStatus.IN_PROGRESS;
+			default :
+				return BuildStatus.UNKNOWN;
 		}
 	}
 
@@ -220,11 +220,10 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	 * Makes Rest Call.
 	 *
 	 * @param sUrl
-	 *            the rest call URL
+	 *          the rest call URL
 	 * @param azurePipelineServer
-	 *            the connection properties for AzurePipeline server
+	 *          the connection properties for AzurePipeline server
 	 * @return the response entity
-	 *
 	 */
 	public ResponseEntity<String> doRestCall(String sUrl, ProcessorToolConnection azurePipelineServer) {
 		log.debug("Enter makeRestCall {}", sUrl);
@@ -243,9 +242,9 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	 * Gets pat info
 	 *
 	 * @param sUrl
-	 *            the url
+	 *          the url
 	 * @param azurePipelineServer
-	 *            azurePipeline server url
+	 *          azurePipeline server url
 	 * @return pat info eg. :pat
 	 */
 	private String getPat(String sUrl, ProcessorToolConnection azurePipelineServer) {
@@ -260,7 +259,6 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 						"Credentials for the following url was not found. This could happen if the domain/subdomain/IP address in the build url returned by AzurePipeline and the AzurePipeline instance url in your configuration do not match: {} ",
 						sUrl);
 			}
-
 		}
 
 		return pat;

@@ -89,9 +89,11 @@ public class JenkinsServiceKanbanRTest {
 	private CodeBuildTimeKanbanServiceImpl codeBuildTimeKanbanServiceImpl;
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
+
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<JenkinsKPIService> services;
+
 	private List<AccountHierarchyDataKanban> accountHierarchyDataKanbanList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
@@ -134,8 +136,7 @@ public class JenkinsServiceKanbanRTest {
 		when(filterHelperService.getHierarachyLevelId(4, "project", true)).thenReturn("project");
 		when(authorizedProjectsService.filterKanbanProjects(accountHierarchyDataKanbanList))
 				.thenReturn(accountHierarchyDataKanbanList);
-		when(filterHelperService.getFilteredBuildsKanban(any(), anyString()))
-				.thenReturn(accountHierarchyDataKanbanList);
+		when(filterHelperService.getFilteredBuildsKanban(any(), anyString())).thenReturn(accountHierarchyDataKanbanList);
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		Map<String, Integer> map = new HashMap<>();
 		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
@@ -145,7 +146,6 @@ public class JenkinsServiceKanbanRTest {
 
 		buildKpiElement = setKpiElement(KPICode.CODE_BUILD_TIME_KANBAN.getKpiId(), "CODE_BUILD_TIME_KANBAN");
 		doReturn(buildKpiElement).when(codeBuildTimeKanbanServiceImpl).getKpiData(any(), any(), any());
-
 	}
 
 	@Test
@@ -154,8 +154,8 @@ public class JenkinsServiceKanbanRTest {
 		List<KpiElement> resultList = jenkinsServiceKanbanR.process(kpiRequest);
 
 		assertThat("Kpi Name :", resultList.get(0).getKpiName(), equalTo("CODE_BUILD_TIME_KANBAN"));
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
-
+		assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
 	}
 
 	@Test
@@ -163,20 +163,26 @@ public class JenkinsServiceKanbanRTest {
 		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 
-
 		List<KpiElement> resultList;
-		try (MockedStatic<JenkinsKPIServiceFactory> mockedStatic = mockStatic(JenkinsKPIServiceFactory.class)) {
+		try (MockedStatic<JenkinsKPIServiceFactory> mockedStatic =
+				mockStatic(JenkinsKPIServiceFactory.class)) {
 			CodeBuildTimeKanbanServiceImpl mockService = mock(CodeBuildTimeKanbanServiceImpl.class);
-			mockedStatic.when(
-					() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())))
+			mockedStatic
+					.when(
+							() ->
+									JenkinsKPIServiceFactory.getJenkinsKPIService(
+											eq(KPICode.CODE_BUILD_TIME_KANBAN.name())))
 					.thenReturn(mockService);
 			when(mockService.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
 			resultList = jenkinsServiceKanbanR.process(kpiRequest);
 			mockedStatic.verify(
-					() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())));
+					() ->
+							JenkinsKPIServiceFactory.getJenkinsKPIService(
+									eq(KPICode.CODE_BUILD_TIME_KANBAN.name())));
 		}
 
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+		assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
 	}
 
 	@Test
@@ -185,19 +191,26 @@ public class JenkinsServiceKanbanRTest {
 		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 
 		List<KpiElement> resultList;
-		try (MockedStatic<JenkinsKPIServiceFactory> mockedStatic = mockStatic(JenkinsKPIServiceFactory.class)) {
+		try (MockedStatic<JenkinsKPIServiceFactory> mockedStatic =
+				mockStatic(JenkinsKPIServiceFactory.class)) {
 			CodeBuildTimeKanbanServiceImpl mockService = mock(CodeBuildTimeKanbanServiceImpl.class);
 			when(mockService.getKpiData(any(), any(), any())).thenReturn(buildKpiElement);
-			mockedStatic.when(
-					() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())))
+			mockedStatic
+					.when(
+							() ->
+									JenkinsKPIServiceFactory.getJenkinsKPIService(
+											eq(KPICode.CODE_BUILD_TIME_KANBAN.name())))
 					.thenReturn(mockService);
 			when(mockService.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
 			resultList = jenkinsServiceKanbanR.process(kpiRequest);
 			mockedStatic.verify(
-					() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())));
+					() ->
+							JenkinsKPIServiceFactory.getJenkinsKPIService(
+									eq(KPICode.CODE_BUILD_TIME_KANBAN.name())));
 		}
 
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+		assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
 	}
 
 	@Test
@@ -211,7 +224,6 @@ public class JenkinsServiceKanbanRTest {
 
 		List<KpiElement> resultList = jenkinsServiceKanbanR.process(kpiRequest);
 		assertThat("Kpi list :", resultList.size(), equalTo(0));
-
 	}
 
 	private KpiRequest createKpiRequest(int level, String source) {
@@ -222,7 +234,7 @@ public class JenkinsServiceKanbanRTest {
 				"Productivity", "mins", source);
 		kpiRequest.setLevel(level);
 		kpiRequest.setLabel("project");
-		kpiRequest.setIds(new String[] { "Kanban Project_6335368249794a18e8a4479f" });
+		kpiRequest.setIds(new String[]{"Kanban Project_6335368249794a18e8a4479f"});
 		kpiRequest.setKpiList(kpiList);
 		Map<String, List<String>> selectedMap = new HashMap<>();
 		selectedMap.put("Project", Arrays.asList("Kanban Project_6335368249794a18e8a4479f"));
@@ -255,7 +267,5 @@ public class JenkinsServiceKanbanRTest {
 
 	@After
 	public void cleanup() {
-
 	}
-
 }

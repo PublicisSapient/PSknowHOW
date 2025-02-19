@@ -20,8 +20,8 @@ public class IssueDetails {
 		if (!(o instanceof IssueDetails))
 			return false;
 		IssueDetails that = (IssueDetails) o;
-		return Objects.equal(sprintIssue, that.sprintIssue) && Objects.equal(url, that.url)
-				&& Objects.equal(desc, that.desc);
+		return Objects.equal(sprintIssue, that.sprintIssue) && Objects.equal(url, that.url) &&
+				Objects.equal(desc, that.desc);
 	}
 
 	@Override

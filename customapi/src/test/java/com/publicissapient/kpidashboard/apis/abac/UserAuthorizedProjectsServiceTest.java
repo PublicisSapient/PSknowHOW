@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.abac;
 
 import static org.mockito.Mockito.anyString;
@@ -105,7 +104,6 @@ public class UserAuthorizedProjectsServiceTest {
 
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
-
 	}
 
 	@Test
@@ -131,8 +129,8 @@ public class UserAuthorizedProjectsServiceTest {
 		projectList.add("5fd9ab0995fe13000165d0ba");
 		when(tokenAuthenticationService.getUserProjects()).thenReturn(projectList);
 		when(accountHierarchyRepo.findAll()).thenReturn(accountHierarchyList);
-		Assertions.assertTrue(!userAuthorizedProjectsService
-				.checkUserAuthForProjects(filterDataFactory.getAccountHierarchyDataList()));
+		Assertions.assertTrue(
+				!userAuthorizedProjectsService.checkUserAuthForProjects(filterDataFactory.getAccountHierarchyDataList()));
 	}
 
 	@Test
@@ -158,7 +156,6 @@ public class UserAuthorizedProjectsServiceTest {
 		projectList.add("63330b7068b5d05cf59c4386");
 		when(tokenAuthenticationService.getUserProjects()).thenReturn(projectList);
 		userAuthorizedProjectsService.filterKanbanProjects(kanbanFilterDataFactory.getAccountHierarchyKanbanDataList());
-
 	}
 
 	@Test
@@ -167,7 +164,6 @@ public class UserAuthorizedProjectsServiceTest {
 		projectList.add("63330b7068b5d05cf59c4386");
 		userAuthorizedProjectsService.getKanbanProjectKey(kanbanFilterDataFactory.getAccountHierarchyKanbanDataList(),
 				kpiRequest);
-
 	}
 
 	@Test
@@ -175,7 +171,5 @@ public class UserAuthorizedProjectsServiceTest {
 		Set<String> projectList = new HashSet<>();
 		projectList.add("63330b7068b5d05cf59c4386");
 		userAuthorizedProjectsService.getProjectKey(filterDataFactory.getAccountHierarchyDataList(), kpiRequest);
-
 	}
-
 }

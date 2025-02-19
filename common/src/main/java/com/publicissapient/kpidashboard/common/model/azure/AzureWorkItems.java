@@ -36,5 +36,4 @@ public class AzureWorkItems {
 	private AzureWorkItemFields fields;
 	// private JSONObject fields;
 	private String url;
-
 }

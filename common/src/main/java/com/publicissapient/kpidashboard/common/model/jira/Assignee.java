@@ -1,4 +1,4 @@
-	/*******************************************************************************
+/*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
  *
@@ -28,10 +28,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * user assignee details
- */
-
+/** user assignee details */
 @Getter
 @Setter
 @Builder

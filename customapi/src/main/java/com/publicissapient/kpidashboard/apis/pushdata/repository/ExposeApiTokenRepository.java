@@ -30,5 +30,4 @@ public interface ExposeApiTokenRepository extends MongoRepository<ExposeApiToken
 	ExposeApiToken findByUserNameAndBasicProjectConfigId(String userName, ObjectId basicProjectConfigId);
 
 	ExposeApiToken findByApiToken(String apiToken);
-
 }

@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -25,17 +24,14 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-/**
- * Application configuration and bootstrap
- */
+/** Application configuration and bootstrap */
 @SpringBootApplication
 @EnableCaching
-@ComponentScan({ "com.publicissapient" })
-@EnableMongoRepositories(basePackages = { "com.publicissapient.**.repository" })
+@ComponentScan({"com.publicissapient"})
+@EnableMongoRepositories(basePackages = {"com.publicissapient.**.repository"})
 public class GitLabApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(GitLabApplication.class, args);
 	}
-
 }

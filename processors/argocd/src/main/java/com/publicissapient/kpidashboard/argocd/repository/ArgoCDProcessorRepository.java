@@ -23,10 +23,7 @@ import org.springframework.stereotype.Repository;
 import com.publicissapient.kpidashboard.argocd.model.ArgoCDProcessor;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 
-/**
- * Processor repository for the ArgoCDProcessor subclass.
- */
-
+/** Processor repository for the ArgoCDProcessor subclass. */
 @Repository
 public interface ArgoCDProcessorRepository extends ProcessorRepository<ArgoCDProcessor> {
 }

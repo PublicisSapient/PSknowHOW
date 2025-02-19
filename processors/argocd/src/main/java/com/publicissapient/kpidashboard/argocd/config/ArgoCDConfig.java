@@ -25,9 +25,7 @@ import org.springframework.stereotype.Component;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Bean to hold settings specific to the ArgoCD processor.
- */
+/** Bean to hold settings specific to the ArgoCD processor. */
 @Component
 @Data
 @NoArgsConstructor
@@ -45,11 +43,10 @@ public class ArgoCDConfig {
 
 	/**
 	 * Provides the IP of Docker Localhost.
-	 * 
+	 *
 	 * @return the Localhost Docker IP
 	 */
 	public String getDockerHostIp() {
 		return dockerHostIp == null ? "" : dockerHostIp;
 	}
-
 }

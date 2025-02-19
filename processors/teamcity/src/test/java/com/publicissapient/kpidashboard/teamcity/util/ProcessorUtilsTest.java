@@ -79,7 +79,6 @@ public class ProcessorUtilsTest {
 		long result = 0L;
 		long timestamp = ProcessorUtils.getCommitTimestamp(jsonObject.toString());
 		assertEquals(result, timestamp);
-
 	}
 
 	@Test
@@ -90,7 +89,6 @@ public class ProcessorUtilsTest {
 		String jobQuery = "abc";
 
 		ProcessorUtils.buildJobQueryString(config, jobQuery);
-
 	}
 
 	@Test
@@ -99,7 +97,6 @@ public class ProcessorUtilsTest {
 		final String userInfo = "abc";
 
 		ProcessorUtils.createHeaders(userInfo);
-
 	}
 
 	@Test
@@ -109,7 +106,6 @@ public class ProcessorUtilsTest {
 		String paths = "C:/local";
 
 		ProcessorUtils.joinURL(base, paths);
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -122,11 +118,9 @@ public class ProcessorUtilsTest {
 		for (int i = 0; i < list.size(); i++) {
 
 			d.put(i, list.get(i));
-
 		}
 
 		ProcessorUtils.getGitRepoBranch(d);
-
 	}
 
 	@Test
@@ -135,7 +129,6 @@ public class ProcessorUtilsTest {
 		String paths = "C:/local";
 
 		ProcessorUtils.removeGitExtensionFromUrl(paths);
-
 	}
 
 	@Test
@@ -144,7 +137,6 @@ public class ProcessorUtilsTest {
 		String paths = "C:/local.git";
 
 		ProcessorUtils.removeGitExtensionFromUrl(paths);
-
 	}
 
 	@Test
@@ -153,7 +145,6 @@ public class ProcessorUtilsTest {
 		String branch = "master";
 
 		ProcessorUtils.getUnqualifiedBranch(branch);
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -166,7 +157,6 @@ public class ProcessorUtilsTest {
 		d.put("lastChanges", "test2");
 
 		ProcessorUtils.startDate(d);
-
 	}
 
 	@SuppressWarnings("unchecked")

@@ -23,8 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 
 public class Node implements Serializable {
 
@@ -39,10 +38,7 @@ public class Node implements Serializable {
 	private List<Node> children;
 	private int level;
 	private String groupName;
-
-	private AccountHierarchy accountHierarchy; // NOSONAR
-	private KanbanAccountHierarchy accountHierarchyKanban;
-
+	private ProjectHierarchy projectHierarchy;
 	private ProjectFilter projectFilter;
 	private SprintFilter sprintFilter;
 	private ReleaseFilter releaseFilter;
@@ -52,86 +48,58 @@ public class Node implements Serializable {
 		this.children = new ArrayList<>();
 	}
 
-	/**
-	 * 
-	 * @param object
-	 * @param childId
-	 * @param parentId
-	 * @param groupName
-	 * @param accountHierarchy
-	 */
 	public Node(Object object, String childId, String name, String parentId, String groupName,
-			AccountHierarchy accountHierarchy) {
+			ProjectHierarchy projectHierarchy, ProjectFilter projectFilter, SprintFilter sprintFilter) {
 		this.value = object;
 		this.id = childId;
 		this.name = name;
 		this.parentId = parentId;
 		this.groupName = groupName;
-		this.accountHierarchy = accountHierarchy;
-		this.children = new ArrayList<>();
-	}
-
-	public Node(Object object, String childId, String name, String parentId, String groupName,
-			AccountHierarchy accountHierarchy, ProjectFilter projectFilter, SprintFilter sprintFilter) {
-		this.value = object;
-		this.id = childId;
-		this.name = name;
-		this.parentId = parentId;
-		this.groupName = groupName;
-		this.accountHierarchy = accountHierarchy;
+		this.projectHierarchy = projectHierarchy;
 		this.children = new ArrayList<>();
 		this.projectFilter = projectFilter;
 		this.sprintFilter = sprintFilter;
 	}
 
 	public Node(Object object, String childId, String name, String parentId, String groupName,
-			AccountHierarchy accountHierarchy, ProjectFilter projectFilter, SprintFilter sprintFilter,
+			ProjectHierarchy projectHierarchy, ProjectFilter projectFilter, SprintFilter sprintFilter,
 			ReleaseFilter releaseFilter) {
 		this.value = object;
 		this.id = childId;
 		this.name = name;
 		this.parentId = parentId;
 		this.groupName = groupName;
-		this.accountHierarchy = accountHierarchy;
+		this.projectHierarchy = projectHierarchy;
 		this.children = new ArrayList<>();
 		this.projectFilter = projectFilter;
 		this.sprintFilter = sprintFilter;
 		this.releaseFilter = releaseFilter;
 	}
 
-	/**
-	 * 
-	 * @param object
-	 * @param childId
-	 * @param parentId
-	 * @param groupName
-	 * @param accountHierarchyKanban
-	 */
 	public Node(Object object, String childId, String name, String parentId, String groupName,
-			KanbanAccountHierarchy accountHierarchyKanban) {
+			ProjectHierarchy projectHierarchy, ProjectFilter projectFilter) {
 		this.value = object;
 		this.id = childId;
 		this.name = name;
 		this.parentId = parentId;
 		this.groupName = groupName;
-		this.accountHierarchyKanban = accountHierarchyKanban;
-		this.children = new ArrayList<>();
-	}
-
-	public Node(Object object, String childId, String name, String parentId, String groupName,
-			KanbanAccountHierarchy accountHierarchyKanban, ProjectFilter projectFilter) {
-		this.value = object;
-		this.id = childId;
-		this.name = name;
-		this.parentId = parentId;
-		this.groupName = groupName;
-		this.accountHierarchyKanban = accountHierarchyKanban;
+		this.projectHierarchy = projectHierarchy;
 		this.children = new ArrayList<>();
 		this.projectFilter = projectFilter;
 	}
 
+	public Node(Object object, String childId, String name, String parentId, String hierarchyLevelId,
+			ProjectHierarchy projectHierarchy) {
+		this.value = object;
+		this.id = childId;
+		this.name = name;
+		this.parentId = parentId;
+		this.groupName = hierarchyLevelId;
+		this.projectHierarchy = projectHierarchy;
+		this.children = new ArrayList<>();
+	}
+
 	/**
-	 * 
 	 * @return value
 	 */
 	public Object getValue() {
@@ -140,7 +108,7 @@ public class Node implements Serializable {
 
 	/**
 	 * Sets value
-	 * 
+	 *
 	 * @param value
 	 */
 	public void setValue(Object value) {
@@ -148,7 +116,6 @@ public class Node implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return id
 	 */
 	public String getId() {
@@ -157,7 +124,7 @@ public class Node implements Serializable {
 
 	/**
 	 * Sets id
-	 * 
+	 *
 	 * @param id
 	 */
 	public void setId(String id) {
@@ -165,7 +132,6 @@ public class Node implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return parentId
 	 */
 	public String getParentId() {
@@ -174,7 +140,7 @@ public class Node implements Serializable {
 
 	/**
 	 * Sets parentId
-	 * 
+	 *
 	 * @param parentId
 	 */
 	public void setParentId(String parentId) {
@@ -182,7 +148,6 @@ public class Node implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return parent of type Node
 	 */
 	public Node getParent() {
@@ -191,7 +156,7 @@ public class Node implements Serializable {
 
 	/**
 	 * Sets parent
-	 * 
+	 *
 	 * @param parent
 	 */
 	public void setParent(Node parent) {
@@ -199,7 +164,6 @@ public class Node implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return List of children of type Node
 	 */
 	public List<Node> getChildren() {
@@ -208,7 +172,7 @@ public class Node implements Serializable {
 
 	/**
 	 * Sets children
-	 * 
+	 *
 	 * @param children
 	 */
 	public void setChildren(List<Node> children) {
@@ -217,7 +181,7 @@ public class Node implements Serializable {
 
 	/**
 	 * Adds an entry to the Children Nodes list
-	 * 
+	 *
 	 * @param child
 	 */
 	public void addChild(Node child) {
@@ -226,17 +190,14 @@ public class Node implements Serializable {
 		}
 	}
 
-	/**
-	 * toString() method of String by adding Parent and Children Nodes
-	 */
+	/** toString() method of String by adding Parent and Children Nodes */
 	@Override
 	public String toString() {
-		return "Node [id=" + id + ", parentId=" + parentId + ", value=" + value + ", children=" + children + ", level="
-				+ level + "]";
+		return "Node [id=" + id + ", parentId=" + parentId + ", value=" + value + ", children=" + children + ", level=" +
+				level + "]";
 	}
 
 	/**
-	 * 
 	 * @return groupName
 	 */
 	public String getGroupName() {
@@ -245,7 +206,7 @@ public class Node implements Serializable {
 
 	/**
 	 * Sets groupName
-	 * 
+	 *
 	 * @param groupName
 	 */
 	public void setGroupName(String groupName) {
@@ -253,7 +214,6 @@ public class Node implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return String
 	 */
 	public String getName() {
@@ -261,7 +221,6 @@ public class Node implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @param name
 	 */
 	public void setName(String name) {
@@ -276,20 +235,12 @@ public class Node implements Serializable {
 		this.level = level;
 	}
 
-	public AccountHierarchy getAccountHierarchy() {
-		return accountHierarchy;
+	public ProjectHierarchy getProjectHierarchy() {
+		return projectHierarchy;
 	}
 
-	public void setAccountHierarchy(AccountHierarchy accountHierarchy) {
-		this.accountHierarchy = accountHierarchy;
-	}
-
-	public KanbanAccountHierarchy getAccountHierarchyKanban() {
-		return accountHierarchyKanban;
-	}
-
-	public void setAccountHierarchyKanban(KanbanAccountHierarchy accountHierarchyKanban) {
-		this.accountHierarchyKanban = accountHierarchyKanban;
+	public void setProjectHierarchy(ProjectHierarchy projectHierarchy) {
+		this.projectHierarchy = projectHierarchy;
 	}
 
 	public ProjectFilter getProjectFilter() {
@@ -323,10 +274,9 @@ public class Node implements Serializable {
 			return false;
 		}
 		Node other = (Node) obj;
-		if (obj instanceof Node && this.id.equals(other.id)
-				&& (null == this.parentId || this.parentId.equals(other.parentId))) {
+		if (obj instanceof Node && this.id.equals(other.id) &&
+				(null == this.parentId || this.parentId.equals(other.parentId))) {
 			isEqual = true;
-
 		}
 		return isEqual;
 	}
@@ -335,5 +285,4 @@ public class Node implements Serializable {
 	public int hashCode() {
 		return Objects.hash(this.id, this.parentId);
 	}
-
 }

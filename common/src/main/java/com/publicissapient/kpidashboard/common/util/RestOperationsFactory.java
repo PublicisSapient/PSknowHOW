@@ -18,9 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.util;
 
-/**
- * A class that provides object of some type
- */
+/** A class that provides object of some type */
 public interface RestOperationsFactory<T> {
 
 	/**

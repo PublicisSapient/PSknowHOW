@@ -54,13 +54,11 @@ public class ZephyrUtilTest {
 		String result = PLAIN_TEXT;
 		when(aesEncryptionService.decrypt(any(), any())).thenReturn(PLAIN_TEXT);
 		assertEquals(aesEncryptionService.decrypt(ENCRYPTED_TEXT, "abc"), result);
-
 	}
 
 	@Test
 	public void testBase64String() {
 		String base64 = zephyrUtil.getCredentialsAsBase64String("user", "pwd");
 		assertEquals("dXNlcjpudWxs", base64);
-
 	}
 }

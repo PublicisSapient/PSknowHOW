@@ -35,9 +35,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class EmailEvent implements Serializable {
 
-	/**
-	 * 
-	 */
+	/** */
 	private static final long serialVersionUID = -1334987659830782650L;
 
 	private String from;
@@ -49,5 +47,4 @@ public class EmailEvent implements Serializable {
 	private Map<String, String> customData;
 	private String emailHost;
 	private int emailPort;
-
 }

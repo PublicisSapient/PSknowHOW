@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -63,17 +62,15 @@ import com.publicissapient.kpidashboard.apis.jira.kanban.service.NetOpenTicketCo
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 /**
- *
  * @author pkum34
- *
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class JiraServiceKanbanRTest {
 
@@ -94,9 +91,11 @@ public class JiraServiceKanbanRTest {
 	private CacheService cacheService;
 	@Mock
 	private NetOpenTicketCountByRCAServiceImpl rcaServiceImpl;
+
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<JiraKPIService> services;
+
 	@Mock
 	TestService service;
 	private List<AccountHierarchyDataKanban> accountHierarchyDataList = new ArrayList<>();
@@ -149,8 +148,7 @@ public class JiraServiceKanbanRTest {
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		when(filterHelperService.getFilteredBuildsKanban(ArgumentMatchers.any(), ArgumentMatchers.any()))
 				.thenReturn(accountHierarchyDataList);
-		when(authorizedProjectsService.filterKanbanProjects(accountHierarchyDataList))
-				.thenReturn(accountHierarchyDataList);
+		when(authorizedProjectsService.filterKanbanProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
 	}
 
 	private void setRcaKpiElement() {
@@ -182,7 +180,6 @@ public class JiraServiceKanbanRTest {
 		dataCount.setData(data);
 
 		return dataCount;
-
 	}
 
 	private void setMockProjectConfig() {
@@ -202,7 +199,6 @@ public class JiraServiceKanbanRTest {
 		projectConfigList.add(projectOne);
 		projectConfigList.add(projectTwo);
 		projectConfigList.add(projectThree);
-
 	}
 
 	private void setMockFieldMapping() {
@@ -225,12 +221,10 @@ public class JiraServiceKanbanRTest {
 		fieldMappingList.add(projectOne);
 		fieldMappingList.add(projectTwo);
 		fieldMappingList.add(projectThree);
-
 	}
 
 	@After
 	public void cleanup() {
-
 	}
 
 	/**
@@ -243,11 +237,9 @@ public class JiraServiceKanbanRTest {
 
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest("kpi14");
 		kpiRequest.setLabel("PROJECT");
-		when(filterHelperService.getFilteredBuildsKanban(kpiRequest, "PROJECT"))
-				.thenThrow(EntityNotFoundException.class);
+		when(filterHelperService.getFilteredBuildsKanban(kpiRequest, "PROJECT")).thenThrow(EntityNotFoundException.class);
 
 		jiraServiceKanbanR.process(kpiRequest);
-
 	}
 
 	// @Test(expected = Exception.class)
@@ -259,7 +251,6 @@ public class JiraServiceKanbanRTest {
 		when(filterHelperService.getFilteredBuildsKanban(kpiRequest, "PROJECT")).thenThrow(ApplicationException.class);
 
 		jiraServiceKanbanR.process(kpiRequest);
-
 	}
 
 	@Test
@@ -270,8 +261,6 @@ public class JiraServiceKanbanRTest {
 		when(service.getKpiData(any(), any(), any())).thenReturn(kpiRequest.getKpiList().get(0));
 		List<KpiElement> resultList = jiraServiceKanbanR.process(kpiRequest);
 		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
-
-
 	}
 
 	@Test
@@ -282,8 +271,6 @@ public class JiraServiceKanbanRTest {
 		when(service.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
 		List<KpiElement> resultList = jiraServiceKanbanR.process(kpiRequest);
 		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
-
-
 	}
 
 	@Test
@@ -294,8 +281,6 @@ public class JiraServiceKanbanRTest {
 		when(service.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
 		List<KpiElement> resultList = jiraServiceKanbanR.process(kpiRequest);
 		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
-
-
 	}
 
 	private KpiRequest createKPIRequest() {
@@ -304,7 +289,7 @@ public class JiraServiceKanbanRTest {
 
 		addKpiElement(kpiList, KPICode.TEST_JIRA.getKpiId(), KPICode.TEST_JIRA.name(), "Category One", "");
 		kpiRequest.setLevel(4);
-		kpiRequest.setIds(new String[] { "Kanban Project_6335368249794a18e8a4479f" });
+		kpiRequest.setIds(new String[]{"Kanban Project_6335368249794a18e8a4479f"});
 		kpiRequest.setKpiList(kpiList);
 		kpiRequest.setRequestTrackerId();
 		Map<String, List<String>> selectedMap = new HashMap<>();
@@ -315,8 +300,7 @@ public class JiraServiceKanbanRTest {
 		return kpiRequest;
 	}
 
-	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category,
-							   String kpiUnit) {
+	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category, String kpiUnit) {
 		KpiElement kpiElement = new KpiElement();
 		kpiElement.setKpiId(kpiId);
 		kpiElement.setKpiName(kpiName);
@@ -351,26 +335,23 @@ public class JiraServiceKanbanRTest {
 
 		try (MockedStatic<JiraKPIServiceFactory> utilities = Mockito.mockStatic(JiraKPIServiceFactory.class)) {
 			utilities
-					.when((Verification) JiraKPIServiceFactory
-							.getJiraKPIService(KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS.name()))
+					.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS.name()))
 					.thenReturn(mcokAbstract);
 			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.TICKET_VELOCITY.name()))
 					.thenReturn(mcokAbstract);
-			utilities.when(
-					(Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.TICKET_COUNT_BY_PRIORITY.name()))
-					.thenReturn(mcokAbstract);
-			utilities.when(
-					(Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.NET_OPEN_TICKET_COUNT_BY_RCA.name()))
+			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.TICKET_COUNT_BY_PRIORITY.name()))
 					.thenReturn(mcokAbstract);
 			utilities
-					.when((Verification) JiraKPIServiceFactory
-							.getJiraKPIService(KPICode.TICKET_OPEN_VS_CLOSE_BY_PRIORITY.name()))
+					.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.NET_OPEN_TICKET_COUNT_BY_RCA.name()))
+					.thenReturn(mcokAbstract);
+			utilities
+					.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.TICKET_OPEN_VS_CLOSE_BY_PRIORITY.name()))
 					.thenReturn(mcokAbstract);
 			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.LEAD_TIME_KANBAN.name()))
 					.thenReturn(mcokAbstract);
 			utilities
-					.when((Verification) JiraKPIServiceFactory
-							.getJiraKPIService(KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE.name()))
+					.when(
+							(Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE.name()))
 					.thenReturn(mcokAbstract);
 			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.KANBAN_JIRA_TECH_DEBT.name()))
 					.thenReturn(mcokAbstract);
@@ -390,21 +371,17 @@ public class JiraServiceKanbanRTest {
 		List<KpiElement> resultList = jiraServiceKanbanR.process(kpiRequest);
 
 		resultList.forEach(k -> {
-
 			KPICode kpi = KPICode.getKPI(k.getKpiId());
 
 			switch (kpi) {
+				case NET_OPEN_TICKET_COUNT_BY_RCA :
+					assertThat("Kpi Name :", k.getKpiName(), equalTo("TICKET_RCA"));
+					break;
 
-			case NET_OPEN_TICKET_COUNT_BY_RCA:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("TICKET_RCA"));
-				break;
-
-			default:
-				break;
+				default :
+					break;
 			}
-
 		});
-
 	}
 
 	@Test
@@ -429,26 +406,23 @@ public class JiraServiceKanbanRTest {
 
 		try (MockedStatic<JiraKPIServiceFactory> utilities = Mockito.mockStatic(JiraKPIServiceFactory.class)) {
 			utilities
-					.when((Verification) JiraKPIServiceFactory
-							.getJiraKPIService(KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS.name()))
+					.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS.name()))
 					.thenReturn(mcokAbstract);
 			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.TICKET_VELOCITY.name()))
 					.thenReturn(mcokAbstract);
-			utilities.when(
-					(Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.TICKET_COUNT_BY_PRIORITY.name()))
-					.thenReturn(mcokAbstract);
-			utilities.when(
-					(Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.NET_OPEN_TICKET_COUNT_BY_RCA.name()))
+			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.TICKET_COUNT_BY_PRIORITY.name()))
 					.thenReturn(mcokAbstract);
 			utilities
-					.when((Verification) JiraKPIServiceFactory
-							.getJiraKPIService(KPICode.TICKET_OPEN_VS_CLOSE_BY_PRIORITY.name()))
+					.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.NET_OPEN_TICKET_COUNT_BY_RCA.name()))
+					.thenReturn(mcokAbstract);
+			utilities
+					.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.TICKET_OPEN_VS_CLOSE_BY_PRIORITY.name()))
 					.thenReturn(mcokAbstract);
 			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.LEAD_TIME_KANBAN.name()))
 					.thenReturn(mcokAbstract);
 			utilities
-					.when((Verification) JiraKPIServiceFactory
-							.getJiraKPIService(KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE.name()))
+					.when(
+							(Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE.name()))
 					.thenReturn(mcokAbstract);
 			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.KANBAN_JIRA_TECH_DEBT.name()))
 					.thenReturn(mcokAbstract);
@@ -462,8 +436,7 @@ public class JiraServiceKanbanRTest {
 
 		when(filterHelperService.getFilteredBuildsKanban(ArgumentMatchers.any(), ArgumentMatchers.any()))
 				.thenReturn(accountHierarchyDataList);
-		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyDataList, kpiRequest))
-				.thenReturn(projectKey);
+		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
 
 		// when(authorizedProjectsService.getKanbanProjectNodesForRequest(ahdList)).thenReturn(projects);
 		//
@@ -473,21 +446,16 @@ public class JiraServiceKanbanRTest {
 		List<KpiElement> resultList = jiraServiceKanbanR.process(kpiRequest);
 
 		resultList.forEach(k -> {
-
 			KPICode kpi = KPICode.getKPI(k.getKpiId());
 
 			switch (kpi) {
+				case NET_OPEN_TICKET_COUNT_BY_RCA :
+					assertThat("Kpi Name :", k.getKpiName(), equalTo("TICKET_RCA"));
+					break;
 
-			case NET_OPEN_TICKET_COUNT_BY_RCA:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("TICKET_RCA"));
-				break;
-
-			default:
-				break;
+				default :
+					break;
 			}
-
 		});
-
 	}
-
 }

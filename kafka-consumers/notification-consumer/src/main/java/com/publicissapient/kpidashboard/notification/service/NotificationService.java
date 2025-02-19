@@ -21,16 +21,19 @@ import com.publicissapient.kpidashboard.notification.model.EmailEvent;
 
 public interface NotificationService {
 
-    /**
-     * @param key        key
-     * @param emailEvent emailEvent
-     */
-    void sendMail(String key, EmailEvent emailEvent);
+	/**
+	 * @param key
+	 *          key
+	 * @param emailEvent
+	 *          emailEvent
+	 */
+	void sendMail(String key, EmailEvent emailEvent);
 
-    /**
-     * @param key        key
-     * @param emailEvent emailEvent
-     */
-    void sendMailUsingSendGrid(String key, EmailEvent emailEvent);
-
+	/**
+	 * @param key
+	 *          key
+	 * @param emailEvent
+	 *          emailEvent
+	 */
+	void sendMailUsingSendGrid(String key, EmailEvent emailEvent);
 }

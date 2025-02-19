@@ -21,7 +21,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -101,7 +100,7 @@ public class RestAPIUtilsTest {
 		HttpHeaders headers = RestAPIUtils.getHeaders(accessToken, usingBasicAuth);
 
 		// Assertions
-		assertNull( headers.getFirst("Authorization"));
+		assertNull(headers.getFirst("Authorization"));
 	}
 
 	@Test
@@ -218,9 +217,9 @@ public class RestAPIUtilsTest {
 
 		// Assertion
 		assertEquals(1, result.size()); // No items should be added because _class is not
-										// "com.cloudbees.hudson.plugins.folder.Folder"
+		// "com.cloudbees.hudson.plugins.folder.Folder"
 
-        assertTrue(result.contains("value"));
+		assertTrue(result.contains("value"));
 		// Mock data with the correct _class
 		innerJsonObject.put("_class", "com.cloudbees.hudson.plugins.folder.Folder");
 
@@ -266,5 +265,4 @@ public class RestAPIUtilsTest {
 		}
 		return jsonArray;
 	}
-
 }

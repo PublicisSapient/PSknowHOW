@@ -21,12 +21,8 @@ package com.publicissapient.kpidashboard.apis.bitbucket.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +44,8 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,10 +73,10 @@ public class BitBucketController {
 	 * Gets bit bucket aggregated metrics.
 	 *
 	 * @param kpiRequest
-	 *            the kpi request
+	 *          the kpi request
 	 * @return the bit bucket aggregated metrics
 	 * @throws Exception
-	 *             the exception
+	 *           the exception
 	 */
 	@RequestMapping(value = "/bitbucket/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<List<KpiElement>> getBitBucketAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
@@ -103,17 +101,16 @@ public class BitBucketController {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);
 		}
 		return ResponseEntity.ok().body(responseList);
-
 	}
 
 	/**
 	 * Gets bit bucket kanban aggregated metrics.
 	 *
 	 * @param kpiRequest
-	 *            the kpi request
+	 *          the kpi request
 	 * @return the bit bucket kanban aggregated metrics
 	 * @throws Exception
-	 *             the exception
+	 *           the exception
 	 */
 	@RequestMapping(value = "/bitbucketkanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<List<KpiElement>> getBitBucketKanbanAggregatedMetrics(
@@ -139,13 +136,13 @@ public class BitBucketController {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);
 		}
 		return ResponseEntity.ok().body(responseList);
-
 	}
 
 	/**
 	 * get all repo members from repo tool
+	 *
 	 * @param projectConfigId
-	 * 				basic project config ig
+	 *          basic project config ig
 	 * @return list of members email
 	 */
 	@GetMapping(value = "repotool/assignees/email/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -153,5 +150,4 @@ public class BitBucketController {
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(new ServiceResponse(true, "", repoToolsConfigService.getProjectRepoToolMembers(projectConfigId)));
 	}
-
 }

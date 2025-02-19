@@ -22,15 +22,16 @@ import lombok.NoArgsConstructor;
 
 /**
  * Used for the Processor Progress details.
+ *
  * @author shunaray
  */
 @Data
 @NoArgsConstructor
 public class ProgressStatus {
 	private String stepName;
-	/**
-	 * time in milliseconds
-	 */
+
+	/** time in milliseconds */
 	private long endTime;
+
 	private String status;
 }

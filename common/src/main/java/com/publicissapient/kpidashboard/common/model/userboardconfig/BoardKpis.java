@@ -20,9 +20,7 @@ package com.publicissapient.kpidashboard.common.model.userboardconfig;
 import lombok.Data;
 
 /**
- * 
  * @author narsingh9
- *
  */
 @Data
 public class BoardKpis {
@@ -35,7 +33,7 @@ public class BoardKpis {
 
 	/**
 	 * getter for isEnabled
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public boolean getIsEnabled() {
@@ -44,9 +42,9 @@ public class BoardKpis {
 
 	/**
 	 * setter for isEnabled
-	 * 
+	 *
 	 * @param isEnabled
-	 *            isEnabled
+	 *          isEnabled
 	 */
 	public void setIsEnabled(boolean isEnabled) {
 		this.isEnabled = isEnabled;

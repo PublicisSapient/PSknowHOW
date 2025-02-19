@@ -34,29 +34,27 @@ import com.publicissapient.kpidashboard.common.model.azureboards.wiql.AzureWiqlM
 public interface ProcessorAzureRestClient {
 
 	/**
-	 * 
 	 * Gets WorkItem Info from Azure API
-	 * 
+	 *
 	 * @param azureServer
-	 *            for connection detail
+	 *          for connection detail
 	 * @param workItemIds
-	 *            issues
+	 *          issues
 	 * @return AzureBoardsWIModel
 	 */
 	AzureBoardsWIModel getWorkItemInfo(AzureServer azureServer, List<Integer> workItemIds);
 
 	/**
 	 * Gets Wiql Response from Azure API
-	 * 
-	 * 
+	 *
 	 * @param azureServer
-	 *            for connection detail
+	 *          for connection detail
 	 * @param startTimesByIssueType
-	 *            startTimesByIssueType
+	 *          startTimesByIssueType
 	 * @param projectConfig
-	 *            projectConfig
+	 *          projectConfig
 	 * @param dataExist
-	 *            data present in db or not
+	 *          data present in db or not
 	 * @return AzureWiqlModel
 	 */
 	AzureWiqlModel getWiqlResponse(AzureServer azureServer, Map<String, LocalDateTime> startTimesByIssueType,
@@ -64,41 +62,39 @@ public interface ProcessorAzureRestClient {
 
 	/**
 	 * Gets Iterations Response from Azure API
-	 * 
+	 *
 	 * @param azureServer
-	 *            for connection detail
+	 *          for connection detail
 	 * @return AzureIterationsModel
 	 */
 	AzureIterationsModel getIterationsResponse(AzureServer azureServer);
 
 	/**
 	 * Gets UpdatesResponse based on issueId
-	 * 
+	 *
 	 * @param azureServer
-	 *            for connection detail
+	 *          for connection detail
 	 * @param issueId
-	 *            issueId
+	 *          issueId
 	 * @return AzureUpdatesModel
 	 */
 	AzureUpdatesModel getUpdatesResponse(AzureServer azureServer, String issueId);
 
 	/**
-	 * 
 	 * Gets Metadata Json response from Azure boards API
-	 * 
+	 *
 	 * @param azureServer
-	 *            for connection detail
+	 *          for connection detail
 	 * @param metadataUrlPath
-	 *            for api endpoints
+	 *          for api endpoints
 	 * @param orgLevelApi
-	 *            for switching between project level and organisational level
-	 *            endpoint
+	 *          for switching between project level and organisational level
+	 *          endpoint
 	 * @return jsonObject response
 	 */
 	JSONObject getMetadataJson(AzureServer azureServer, String metadataUrlPath, boolean orgLevelApi);
 
 	/**
-	 *
 	 * @param azureServer
 	 * @param sprintId
 	 * @return

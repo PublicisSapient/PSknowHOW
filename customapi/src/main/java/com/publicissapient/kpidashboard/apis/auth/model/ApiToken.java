@@ -31,9 +31,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The type Api token.
- */
+/** The type Api token. */
 @Data
 @Builder
 @Getter
@@ -42,10 +40,9 @@ import lombok.Setter;
 @Document(collection = "apitoken")
 public class ApiToken extends BasicModel {
 
-	/**
-	 * The Hash prefix.
-	 */
+	/** The Hash prefix. */
 	private static final String HASH_PREFIX = "sha512:";
+
 	private String apiUser;
 	private String apiKey;
 	private Long expirationDt;
@@ -54,11 +51,11 @@ public class ApiToken extends BasicModel {
 	 * Instantiates a new Api token.
 	 *
 	 * @param apiUser
-	 *            the api user
+	 *          the api user
 	 * @param apiKey
-	 *            the api key
+	 *          the api key
 	 * @param expirationDt
-	 *            the expiration dt
+	 *          the expiration dt
 	 */
 	public ApiToken(String apiUser, String apiKey, Long expirationDt) {
 		super();
@@ -71,7 +68,7 @@ public class ApiToken extends BasicModel {
 	 * Hash string.
 	 *
 	 * @param apiKey
-	 *            the api key
+	 *          the api key
 	 * @return the string
 	 */
 	private static String hash(String apiKey) {
@@ -94,7 +91,7 @@ public class ApiToken extends BasicModel {
 	 * Check api key boolean.
 	 *
 	 * @param apiKey
-	 *            the api key
+	 *          the api key
 	 * @return the boolean
 	 */
 	public boolean checkApiKey(String apiKey) {

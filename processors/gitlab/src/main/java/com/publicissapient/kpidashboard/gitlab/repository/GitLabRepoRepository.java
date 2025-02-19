@@ -26,9 +26,7 @@ import org.springframework.data.mongodb.repository.Query;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemRepository;
 import com.publicissapient.kpidashboard.gitlab.model.GitLabRepo;
 
-/**
- * GitLabRepoRepository is used to process GitLabRepo.
- */
+/** GitLabRepoRepository is used to process GitLabRepo. */
 public interface GitLabRepoRepository extends ProcessorItemRepository<GitLabRepo> {
 
 	/**
@@ -36,10 +34,9 @@ public interface GitLabRepoRepository extends ProcessorItemRepository<GitLabRepo
 	 * GitLabRepo.
 	 *
 	 * @param processorId
-	 *            the processor id
+	 *          the processor id
 	 * @return GitLabRepo list of GitLabRepo
 	 */
 	@Query("{ 'processorId' : ?0, 'isActive': true}")
 	List<GitLabRepo> findActiveRepos(ObjectId processorId);
-
 }

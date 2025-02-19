@@ -34,9 +34,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Model class to represent kpi_master collection.
- */
+/** Model class to represent kpi_master collection. */
 @Data
 @Builder
 @Getter
@@ -58,10 +56,13 @@ public class KpiMaster extends BasicModel {
 	private String chartType;
 	private String upperThresholdBG;
 	private String lowerThresholdBG;
+
 	@JsonProperty("xaxisLabel")
 	private String xAxisLabel;
+
 	@JsonProperty("yaxisLabel")
 	private String yAxisLabel;
+
 	private boolean showTrend;
 	private Boolean isPositiveTrend;
 	private String lineLegend;
@@ -74,9 +75,9 @@ public class KpiMaster extends BasicModel {
 	private KPIVideoLink videoLink;
 
 	@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName") // because it will
-															  // result in
-															  // changing ui and
-															  // db
+	// result in
+	// changing ui and
+	// db
 	private Boolean isTrendUpOnValIncrease;
 
 	private String kpiSource;
@@ -92,17 +93,19 @@ public class KpiMaster extends BasicModel {
 	private String aggregationCircleCriteria;
 	private boolean isTrendCalculative;
 	private List<KpiFormula> trendCalculation;
+
 	@JsonProperty("isAdditionalFilterSupport")
 	private boolean isAdditionalFilterSupport;
+
 	private List<String> maturityRange;
 	private Integer kpiWidth;
 	private List<MaturityLevel> maturityLevel;
 	private Boolean isRepoToolKpi;
-	private Map<Integer,String> yaxisOrder;
+	private Map<Integer, String> yaxisOrder;
 	private Boolean isAggregationStacks;
-	//to show x axis as ranges and not sprint number
+	// to show x axis as ranges and not sprint number
 	private Boolean isXaxisGroup;
-	//to implement bar graph by modifying bar-line graph
+	// to implement bar graph by modifying bar-line graph
 	private Boolean lineChart;
 	private Integer kpiHeight;
 	private Boolean isRawData;

@@ -56,7 +56,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author neechauh0
- *
  */
 @Service
 @Slf4j
@@ -113,10 +112,8 @@ public class UserAuthorizedProjectsService {
 		List<String> nodeIds = new ArrayList<>();
 		List<AccountHierarchy> label = accountHierarchyRepo.findAll();
 		if (!projects.isEmpty()) {
-			label = label.stream()
-					.filter(data -> projects.contains(data.getBasicProjectConfigId().toString())
-							&& data.getLabelName().equalsIgnoreCase(CommonConstant.PROJECT))
-					.collect(Collectors.toList());
+			label = label.stream().filter(data -> projects.contains(data.getBasicProjectConfigId().toString()) &&
+					data.getLabelName().equalsIgnoreCase(CommonConstant.PROJECT)).collect(Collectors.toList());
 
 			label.forEach(action -> nodeIds.add(action.getNodeId()));
 		}
@@ -132,12 +129,12 @@ public class UserAuthorizedProjectsService {
 	public Set<String> getProjectNodesForRequest(List<AccountHierarchyData> filteredAccountDataList) {
 
 		Set<String> projectNodes = new HashSet<>();
-		filteredAccountDataList.forEach(element -> projectNodes.addAll(element.getNode().stream().filter(
-				projectNode -> projectNode.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT))
+		filteredAccountDataList.forEach(element -> projectNodes.addAll(element.getNode().stream()
+				.filter(projectNode -> projectNode.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT))
 				.map(Node::getId).collect(Collectors.toSet())));
 		return projectNodes;
-
 	}
+
 	//
 
 	/**
@@ -154,7 +151,6 @@ public class UserAuthorizedProjectsService {
 				.collect(Collectors.toList());
 
 		return filteredAccountData;
-
 	}
 
 	/*
@@ -171,7 +167,7 @@ public class UserAuthorizedProjectsService {
 		Set<String> projects = getProjectNodesForRequest(filteredAccountDataList);
 		List<String> ids = Arrays.asList(kpiRequest.getIds());
 		List<String> keys = Stream.concat(projects.stream(), ids.stream()).collect(Collectors.toList());
-		if(kpiRequest.getSelectedMap().get(Constant.DATE) != null)
+		if (kpiRequest.getSelectedMap().get(Constant.DATE) != null)
 			keys.addAll(kpiRequest.getSelectedMap().get(Constant.DATE));
 		return keys.stream().toArray(String[]::new);
 	}
@@ -213,8 +209,8 @@ public class UserAuthorizedProjectsService {
 	 */
 	private List<String> getKanbanProjectNodeIds(Set<String> projects) {
 		List<KanbanAccountHierarchy> label = kanbanAccountHierarchyRepository.findAll();
-		label = label.stream().filter(data -> projects.contains(data.getBasicProjectConfigId().toString())
-				&& data.getLabelName().equalsIgnoreCase(CommonConstant.PROJECT)).collect(Collectors.toList());
+		label = label.stream().filter(data -> projects.contains(data.getBasicProjectConfigId().toString()) &&
+				data.getLabelName().equalsIgnoreCase(CommonConstant.PROJECT)).collect(Collectors.toList());
 		List<String> nodeIds = new ArrayList<>();
 		label.forEach(action -> nodeIds.add(action.getNodeId()));
 		return nodeIds;
@@ -229,11 +225,10 @@ public class UserAuthorizedProjectsService {
 	public Set<String> getKanbanProjectNodesForRequest(List<AccountHierarchyDataKanban> filteredAccountDataList) {
 
 		Set<String> projectNodes = new HashSet<>();
-		filteredAccountDataList.forEach(element -> projectNodes.addAll(element.getNode().stream().filter(
-				projectNode -> projectNode.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT))
+		filteredAccountDataList.forEach(element -> projectNodes.addAll(element.getNode().stream()
+				.filter(projectNode -> projectNode.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT))
 				.map(Node::getId).collect(Collectors.toSet())));
 		return projectNodes;
-
 	}
 
 	/**
@@ -243,8 +238,7 @@ public class UserAuthorizedProjectsService {
 	 * @param kpiRequest
 	 * @return
 	 */
-	public String[] getKanbanProjectKey(List<AccountHierarchyDataKanban> filteredAccountDataList,
-			KpiRequest kpiRequest) {
+	public String[] getKanbanProjectKey(List<AccountHierarchyDataKanban> filteredAccountDataList, KpiRequest kpiRequest) {
 
 		Set<String> projects = getSelectedIds(kpiRequest);
 		List<String> ids = Arrays.asList(kpiRequest.getIds());
@@ -260,22 +254,21 @@ public class UserAuthorizedProjectsService {
 			projectKeys[index++] = str;
 
 		return projectKeys;
-
 	}
 
 	/**
 	 * This method populate id in kanban scenario
-	 * 
+	 *
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 */
 	private Set<String> getSelectedIds(KpiRequest kpiRequest) {
 		Set<String> ids = new HashSet<>();
 		Map<String, List<String>> selectedMap = kpiRequest.getSelectedMap();
 
 		List<HierarchyLevel> hiearachyLevel = cacheService.getFullKanbanHierarchyLevel();
-		List<String> kanbanHierarchyOrder = Lists.reverse(hiearachyLevel).stream()
-				.map(HierarchyLevel::getHierarchyLevelId).collect(Collectors.toList());
+		List<String> kanbanHierarchyOrder = Lists.reverse(hiearachyLevel).stream().map(HierarchyLevel::getHierarchyLevelId)
+				.collect(Collectors.toList());
 
 		for (String hierarchyLevel : kanbanHierarchyOrder) {
 			if (CollectionUtils.isNotEmpty(selectedMap.get(hierarchyLevel))) {
@@ -285,5 +278,4 @@ public class UserAuthorizedProjectsService {
 		}
 		return ids;
 	}
-
 }

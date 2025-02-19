@@ -54,5 +54,4 @@ public class DeleteProjectTraceLogServiceImpl implements DeleteProjectTraceLogSe
 		traceLog.setDeletionDate(LocalDateTime.now());
 		return traceLog;
 	}
-
 }

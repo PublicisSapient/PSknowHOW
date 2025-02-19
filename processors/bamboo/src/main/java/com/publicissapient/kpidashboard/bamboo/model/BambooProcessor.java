@@ -45,7 +45,6 @@ public class BambooProcessor extends Processor {
 
 	public static BambooProcessor prototype() {
 		return BambooProcessor.processorBuilder().name(ProcessorConstants.BAMBOO).online(true).enabled(true)
-				.processorType(ProcessorType.BUILD).lastExecuted(System.currentTimeMillis()).isLastSuccess(false)
-				.build();
+				.processorType(ProcessorType.BUILD).lastExecuted(System.currentTimeMillis()).isLastSuccess(false).build();
 	}
 }

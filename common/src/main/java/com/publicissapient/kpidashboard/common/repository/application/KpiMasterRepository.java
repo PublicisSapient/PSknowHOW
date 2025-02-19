@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -27,40 +26,37 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 
-/**
- * Repository for {@link KpiMaster}.
- */
+/** Repository for {@link KpiMaster}. */
 public interface KpiMasterRepository extends CrudRepository<KpiMaster, ObjectId>, QuerydslPredicateExecutor<KpiMaster> {
 	/**
 	 * Finds kpis based on dashboard name.
-	 * 
+	 *
 	 * @param dashboardName
-	 *            dashboard name
+	 *          dashboard name
 	 * @return list of KpiMaster
 	 */
 	List<KpiMaster> findBykpiOnDashboard(String dashboardName);
 
 	/**
 	 * Finds kpis based on isInFeed
-	 * 
+	 *
 	 * @param isInFeed
-	 *            true or false
+	 *          true or false
 	 * @return list of KpiMaster
 	 */
 	List<KpiMaster> findBykpiInAggregatedFeed(String isInFeed);
 
 	/**
 	 * Finds kpis based on kpi category.
-	 * 
+	 *
 	 * @param kpiCategory
-	 *            kpi category
+	 *          kpi category
 	 * @param kanban
 	 * @return list of KpiMaster
 	 */
 	List<KpiMaster> findByKpiCategoryAndKanban(String kpiCategory, boolean kanban);
 
 	/**
-	 *
 	 * @param kanban
 	 * @param kpiCategory
 	 * @return
@@ -69,9 +65,10 @@ public interface KpiMasterRepository extends CrudRepository<KpiMaster, ObjectId>
 
 	/**
 	 * get kpi master data by kpiId list
-	 * @param kpiIds list of kpi ids
+	 *
+	 * @param kpiIds
+	 *          list of kpi ids
 	 * @return list of KpiMaster
 	 */
 	List<KpiMaster> findByKpiIdIn(List<String> kpiIds);
-
 }

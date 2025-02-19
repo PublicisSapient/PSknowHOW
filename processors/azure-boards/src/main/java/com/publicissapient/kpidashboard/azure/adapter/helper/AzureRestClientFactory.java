@@ -41,11 +41,11 @@ public class AzureRestClientFactory {
 
 	/**
 	 * Cleans the cache in th Custom API
-	 * 
+	 *
 	 * @param cacheEndPoint
-	 *            URL end point where Custom API cache is created
+	 *          URL end point where Custom API cache is created
 	 * @param cacheName
-	 *            Name of the Custom API cache
+	 *          Name of the Custom API cache
 	 */
 	public void cacheRestClient(String cacheEndPoint, String cacheName) {
 		HttpHeaders headers = new HttpHeaders();
@@ -78,11 +78,11 @@ public class AzureRestClientFactory {
 	 * Cleans the cache in th Custom API
 	 *
 	 * @param cacheEndPoint
-	 *            URL end point where Custom API cache is created
+	 *          URL end point where Custom API cache is created
 	 * @param param1
-	 *            parameter 1
+	 *          parameter 1
 	 * @param param2
-	 *            parameter 2
+	 *          parameter 2
 	 */
 	public void cacheRestClient(String cacheEndPoint, String param1, String param2) {
 		HttpHeaders headers = new HttpHeaders();

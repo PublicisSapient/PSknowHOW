@@ -31,21 +31,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
-import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.apis.data.TestExecutionDataFactory;
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
-import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -55,34 +47,42 @@ import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperServic
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.TestCaseDetailsDataFactory;
+import com.publicissapient.kpidashboard.apis.data.TestExecutionDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
+import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RegressionPercentageServiceImplTest {
 
-	private final static String TESTCASEKEY = "testCaseData";
+	private static final String TESTCASEKEY = "testCaseData";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
@@ -118,6 +118,8 @@ public class RegressionPercentageServiceImplTest {
 	private KpiElement kpiElement;
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+
 	@Before
 	public void setup() {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
@@ -125,6 +127,19 @@ public class RegressionPercentageServiceImplTest {
 		kpiRequest.setLabel("PROJECT");
 		kpiElement = kpiRequest.getKpiList().get(0);
 		kpiWiseAggregation.put("defectInjectionRate", "average");
+
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
+
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
@@ -137,11 +152,11 @@ public class RegressionPercentageServiceImplTest {
 		automatedTestCaseList = TestCaseDetailsDataFactory.newInstance().findAutomatedTestCases();
 		testCaseDetailsList = TestCaseDetailsDataFactory.newInstance().getTestCaseDetailsList();
 		List<TestExecution> testExecutionList = TestExecutionDataFactory.newInstance().getTestExecutionList();
-		testExecutionList.forEach(test->{
+		testExecutionList.forEach(test -> {
 			test.setAutomatedRegressionTestCases(1);
 			test.setTotalRegressionTestCases(1);
 		});
-		when(testExecutionRepository.findTestExecutionDetailByFilters(anyMap(),anyMap())).thenReturn(testExecutionList);
+		when(testExecutionRepository.findTestExecutionDetailByFilters(anyMap(), anyMap())).thenReturn(testExecutionList);
 
 		AdditionalFilterCategoryFactory additionalFilterCategoryFactory = AdditionalFilterCategoryFactory.newInstance();
 		List<AdditionalFilterCategory> additionalFilterCategoryList = additionalFilterCategoryFactory
@@ -151,23 +166,20 @@ public class RegressionPercentageServiceImplTest {
 		when(cacheService.getAdditionalFilterHierarchyLevel()).thenReturn(additonalFilterMap);
 		when(filterHelperService.getAdditionalFilterHierarchyLevel()).thenReturn(additonalFilterMap);
 
-
-		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap= new HashMap<>();
-		Map<String, List<ProjectToolConfig>> projectTool= new HashMap<>();
-		ProjectToolConfig zephyConfig= new ProjectToolConfig();
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap = new HashMap<>();
+		Map<String, List<ProjectToolConfig>> projectTool = new HashMap<>();
+		ProjectToolConfig zephyConfig = new ProjectToolConfig();
 		zephyConfig.setRegressionAutomationLabels(Arrays.asList("test1"));
 		zephyConfig.setTestRegressionValue(Arrays.asList("test1"));
 		zephyConfig.setRegressionAutomationFolderPath(Arrays.asList("test1"));
 		projectTool.put(ProcessorConstants.ZEPHYR, Arrays.asList(zephyConfig));
-		ProjectToolConfig jiraTest= new ProjectToolConfig();
+		ProjectToolConfig jiraTest = new ProjectToolConfig();
 		jiraTest.setJiraRegressionTestValue(Arrays.asList("test1"));
 		jiraTest.setTestCaseStatus(Arrays.asList("test1"));
 		projectTool.put(ProcessorConstants.ZEPHYR, Arrays.asList(zephyConfig));
 		projectTool.put(ProcessorConstants.JIRA_TEST, Arrays.asList(jiraTest));
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), projectTool);
-		when(cacheService
-				.cacheProjectToolConfigMapData()).thenReturn(toolMap);
-
+		when(cacheService.cacheProjectToolConfigMapData()).thenReturn(toolMap);
 	}
 
 	@Test
@@ -190,8 +202,8 @@ public class RegressionPercentageServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name()))
 				.thenReturn(kpiRequestTrackerId);
 		try {
-			KpiElement kpiElement = regressionPercentageServiceImpl.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0), treeAggregatorDetail);
+			KpiElement kpiElement = regressionPercentageServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
 			assertThat(((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
 		} catch (ApplicationException exception) {
 
@@ -209,8 +221,7 @@ public class RegressionPercentageServiceImplTest {
 			}
 		});
 		when(testCaseDetailsRepository.findTestDetails(any(), any(), any())).thenReturn(testCaseDetailsList);
-		Map<String, Object> map = regressionPercentageServiceImpl.fetchKPIDataFromDb(leafNodeList, null, null,
-				kpiRequest);
+		Map<String, Object> map = regressionPercentageServiceImpl.fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
 		Map<String, List<TestCaseDetails>> testCaseData = testCaseDetailsList.stream()
 				.collect(Collectors.groupingBy(TestCaseDetails::getBasicProjectConfigId, Collectors.toList()));
 		assertThat("fetch KPI dats from DB :", map.get("testCaseData"), equalTo(testCaseData));
@@ -233,8 +244,8 @@ public class RegressionPercentageServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name()))
 				.thenReturn(kpiRequestTrackerId);
 		try {
-			KpiElement kpiElement = regressionPercentageServiceImpl.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0), treeAggregatorDetail);
+			KpiElement kpiElement = regressionPercentageServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
 			assertThat(((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
 		} catch (ApplicationException exception) {
 

@@ -36,18 +36,20 @@ import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 @JsonInclude(Include.NON_NULL)
 public class KPIExcelValidationDataResponse {
 
-	/**
-	 * The Map of sprint and data.
-	 */
+	/** The Map of sprint and data. */
 	@JsonProperty("validationData")
 	/* package */ Map<String, ValidationData> mapOfSprintAndData;
+
 	private String kpiName;
 	private boolean saveDisplay; // Use for providing excel enable and disable flag
 	private String kpiId;
+
 	@JsonProperty("columns")
 	private List<String> excelColumns;
+
 	@JsonProperty("excelData")
 	private List<KPIExcelData> excelData;
+
 	@JsonProperty("kpiColumnList")
 	private List<KpiColumnDetails> kpiColumnDetails;
 
@@ -72,7 +74,7 @@ public class KPIExcelValidationDataResponse {
 	 * Sets map of sprint and data.
 	 *
 	 * @param mapOfSprintAndData
-	 *            the map of sprint and data
+	 *          the map of sprint and data
 	 */
 	public void setMapOfSprintAndData(Map<String, ValidationData> mapOfSprintAndData) {
 		this.mapOfSprintAndData = mapOfSprintAndData;
@@ -91,16 +93,13 @@ public class KPIExcelValidationDataResponse {
 	 * Sets kpi name.
 	 *
 	 * @param kpiName
-	 *            the kpi name
+	 *          the kpi name
 	 */
 	public void setKpiName(String kpiName) {
 		this.kpiName = kpiName;
 	}
 
-	/**
-	 * set save display flag
-	 *
-	 */
+	/** set save display flag */
 	public boolean getSaveDisplay() {
 		return saveDisplay;
 	}
@@ -122,7 +121,7 @@ public class KPIExcelValidationDataResponse {
 	 * Sets kpi id.
 	 *
 	 * @param kpiId
-	 *            the kpi id
+	 *          the kpi id
 	 */
 	public void setKpiId(String kpiId) {
 		this.kpiId = kpiId;
@@ -143,5 +142,4 @@ public class KPIExcelValidationDataResponse {
 	public void setKpiColumnDetails(List<KpiColumnDetails> kpiColumnDetails) {
 		this.kpiColumnDetails = kpiColumnDetails;
 	}
-
 }

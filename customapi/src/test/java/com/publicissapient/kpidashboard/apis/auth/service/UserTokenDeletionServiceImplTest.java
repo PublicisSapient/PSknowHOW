@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.auth.service;
 
 import static org.mockito.Mockito.verify;

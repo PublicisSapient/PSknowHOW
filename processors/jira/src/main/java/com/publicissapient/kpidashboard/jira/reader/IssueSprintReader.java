@@ -70,10 +70,13 @@ public class IssueSprintReader implements ItemReader<ReadData> {
 	int issueSize = 0;
 	private Iterator<Issue> issueIterator;
 	ProjectConfFieldMapping projectConfFieldMapping;
+
 	@Value("#{jobParameters['sprintId']}")
 	private String sprintId;
+
 	private ReaderRetryHelper retryHelper;
-    ProcessorJiraRestClient client;
+	ProcessorJiraRestClient client;
+
 	@Value("#{jobParameters['processorId']}")
 	private String processorId;
 
@@ -82,8 +85,8 @@ public class IssueSprintReader implements ItemReader<ReadData> {
 		pageSize = jiraProcessorConfig.getPageSize();
 		projectConfFieldMapping = fetchProjectConfiguration.fetchConfigurationBasedOnSprintId(sprintId);
 		retryHelper = new ReaderRetryHelper();
-        client = jiraClientService.getRestClientMap(sprintId);
-    }
+		client = jiraClientService.getRestClientMap(sprintId);
+	}
 
 	@Override
 	public ReadData read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
@@ -124,11 +127,9 @@ public class IssueSprintReader implements ItemReader<ReadData> {
 	@TrackExecutionTime
 	private void fetchIssues(ProcessorJiraRestClient client) throws Exception {
 		ReaderRetryHelper.RetryableOperation<Void> retryableOperation = () -> {
-
 			log.info("Reading issues for project : {}, page No : {}", projectConfFieldMapping.getProjectName(),
 					pageNumber / pageSize);
-			issues = fetchIssueSprint.fetchIssuesSprintBasedOnJql(projectConfFieldMapping, client, pageNumber,
-					sprintId);
+			issues = fetchIssueSprint.fetchIssuesSprintBasedOnJql(projectConfFieldMapping, client, pageNumber, sprintId);
 			issueSize = issues.size();
 			pageNumber += pageSize;
 			if (CollectionUtils.isNotEmpty(issues)) {
@@ -146,5 +147,4 @@ public class IssueSprintReader implements ItemReader<ReadData> {
 			throw e;
 		}
 	}
-
 }

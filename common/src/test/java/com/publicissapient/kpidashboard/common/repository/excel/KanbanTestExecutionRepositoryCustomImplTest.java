@@ -33,15 +33,13 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * @author shi6
@@ -77,12 +75,9 @@ public class KanbanTestExecutionRepositoryCustomImplTest {
 		when(mongoOperations.find(any(Query.class), eq(KanbanTestExecution.class))).thenReturn(Collections.emptyList());
 
 		// Test
-		kanbanTestExecutionRepository.findTestExecutionDetailByFilters(mapOfFilters, uniqueProjectMap, dateFrom,
-				dateTo);
+		kanbanTestExecutionRepository.findTestExecutionDetailByFilters(mapOfFilters, uniqueProjectMap, dateFrom, dateTo);
 
 		// Verify that the find method is called with the correct parameters
 		verify(mongoOperations, times(1)).find(any(Query.class), eq(KanbanTestExecution.class));
-
 	}
-
 }

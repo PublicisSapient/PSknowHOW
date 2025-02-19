@@ -62,8 +62,8 @@ public class CapacityKpiDataRepositoryImpl implements CapacityKpiDataCustomRepos
 		// map of common filters Project, Project and Sprint
 		for (Map.Entry<String, Object> entry : mapofFilters.entrySet()) {
 			String key = entry.getKey();
-			if (!key.equalsIgnoreCase("additionalFilterCapacityList.nodeCapacityList.additionalFilterId")
-					&& !key.equalsIgnoreCase("additionalFilterCapacityList.filterId")) {
+			if (!key.equalsIgnoreCase("additionalFilterCapacityList.nodeCapacityList.additionalFilterId") &&
+					!key.equalsIgnoreCase("additionalFilterCapacityList.filterId")) {
 				if (CollectionUtils.isNotEmpty((List<Pattern>) entry.getValue())) {
 					criteria = criteria.and(key).in((List<Pattern>) entry.getValue());
 				}
@@ -76,7 +76,6 @@ public class CapacityKpiDataRepositoryImpl implements CapacityKpiDataCustomRepos
 			projectCriteria.and(CONFIG_ID).is(project);
 			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
 			projectCriteriaList.add(projectCriteria);
-
 		});
 		Query query = new Query(criteria);
 		if (CollectionUtils.isNotEmpty(projectCriteriaList)) {
@@ -91,13 +90,12 @@ public class CapacityKpiDataRepositoryImpl implements CapacityKpiDataCustomRepos
 				if (CollectionUtils.isNotEmpty(capacityKpiData.getAdditionalFilterCapacityList())) {
 					List<String> additionalFilter = (List<String>) mapofFilters
 							.get("additionalFilterCapacityList.nodeCapacityList.additionalFilterId");
-					List<String> upperCaseKey = ((List<String>) mapofFilters
-							.get("additionalFilterCapacityList.filterId")).stream().map(String::toUpperCase).toList();
+					List<String> upperCaseKey = ((List<String>) mapofFilters.get("additionalFilterCapacityList.filterId"))
+							.stream().map(String::toUpperCase).toList();
 					capacityKpiData.setCapacityPerSprint(capacityKpiData.getAdditionalFilterCapacityList().stream()
 							.filter(additionalFilterCapacity -> upperCaseKey
 									.contains(additionalFilterCapacity.getFilterId().toUpperCase()))
-							.flatMap(
-									additionalFilterCapacity -> additionalFilterCapacity.getNodeCapacityList().stream())
+							.flatMap(additionalFilterCapacity -> additionalFilterCapacity.getNodeCapacityList().stream())
 							.filter(leaf -> additionalFilter.contains(leaf.getAdditionalFilterId()))
 							.mapToDouble(LeafNodeCapacity::getAdditionalFilterCapacity).sum());
 				} else {

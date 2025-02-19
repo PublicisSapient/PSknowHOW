@@ -75,19 +75,14 @@ public class GlobalConfigChangeLog {
 			List<Document> processorData = Arrays.asList(
 					createProcessor("Jira", "AGILE_TOOL", "com.publicissapient.kpidashboard.jira.model.JiraProcessor"),
 					createSonarProcessor(),
-					createProcessor("Zephyr", "TESTING_TOOLS",
-							"com.publicissapient.kpidashboard.zephyr.model.ZephyrProcessor"),
+					createProcessor("Zephyr", "TESTING_TOOLS", "com.publicissapient.kpidashboard.zephyr.model.ZephyrProcessor"),
 					createProcessor("GitHub", "SCM", "com.publicissapient.kpidashboard.github.model.GitHubProcessor"),
-					createProcessor("Teamcity", BUILD,
-							"com.publicissapient.kpidashboard.teamcity.model.TeamcityProcessor"),
-					createProcessor("Bitbucket", "SCM",
-							"com.publicissapient.kpidashboard.bitbucket.model.BitbucketProcessor"),
+					createProcessor("Teamcity", BUILD, "com.publicissapient.kpidashboard.teamcity.model.TeamcityProcessor"),
+					createProcessor("Bitbucket", "SCM", "com.publicissapient.kpidashboard.bitbucket.model.BitbucketProcessor"),
 					createProcessor("GitLab", "SCM", "com.publicissapient.kpidashboard.gitlab.model.GitLabProcessor"),
-					createProcessor("Jenkins", BUILD,
-							"com.publicissapient.kpidashboard.jenkins.model.JenkinsProcessor"),
+					createProcessor("Jenkins", BUILD, "com.publicissapient.kpidashboard.jenkins.model.JenkinsProcessor"),
 					createProcessor("Bamboo", BUILD, "com.publicissapient.kpidashboard.bamboo.model.BambooProcessor"),
-					createProcessor("Azure", "AGILE_TOOL",
-							"com.publicissapient.kpidashboard.azure.model.AzureProcessor"),
+					createProcessor("Azure", "AGILE_TOOL", "com.publicissapient.kpidashboard.azure.model.AzureProcessor"),
 					createProcessor("AzureRepository", "SCM",
 							"com.publicissapient.kpidashboard.azurerepo.model.AzureRepoProcessor"),
 					createProcessor("AzurePipeline", BUILD,
@@ -96,10 +91,8 @@ public class GlobalConfigChangeLog {
 							"com.publicissapient.kpidashboard.jiratest.model.JiraTestProcessor"),
 					createProcessor("GitHubAction", BUILD,
 							"com.publicissapient.kpidashboard.githubaction.model.GitHubActionProcessor"),
-					createProcessor("RepoTool", "SCM",
-							"com.publicissapient.kpidashboard.repodb.model.RepoDbProcessor"),
-					createProcessor("ArgoCD", BUILD,
-							"com.publicissapient.kpidashboard.argocd.model.ArgoCDProcessor"));
+					createProcessor("RepoTool", "SCM", "com.publicissapient.kpidashboard.repodb.model.RepoDbProcessor"),
+					createProcessor("ArgoCD", BUILD, "com.publicissapient.kpidashboard.argocd.model.ArgoCDProcessor"));
 
 			mongoTemplate.getCollection("processor").insertMany(processorData);
 		}
@@ -114,8 +107,7 @@ public class GlobalConfigChangeLog {
 	private Document createSonarProcessor() {
 		return new Document().append("processorName", "Sonar").append("processorType", "SONAR_ANALYSIS")
 				.append("isActive", true).append("isOnline", true).append("errors", Collections.emptyList())
-				.append("isLastSuccess", false)
-				.append(CLASS_KEY, "com.publicissapient.kpidashboard.sonar.model.SonarProcessor")
+				.append("isLastSuccess", false).append(CLASS_KEY, "com.publicissapient.kpidashboard.sonar.model.SonarProcessor")
 				.append("sonarKpiMetrics", createSonarKpiMetrics());
 	}
 
@@ -126,21 +118,21 @@ public class GlobalConfigChangeLog {
 				"alert_status", "quality_gate_details", "sqale_rating");
 	}
 
-//	repo tool related info used by repo tool processor
+	// repo tool related info used by repo tool processor
 	public void insertRepoToolProviderData() {
-		mongoTemplate.getCollection("repo_tools_provider").insertMany(Arrays.asList(
-				new Document(TOOL_NAME, "bitbucket").append(TEST_API_URL, "https://api.bitbucket.org/2.0/workspaces/")
-						.append("testServerApiUrl", "/bitbucket/rest/api/1.0/projects/")
-						.append(REPO_TOOL_PROVIDER, "bitbucket_oauth2"),
-				new Document(TOOL_NAME, "gitlab").append(REPO_TOOL_PROVIDER, "gitlab").append(TEST_API_URL,
-						"/api/v4/projects/"),
-				new Document(TOOL_NAME, "github").append(TEST_API_URL, "https://api.github.com/users/")
-						.append(REPO_TOOL_PROVIDER, "github")));
+		mongoTemplate.getCollection("repo_tools_provider")
+				.insertMany(Arrays.asList(
+						new Document(TOOL_NAME, "bitbucket").append(TEST_API_URL, "https://api.bitbucket.org/2.0/workspaces/")
+								.append("testServerApiUrl", "/bitbucket/rest/api/1.0/projects/")
+								.append(REPO_TOOL_PROVIDER, "bitbucket_oauth2"),
+						new Document(TOOL_NAME, "gitlab").append(REPO_TOOL_PROVIDER, "gitlab").append(TEST_API_URL,
+								"/api/v4/projects/"),
+						new Document(TOOL_NAME, "github").append(TEST_API_URL, "https://api.github.com/users/")
+								.append(REPO_TOOL_PROVIDER, "github")));
 	}
 
 	@RollbackExecution
 	public void rollback() {
 		// We are inserting the documents through DDL, no rollback to any collections.
 	}
-
 }

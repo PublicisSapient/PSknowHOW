@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,6 +40,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -72,9 +72,7 @@ import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestReposi
 
 /**
  * @author yasbano
- *
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class MeanTimeToMergeServiceImplTest {
 
@@ -125,9 +123,17 @@ public class MeanTimeToMergeServiceImplTest {
 		MergeRequestDataFactory mergeRequestDataFactory = MergeRequestDataFactory.newInstance();
 		mergeRequestsList = mergeRequestDataFactory.getMergeRequestList();
 
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		});
@@ -135,7 +141,6 @@ public class MeanTimeToMergeServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		setToolMap();
 		setTreadValuesDataCount();
-
 	}
 
 	private void setTreadValuesDataCount() {
@@ -190,7 +195,6 @@ public class MeanTimeToMergeServiceImplTest {
 		toolGroup.put(Constant.TOOL_BITBUCKET, toolList1);
 		toolGroup.put(Constant.TOOL_AZUREREPO, toolList2);
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
-
 	}
 
 	private Tool createTool(String url, String branch, String toolType, String username, String password,
@@ -231,7 +235,6 @@ public class MeanTimeToMergeServiceImplTest {
 	public void testGetQualifierType() {
 		String result = meanTimeToMergeServiceImpl.getQualifierType();
 		assertEquals(result, KPICode.MEAN_TIME_TO_MERGE.name());
-
 	}
 
 	@Test

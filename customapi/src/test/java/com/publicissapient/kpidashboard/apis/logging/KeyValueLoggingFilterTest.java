@@ -26,11 +26,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Collection;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,6 +47,11 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KeyValueLoggingFilterTest {
@@ -87,7 +87,6 @@ public class KeyValueLoggingFilterTest {
 		ReflectionTestUtils.setField(filter, "version", appVersion);
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(requestUrl);
-
 	}
 
 	@After
@@ -98,7 +97,6 @@ public class KeyValueLoggingFilterTest {
 
 	@Test
 	public void testMethod() {
-
 	}
 
 	// @Test
@@ -126,10 +124,9 @@ public class KeyValueLoggingFilterTest {
 		when(request.getSession(false)).thenReturn(session);
 		when(session.getId()).thenReturn(sessionId);
 
-		Collection<? extends GrantedAuthority> authorities = Lists
-				.newArrayList(new SimpleGrantedAuthority("ROLE_ADMIN"));
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(principal,
-				"password", authorities);
+		Collection<? extends GrantedAuthority> authorities = Lists.newArrayList(new SimpleGrantedAuthority("ROLE_ADMIN"));
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(principal, "password",
+				authorities);
 		authentication.setDetails(userDetails);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -148,7 +145,5 @@ public class KeyValueLoggingFilterTest {
 		StringBuilder builder = new StringBuilder();
 		builder.append(field).append('=').append('"').append(value).append('"');
 		return loggingEvent.getFormattedMessage().contains(builder.toString());
-
 	}
-
 }

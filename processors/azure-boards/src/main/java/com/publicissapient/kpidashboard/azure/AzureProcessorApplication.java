@@ -32,8 +32,8 @@ import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableCaching
-@ComponentScan(basePackages = { "com.publicissapient" })
-@EnableMongoRepositories(basePackages = { "com.publicissapient.**.repository" })
+@ComponentScan(basePackages = {"com.publicissapient"})
+@EnableMongoRepositories(basePackages = {"com.publicissapient.**.repository"})
 public class AzureProcessorApplication {
 
 	private static boolean sslHostNameFlag = true;
@@ -48,5 +48,4 @@ public class AzureProcessorApplication {
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
-
 }

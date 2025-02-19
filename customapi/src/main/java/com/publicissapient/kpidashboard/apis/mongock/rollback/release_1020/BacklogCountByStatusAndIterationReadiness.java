@@ -55,7 +55,6 @@ public class BacklogCountByStatusAndIterationReadiness {
 		updateFieldMappingBackToString(fieldMapping);
 		MongoCollection<Document> fieldMappingStructure = mongoTemplate.getCollection("field_mapping_structure");
 		updateFieldMappingstructureBack(fieldMappingStructure);
-
 	}
 
 	@RollbackExecution
@@ -75,6 +74,7 @@ public class BacklogCountByStatusAndIterationReadiness {
 		Document itrUpdate = new Document("$set", new Document(FIELD_LABEL, STATUS_TO_IDENTIFY_IN_READY_FOR_DEV));
 		fieldMappingStructure.updateOne(itr, itrUpdate);
 	}
+
 	private static void updateFieldMappingField(MongoCollection<Document> fieldMapping) {
 		fieldMapping.find(new Document(JIRA_DEFECT_REJECTION_STATUS_KPI_151, new Document("$type", "string")))
 				.forEach(doc -> {
@@ -85,6 +85,7 @@ public class BacklogCountByStatusAndIterationReadiness {
 					fieldMapping.updateOne(updateQuery, updateDoc);
 				});
 	}
+
 	private static void updateFieldMappingBackToString(MongoCollection<Document> fieldMapping) {
 		fieldMapping.find(new Document(JIRA_DEFECT_REJECTION_STATUS_KPI_151, new Document("$type", "array")))
 				.forEach(doc -> {
@@ -107,5 +108,4 @@ public class BacklogCountByStatusAndIterationReadiness {
 		Document itrUpdate = new Document("$set", new Document(FIELD_LABEL, STATUS_TO_IDENTIFY_IN_REFINED_ISSUES));
 		fieldMappingStructure.updateOne(itr, itrUpdate);
 	}
-
 }

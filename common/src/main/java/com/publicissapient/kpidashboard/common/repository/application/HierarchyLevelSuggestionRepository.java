@@ -10,11 +10,9 @@ import com.publicissapient.kpidashboard.common.model.application.HierarchyLevelS
  * interface for hierarchy levels values Repository
  *
  * @author Hiren Babariya
- *
  */
 @Repository
 public interface HierarchyLevelSuggestionRepository extends MongoRepository<HierarchyLevelSuggestion, ObjectId> {
 
 	HierarchyLevelSuggestion findByHierarchyLevelId(String hierarchyLevelId);
-
 }

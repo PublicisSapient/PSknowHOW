@@ -48,7 +48,6 @@ public class RemoveMandatory {
 	@Execution
 	public void execution() {
 		updateMandatoryFields(true);
-
 	}
 
 	@RollbackExecution
@@ -57,8 +56,7 @@ public class RemoveMandatory {
 	}
 
 	private void updateMandatoryFields(boolean isMandatory) {
-		final MongoCollection<Document> fieldMappingStructCollection = mongoTemplate
-				.getCollection(FIELD_MAPPING_STRUCTURE);
+		final MongoCollection<Document> fieldMappingStructCollection = mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE);
 		updateMandatory(FIELD_NAME_LIST, isMandatory, fieldMappingStructCollection, "$set");
 	}
 
@@ -69,5 +67,4 @@ public class RemoveMandatory {
 			fieldMappingStructCollection.updateOne(new Document(FIELD_NAME, fieldName), updateDocument);
 		}
 	}
-
 }

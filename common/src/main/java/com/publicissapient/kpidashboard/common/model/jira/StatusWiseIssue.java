@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.common.model.jira;
 /**
  * @author aksshriv1
  */
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,7 +37,6 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class StatusWiseIssue {
 
-    private Double issueCount;
-    private String issueStoryPoint;
-
+	private Double issueCount;
+	private String issueStoryPoint;
 }

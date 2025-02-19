@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -30,9 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
-import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -56,8 +52,9 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.SprintVelocityServiceHelper;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -78,7 +75,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
  * Test class for @{BacklogReadinessEfficiencyServiceImpl}
  *
  * @author dhachuda
- *
  */
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class BacklogReadinessEfficiencyServiceImplTest {
@@ -184,14 +180,12 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 		when(filterHelperService.getFilteredBuilds(any(), any())).thenReturn(accountHierarchyDataList);
 		try {
 			KpiElement kpiElement = backlogReadinessEfficiencyServiceImpl.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
+					kpiRequest.getKpiList().get(0), treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 			assertNotNull((DataCount) kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -204,9 +198,9 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraIssueRepository.findIssuesBySprintAndType(any(), any())).thenReturn(storyList);
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(new JiraIssueReleaseStatus());
-		List<JiraIssue> backLogStory = backlogReadinessEfficiencyServiceImpl
-				.getBackLogStory(new ObjectId("6335363749794a18e8a4479b"));
+		List<JiraIssue> backLogStory =
+				backlogReadinessEfficiencyServiceImpl.getBackLogStory(
+						new ObjectId("6335363749794a18e8a4479b"));
 		Assert.assertEquals(backLogStory.size(), storyList.size());
 	}
-
 }

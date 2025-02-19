@@ -26,14 +26,12 @@ import org.springframework.util.StringUtils;
 
 public class EntityNotFoundException extends Exception {
 
-	/**
-	 * 
-	 */
+	/** */
 	private static final long serialVersionUID = 1L;
+
 	private static final int ONE = 1;
 
 	/**
-	 * 
 	 * @param clazz
 	 * @param searchParamsMap
 	 */
@@ -44,7 +42,7 @@ public class EntityNotFoundException extends Exception {
 
 	/**
 	 * Generates exception message
-	 * 
+	 *
 	 * @param entity
 	 * @param searchParams
 	 * @return String by capitalizing first character in the error message
@@ -55,13 +53,13 @@ public class EntityNotFoundException extends Exception {
 
 	/**
 	 * Puts entries into a map in sequential order
-	 * 
+	 *
 	 * @param keyType
 	 * @param valueType
 	 * @param entries
 	 * @return sequential ordered {@code IntStream} from {@code startInclusive}
-	 *         (inclusive) to {@code endExclusive} (exclusive) by an incremental
-	 *         step of {@code 1}.
+	 *         (inclusive) to {@code
+	 *     endExclusive} (exclusive) by an incremental step of {@code 1}.
 	 */
 	private static <K, V> Map<K, V> toMap(Class<K> keyType, Class<V> valueType, Object... entries) {
 		if (entries.length % 2 == ONE) {
@@ -70,5 +68,4 @@ public class EntityNotFoundException extends Exception {
 		return IntStream.range(0, entries.length / 2).map(i -> i * 2).collect(HashMap::new,
 				(m, i) -> m.put(keyType.cast(entries[i]), valueType.cast(entries[i + 1])), Map::putAll);
 	}
-
 }

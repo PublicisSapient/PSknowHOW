@@ -176,6 +176,22 @@
         <heap unit="MB">50</heap>
     </cache>
 
+    <cache alias="organizationHierarchies">
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+
+        <heap unit="MB">50</heap>
+    </cache>
+
+    <cache alias="allProjectConfigMap">
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+
+        <heap unit="MB">50</heap>
+    </cache>
+
     <cache alias="testingKpiCache">
         <expiry>
             <ttl unit="hours">2</ttl>
@@ -185,6 +201,22 @@
     </cache>
 
     <cache alias="project_kpi_data_cache">
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+
+        <heap unit="MB">50</heap>
+    </cache>
+
+    <cache alias="createdBy">
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+
+        <heap unit="MB">50</heap>
+    </cache>
+
+    <cache alias="reportsById">
         <expiry>
             <ttl unit="hours">2</ttl>
         </expiry>

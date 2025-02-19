@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.processor;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -82,14 +81,16 @@ public class KanbanJiraIssueAssigneeProcessorImplTest {
 	@Test
 	public void setAssigneeDetails() {
 
-		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any())).thenReturn(assigneeDetails);
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any()))
+				.thenReturn(assigneeDetails);
 		createAssigneeDetails.createKanbanAssigneeDetails(createProjectConfig(), jiraIssue);
 	}
 
 	@Test
 	public void setAssigneeDetails2() {
 
-		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any())).thenReturn(null);
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any()))
+				.thenReturn(null);
 		createAssigneeDetails.createKanbanAssigneeDetails(createProjectConfig(), jiraIssue);
 	}
 
@@ -110,5 +111,4 @@ public class KanbanJiraIssueAssigneeProcessorImplTest {
 				.newInstance("/json/default/jira_issues.json");
 		return jiraIssueDataFactory.findTopByBasicProjectConfigId("63c04dc7b7617e260763ca4e");
 	}
-
 }

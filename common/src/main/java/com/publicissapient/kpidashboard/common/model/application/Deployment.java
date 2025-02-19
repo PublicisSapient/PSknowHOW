@@ -58,11 +58,11 @@ public class Deployment extends BasicModel {
 
 	@Override
 	public String toString() {
-		return "Deployment{" + "processorId=" + processorId + ", basicProjectConfigId=" + basicProjectConfigId
-				+ ", projectToolConfigId=" + projectToolConfigId + ", envId='" + envId + '\'' + ", envName='" + envName
-				+ '\'' + ", envUrl='" + envUrl + '\'' + ", startTime='" + startTime + '\'' + ", endTime='" + endTime
-				+ '\'' + ", duration=" + duration + ", deploymentStatus=" + deploymentStatus + ", jobId='" + jobId
-				+ '\'' + ", jobName='" + jobName + '\'' + ", jobFolderName='" + jobFolderName + '\'' + ", deployedBy='"
-				+ deployedBy + '\'' + ", number='" + number + '\'' + ", createdAt='" + createdAt + '\'' + '}';
+		return "Deployment{" + "processorId=" + processorId + ", basicProjectConfigId=" + basicProjectConfigId +
+				", projectToolConfigId=" + projectToolConfigId + ", envId='" + envId + '\'' + ", envName='" + envName + '\'' +
+				", envUrl='" + envUrl + '\'' + ", startTime='" + startTime + '\'' + ", endTime='" + endTime + '\'' +
+				", duration=" + duration + ", deploymentStatus=" + deploymentStatus + ", jobId='" + jobId + '\'' +
+				", jobName='" + jobName + '\'' + ", jobFolderName='" + jobFolderName + '\'' + ", deployedBy='" + deployedBy +
+				'\'' + ", number='" + number + '\'' + ", createdAt='" + createdAt + '\'' + '}';
 	}
 }

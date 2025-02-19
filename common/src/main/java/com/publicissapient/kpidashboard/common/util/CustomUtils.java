@@ -23,9 +23,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * Custom utils for common operations
- */
+/** Custom utils for common operations */
 public final class CustomUtils {
 
 	private CustomUtils() {
@@ -46,7 +44,7 @@ public final class CustomUtils {
 	 * Primary key on name string.
 	 *
 	 * @param name
-	 *            the name
+	 *          the name
 	 * @return the string
 	 */
 	public static String primaryKeyOnName(String name) {
@@ -54,7 +52,6 @@ public final class CustomUtils {
 		String returnString = null;
 		if (StringUtils.isNotEmpty(name) && StringUtils.isNotBlank(name)) {
 			returnString = name.toLowerCase().trim();
-
 		}
 
 		return returnString;
@@ -65,20 +62,18 @@ public final class CustomUtils {
 	 * order top to bottom
 	 *
 	 * @param nodeNameMap
-	 *            the node name map
+	 *          the node name map
 	 * @return string
 	 */
 	public static String primaryKeyOnName(Map<String, String> nodeNameMap) {
 
 		StringBuilder returnString = new StringBuilder(100);
 
-		nodeNameMap.forEach(
-				(key, value) -> returnString.append(null == value ? "" : value.trim().toLowerCase()).append("_"));
+		nodeNameMap
+				.forEach((key, value) -> returnString.append(null == value ? "" : value.trim().toLowerCase()).append("_"));
 
 		return returnString.toString().endsWith("_")
 				? returnString.toString().substring(0, returnString.toString().length() - 1)
 				: returnString.toString();
-
 	}
-
 }

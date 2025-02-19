@@ -52,5 +52,4 @@ public class Filter {
 		this.isShown = isShown;
 		this.order = order;
 	}
-
 }

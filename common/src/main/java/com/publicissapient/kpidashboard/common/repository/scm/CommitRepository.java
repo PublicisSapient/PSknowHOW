@@ -27,38 +27,37 @@ import org.springframework.data.repository.CrudRepository;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 
-/**
- * Repository for {@link CommitDetails} data.
- */
-public interface CommitRepository extends CrudRepository<CommitDetails, ObjectId>,
-		QuerydslPredicateExecutor<CommitDetails>, CommitRepositoryCustom {
+/** Repository for {@link CommitDetails} data. */
+public interface CommitRepository
+		extends
+			CrudRepository<CommitDetails, ObjectId>,
+			QuerydslPredicateExecutor<CommitDetails>,
+			CommitRepositoryCustom {
 
 	/**
 	 * Finds the {@link CommitDetails} with the given revision number for a specific
 	 * {@link ProcessorItem}.
 	 *
 	 * @param processorItemId
-	 *            processor item id
+	 *          processor item id
 	 * @param revisionNumber
-	 *            revision number
+	 *          revision number
 	 * @return a {@link CommitDetails}
 	 */
 	CommitDetails findByProcessorItemIdAndRevisionNumber(ObjectId processorItemId, String revisionNumber);
 
 	/**
 	 * delete all documents with matching ids
-	 * 
+	 *
 	 * @param processorItemIds
-	 *            processor item id
+	 *          processor item id
 	 */
 	void deleteByProcessorItemIdIn(List<ObjectId> processorItemIds);
 
 	/**
-	 *
 	 * @param processorItemId
 	 * @param revisionNumber
 	 * @return
 	 */
 	List<CommitDetails> findByProcessorItemIdAndRevisionNumberIn(ObjectId processorItemId, List<String> revisionNumber);
-
 }

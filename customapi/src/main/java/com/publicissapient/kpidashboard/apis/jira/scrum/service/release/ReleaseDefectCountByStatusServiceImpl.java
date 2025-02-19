@@ -32,7 +32,6 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -63,8 +62,7 @@ public class ReleaseDefectCountByStatusServiceImpl extends JiraReleaseKPIService
 	@Autowired
 	private CommonServiceImpl commonService;
 
-	private static void getStatusWiseCount(Map<String, List<JiraIssue>> statusData,
-			Map<String, Integer> statusCountMap) {
+	private static void getStatusWiseCount(Map<String, List<JiraIssue>> statusData, Map<String, Integer> statusCountMap) {
 		for (Map.Entry<String, List<JiraIssue>> statusEntry : statusData.entrySet()) {
 			statusCountMap.put(statusEntry.getKey(), statusEntry.getValue().size());
 		}
@@ -142,8 +140,8 @@ public class ReleaseDefectCountByStatusServiceImpl extends JiraReleaseKPIService
 					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_STATUS_RELEASE.getColumns());
 					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_STATUS_RELEASE.getColumns());
 					kpiElement.setExcelData(excelData);
-					log.info("ReleaseDefectCountByStatusServiceImpl -> request id : {} total jira Issues : {}",
-							requestTrackerId, filterDataList.get(0));
+					log.info("ReleaseDefectCountByStatusServiceImpl -> request id : {} total jira Issues : {}", requestTrackerId,
+							filterDataList.get(0));
 				}
 			}
 			kpiElement.setTrendValueList(filterDataList);
@@ -152,8 +150,8 @@ public class ReleaseDefectCountByStatusServiceImpl extends JiraReleaseKPIService
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
 			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				CollectionUtils.isNotEmpty(jiraIssueList)) {
 			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
 		}
 	}

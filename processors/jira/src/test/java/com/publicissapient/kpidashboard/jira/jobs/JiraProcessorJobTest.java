@@ -23,7 +23,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.publicissapient.kpidashboard.jira.tasklet.KanbanJiraIssueReleaseStatusTasklet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -63,6 +62,7 @@ import com.publicissapient.kpidashboard.jira.reader.IssueBoardReader;
 import com.publicissapient.kpidashboard.jira.reader.IssueJqlReader;
 import com.publicissapient.kpidashboard.jira.reader.IssueSprintReader;
 import com.publicissapient.kpidashboard.jira.tasklet.JiraIssueReleaseStatusTasklet;
+import com.publicissapient.kpidashboard.jira.tasklet.KanbanJiraIssueReleaseStatusTasklet;
 import com.publicissapient.kpidashboard.jira.tasklet.KanbanReleaseDataTasklet;
 import com.publicissapient.kpidashboard.jira.tasklet.MetaDataTasklet;
 import com.publicissapient.kpidashboard.jira.tasklet.ScrumReleaseDataTasklet;
@@ -142,7 +142,6 @@ public class JiraProcessorJobTest {
 	@Mock
 	private JobStepProgressListener jobStepProgressListener;
 
-
 	@InjectMocks
 	private JiraProcessorJob jiraProcessorJob;
 
@@ -167,7 +166,7 @@ public class JiraProcessorJobTest {
 		Job job = mock(Job.class);
 		JobBuilder jobBuilder = mock(JobBuilder.class);
 		SimpleJobBuilder simpleJobBuilder = mock(SimpleJobBuilder.class);
-		when(builderFactory.getJobBuilder(any(String.class),any(JobRepository.class))).thenReturn(jobBuilder);
+		when(builderFactory.getJobBuilder(any(String.class), any(JobRepository.class))).thenReturn(jobBuilder);
 		// Configure the mock objects
 		when(jobBuilder.incrementer(any(RunIdIncrementer.class))).thenReturn(jobBuilder);
 		when(jobBuilder.start(any(Step.class))).thenReturn(simpleJobBuilder);
@@ -198,6 +197,5 @@ public class JiraProcessorJobTest {
 		jiraProcessorJob.fetchIssueSprintJob();
 		jiraProcessorJob.fetchIssueKanbanJqlJob();
 		jiraProcessorJob.runMetaDataStep();
-
 	}
 }

@@ -14,12 +14,13 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationServiceR;
 import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * @author purgupta2
@@ -27,23 +28,22 @@ import org.springframework.stereotype.Service;
 @Service
 public class NonTrendServiceFactory {
 
-    @Autowired
-    private JiraIterationServiceR jiraIterationService;
+	@Autowired
+	private JiraIterationServiceR jiraIterationService;
 
-    @Autowired
-    private JiraReleaseServiceR jiraReleaseService;
+	@Autowired
+	private JiraReleaseServiceR jiraReleaseService;
 
-    @Autowired
-    private JiraBacklogServiceR jiraBacklogService;
+	@Autowired
+	private JiraBacklogServiceR jiraBacklogService;
 
-    public JiraNonTrendKPIServiceR getService(String factoryType) {
-        if (CommonConstant.ITERATION.equals(factoryType)) {
-            return jiraIterationService;
-        } else if (CommonConstant.RELEASE.equals(factoryType)) {
-            return jiraReleaseService;
-        } else {
-            return jiraBacklogService;
-        }
-    }
-
+	public JiraNonTrendKPIServiceR getService(String factoryType) {
+		if (CommonConstant.ITERATION.equals(factoryType)) {
+			return jiraIterationService;
+		} else if (CommonConstant.RELEASE.equals(factoryType)) {
+			return jiraReleaseService;
+		} else {
+			return jiraBacklogService;
+		}
+	}
 }

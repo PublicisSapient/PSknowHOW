@@ -25,9 +25,8 @@ import com.publicissapient.kpidashboard.common.model.application.RequestLog;
 
 /**
  * Repository for {@link RequestLog}.
- * 
- * @author prijain3
  *
+ * @author prijain3
  */
 public interface RequestLogRepository extends CrudRepository<RequestLog, ObjectId> {
 }

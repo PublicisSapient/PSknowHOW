@@ -17,8 +17,9 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1210;
 
-import com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1210.IterationKpiColumnConfigUpdate;
 import org.springframework.data.mongodb.core.MongoTemplate;
+
+import com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1210.IterationKpiColumnConfigUpdate;
 
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
@@ -45,5 +46,4 @@ public class IterationKpiColumnConfigUpdateR {
 	public void rollback() {
 		kpiColumnConfigUpdate.execution();
 	}
-
 }

@@ -43,7 +43,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * get test case details from zephyr cloud url
  * https://api.zephyrscale.smartbear.com/v2/
- *
  */
 @Component
 @Slf4j
@@ -85,7 +84,6 @@ public class ZephyrCloudImpl implements ZephyrClient {
 	 *
 	 * @param responseBody
 	 * @param key
-	 *
 	 */
 	public static JSONArray parseData(String responseBody, String key) throws ParseException {
 		JSONParser jsonParser = new JSONParser();
@@ -128,13 +126,11 @@ public class ZephyrCloudImpl implements ZephyrClient {
 					ResponseEntity<String> response = restTemplate.exchange(testCaseUrl, HttpMethod.GET, httpEntity,
 							String.class);
 					if (response.getStatusCode() == HttpStatus.OK && Objects.nonNull(response.getBody())) {
-						parseResponseAndPrepareTestCases(testCaseList, accessToken, jiraCloudCredential, response,
-								folderMap);
+						parseResponseAndPrepareTestCases(testCaseList, accessToken, jiraCloudCredential, response, folderMap);
 					} else {
 						String statusCode = response.getStatusCode().toString();
 						log.error("Error while fetching projects from {}. with status {}", testCaseUrl, statusCode);
-						throw new RestClientException(
-								"Got different status code: " + statusCode + " : " + response.getBody());
+						throw new RestClientException("Got different status code: " + statusCode + " : " + response.getBody());
 					}
 				}
 			} catch (Exception exception) {
@@ -142,24 +138,23 @@ public class ZephyrCloudImpl implements ZephyrClient {
 				log.error("Error while fetching projects from {}", exception.getMessage());
 				throw new RestClientException("Error while fetching projects from {}", exception);
 			}
-
 		}
 		return testCaseList;
 	}
 
 	/**
 	 * to check client exception
-	 * 
+	 *
 	 * @param toolInfo
-	 *            toolInfo
+	 *          toolInfo
 	 * @param exception
-	 *            exception
+	 *          exception
 	 */
 	private void isClientException(ProcessorToolConnection toolInfo, Exception exception) {
-		if (exception instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ClientErrorMessageEnum
-					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+		if (exception instanceof HttpClientErrorException &&
+				((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) exception).getStatusCode().value())
+					.getReasonPhrase();
 			processorToolConnectionService.updateBreakingConnection(toolInfo.getConnectionId(), errMsg);
 		}
 	}
@@ -282,8 +277,7 @@ public class ZephyrCloudImpl implements ZephyrClient {
 	 * @param testcaseResponse
 	 * @param jiraCloudCredential
 	 */
-	private Set<String> prepareIssueLinks(JSONObject testcaseResponse, String jiraCloudCredential)
-			throws ParseException {
+	private Set<String> prepareIssueLinks(JSONObject testcaseResponse, String jiraCloudCredential) throws ParseException {
 		Set<String> issueLinks = new HashSet<>();
 		if (jiraCloudCredential != null) {
 			JSONObject jsonObject = getJSONObject(testcaseResponse, LINKS);
@@ -305,9 +299,8 @@ public class ZephyrCloudImpl implements ZephyrClient {
 	 * Issues Id getting from rest api call
 	 *
 	 * @param url
-	 *            for example = https://jira.cloudurl.com/rest/api/2/issue/103328
+	 *          for example = https://jira.cloudurl.com/rest/api/2/issue/103328
 	 * @param jiraCloudCredential
-	 *
 	 */
 	private String getIssueLinksDetailsUsingRestAPICall(String url, String jiraCloudCredential) throws ParseException {
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET,
@@ -325,7 +318,6 @@ public class ZephyrCloudImpl implements ZephyrClient {
 	 *
 	 * @param jsonObject
 	 * @param key
-	 *
 	 */
 	public String getString(JSONObject jsonObject, String key) {
 		String value = null;
@@ -343,7 +335,6 @@ public class ZephyrCloudImpl implements ZephyrClient {
 	 *
 	 * @param jsonObject
 	 * @param key
-	 *
 	 */
 	public JSONObject getJSONObject(JSONObject jsonObject, String key) {
 		JSONObject value = null;
@@ -361,7 +352,6 @@ public class ZephyrCloudImpl implements ZephyrClient {
 	 *
 	 * @param jsonObject
 	 * @param key
-	 *
 	 */
 	public JSONArray getJSONArray(JSONObject jsonObject, String key) {
 		JSONArray value = null;
@@ -376,7 +366,6 @@ public class ZephyrCloudImpl implements ZephyrClient {
 	 * prepare folder full path map(folderId,folderFullPath)
 	 *
 	 * @param accessToken
-	 *
 	 */
 	private Map<String, String> prepareFoldersFullPath(String accessToken) throws ParseException {
 		Map<String, String> folderMap = new HashMap<>();
@@ -423,5 +412,4 @@ public class ZephyrCloudImpl implements ZephyrClient {
 		}
 		return folderMap;
 	}
-
 }

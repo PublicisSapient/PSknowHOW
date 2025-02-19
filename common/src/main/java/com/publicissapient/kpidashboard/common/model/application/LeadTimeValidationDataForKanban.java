@@ -10,10 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * Lead time validation data to show in excel.
- */
-
+/** Lead time validation data to show in excel. */
 @Data
 @Builder
 @Getter

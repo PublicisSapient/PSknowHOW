@@ -53,7 +53,6 @@ public class DefaultLogoInsertorTest {
 
 		when(customApiConfig.getApplicationDefaultLogo()).thenReturn("PsKnowHowLogo.png");
 		defaultLogoInsertor.insertDefaultImage();
-
 	}
 
 	@Test
@@ -62,7 +61,5 @@ public class DefaultLogoInsertorTest {
 		when(customApiConfig.getApplicationDefaultLogo()).thenReturn("PsKnowHowLogo.png");
 
 		defaultLogoInsertor.insertDefaultImage();
-
 	}
-
 }

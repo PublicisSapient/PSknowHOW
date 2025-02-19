@@ -13,14 +13,13 @@ import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepo
  * @author shunaray
  */
 @Service
-public class BoardMetadataServiceImpl implements BoardMetadataService{
+public class BoardMetadataServiceImpl implements BoardMetadataService {
 
 	@Autowired
 	private BoardMetadataRepository boardMetadataRepository;
 
 	public List<BoardMetadata> findAll() {
 		Iterable<BoardMetadata> iterable = boardMetadataRepository.findAll();
-		return StreamSupport.stream(iterable.spliterator(), false)
-				.toList();
+		return StreamSupport.stream(iterable.spliterator(), false).toList();
 	}
 }

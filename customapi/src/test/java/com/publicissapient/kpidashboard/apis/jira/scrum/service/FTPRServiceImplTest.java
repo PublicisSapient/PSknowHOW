@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static com.publicissapient.kpidashboard.apis.constant.Constant.*;
@@ -109,7 +108,7 @@ public class FTPRServiceImplTest {
 		kpiRequest.setLabel("PROJECT");
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
-				.newInstance();
+				.newInstance("/json/default/project_hierarchy_filter_data.json");
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 
 		sprintDetails = SprintDetailsDataFactory.newInstance().getSprintDetails().get(0);
@@ -131,10 +130,9 @@ public class FTPRServiceImplTest {
 		fieldMapping.setJiraDefectRejectionStatusKPI135("");
 		fieldMapping.setResolutionTypeForRejectionKPI135(Arrays.asList("Invalid", "Duplicate", "Unrequired"));
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(Arrays.asList("Closed"));
-		fieldMapping.setDefectPriorityKPI135(Arrays.asList(new LabelCount("p2",1),new LabelCount("p1",3)));
+		fieldMapping.setDefectPriorityKPI135(Arrays.asList(new LabelCount("p2", 1), new LabelCount("p1", 3)));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-
 	}
 
 	@Test

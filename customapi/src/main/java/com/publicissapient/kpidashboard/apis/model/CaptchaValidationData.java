@@ -18,9 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.model;
 
-/**
- * Represents Captcha validation data.
- */
+/** Represents Captcha validation data. */
 public class CaptchaValidationData {
 
 	private String encryptedString;
@@ -39,7 +37,7 @@ public class CaptchaValidationData {
 	 * Sets encrypted string.
 	 *
 	 * @param encryptedString
-	 *            the encrypted string
+	 *          the encrypted string
 	 */
 	public void setEncryptedString(String encryptedString) {
 		this.encryptedString = encryptedString;
@@ -58,7 +56,7 @@ public class CaptchaValidationData {
 	 * Sets result.
 	 *
 	 * @param result
-	 *            the result
+	 *          the result
 	 */
 	public void setResult(String result) {
 		this.result = result;

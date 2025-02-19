@@ -28,10 +28,9 @@ import lombok.Setter;
 
 /**
  * The response data of fieldmapping along with the templatecode
- * 
+ *
  * @author shi6
- **/
-
+ */
 @Getter
 @Setter
 @Builder

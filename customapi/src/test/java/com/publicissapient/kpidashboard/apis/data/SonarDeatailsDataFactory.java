@@ -33,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author sansharm13
- *
  */
 @Slf4j
 public class SonarDeatailsDataFactory {
@@ -77,12 +76,10 @@ public class SonarDeatailsDataFactory {
 			mapper.registerModule(new JavaTimeModule());
 			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
 		}
 	}
 
 	public List<SonarDetails> getSonarDetailsList() {
 		return sonarDeatailsDataFactory;
 	}
-
 }

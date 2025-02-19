@@ -27,10 +27,8 @@ import com.publicissapient.kpidashboard.common.model.sonar.SonarDetails;
 @Repository
 public interface SonarRepository extends MongoRepository<SonarDetails, ObjectId> {
 	/**
-	 * 
 	 * @param projectName
 	 * @return SonarDetails by projectName
 	 */
 	SonarDetails findByName(String projectName);
-
 }

@@ -37,5 +37,4 @@ import lombok.Setter;
 public class IterationKpiFilters {
 	private IterationKpiFiltersOptions filter1;
 	private IterationKpiFiltersOptions filter2;
-
 }

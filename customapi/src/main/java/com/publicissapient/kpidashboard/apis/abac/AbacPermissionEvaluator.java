@@ -65,5 +65,4 @@ public class AbacPermissionEvaluator implements PermissionEvaluator {
 			Object permission) {
 		return false;
 	}
-
 }

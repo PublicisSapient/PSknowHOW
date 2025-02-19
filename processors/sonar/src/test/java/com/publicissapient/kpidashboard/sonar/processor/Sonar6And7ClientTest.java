@@ -35,7 +35,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
@@ -45,7 +44,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
@@ -98,8 +96,8 @@ public class Sonar6And7ClientTest {
 		when(restOperationsFactory.getTypeInstance()).thenReturn(rest);
 		SONAR_SERVER.setUrl(SONAR_URL);
 		SONAR_CLOUD.setUrl(SONAR_CLOUD_URL);
-		sonar6And7Client = new Sonar6And7Client(restOperationsFactory, sonarSettings, toolCredentialProvider);
-
+		sonar6And7Client =
+				new Sonar6And7Client(restOperationsFactory, sonarSettings, toolCredentialProvider);
 	}
 
 	@Test
@@ -108,16 +106,13 @@ public class Sonar6And7ClientTest {
 		String projectsUrl = SONAR_URL + URL_RESOURCES;
 		when(sonarSettings.getPageSize()).thenReturn(500);
 		doReturn(new ResponseEntity<>(projectJson, HttpStatus.OK)).when(rest).exchange(ArgumentMatchers.eq(projectsUrl),
-				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 		SONAR_SERVER.setUsername(USER_NAME);
 		SONAR_SERVER.setPassword(PASSWORD);
 		List<SonarProcessorItem> projects = sonar6And7Client.getSonarProjectList(SONAR_SERVER);
 		assertThat("Projects count: ", projects.size(), is(2));
-		assertThat("First Project name: ", projects.get(0).getProjectName(),
-				is("testPackage.sonar:TestProject"));
-		assertThat("Second Project name: ", projects.get(1).getProjectName(),
-				is("testPackage.sonar:AnotherTestProject"));
+		assertThat("First Project name: ", projects.get(0).getProjectName(), is("testPackage.sonar:TestProject"));
+		assertThat("Second Project name: ", projects.get(1).getProjectName(), is("testPackage.sonar:AnotherTestProject"));
 		assertThat("First Project id: ", projects.get(0).getProjectId(), is("AVu3b-MAphY78UZXuYHp"));
 		assertThat("Second Project id: ", projects.get(1).getProjectId(), is("BVx3b-MAphY78UZXuYHp"));
 	}
@@ -128,14 +123,13 @@ public class Sonar6And7ClientTest {
 		String projectsUrl = SONAR_URL + URL_RESOURCES;
 		when(sonarSettings.getPageSize()).thenReturn(500);
 		doReturn(new ResponseEntity<>(projectJson, HttpStatus.EXPECTATION_FAILED)).when(rest).exchange(
-				ArgumentMatchers.eq(projectsUrl), ArgumentMatchers.eq(HttpMethod.GET),
-				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(projectsUrl), ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
+				ArgumentMatchers.eq(String.class));
 
 		SONAR_SERVER.setUsername(USER_NAME);
 		SONAR_SERVER.setPassword(PASSWORD);
 		List<SonarProcessorItem> projects = sonar6And7Client.getSonarProjectList(SONAR_SERVER);
 		Assert.assertEquals("Project size is: ", 0, projects.size());
-
 	}
 
 	@Test
@@ -144,8 +138,7 @@ public class Sonar6And7ClientTest {
 		when(sonarSettings.getPageSize()).thenReturn(500);
 
 		doThrow(new RestClientException("rest client exception")).when(rest).exchange(ArgumentMatchers.eq(projectsUrl),
-				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 
 		SONAR_SERVER.setUsername(USER_NAME);
 		SONAR_SERVER.setPassword(PASSWORD);
@@ -154,7 +147,6 @@ public class Sonar6And7ClientTest {
 		} catch (RestClientException exception) {
 			Assert.assertEquals("Exception: ", "rest client exception", exception.getMessage());
 		}
-
 	}
 
 	@Test
@@ -165,11 +157,9 @@ public class Sonar6And7ClientTest {
 		String measureUrl = String.format(SONAR_URL + URL_RESOURCE_DETAILS, project.getProjectId(), METRICS);
 		String analysesUrl = String.format(SONAR_URL + URL_PROJECT_ANALYSES, project.getProjectName());
 		doReturn(new ResponseEntity<>(measureJson, HttpStatus.OK)).when(rest).exchange(ArgumentMatchers.eq(measureUrl),
-				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				ArgumentMatchers.eq(String.class));
-		doReturn(new ResponseEntity<>(analysesJson, HttpStatus.OK)).when(rest).exchange(
-				ArgumentMatchers.eq(analysesUrl), ArgumentMatchers.eq(HttpMethod.GET),
-				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+		doReturn(new ResponseEntity<>(analysesJson, HttpStatus.OK)).when(rest).exchange(ArgumentMatchers.eq(analysesUrl),
+				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 		SonarDetails sonarDetail = sonar6And7Client.getLatestSonarDetails(getProject(),
 				new HttpEntity<>(createHeaders(SONAR_SERVER.getUsername(), SONAR_SERVER.getPassword())), METRICS);
 		assertThat("Sonar metrics: ", sonarDetail.getMetrics().size(), is(19));
@@ -219,15 +209,13 @@ public class Sonar6And7ClientTest {
 				project.getKey(), METRICS, DEFAULT_DATE);
 
 		doThrow(new RestClientException("rest client exception")).when(rest).exchange(ArgumentMatchers.eq(historyUrl),
-				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 
 		SONAR_CLOUD.setAccessToken(ACCESS_TOKEN);
 
 		List<SonarHistory> codeQualityHistories = sonar6And7Client.getPastSonarDetails(getProject(),
 				new HttpEntity<>(createHeaders(SONAR_CLOUD.getAccessToken())), METRICS);
 		Assert.assertEquals("Data size: ", 0, codeQualityHistories.size());
-
 	}
 
 	@Test
@@ -244,8 +232,7 @@ public class Sonar6And7ClientTest {
 				project.getKey(), METRICS, DEFAULT_DATE);
 
 		doReturn(new ResponseEntity<>(historyJson, HttpStatus.OK)).when(rest).exchange(ArgumentMatchers.eq(historyUrl),
-				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 
 		doReturn(new ResponseEntity<>(history2Json, HttpStatus.OK)).when(rest).exchange(
 				ArgumentMatchers.eq(historyEmptyUrl), ArgumentMatchers.eq(HttpMethod.GET),
@@ -258,7 +245,6 @@ public class Sonar6And7ClientTest {
 
 		Assert.assertNotNull("History data available: ", codeQualityHistories);
 		Assert.assertEquals("History data size: ", 3, codeQualityHistories.size());
-
 	}
 
 	@Test
@@ -270,8 +256,7 @@ public class Sonar6And7ClientTest {
 				project.getKey(), METRICS, DEFAULT_DATE);
 
 		doThrow(new RestClientException("rest client exception")).when(rest).exchange(ArgumentMatchers.eq(historyUrl),
-				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 
 		SONAR_SERVER.setUsername(USER_NAME);
 		SONAR_SERVER.setPassword(PASSWORD);
@@ -279,7 +264,5 @@ public class Sonar6And7ClientTest {
 		List<SonarHistory> codeQualityHistories = sonar6And7Client.getPastSonarDetails(getProject(),
 				new HttpEntity<>(createHeaders(SONAR_SERVER.getUsername(), SONAR_SERVER.getPassword())), METRICS);
 		Assert.assertEquals("Data size: ", 0, codeQualityHistories.size());
-
 	}
-
 }

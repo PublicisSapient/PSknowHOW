@@ -31,9 +31,8 @@ public interface KPIVideoLinkRepository extends MongoRepository<KPIVideoLink, Ob
 	 * Finds by kpiId.
 	 *
 	 * @param kpiId
-	 *            the kpiId
+	 *          the kpiId
 	 * @return the KpiVideoLink
 	 */
 	KPIVideoLink findByKpiId(String kpiId);
-
 }

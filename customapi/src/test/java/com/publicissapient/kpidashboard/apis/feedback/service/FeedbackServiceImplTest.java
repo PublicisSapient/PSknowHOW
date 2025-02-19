@@ -52,7 +52,6 @@ import com.publicissapient.kpidashboard.common.service.NotificationService;
 
 /**
  * @author sanbhand1
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class FeedbackServiceImplTest {
@@ -74,9 +73,7 @@ public class FeedbackServiceImplTest {
 	@Mock
 	private NotificationService notificationService;
 
-	/**
-	 * method includes preprocesses for test cases
-	 */
+	/** method includes preprocesses for test cases */
 	@Before
 	public void setUp() {
 
@@ -84,18 +81,13 @@ public class FeedbackServiceImplTest {
 		feedbackSubmitDTO.setFeedback("feedback");
 	}
 
-	/**
-	 * to clean up the code
-	 */
+	/** to clean up the code */
 	@After
 	public void cleanup() {
 		feedbackSubmitDTO = new FeedbackSubmitDTO();
 	}
 
-	/**
-	 * Get method to Test for all the categories
-	 * 
-	 */
+	/** Get method to Test for all the categories */
 	@Test
 	public void getFeedbackCategoriesTest() {
 		when(customApiConfig.getFeedbackCategories()).thenReturn(new ArrayList<>());
@@ -106,7 +98,7 @@ public class FeedbackServiceImplTest {
 
 	/**
 	 * method to Test submit Feedback Request
-	 * 
+	 *
 	 * @throws UnknownHostException
 	 */
 	@Test
@@ -136,6 +128,5 @@ public class FeedbackServiceImplTest {
 		String loggedUserName = "testDummyUser";
 		boolean response = feedbackServiceImpl.submitFeedback(feedbackSubmitDTO, loggedUserName);
 		assertThat("status: ", response, equalTo(true));
-
 	}
 }

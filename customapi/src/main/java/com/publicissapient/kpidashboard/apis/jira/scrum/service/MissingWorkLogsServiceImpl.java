@@ -79,8 +79,8 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 	private FilterHelperService flterHelperService;
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 
@@ -97,8 +97,8 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 		Map<String, List<DataCount>> trendAnalysisMap = trendValueList.stream()
 				.collect(Collectors.groupingBy(DataCount::getSProjectName, Collectors.toList()));
 		List<DataCount> dataList = new ArrayList<>();
-		trendAnalysisMap.entrySet().stream().forEach(trend -> dataList.add(new DataCount(trend.getKey(), Lists.reverse(
-				Lists.reverse(trend.getValue()).stream().limit(Constant.TREND_LIMIT).collect(Collectors.toList())))));
+		trendAnalysisMap.entrySet().stream().forEach(trend -> dataList.add(new DataCount(trend.getKey(), Lists
+				.reverse(Lists.reverse(trend.getValue()).stream().limit(Constant.TREND_LIMIT).collect(Collectors.toList())))));
 		kpiElement.setTrendValueList(dataList);
 
 		if (null != trendValueList.get(0)) {
@@ -109,7 +109,6 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 				dataCount.setData(k);
 				dataCount.setCount((Integer) v);
 				dataCountList.add(dataCount);
-
 			});
 
 			kpiElement.setValue(dataCountList);
@@ -150,18 +149,18 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 							fieldMapping.getJiraStoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 				}
 				uniqueProjMap.put(basicProjectConfigId.toString(), mapOfProjFilters);
-				ignoreStatusList.add(StringUtils.isEmpty(fieldMapping.getStoryFirstStatus()) ? ""
-						: fieldMapping.getStoryFirstStatus());
-				ignoreStatusList.addAll(
-						CollectionUtils.isEmpty(fieldMapping.getJiraDefectDroppedStatus()) ? Lists.newArrayList()
-								: fieldMapping.getJiraDefectDroppedStatus());
+				ignoreStatusList
+						.add(StringUtils.isEmpty(fieldMapping.getStoryFirstStatus()) ? "" : fieldMapping.getStoryFirstStatus());
+				ignoreStatusList.addAll(CollectionUtils.isEmpty(fieldMapping.getJiraDefectDroppedStatus())
+						? Lists.newArrayList()
+						: fieldMapping.getJiraDefectDroppedStatus());
 				uniqueProjectIssueStatusMap.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(ignoreStatusList));
 				uniqueProjectIssueTypeNotIn.put(basicProjectConfigId.toString(), uniqueProjectIssueStatusMap);
 			}
 		});
 
-		/** additional filter **/
+		/** additional filter * */
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
 		mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
 				sprintList.stream().distinct().collect(Collectors.toList()));
@@ -169,8 +168,8 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
 		resultListMap.put(TOTAL_STORY_LIST, jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjMap));
-		resultListMap.put(STORY_LIST, jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap,
-				uniqueProjectIssueTypeNotIn));
+		resultListMap.put(STORY_LIST,
+				jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap, uniqueProjectIssueTypeNotIn));
 		return resultListMap;
 	}
 
@@ -182,7 +181,7 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 	/**
 	 * Populates KPI value to sprint leaf nodes and gives the trend analysis at
 	 * sprint level.
-	 * 
+	 *
 	 * @param sprintLeafNodeList
 	 * @param trendValueList
 	 * @param kpiElement
@@ -193,29 +192,28 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 			KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
+		sprintLeafNodeList.sort(
+				(node1, node2) -> node1.getSprintFilter().getStartDate().compareTo(node2.getSprintFilter().getStartDate()));
 
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
 
 		List<JiraIssue> sprintWiseStoryList = (List<JiraIssue>) resultMap.get(STORY_LIST);
-		Map<Pair<String, String>, List<JiraIssue>> sprintWiseStoryMap = sprintWiseStoryList.stream().collect(Collectors
-				.groupingBy(ji -> Pair.of(ji.getBasicProjectConfigId(), ji.getSprintID()), Collectors.toList()));
+		Map<Pair<String, String>, List<JiraIssue>> sprintWiseStoryMap = sprintWiseStoryList.stream().collect(
+				Collectors.groupingBy(ji -> Pair.of(ji.getBasicProjectConfigId(), ji.getSprintID()), Collectors.toList()));
 
 		List<JiraIssue> sprintWiseTotalStoryList = (List<JiraIssue>) resultMap.get(TOTAL_STORY_LIST);
-		Map<Pair<String, String>, List<JiraIssue>> sprintWiseTotalStoryMap = sprintWiseTotalStoryList.stream()
-				.collect(Collectors.groupingBy(ji -> Pair.of(ji.getBasicProjectConfigId(), ji.getSprintID()),
-						Collectors.toList()));
+		Map<Pair<String, String>, List<JiraIssue>> sprintWiseTotalStoryMap = sprintWiseTotalStoryList.stream().collect(
+				Collectors.groupingBy(ji -> Pair.of(ji.getBasicProjectConfigId(), ji.getSprintID()), Collectors.toList()));
 
 		Map<String, ValidationData> validationDataMap = new HashMap<>();
 
 		for (Node node : sprintLeafNodeList) {
 			// Leaf node wise data
 			String trendLineName = node.getProjectFilter().getName();
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
+			Pair<String, String> currentNodeIdentifier = Pair.of(node.getProjectFilter().getBasicProjectConfigId().toString(),
+					node.getSprintFilter().getId());
 
 			List<JiraIssue> stories = sprintWiseStoryMap.get(currentNodeIdentifier);
 			List<JiraIssue> totalStories = sprintWiseTotalStoryMap.get(currentNodeIdentifier);
@@ -257,32 +255,30 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 			dataCount.setStartDate(formatStartDate);
 			dataCount.setEndDate(formatEndDate);
 			trendValueList.add(dataCount);
-
 		}
 	}
 
 	/**
 	 * Sets the information at sprint level.
-	 * 
+	 *
 	 * @param stories
 	 * @param totalStory
 	 * @param unloggedStory
-	 * 
 	 */
 	private void setSprintData(List<JiraIssue> stories, List<JiraIssue> totalStory, List<JiraIssue> unloggedStory) {
 		if (CollectionUtils.isNotEmpty(stories)) {
-			totalStory.addAll(stories.stream().filter(issue -> Double.parseDouble(issue.getEstimate()) > 0.0)
-					.collect(Collectors.toList()));
+			totalStory.addAll(
+					stories.stream().filter(issue -> Double.parseDouble(issue.getEstimate()) > 0.0).collect(Collectors.toList()));
 
-			unloggedStory.addAll(totalStory.stream().filter(
-					issue -> (issue.getTimeSpentInMinutes() == null || issue.getTimeSpentInMinutes() == UNLOGGED))
+			unloggedStory.addAll(totalStory.stream()
+					.filter(issue -> (issue.getTimeSpentInMinutes() == null || issue.getTimeSpentInMinutes() == UNLOGGED))
 					.collect(Collectors.toList()));
 		}
 	}
 
 	/**
 	 * Populates Validation Data Object
-	 * 
+	 *
 	 * @param kpiElement
 	 * @param requestTrackerId
 	 * @param sprintWiseStoriesList
@@ -291,8 +287,8 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 	 * @param node
 	 */
 	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			List<JiraIssue> sprintWiseStoriesList, Map<String, ValidationData> validationDataMap,
-			String filterToShowOnTrend, Node node) {
+			List<JiraIssue> sprintWiseStoriesList, Map<String, ValidationData> validationDataMap, String filterToShowOnTrend,
+			Node node) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			String keyForValidation = sprintWiseStoriesList.get(0).getSprintName();
 			List<String> storyKeyList = new ArrayList<>();
@@ -314,5 +310,4 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 			kpiElement.setMapOfSprintAndData(validationDataMap);
 		}
 	}
-
 }

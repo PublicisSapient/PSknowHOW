@@ -23,10 +23,7 @@ import org.springframework.stereotype.Repository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 import com.publicissapient.kpidashboard.sonar.model.SonarProcessor;
 
-/**
- * Sonar Processor Repository which extends Processor repository.
- *
- */
+/** Sonar Processor Repository which extends Processor repository. */
 @Repository
 public interface SonarProcessorRepository extends ProcessorRepository<SonarProcessor> {
 }

@@ -59,5 +59,4 @@ public class VersionMetadataControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("/getversionmetadata").contentType(TestUtil.APPLICATION_JSON_UTF8))
 				.andExpect(status().isOk());
 	}
-
 }

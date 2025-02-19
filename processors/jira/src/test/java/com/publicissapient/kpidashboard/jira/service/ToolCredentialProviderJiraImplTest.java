@@ -16,32 +16,32 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.service;
 
-import com.publicissapient.kpidashboard.common.model.ToolCredential;
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ToolCredentialProviderJiraImplTest {
 
-    @InjectMocks
-    ToolCredentialProviderJiraImpl credentialProvider;
+	@InjectMocks
+	ToolCredentialProviderJiraImpl credentialProvider;
 
-    @Test
-    public void testFindCredential() {
-        // Arrange
-        String validCredRef = "validReference";
+	@Test
+	public void testFindCredential() {
+		// Arrange
+		String validCredRef = "validReference";
 
-        // Act
-        ToolCredential result = credentialProvider.findCredential(validCredRef);
+		// Act
+		ToolCredential result = credentialProvider.findCredential(validCredRef);
 
-        // Assert
-        assertNull("Expected null for an invalid credential reference",result);
-    }
+		// Assert
+		assertNull("Expected null for an invalid credential reference", result);
+	}
 }

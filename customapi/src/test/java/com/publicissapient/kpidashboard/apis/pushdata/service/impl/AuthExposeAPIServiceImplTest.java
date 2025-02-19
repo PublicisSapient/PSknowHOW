@@ -25,8 +25,6 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 
-
-import jakarta.servlet.http.HttpServletRequest;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
@@ -45,6 +43,8 @@ import com.publicissapient.kpidashboard.apis.pushdata.model.dto.ExposeAPITokenRe
 import com.publicissapient.kpidashboard.apis.pushdata.repository.ExposeApiTokenRepository;
 import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
 import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthExposeAPIServiceImplTest {
@@ -115,7 +115,8 @@ public class AuthExposeAPIServiceImplTest {
 		when(httpServletRequest.getHeader("Api-Key")).thenReturn("valid_token");
 		when(exposeApiTokenRepository.findByApiToken("valid_token")).thenReturn(exposeApiTokenDbExist);
 
-		when(projectAccessManager.hasProjectEditPermission(new ObjectId("61e4f7852747353d4405c762"), "SUPERADMIN"))
+		when(projectAccessManager.hasProjectEditPermission(
+						new ObjectId("61e4f7852747353d4405c762"), "SUPERADMIN"))
 				.thenReturn(true);
 		ExposeApiToken exposeApiToken = authExposeAPIService.validateToken(httpServletRequest);
 
@@ -126,9 +127,9 @@ public class AuthExposeAPIServiceImplTest {
 	public void validateTokenPushDataWithInValidToken() {
 		when(httpServletRequest.getHeader("Api-Key")).thenReturn("invalid_token");
 		when(exposeApiTokenRepository.findByApiToken("invalid_token")).thenReturn(null);
-		doThrow(new PushDataException()).when(pushDataTraceLogService).setExceptionTraceLog(anyString(),
-				any(Object.class));
+		doThrow(new PushDataException())
+				.when(pushDataTraceLogService)
+				.setExceptionTraceLog(anyString(), any(Object.class));
 		authExposeAPIService.validateToken(httpServletRequest);
-
 	}
 }

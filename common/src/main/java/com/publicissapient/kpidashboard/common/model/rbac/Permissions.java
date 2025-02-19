@@ -35,9 +35,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents the permissions data used in roleData.
- */
+/** Represents the permissions data used in roleData. */
 @Data
 @Builder
 @Getter
@@ -67,5 +65,4 @@ public class Permissions extends BasicModel {
 
 	@Field("isDeleted")
 	private String isDeleted;
-
 }

@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application;//NOPMD
+package com.publicissapient.kpidashboard.common.model.application; // NOPMD
 
 import java.util.List;
 
@@ -29,9 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The Structure of each FieldMapping is defined
- */
+/** The Structure of each FieldMapping is defined */
 @SuppressWarnings("PMD.TooManyFields")
 @Data
 @Builder
@@ -80,5 +78,4 @@ public class BaseFieldMappingStructure extends BasicModel {
 		String maxValue;
 		String minValue;
 	}
-
 }

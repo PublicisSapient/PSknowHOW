@@ -19,68 +19,65 @@
 
 package com.publicissapient.kpidashboard.common.model.application;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
-
 public class AdditionalFilterCategoryTest {
-    @Test
-    public void testConstructorAndGetters() {
-        // Create an instance using the constructor
-        AdditionalFilterCategory category = new AdditionalFilterCategory(1, "123", "Test Category");
+	@Test
+	public void testConstructorAndGetters() {
+		// Create an instance using the constructor
+		AdditionalFilterCategory category = new AdditionalFilterCategory(1, "123", "Test Category");
 
-        // Verify values using getters
-        assertEquals(1, category.getLevel());
-        assertEquals("123", category.getFilterCategoryId());
-        assertEquals("Test Category", category.getFilterCategoryName());
-    }
+		// Verify values using getters
+		assertEquals(1, category.getLevel());
+		assertEquals("123", category.getFilterCategoryId());
+		assertEquals("Test Category", category.getFilterCategoryName());
+	}
 
-    @Test
-    public void testSetterMethods() {
-        // Create an instance using the default constructor
-        AdditionalFilterCategory category = new AdditionalFilterCategory();
+	@Test
+	public void testSetterMethods() {
+		// Create an instance using the default constructor
+		AdditionalFilterCategory category = new AdditionalFilterCategory();
 
-        // Use setter methods to set values
-        category.setLevel(2);
-        category.setFilterCategoryId("456");
-        category.setFilterCategoryName("New Category");
+		// Use setter methods to set values
+		category.setLevel(2);
+		category.setFilterCategoryId("456");
+		category.setFilterCategoryName("New Category");
 
-        // Verify values using getters
-        assertEquals(2, category.getLevel());
-        assertEquals("456", category.getFilterCategoryId());
-        assertEquals("New Category", category.getFilterCategoryName());
-    }
+		// Verify values using getters
+		assertEquals(2, category.getLevel());
+		assertEquals("456", category.getFilterCategoryId());
+		assertEquals("New Category", category.getFilterCategoryName());
+	}
 
-    @Test
-    public void testEqualsAndHashCode() {
-        // Create two instances with the same values
-        AdditionalFilterCategory category1 = new AdditionalFilterCategory(1, "123", "Test Category");
-        AdditionalFilterCategory category2 = new AdditionalFilterCategory(1, "123", "Test Category");
+	@Test
+	public void testEqualsAndHashCode() {
+		// Create two instances with the same values
+		AdditionalFilterCategory category1 = new AdditionalFilterCategory(1, "123", "Test Category");
+		AdditionalFilterCategory category2 = new AdditionalFilterCategory(1, "123", "Test Category");
 
-        // Verify equals method
-        Assertions.assertTrue(category1.equals(category2));
-        Assertions.assertTrue(category2.equals(category1));
+		// Verify equals method
+		Assertions.assertTrue(category1.equals(category2));
+		Assertions.assertTrue(category2.equals(category1));
 
-        // Verify hashCode method
-        assertEquals(category1.hashCode(), category2.hashCode());
-    }
+		// Verify hashCode method
+		assertEquals(category1.hashCode(), category2.hashCode());
+	}
 
-    @Test
-    public void testNotEquals() {
-        // Create two instances with different values
-        AdditionalFilterCategory category1 = new AdditionalFilterCategory(1, "123", "Test Category");
-        AdditionalFilterCategory category2 = new AdditionalFilterCategory(2, "456", "New Category");
+	@Test
+	public void testNotEquals() {
+		// Create two instances with different values
+		AdditionalFilterCategory category1 = new AdditionalFilterCategory(1, "123", "Test Category");
+		AdditionalFilterCategory category2 = new AdditionalFilterCategory(2, "456", "New Category");
 
-        // Verify equals method
-        Assertions.assertFalse(category1.equals(category2));
-        Assertions.assertFalse(category2.equals(category1));
+		// Verify equals method
+		Assertions.assertFalse(category1.equals(category2));
+		Assertions.assertFalse(category2.equals(category1));
 
-        // Verify hashCode method (optional, but recommended)
-        assertNotEquals(category1.hashCode(), category2.hashCode());
-    }
-
+		// Verify hashCode method (optional, but recommended)
+		assertNotEquals(category1.hashCode(), category2.hashCode());
+	}
 }

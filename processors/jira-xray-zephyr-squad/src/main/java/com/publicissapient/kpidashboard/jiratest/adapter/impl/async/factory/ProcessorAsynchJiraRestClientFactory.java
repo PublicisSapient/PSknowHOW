@@ -34,11 +34,11 @@ public class ProcessorAsynchJiraRestClientFactory extends AsynchronousJiraRestCl
 	 * Creates JIRA Client
 	 *
 	 * @param serverUri
-	 *            Jira Server URI
+	 *          Jira Server URI
 	 * @param authenticationHandler
-	 *            Authentication handler instance
+	 *          Authentication handler instance
 	 * @param jiraTestProcessorConfig
-	 *            Jira Test processor config
+	 *          Jira Test processor config
 	 * @return SpeedyJiraRestClient
 	 */
 	public ProcessorJiraRestClient create(final URI serverUri, final AuthenticationHandler authenticationHandler,
@@ -52,13 +52,13 @@ public class ProcessorAsynchJiraRestClientFactory extends AsynchronousJiraRestCl
 	 * Creates JIRA client with Basic HTTP Authentication
 	 *
 	 * @param serverUri
-	 *            Jira Server URI
+	 *          Jira Server URI
 	 * @param username
-	 *            Jira login username
+	 *          Jira login username
 	 * @param password
-	 *            Jira Login password
+	 *          Jira Login password
 	 * @param jiraTestProcessorConfig
-	 *            Jira Test processor config
+	 *          Jira Test processor config
 	 * @return SpeedyJiraRestClient
 	 */
 	public ProcessorJiraRestClient createWithBasicHttpAuthentication(final URI serverUri, final String username,

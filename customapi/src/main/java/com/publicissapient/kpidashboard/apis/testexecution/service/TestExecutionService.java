@@ -16,10 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
-
+/** */
 package com.publicissapient.kpidashboard.apis.testexecution.service;
 
 import java.util.List;
@@ -28,12 +25,11 @@ import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution
 
 /**
  * @author sansharm13
- *
  */
 public interface TestExecutionService {
 	/**
 	 * This method process the test Execution data.
-	 * 
+	 *
 	 * @param testExecution
 	 * @return TestExecution object
 	 */
@@ -41,12 +37,11 @@ public interface TestExecutionService {
 
 	/**
 	 * Gets test execution percentage
-	 * 
+	 *
 	 * @param basicProjectConfigId
 	 * @return return list of test executions
 	 */
 	List<TestExecutionData> getTestExecutions(String basicProjectConfigId);
 
 	void deleteTestExecutionByProject(boolean isKanban, String basicProjectConfigId);
-
 }

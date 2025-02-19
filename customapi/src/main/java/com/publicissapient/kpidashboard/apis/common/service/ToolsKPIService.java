@@ -19,7 +19,6 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
@@ -38,13 +37,14 @@ import com.publicissapient.kpidashboard.common.model.application.DataValue;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 public abstract class ToolsKPIService<R, S> {
 
 	private Set<String> cumulativeTrend = new HashSet<>(Arrays.asList(KPICode.UNIT_TEST_COVERAGE.name(),
-			KPICode.UNIT_TEST_COVERAGE_KANBAN.name(), KPICode.SONAR_TECH_DEBT_KANBAN.name(),
-			KPICode.SONAR_TECH_DEBT.name(), KPICode.NUMBER_OF_CHECK_INS.name(), KPICode.CODE_BUILD_TIME_KANBAN.name(),
-			KPICode.TEST_EXECUTION_KANBAN.name() , KPICode.REGRESSION_AUTOMATION_COVERAGE.name()));
+			KPICode.UNIT_TEST_COVERAGE_KANBAN.name(), KPICode.SONAR_TECH_DEBT_KANBAN.name(), KPICode.SONAR_TECH_DEBT.name(),
+			KPICode.NUMBER_OF_CHECK_INS.name(), KPICode.CODE_BUILD_TIME_KANBAN.name(), KPICode.TEST_EXECUTION_KANBAN.name(),
+			KPICode.REGRESSION_AUTOMATION_COVERAGE.name()));
 
 	private Set<String> reverseTrendList = new HashSet<>(Arrays.asList(KPICode.CODE_COMMIT.name(),
 			KPICode.MEAN_TIME_TO_MERGE.name(), KPICode.PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING.name(),
@@ -69,15 +69,14 @@ public abstract class ToolsKPIService<R, S> {
 	 * needed.
 	 *
 	 * @param node
-	 *            node
+	 *          node
 	 * @param nodeWiseKPIValue
-	 *            nodeWiseKPIValue
+	 *          nodeWiseKPIValue
 	 * @param kpiCode
-	 *            kpiCode
+	 *          kpiCode
 	 * @return value of node
 	 */
-	public Object calculateAggregatedValue(Node node, Map<Pair<String, String>, Node> nodeWiseKPIValue,
-			KPICode kpiCode) {
+	public Object calculateAggregatedValue(Node node, Map<Pair<String, String>, Node> nodeWiseKPIValue, KPICode kpiCode) {
 
 		String kpiName = kpiCode.name();
 		String kpiId = kpiCode.getKpiId();
@@ -110,7 +109,6 @@ public abstract class ToolsKPIService<R, S> {
 			nodeWiseKPIValue.put(Pair.of(node.getGroupName().toUpperCase(), node.getId()), node);
 		}
 		return node.getValue();
-
 	}
 
 	/**
@@ -120,11 +118,11 @@ public abstract class ToolsKPIService<R, S> {
 	 * use case where all the node details needed.
 	 *
 	 * @param node
-	 *            node
+	 *          node
 	 * @param nodeWiseKPIValue
-	 *            nodeWiseKPIValue
+	 *          nodeWiseKPIValue
 	 * @param kpiCode
-	 *            kpiCode
+	 *          kpiCode
 	 * @return value of node
 	 */
 	public Map<String, List<DataCount>> calculateAggregatedValueMap(Node node,
@@ -175,7 +173,6 @@ public abstract class ToolsKPIService<R, S> {
 		nodeWiseKPIValue.put(Pair.of(node.getGroupName().toUpperCase(), node.getId()), node);
 
 		return (Map<String, List<DataCount>>) node.getValue();
-
 	}
 
 	/**
@@ -185,11 +182,11 @@ public abstract class ToolsKPIService<R, S> {
 	 * needed.
 	 *
 	 * @param node
-	 *            node
+	 *          node
 	 * @param nodeWiseKPIValue
-	 *            nodeWiseKPIValue
+	 *          nodeWiseKPIValue
 	 * @param kpiCode
-	 *            kpiCode
+	 *          kpiCode
 	 * @return value of node
 	 */
 	public Object calculateAggregatedMultipleValueGroup(Node node, Map<Pair<String, String>, Node> nodeWiseKPIValue,
@@ -226,18 +223,17 @@ public abstract class ToolsKPIService<R, S> {
 			nodeWiseKPIValue.put(Pair.of(node.getGroupName().toUpperCase(), node.getId()), node);
 		}
 		return node.getValue();
-
 	}
 
 	/**
 	 * This method set Data count
 	 *
 	 * @param aggregatedValueList
-	 *            aggregatedValueList
+	 *          aggregatedValueList
 	 * @param node
-	 *            node
+	 *          node
 	 * @param aggregatedDataCount
-	 *            aggregatedDataCount
+	 *          aggregatedDataCount
 	 */
 	private void setDataCountWithoutAggregation(List<DataCount> aggregatedValueList, Node node,
 			List<DataCount> aggregatedDataCount, String kpiName) {
@@ -265,11 +261,11 @@ public abstract class ToolsKPIService<R, S> {
 	 * This method aggregate node values.
 	 *
 	 * @param kpiName
-	 *            kpiName
+	 *          kpiName
 	 * @param aggregatedValueList
-	 *            aggregatedValueList
+	 *          aggregatedValueList
 	 * @param node
-	 *            node
+	 *          node
 	 */
 	public List<DataCount> calculateAggregatedValue(String kpiName, List<DataCount> aggregatedValueList, Node node,
 			String kpiId) {
@@ -321,7 +317,7 @@ public abstract class ToolsKPIService<R, S> {
 
 	/**
 	 * calculate Aggregated MultipleValue based on projects and sprints wise data
-	 * 
+	 *
 	 * @param kpiName
 	 * @param aggregatedValueList
 	 * @param node
@@ -372,7 +368,7 @@ public abstract class ToolsKPIService<R, S> {
 
 	/**
 	 * aggregated Data Values based on multi line chart
-	 * 
+	 *
 	 * @param kpiId
 	 * @param dataCount
 	 * @param valueMultiLine
@@ -410,8 +406,7 @@ public abstract class ToolsKPIService<R, S> {
 	 * @param dataValue
 	 * @param aggregatedHoverValue
 	 */
-	private void collectHoverDataBaseOnLineType(Map<String, Object> dataValue,
-			Map<String, Object> aggregatedHoverValue) {
+	private void collectHoverDataBaseOnLineType(Map<String, Object> dataValue, Map<String, Object> aggregatedHoverValue) {
 		if (MapUtils.isNotEmpty(dataValue)) {
 			Map<String, Object> hoverValuee = new LinkedHashMap<>(dataValue);
 			if (MapUtils.isNotEmpty(hoverValuee)) {
@@ -431,7 +426,7 @@ public abstract class ToolsKPIService<R, S> {
 
 	/**
 	 * Collect Aggregated Data based on multi Line chart type
-	 * 
+	 *
 	 * @param valueMultiLine
 	 * @param dc
 	 */
@@ -463,13 +458,13 @@ public abstract class ToolsKPIService<R, S> {
 	 * This method collect aggregated data
 	 *
 	 * @param values
-	 *            values
+	 *          values
 	 * @param lineValues
-	 *            lineValues
+	 *          lineValues
 	 * @param aggregatedMapValues
-	 *            aggregatedMapValues
+	 *          aggregatedMapValues
 	 * @param dc
-	 *            data count
+	 *          data count
 	 */
 	private void collectAggregatedData(List<R> values, List<R> lineValues, List<R> aggregatedMapValues, DataCount dc) {
 		Object obj = dc.getValue();
@@ -492,7 +487,7 @@ public abstract class ToolsKPIService<R, S> {
 	 * This method group values to be aggregated
 	 *
 	 * @param projectWiseDataCount
-	 *            projectWiseDataCount
+	 *          projectWiseDataCount
 	 * @return grouped value
 	 */
 	private List<List<DataCount>> aggregateIndexedValues(Map<String, List<DataCount>> projectWiseDataCount) {
@@ -514,15 +509,15 @@ public abstract class ToolsKPIService<R, S> {
 	 * This method aggregate values and set in data count object
 	 *
 	 * @param kpiId
-	 *            kpiId
+	 *          kpiId
 	 * @param dataCount
-	 *            dataCount
+	 *          dataCount
 	 * @param values
-	 *            values
+	 *          values
 	 * @param lineValues
-	 *            lineValues
+	 *          lineValues
 	 * @param aggregatedMapValues
-	 *            aggregatedMapValues
+	 *          aggregatedMapValues
 	 */
 	private void setDataCountValue(String kpiId, DataCount dataCount, List<R> values, List<R> lineValues,
 			List<R> aggregatedMapValues) {
@@ -545,10 +540,10 @@ public abstract class ToolsKPIService<R, S> {
 	 * This method return trend value for simple non filter KPIs
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @param kpiElement
 	 * @param nodeWiseKPIValue
-	 *            nodeWiseKPIValue
+	 *          nodeWiseKPIValue
 	 * @return trend values
 	 */
 	public List<DataCount> getTrendValues(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -573,9 +568,7 @@ public abstract class ToolsKPIService<R, S> {
 						aggregateValue = maturityValue.getValue();
 						maturity = maturityValue.getKey();
 					}
-					trendValues
-							.add(new DataCount(node.getName(), maturity, aggregateValue, getList(dataCounts, kpiName)));
-
+					trendValues.add(new DataCount(node.getName(), maturity, aggregateValue, getList(dataCounts, kpiName)));
 				}
 			}
 		}
@@ -587,14 +580,14 @@ public abstract class ToolsKPIService<R, S> {
 	 * DORA KPI)
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @param kpiElement
-	 *            kpiElement
+	 *          kpiElement
 	 * @param nodeWiseKPIValue
-	 *            nodeWiseKPIValue
+	 *          nodeWiseKPIValue
 	 * @return trend values
 	 */
-	public List<DataCount> getAggregateTrendValues(KpiRequest kpiRequest,KpiElement kpiElement,
+	public List<DataCount> getAggregateTrendValues(KpiRequest kpiRequest, KpiElement kpiElement,
 			Map<Pair<String, String>, Node> nodeWiseKPIValue, KPICode kpiCode) {
 		String kpiName = kpiCode.name();
 		String kpiId = kpiCode.getKpiId();
@@ -610,8 +603,8 @@ public abstract class ToolsKPIService<R, S> {
 
 				List<DataCount> dataCounts = obj instanceof List<?> ? (List<DataCount>) obj : null;
 				if (CollectionUtils.isNotEmpty(dataCounts)) {
-					List<R> aggValues = dataCounts.stream().filter(val -> val.getValue() != null)
-							.map(val -> (R) val.getValue()).collect(Collectors.toList());
+					List<R> aggValues = dataCounts.stream().filter(val -> val.getValue() != null).map(val -> (R) val.getValue())
+							.collect(Collectors.toList());
 
 					R calculatedAggValue = getCalculatedAggValue(aggValues, kpiId);
 					String maturity = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
@@ -621,9 +614,8 @@ public abstract class ToolsKPIService<R, S> {
 					if (StringUtils.isNotEmpty(maturity)) {
 						aggregateValue = String.valueOf(calculatedAggValue);
 					}
-					trendValues.add(new DataCount(node.getName(), maturity, aggregateValue,
-							getList(dataCounts, kpiName), calculatedAggValue));
-
+					trendValues.add(new DataCount(node.getName(), maturity, aggregateValue, getList(dataCounts, kpiName),
+							calculatedAggValue));
 				}
 			}
 		}
@@ -632,11 +624,11 @@ public abstract class ToolsKPIService<R, S> {
 
 	/**
 	 * Method to calculate the Aggregated value with Cycle kpi dora
-	 * 
+	 *
 	 * @param aggValues
-	 *            AggValue
+	 *          AggValue
 	 * @param kpiId
-	 *            kpiId
+	 *          kpiId
 	 * @return calculated Agg value
 	 */
 	private R getCalculatedAggValue(List<R> aggValues, String kpiId) {
@@ -663,10 +655,10 @@ public abstract class ToolsKPIService<R, S> {
 	 * This method return trend value for KPIs containing filter or map as value
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @param kpiElement
 	 * @param nodeWiseKPIValue
-	 *            nodeWiseKPIValue
+	 *          nodeWiseKPIValue
 	 * @return map of string and list of trendvalue
 	 */
 	public Map<String, List<DataCount>> getTrendValuesMap(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -681,7 +673,8 @@ public abstract class ToolsKPIService<R, S> {
 			Node node = nodeWiseKPIValue.get(Pair.of(kpiRequest.getSelecedHierarchyLabel().toUpperCase(), selectedId));
 			if (null != node) {
 				Object obj = node.getValue();
-				Map<String, List<DataCount>> valueMap = obj instanceof Map<?, ?> ? (Map<String, List<DataCount>>) obj
+				Map<String, List<DataCount>> valueMap = obj instanceof Map<?, ?>
+						? (Map<String, List<DataCount>>) obj
 						: new HashMap<>();
 				if (MapUtils.isNotEmpty(valueMap)) {
 					valueMap.remove(Constant.DEFAULT);
@@ -694,10 +687,8 @@ public abstract class ToolsKPIService<R, S> {
 							aggregateValue = maturityValue.getValue();
 							maturity = maturityValue.getKey();
 						}
-						trendValues
-								.add(new DataCount(node.getName(), maturity, aggregateValue, getList(value, kpiName)));
+						trendValues.add(new DataCount(node.getName(), maturity, aggregateValue, getList(value, kpiName)));
 						trendMap.computeIfAbsent(key, k -> new ArrayList<>()).addAll(trendValues);
-
 					});
 				}
 			}
@@ -710,14 +701,14 @@ public abstract class ToolsKPIService<R, S> {
 	 * circle KPI (like DORA KPI)
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @param kpiElement
-	 *            kpiElement
+	 *          kpiElement
 	 * @param nodeWiseKPIValue
-	 *            nodeWiseKPIValue
+	 *          nodeWiseKPIValue
 	 * @return map of string and list of trendvalue
 	 */
-	public Map<String, List<DataCount>> getAggregateTrendValuesMap(KpiRequest kpiRequest,KpiElement kpiElement,
+	public Map<String, List<DataCount>> getAggregateTrendValuesMap(KpiRequest kpiRequest, KpiElement kpiElement,
 			Map<Pair<String, String>, Node> nodeWiseKPIValue, KPICode kpiCode) {
 		String kpiName = kpiCode.name();
 		String kpiId = kpiCode.getKpiId();
@@ -730,15 +721,16 @@ public abstract class ToolsKPIService<R, S> {
 			Node node = nodeWiseKPIValue.get(Pair.of(kpiRequest.getSelecedHierarchyLabel().toUpperCase(), selectedId));
 			if (null != node) {
 				Object obj = node.getValue();
-				Map<String, List<DataCount>> valueMap = obj instanceof Map<?, ?> ? (Map<String, List<DataCount>>) obj
+				Map<String, List<DataCount>> valueMap = obj instanceof Map<?, ?>
+						? (Map<String, List<DataCount>>) obj
 						: new HashMap<>();
 				if (MapUtils.isNotEmpty(valueMap)) {
 					valueMap.remove(Constant.DEFAULT);
 					valueMap.forEach((key, value) -> {
 						List<DataCount> trendValues = new ArrayList<>();
 
-						List<R> aggValues = value.stream().filter(val -> val.getValue() != null)
-								.map(val -> (R) val.getValue()).collect(Collectors.toList());
+						List<R> aggValues = value.stream().filter(val -> val.getValue() != null).map(val -> (R) val.getValue())
+								.collect(Collectors.toList());
 						R calculatedAggValue = getCalculatedAggValue(aggValues, kpiId);
 						String aggregateValue = null;
 						String maturity = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
@@ -746,10 +738,9 @@ public abstract class ToolsKPIService<R, S> {
 						if (StringUtils.isNotEmpty(maturity)) {
 							aggregateValue = String.valueOf(calculatedAggValue);
 						}
-						trendValues.add(new DataCount(node.getName(), maturity, aggregateValue, getList(value, kpiName),
-								calculatedAggValue));
+						trendValues.add(
+								new DataCount(node.getName(), maturity, aggregateValue, getList(value, kpiName), calculatedAggValue));
 						trendMap.computeIfAbsent(key, k -> new ArrayList<>()).addAll(trendValues);
-
 					});
 				}
 			}
@@ -761,10 +752,10 @@ public abstract class ToolsKPIService<R, S> {
 	 * Based on data prepared return list in order
 	 *
 	 * @param value
-	 *            value
+	 *          value
 	 * @param kpiName
-	 *
-	 *            kpiName
+	 *          <p>
+	 *          kpiName
 	 * @return list
 	 */
 	private List<DataCount> getList(List<DataCount> value, String kpiName) {
@@ -779,7 +770,7 @@ public abstract class ToolsKPIService<R, S> {
 	 * This method fetch hierarchy id based on selections
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @return set of string
 	 */
 	private Set<String> getSelectedIds(KpiRequest kpiRequest) {
@@ -816,7 +807,7 @@ public abstract class ToolsKPIService<R, S> {
 	 * This method populate id in kanban scenario
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 */
 	private void populateKanbanData(KpiRequest kpiRequest) {
 		String id = kpiRequest.getIds()[0];
@@ -839,9 +830,9 @@ public abstract class ToolsKPIService<R, S> {
 	 * This method populate id on sprint selection
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @param selectedIds
-	 *            selectedIds
+	 *          selectedIds
 	 */
 	private void populateSelectedIdInSprintSelection(KpiRequest kpiRequest, Set<String> selectedIds) {
 		for (String selectedId : kpiRequest.getSelectedMap().get(Constant.SPRINT.toLowerCase())) {
@@ -856,11 +847,11 @@ public abstract class ToolsKPIService<R, S> {
 	 * This method return maturity of KPI
 	 *
 	 * @param dataCounts
-	 *            dataCounts
+	 *          dataCounts
 	 * @param kpiName
-	 *            kpiName
+	 *          kpiName
 	 * @param kpiId
-	 *            kpiId
+	 *          kpiId
 	 * @return maturity value
 	 */
 	private Pair<String, String> collectValuesForMaturity(List<DataCount> dataCounts, String kpiName, String kpiId) {
@@ -883,9 +874,8 @@ public abstract class ToolsKPIService<R, S> {
 			}
 			R aggValue = null;
 			if (kpiId.equalsIgnoreCase(KPICode.SPRINT_VELOCITY.getKpiId())) {
-				maturityValue = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
-						String.valueOf(collectValuesForMaturityForVelocity(
-								Lists.reverse(values.stream().map(Double.class::cast).toList()))));
+				maturityValue = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId, String.valueOf(
+						collectValuesForMaturityForVelocity(Lists.reverse(values.stream().map(Double.class::cast).toList()))));
 			} else {
 				aggValue = calculateAggValue(kpiName, dataCounts, values, kpiId);
 				maturityValue = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
@@ -901,7 +891,7 @@ public abstract class ToolsKPIService<R, S> {
 	 * variance patterns and predefined thresholds.
 	 *
 	 * @param velocities
-	 *            A list of velocity values representing sprint performance.
+	 *          A list of velocity values representing sprint performance.
 	 * @return An Integer representing the maturity level:
 	 */
 	private Integer collectValuesForMaturityForVelocity(List<Double> velocities) {
@@ -924,11 +914,16 @@ public abstract class ToolsKPIService<R, S> {
 		boolean withinRange = variances.stream().allMatch(v -> Math.abs(v) <= threshold);
 		double sumVariances = variances.stream().mapToDouble(Double::doubleValue).sum();
 
-		if (allNegative) return 1;
-		if (sumVariances < 0 && !withinRange) return 2;
-		if (withinRange) return 3;
-		if (!allPositive && sumVariances > 0) return 4;
-		if (allPositive) return 5;
+		if (allNegative)
+			return 1;
+		if (sumVariances < 0 && !withinRange)
+			return 2;
+		if (withinRange)
+			return 3;
+		if (!allPositive && sumVariances > 0)
+			return 4;
+		if (allPositive)
+			return 5;
 
 		return null;
 	}
@@ -937,9 +932,9 @@ public abstract class ToolsKPIService<R, S> {
 	 * Generic method to override for aggregation
 	 *
 	 * @param values
-	 *            values
+	 *          values
 	 * @param kpiName
-	 *            kpiName
+	 *          kpiName
 	 * @return aggregated value
 	 */
 	public R calculateKpiValue(List<R> values, String kpiName) { // NOSONAR
@@ -950,9 +945,9 @@ public abstract class ToolsKPIService<R, S> {
 	 * Generic method to override for aggregation in map scenario
 	 *
 	 * @param values
-	 *            values
+	 *          values
 	 * @param kpiName
-	 *            kpiName
+	 *          kpiName
 	 * @return aggregated value
 	 */
 	public S calculateMapKpiMaturity(List<R> values, String kpiName) { // NOSONAR
@@ -963,11 +958,11 @@ public abstract class ToolsKPIService<R, S> {
 	 * This method implement aggreagation based on kpi
 	 *
 	 * @param kpiName
-	 *            kpiName
+	 *          kpiName
 	 * @param value
-	 *            value
+	 *          value
 	 * @param values
-	 *            values
+	 *          values
 	 * @return aggregated value
 	 */
 	private R calculateAggValue(String kpiName, List<DataCount> value, List<R> values, String kpiId) {
@@ -977,16 +972,14 @@ public abstract class ToolsKPIService<R, S> {
 		} else if (kpiName.equals(KPICode.LEAD_TIME.name())) {
 			// the maturity has to be gven for < 3 Months value
 			List<DataCount> lessThan3Month = value.stream()
-					.filter(dataCount -> "< 3 Months".equalsIgnoreCase(dataCount.getsSprintID()))
-					.collect(Collectors.toList());
+					.filter(dataCount -> "< 3 Months".equalsIgnoreCase(dataCount.getsSprintID())).collect(Collectors.toList());
 			if (CollectionUtils.isNotEmpty(lessThan3Month)) {
 				aggValue = (R) lessThan3Month.get(0).getValue();
 			}
 		} else {
 			aggValue = calculateKpiValue(values, kpiId);
-			if ((kpiName.equals(KPICode.DEPLOYMENT_FREQUENCY.name())
-					|| kpiName.equals(KPICode.DEPLOYMENT_FREQUENCY_KANBAN.name()))
-					&& CollectionUtils.isNotEmpty(values)) {
+			if ((kpiName.equals(KPICode.DEPLOYMENT_FREQUENCY.name()) ||
+					kpiName.equals(KPICode.DEPLOYMENT_FREQUENCY_KANBAN.name())) && CollectionUtils.isNotEmpty(values)) {
 				aggValue = (R) String.valueOf(Integer.parseInt(String.valueOf(aggValue)) / values.size());
 			}
 		}
@@ -997,9 +990,9 @@ public abstract class ToolsKPIService<R, S> {
 	 * This method aggregate double.
 	 *
 	 * @param valueList
-	 *            valueList
+	 *          valueList
 	 * @param kpiId
-	 *            kpiId
+	 *          kpiId
 	 * @return result
 	 */
 	public Double calculateKpiValueForDouble(List<Double> valueList, String kpiId) {
@@ -1024,12 +1017,12 @@ public abstract class ToolsKPIService<R, S> {
 	 * This method aggregate long.
 	 *
 	 * @param valueList
-	 *            valueList
+	 *          valueList
 	 * @param kpiId
-	 *            kpiId
+	 *          kpiId
 	 * @return result
 	 */
-	public Long  calculateKpiValueForLong(List<Long> valueList, String kpiId) {
+	public Long calculateKpiValueForLong(List<Long> valueList, String kpiId) {
 		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
 			if (null == customApiConfig.getPercentileValue()) {
 				return AggregationUtils.percentilesLong(valueList, 90d);
@@ -1053,9 +1046,9 @@ public abstract class ToolsKPIService<R, S> {
 	 * This method aggregate double.
 	 *
 	 * @param values
-	 *            values
+	 *          values
 	 * @param kpiName
-	 *            kpiName
+	 *          kpiName
 	 * @return result
 	 */
 	public Map<String, Long> calculateKpiValueForMap(List<Map<String, Long>> values, String kpiName) {
@@ -1069,8 +1062,7 @@ public abstract class ToolsKPIService<R, S> {
 				if (null == customApiConfig.getPercentileValue()) {
 					resultMap.put(key, AggregationUtils.percentilesForLongValues(value, 90.0D));
 				} else {
-					resultMap.put(key,
-							AggregationUtils.percentilesForLongValues(value, customApiConfig.getPercentileValue()));
+					resultMap.put(key, AggregationUtils.percentilesForLongValues(value, customApiConfig.getPercentileValue()));
 				}
 			} else if (Constant.MEDIAN.equalsIgnoreCase(aggregationCriteria)) {
 				resultMap.put(key, AggregationUtils.getMedianForLong(value));
@@ -1090,9 +1082,9 @@ public abstract class ToolsKPIService<R, S> {
 	 * This method aggregate double.
 	 *
 	 * @param values
-	 *            values
+	 *          values
 	 * @param kpiId
-	 *            kpiId
+	 *          kpiId
 	 * @return result
 	 */
 	public Map<String, Object> calculateKpiValueForIntMap(List<Map<String, Object>> values, String kpiId) {
@@ -1107,8 +1099,7 @@ public abstract class ToolsKPIService<R, S> {
 				if (null == customApiConfig.getPercentileValue()) {
 					resultMap.put(key, AggregationUtils.percentilesInteger(value, 90.0D));
 				} else {
-					resultMap.put(key,
-							AggregationUtils.percentilesInteger(value, customApiConfig.getPercentileValue()));
+					resultMap.put(key, AggregationUtils.percentilesInteger(value, customApiConfig.getPercentileValue()));
 				}
 			} else if (Constant.MEDIAN.equalsIgnoreCase(aggregationCriteria)) {
 				resultMap.put(key, AggregationUtils.getMedianForInteger(value));
@@ -1129,11 +1120,11 @@ public abstract class ToolsKPIService<R, S> {
 	 * This method return maturity level
 	 *
 	 * @param maturityRangeList
-	 *            maturityRangeList
+	 *          maturityRangeList
 	 * @param kpiId
-	 *            kpiId
+	 *          kpiId
 	 * @param kpiCeilValue
-	 *            kpiCeilValue
+	 *          kpiCeilValue
 	 * @return maturity level
 	 */
 	public String calculateMaturity(List<String> maturityRangeList, String kpiId, String kpiCeilValue) {
@@ -1144,7 +1135,7 @@ public abstract class ToolsKPIService<R, S> {
 	 * Method to round value
 	 *
 	 * @param value
-	 *            value
+	 *          value
 	 * @return rounded value
 	 */
 	public Double round(Double value) {
@@ -1155,11 +1146,11 @@ public abstract class ToolsKPIService<R, S> {
 
 	/**
 	 * Method to calculate the Agg value of List of double for cycle kpi(dora)
-	 * 
+	 *
 	 * @param valueList
-	 *            List of values
+	 *          List of values
 	 * @param kpiId
-	 *            kpiId
+	 *          kpiId
 	 * @return Agg value
 	 */
 	public Double calculateCycleAggregateValueForDouble(List<Double> valueList, String kpiId) {
@@ -1182,11 +1173,11 @@ public abstract class ToolsKPIService<R, S> {
 
 	/**
 	 * Method to calculate the Agg value of List of Long for cycle kpi(dora)
-	 * 
+	 *
 	 * @param valueList
-	 *            List of values
+	 *          List of values
 	 * @param kpiId
-	 *            kpiId
+	 *          kpiId
 	 * @return Agg value
 	 */
 	public Long calculateCycleAggregateValueForLong(List<Long> valueList, String kpiId) {
@@ -1212,36 +1203,44 @@ public abstract class ToolsKPIService<R, S> {
 	 * selected
 	 *
 	 * @param selectIds
-	 *            projectIds
+	 *          projectIds
 	 * @param kpiElement
-	 *            kpiElement
+	 *          kpiElement
 	 * @param labelName
-	 *            labelName
+	 *          labelName
 	 */
 	public void calculateThresholdValue(Set<String> selectIds, KpiElement kpiElement, String labelName) {
-		if (selectIds.size() == 1 && (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
-				|| labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
+		if (selectIds.size() == 1 && (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT) ||
+				labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
 
-			Optional<String> projectId = extractProjectId(selectIds.iterator().next());
-			projectId.ifPresent(id -> {
-				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-						.get(new ObjectId(id));
-				if (fieldMapping != null) {
-					kpiElement.setThresholdValue(calculateThresholdValue(fieldMapping));
-				}
-			});
+			Optional<String> projectId = extractProjectId(selectIds.iterator().next(), labelName);
+			Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
+					.cacheProjectConfigMapData();
+
+			basicConfigMap.values().stream()
+					.filter(projectBasicConfig -> projectBasicConfig.getProjectNodeId().equalsIgnoreCase(projectId.orElse("")))
+					.findFirst().ifPresent(basicConfig -> {
+						FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicConfig.getId());
+						if (fieldMapping != null) {
+							kpiElement.setThresholdValue(calculateThresholdValue(fieldMapping));
+						}
+					});
 		}
 	}
-	private Optional<String> extractProjectId(String input) {
-		int lastUnderscoreIndex = input.lastIndexOf("_");
-		return lastUnderscoreIndex != -1
-				? Optional.of(input.substring(lastUnderscoreIndex + 1))
-				: Optional.empty();
+
+	private Optional<String> extractProjectId(String input, String labelName) {
+		if (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) {
+			int lastUnderscoreIndex = input.lastIndexOf("_");
+			return lastUnderscoreIndex != -1 ? Optional.of(input.substring(lastUnderscoreIndex + 1)) : Optional.empty();
+		} else if (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
+			return StringUtils.isNotEmpty(input) ? Optional.ofNullable(input) : Optional.empty();
+		}
+		return Optional.empty();
 	}
+
 	/**
-	 *
 	 * @param fieldMapping
-	 *            fieldMapping
+	 *          fieldMapping
 	 * @return
 	 */
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
@@ -1249,11 +1248,10 @@ public abstract class ToolsKPIService<R, S> {
 	}
 
 	/**
-	 * 
 	 * @param fieldValue
-	 *            fieldmapping thresholdvalue
+	 *          fieldmapping thresholdvalue
 	 * @param kpiId
-	 *            KPICODE kpiId
+	 *          KPICODE kpiId
 	 * @return
 	 */
 	public Double calculateThresholdValue(String fieldValue, String kpiId) { // NOSONAR
@@ -1267,5 +1265,4 @@ public abstract class ToolsKPIService<R, S> {
 		}
 		return thresholdValue;
 	}
-
 }

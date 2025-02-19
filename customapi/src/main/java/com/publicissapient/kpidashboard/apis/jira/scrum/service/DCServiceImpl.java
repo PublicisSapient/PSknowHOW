@@ -72,9 +72,8 @@ import lombok.extern.slf4j.Slf4j;
  * This class fetches the defect count KPI along with trend analysis. Trend
  * analysis for Defect Count KPI has total defect count at y-axis and sprint id
  * at x-axis. {@link JiraKPIService}
- * 
- * @author tauakram
  *
+ * @author tauakram
  */
 @Component
 @Slf4j
@@ -102,31 +101,25 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 	@Autowired
 	private CacheService cacheService;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public String getQualifierType() {
 		return KPICode.DEFECT_COUNT_BY_PRIORITY.name();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-
 			if (Filters.getFilter(k) == Filters.SPRINT) {
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
-
 		});
 
 		log.debug("[DC-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
@@ -159,17 +152,13 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 		return kpiElement;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Long calculateKPIMetrics(Map<String, Object> objectMap) {
 		return 0L;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(final List<Node> leafNodeList, final String startDate,
 			final String endDate, final KpiRequest kpiRequest) {
@@ -193,16 +182,14 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectCountlIssueTypeKPI28()));
 			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
-					fieldMapping.getResolutionTypeForRejectionKPI28(),
-					fieldMapping.getJiraDefectRejectionStatusKPI28());
+					fieldMapping.getResolutionTypeForRejectionKPI28(), fieldMapping.getJiraDefectRejectionStatusKPI28());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-
 		});
 
 		final Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		final Map<String, Object> resultListMap = new HashMap<>();
 
-		/** additional filter **/
+		/** additional filter * */
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
 
 		mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
@@ -233,12 +220,11 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 		resultListMap.put(TOTAL_DEFECT_DATA, defectListWoDrop);
 		resultListMap.put(STORY_LIST, jiraIssueRepository.findIssueAndDescByNumber(storyIdList));
 		return resultListMap;
-
 	}
 
 	/**
 	 * Get DefectList without Drop
-	 * 
+	 *
 	 * @param defectLinkedWithStory
 	 * @param droppedDefects
 	 * @return
@@ -254,17 +240,17 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 	/**
 	 * This method populates KPI value to sprint leaf nodes. It also gives the trend
 	 * analysis at sprint wise.
-	 * 
+	 *
 	 * @param mapTmp
-	 *            node id map
+	 *          node id map
 	 * @param sprintLeafNodeList
-	 *            sprint nodes list
+	 *          sprint nodes list
 	 * @param trendValueList
-	 *            list to hold trend nodes data
+	 *          list to hold trend nodes data
 	 * @param kpiElement
-	 *            the KpiElement
+	 *          the KpiElement
 	 * @param kpiRequest
-	 *            the KpiRequest
+	 *          the KpiRequest
 	 */
 	@SuppressWarnings(UNCHECKED)
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
@@ -275,21 +261,20 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 		String startDate;
 		String endDate;
 
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
+		sprintLeafNodeList.sort(
+				(node1, node2) -> node1.getSprintFilter().getStartDate().compareTo(node2.getSprintFilter().getStartDate()));
 
 		startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 
-		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
-				kpiRequest);
+		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
 
 		List<JiraIssue> storyList = (List<JiraIssue>) storyDefectDataListMap.get(STORY_LIST);
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap
 				.get(SPRINT_WISE_STORY_DATA);
 
-		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
-				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
+		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(
+				Collectors.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
 
 		Map<Pair<String, String>, Map<String, Long>> sprintWiseDCPriorityMap = new HashMap<>();
 		Map<Pair<String, String>, Integer> sprintWiseTDCMap = new HashMap<>();
@@ -299,7 +284,6 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 
 		Set<String> projectWisePriorityList = new HashSet<>();
 		sprintWiseMap.forEach((sprintFilter, sprintWiseStories) -> {
-
 			List<String> storyIdList = new ArrayList<>();
 			sprintWiseStories.stream().map(SprintWiseStory::getStoryList).collect(Collectors.toList())
 					.forEach(storyIdList::addAll);
@@ -309,8 +293,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 					.collect(Collectors.toList());
 			// Below code is needed if defect->sprint linkage is considered
 
-			Map<String, Long> priorityCountMap = KPIHelperUtil.setpriorityScrum(sprintWiseDefectDataList,
-					customApiConfig);
+			Map<String, Long> priorityCountMap = KPIHelperUtil.setpriorityScrum(sprintWiseDefectDataList, customApiConfig);
 			projectWisePriorityList.addAll(priorityCountMap.keySet());
 			sprintWiseDefectDataListMap.put(sprintFilter, sprintWiseDefectDataList);
 
@@ -322,12 +305,11 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 
 		sprintLeafNodeList.forEach(node -> {
 			String trendLineName = node.getProjectFilter().getName();
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
+			Pair<String, String> currentNodeIdentifier = Pair.of(node.getProjectFilter().getBasicProjectConfigId().toString(),
+					node.getSprintFilter().getId());
 
 			Map<String, List<DataCount>> dataCountMap = new HashMap<>();
-			Map<String, Long> priorityMap = sprintWiseDCPriorityMap.getOrDefault(currentNodeIdentifier,
-					new HashMap<>());
+			Map<String, Long> priorityMap = sprintWiseDCPriorityMap.getOrDefault(currentNodeIdentifier, new HashMap<>());
 			Map<String, Long> finalMap = new HashMap<>();
 			Map<String, Object> overAllHoverValueMap = new HashMap<>();
 			if (CollectionUtils.isNotEmpty(projectWisePriorityList)) {
@@ -342,8 +324,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 
 				String finalTrendLineName = trendLineName;
 				finalMap.forEach((priority, value) -> {
-					DataCount dataCount = getDataCountObject(node, finalTrendLineName, overAllHoverValueMap, priority,
-							value);
+					DataCount dataCount = getDataCountObject(node, finalTrendLineName, overAllHoverValueMap, priority, value);
 					trendValueList.add(dataCount);
 					dataCountMap.computeIfAbsent(priority, k -> new ArrayList<>()).add(dataCount);
 				});
@@ -355,17 +336,14 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 					node.getSprintFilter().getName(), sprintWiseDCPriorityMap.get(currentNodeIdentifier),
 					sprintWiseTDCMap.get(currentNodeIdentifier));
 			mapTmp.get(node.getId()).setValue(dataCountMap);
-
 		});
 
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY.getColumns(sprintLeafNodeList, cacheService,
-				flterHelperService));
-
+		kpiElement.setExcelColumns(
+				KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
 	}
 
 	/**
-	 *
 	 * @param node
 	 * @param trendLineName
 	 * @param overAllHoverValueMap
@@ -396,19 +374,18 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 			List<JiraIssue> sprintWiseDefectDataList, CustomApiConfig customApiConfig, List<JiraIssue> storyList) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			KPIExcelUtility.populateDefectRelatedExcelData(sprintName, sprintWiseDefectDataList, excelData,
-					customApiConfig, storyList);
-
+			KPIExcelUtility.populateDefectRelatedExcelData(sprintName, sprintWiseDefectDataList, excelData, customApiConfig,
+					storyList);
 		}
 	}
 
 	/**
 	 * Sets logging data.
-	 * 
+	 *
 	 * @param storyIdList
-	 *            list of story ids
+	 *          list of story ids
 	 * @param defectLinkedWithStory
-	 *            defects linked with story
+	 *          defects linked with story
 	 */
 	private void setDbQueryLogger(List<String> storyIdList, List<JiraIssue> defectLinkedWithStory) {
 
@@ -425,15 +402,15 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 
 	/**
 	 * Sets logger to log sprint level details.
-	 * 
+	 *
 	 * @param sprint
-	 *            unique key to identify sprint
+	 *          unique key to identify sprint
 	 * @param storyIdList
-	 *            story id list
+	 *          story id list
 	 * @param sprintWiseDefectDataList
-	 *            defects for current sprint
+	 *          defects for current sprint
 	 * @param priorityCountMap
-	 *            priority map of defects
+	 *          priority map of defects
 	 */
 	private void setSprintWiseLogger(Pair<String, String> sprint, List<String> storyIdList,
 			List<JiraIssue> sprintWiseDefectDataList, Map<String, Long> priorityCountMap) {
@@ -456,8 +433,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 		return calculateKpiValueForLong(valueList, kpiName);
 	}
 
-	private Map<String, List<DataCount>> sortTrendValueMap(Map<String, List<DataCount>> trendMap,
-			List<String> keyOrder) {
+	private Map<String, List<DataCount>> sortTrendValueMap(Map<String, List<DataCount>> trendMap, List<String> keyOrder) {
 		Map<String, List<DataCount>> sortedMap = new LinkedHashMap<>();
 		keyOrder.forEach(order -> {
 			if (null != trendMap.get(order)) {
@@ -469,8 +445,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 
 	private List<String> priorityTypes(boolean addOverall) {
 		if (addOverall) {
-			return Arrays.asList(CommonConstant.OVERALL, Constant.P1, Constant.P2, Constant.P3, Constant.P4,
-					Constant.MISC);
+			return Arrays.asList(CommonConstant.OVERALL, Constant.P1, Constant.P2, Constant.P3, Constant.P4, Constant.MISC);
 		} else {
 			return Arrays.asList(Constant.P1, Constant.P2, Constant.P3, Constant.P4, Constant.MISC);
 		}
@@ -478,7 +453,6 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 
 	@Override
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI28(),
-				KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId());
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI28(), KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId());
 	}
 }

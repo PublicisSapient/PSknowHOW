@@ -21,9 +21,6 @@ package com.publicissapient.kpidashboard.githubaction.repository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 import com.publicissapient.kpidashboard.githubaction.model.GitHubActionProcessor;
 
-/**
- * The Interface GitHubProcessorRepository.
- */
+/** The Interface GitHubProcessorRepository. */
 public interface GitHubProcessorRepository extends ProcessorRepository<GitHubActionProcessor> {
-
 }

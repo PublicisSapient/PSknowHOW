@@ -38,10 +38,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.*;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationServiceR;
@@ -76,8 +74,7 @@ public class DefectCountByServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(defectCountByService.getQualifierType(),
-				equalTo(KPICode.DEFECT_COUNT_BY_ITERATION.name()));
+		assertThat(defectCountByService.getQualifierType(), equalTo(KPICode.DEFECT_COUNT_BY_ITERATION.name()));
 	}
 
 	@Before
@@ -125,14 +122,14 @@ public class DefectCountByServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 		when(jiraServiceR.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraServiceR.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> returnMap = defectCountByService.fetchKPIDataFromDb(leafNodeList.get(0), startDate,
-				endDate, kpiRequest);
+		Map<String, Object> returnMap = defectCountByService.fetchKPIDataFromDb(leafNodeList.get(0), startDate, endDate,
+				kpiRequest);
 		assertNotNull(returnMap);
 	}
 }

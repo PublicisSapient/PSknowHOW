@@ -20,9 +20,7 @@ package com.publicissapient.kpidashboard.apis.model;
 
 import java.util.Map;
 
-/**
- * Represents Version details.
- */
+/** Represents Version details. */
 public class VersionDetails {
 
 	private Map<String, String> versionDetailsMap;
@@ -40,10 +38,9 @@ public class VersionDetails {
 	 * Sets version details map.
 	 *
 	 * @param versionDetailsMap
-	 *            the version details map
+	 *          the version details map
 	 */
 	public void setVersionDetailsMap(Map<String, String> versionDetailsMap) {
 		this.versionDetailsMap = versionDetailsMap;
 	}
-
 }

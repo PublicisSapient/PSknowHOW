@@ -26,16 +26,14 @@ import org.springframework.data.mongodb.repository.Query;
 
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
 
-/**
- * Interface for access_requests collection
- */
+/** Interface for access_requests collection */
 public interface AccessRequestsRepository extends MongoRepository<AccessRequest, ObjectId> {
 
 	/**
 	 * Fetch all access requests by username.
 	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @return Access Request data
 	 */
 	List<AccessRequest> findByUsername(String username);
@@ -44,7 +42,7 @@ public interface AccessRequestsRepository extends MongoRepository<AccessRequest,
 	 * Fetch all access requests by status.
 	 *
 	 * @param status
-	 *            the status
+	 *          the status
 	 * @return List of {@link AccessRequest}
 	 */
 	List<AccessRequest> findByStatus(String status);
@@ -53,18 +51,18 @@ public interface AccessRequestsRepository extends MongoRepository<AccessRequest,
 	 * Fetch all access requests by username and status.
 	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @param status
-	 *            the status
+	 *          the status
 	 * @return list of access requests
 	 */
 	List<AccessRequest> findByUsernameAndStatus(String username, String status);
 
 	/**
 	 * Find pending requests which have provided item(project)
-	 * 
+	 *
 	 * @param itemId
-	 *            item id
+	 *          item id
 	 * @return pending requests which have provided item
 	 */
 	@Query("{'status':'Pending', 'accessNode.accessItems.itemId': ?0}")
@@ -72,11 +70,11 @@ public interface AccessRequestsRepository extends MongoRepository<AccessRequest,
 
 	/**
 	 * Find pending requests
-	 * 
+	 *
 	 * @param status
-	 *            status
+	 *          status
 	 * @param accessLevel
-	 *            accessLevel
+	 *          accessLevel
 	 * @return pending requests which have provided item
 	 */
 	@Query("{'status': ?0, 'accessNode.accessLevel': ?1}")
@@ -84,9 +82,9 @@ public interface AccessRequestsRepository extends MongoRepository<AccessRequest,
 
 	/**
 	 * Fetch access request
-	 * 
+	 *
 	 * @param id
-	 *            access request id
+	 *          access request id
 	 * @return the access request
 	 */
 	AccessRequest findById(String id);

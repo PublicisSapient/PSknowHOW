@@ -70,7 +70,6 @@ public class ApiTokenServiceTest {
 		} catch (Exception e) {
 
 		}
-
 	}
 
 	@Test
@@ -115,5 +114,4 @@ public class ApiTokenServiceTest {
 
 		}
 	}
-
 }

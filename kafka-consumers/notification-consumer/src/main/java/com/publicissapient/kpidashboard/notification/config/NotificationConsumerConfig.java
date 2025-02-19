@@ -34,18 +34,18 @@ import lombok.NoArgsConstructor;
 @Data
 public class NotificationConsumerConfig {
 
-    @Value("${kafka.mailtopic}")
-    private String kafkaMailTopic;
+	@Value("${kafka.mailtopic}")
+	private String kafkaMailTopic;
 
-    private String fromEmail;
+	private String fromEmail;
 
-    private Map<String, String> mailTemplate;
+	private Map<String, String> mailTemplate;
 
-    private boolean sendGridEnabled;
+	private boolean sendGridEnabled;
 
-    @Value("${mail.sendgrid.api-key}")
-    private String sendGridApiKey;
+	@Value("${mail.sendgrid.api-key}")
+	private String sendGridApiKey;
 
-    @Value("${mail.sendgrid.api-end-point}")
-    private String sendGridApiEndPoint;
+	@Value("${mail.sendgrid.api-end-point}")
+	private String sendGridApiEndPoint;
 }

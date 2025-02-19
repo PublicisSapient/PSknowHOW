@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.azure.model;//NOPMD
+package com.publicissapient.kpidashboard.azure.model; // NOPMD
 
 import org.bson.types.ObjectId;
 
@@ -33,7 +33,7 @@ import lombok.Setter;
 @Setter
 @Data
 @Builder
-public class ProjectConfFieldMapping {// NOPMD
+public class ProjectConfFieldMapping { // NOPMD
 	// Do not remove pmd this is for ignoring TooManyFields violation
 	// it is required
 	private String projectKey;

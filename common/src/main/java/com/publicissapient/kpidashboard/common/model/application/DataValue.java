@@ -25,5 +25,4 @@ public class DataValue implements Serializable {
 	private String data;
 	private Object value;
 	private Map<String, Object> hoverValue;
-
 }

@@ -84,8 +84,7 @@ public class GitHubActionBuildClient implements GitHubActionClient {
 			int nextPage = 1;
 			while (hasMorePage) {
 
-				ResponseEntity<String> respPayload = getResponse(githubServer.getUsername(), decryptedApiToken,
-						restUri);
+				ResponseEntity<String> respPayload = getResponse(githubServer.getUsername(), decryptedApiToken, restUri);
 				if (respPayload == null)
 					break;
 				JSONArray responseJson = getJSONFromResponse(respPayload.getBody(), WORKFLOW_RUNS);
@@ -99,7 +98,6 @@ public class GitHubActionBuildClient implements GitHubActionClient {
 				if (responseJson.isEmpty()) {
 					hasMorePage = false;
 				}
-
 			}
 
 		} catch (RestClientException | URISyntaxException | UnsupportedEncodingException | ParseException e) {
@@ -120,11 +118,9 @@ public class GitHubActionBuildClient implements GitHubActionClient {
 		} catch (ParseException e) {
 			log.error(String.format("Parsing jobs details on instance: %s", githubServer.getUrl()), e);
 		}
-
 	}
 
-	private void processJobDetailsRecursively(JSONObject jsonJob, Set<Build> result,
-			ProjectBasicConfig proBasicConfig) {
+	private void processJobDetailsRecursively(JSONObject jsonJob, Set<Build> result, ProjectBasicConfig proBasicConfig) {
 
 		log.info("Entered inside method processJobDetailsRecursively");
 		JSONArray jsonBuilds = ProcessorUtils.getJsonArray(jsonJob, Constants.BUILDS);
@@ -137,7 +133,6 @@ public class GitHubActionBuildClient implements GitHubActionClient {
 			// add the builds to the job
 			result.addAll(builds);
 		}
-
 	}
 
 	private void createBuildDetailsObject(Set<Build> builds, Object build, ProjectBasicConfig proBasicConfig) {
@@ -155,15 +150,14 @@ public class GitHubActionBuildClient implements GitHubActionClient {
 		}
 		gitHubActionBuild.setBuildUrl(buildURL);
 		gitHubActionBuild.setNumber(buildNumber);
-		gitHubActionBuild.setStartTime(
-				Instant.parse(ProcessorUtils.getString(jsonBuild, Constants.RUN_STARTED_AT)).toEpochMilli());
+		gitHubActionBuild
+				.setStartTime(Instant.parse(ProcessorUtils.getString(jsonBuild, Constants.RUN_STARTED_AT)).toEpochMilli());
 		gitHubActionBuild
 				.setEndTime(Instant.parse(ProcessorUtils.getString(jsonBuild, Constants.UPDATED_AT)).toEpochMilli());
 		gitHubActionBuild.setDuration(gitHubActionBuild.getEndTime() - gitHubActionBuild.getStartTime());
 		gitHubActionBuild.setTimestamp(System.currentTimeMillis());
 		gitHubActionBuild.setBuildStatus(getBuildStatus(jsonBuild));
 		builds.add(gitHubActionBuild);
-
 	}
 
 	@Override
@@ -198,16 +192,16 @@ public class GitHubActionBuildClient implements GitHubActionClient {
 	private BuildStatus getBuildStatus(JSONObject buildJson) {
 		String status = buildJson.get(Constants.RESULT).toString();
 		switch (status) {
-		case "success":
-			return BuildStatus.SUCCESS;
-		case "unstable":
-			return BuildStatus.UNSTABLE;
-		case "failure":
-			return BuildStatus.FAILURE;
-		case "cancelled":
-			return BuildStatus.ABORTED;
-		default:
-			return BuildStatus.UNKNOWN;
+			case "success" :
+				return BuildStatus.SUCCESS;
+			case "unstable" :
+				return BuildStatus.UNSTABLE;
+			case "failure" :
+				return BuildStatus.FAILURE;
+			case "cancelled" :
+				return BuildStatus.ABORTED;
+			default :
+				return BuildStatus.UNKNOWN;
 		}
 	}
 }

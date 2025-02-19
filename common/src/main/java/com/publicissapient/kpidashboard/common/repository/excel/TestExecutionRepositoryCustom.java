@@ -23,21 +23,18 @@ import java.util.Map;
 
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 
-/**
- * The interface Test execution detail custom repository.
- */
+/** The interface Test execution detail custom repository. */
 public interface TestExecutionRepositoryCustom {
 
 	/**
 	 * Returns TestExecution documents for selected filters and date range.
-	 * 
+	 *
 	 * @param mapOfFilters
-	 *            filters applied
+	 *          filters applied
 	 * @param uniqueProjectMap
-	 *            project specific filters
+	 *          project specific filters
 	 * @return result list
 	 */
 	List<TestExecution> findTestExecutionDetailByFilters(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap);
-
 }

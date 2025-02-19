@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -111,19 +110,17 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-
 			Filters filters = Filters.getFilter(k);
 			if (Filters.SPRINT == filters) {
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
-
 		});
 
 		log.debug("[FTPR-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
@@ -144,16 +141,16 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
+		sprintLeafNodeList.sort(
+				(node1, node2) -> node1.getSprintFilter().getStartDate().compareTo(node2.getSprintFilter().getStartDate()));
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 		long time = System.currentTimeMillis();
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
 		log.info("FirstTimePassRate taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) resultMap.get(SPRINT_WISE_CLOSED_STORIES);
-		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
-				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
+		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(
+				Collectors.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
 		List<JiraIssue> jiraIssueList = (List<JiraIssue>) resultMap.get(ISSUE_DATA);
 		Set<JiraIssue> defectListsForExcel = (Set<JiraIssue>) resultMap.get(DEFECT_FOR_EXCEL);
 		Map<String, Set<JiraIssue>> projectWiseStories = jiraIssueList.stream()
@@ -174,8 +171,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			sprintWiseTotalStoryIdList.put(sprint, totalStoryIdList);
 
 			List<JiraIssue> ftpStoriesList = ((List<JiraIssue>) resultMap.get(FIRST_TIME_PASS_STORIES)).stream()
-					.filter(jiraIssue -> jiraIssue.getSprintID().equals(sprint.getValue()))
-					.collect(Collectors.toList());
+					.filter(jiraIssue -> jiraIssue.getSprintID().equals(sprint.getValue())).collect(Collectors.toList());
 			sprintWiseFTPListMap.put(sprint, ftpStoriesList);
 
 			double ftprForCurrentLeaf = 0.0d;
@@ -191,11 +187,10 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
 		sprintLeafNodeList.forEach(node -> {
-
 			String trendLineName = node.getProjectFilter().getName();
 			String currentSprintComponentId = node.getSprintFilter().getId();
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
+			Pair<String, String> currentNodeIdentifier = Pair.of(node.getProjectFilter().getBasicProjectConfigId().toString(),
+					currentSprintComponentId);
 			double ftprForCurrentLeaf;
 
 			if (sprintWiseFTPRMap.containsKey(currentNodeIdentifier)) {
@@ -209,8 +204,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					Set<JiraIssue> linkedDefects = projectWiseDefect
 							.get(node.getProjectFilter().getBasicProjectConfigId().toString());
 					Map<String, JiraIssue> issueMapping = new HashMap<>();
-					Optional.ofNullable(jiraIssues).ifPresent(
-							jIssue -> jIssue.forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue)));
+					Optional.ofNullable(jiraIssues)
+							.ifPresent(jIssue -> jIssue.forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue)));
 					List<KPIExcelData> excelDatas = new ArrayList<>();
 					KPIExcelUtility.populateFTPRExcelData(totalStoryIdList, ftpStoriesList, excelDatas, issueMapping,
 							new ArrayList<>(linkedDefects != null ? linkedDefects : new ArrayList<>()), customApiConfig,
@@ -221,8 +216,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				ftprForCurrentLeaf = 0.0d;
 			}
 
-			log.debug("[FTPR-SPRINT-WISE][{}]. FTPR for sprint {}  is {}", requestTrackerId,
-					node.getSprintFilter().getName(), ftprForCurrentLeaf);
+			log.debug("[FTPR-SPRINT-WISE][{}]. FTPR for sprint {}  is {}", requestTrackerId, node.getSprintFilter().getName(),
+					ftprForCurrentLeaf);
 
 			DataCount dataCount = new DataCount();
 			dataCount.setData(String.valueOf(Math.round(ftprForCurrentLeaf)));
@@ -240,7 +235,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(
 				KPIExcelColumn.FIRST_TIME_PASS_RATE.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
-
 	}
 
 	private void setHowerMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
@@ -292,9 +286,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getIncludeRCAForKPI82());
 
 			if (Optional.ofNullable(fieldMapping.getJiraKPI82StoryIdentification()).isPresent()) {
-				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters,
-						fieldMapping.getJiradefecttype(), fieldMapping.getJiraKPI82StoryIdentification(),
-						JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(),
+						fieldMapping.getJiraKPI82StoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 			}
 			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI82())) {
 				mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
@@ -304,13 +297,12 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
 					fieldMapping.getJiraIssueDeliverdStatusKPI82());
 			KpiHelperService.getDroppedDefectsFilters(statusConfigsOfRejectedStoriesByProject, basicProjectConfigId,
-					fieldMapping.getResolutionTypeForRejectionKPI82(),
-					fieldMapping.getJiraDefectRejectionStatusKPI82());
+					fieldMapping.getResolutionTypeForRejectionKPI82(), fieldMapping.getJiraDefectRejectionStatusKPI82());
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		});
 
-		/** additional filter **/
+		/** additional filter * */
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
 
 		mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
@@ -367,10 +359,9 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 	 */
 	private void removeStoriesWithDefect(List<JiraIssue> issuesBySprintAndType,
 			Map<String, Map<String, Integer>> projectWisePriority, Map<String, Set<String>> projectWiseRCA,
-			Map<String, Map<String, List<String>>> statusConfigsOfRejectedStoriesByProject,
-			Set<JiraIssue> defectForExcel) {
-		List<JiraIssue> allDefects = jiraIssueRepository.findByTypeNameAndDefectStoryIDIn(
-				NormalizedJira.DEFECT_TYPE.getValue(), getIssueIds(issuesBySprintAndType));
+			Map<String, Map<String, List<String>>> statusConfigsOfRejectedStoriesByProject, Set<JiraIssue> defectForExcel) {
+		List<JiraIssue> allDefects = jiraIssueRepository
+				.findByTypeNameAndDefectStoryIDIn(NormalizedJira.DEFECT_TYPE.getValue(), getIssueIds(issuesBySprintAndType));
 		Set<JiraIssue> defects = new HashSet<>();
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
 		allDefects.stream().forEach(d -> issuesBySprintAndType.stream().forEach(i -> {

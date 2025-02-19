@@ -50,8 +50,9 @@ public class HappinessKpiCapacityImplTest {
 
 	@Test
 	public void saveHappinessKpiDataSuccessUpdateTest() {
-		Mockito.when(happinessKpiDataRepository.findExistingByBasicProjectConfigIdAndSprintIDAndDateOfSubmission(
-				Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(createHappinessData());
+		Mockito.when(happinessKpiDataRepository
+				.findExistingByBasicProjectConfigIdAndSprintIDAndDateOfSubmission(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(createHappinessData());
 		ServiceResponse serviceResponse = happinessKpiService.saveHappinessKpiData(createHappinessDto());
 		assertEquals(serviceResponse.getSuccess(), Boolean.TRUE);
 	}
@@ -109,5 +110,4 @@ public class HappinessKpiCapacityImplTest {
 		happinessKpiDTO.setUserRatingList(userRatingDTO);
 		return happinessKpiDTO;
 	}
-
 }

@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.common.constant;
 
 import static org.junit.Assert.assertEquals;
@@ -38,5 +37,4 @@ public class UserRoleTest {
 		assertEquals("ROLE_ADMIN", UserRole.ROLE_ADMIN.toString());
 		assertEquals("ROLE_API", UserRole.ROLE_API.toString());
 	}
-
 }

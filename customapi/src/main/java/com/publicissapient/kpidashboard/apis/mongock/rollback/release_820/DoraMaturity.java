@@ -51,9 +51,8 @@ public class DoraMaturity {
 
 		// Update command for kpi116
 		collection.updateOne(new Document("kpiId", "kpi116"),
-				new Document("$set",
-						new Document("maturityRange", Arrays.asList("-50", "50-30", "30-20", "20-10", "10-"))
-								.append("maturityLevel", null)));
+				new Document("$set", new Document("maturityRange", Arrays.asList("-50", "50-30", "30-20", "20-10", "10-"))
+						.append("maturityLevel", null)));
 
 		// Update command for kpi118
 
@@ -81,5 +80,4 @@ public class DoraMaturity {
 		// not required
 
 	}
-
 }

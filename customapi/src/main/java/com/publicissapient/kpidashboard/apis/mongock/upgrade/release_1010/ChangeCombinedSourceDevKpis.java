@@ -17,12 +17,14 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1010;
 
+import org.bson.Document;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
 import com.mongodb.client.MongoCollection;
+
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
-import org.bson.Document;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 @ChangeUnit(id = "change_repo_tool_kpi_combined_source", order = "101015", author = "kunkambl", systemVersion = "10.1.0")
 public class ChangeCombinedSourceDevKpis {
@@ -67,5 +69,4 @@ public class ChangeCombinedSourceDevKpis {
 		updateDocument(kpiMaster, "kpi158", EXISTING_KPI_SOURCE);
 		updateDocument(kpiMaster, "kpi159", EXISTING_KPI_SOURCE);
 	}
-
 }

@@ -2,7 +2,6 @@ package com.publicissapient.kpidashboard.apis.comments.rest;
 
 import java.util.List;
 import java.util.Map;
-
 import javax.validation.Valid;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Mahesh
- *
  */
 @RestController
 @RequestMapping("/comments")
@@ -54,16 +52,14 @@ public class CommentsController {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(false, "Comment not found", mappedCommentInfo));
 		}
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(new ServiceResponse(true, "Found comments", mappedCommentInfo));
-
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "Found comments", mappedCommentInfo));
 	}
 
 	/**
 	 * This method will save the comment for a selected project from the
 	 * organization level. Only one comment can submit at a time for the project &
 	 * selected KPI.
-	 * 
+	 *
 	 * @param comment
 	 * @return
 	 */
@@ -80,7 +76,6 @@ public class CommentsController {
 	}
 
 	/**
-	 *
 	 * @param commentViewRequestDTO
 	 * @return
 	 */
@@ -88,19 +83,15 @@ public class CommentsController {
 	public ResponseEntity<ServiceResponse> getKpiWiseCommentsCount(
 			@RequestBody CommentViewRequestDTO commentViewRequestDTO) {
 		Map<String, Integer> kpiWiseCount = commentsService.findCommentByBoard(commentViewRequestDTO.getNodes(),
-				commentViewRequestDTO.getLevel(), commentViewRequestDTO.getNodeChildId(),
-				commentViewRequestDTO.getKpiIds());
+				commentViewRequestDTO.getLevel(), commentViewRequestDTO.getNodeChildId(), commentViewRequestDTO.getKpiIds());
 		if (MapUtils.isEmpty(kpiWiseCount)) {
 			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Comments not found", null));
 		} else {
-			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ServiceResponse(true, "Found Comments Count", kpiWiseCount));
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "Found Comments Count", kpiWiseCount));
 		}
-
 	}
 
 	/**
-	 *
 	 * @param commentId
 	 * @return
 	 */
@@ -117,23 +108,20 @@ public class CommentsController {
 	}
 
 	/**
-	 *
 	 * @param commentViewRequestDTO
 	 * @return
 	 */
 	@PostMapping("/commentsSummary")
-	public ResponseEntity<ServiceResponse> getCommentsSummary(
-			@RequestBody CommentViewRequestDTO commentViewRequestDTO) {
+	public ResponseEntity<ServiceResponse> getCommentsSummary(@RequestBody CommentViewRequestDTO commentViewRequestDTO) {
 
 		List<CommentViewResponseDTO> commentViewAllByBoard = commentsService.findLatestCommentSummary(
-				commentViewRequestDTO.getNodes(), commentViewRequestDTO.getLevel(),
-				commentViewRequestDTO.getNodeChildId(), commentViewRequestDTO.getKpiIds());
+				commentViewRequestDTO.getNodes(), commentViewRequestDTO.getLevel(), commentViewRequestDTO.getNodeChildId(),
+				commentViewRequestDTO.getKpiIds());
 		if (CollectionUtils.isEmpty(commentViewAllByBoard)) {
 			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Comments not found", null));
 		} else {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(true, "Found comments", commentViewAllByBoard));
 		}
-
 	}
 }

@@ -51,9 +51,9 @@ public class DREDefinitionChangeLog {
 	public void rollbackDREFieldMappingStructure() {
 		Document filter = new Document("fieldName", "jiraDodKPI14");
 
-		Document update = new Document("$set", new Document()
-				.append("fieldLabel", "Status considered for defect closure")
-				.append("tooltip", new Document("definition", "Status considered for defect closure (Mention completed status of all types of defects)")));
+		Document update = new Document("$set",
+				new Document().append("fieldLabel", "Status considered for defect closure").append("tooltip", new Document(
+						"definition", "Status considered for defect closure (Mention completed status of all types of defects)")));
 
 		mongoTemplate.getCollection("field_mapping_structure").updateOne(filter, update);
 	}
@@ -66,5 +66,4 @@ public class DREDefinitionChangeLog {
 	public void rollbackFieldMappingStructure() {
 		// provide rollback script
 	}
-
 }

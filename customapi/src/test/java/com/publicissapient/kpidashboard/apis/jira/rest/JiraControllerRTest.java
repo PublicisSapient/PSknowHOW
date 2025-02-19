@@ -27,7 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -48,6 +47,7 @@ import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceKanbanR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraToolConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeDetailsDTO;
 import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
 
@@ -59,9 +59,7 @@ import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeRes
  * ] to switch off formatter for section of code.
  *
  * @author tauakram
- *
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class JiraControllerRTest {
 
@@ -95,27 +93,28 @@ public class JiraControllerRTest {
 	@Test
 	public void getJiraKPIMetricReturnsValue() throws Exception {
 		// TODO GIRISH here discuss with team
-		//@formatter:off
-		String request = "{\n" +
-				"  \"kpiList\": [\n" +
-				"    {\n" +
-				"      \"id\": \"5b753628d42937acd035b7ef\",\n" +
-				"      \"kpiId\": \"kpi14\",\n" +
-				"      \"kpiName\": \"Defect Injection Rate\",\n" +
-				"      \"isDeleted\": \"False\",\n" +
-				"      \"kpiCategory\": \"Quality\",\n" +
-				"      \"kpiUnit\": \"Percentage\",\n" +
-				"      \"kpiSource\": \"Jira\",\n" +
-				"      \"maxValue\": \"\",\n" +
-				"      \"chartType\": \"gaugeChart\"\n" +
-				"    }\n" +
-				"  ],\n" +
-				"  \"ids\": [\n" +
-				"    \"GMA_GMA\"\n" +
-				"  ],\n" +
-				"  \"level\": 1\n" +
-				"}";
-		//@formatter:on
+		// @formatter:off
+		String request =
+				"{\n"
+						+ "  \"kpiList\": [\n"
+						+ "    {\n"
+						+ "      \"id\": \"5b753628d42937acd035b7ef\",\n"
+						+ "      \"kpiId\": \"kpi14\",\n"
+						+ "      \"kpiName\": \"Defect Injection Rate\",\n"
+						+ "      \"isDeleted\": \"False\",\n"
+						+ "      \"kpiCategory\": \"Quality\",\n"
+						+ "      \"kpiUnit\": \"Percentage\",\n"
+						+ "      \"kpiSource\": \"Jira\",\n"
+						+ "      \"maxValue\": \"\",\n"
+						+ "      \"chartType\": \"gaugeChart\"\n"
+						+ "    }\n"
+						+ "  ],\n"
+						+ "  \"ids\": [\n"
+						+ "    \"GMA_GMA\"\n"
+						+ "  ],\n"
+						+ "  \"level\": 1\n"
+						+ "}";
+		// @formatter:on
 
 		List<KpiElement> kpiElementList = new ArrayList<>();
 		KpiElement kpiElement = new KpiElement();
@@ -126,49 +125,51 @@ public class JiraControllerRTest {
 		when(jiraService.process(Mockito.any())).thenReturn(kpiElementList);
 		mockMvc.perform(post("/jira/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
-
 	}
 
 	@Test
 	public void getJiraKPIMetricReturns400() throws Exception {
-		//@formatter:off
-		String request = "{\n" +
-				"  \"level\": 3,\n" +
-				"  \"ids\": [\n" +
-				"    \"OPRO Sprint 71_12138_10304_PR\",\n" +
-				"    \"OPRO Sprint 72_12139_10304_PR\"\n" +
-				"  ],\n" +
-				"  \"kpiList\": []\n" +
-				"}";
+		// @formatter:off
+		String request =
+				"{\n"
+						+ "  \"level\": 3,\n"
+						+ "  \"ids\": [\n"
+						+ "    \"OPRO Sprint 71_12138_10304_PR\",\n"
+						+ "    \"OPRO Sprint 72_12139_10304_PR\"\n"
+						+ "  ],\n"
+						+ "  \"kpiList\": []\n"
+						+ "}";
 
-		mockMvc.perform(post("/jira/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
-				.andDo(print()).andExpect(status().isBadRequest());
-
+		mockMvc
+				.perform(post("/jira/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
+				.andDo(print())
+				.andExpect(status().isBadRequest());
 	}
 
 	@Test
 	public void getJiraKanbanKPIMetricReturnsValue() throws Exception {
-		//@formatter:off
-		String request = "{\n" +
-				"  \"kpiList\": [\n" +
-				"    {\n" +
-				"      \"id\": \"5b753628d42937acd035b7ef\",\n" +
-				"      \"kpiId\": \"kpi48\",\n" +
-				"      \"kpiName\": \"Total Ticket Count\",\n" +
-				"      \"isDeleted\": \"False\",\n" +
-				"      \"kpiCategory\": \"Quality\",\n" +
-				"      \"kpiUnit\": \"Percentage\",\n" +
-				"      \"kpiSource\": \"Jira\",\n" +
-				"      \"maxValue\": \"\",\n" +
-				"      \"chartType\": \"gaugeChart\"\n" +
-				"    }\n" +
-				"  ],\n" +
-				"  \"ids\": [\n" +
-				"    \"GMA_GMA\"\n" +
-				"  ],\n" +
-				"  \"level\": 1\n" +
-				"}";
-		//@formatter:on
+		// @formatter:off
+		String request =
+				"{\n"
+						+ "  \"kpiList\": [\n"
+						+ "    {\n"
+						+ "      \"id\": \"5b753628d42937acd035b7ef\",\n"
+						+ "      \"kpiId\": \"kpi48\",\n"
+						+ "      \"kpiName\": \"Total Ticket Count\",\n"
+						+ "      \"isDeleted\": \"False\",\n"
+						+ "      \"kpiCategory\": \"Quality\",\n"
+						+ "      \"kpiUnit\": \"Percentage\",\n"
+						+ "      \"kpiSource\": \"Jira\",\n"
+						+ "      \"maxValue\": \"\",\n"
+						+ "      \"chartType\": \"gaugeChart\"\n"
+						+ "    }\n"
+						+ "  ],\n"
+						+ "  \"ids\": [\n"
+						+ "    \"GMA_GMA\"\n"
+						+ "  ],\n"
+						+ "  \"level\": 1\n"
+						+ "}";
+		// @formatter:on
 
 		List<KpiElement> kpiElementList = new ArrayList<>();
 		KpiElement kpiElement = new KpiElement();
@@ -179,34 +180,36 @@ public class JiraControllerRTest {
 		when(jiraServiceKanban.process(Mockito.any())).thenReturn(kpiElementList);
 		mockMvc.perform(post("/jirakanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
-
 	}
 
 	@Test
 	public void getJiraKanbanKPIMetricReturns400() throws Exception {
-		//@formatter:off
-		String request = "{\n" +
-				"  \"level\": 2,\n" +
-				"  \"ids\": [\n" +
-				"    \"PR\",\n" +
-				"  ],\n" +
-				"  \"kpiList\": []\n" +
-				"}";
+		// @formatter:off
+		String request =
+				"{\n"
+						+ "  \"level\": 2,\n"
+						+ "  \"ids\": [\n"
+						+ "    \"PR\",\n"
+						+ "  ],\n"
+						+ "  \"kpiList\": []\n"
+						+ "}";
 
-		mockMvc.perform(post("/jirakanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
-				.andDo(print()).andExpect(status().isBadRequest());
-
+		mockMvc
+				.perform(post("/jirakanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
+				.andDo(print())
+				.andExpect(status().isBadRequest());
 	}
 
 	@Test
 	public void getJiraBoardDetailsListReturnValue() throws Exception {
-		//@formatter:off
-		String request = "{\n"
-				+ "    \"connectionId\" : \"6324559257413703ba3bf4ed\",\n"
-				+ "    \"projectKey\" : \"TestKey\",\n"
-				+ "    \"boardType\" : \"scrum\"\n"
-				+ "}";
-		//@formatter:on
+		// @formatter:off
+		String request =
+				"{\n"
+						+ "    \"connectionId\" : \"6324559257413703ba3bf4ed\",\n"
+						+ "    \"projectKey\" : \"TestKey\",\n"
+						+ "    \"boardType\" : \"scrum\"\n"
+						+ "}";
+		// @formatter:on
 
 		List<BoardDetailsDTO> boardDetailsList = new ArrayList<>();
 
@@ -222,22 +225,21 @@ public class JiraControllerRTest {
 				.body(new ServiceResponse(true, "Successfully fetched board details list", boardDetailsList)));
 		mockMvc.perform(post("/jira/board").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
-
 	}
 
 	@Test
 	public void getJiraBoardDetailsListReturn400() throws Exception {
-		//@formatter:off
-		String request = "{\n"
-				+ "    \"connectionId\" : \"6324559257413703ba3bf4ed\",\n"
-				+ "    \"projectKey\" : \"TestKey\",\n"
-				+ "    \"boardType\" : \"scrum\"\n"
-				+ "}";
-		//@formatter:on
+		// @formatter:off
+		String request =
+				"{\n"
+						+ "    \"connectionId\" : \"6324559257413703ba3bf4ed\",\n"
+						+ "    \"projectKey\" : \"TestKey\",\n"
+						+ "    \"boardType\" : \"scrum\"\n"
+						+ "}";
+		// @formatter:on
 
-		mockMvc.perform(post("/jirakanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
-				.andDo(print()).andExpect(status().isBadRequest());
-
+		mockMvc.perform(post("/jirakanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request)).andDo(print())
+				.andExpect(status().isBadRequest());
 	}
 
 	@Test

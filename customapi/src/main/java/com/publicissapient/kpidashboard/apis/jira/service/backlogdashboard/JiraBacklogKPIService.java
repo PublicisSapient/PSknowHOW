@@ -96,5 +96,4 @@ public abstract class JiraBacklogKPIService<R, S> extends ToolsKPIService<R, S> 
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		overAllModalValues.add(iterationKpiModalValue);
 	}
-
 }

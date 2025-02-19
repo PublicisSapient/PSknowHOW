@@ -13,11 +13,8 @@ import lombok.Setter;
  * Provide sonar version list based on type (sonarServer, SonarCloud) and Branch
  * supported or not
  *
- *
  * @author Hiren babariya
- *
  */
-
 @Data
 @Builder
 @Getter
@@ -29,5 +26,4 @@ public class SonarVersionResponseDTO {
 	private String type;
 	private boolean branchSupport;
 	private List<String> versions;
-
 }

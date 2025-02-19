@@ -1,56 +1,65 @@
-import { Component, TemplateRef, ViewContainerRef } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { Component, Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
 import { FeatureFlagDirective } from './feature-flag.directive';
 import { FeatureFlagsService } from '../../services/feature-toggle.service';
-import { SharedService } from 'src/app/services/shared.service';
-import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
-import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
-import { HttpService } from 'src/app/services/http.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 
+@Component({
+  template: `<ng-template [featureFlag]="'testFeature'">Feature Content</ng-template>`
+})
+class TestComponent {}
+
 describe('FeatureFlagDirective', () => {
-    let directive: FeatureFlagDirective;
-    let tpl: TemplateRef<any>;
-    let vcr: ViewContainerRef;
-    let featureFlagService: FeatureFlagsService;
+  let fixture: ComponentFixture<TestComponent>;
+  let featureFlagsService: jasmine.SpyObj<FeatureFlagsService>;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
-            declarations: [FeatureFlagDirective],
-            providers: [
-                FeatureFlagsService,
-                SharedService,
-                GetAuthorizationService,
-                HttpService,
-                { provide: APP_CONFIG, useValue: AppConfig }
-            ]
-        }).compileComponents();
+  beforeEach(() => {
+    const featureFlagsSpy = jasmine.createSpyObj('FeatureFlagsService', ['isFeatureEnabled']);
 
-        tpl = {} as TemplateRef<any>;
-        vcr = { createEmbeddedView: jasmine.createSpy('createEmbeddedView'), clear: jasmine.createSpy('clear') } as unknown as ViewContainerRef;
-        // featureFlagService = { isFeatureEnabled: jasmine.createSpy('isFeatureEnabled').and.returnValue(of(true)) } as unknown as FeatureFlagsService;
-        featureFlagService = TestBed.inject(FeatureFlagsService);
-        directive = new FeatureFlagDirective(tpl, vcr, featureFlagService);
+    TestBed.configureTestingModule({
+      declarations: [FeatureFlagDirective, TestComponent],
+      providers: [{ provide: FeatureFlagsService, useValue: featureFlagsSpy }]
     });
 
-    /** TODO: isFeatureEnabled should return a promise */
-    xit('should create an embedded view when feature is enabled', () => {
-        let featureEnabledSpy = spyOn<any>(featureFlagService, 'isFeatureEnabled').and.returnValue(of(false));
-        directive.featureFlag = 'myFeature';
-        expect(featureEnabledSpy).toHaveBeenCalledWith('myFeature');
-        expect(vcr.createEmbeddedView).toHaveBeenCalledWith(tpl);
-        expect(vcr.clear).not.toHaveBeenCalled();
-    });
+    fixture = TestBed.createComponent(TestComponent);
+    featureFlagsService = TestBed.inject(FeatureFlagsService) as jasmine.SpyObj<FeatureFlagsService>;
+  });
 
-    xit('should clear the view container when feature is disabled', () => {
-        let featureEnabledSpy = spyOn<any>(featureFlagService, 'isFeatureEnabled').and.returnValue(of(false));
+  it('should display content when feature is enabled', async () => {
+    featureFlagsService.isFeatureEnabled.and.returnValue(Promise.resolve(true));
 
-        directive.featureFlag = 'myFeature';
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
 
-        expect(featureEnabledSpy).toHaveBeenCalledWith('myFeature');
-        expect(vcr.clear).toHaveBeenCalled();
-        expect(vcr.createEmbeddedView).not.toHaveBeenCalled();
-    });
+    expect(fixture.nativeElement.textContent).toContain('Feature Content');
+  });
+
+  it('should not display content when feature is disabled', async () => {
+    featureFlagsService.isFeatureEnabled.and.returnValue(Promise.resolve(false));
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).not.toContain('Feature Content');
+  });
 });

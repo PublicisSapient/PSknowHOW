@@ -22,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Module constants
- * 
+ *
  * @author anisingh4
  */
 public final class Constants {
@@ -38,21 +38,20 @@ public final class Constants {
 	public static final String RESULT = "result";
 	public static final String REVISION = "revision";
 	public static final String JOB_URL_END_POINT = "/job/BUILD_NAME/api/json?tree=";
-	private static final String[] ITEMS_TREE = { "user", "author[fullName]", REVISION, "id", "msg", TIMESTAMP, "date",
-			"paths[file]" };
-	private static final String[] BUILD_TREE = { NUMBER, URL, TIMESTAMP, DURATION, BUILDING, RESULT,
-			"culprits[fullName]", "changeSets[items[" + StringUtils.join(ITEMS_TREE, ",") + "],kind]",
+	private static final String[] ITEMS_TREE = {"user", "author[fullName]", REVISION, "id", "msg", TIMESTAMP, "date",
+			"paths[file]"};
+	private static final String[] BUILD_TREE = {NUMBER, URL, TIMESTAMP, DURATION, BUILDING, RESULT, "culprits[fullName]",
+			"changeSets[items[" + StringUtils.join(ITEMS_TREE, ",") + "],kind]",
 			"changeSet[items[" + StringUtils.join(ITEMS_TREE, ",") + "]", "kind", "revisions[module,revision]]",
-			"actions[lastBuiltRevision[SHA1,branch[SHA1,name]],remoteUrls]" };
+			"actions[lastBuiltRevision[SHA1,branch[SHA1,name]],remoteUrls]"};
 	public static final String BUILD_URL_END_POINT = "/api/json?tree=" + StringUtils.join(BUILD_TREE, ",");
-	private static final String[] JOB_BUILD_TREE = { NUMBER, URL, TIMESTAMP, DURATION, BUILDING, RESULT,
-			"culprits[fullName]" };
-	public static final String JOB_FIELDS = "name,url,builds[" + StringUtils.join(JOB_BUILD_TREE, ",")
-			+ "],lastSuccessfulBuild[timestamp,builtOn],lastBuild[timestamp,builtOn]";
+	private static final String[] JOB_BUILD_TREE = {NUMBER, URL, TIMESTAMP, DURATION, BUILDING, RESULT,
+			"culprits[fullName]"};
+	public static final String JOB_FIELDS = "name,url,builds[" + StringUtils.join(JOB_BUILD_TREE, ",") +
+			"],lastSuccessfulBuild[timestamp,builtOn],lastBuild[timestamp,builtOn]";
 	public static final String CHILD_JOBS_TREE = "jobs[" + JOB_FIELDS + "]";
 
 	private Constants() {
 		// to prevent object creation
 	}
-
 }

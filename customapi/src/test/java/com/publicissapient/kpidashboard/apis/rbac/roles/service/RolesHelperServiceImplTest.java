@@ -58,9 +58,7 @@ public class RolesHelperServiceImplTest {
 	@Mock
 	private RolesRepository rolesRepository;
 
-	/**
-	 * method includes preprocesses for test cases
-	 */
+	/** method includes preprocesses for test cases */
 	@Before
 	public void setup() {
 		testRolename = "UnitTest";
@@ -85,7 +83,6 @@ public class RolesHelperServiceImplTest {
 
 		testPermissions.add(perm2);
 		testRoleData.setPermissions(testPermissions);
-
 	}
 
 	@After
@@ -112,10 +109,7 @@ public class RolesHelperServiceImplTest {
 		testRoleData.setPermissions(testPermissions);
 	}
 
-	/**
-	 * 1. database call has an error and returns null
-	 *
-	 */
+	/** 1. database call has an error and returns null */
 	@Test
 	public void testGetAllRole1() {
 		when(rolesRepository.findAll()).thenReturn(null);
@@ -124,22 +118,17 @@ public class RolesHelperServiceImplTest {
 		assertThat("Data should not exist: ", response.getData(), equalTo(null));
 	}
 
-	/**
-	 * 2. database call has no records and returns empty array
-	 *
-	 */
+	/** 2. database call has no records and returns empty array */
 	@Test
 	public void testGetAllRole2() {
 		when(rolesRepository.findAll()).thenReturn(new ArrayList<RoleData>());
 		ServiceResponse response = rolesHelperServiceImpl.getAllRoles();
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertThat("Data should exist but empty: ", response.getData(), equalTo(new ArrayList<RoleData>()));
+		assertThat(
+				"Data should exist but empty: ", response.getData(), equalTo(new ArrayList<RoleData>()));
 	}
 
-	/**
-	 * 3. database call has records and returns them as an array
-	 *
-	 */
+	/** 3. database call has records and returns them as an array */
 	@Test
 	public void testGetAllRole3() {
 		List<RoleData> a = new ArrayList<RoleData>();
@@ -150,10 +139,7 @@ public class RolesHelperServiceImplTest {
 		assertThat("Data should exist but empty: ", response.getData(), equalTo(a));
 	}
 
-	/**
-	 * 4. Input String id is null
-	 *
-	 */
+	/** 4. Input String id is null */
 	@Test
 	public void testGetRoleById1() {
 		testId = null;
@@ -162,10 +148,7 @@ public class RolesHelperServiceImplTest {
 		assertThat("Data should not exist: ", response.getData(), equalTo(null));
 	}
 
-	/**
-	 * 5. Input String id creates invalid ObjectId
-	 *
-	 */
+	/** 5. Input String id creates invalid ObjectId */
 	@Test
 	public void testGetRoleById2() {
 		testId = "UnitTest";
@@ -177,7 +160,6 @@ public class RolesHelperServiceImplTest {
 	/**
 	 * 6. Input String id is valid but data at this id does not exist in the
 	 * database.
-	 *
 	 */
 	@Test
 	public void testGetRoleById3() {
@@ -188,10 +170,7 @@ public class RolesHelperServiceImplTest {
 		assertThat("Data should not exist: ", response.getData(), equalTo(null));
 	}
 
-	/**
-	 * 7. Input String id is valid and data at this id exists in the database.
-	 *
-	 */
+	/** 7. Input String id is valid and data at this id exists in the database. */
 	@Test
 	public void testGetRoleById4() {
 		testId = "5ca455aa70c53c4f50076e34";
@@ -203,10 +182,7 @@ public class RolesHelperServiceImplTest {
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 	}
 
-	/**
-	 * 8. Input String id is null
-	 *
-	 */
+	/** 8. Input String id is null */
 	@Test
 	public void testModifyRoleById1() {
 		testId = null;
@@ -217,10 +193,7 @@ public class RolesHelperServiceImplTest {
 		assertEquals(null, response.getData());
 	}
 
-	/**
-	 * 9. Input String id creates invalid ObjectId
-	 *
-	 */
+	/** 9. Input String id creates invalid ObjectId */
 	@Test
 	public void testModifyRoleById2() {
 		testId = "5ca455aa70c53c4f5007";
@@ -233,7 +206,6 @@ public class RolesHelperServiceImplTest {
 
 	/**
 	 * 10. Input String id is valid but input roleData has no permissions selected.
-	 *
 	 */
 	@Test
 	public void testModifyRoleById3() {
@@ -249,7 +221,6 @@ public class RolesHelperServiceImplTest {
 
 	/**
 	 * 11. Input String id is valid but input roleData has no permissions selected.
-	 *
 	 */
 	@Test
 	public void testModifyRoleById4() {
@@ -272,7 +243,6 @@ public class RolesHelperServiceImplTest {
 	/**
 	 * 12. Input String id is valid but input roleData has at least one permission
 	 * selected.
-	 *
 	 */
 	@Test
 	public void testModifyRoleById5() {
@@ -293,10 +263,7 @@ public class RolesHelperServiceImplTest {
 		assertEquals(response.getData(), a);
 	}
 
-	/**
-	 * 13. Input String id is valid but input roleData has no role name.
-	 *
-	 */
+	/** 13. Input String id is valid but input roleData has no role name. */
 	@Test
 	public void testModifyRoleById6() {
 		testId = "5ca455aa70c53c4f50076e34";
@@ -309,10 +276,7 @@ public class RolesHelperServiceImplTest {
 		assertEquals(null, response.getData());
 	}
 
-	/**
-	 * 14. Input String id is valid but input roleData has no role decription.
-	 *
-	 */
+	/** 14. Input String id is valid but input roleData has no role decription. */
 	@Test
 	public void testModifyRoleById7() {
 		testId = "5ca455aa70c53c4f50076e34";
@@ -325,10 +289,7 @@ public class RolesHelperServiceImplTest {
 		assertEquals(null, response.getData());
 	}
 
-	/**
-	 * 15. Input String id is valid and data at this id exists.
-	 *
-	 */
+	/** 15. Input String id is valid and data at this id exists. */
 	@Test
 	public void testModifyRoleById8() {
 		testId = "5ca455aa70c53c4f50076e34";
@@ -340,10 +301,7 @@ public class RolesHelperServiceImplTest {
 		assertEquals(response.getData(), a);
 	}
 
-	/**
-	 * 16. Creating a role
-	 *
-	 */
+	/** 16. Creating a role */
 	@Test
 	public void testCreateRole1() {
 		List<RoleData> a = new ArrayList<RoleData>();
@@ -353,10 +311,7 @@ public class RolesHelperServiceImplTest {
 		assertEquals(response.getData(), a);
 	}
 
-	/**
-	 * 17. Input roleData has no role name.
-	 *
-	 */
+	/** 17. Input roleData has no role name. */
 	@Test
 	public void testCreateRole2() {
 		testRoleData.setRoleName(null);
@@ -366,5 +321,4 @@ public class RolesHelperServiceImplTest {
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 		assertEquals(null, response.getData());
 	}
-
 }

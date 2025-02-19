@@ -29,9 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The type Zephyr config.
- */
+/** The type Zephyr config. */
 @Component
 @ConfigurationProperties(prefix = "zephyr")
 @Data
@@ -53,7 +51,7 @@ public class ZephyrConfig {
 	private String isRegressionCandidateField;
 	private String isAutomableField;
 	private String customApiBaseUrl;
+
 	@Value("${aesEncryptionKey}")
 	private String aesEncryptionKey;
-
 }

@@ -87,8 +87,8 @@ public class UsersSessionServiceImplTest {
 
 		when(usersSessionRepository.save(any(UsersSession.class))).thenReturn(new UsersSession());
 
-		UsersSession result = usersSessionService.createUsersSessionInfo(userInfo,
-				AuthenticationEvent.LOGIN, Status.SUCCESS);
+		UsersSession result = usersSessionService.createUsersSessionInfo(userInfo, AuthenticationEvent.LOGIN,
+				Status.SUCCESS);
 
 		assertNotNull(result);
 	}
@@ -109,8 +109,9 @@ public class UsersSessionServiceImplTest {
 
 	@Test
 	public void testGetLastLogoutTimeOfUser_UserHasNoLogoutHistory_ReturnsNull() {
-		when(usersSessionRepository.findTopByUserNameAndEventOrderByTimeStampDesc(anyString(),
-				any(AuthenticationEvent.class))).thenReturn(null);
+		when(usersSessionRepository.findTopByUserNameAndEventOrderByTimeStampDesc(
+						anyString(), any(AuthenticationEvent.class)))
+				.thenReturn(null);
 
 		LocalDateTime actualLogoutTime = usersSessionService.getLastLogoutTimeOfUser("username");
 

@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
+
 import com.publicissapient.kpidashboard.common.model.notification.EmailEvent;
 
 /**
@@ -46,15 +47,14 @@ public class NotificationEventProducer {
 	private static final String SUCCESS_MESSAGE = "Mail message to topic sent successfully";
 	private static final String FAILURE_MESSAGE = "Error Sending the mail message to topic and the exception is: ";
 
-	public void sendNotificationEvent(String key, EmailEvent email, Map<String, String> headerDetails, String topic, boolean notificationSwitch, KafkaTemplate<String, Object> kafkaTemplate) {
+	public void sendNotificationEvent(String key, EmailEvent email, Map<String, String> headerDetails, String topic,
+			boolean notificationSwitch, KafkaTemplate<String, Object> kafkaTemplate) {
 		if (notificationSwitch) {
 			try {
-				LOGGER.info(
-						"Notification Switch is on. Sending message now.....");
+				LOGGER.info("Notification Switch is on. Sending message now.....");
 				ProducerRecord<String, Object> producerRecord = buildProducerRecord(key, email, headerDetails, topic);
-				LOGGER.info(
-						"created producer record.....");
-				CompletableFuture<SendResult<String, Object>> completableFuture =  kafkaTemplate.send(producerRecord);
+				LOGGER.info("created producer record.....");
+				CompletableFuture<SendResult<String, Object>> completableFuture = kafkaTemplate.send(producerRecord);
 				LOGGER.info("sent msg.....");
 				completableFuture.whenComplete((result, ex) -> {
 					if (ex == null) {
@@ -63,18 +63,17 @@ public class NotificationEventProducer {
 						handleFailure(ex);
 					}
 				});
-			}catch(Exception ex) {
+			} catch (Exception ex) {
 				LOGGER.info(String.format("Notification Event %s", ex.getMessage()));
 			}
 		} else {
 			LOGGER.info(
 					"Notification Switch is Off. If want to send notification set true for notification.switch in property");
 		}
-
 	}
 
 	private ProducerRecord<String, Object> buildProducerRecord(String key, EmailEvent email,
-															   Map<String, String> headerDetails,String topic) {
+			Map<String, String> headerDetails, String topic) {
 		List<Header> recordHeaders = new ArrayList<>();
 		if (MapUtils.isNotEmpty(headerDetails)) {
 			headerDetails.forEach((k, v) -> {
@@ -93,5 +92,4 @@ public class NotificationEventProducer {
 		LOGGER.info(SUCCESS_MESSAGE + " key : {}, value : {}, Partition : {}", key, email.getSubject(),
 				result.getRecordMetadata().partition());
 	}
-
 }

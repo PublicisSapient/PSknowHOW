@@ -16,8 +16,10 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.common.feature;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,28 +27,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.togglz.core.manager.FeatureManager;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestTogglzConfig.class)
 public class FeatureEnumTest {
 
-    @Autowired
-    private FeatureManager featureManager;
+	@Autowired
+	private FeatureManager featureManager;
 
-    @Test
-    public void testDailyStandupFeatureIsActive() {
-        assertTrue(featureManager.isActive(FeatureEnum.DAILY_STANDUP));
-    }
+	@Test
+	public void testDailyStandupFeatureIsActive() {
+		assertTrue(featureManager.isActive(FeatureEnum.DAILY_STANDUP));
+	}
 
-    @Test
-    public void testRecommendationFeatureIsActive() {
-        assertFalse(featureManager.isActive(FeatureEnum.RECOMMENDATIONS));
-    }
+	@Test
+	public void testRecommendationFeatureIsActive() {
+		assertFalse(featureManager.isActive(FeatureEnum.RECOMMENDATIONS));
+	}
 
-    @Test
-    public void testnewUIFeatureIsActive() {
-        assertTrue(featureManager.isActive(FeatureEnum.NEW_UI_SWITCH));
-    }
+	@Test
+	public void testnewUIFeatureIsActive() {
+		assertTrue(featureManager.isActive(FeatureEnum.NEW_UI_SWITCH));
+	}
 }

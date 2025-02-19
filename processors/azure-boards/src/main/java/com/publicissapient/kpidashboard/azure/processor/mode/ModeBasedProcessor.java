@@ -52,9 +52,9 @@ public abstract class ModeBasedProcessor { // NOSONAR
 
 	/**
 	 * Validate and Collects Issues and data
-	 * 
+	 *
 	 * @param projectConfigList
-	 *            projectConfiguration list
+	 *          projectConfiguration list
 	 * @return Map of validateAndCollectIssues
 	 */
 	public abstract Map<String, Integer> validateAndCollectIssues(List<ProjectBasicConfig> projectConfigList);
@@ -62,11 +62,11 @@ public abstract class ModeBasedProcessor { // NOSONAR
 	/**
 	 * Adds corresponding projectConfig and Fieldmapping to single
 	 * ProjectConfFieldMapping
-	 * 
+	 *
 	 * @param projectConfigList
-	 *            List of project configurations
+	 *          List of project configurations
 	 * @param fieldMappingList
-	 *            List of all the Field mappings
+	 *          List of all the Field mappings
 	 * @return Map of Project Key and ProjectConfFieldMapping
 	 */
 	public Map<String, ProjectConfFieldMapping> createProjectConfigMap(List<ProjectBasicConfig> projectConfigList,
@@ -81,8 +81,9 @@ public abstract class ModeBasedProcessor { // NOSONAR
 			projectConfFieldMapping.setProjectKey(getAzureProjectKey(projectConfig.getId()));
 			projectConfFieldMapping.setAzureBoardToolConfigId(getToolConfigId(projectConfig.getId()));
 			projectConfFieldMapping.setProjectBasicConfig(projectConfig);
-            projectConfFieldMapping.setProjectToolConfig(getProjectToolConfig(projectConfig.getId(), projectConfFieldMapping.getAzure().getConnection().getId()));
-            CollectionUtils.emptyIfNull(fieldMappingList).stream()
+			projectConfFieldMapping.setProjectToolConfig(
+					getProjectToolConfig(projectConfig.getId(), projectConfFieldMapping.getAzure().getConnection().getId()));
+			CollectionUtils.emptyIfNull(fieldMappingList).stream()
 					.filter(fieldMapping -> projectConfig.getId().equals(fieldMapping.getBasicProjectConfigId()))
 					.forEach(projectConfFieldMapping::setFieldMapping);
 			projectConfigMap.putIfAbsent(projectConfig.getProjectName(), projectConfFieldMapping);
@@ -92,7 +93,7 @@ public abstract class ModeBasedProcessor { // NOSONAR
 
 	/**
 	 * Gets the toolConfigId of the azure board tool
-	 * 
+	 *
 	 * @param basicProjectConfigId
 	 * @return toolConfigId for azure board
 	 */
@@ -104,9 +105,9 @@ public abstract class ModeBasedProcessor { // NOSONAR
 
 	/**
 	 * This method gets list of RelevantProjects based on mode
-	 * 
+	 *
 	 * @param projectConfigList
-	 *            list of all the projects present in the DB
+	 *          list of all the projects present in the DB
 	 * @return relevant project list i.e. online project list or offline project
 	 *         list
 	 */
@@ -114,16 +115,18 @@ public abstract class ModeBasedProcessor { // NOSONAR
 
 	/**
 	 * Gets AzureProjectKey
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return ProjectKey
 	 */
 	private String getAzureProjectKey(ObjectId basicProjectConfigId) {
 		List<ProjectToolConfig> azureBoardsDetails = toolRepository
 				.findByToolNameAndBasicProjectConfigId(ProcessorConstants.AZURE, basicProjectConfigId);
-		return azureBoardsDetails.isEmpty() ? StringUtils.EMPTY :
-				Optional.ofNullable(azureBoardsDetails.get(0)).map(ProjectToolConfig::getProjectKey).orElse(StringUtils.EMPTY);
+		return azureBoardsDetails.isEmpty()
+				? StringUtils.EMPTY
+				: Optional.ofNullable(azureBoardsDetails.get(0)).map(ProjectToolConfig::getProjectKey)
+						.orElse(StringUtils.EMPTY);
 	}
 
 	private ProjectToolConfig getProjectToolConfig(ObjectId configId, ObjectId connectionId) {
@@ -135,9 +138,9 @@ public abstract class ModeBasedProcessor { // NOSONAR
 
 	/**
 	 * Gets AzureToolConfig
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return AzureToolConfig
 	 */
 	private AzureToolConfig getAzureToolConfig(ObjectId basicProjectConfigId) {
@@ -145,7 +148,7 @@ public abstract class ModeBasedProcessor { // NOSONAR
 		List<ProjectToolConfig> azureBoardsDetails = toolRepository
 				.findByToolNameAndBasicProjectConfigId(ProcessorConstants.AZURE, basicProjectConfigId);
 		if (CollectionUtils.isNotEmpty(azureBoardsDetails)) {
-			BeanUtils.copyProperties(azureBoardsDetails.get(0),toolObj);
+			BeanUtils.copyProperties(azureBoardsDetails.get(0), toolObj);
 			if (Optional.ofNullable(azureBoardsDetails.get(0).getConnectionId()).isPresent()) {
 				Optional<Connection> conn = connectionRepository.findById(azureBoardsDetails.get(0).getConnectionId());
 				if (conn.isPresent()) {
@@ -155,5 +158,4 @@ public abstract class ModeBasedProcessor { // NOSONAR
 		}
 		return toolObj;
 	}
-
 }

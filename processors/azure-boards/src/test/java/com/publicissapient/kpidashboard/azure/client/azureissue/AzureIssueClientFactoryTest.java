@@ -68,5 +68,4 @@ public class AzureIssueClientFactoryTest {
 		projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 		projectConfFieldMapping.setKanban(false);
 	}
-
 }

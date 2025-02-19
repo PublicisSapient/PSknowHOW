@@ -63,9 +63,7 @@ public class AutoApproveAccessServiceImpl implements AutoApproveAccessService {
 		}
 
 		boolean isEnabled = autoApproveConfig.getEnableAutoApprove().equalsIgnoreCase("true");
-		List<String> roles = autoApproveConfig.getRoles().stream().map(RoleData::getRoleName)
-				.collect(Collectors.toList());
+		List<String> roles = autoApproveConfig.getRoles().stream().map(RoleData::getRoleName).collect(Collectors.toList());
 		return isEnabled && roles.contains(roleName);
 	}
-
 }

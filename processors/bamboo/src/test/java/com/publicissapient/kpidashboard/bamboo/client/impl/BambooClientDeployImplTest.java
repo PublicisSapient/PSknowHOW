@@ -84,7 +84,7 @@ public class BambooClientDeployImplTest {
 	private ProjectToolConfigRepository toolConfigRepository;
 	@InjectMocks
 	private BambooClientDeployImpl bambooClientDeploy;
-	
+
 	@Before
 	public void init() {
 		List<ProjectToolConfig> toolList = new ArrayList<>();
@@ -139,14 +139,12 @@ public class BambooClientDeployImplTest {
 	public void checkBambooConnection() {
 		try {
 			HttpEntity<String> headers = generateHeader("test:decryptPassword");
-			when(restClient.exchange(
-					eq(URI.create("https://xyz.com/bamboo/rest/api/latest/deploy/dashboard/190709761")),
-					eq(HttpMethod.GET), eq(headers), eq(String.class))).thenReturn(
-							new ResponseEntity<>(getServerResponseFromJson("project_details.json"), HttpStatus.OK));
+			when(restClient.exchange(eq(URI.create("https://xyz.com/bamboo/rest/api/latest/deploy/dashboard/190709761")),
+					eq(HttpMethod.GET), eq(headers), eq(String.class)))
+					.thenReturn(new ResponseEntity<>(getServerResponseFromJson("project_details.json"), HttpStatus.OK));
 			bambooClientDeploy.connectBamboo("https://xyz.com/bamboo/rest/api/latest/deploy/dashboard/190709761",
 					PROJECT_TOOL_CONNECTION_1, headers);
-			verify(restClient).exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), eq(headers),
-					eq(String.class));
+			verify(restClient).exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class));
 		} catch (IOException e) {
 			log.error("Exception " + e);
 		}
@@ -164,12 +162,10 @@ public class BambooClientDeployImplTest {
 			respEntity = new HttpEntity<>(headers);
 		}
 		return respEntity;
-
 	}
 
 	private String getServerResponseFromJson(String fileName) throws IOException {
 		String filePath = "src/test/resources/" + fileName;
 		return new String(Files.readAllBytes(Paths.get(filePath)));
 	}
-
 }

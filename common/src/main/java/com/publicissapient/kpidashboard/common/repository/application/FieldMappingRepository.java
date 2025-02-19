@@ -41,7 +41,7 @@ public interface FieldMappingRepository extends MongoRepository<FieldMapping, Ob
 	 * Find by project config id field mapping.
 	 *
 	 * @param projectConfigId
-	 *            the project config id
+	 *          the project config id
 	 * @return the field mapping
 	 */
 	FieldMapping findByBasicProjectConfigId(ObjectId projectConfigId);
@@ -50,7 +50,7 @@ public interface FieldMappingRepository extends MongoRepository<FieldMapping, Ob
 	 * Find by project id field mapping.
 	 *
 	 * @param projectId
-	 *            the project id
+	 *          the project id
 	 * @return the field mapping
 	 */
 	FieldMapping findByProjectId(String projectId);
@@ -59,13 +59,13 @@ public interface FieldMappingRepository extends MongoRepository<FieldMapping, Ob
 	 * Delete by project config id.
 	 *
 	 * @param basicProjectConfigId
-	 *            the project config id
+	 *          the project config id
 	 */
 	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
 	/**
 	 * Find by projectToolConfigId
-	 * 
+	 *
 	 * @param projectToolConfigId
 	 * @return field mapping of the tool
 	 */
@@ -73,9 +73,9 @@ public interface FieldMappingRepository extends MongoRepository<FieldMapping, Ob
 
 	/**
 	 * Find by id
-	 * 
+	 *
 	 * @param id
-	 *            field mapping id
+	 *          field mapping id
 	 * @return field mapping of the tool
 	 */
 	Optional<FieldMapping> findById(ObjectId id);

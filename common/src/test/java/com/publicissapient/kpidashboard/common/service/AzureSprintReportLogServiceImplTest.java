@@ -74,8 +74,8 @@ public class AzureSprintReportLogServiceImplTest {
 		existingLog.setRefreshAuditDetails(
 				new ArrayList<>(Collections.singletonList(new RefreshAuditDetails(1649241013929L, "user1"))));
 
-		when(azureSprintReportLogRepository.findByBasicProjectConfigIdAndSprintId(any(ObjectId.class),
-				any(String.class))).thenReturn(Optional.of(existingLog));
+		when(azureSprintReportLogRepository.findByBasicProjectConfigIdAndSprintId(any(ObjectId.class), any(String.class)))
+				.thenReturn(Optional.of(existingLog));
 
 		azureSprintReportLogService.saveSprintRefreshLog(sprintDetails, basicProjectConfigId, refreshOn, refreshBy);
 
@@ -126,8 +126,8 @@ public class AzureSprintReportLogServiceImplTest {
 		sprintDetails.setStartDate("2022-01-01");
 		sprintDetails.setEndDate("2022-01-15");
 
-		when(azureSprintReportLogRepository.findByBasicProjectConfigIdAndSprintId(any(ObjectId.class),
-				any(String.class))).thenReturn(Optional.empty());
+		when(azureSprintReportLogRepository.findByBasicProjectConfigIdAndSprintId(any(ObjectId.class), any(String.class)))
+				.thenReturn(Optional.empty());
 
 		azureSprintReportLogService.saveSprintRefreshLog(sprintDetails, basicProjectConfigId, refreshOn, refreshBy);
 

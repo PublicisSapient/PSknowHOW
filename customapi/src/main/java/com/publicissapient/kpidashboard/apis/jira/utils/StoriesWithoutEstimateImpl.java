@@ -60,7 +60,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author anisingh4
  */
-
 @Slf4j
 @Component
 public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -96,20 +95,18 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 	 * @throws ApplicationException
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-
 			Filters filters = Filters.getFilter(k);
 			if (Filters.SPRINT == filters) {
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
-
 		});
 
 		log.debug("[STORIES_WITHOUT_ESTIMATE-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
@@ -118,8 +115,8 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 		Map<String, List<DataCount>> trendAnalysisMap = trendValueList.stream()
 				.collect(Collectors.groupingBy(DataCount::getSProjectName, Collectors.toList()));
 		List<DataCount> dataList = new ArrayList<>();
-		trendAnalysisMap.entrySet().stream().forEach(trend -> dataList.add(new DataCount(trend.getKey(), Lists.reverse(
-				Lists.reverse(trend.getValue()).stream().limit(Constant.TREND_LIMIT).collect(Collectors.toList())))));
+		trendAnalysisMap.entrySet().stream().forEach(trend -> dataList.add(new DataCount(trend.getKey(), Lists
+				.reverse(Lists.reverse(trend.getValue()).stream().limit(Constant.TREND_LIMIT).collect(Collectors.toList())))));
 		kpiElement.setTrendValueList(dataList);
 
 		if (CollectionUtils.isNotEmpty(dataList)) {
@@ -130,7 +127,6 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 				dataCount.setData(k);
 				dataCount.setCount((Integer) v);
 				dataCountList.add(dataCount);
-
 			});
 
 			kpiElement.setValue(dataCountList);
@@ -171,10 +167,9 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 						fieldMapping.getJiraStoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 			}
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-
 		});
 
-		/** additional filter **/
+		/** additional filter * */
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
 
 		mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
@@ -185,14 +180,13 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 		List<JiraIssue> totalIssues = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap);
 		resultListMap.put(STORY_LIST, totalIssues);
 		return resultListMap;
-
 	}
 
 	private List<JiraIssue> findIssuesWithoutEstimate(List<JiraIssue> totalIssues) {
 		List<JiraIssue> issuesWithoutEstimate = null;
 		if (CollectionUtils.isNotEmpty(totalIssues)) {
-			issuesWithoutEstimate = totalIssues.stream().filter(
-					jiraIssue -> jiraIssue.getEstimate() == null || Double.valueOf(jiraIssue.getEstimate()).equals(0.0))
+			issuesWithoutEstimate = totalIssues.stream()
+					.filter(jiraIssue -> jiraIssue.getEstimate() == null || Double.valueOf(jiraIssue.getEstimate()).equals(0.0))
 					.collect(Collectors.toList());
 		}
 
@@ -232,8 +226,8 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 		String startDate;
 		String endDate;
 
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
+		sprintLeafNodeList.sort(
+				(node1, node2) -> node1.getSprintFilter().getStartDate().compareTo(node2.getSprintFilter().getStartDate()));
 
 		startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
@@ -241,16 +235,16 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 
 		List<JiraIssue> sprintWiseStoryList = (List<JiraIssue>) resultMap.get(STORY_LIST);
 
-		Map<Pair<String, String>, List<JiraIssue>> sprintWiseStoryMap = sprintWiseStoryList.stream().collect(Collectors
-				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprintID()), Collectors.toList()));
+		Map<Pair<String, String>, List<JiraIssue>> sprintWiseStoryMap = sprintWiseStoryList.stream().collect(
+				Collectors.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprintID()), Collectors.toList()));
 
 		Map<String, ValidationData> validationDataMap = new HashMap<>();
 
 		for (Node node : sprintLeafNodeList) {
 			// Leaf node wise data
 			String trendLineName = node.getProjectFilter().getName();
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
+			Pair<String, String> currentNodeIdentifier = Pair.of(node.getProjectFilter().getBasicProjectConfigId().toString(),
+					node.getSprintFilter().getId());
 
 			List<JiraIssue> totalIssuesOfSprint = sprintWiseStoryMap.get(currentNodeIdentifier);
 
@@ -285,7 +279,6 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 			dataCount.setEndDate(formatDate(endDate));
 			dataCount.setHoverValue(howerValues);
 			trendValueList.add(dataCount);
-
 		}
 	}
 
@@ -316,8 +309,8 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 	 * @param node
 	 */
 	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			List<JiraIssue> sprintWiseStoriesList, Map<String, ValidationData> validationDataMap,
-			String filterToShowOnTrend, Node node) {
+			List<JiraIssue> sprintWiseStoriesList, Map<String, ValidationData> validationDataMap, String filterToShowOnTrend,
+			Node node) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			String keyForValidation = sprintWiseStoriesList.get(0).getSprintName();
 			List<String> storyKeyList = new ArrayList<>();
@@ -347,5 +340,4 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 				.get(node.getProjectFilter().getBasicProjectConfigId());
 		return "Story Point".equals(fieldMapping.getEstimationCriteria());
 	}
-
 }

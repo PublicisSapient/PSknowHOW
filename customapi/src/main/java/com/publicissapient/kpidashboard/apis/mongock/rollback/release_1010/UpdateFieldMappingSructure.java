@@ -34,6 +34,7 @@ public class UpdateFieldMappingSructure {
 	private final MongoTemplate mongoTemplate;
 	private static final String FIELD_NAME = "jiraTestAutomationIssueType";
 	private static final String FIELD_LABEL = "In Sprint Automation - Issue Types with Linked Test Case ";
+
 	public UpdateFieldMappingSructure(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}

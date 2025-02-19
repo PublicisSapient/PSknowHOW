@@ -23,9 +23,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Represents defect aging project wise.
- */
+/** Represents defect aging project wise. */
 @Data
 @Builder
 @AllArgsConstructor
@@ -34,5 +32,4 @@ public class TotalDefectAgingProjectWise {
 
 	private String projectName;
 	private Integer agingValue;
-
 }

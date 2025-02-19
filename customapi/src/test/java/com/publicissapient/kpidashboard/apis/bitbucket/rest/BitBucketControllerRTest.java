@@ -71,12 +71,12 @@ public class BitBucketControllerRTest {
 
 	@Test
 	public void getBitBucketKPIMetricReturnsValue() throws Exception {
-		String request = "{\n" + "  \"kpiList\": [\n" + "    {\n" + "      \"id\": \"5b753628d42937acd035b7ef\",\n"
-				+ "      \"kpiId\": \"kpi11\",\n" + "      \"kpiName\": \"BitBucketCheck-ins\",\n"
-				+ "      \"isDeleted\": \"False\",\n" + "      \"kpiCategory\": \"Productivity\",\n"
-				+ "      \"kpiUnit\": \"Number\",\n" + "      \"kpiSource\": \"BitBucket\",\n"
-				+ "      \"maxValue\": \"\",\n" + "      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ],\n"
-				+ "  \"ids\": [\n" + "    \"GMA_GMA\"\n" + "  ],\n" + "  \"level\": 1\n" + "}";
+		String request = "{\n" + "  \"kpiList\": [\n" + "    {\n" + "      \"id\": \"5b753628d42937acd035b7ef\",\n" +
+				"      \"kpiId\": \"kpi11\",\n" + "      \"kpiName\": \"BitBucketCheck-ins\",\n" +
+				"      \"isDeleted\": \"False\",\n" + "      \"kpiCategory\": \"Productivity\",\n" +
+				"      \"kpiUnit\": \"Number\",\n" + "      \"kpiSource\": \"BitBucket\",\n" + "      \"maxValue\": \"\",\n" +
+				"      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ],\n" + "  \"ids\": [\n" + "    \"GMA_GMA\"\n" +
+				"  ],\n" + "  \"level\": 1\n" + "}";
 
 		List<KpiElement> kpiElementList = new ArrayList<>();
 		KpiElement kpiElement = new KpiElement();
@@ -87,28 +87,26 @@ public class BitBucketControllerRTest {
 		when(bitbucketService.process(Mockito.any())).thenReturn(kpiElementList);
 		mockMvc.perform(post("/bitbucket/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
-
 	}
 
 	@Test
 	public void getBitBucketKPIMetricReturns400() throws Exception {
 
-		String request = "{\n" + "  \"level\": 3,\n" + "  \"ids\": [\n" + "    \"OPRO Sprint 71_12138_10304_PR\",\n"
-				+ "    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
+		String request = "{\n" + "  \"level\": 3,\n" + "  \"ids\": [\n" + "    \"OPRO Sprint 71_12138_10304_PR\",\n" +
+				"    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
 
-		mockMvc.perform(post("/bitbucket/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
-				.andDo(print()).andExpect(status().isBadRequest());
-
+		mockMvc.perform(post("/bitbucket/kpi").contentType(MediaType.APPLICATION_JSON).content(request)).andDo(print())
+				.andExpect(status().isBadRequest());
 	}
 
 	@Test
 	public void getBitBucketKPIMetricKanbanReturnsValue() throws Exception {
-		String request = "{\n" + "  \"kpiList\": [\n" + "    {\n" + "      \"id\": \"5b753628d42937acd035b7ef\",\n"
-				+ "      \"kpiId\": \"kpi11\",\n" + "      \"kpiName\": \"BitBucketCheck-ins\",\n"
-				+ "      \"isDeleted\": \"False\",\n" + "      \"kpiCategory\": \"Productivity\",\n"
-				+ "      \"kpiUnit\": \"Number\",\n" + "      \"kpiSource\": \"BitBucket\",\n"
-				+ "      \"maxValue\": \"\",\n" + "      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ],\n"
-				+ "  \"ids\": [\n" + "    \"GMA_GMA\"\n" + "  ],\n" + "  \"level\": 1\n" + "}";
+		String request = "{\n" + "  \"kpiList\": [\n" + "    {\n" + "      \"id\": \"5b753628d42937acd035b7ef\",\n" +
+				"      \"kpiId\": \"kpi11\",\n" + "      \"kpiName\": \"BitBucketCheck-ins\",\n" +
+				"      \"isDeleted\": \"False\",\n" + "      \"kpiCategory\": \"Productivity\",\n" +
+				"      \"kpiUnit\": \"Number\",\n" + "      \"kpiSource\": \"BitBucket\",\n" + "      \"maxValue\": \"\",\n" +
+				"      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ],\n" + "  \"ids\": [\n" + "    \"GMA_GMA\"\n" +
+				"  ],\n" + "  \"level\": 1\n" + "}";
 
 		List<KpiElement> kpiElementList = new ArrayList<>();
 		KpiElement kpiElement = new KpiElement();
@@ -120,18 +118,15 @@ public class BitBucketControllerRTest {
 		when(bitbucketServiceKanban.process(Mockito.any())).thenReturn(kpiElementList);
 		mockMvc.perform(post("/bitbucketkanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
-
 	}
 
 	@Test
 	public void getBitBucketKPIMetricKanbanReturns400() throws Exception {
 
-		String request = "{\n" + "  \"level\": 3,\n" + "  \"ids\": [\n" + "    \"OPRO Sprint 71_12138_10304_PR\",\n"
-				+ "    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
+		String request = "{\n" + "  \"level\": 3,\n" + "  \"ids\": [\n" + "    \"OPRO Sprint 71_12138_10304_PR\",\n" +
+				"    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
 
 		mockMvc.perform(post("/bitbucketkanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andDo(print()).andExpect(status().isBadRequest());
-
 	}
-
 }

@@ -26,9 +26,7 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 
-/**
- * The interface Project release repo.
- */
+/** The interface Project release repo. */
 @Repository
 public interface ProjectReleaseRepo extends MongoRepository<ProjectRelease, ObjectId> {
 
@@ -36,16 +34,16 @@ public interface ProjectReleaseRepo extends MongoRepository<ProjectRelease, Obje
 	 * Find by config id project release.
 	 *
 	 * @param configId
-	 *            the config id
+	 *          the config id
 	 * @return the project release
 	 */
 	ProjectRelease findByConfigId(ObjectId configId);
 
 	/**
 	 * Deletes all documents that matches with given basicProjectConfigId.
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 */
 	void deleteByConfigId(ObjectId basicProjectConfigId);
 
@@ -53,9 +51,8 @@ public interface ProjectReleaseRepo extends MongoRepository<ProjectRelease, Obje
 	 * Find by config ids project release.
 	 *
 	 * @param configIds
-	 *            the config ids
+	 *          the config ids
 	 * @return the project releases
 	 */
 	List<ProjectRelease> findByConfigIdIn(List<ObjectId> configIds);
-
 }

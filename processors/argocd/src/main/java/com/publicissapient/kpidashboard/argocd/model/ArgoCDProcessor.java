@@ -18,9 +18,6 @@
 
 package com.publicissapient.kpidashboard.argocd.model;
 
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -30,38 +27,41 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorType;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorError;
 
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 /**
  * Extension of Processor that stores current build server configuration.
- * 
+ *
  * @see Processor
  */
 @NoArgsConstructor
 public class ArgoCDProcessor extends Processor {
-	
+
 	/**
 	 * @param processorName
-	 * 				processor name
+	 *          processor name
 	 * @param processorType
-	 * 				processor type
+	 *          processor type
 	 * @param active
-	 * 				active
+	 *          active
 	 * @param online
-	 * 				online
+	 *          online
 	 * @param errors
-	 * 				list if Processor Errors
+	 *          list if Processor Errors
 	 * @param lastExecuted
-	 * 				last executed time
+	 *          last executed time
 	 * @param objectId
-	 * 				processor Object Id
+	 *          processor Object Id
 	 * @param lastJobSuccess
-	 * 				is last Job was successful
+	 *          is last Job was successful
 	 */
 	@Builder(builderMethodName = "processorBuilder")
 	public ArgoCDProcessor(String processorName, ProcessorType processorType, boolean active, boolean online,
 			List<ProcessorError> errors, long lastExecuted, ObjectId objectId, boolean lastJobSuccess) {
 		super(processorName, processorType, active, online, errors, lastExecuted, objectId, lastJobSuccess);
 	}
-	
+
 	/**
 	 * Provides buildProcessor processor.
 	 *
@@ -73,5 +73,4 @@ public class ArgoCDProcessor extends Processor {
 				.processorType(ProcessorType.BUILD).online(true).active(true).lastExecuted(System.currentTimeMillis())
 				.lastJobSuccess(false).build();
 	}
-
 }

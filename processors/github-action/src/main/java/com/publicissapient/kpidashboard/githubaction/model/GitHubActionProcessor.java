@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
 /**
  * GitHubActionProcessor represents a class which holds github prototyping and
  * executes the github data and stores in DB.
- * 
+ *
  * @see Processor
  */
 @NoArgsConstructor
@@ -43,21 +43,21 @@ public class GitHubActionProcessor extends Processor {
 	 * The constructor.
 	 *
 	 * @param processorName
-	 *            processorName
+	 *          processorName
 	 * @param processorType
-	 *            processorType
+	 *          processorType
 	 * @param enabled
-	 *            enabled
+	 *          enabled
 	 * @param online
-	 *            online
+	 *          online
 	 * @param errors
-	 *            errors
+	 *          errors
 	 * @param lastExecuted
-	 *            lastExecuted
+	 *          lastExecuted
 	 * @param objectId
-	 *            objectId
+	 *          objectId
 	 * @param isLastSuccess
-	 *            isLastSuccess
+	 *          isLastSuccess
 	 */
 	@Builder(builderMethodName = "processorBuilder")
 	public GitHubActionProcessor(String processorName, ProcessorType processorType, boolean enabled, boolean online,
@@ -72,8 +72,7 @@ public class GitHubActionProcessor extends Processor {
 	 */
 	public static GitHubActionProcessor prototype() {
 		return GitHubActionProcessor.processorBuilder().processorName(ProcessorConstants.GITHUBACTION).online(true)
-				.enabled(true).processorType(ProcessorType.BUILD).lastExecuted(System.currentTimeMillis())
-				.isLastSuccess(false).build();
+				.enabled(true).processorType(ProcessorType.BUILD).lastExecuted(System.currentTimeMillis()).isLastSuccess(false)
+				.build();
 	}
-
 }

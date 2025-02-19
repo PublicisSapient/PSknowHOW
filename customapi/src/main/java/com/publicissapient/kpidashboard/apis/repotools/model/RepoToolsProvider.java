@@ -37,8 +37,8 @@ import lombok.Setter;
 @Data
 @Document(collection = "repo_tools_provider")
 public class RepoToolsProvider extends BasicModel {
-    private String toolName;
-    private String repoToolProvider;
-    private String testApiUrl;
-    private String testServerApiUrl;
+	private String toolName;
+	private String repoToolProvider;
+	private String testApiUrl;
+	private String testServerApiUrl;
 }

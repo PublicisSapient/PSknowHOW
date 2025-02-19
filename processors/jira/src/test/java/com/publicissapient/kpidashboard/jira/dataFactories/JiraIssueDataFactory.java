@@ -19,9 +19,7 @@ package com.publicissapient.kpidashboard.jira.dataFactories;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -29,11 +27,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 
 import lombok.extern.slf4j.Slf4j;
-
 
 @Slf4j
 public class JiraIssueDataFactory {
@@ -75,19 +73,19 @@ public class JiraIssueDataFactory {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		}
 
-//		return mapper;
+		// return mapper;
 	}
 
 	public List<JiraIssue> getJiraIssues() {
 		return jiraIssues;
 	}
 
-	public List<AdditionalFilter> getAdditionalFilter(){
+	public List<AdditionalFilter> getAdditionalFilter() {
 		return jiraIssues.get(0).getAdditionalFilters();
 	}
 
-	public JiraIssue findTopByBasicProjectConfigId(String basicProjectConfigId){
-		return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getBasicProjectConfigId().equals(basicProjectConfigId)).findFirst()
-				.orElse(null);
+	public JiraIssue findTopByBasicProjectConfigId(String basicProjectConfigId) {
+		return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getBasicProjectConfigId().equals(basicProjectConfigId))
+				.findFirst().orElse(null);
 	}
 }

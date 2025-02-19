@@ -16,16 +16,18 @@
  */
 package com.publicissapient.kpidashboard.apis.mongock.installation;
 
+import java.util.List;
+
+import org.springframework.data.mongodb.core.MongoTemplate;
+
 import com.publicissapient.kpidashboard.apis.mongock.data.FiltersDataFactory;
 import com.publicissapient.kpidashboard.apis.util.MongockUtil;
 import com.publicissapient.kpidashboard.common.model.application.Filters;
+
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.mongodb.core.MongoTemplate;
-
-import java.util.List;
 
 /**
  * @author purgupta2
@@ -34,23 +36,23 @@ import java.util.List;
 @ChangeUnit(id = "ddl7", order = "007", author = "purgupta2")
 public class FiltersTable {
 
-    private final MongoTemplate mongoTemplate;
-    List<Filters> filtersList;
+	private final MongoTemplate mongoTemplate;
+	List<Filters> filtersList;
 
-    public FiltersTable(MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
-        FiltersDataFactory filtersDataFactory = FiltersDataFactory.newInstance();
-        filtersList = filtersDataFactory.getFiltersList();
-    }
+	public FiltersTable(MongoTemplate mongoTemplate) {
+		this.mongoTemplate = mongoTemplate;
+		FiltersDataFactory filtersDataFactory = FiltersDataFactory.newInstance();
+		filtersList = filtersDataFactory.getFiltersList();
+	}
 
-    @Execution
-    public boolean changeSet() {
-        MongockUtil.saveListToDB(filtersList, "filters", mongoTemplate);
-        return true;
-    }
+	@Execution
+	public boolean changeSet() {
+		MongockUtil.saveListToDB(filtersList, "filters", mongoTemplate);
+		return true;
+	}
 
-    @RollbackExecution
-    public void rollback() {
-        // We are inserting the documents through DDL, no rollback to any collections.
-    }
+	@RollbackExecution
+	public void rollback() {
+		// We are inserting the documents through DDL, no rollback to any collections.
+	}
 }

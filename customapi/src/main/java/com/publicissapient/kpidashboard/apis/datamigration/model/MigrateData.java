@@ -27,5 +27,4 @@ public class MigrateData {
 	private String projectName;
 	private String level;
 	private String hierarchyName;
-
 }

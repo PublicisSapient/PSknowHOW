@@ -95,8 +95,8 @@ public class SonarDataCleanUpServiceTest {
 		doNothing().when(sonarHistoryRepository).deleteByProcessorItemIdIn(Mockito.anyList());
 		doNothing().when(processorItemRepository).deleteByToolConfigId(Mockito.any(ObjectId.class));
 		doNothing().when(cacheService).clearCache(CommonConstant.SONAR_KPI_CACHE);
-		doNothing().when(processorExecutionTraceLogRepository)
-				.deleteByBasicProjectConfigIdAndProcessorName(Mockito.any(), Mockito.anyString());
+		doNothing().when(processorExecutionTraceLogRepository).deleteByBasicProjectConfigIdAndProcessorName(Mockito.any(),
+				Mockito.anyString());
 		sonarDataCleanUpService.clean("5e9e4593e4b0c8ece56710c3");
 
 		verify(sonarDetailsRepository, times(1))

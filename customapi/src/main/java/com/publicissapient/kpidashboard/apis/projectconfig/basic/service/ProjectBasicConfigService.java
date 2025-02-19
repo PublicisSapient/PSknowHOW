@@ -23,34 +23,34 @@ import java.util.Map;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.model.HierarchyResponseDTO;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
 
 /**
  * @author narsingh9
- *
  */
 public interface ProjectBasicConfigService {
 
 	/**
 	 * Service to save a new project's basic configuration in the
 	 * project_basic_config collection
-	 * 
+	 *
 	 * @param projectBasicConfigDTO
-	 *            detail to be saved.
+	 *          detail to be saved.
 	 * @return {@link ServiceResponse} object.
 	 */
 	ServiceResponse addBasicConfig(ProjectBasicConfigDTO projectBasicConfigDTO);
 
 	/**
-	 * 
 	 * Service to update an existing project's basic configuration in the
 	 * project_basic_config collection
-	 * 
+	 *
 	 * @param basicConfigId
 	 * @param projectBasicConfigDTO
-	 *            detail to be updated.
+	 *          detail to be updated.
 	 * @return {@link ServiceResponse} object.
 	 */
 	ServiceResponse updateBasicConfig(String basicConfigId, ProjectBasicConfigDTO projectBasicConfigDTO);
@@ -58,9 +58,9 @@ public interface ProjectBasicConfigService {
 	/**
 	 * Service to fetch the list of project basic configuration in the
 	 * project_basic_config collection
-	 * 
+	 *
 	 * @param basicProjectConfigIds
-	 *            : if null or empty, return null
+	 *          : if null or empty, return null
 	 * @return {@link ProjectBasicConfig }
 	 */
 	ProjectBasicConfig getProjectBasicConfigs(String basicProjectConfigIds);
@@ -68,22 +68,22 @@ public interface ProjectBasicConfigService {
 	/**
 	 * Service to fetch the list of all project basic configuration in the
 	 * project_basic_config collection
-	 * 
+	 *
 	 * @return {@code List<ProjectBasicConfig>} : empty list incase no data found
 	 */
-	List<ProjectBasicConfig> getAllProjectsBasicConfigs();
+	List<ProjectBasicConfig> getFilteredProjectsBasicConfigs(boolean includeAll);
 
 	/**
 	 * Service to fetch the list of all project basic configuration in the
 	 * project_basic_config collection
-	 * 
+	 *
 	 * @return {@code List<ProjectBasicConfig>} : empty list in case no data found
 	 */
-	List<ProjectBasicConfig> getAllProjectsBasicConfigsWithoutPermission();
+	List<ProjectBasicConfig> getAllProjectBasicConfigs(boolean includeAll);
 
 	/**
 	 * Delete basic project congig
-	 * 
+	 *
 	 * @param basicProjectConfigId
 	 * @return deleted ProjectBasicConfig
 	 */
@@ -92,7 +92,7 @@ public interface ProjectBasicConfigService {
 	/**
 	 * Service to fetch the list of all project basic configuration including all
 	 * hierarchy levels property
-	 * 
+	 *
 	 * @return {@code List<ProjectBasicConfigDTO>} : empty list incase no data found
 	 */
 	List<ProjectBasicConfigDTO> getAllProjectsBasicConfigsDTOWithoutPermission();
@@ -107,14 +107,13 @@ public interface ProjectBasicConfigService {
 	Map<String, ProjectBasicConfigDTO> getBasicConfigsDTOMapWithoutPermission();
 
 	/**
-	 * 
 	 * @return {@code ProjectBasicConfigNode }: empty object incase no data found
 	 */
 	ProjectBasicConfigNode getBasicConfigTree();
 
 	/**
 	 * Method to find out the node from a project basic config tree
-	 * 
+	 *
 	 * @param node
 	 * @param searchValue
 	 * @param groupName
@@ -124,14 +123,14 @@ public interface ProjectBasicConfigService {
 
 	/**
 	 * Method to find out all the child nodes of a tree
-	 * 
+	 *
 	 * @param node
 	 */
 	void findChildren(ProjectBasicConfigNode node, List<ProjectBasicConfigNode> children);
 
 	/**
 	 * Method to find out all the parent nodes of a tree
-	 * 
+	 *
 	 * @param nodes
 	 * @param parents
 	 */
@@ -139,27 +138,25 @@ public interface ProjectBasicConfigService {
 
 	/**
 	 * Method to find out all the projects nodes of a tree
-	 * 
+	 *
 	 * @param node
 	 * @param leafNodes
 	 */
 	void findLeaf(ProjectBasicConfigNode node, List<ProjectBasicConfigNode> leafNodes);
 
-	/**
-	 * sort based on Hierarchy Level
-	 * 
-	 * @param projectBasicConfig
-	 * @return
-	 */
-	void projectBasicConfigSortedBasedOnHierarchyLevel(ProjectBasicConfig projectBasicConfig);
-
 	List<HierarchyResponseDTO> getHierarchyData();
+
+	List<HierarchyValue> getHierarchy(List<HierarchyLevel> hierarchyLevels, String nodeId);
+
+	ProjectBasicConfig getProjectBasicConfig(String projectBasicConfigId);
+
+	List<ProjectBasicConfig> getAllProjectsBasicConfigs(boolean isKanban);
 
 	/**
 	 * Method to filter the hierarchy DTOs with atLeast one connected tools
-	 * 
+	 *
 	 * @param hierarchyData
-	 *            hierarchy data
+	 *          hierarchy data
 	 * @return a list of HierarchyResponseDTOs with at least one connected tool
 	 */
 	List<HierarchyResponseDTO> filterHierarchyDTOsWithConnectedTools(List<HierarchyResponseDTO> hierarchyData);

@@ -1,7 +1,5 @@
 package com.publicissapient.kpidashboard.common.model.application.dto;
 
-import java.util.TreeSet;
-
 import lombok.Data;
 
 @Data
@@ -10,5 +8,4 @@ public class HierarchyLevelDTO {
 	private String hierarchyLevelId;
 	private String hierarchyLevelName;
 	private String hierarchyLevelInfo;
-	private TreeSet<String> suggestions;
 }

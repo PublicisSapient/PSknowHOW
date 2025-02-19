@@ -18,10 +18,7 @@
 
 package com.publicissapient.kpidashboard.sonar.util;
 
-/**
- * Contains Sonar dashboard url.
- *
- */
+/** Contains Sonar dashboard url. */
 public class SonarDashboardUrl {
 
 	private static final String SLASH = "/";
@@ -32,20 +29,18 @@ public class SonarDashboardUrl {
 
 	/**
 	 * Construct object with project url and instanceId.
-	 * 
+	 *
 	 * @param projectUrl
-	 *            the project URL
+	 *          the project URL
 	 * @param instanceId
-	 *            the instance Id
+	 *          the instance Id
 	 */
 	public SonarDashboardUrl(String projectUrl, String instanceId) {
 		this.projectUrl = projectUrl;
 		this.instanceId = instanceId;
 	}
 
-	/**
-	 * Overridden method of String's toString.
-	 */
+	/** Overridden method of String's toString. */
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(projectUrl);

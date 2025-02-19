@@ -56,5 +56,4 @@ public class CapacityEnableSquad {
 		mongoTemplate.getCollection("kpi_master").updateOne(new Document("kpiId", kpiId),
 				new Document("$set", new Document("isAdditionalFilterSupport", isAdditionalFilterSupport)));
 	}
-
 }

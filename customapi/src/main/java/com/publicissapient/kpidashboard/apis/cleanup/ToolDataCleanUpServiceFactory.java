@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.cleanup;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -50,9 +49,9 @@ public class ToolDataCleanUpServiceFactory {
 
 	/**
 	 * Gets service object for the tool
-	 * 
+	 *
 	 * @param toolName
-	 *            name of the tool
+	 *          name of the tool
 	 * @return DataCleanUpService object for the tool
 	 */
 	public ToolDataCleanUpService getService(String toolName) {
@@ -70,37 +69,36 @@ public class ToolDataCleanUpServiceFactory {
 		String toolCategory = "";
 
 		switch (toolName) {
-		case ProcessorConstants.JIRA:
-		case ProcessorConstants.AZURE:
-			toolCategory = ProcessorType.AGILE_TOOL.toString();
-			break;
-		case ProcessorConstants.JIRA_TEST:
-		case ProcessorConstants.ZEPHYR:
-			toolCategory = ProcessorType.TESTING_TOOLS.toString();
-			break;
-		case ProcessorConstants.SONAR:
-			toolCategory = ProcessorType.SONAR_ANALYSIS.toString();
-			break;
-		case ProcessorConstants.BAMBOO:
-		case ProcessorConstants.JENKINS:
-		case ProcessorConstants.TEAMCITY:
-		case ProcessorConstants.AZUREPIPELINE:
-		case ProcessorConstants.GITHUBACTION:
-		case ProcessorConstants.ARGOCD:
-			toolCategory = ProcessorType.BUILD.toString();
-			break;
-		case ProcessorConstants.BITBUCKET:
-		case ProcessorConstants.GITLAB:
-		case ProcessorConstants.AZUREREPO:
-		case ProcessorConstants.GITHUB:
-			toolCategory = ProcessorType.SCM.toString();
-			break;
-		case ProcessorConstants.NEWREILC:
-			toolCategory = ProcessorType.NEW_RELIC.toString();
-			break;
-		default:
-			throw new IllegalStateException("invalid tool name = " + toolName);
-
+			case ProcessorConstants.JIRA :
+			case ProcessorConstants.AZURE :
+				toolCategory = ProcessorType.AGILE_TOOL.toString();
+				break;
+			case ProcessorConstants.JIRA_TEST :
+			case ProcessorConstants.ZEPHYR :
+				toolCategory = ProcessorType.TESTING_TOOLS.toString();
+				break;
+			case ProcessorConstants.SONAR :
+				toolCategory = ProcessorType.SONAR_ANALYSIS.toString();
+				break;
+			case ProcessorConstants.BAMBOO :
+			case ProcessorConstants.JENKINS :
+			case ProcessorConstants.TEAMCITY :
+			case ProcessorConstants.AZUREPIPELINE :
+			case ProcessorConstants.GITHUBACTION :
+			case ProcessorConstants.ARGOCD :
+				toolCategory = ProcessorType.BUILD.toString();
+				break;
+			case ProcessorConstants.BITBUCKET :
+			case ProcessorConstants.GITLAB :
+			case ProcessorConstants.AZUREREPO :
+			case ProcessorConstants.GITHUB :
+				toolCategory = ProcessorType.SCM.toString();
+				break;
+			case ProcessorConstants.NEWREILC :
+				toolCategory = ProcessorType.NEW_RELIC.toString();
+				break;
+			default :
+				throw new IllegalStateException("invalid tool name = " + toolName);
 		}
 		return toolCategory;
 	}

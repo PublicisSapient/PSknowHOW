@@ -41,9 +41,9 @@ import com.publicissapient.kpidashboard.common.converter.ZonedDateTimeWriteConve
 import com.publicissapient.kpidashboard.common.mapper.CustomObjectMapper;
 
 /**
- * An extension of {@link WebMvcConfigurer} to provide project specific
- * web mvc configuration.
- * 
+ * An extension of {@link WebMvcConfigurer} to provide project specific web mvc
+ * configuration.
+ *
  * @author anisingh4
  */
 @Configuration
@@ -86,12 +86,11 @@ public class WebMVCConfig implements WebMvcConfigurer {
 		registry.addResourceHandler("/swagger-ui/**")
 				.addResourceLocations("classpath:/META-INF/resources/webjars/springdoc-openapi-ui/");
 	}
+
 	@Override
 	public void addFormatters(FormatterRegistry registry) {
 		registry.addConverter(new DateToJodaDateTimeConverter());
 		registry.addConverter(new ZonedDateTimeWriteConverter());
 		registry.addConverter(new ZonedDateTimeReadConverter());
 	}
-
-
 }

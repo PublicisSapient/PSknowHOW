@@ -31,7 +31,7 @@ import io.mongock.api.annotations.RollbackExecution;
 
 /**
  * add rca exclusion field mapping
- * 
+ *
  * @author shi6
  */
 @ChangeUnit(id = "dctp_enhnc", order = "8332", author = "shi6", systemVersion = "8.3.3")
@@ -49,8 +49,8 @@ public class DCTPEnhnc {
 	public void execution() {
 		Document excludeRCA = new Document(FIELD_NAME, "excludeRCAFromKPI163")
 				.append("fieldLabel", "Root cause values to be excluded").append("fieldType", "chips")
-				.append("section", "Defects Mapping").append("tooltip",
-						new Document(DEFINITION, "Root cause reasons for defects which are to be excluded."));
+				.append("section", "Defects Mapping")
+				.append("tooltip", new Document(DEFINITION, "Root cause reasons for defects which are to be excluded."));
 
 		mongoTemplate.getCollection("field_mapping_structure").insertOne(excludeRCA);
 	}

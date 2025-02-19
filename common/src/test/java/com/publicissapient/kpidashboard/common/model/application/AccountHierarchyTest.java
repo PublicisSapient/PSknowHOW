@@ -16,100 +16,103 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.common.model.application;
-
-import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.Test;
+
 public final class AccountHierarchyTest {
-    /// region Test suites for executable
-    /// com.publicissapient.kpidashboard.common.model.application.AccountHierarchy.equals
+	/// region Test suites for executable
+	/// com.publicissapient.kpidashboard.common.model.application.AccountHierarchy.equals
 
-    /// region SYMBOLIC EXECUTION: SUCCESSFUL EXECUTIONS for method
-    /// equals(java.lang.Object)
+	/// region SYMBOLIC EXECUTION: SUCCESSFUL EXECUTIONS for method
+	/// equals(java.lang.Object)
 
-    /**
-     * @utbot.classUnderTest {@link AccountHierarchy}
-     * @utbot.methodUnderTest {@link AccountHierarchy#equals(Object)}
-     * @utbot.executesCondition {@code (null != obj): False}
-     * @utbot.executesCondition {@code (null == obj): True}
-     * @utbot.returnsFrom {@code return false;}
-     */
-    @Test
-    public void testEquals_NullEqualsObj() {
-        AccountHierarchy accountHierarchy = new AccountHierarchy();
+	/**
+	 * @utbot.classUnderTest {@link AccountHierarchy}
+	 * @utbot.methodUnderTest {@link AccountHierarchy#equals(Object)}
+	 * @utbot.executesCondition {@code (null != obj): False}
+	 * @utbot.executesCondition {@code (null == obj): True}
+	 * @utbot.returnsFrom {@code return false;}
+	 */
+	@Test
+	public void testEquals_NullEqualsObj() {
+		AccountHierarchy accountHierarchy = new AccountHierarchy();
 
-        boolean actual = accountHierarchy.equals(null);
+		boolean actual = accountHierarchy.equals(null);
 
-        assertFalse(actual);
-    }
+		assertFalse(actual);
+	}
 
-    /**
-     * @utbot.classUnderTest {@link AccountHierarchy}
-     * @utbot.methodUnderTest {@link AccountHierarchy#equals(Object)}
-     * @utbot.executesCondition {@code (null != obj): True}
-     * @utbot.executesCondition {@code (this.getClass() != obj.getClass()): True}
-     * @utbot.returnsFrom {@code return false;}
-     */
-    @Test
-    public void testEquals_ThisGetClassNotEqualsObjGetClass() {
-        AccountHierarchy accountHierarchy = new AccountHierarchy();
-        short[] obj = {};
+	/**
+	 * @utbot.classUnderTest {@link AccountHierarchy}
+	 * @utbot.methodUnderTest {@link AccountHierarchy#equals(Object)}
+	 * @utbot.executesCondition {@code (null != obj): True}
+	 * @utbot.executesCondition {@code (this.getClass() != obj.getClass()): True}
+	 * @utbot.returnsFrom {@code return false;}
+	 */
+	@Test
+	public void testEquals_ThisGetClassNotEqualsObjGetClass() {
+		AccountHierarchy accountHierarchy = new AccountHierarchy();
+		short[] obj = {};
 
-        boolean actual = accountHierarchy.equals(obj);
+		boolean actual = accountHierarchy.equals(obj);
 
-        assertFalse(actual);
-    }
-    /// endregion
+		assertFalse(actual);
+	}
 
-    /// region Errors report for equals
+	/// endregion
 
-    public void testEquals_errors() {
-        // Couldn't generate some tests. List of errors:
-        //
-        // 1 occurrences of:
-        // Default concrete execution failed
+	/// region Errors report for equals
 
-    }
-    /// endregion
+	public void testEquals_errors() {
+		// Couldn't generate some tests. List of errors:
+		//
+		// 1 occurrences of:
+		// Default concrete execution failed
 
-    /// endregion
+	}
 
-    /// region Test suites for executable
-    /// com.publicissapient.kpidashboard.common.model.application.AccountHierarchy.hashCode
+	/// endregion
 
-    /// region SYMBOLIC EXECUTION: SUCCESSFUL EXECUTIONS for method hashCode()
+	/// endregion
 
-    /**
-     * @utbot.classUnderTest {@link AccountHierarchy}
-     * @utbot.methodUnderTest {@link AccountHierarchy#hashCode()}
-     * @utbot.invokes {@link java.util.Objects#hash(Object[])}
-     * @utbot.returnsFrom {@code return Objects.hash(this.nodeId, this.path, this.beginDate, this.endDate, this.releaseState);}
-     */
-    @Test
-    public void testHashCode_ObjectsHash() {
-        AccountHierarchy accountHierarchy = new AccountHierarchy(null, null, null, null, null, null, null, null, null,
-                null, null, null, null);
+	/// region Test suites for executable
+	/// com.publicissapient.kpidashboard.common.model.application.AccountHierarchy.hashCode
 
-        int actual = accountHierarchy.hashCode();
+	/// region SYMBOLIC EXECUTION: SUCCESSFUL EXECUTIONS for method hashCode()
 
-        assertEquals(28629151, actual);
-    }
-    /// endregion
+	/**
+	 * @utbot.classUnderTest {@link AccountHierarchy}
+	 * @utbot.methodUnderTest {@link AccountHierarchy#hashCode()}
+	 * @utbot.invokes {@link java.util.Objects#hash(Object[])}
+	 * @utbot.returnsFrom {@code return Objects.hash(this.nodeId, this.path, this.beginDate,
+	 *     this.endDate, this.releaseState);}
+	 */
+	@Test
+	public void testHashCode_ObjectsHash() {
+		AccountHierarchy accountHierarchy = new AccountHierarchy(null, null, null, null, null, null, null, null, null, null,
+				null, null, null);
 
-    /// region Errors report for hashCode
+		int actual = accountHierarchy.hashCode();
 
-    public void testHashCode_errors() {
-        // Couldn't generate some tests. List of errors:
-        //
-        // 1 occurrences of:
-        // Default concrete execution failed
+		assertEquals(28629151, actual);
+	}
 
-    }
-    /// endregion
+	/// endregion
 
-    /// endregion
+	/// region Errors report for hashCode
+
+	public void testHashCode_errors() {
+		// Couldn't generate some tests. List of errors:
+		//
+		// 1 occurrences of:
+		// Default concrete execution failed
+
+	}
+	/// endregion
+
+	/// endregion
 }

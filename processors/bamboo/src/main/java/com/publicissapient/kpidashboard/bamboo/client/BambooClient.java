@@ -31,9 +31,7 @@ import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 
-/**
- * Client for fetching jobs and build information from Bamboo server
- */
+/** Client for fetching jobs and build information from Bamboo server */
 public interface BambooClient {
 
 	/**
@@ -41,9 +39,9 @@ public interface BambooClient {
 	 * non-trailing /'s
 	 *
 	 * @param baseUrl
-	 *            baseUrl
+	 *          baseUrl
 	 * @param params
-	 *            string list to append in the url
+	 *          string list to append in the url
 	 * @return full url
 	 */
 	static String appendToURL(String baseUrl, String... params) {
@@ -63,13 +61,13 @@ public interface BambooClient {
 	 * for each job populating atleast, the build number and url of each build.
 	 *
 	 * @param bambooServer
-	 *            {@link ProcessorToolConnection}
+	 *          {@link ProcessorToolConnection}
 	 * @param proBasicConfig
 	 * @return a summary of every build for each job on the instance
 	 * @throws ParseException
-	 *             if the response from the bamboo service is not interpretable
+	 *           if the response from the bamboo service is not interpretable
 	 * @throws MalformedURLException
-	 *             if the bamboo service url is not formed correctly
+	 *           if the bamboo service url is not formed correctly
 	 */
 	Map<ObjectId, Set<Build>> getJobsFromServer(ProcessorToolConnection bambooServer, ProjectBasicConfig proBasicConfig)
 			throws ParseException, MalformedURLException;
@@ -78,16 +76,15 @@ public interface BambooClient {
 	 * Gets the complete information of a build from Bamboo server.
 	 *
 	 * @param buildUrl
-	 *            the url of the build
+	 *          the url of the build
 	 * @param instanceUrl
-	 *            the URL for the Bamboo instance
+	 *          the URL for the Bamboo instance
 	 * @param bambooServer
-	 *            {@link ProcessorToolConnection}
+	 *          {@link ProcessorToolConnection}
 	 * @return a Build instance or null
 	 */
 	Build getBuildDetailsFromServer(String buildUrl, String instanceUrl, ProcessorToolConnection bambooServer);
 
 	Map<Pair<ObjectId, String>, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection bambooServer,
 			ProjectBasicConfig proBasicConfig) throws ParseException, MalformedURLException;
-
 }

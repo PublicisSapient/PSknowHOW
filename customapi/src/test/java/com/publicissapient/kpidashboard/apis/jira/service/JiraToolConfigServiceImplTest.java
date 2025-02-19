@@ -33,12 +33,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Objects;
 
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.util.ProjectAccessUtil;
 import org.bson.types.ObjectId;
 import org.json.simple.parser.ParseException;
 import org.junit.Assert;
@@ -60,6 +58,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.util.ProjectAccessUtil;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
@@ -73,9 +73,7 @@ import com.publicissapient.kpidashboard.common.repository.connection.ConnectionR
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 
 /**
- *
  * @author Hirenkumar babariya
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class JiraToolConfigServiceImplTest {
@@ -137,7 +135,6 @@ public class JiraToolConfigServiceImplTest {
 		projectTool.setConnectionId(new ObjectId(connectionId));
 		projectTool.setProjectKey("ABC");
 		projectToolConfigs.add(projectTool);
-
 	}
 
 	@Test
@@ -152,9 +149,12 @@ public class JiraToolConfigServiceImplTest {
 		when(restAPIUtils.getHeaders(connection1.getUsername(), "decryptKey")).thenReturn(header);
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
 
-		doReturn(new ResponseEntity<>(getServerResponseFromJson("jiraBoardListResponse.json"), HttpStatus.OK))
+		doReturn(
+						new ResponseEntity<>(
+								getServerResponseFromJson("jiraBoardListResponse.json"), HttpStatus.OK))
 				.when(restTemplate)
-				.exchange(eq(RESOURCE_JIRA_BOARD_ENDPOINT), eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
+				.exchange(
+						eq(RESOURCE_JIRA_BOARD_ENDPOINT), eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
 		BoardDetailsDTO boardRequestDTO1 = new BoardDetailsDTO();
 		boardRequestDTO1.setBoardId(11862);
 		boardRequestDTO1.setBoardName("Test | XYZ | Scrum Board");
@@ -165,7 +165,11 @@ public class JiraToolConfigServiceImplTest {
 		responseList.add(boardRequestDTO2);
 		doReturn(false).when(projectAccessUtil).ifConnectionNotAccessible(any());
 
-		Assert.assertEquals(Objects.requireNonNull(jiraToolConfigService.getJiraBoardDetailsList(boardRequestDTO).getBody()).getData(),responseList);
+		Assert.assertEquals(
+				Objects.requireNonNull(
+								jiraToolConfigService.getJiraBoardDetailsList(boardRequestDTO).getBody())
+						.getData(),
+				responseList);
 	}
 
 	@Test
@@ -178,11 +182,21 @@ public class JiraToolConfigServiceImplTest {
 		header.add("Authorization", "base64str");
 		when(restAPIUtils.getHeaders(connection1.getUsername(), "decryptKey")).thenReturn(header);
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
-		doReturn(new ResponseEntity<>(null, null, HttpStatus.NO_CONTENT)).when(restTemplate)
-				.exchange(eq(RESOURCE_JIRA_BOARD_ENDPOINT), eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
-		ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false,
-				"Not found any configure board details with provided connection details", null));
-		Assert.assertNotEquals(null,Objects.requireNonNull(jiraToolConfigService.getJiraBoardDetailsList(boardRequestDTO).getBody()).getData());
+		doReturn(new ResponseEntity<>(null, null, HttpStatus.NO_CONTENT))
+				.when(restTemplate)
+				.exchange(
+						eq(RESOURCE_JIRA_BOARD_ENDPOINT), eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
+		ResponseEntity.status(HttpStatus.OK)
+				.body(
+						new ServiceResponse(
+								false,
+								"Not found any configure board details with provided connection details",
+								null));
+		Assert.assertNotEquals(
+				null,
+				Objects.requireNonNull(
+								jiraToolConfigService.getJiraBoardDetailsList(boardRequestDTO).getBody())
+						.getData());
 	}
 
 	private String getServerResponseFromJson(String fileName) throws IOException {
@@ -213,10 +227,10 @@ public class JiraToolConfigServiceImplTest {
 		HttpHeaders header = new HttpHeaders();
 		header.add("Authorization", "Basic base64str");
 		when(restAPIUtils.getHeaders(connection1.getUsername(), "decryptKey")).thenReturn(header);
-		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
+		when(restTemplate.exchange(
+						anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
 				.thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
 		doNothing().when(connectionService).updateBreakingConnection(eq(connection1), anyString());
 		jiraToolConfigService.getJiraBoardDetailsList(boardRequestDTO);
 	}
-
 }

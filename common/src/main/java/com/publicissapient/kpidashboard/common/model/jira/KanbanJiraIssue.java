@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.jira;//NOPMD
+package com.publicissapient.kpidashboard.common.model.jira; // NOPMD
 
 import java.util.List;
 import java.util.Set;
@@ -36,9 +36,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The type Kanban feature.
- */
+/** The type Kanban feature. */
 @Data
 @Builder
 @Getter
@@ -160,10 +158,10 @@ public class KanbanJiraIssue extends BasicModel {
 	// Story demonstrated to client field
 	private String storyDemonstratedFieldValue;
 	private DateTime storyDemonstratedFieldValueDate;
-	/**
-	 * Device Platform (iOS/Android/Desktop)
-	 */
+
+	/** Device Platform (iOS/Android/Desktop) */
 	private String devicePlatform;
+
 	private String defectRaisedBy;
 	private String jiraStatus;
 	private Set<String> defectStoryID;

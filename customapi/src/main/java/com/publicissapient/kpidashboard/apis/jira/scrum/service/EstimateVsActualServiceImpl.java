@@ -82,25 +82,21 @@ public class EstimateVsActualServiceImpl extends JiraIterationKPIService {
 				// to modify sprint details on the basis of configuration for the project
 				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
-				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
-						.collect(Collectors.toSet());
+				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toSet());
 
-				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
-						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI75(),
-						fieldMapping.getJiraIterationCompletionStatusKPI75(),
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+						fieldMapping.getJiraIterationIssuetypeKPI75(), fieldMapping.getJiraIterationCompletionStatusKPI75(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> jiraIssueList = IterationKpiHelper.getFilteredJiraIssue(totalIssues,
-							totalJiraIssueList);
-					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getTotalIssues(), jiraIssueList);
+					List<JiraIssue> jiraIssueList = IterationKpiHelper.getFilteredJiraIssue(totalIssues, totalJiraIssueList);
+					Set<JiraIssue> filtersIssuesList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
+							sprintDetails, sprintDetails.getTotalIssues(), jiraIssueList);
 					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueTypeExcludeKPI75())) {
-						Set<String> defectTypeSet = fieldMapping.getJiraIssueTypeExcludeKPI75().stream()
-								.map(String::toLowerCase).collect(Collectors.toSet());
+						Set<String> defectTypeSet = fieldMapping.getJiraIssueTypeExcludeKPI75().stream().map(String::toLowerCase)
+								.collect(Collectors.toSet());
 						filtersIssuesList = filtersIssuesList.stream()
 								.filter(jiraIssue -> !defectTypeSet.contains(jiraIssue.getTypeName().toLowerCase()))
 								.collect(Collectors.toCollection(HashSet::new));
@@ -115,20 +111,18 @@ public class EstimateVsActualServiceImpl extends JiraIterationKPIService {
 	/**
 	 * Populates KPI value to sprint leaf nodes and gives the trend analysis at
 	 * sprint level.
-	 * 
+	 *
 	 * @param sprintLeafNode
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Node sprintLeafNode, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node sprintLeafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNode, null, null, kpiRequest);
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 		if (CollectionUtils.isNotEmpty(allIssues)) {
-			log.info("Estimate Vs Actual -> request id : {} total jira Issues : {}", requestTrackerId,
-					allIssues.size());
+			log.info("Estimate Vs Actual -> request id : {} total jira Issues : {}", requestTrackerId, allIssues.size());
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(Objects.requireNonNull(sprintLeafNode).getProjectFilter().getBasicProjectConfigId());
 			// Creating map of modal Objects
@@ -158,7 +152,7 @@ public class EstimateVsActualServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates filter group.
-	 * 
+	 *
 	 * @return
 	 */
 	private FilterGroup createFilterGroup() {
@@ -174,7 +168,7 @@ public class EstimateVsActualServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates individual filter object.
-	 * 
+	 *
 	 * @param type
 	 * @param name
 	 * @param key
@@ -192,7 +186,7 @@ public class EstimateVsActualServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates data group that tells what kind of data will be shown on chart.
-	 * 
+	 *
 	 * @return
 	 */
 	private KpiDataGroup createDataGroup() {
@@ -207,7 +201,7 @@ public class EstimateVsActualServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates kpi data object.
-	 * 
+	 *
 	 * @param key
 	 * @param name
 	 * @param order
@@ -225,5 +219,4 @@ public class EstimateVsActualServiceImpl extends JiraIterationKPIService {
 		data.setShowAsLegend(false);
 		return data;
 	}
-
 }

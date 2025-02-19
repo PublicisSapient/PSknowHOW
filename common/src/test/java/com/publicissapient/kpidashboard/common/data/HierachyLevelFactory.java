@@ -38,53 +38,52 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HierachyLevelFactory {
 
-    private static final String FILE_PATH_FILTER_CATEGORIES = "/json/default/hierarchy_levels.json";
-    private List<HierarchyLevel> hierarchyLevels;
-    private ObjectMapper mapper;
+	private static final String FILE_PATH_FILTER_CATEGORIES = "/json/default/hierarchy_levels.json";
+	private List<HierarchyLevel> hierarchyLevels;
+	private ObjectMapper mapper;
 
-    private HierachyLevelFactory() {
-    }
+	private HierachyLevelFactory() {
+	}
 
-    public static HierachyLevelFactory newInstance(String filePath) {
+	public static HierachyLevelFactory newInstance(String filePath) {
 
-        HierachyLevelFactory factory = new HierachyLevelFactory();
-        factory.createObjectMapper();
-        factory.init(filePath);
-        return factory;
-    }
+		HierachyLevelFactory factory = new HierachyLevelFactory();
+		factory.createObjectMapper();
+		factory.init(filePath);
+		return factory;
+	}
 
-    public static HierachyLevelFactory newInstance() {
+	public static HierachyLevelFactory newInstance() {
 
-        return newInstance(null);
-    }
+		return newInstance(null);
+	}
 
-    private void init(String filePath) {
-        try {
+	private void init(String filePath) {
+		try {
 
-            String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_FILTER_CATEGORIES : filePath;
+			String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_FILTER_CATEGORIES : filePath;
 
-            hierarchyLevels = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
-                    new TypeReference<List<HierarchyLevel>>() {
-                    });
-        } catch (IOException e) {
-            log.error("Error in reading kpi request from file = " + filePath, e);
-        }
-    }
+			hierarchyLevels = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
+					new TypeReference<List<HierarchyLevel>>() {
+					});
+		} catch (IOException e) {
+			log.error("Error in reading kpi request from file = " + filePath, e);
+		}
+	}
 
-    private ObjectMapper createObjectMapper() {
+	private ObjectMapper createObjectMapper() {
 
-        if (mapper == null) {
-            mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        }
+		if (mapper == null) {
+			mapper = new ObjectMapper();
+			mapper.registerModule(new JavaTimeModule());
+			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		}
 
-        return mapper;
-    }
+		return mapper;
+	}
 
-    public List<HierarchyLevel> getHierarchyLevels() {
-        return hierarchyLevels;
-    }
-
+	public List<HierarchyLevel> getHierarchyLevels() {
+		return hierarchyLevels;
+	}
 }

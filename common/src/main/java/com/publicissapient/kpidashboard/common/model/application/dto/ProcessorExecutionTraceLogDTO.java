@@ -28,23 +28,19 @@ import com.publicissapient.kpidashboard.common.model.application.ProgressStatus;
 
 import lombok.Data;
 
-/**
- * Dto for processorExecutionTraceLog
- */
+/** Dto for processorExecutionTraceLog */
 @Data
 public class ProcessorExecutionTraceLogDTO {
 	private ObjectId id;
 	private String processorName;
 	private String basicProjectConfigId;
 
-	/**
-	 * time in milliseconds
-	 */
+	/** time in milliseconds */
 	private long executionStartedAt;
-	/**
-	 * time in milliseconds
-	 */
+
+	/** time in milliseconds */
 	private long executionEndedAt;
+
 	private boolean executionSuccess;
 	private String lastSuccessfulRun;
 	private Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType;

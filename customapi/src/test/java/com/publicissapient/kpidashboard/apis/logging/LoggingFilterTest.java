@@ -23,10 +23,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -38,6 +34,11 @@ import org.springframework.http.HttpMethod;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.model.application.RequestLog;
 import com.publicissapient.kpidashboard.common.repository.application.RequestLogRepository;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LoggingFilterTest {
@@ -113,5 +114,4 @@ public class LoggingFilterTest {
 		loggingFilter.doFilter(httpServletRequest, httpServletResponse, filterChain);
 		verify(requestLogRepository, times(1)).save(any(RequestLog.class));
 	}
-
 }

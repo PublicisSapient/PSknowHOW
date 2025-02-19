@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -32,21 +31,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "displayName", "url", "id", "uniqueName", "imageUrl", "descriptor" })
+@JsonPropertyOrder({"displayName", "url", "id", "uniqueName", "imageUrl", "descriptor"})
 public class SystemChangedBy {
 
 	@JsonProperty("displayName")
 	private String displayName;
+
 	@JsonProperty("url")
 	private String url;
+
 	@JsonProperty("id")
 	private String id;
+
 	@JsonProperty("uniqueName")
 	private String uniqueName;
+
 	@JsonProperty("imageUrl")
 	private String imageUrl;
+
 	@JsonProperty("descriptor")
 	private String descriptor;
+
 	@JsonIgnore
 	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -126,5 +131,4 @@ public class SystemChangedBy {
 				.append("uniqueName", uniqueName).append("imageUrl", imageUrl).append("descriptor", descriptor)
 				.append("additionalProperties", additionalProperties).toString();
 	}
-
 }

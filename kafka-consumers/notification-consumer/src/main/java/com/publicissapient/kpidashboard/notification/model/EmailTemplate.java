@@ -30,7 +30,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * This class is responsible for creating email template to be send as json payload
+ * This class is responsible for creating email template to be send as json
+ * payload
  *
  * @author purgupta2
  */
@@ -42,59 +43,58 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EmailTemplate implements Serializable {
 
-    private List<Personalization> personalizations;
-    private Sender from;
-    private String subject;
-    private List<Content> content;
+	private List<Personalization> personalizations;
+	private Sender from;
+	private String subject;
+	private List<Content> content;
 
-    public static EmailTemplate fromEmailEvent(EmailEvent emailEvent, String html) {
-        EmailTemplate emailTemplate = new EmailTemplate();
+	public static EmailTemplate fromEmailEvent(EmailEvent emailEvent, String html) {
+		EmailTemplate emailTemplate = new EmailTemplate();
 
-        // Map from EmailEvent to EmailTemplate
-        Personalization personalization = new Personalization();
-        List<Recipient> recipients = new ArrayList<>();
-        for (String to : emailEvent.getTo()) {
-            Recipient recipient = new Recipient();
-            recipient.setEmail(to);
-            recipients.add(recipient);
-        }
-        personalization.setTo(recipients);
+		// Map from EmailEvent to EmailTemplate
+		Personalization personalization = new Personalization();
+		List<Recipient> recipients = new ArrayList<>();
+		for (String to : emailEvent.getTo()) {
+			Recipient recipient = new Recipient();
+			recipient.setEmail(to);
+			recipients.add(recipient);
+		}
+		personalization.setTo(recipients);
 
-        Sender sender = new Sender();
-        sender.setEmail(emailEvent.getFrom());
+		Sender sender = new Sender();
+		sender.setEmail(emailEvent.getFrom());
 
-        Content content = new Content();
-        content.setType("text/html");
-        content.setValue(html);
+		Content content = new Content();
+		content.setType("text/html");
+		content.setValue(html);
 
-        emailTemplate.setPersonalizations(Collections.singletonList(personalization));
-        emailTemplate.setFrom(sender);
-        emailTemplate.setSubject(emailEvent.getSubject());
-        emailTemplate.setContent(Collections.singletonList(content));
-        log.info("EmailTemplate: " + emailTemplate.getPersonalizations().toString());
+		emailTemplate.setPersonalizations(Collections.singletonList(personalization));
+		emailTemplate.setFrom(sender);
+		emailTemplate.setSubject(emailEvent.getSubject());
+		emailTemplate.setContent(Collections.singletonList(content));
+		log.info("EmailTemplate: " + emailTemplate.getPersonalizations().toString());
 
-        return emailTemplate;
-    }
+		return emailTemplate;
+	}
 
-    @Data
-    public static class Recipient {
-        private String email;
-    }
+	@Data
+	public static class Recipient {
+		private String email;
+	}
 
-    @Data
-    public static class Personalization {
-        private List<Recipient> to;
-    }
+	@Data
+	public static class Personalization {
+		private List<Recipient> to;
+	}
 
-    @Data
-    public static class Sender {
-        private String email;
-    }
+	@Data
+	public static class Sender {
+		private String email;
+	}
 
-    @Data
-    public static class Content {
-        private String type;
-        private String value;
-    }
+	@Data
+	public static class Content {
+		private String type;
+		private String value;
+	}
 }
-

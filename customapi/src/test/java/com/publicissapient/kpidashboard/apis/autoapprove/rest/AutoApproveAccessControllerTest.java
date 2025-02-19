@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.autoapprove.rest;
 
 import static org.mockito.Mockito.when;
@@ -46,7 +45,6 @@ import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
 
 /**
  * @author sanbhand1
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class AutoApproveAccessControllerTest {
@@ -77,17 +75,13 @@ public class AutoApproveAccessControllerTest {
 		autoApproveAccessConfig = new AutoApproveAccessConfig();
 		autoApproveAccessConfig.setEnableAutoApprove("true");
 		autoApproveAccessConfig.setRoles(roles);
-
 	}
 
-	/**
-	 * method includes post processes for test cases
-	 */
+	/** method includes post processes for test cases */
 	@After
 	public void after() {
 		mockMvc = null;
 		autoApproveAccessConfigDTO = null;
-
 	}
 
 	@Test
@@ -100,33 +94,33 @@ public class AutoApproveAccessControllerTest {
 	@Test
 	public void testGetAutoApproveConfigWithDAte() throws Exception {
 		when(autoApproveAccessService.getAutoApproveConfig()).thenReturn(autoApproveAccessConfig);
-		mockMvc.perform(MockMvcRequestBuilders.get("/autoapprove").contentType(MediaType.APPLICATION_JSON_VALUE))
+		mockMvc
+				.perform(
+						MockMvcRequestBuilders.get("/autoapprove")
+								.contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
 
 	@Test
 	public void testSaveAutoApproveRoles() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.post("/autoapprove")
-				.content(mapper.writeValueAsString(autoApproveAccessConfigDTO))
-				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
-
+				.content(mapper.writeValueAsString(autoApproveAccessConfigDTO)).contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
 	}
 
 	@Test
 	public void modifyAutoApprovConfigById() throws Exception {
 
 		mockMvc.perform(MockMvcRequestBuilders.put("/autoapprove/" + testId)
-				.content(mapper.writeValueAsString(autoApproveAccessConfigDTO))
-				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
-
+				.content(mapper.writeValueAsString(autoApproveAccessConfigDTO)).contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
 	}
 
 	@Test
 	public void modifyAutoApprovConfigByInvalidId() throws Exception {
 
 		mockMvc.perform(MockMvcRequestBuilders.put("/autoapprove/" + "6000e645ca33dc927b4a")
-				.content(mapper.writeValueAsString(autoApproveAccessConfigDTO))
-				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
-
+				.content(mapper.writeValueAsString(autoApproveAccessConfigDTO)).contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
 	}
 }

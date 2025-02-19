@@ -197,7 +197,5 @@ public class JiraIterationKPIServiceTest {
 				KpiRequest kpiRequest) {
 			return null;
 		}
-
 	}
-
 }

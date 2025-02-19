@@ -31,11 +31,10 @@ public interface KpiColumnConfigRepository extends MongoRepository<KpiColumnConf
 	 * KpiId if basicProjectConfigId is present
 	 *
 	 * @param basicProjectConfigId
-	 *            BasicProjectConfigId
+	 *          BasicProjectConfigId
 	 * @param kpiId
-	 *            kpiId
+	 *          kpiId
 	 * @return KpiColumnConfig if exist
 	 */
 	KpiColumnConfig findByBasicProjectConfigIdAndKpiId(ObjectId basicProjectConfigId, String kpiId);
-
 }

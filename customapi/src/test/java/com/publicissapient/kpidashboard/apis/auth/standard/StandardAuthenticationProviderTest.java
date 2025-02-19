@@ -59,5 +59,4 @@ public class StandardAuthenticationProviderTest {
 		assertTrue(provider.supports(StandardAuthenticationToken.class));
 		assertFalse(provider.supports(UsernamePasswordAuthenticationToken.class));
 	}
-
 }

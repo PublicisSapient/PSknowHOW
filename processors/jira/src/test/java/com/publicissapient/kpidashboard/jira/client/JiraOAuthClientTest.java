@@ -118,10 +118,9 @@ public class JiraOAuthClientTest {
 		String callBack = null;
 		try {
 			callBack = jiraOAuthClient.getOAuthVerifier("https://www.baseurl.com/", "uName", "password");
-		}catch (Exception ex){
+		} catch (Exception ex) {
 			assertNull(callBack);
 		}
-		
 	}
 
 	@Test(expected = RuntimeException.class)
@@ -133,7 +132,6 @@ public class JiraOAuthClientTest {
 	@Test(expected = RuntimeException.class)
 	public void getAccessTokenNullTest() throws IOException {
 		jiraOAuthClient.getAccessToken("uName", "password");
-
 	}
 
 	@Test
@@ -143,18 +141,18 @@ public class JiraOAuthClientTest {
 		when(request.getUri()).thenReturn(new URI("https://www.baseurl.com/"));
 		when(request.getEntityStream()).thenReturn(inputStream);
 
-		//OAuthAccessor accessor=new OAuthAccessor(consumer);
-		//OAuthAccessor spyOAuthAccessor = Mockito.spy(accessor);
-		OAuthMessage oAuthMessage=new OAuthMessage("method","https://www.baseurl.com?ss=k",null);
-		OAuthMessage spyOAuthMessage= Mockito.spy(oAuthMessage);
-		//accessor.consumer.setProperty("RSA-SHA1.PrivateKey","pvtKey");
-		//when(spyOAuthAccessor.newRequestMessage(anyString(),anyString(), anySet(),eq(inputStream))).thenReturn(spyOAuthMessage);
-		//when(accessor.consumer.getProperty("RSA-SHA1.PrivateKey")).thenReturn("pvt");
-		//doNothing().when(oAuthMessage).addRequiredParameters(any());
-		//when(oAuthMessage.sign(accessor)).thenReturn()
-		//MockedStatic<OAuth> oAuthMockedStatic = Mockito.mockStatic(OAuth.class);
+		// OAuthAccessor accessor=new OAuthAccessor(consumer);
+		// OAuthAccessor spyOAuthAccessor = Mockito.spy(accessor);
+		OAuthMessage oAuthMessage = new OAuthMessage("method", "https://www.baseurl.com?ss=k", null);
+		OAuthMessage spyOAuthMessage = Mockito.spy(oAuthMessage);
+		// accessor.consumer.setProperty("RSA-SHA1.PrivateKey","pvtKey");
+		// when(spyOAuthAccessor.newRequestMessage(anyString(),anyString(),
+		// anySet(),eq(inputStream))).thenReturn(spyOAuthMessage);
+		// when(accessor.consumer.getProperty("RSA-SHA1.PrivateKey")).thenReturn("pvt");
+		// doNothing().when(oAuthMessage).addRequiredParameters(any());
+		// when(oAuthMessage.sign(accessor)).thenReturn()
+		// MockedStatic<OAuth> oAuthMockedStatic = Mockito.mockStatic(OAuth.class);
 		jiraOAuthClient.configure(builder);
-		verify(builder,times(2)).build();
+		verify(builder, times(2)).build();
 	}
-
 }

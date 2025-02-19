@@ -31,7 +31,6 @@ import io.mongock.api.annotations.RollbackExecution;
  * @author aksshriv1
  */
 @ChangeUnit(id = "r_cod_yaxislabel", order = "09501", author = "aksshriv1", systemVersion = "9.5.0")
-
 public class CostOfDelayEnh {
 
 	private final MongoTemplate mongoTemplate;
@@ -54,12 +53,10 @@ public class CostOfDelayEnh {
 
 		// Perform the update
 		kpiMaster.updateOne(filter, update);
-
 	}
 
 	@RollbackExecution
 	public void rollback() {
 		// no implementation required
 	}
-
 }

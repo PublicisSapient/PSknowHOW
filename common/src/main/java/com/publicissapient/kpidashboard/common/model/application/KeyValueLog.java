@@ -22,9 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * The Class KeyValueLog.
- */
+/** The Class KeyValueLog. */
 public class KeyValueLog {
 
 	private static final char SEPERATOR = ' ';
@@ -39,9 +37,9 @@ public class KeyValueLog {
 	 * With.
 	 *
 	 * @param key
-	 *            the key
+	 *          the key
 	 * @param value
-	 *            the value
+	 *          the value
 	 * @return the key value log
 	 */
 	public KeyValueLog with(String key, Object value) {
@@ -55,11 +53,9 @@ public class KeyValueLog {
 		Set<String> keySet = attributes.keySet();
 		StringBuilder builder = new StringBuilder();
 		for (String key : keySet) {
-			builder.append(key).append(EQUALS).append(QUOTE).append(attributes.get(key)).append(QUOTE)
-					.append(SEPERATOR);
+			builder.append(key).append(EQUALS).append(QUOTE).append(attributes.get(key)).append(QUOTE).append(SEPERATOR);
 		}
 
 		return builder.toString().trim();
 	}
-
 }

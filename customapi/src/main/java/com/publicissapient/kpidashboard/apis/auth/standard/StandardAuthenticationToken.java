@@ -32,7 +32,6 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 	private transient Object credentials;
 
 	/**
-	 * 
 	 * @param principal
 	 * @param credentials
 	 */
@@ -45,7 +44,6 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 	}
 
 	/**
-	 * 
 	 * @param principal
 	 * @param credentials
 	 * @param authorities
@@ -78,7 +76,6 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 	/**
 	 * Sets authenticated false if isAuthneticated is false, Throws
 	 * IllegalArgumentException if isAuthneticated is true.
-	 * 
 	 */
 	@Override
 	public void setAuthenticated(boolean isAuthenticated) {
@@ -90,9 +87,7 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 		super.setAuthenticated(false);
 	}
 
-	/**
-	 * Erases credentials and sets credentials object to null
-	 */
+	/** Erases credentials and sets credentials object to null */
 	@Override
 	public void eraseCredentials() {
 		super.eraseCredentials();
@@ -102,7 +97,7 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 	/**
 	 * Overridden method of Object's equal method compares principal and credentials
 	 * object to check StandardAuthenticationToken is equal
-	 * 
+	 *
 	 * @return true if invoked object's principal and credentials are matching,
 	 *         false if they are not matching
 	 */
@@ -123,7 +118,7 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 
 	/**
 	 * Overridden method of Object's hashcode method
-	 * 
+	 *
 	 * @return hashcode
 	 */
 	@Override

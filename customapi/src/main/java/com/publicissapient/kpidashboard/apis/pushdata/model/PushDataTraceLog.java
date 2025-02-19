@@ -30,10 +30,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * token details for push data via expose api
- */
-
+/** token details for push data via expose api */
 @Data
 @Getter
 @Setter

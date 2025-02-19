@@ -16,15 +16,18 @@
  */
 package com.publicissapient.kpidashboard.common.model.application;
 
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.util.List;
 
-/** store all filters needed for a dashboard
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * store all filters needed for a dashboard
  *
  * @author purgupta2
  */
@@ -33,41 +36,41 @@ import java.util.List;
 @AllArgsConstructor
 @Document(collection = "filters")
 public class Filters extends BasicModel {
-    private Integer boardId;
-    private ProjectTypeSwitch projectTypeSwitch;
-    private BasicFilter primaryFilter;
-    private ParentFilter parentFilter;
-    private List<BasicFilter> additionalFilters;
+	private Integer boardId;
+	private ProjectTypeSwitch projectTypeSwitch;
+	private BasicFilter primaryFilter;
+	private ParentFilter parentFilter;
+	private List<BasicFilter> additionalFilters;
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ProjectTypeSwitch {
-        private boolean enabled;
-        private boolean visible;
-    }
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class ProjectTypeSwitch {
+		private boolean enabled;
+		private boolean visible;
+	}
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class BasicFilter {
-        private String type;
-        private DefaultLevel defaultLevel;
-    }
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class BasicFilter {
+		private String type;
+		private DefaultLevel defaultLevel;
+	}
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class DefaultLevel {
-        private String labelName;
-        private String sortBy;
-    }
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class DefaultLevel {
+		private String labelName;
+		private String sortBy;
+	}
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ParentFilter {
-        private String labelName;
-        private String emittedLevel;
-    }
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class ParentFilter {
+		private String labelName;
+		private String emittedLevel;
+	}
 }

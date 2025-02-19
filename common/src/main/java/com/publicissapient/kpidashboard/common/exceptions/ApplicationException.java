@@ -18,9 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.exceptions;
 
-/**
- * Class providing methods for exception.
- */
+/** Class providing methods for exception. */
 public class ApplicationException extends Exception {
 	public static final int NOTHING_TO_UPDATE = 0;
 	public static final int JSON_FORMAT_ERROR = -1;
@@ -38,9 +36,9 @@ public class ApplicationException extends Exception {
 	 * Instantiates a new application exception.
 	 *
 	 * @param message
-	 *            the message
+	 *          the message
 	 * @param errorCode
-	 *            the error code
+	 *          the error code
 	 */
 	public ApplicationException(String message, int errorCode) {
 		super(message);
@@ -51,11 +49,11 @@ public class ApplicationException extends Exception {
 	 * Instantiates a new application exception.
 	 *
 	 * @param message
-	 *            the message
+	 *          the message
 	 * @param cause
-	 *            the cause
+	 *          the cause
 	 * @param errorCode
-	 *            the error code
+	 *          the error code
 	 */
 	public ApplicationException(String message, Throwable cause, int errorCode) {
 		super(message, cause);
@@ -66,7 +64,7 @@ public class ApplicationException extends Exception {
 	 * Instantiates a new application exception.
 	 *
 	 * @param cause
-	 *            the cause
+	 *          the cause
 	 */
 	public ApplicationException(Throwable cause) {
 		super(cause);
@@ -76,16 +74,15 @@ public class ApplicationException extends Exception {
 	 * Instantiates a new application exception.
 	 *
 	 * @param message
-	 *            the message
+	 *          the message
 	 * @param cause
-	 *            the cause
+	 *          the cause
 	 * @param enableSuppression
-	 *            the enable suppression
+	 *          the enable suppression
 	 * @param writableStackTrace
-	 *            the writable stack trace
+	 *          the writable stack trace
 	 */
-	public ApplicationException(String message, Throwable cause, boolean enableSuppression,
-			boolean writableStackTrace) {
+	public ApplicationException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
 

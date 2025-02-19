@@ -35,7 +35,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { AggregationUtils.class })
+@ContextConfiguration(classes = {AggregationUtils.class})
 public class AggregationUtilsTests {
 
 	@Test
@@ -64,7 +64,6 @@ public class AggregationUtilsTests {
 	@Test
 	public void testAverageNull() {
 		assertNull(AggregationUtils.average(null));
-
 	}
 
 	@Test
@@ -77,7 +76,6 @@ public class AggregationUtilsTests {
 	@Test
 	public void testWeightedAverageNull() {
 		assertNull(AggregationUtils.weightedAverage(null, null));
-
 	}
 
 	@Test
@@ -85,7 +83,6 @@ public class AggregationUtilsTests {
 		List<Double> wgt = new ArrayList<>();
 		List<Double> measure = Arrays.asList(0.01, 0.19, 0.50, 0.05, 0.05, 0.10, 0.05, 0.05);
 		AggregationUtils.weightedAverage(measure, wgt);
-
 	}
 
 	@Test
@@ -97,7 +94,6 @@ public class AggregationUtilsTests {
 	@Test
 	public void testPercentilesNull() {
 		assertNull(AggregationUtils.percentiles(null, 90d));
-
 	}
 
 	@Test
@@ -207,7 +203,6 @@ public class AggregationUtilsTests {
 	@Test
 	public void testPercentilesLongNull() {
 		assertNull(AggregationUtils.percentilesLong(null, 90d));
-
 	}
 
 	@Test
@@ -250,7 +245,6 @@ public class AggregationUtilsTests {
 	@Test
 	public void testPercentilesIntegerNull() {
 		assertNull(AggregationUtils.percentilesInteger(null, 90d));
-
 	}
 
 	@Test
@@ -308,7 +302,6 @@ public class AggregationUtilsTests {
 	public void percentilesIntegerEmptyLongList1() {
 		List<Long> measure = Arrays.asList(2l);
 		AggregationUtils.percentilesForLongValues(measure, null);
-
 	}
 
 	@Test
@@ -385,5 +378,4 @@ public class AggregationUtilsTests {
 
 		AggregationUtils.aggregateForCodeMetrics(aggregatedValueList);
 	}
-
 }

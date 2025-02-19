@@ -26,5 +26,4 @@ import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataResponse;
 public interface PushBaseService {
 
 	PushDataResponse processPushDataInput(PushBuildDeploy buildDeploy, ObjectId projectConfigId);
-
 }

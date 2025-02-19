@@ -10,12 +10,10 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
 /**
  * @author Hiren Babariya
- *
  */
 public interface SprintClient {
 
 	/**
-	 *
 	 * @param projectConfig
 	 * @param sprintDetailsSet
 	 * @param azureAdapter
@@ -23,5 +21,4 @@ public interface SprintClient {
 	 */
 	void prepareSprintReport(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
 			AzureAdapter azureAdapter, AzureServer azureServer) throws SprintReportException;
-
 }

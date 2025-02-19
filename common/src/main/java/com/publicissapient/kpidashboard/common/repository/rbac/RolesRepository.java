@@ -24,9 +24,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
 
-/**
- * Interface for roles collection
- */
+/** Interface for roles collection */
 public interface RolesRepository extends MongoRepository<RoleData, ObjectId>, QuerydslPredicateExecutor<RoleData> {
 
 	/**
@@ -35,5 +33,4 @@ public interface RolesRepository extends MongoRepository<RoleData, ObjectId>, Qu
 	 * @return {@link RoleData}
 	 */
 	RoleData findByRoleName(String roleName);
-
 }

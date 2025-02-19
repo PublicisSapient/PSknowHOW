@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.rbac.accessrequests.rest;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,7 +47,6 @@ import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
 
 /**
  * @author anamital
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class AccessRequestsControllerTest {
@@ -67,9 +64,7 @@ public class AccessRequestsControllerTest {
 	@Mock
 	private UserTokenDeletionService userTokenDeletionService;
 
-	/**
-	 * method includes preprocesses for test cases
-	 */
+	/** method includes preprocesses for test cases */
 	@Before
 	public void before() {
 		testUsername = "user1";
@@ -112,9 +107,7 @@ public class AccessRequestsControllerTest {
 		testAccessRequestsData.setRoles(roles);
 	}
 
-	/**
-	 * method includes post processes for test cases
-	 */
+	/** method includes post processes for test cases */
 	@After
 	public void after() {
 		mockMvc = null;
@@ -126,9 +119,10 @@ public class AccessRequestsControllerTest {
 
 	/**
 	 * method to test GET /accessrequests restPoint ;
-	 * 
+	 *
+	 * <p>
 	 * Get all access requests
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -140,7 +134,7 @@ public class AccessRequestsControllerTest {
 	/**
 	 * method to test GET /accessrequests/user/{username} restPoint ; Get access
 	 * requests created by username
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -152,7 +146,7 @@ public class AccessRequestsControllerTest {
 	/**
 	 * method to test GET /accessrequests/status/{status} restPoint ; Get access
 	 * requests with current status
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -165,38 +159,38 @@ public class AccessRequestsControllerTest {
 	/**
 	 * method to test GET /accessrequests/{id} restPoint ; Get access request with
 	 * id
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
 	public void testGetAccessRequestById() throws Exception {
-		mockMvc.perform(
-				MockMvcRequestBuilders.get("/accessrequests/" + testId).contentType(MediaType.APPLICATION_JSON_VALUE))
+		mockMvc
+				.perform(MockMvcRequestBuilders.get("/accessrequests/" + testId).contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
 
 	/**
 	 * method to test PUT /accessrequests/{id} restPoint ; Modify access request
 	 * with id
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
 	public void testModifyAccessRequest() throws Exception {
 
-		mockMvc.perform(MockMvcRequestBuilders.put("/accessrequests/" + testId)
-				.content(mapper.writeValueAsString(testAccessRequestsData))
-				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
-
+		mockMvc
+				.perform(MockMvcRequestBuilders.put("/accessrequests/" + testId)
+						.content(mapper.writeValueAsString(testAccessRequestsData)).contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
 	}
 
 	/**
 	 * create ProjectsForAccessRequest object
-	 * 
+	 *
 	 * @param projectName
-	 *            projectName
+	 *          projectName
 	 * @param projectId
-	 *            projectId
+	 *          projectId
 	 * @return object
 	 */
 	private ProjectsForAccessRequest createProjectsForAccessRequest(String projectName, String projectId) {
@@ -205,5 +199,4 @@ public class AccessRequestsControllerTest {
 		par.setProjectId(projectId);
 		return par;
 	}
-
 }

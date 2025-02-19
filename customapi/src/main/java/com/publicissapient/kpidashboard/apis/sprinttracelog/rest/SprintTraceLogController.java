@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.sprinttracelog.rest;
 
-import com.publicissapient.kpidashboard.apis.sprinttracelog.service.SprintTraceLogService;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +25,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.sprinttracelog.service.SprintTraceLogService;
 
 @RestController
 @RequestMapping("/activeIteration")
@@ -39,5 +40,4 @@ public class SprintTraceLogController {
 		ServiceResponse response = sprintTraceLogService.getActiveSprintFetchStatus(sprintId);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
-
 }

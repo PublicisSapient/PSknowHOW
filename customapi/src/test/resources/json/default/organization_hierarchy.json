@@ -1,0 +1,34 @@
+[
+  {
+    "_id" : "6376325b6e296184616be442",
+    "nodeId" : "hierarchyLevelOne_unique_001",
+    "nodeName" : "Sample One Value",
+    "nodeDisplayName" : "Sample One Value",
+    "hierarchyLevelId" : "hierarchyLevelOne",
+    "parentId" : ""
+  },
+  {
+    "_id" : "6376325b6e296184616be441",
+    "nodeId" : "hierarchyLevelTwo_unique_001",
+    "nodeName" : "Sample Two Value",
+    "nodeDisplayName" : "Sample Two Value",
+    "hierarchyLevelId" : "hierarchyLevelTwo",
+    "parentId" : "hierarchyLevelOne_unique_001"
+  },
+  {
+    "_id" : "6376325b6e296184616be440",
+    "nodeId" : "hierarchyLevelThree_unique_001",
+    "nodeName" : "Sample Three Value",
+    "nodeDisplayName" : "Sample Three Value",
+    "hierarchyLevelId" : "hierarchyLevelThree",
+    "parentId" : "hierarchyLevelTwo_unique_001"
+  },
+  {
+    "_id" : "6376325b6e296184616be43f",
+    "nodeId" : "project_unique_004",
+    "nodeName" : "Test Project",
+    "nodeDisplayName" : "Test Project",
+    "hierarchyLevelId" : "project",
+    "parentId" : "hierarchyLevelThree_unique_001"
+  }
+]

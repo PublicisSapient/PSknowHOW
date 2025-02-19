@@ -33,9 +33,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * Data count used for response of all the kpis.
- */
+/** Data count used for response of all the kpis. */
 @SuppressWarnings("PMD.TooManyFields")
 @Data
 @Builder
@@ -72,7 +70,7 @@ public class DataCount implements Serializable {
 	private String endDate;
 	private String kpiGroup;
 	private String url;
-	private String createdDate;// epic progress sorting
+	private String createdDate; // epic progress sorting
 
 	private List<String> sprintIds;
 	private List<String> sprintNames;
@@ -80,12 +78,12 @@ public class DataCount implements Serializable {
 	private String groupBy;
 	private String maturity;
 	private transient Object maturityValue;
-	//dora dashboard
+	// dora dashboard
 	private transient Object aggregationValue;
 	private transient Object lineValue;
 
 	private transient Map<String, Object> subfilterValues;
-	private String graphType;// for non-clustered bar and line graph
+	private String graphType; // for non-clustered bar and line graph
 
 	private List<DataValue> dataValue; // for multiple line graph
 	private transient Object size; // horizontal stacked bar graph
@@ -94,9 +92,9 @@ public class DataCount implements Serializable {
 	 * Instantiates a new Data count.
 	 *
 	 * @param data
-	 *            the data
+	 *          the data
 	 * @param count
-	 *            the count
+	 *          the count
 	 */
 	public DataCount(String data, Integer count) {
 		this.data = data;
@@ -107,9 +105,9 @@ public class DataCount implements Serializable {
 	 * Instantiates a new Data count.
 	 *
 	 * @param data
-	 *            the data
+	 *          the data
 	 * @param value
-	 *            the value
+	 *          the value
 	 */
 	public DataCount(String data, Object value) {
 		this.data = data;
@@ -118,13 +116,13 @@ public class DataCount implements Serializable {
 
 	/**
 	 * Instantiates a drill down data count
-	 * 
+	 *
 	 * @param subFilter
-	 *            the subFilter
+	 *          the subFilter
 	 * @param value
-	 *            the value
+	 *          the value
 	 * @param drillDown
-	 *            the drillDown
+	 *          the drillDown
 	 */
 	public DataCount(String subFilter, Object value, Object drillDown) {
 		this.subFilter = subFilter;
@@ -136,13 +134,13 @@ public class DataCount implements Serializable {
 	 * Instantiates a drill down data count
 	 *
 	 * @param subFilter
-	 *            the subFilter
+	 *          the subFilter
 	 * @param value
-	 *            the value
+	 *          the value
 	 * @param size
-	 *            the size
+	 *          the size
 	 * @param drillDown
-	 *            the drill down
+	 *          the drill down
 	 */
 	public DataCount(String subFilter, Object value, Object size, Object drillDown) {
 		this.subFilter = subFilter;
@@ -155,11 +153,11 @@ public class DataCount implements Serializable {
 	 * Instantiates a new Data count.
 	 *
 	 * @param data
-	 *            the data
+	 *          the data
 	 * @param priority
-	 *            the priority
+	 *          the priority
 	 * @param value
-	 *            the value
+	 *          the value
 	 */
 	public DataCount(String data, String priority, Object value) {
 		this.data = data;
@@ -168,27 +166,33 @@ public class DataCount implements Serializable {
 	}
 
 	/**
-	 *
-	 * @param data the data
-	 * @param maturity maturity
-	 * @param maturityValue maturity value
-	 * @param value value
+	 * @param data
+	 *          the data
+	 * @param maturity
+	 *          maturity
+	 * @param maturityValue
+	 *          maturity value
+	 * @param value
+	 *          value
 	 */
 	public DataCount(String data, String maturity, Object maturityValue, Object value) {
 		this.data = data;
 		this.maturity = maturity;
 		this.maturityValue = maturityValue;
 		this.value = value;
-
 	}
 
 	/**
-	 *
-	 * @param data data
-	 * @param maturity maturity
-	 * @param maturityValue maturity value
-	 * @param value value
-	 * @param aggregationValue aggregation Value
+	 * @param data
+	 *          data
+	 * @param maturity
+	 *          maturity
+	 * @param maturityValue
+	 *          maturity value
+	 * @param value
+	 *          value
+	 * @param aggregationValue
+	 *          aggregation Value
 	 */
 	public DataCount(String data, String maturity, Object maturityValue, Object value, Object aggregationValue) {
 		this.data = data;

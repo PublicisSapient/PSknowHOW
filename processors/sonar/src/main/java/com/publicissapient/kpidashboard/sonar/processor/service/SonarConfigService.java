@@ -18,18 +18,15 @@
 
 package com.publicissapient.kpidashboard.sonar.processor.service;
 
-
 import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.common.util.PropertyUtils;
 import com.publicissapient.kpidashboard.sonar.config.SonarConfig;
 
-/**
- * Service for trimming property file.
- *
- */
+/** Service for trimming property file. */
 @Service
 public class SonarConfigService {
 
@@ -38,12 +35,9 @@ public class SonarConfigService {
 	@Autowired
 	private PropertyUtils propertyUtils;
 
-	/**
-	 * Update setting object.
-	 */
+	/** Update setting object. */
 	@PostConstruct
 	public void updateSettingsObject() {
 		propertyUtils.trimProps(sonarConfig.getClass().getDeclaredFields(), sonarConfig);
 	}
-
 }

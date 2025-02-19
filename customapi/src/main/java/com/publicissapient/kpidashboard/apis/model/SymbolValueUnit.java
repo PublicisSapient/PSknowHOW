@@ -21,11 +21,9 @@ package com.publicissapient.kpidashboard.apis.model;
 public class SymbolValueUnit {
 	/**
 	 * This is response for jira custom dashboard api service.
-	 * 
+	 *
 	 * @author pkum34
-	 * 
 	 */
-
 	private String symbol;
 
 	private String value;
@@ -35,7 +33,6 @@ public class SymbolValueUnit {
 	private String trend;
 
 	/**
-	 * 
 	 * @return symbol
 	 */
 	public String getSymbol() {
@@ -44,7 +41,7 @@ public class SymbolValueUnit {
 
 	/**
 	 * Sets symbol
-	 * 
+	 *
 	 * @param symbol
 	 */
 	public void setSymbol(String symbol) {
@@ -52,7 +49,6 @@ public class SymbolValueUnit {
 	}
 
 	/**
-	 * 
 	 * @return value
 	 */
 	public String getValue() {
@@ -61,7 +57,7 @@ public class SymbolValueUnit {
 
 	/**
 	 * Sets value
-	 * 
+	 *
 	 * @param value
 	 */
 	public void setValue(String value) {
@@ -69,7 +65,6 @@ public class SymbolValueUnit {
 	}
 
 	/**
-	 * 
 	 * @return unit
 	 */
 	public String getUnit() {
@@ -78,7 +73,7 @@ public class SymbolValueUnit {
 
 	/**
 	 * Sets unit
-	 * 
+	 *
 	 * @param unit
 	 */
 	public void setUnit(String unit) {
@@ -86,7 +81,6 @@ public class SymbolValueUnit {
 	}
 
 	/**
-	 * 
 	 * @return trend
 	 */
 	public String getTrend() {
@@ -95,11 +89,10 @@ public class SymbolValueUnit {
 
 	/**
 	 * Sets trend
-	 * 
+	 *
 	 * @param trend
 	 */
 	public void setTrend(String trend) {
 		this.trend = trend;
 	}
-
 }

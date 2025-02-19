@@ -1,9 +1,10 @@
 package com.publicissapient.kpidashboard.jira.model;
 
+import org.bson.types.ObjectId;
+
 import com.atlassian.jira.rest.client.api.domain.Issue;
 
 import lombok.Data;
-import org.bson.types.ObjectId;
 
 @Data
 public class ReadData {
@@ -12,5 +13,4 @@ public class ReadData {
 	private String boardId;
 	private boolean isSprintFetch;
 	private ObjectId processorId;
-
 }

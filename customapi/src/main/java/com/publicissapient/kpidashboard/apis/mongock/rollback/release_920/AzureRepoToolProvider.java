@@ -49,5 +49,4 @@ public class AzureRepoToolProvider {
 
 		mongoTemplate.getCollection("repo_tools_provider").insertOne(document);
 	}
-
 }

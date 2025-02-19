@@ -18,13 +18,10 @@
 
 package com.publicissapient.kpidashboard.common.util;
 
-import javax.xml.bind.DatatypeConverter;
-
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -32,9 +29,9 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-/**
- * Handles Encryption for the applications.
- */
+import javax.xml.bind.DatatypeConverter;
+
+/** Handles Encryption for the applications. */
 public final class Encryption {
 
 	private static final String ALGO = "AES";
@@ -49,12 +46,12 @@ public final class Encryption {
 	 *
 	 * @return the string key
 	 * @throws EncryptionException
-	 *             the encryption exception
+	 *           the encryption exception
 	 */
 	public static String getStringKey() throws EncryptionException {
 		SecretKey key = null;
 		try {
-			 key = KeyGenerator.getInstance(ALGO).generateKey();
+			key = KeyGenerator.getInstance(ALGO).generateKey();
 		} catch (NoSuchAlgorithmException e) {
 			throw new EncryptionException("Cannot generate a secret key" + '\n' + e.getMessage(), e);
 		}
@@ -65,7 +62,7 @@ public final class Encryption {
 	 * Gets aes encryption key.
 	 *
 	 * @param key
-	 *            the key
+	 *          the key
 	 * @return the aes encryption key
 	 */
 	private static SecretKey getAesEncryptionKey(String key) {
@@ -84,7 +81,7 @@ public final class Encryption {
 	 * To byte array byte [ ].
 	 *
 	 * @param str
-	 *            the str
+	 *          the str
 	 * @return the byte [ ]
 	 */
 	private static byte[] toByteArray(String str) {
@@ -95,28 +92,28 @@ public final class Encryption {
 	 * Encrypts plainText in AES using the secret key
 	 *
 	 * @param plainText
-	 *            the plain text
+	 *          the plain text
 	 * @param key
-	 *            the key
+	 *          the key
 	 * @return string
 	 * @throws NoSuchPaddingException
-	 *             the no such padding exception
+	 *           the no such padding exception
 	 * @throws NoSuchAlgorithmException
-	 *             the no such algorithm exception
+	 *           the no such algorithm exception
 	 * @throws BadPaddingException
-	 *             the bad padding exception
+	 *           the bad padding exception
 	 * @throws IllegalBlockSizeException
-	 *             the illegal block size exception
+	 *           the illegal block size exception
 	 * @throws InvalidKeyException
-	 *             the invalid key exception
+	 *           the invalid key exception
 	 */
 	public static String aesEncryptString(String plainText, String key) throws NoSuchPaddingException,
 			NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException, InvalidKeyException {
 		SecretKey secKey = getAesEncryptionKey(key);
 
 		// AES defaults to AES/CBC/PKCS5Padding in Java 7
-		 Cipher aesCipher = Cipher.getInstance(DEFAULT_MODE_AND_PADDING_SCHEME); // NOSONAR
-		 aesCipher.init(Cipher.ENCRYPT_MODE, secKey);
+		Cipher aesCipher = Cipher.getInstance(DEFAULT_MODE_AND_PADDING_SCHEME); // NOSONAR
+		aesCipher.init(Cipher.ENCRYPT_MODE, secKey);
 		byte[] byteCipherText = aesCipher.doFinal(plainText.getBytes());
 		return bytesToHex(byteCipherText);
 	}
@@ -125,27 +122,27 @@ public final class Encryption {
 	 * Aes decrypt string string.
 	 *
 	 * @param byteCipherText
-	 *            the byte cipher text
+	 *          the byte cipher text
 	 * @param key
-	 *            the key
+	 *          the key
 	 * @return the string
 	 * @throws NoSuchPaddingException
-	 *             the no such padding exception
+	 *           the no such padding exception
 	 * @throws NoSuchAlgorithmException
-	 *             the no such algorithm exception
+	 *           the no such algorithm exception
 	 * @throws InvalidKeyException
-	 *             the invalid key exception
+	 *           the invalid key exception
 	 * @throws BadPaddingException
-	 *             the bad padding exception
+	 *           the bad padding exception
 	 * @throws IllegalBlockSizeException
-	 *             the illegal block size exception
+	 *           the illegal block size exception
 	 */
 	public static String aesDecryptString(String byteCipherText, String key) throws GeneralSecurityException {
 		SecretKey secKey = getAesEncryptionKey(key);
 		Cipher aesCipher;
 		try {
 			// Use AES/CBC/PKCS5Padding instead of the default algorithm and padding scheme
-			aesCipher = Cipher.getInstance(DEFAULT_MODE_AND_PADDING_SCHEME);// NOSONAR
+			aesCipher = Cipher.getInstance(DEFAULT_MODE_AND_PADDING_SCHEME); // NOSONAR
 			aesCipher.init(Cipher.DECRYPT_MODE, secKey);
 			byte[] byteCipherString = toByteArray(byteCipherText);
 			byte[] bytePlainText = aesCipher.doFinal(byteCipherString);
@@ -153,7 +150,5 @@ public final class Encryption {
 		} catch (GeneralSecurityException e) {
 			throw new GeneralSecurityException("Could not retrieve AES cipher", e);
 		}
-
 	}
-
 }

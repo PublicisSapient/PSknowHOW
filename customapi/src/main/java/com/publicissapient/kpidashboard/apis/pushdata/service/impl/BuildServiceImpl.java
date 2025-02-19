@@ -57,7 +57,6 @@ public class BuildServiceImpl {
 	PushDataValidationServiceImpl pushDataValidationService;
 
 	/**
-	 *
 	 * @param basicProjectConfigId
 	 * @param buildsList
 	 * @param buildList
@@ -76,20 +75,20 @@ public class BuildServiceImpl {
 				Map<String, String> errorMap = createErrorMap(pushBuild);
 				if (MapUtils.isNotEmpty(errorMap)) {
 					failedRecords.getAndIncrement();
-					log.error("Errors in build for jobNumber " + pushBuild.getNumber() + " jobName "
-							+ pushBuild.getJobName() + " are ", errorMap);
+					log.error(
+							"Errors in build for jobNumber " + pushBuild.getNumber() + " jobName " + pushBuild.getJobName() + " are ",
+							errorMap);
 					pushErrorData.setErrors(errorMap);
 				} else {
 					// if no errors are present in the input job then it will create Build List
-					buildList.add(createBuild(basicProjectConfigId, pushBuild,
-							checkExisitingJob(pushBuild, basicProjectConfigId)));
+					buildList
+							.add(createBuild(basicProjectConfigId, pushBuild, checkExisitingJob(pushBuild, basicProjectConfigId)));
 				}
 				pushDataDetails.add(createTraceLog(pushErrorData));
 				buildErrorList.add(pushErrorData);
 			});
 		}
 		return failedRecords.get();
-
 	}
 
 	private PushDataDetail createTraceLog(PushErrorData pushErrorData) {
@@ -107,7 +106,7 @@ public class BuildServiceImpl {
 
 	/**
 	 * validation data and creating error map for each validation
-	 * 
+	 *
 	 * @param pushBuild
 	 * @return
 	 */
@@ -129,14 +128,14 @@ public class BuildServiceImpl {
 
 	/**
 	 * check existing job on the basis of jobName/jobNumber/basicprojectConfigId
-	 * 
+	 *
 	 * @param pushBuild
 	 * @param basicProjectConfigId
 	 * @return
 	 */
 	private Build checkExisitingJob(PushBuild pushBuild, ObjectId basicProjectConfigId) {
-		return buildRepository.findByNumberAndBuildJobAndBasicProjectConfigId(pushBuild.getNumber(),
-				pushBuild.getJobName(), basicProjectConfigId);
+		return buildRepository.findByNumberAndBuildJobAndBasicProjectConfigId(pushBuild.getNumber(), pushBuild.getJobName(),
+				basicProjectConfigId);
 	}
 
 	protected void saveBuilds(List<Build> buildList) {
@@ -160,5 +159,4 @@ public class BuildServiceImpl {
 				DateUtil.TIME_FORMAT));
 		return build;
 	}
-
 }

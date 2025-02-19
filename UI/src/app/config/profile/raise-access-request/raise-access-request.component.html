@@ -46,5 +46,5 @@
 <div class="form-footer">
   <button pButton pRipple label="Submit" icon="pi pi-save" class="p-button p-button-success p-button-raised"
     (click)="submitRequest()"
-    [disabled]="(roleSelected && !!requestData['role'] && requestData['role'] === 'ROLE_SUPERADMIN')? false: (this.roleSelected && !!this.requestData['accessNode'] && this.requestData['accessNode']['accessItems'] && this.requestData['accessNode']['accessItems'].length > 0)? false: true"></button>
+    [disabled]="(this.roleSelected && !!this.requestData['accessNode'] && this.requestData['accessNode']['accessItems'] && this.requestData['accessNode']['accessItems'].length > 0)? false: true"></button>
 </div>

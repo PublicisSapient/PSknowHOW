@@ -29,10 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents the Excel Data for KPIs
- */
-
+/** Represents the Excel Data for KPIs */
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -490,10 +487,9 @@ public class KPIExcelData {
 	@JsonProperty("Author")
 	private String author;
 
-	@JsonProperty( "PR Review Time")
+	@JsonProperty("PR Review Time")
 	private String prReviewTime;
 
 	@JsonProperty("PR Status")
 	private String prStatus;
-
 }

@@ -462,6 +462,14 @@ describe('UploadComponent', () => {
       totalRegressionTestCases: new FormControl(''),
     });
 
+    const nativeElement = fixture.nativeElement;
+    nativeElement.innerHTML = `
+      <div class="horizontal-tabs">
+        <button class="btn-tab pi-scrum-button"></button>
+        <button class="btn-tab pi-kanban-button btn-active"></button>
+      </div>
+    `;
+
     fixture.detectChanges();
   }));
 
@@ -730,6 +738,58 @@ describe('UploadComponent', () => {
 
   });
 
+  it('should add active class to Scrum button and remove from Kanban button', () => {
+    component.addActiveToTab();
+
+    const scrumButton = document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button');
+    const kanbanButton = document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button');
+
+    expect(scrumButton?.classList.contains('btn-active')).toBe(true);
+    expect(kanbanButton?.classList.contains('btn-active')).toBe(false);
+  });
+
+  it('should activate Scrum and deactivate Kanban', () => {
+    component.kanbanActivation('scrum');
+
+    const scrumButton = document.querySelector('.pi-scrum-button');
+    const kanbanButton = document.querySelector('.pi-kanban-button');
+
+    expect(scrumButton?.classList.contains('btn-active')).toBe(true);
+    expect(kanbanButton?.classList.contains('btn-active')).toBe(false);
+    expect(component.kanban).toBe(false);
+  });
+
+  it('should activate Kanban and deactivate Scrum', () => {
+    component.kanbanActivation('kanban');
+
+    const scrumButton = document.querySelector('.pi-scrum-button');
+    const kanbanButton = document.querySelector('.pi-kanban-button');
+
+    expect(scrumButton?.classList.contains('btn-active')).toBe(false);
+    expect(kanbanButton?.classList.contains('btn-active')).toBe(true);
+    expect(component.kanban).toBe(true);
+  });
+
+  it('should reset properties on activation', () => {
+    component.kanbanActivation('kanban');
+
+    expect(component.startDate).toBe('');
+    expect(component.endDate).toBe('');
+    expect(component.executionDate).toBe('');
+    expect(component.capacityErrorMessage).toBe('');
+    expect(component.testExecutionErrorMessage).toBe('');
+    expect(component.isCapacitySaveDisabled).toBe(true);
+    expect(component.isTestExecutionSaveDisabled).toBe(true);
+    expect(component.loader).toBe(true);
+    expect(component.tableLoader).toBe(true);
+    expect(component.noData).toBe(false);
+    expect(component.testExecutionKanbanData).toEqual([]);
+    expect(component.testExecutionScrumData).toEqual([]);
+    expect(component.capacityKanbanData).toEqual([]);
+    expect(component.capacityScrumData).toEqual([]);
+    expect(component.projectDetails).toEqual({});
+    expect(component.selectedProjectBaseConfigId).toBe('');
+  });
 
 
   it('should get test execution data of a selected project', () => {

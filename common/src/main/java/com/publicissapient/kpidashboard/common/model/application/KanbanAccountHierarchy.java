@@ -34,9 +34,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The type Kanban account hierarchy.
- */
+/** The type Kanban account hierarchy. */
 @Data
 @Builder
 @Getter
@@ -45,10 +43,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Document(collection = "kanban_account_hierarchy")
 public class KanbanAccountHierarchy extends BasicModel implements Serializable {
-	/**
-	 * 
-	 */
+	/** */
 	private static final long serialVersionUID = 1L;
+
 	private String nodeId;
 	private String nodeName;
 	private String labelName;
@@ -69,13 +66,12 @@ public class KanbanAccountHierarchy extends BasicModel implements Serializable {
 			return false;
 		}
 		KanbanAccountHierarchy other = (KanbanAccountHierarchy) obj;
-		if (obj instanceof KanbanAccountHierarchy && this.nodeId.equals(other.nodeId)
-				&& (null == this.path || this.path.equals(other.path))
-				&& (null == this.beginDate || this.beginDate.equals(other.beginDate))
-				&& (null == this.endDate || this.endDate.equals(other.endDate))
-				&& (null == this.releaseState || this.releaseState.equals(other.releaseState))) {
+		if (obj instanceof KanbanAccountHierarchy && this.nodeId.equals(other.nodeId) &&
+				(null == this.path || this.path.equals(other.path)) &&
+				(null == this.beginDate || this.beginDate.equals(other.beginDate)) &&
+				(null == this.endDate || this.endDate.equals(other.endDate)) &&
+				(null == this.releaseState || this.releaseState.equals(other.releaseState))) {
 			isEqual = true;
-
 		}
 		return isEqual;
 	}

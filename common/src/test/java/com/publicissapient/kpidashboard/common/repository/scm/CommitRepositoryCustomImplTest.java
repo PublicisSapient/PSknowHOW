@@ -32,19 +32,17 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.MongoConverter;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /*
 author @shi6
@@ -62,10 +60,9 @@ public class CommitRepositoryCustomImplTest {
 	public void testFindCommitList() {
 		// Set up test data
 		Document connection = new Document("httpUrl", "http://example.com").append("baseUrl", "http://baseurl.com");
-		Document projectToolConfigProcessorItemDocument = new Document("_id", "123")
-				.append("basicProjectConfigId", "456").append("toolName", "SampleTool").append("branch", "main")
-				.append("repoSlug", "sample-repo").append("repositoryName", "Sample Repository")
-				.append("processorItemList", Arrays.asList("item1", "item2"))
+		Document projectToolConfigProcessorItemDocument = new Document("_id", "123").append("basicProjectConfigId", "456")
+				.append("toolName", "SampleTool").append("branch", "main").append("repoSlug", "sample-repo")
+				.append("repositoryName", "Sample Repository").append("processorItemList", Arrays.asList("item1", "item2"))
 				.append("connection", Arrays.asList(connection));
 
 		List<Document> documents = Arrays.asList(projectToolConfigProcessorItemDocument);
@@ -101,5 +98,4 @@ public class CommitRepositoryCustomImplTest {
 		// Additional assertions or verifications based on the actual logic of the
 		// method
 	}
-
 }

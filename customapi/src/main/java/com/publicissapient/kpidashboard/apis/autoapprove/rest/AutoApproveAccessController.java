@@ -1,7 +1,6 @@
 package com.publicissapient.kpidashboard.apis.autoapprove.rest;
 
 import java.util.Arrays;
-
 import javax.validation.Valid;
 
 import org.bson.types.ObjectId;
@@ -52,12 +51,12 @@ public class AutoApproveAccessController {
 		AutoApproveAccessConfig autoAccessApprovalData = autoApproveService.getAutoApproveConfig();
 		if (autoAccessApprovalData == null) {
 			log.info("No roles found for auto approval in db");
-			return ResponseEntity.status(HttpStatus.OK).body(
-					new ServiceResponse(false, "auto approval not configured", Arrays.asList(autoAccessApprovalData)));
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(false, "auto approval not configured", Arrays.asList(autoAccessApprovalData)));
 		}
 		log.info("Fetched roles for auto access successfully");
-		return ResponseEntity.status(HttpStatus.OK).body(
-				new ServiceResponse(true, "Found all roles for auto approval", Arrays.asList(autoAccessApprovalData)));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new ServiceResponse(true, "Found all roles for auto approval", Arrays.asList(autoAccessApprovalData)));
 	}
 
 	@PutMapping("/{id}")
@@ -69,8 +68,8 @@ public class AutoApproveAccessController {
 
 		if (!ObjectId.isValid(id)) {
 			log.info("Id not valid");
-			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false,
-					"access_request@" + id + " does not exist", Arrays.asList(autoAcessDTO)));
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(false, "access_request@" + id + " does not exist", Arrays.asList(autoAcessDTO)));
 		}
 
 		AutoApproveAccessConfig autoApproveData = autoApproveService.modifyAutoApprovConfigById(id, autoApproveRole);

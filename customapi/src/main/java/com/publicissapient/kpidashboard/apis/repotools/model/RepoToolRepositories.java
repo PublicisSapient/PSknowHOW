@@ -28,24 +28,25 @@ import lombok.Data;
 @Data
 public class RepoToolRepositories {
 
-    private String name;
-    private String repository;
-    private String repositoryName;
-    private double average;
-    @JsonProperty("commit_count")
-    private long commitCount;
-    private double repositoryGrade;
-    private List<IndividualCommitsCount> individualCommitsCount;
-    private List<Branches> branchesCommitsCount;
-    private List<Branches> branches;
-    private Map<String, Double> mergeRequestsPT;
-    private String filteredBranch;
-    private double repositoryReworkRateGrade;
-    private double innovationRatePercentageRepo;
-    private int mergeRequestsNumber;
-    private double repoDefectMergeRequestPercentage;
-    private double repoRevertRatePercentage;
-    private double revertRateGrade;
-    private double repositoryPercentage;
+	private String name;
+	private String repository;
+	private String repositoryName;
+	private double average;
 
+	@JsonProperty("commit_count")
+	private long commitCount;
+
+	private double repositoryGrade;
+	private List<IndividualCommitsCount> individualCommitsCount;
+	private List<Branches> branchesCommitsCount;
+	private List<Branches> branches;
+	private Map<String, Double> mergeRequestsPT;
+	private String filteredBranch;
+	private double repositoryReworkRateGrade;
+	private double innovationRatePercentageRepo;
+	private int mergeRequestsNumber;
+	private double repoDefectMergeRequestPercentage;
+	private double repoRevertRatePercentage;
+	private double revertRateGrade;
+	private double repositoryPercentage;
 }

@@ -20,7 +20,6 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
  * Utility class for rest api call request/response
  *
  * @author hiren babariya
- *
  */
 @Component
 public class RestAPIUtils {
@@ -51,9 +50,9 @@ public class RestAPIUtils {
 	 * Creates HTTP Headers.
 	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @param password
-	 *            the password
+	 *          the password
 	 * @return HttpHeaders the http header
 	 */
 	public HttpHeaders getHeaders(String username, String password) {
@@ -78,12 +77,11 @@ public class RestAPIUtils {
 	 * Creates HTTP Headers.
 	 *
 	 * @param header
-	 *            http header
-	 *
+	 *          http header
 	 * @param key
-	 *            key
+	 *          key
 	 * @param value
-	 *            value
+	 *          value
 	 * @return HttpHeaders the http header
 	 */
 	public HttpHeaders addHeaders(HttpHeaders header, String key, String value) {
@@ -98,9 +96,9 @@ public class RestAPIUtils {
 	 * Converts json Array to string response body.
 	 *
 	 * @param responseBody
-	 *            the api response body string
+	 *          the api response body string
 	 * @param key
-	 *            the project key
+	 *          the project key
 	 * @return the string data
 	 */
 	public JSONArray convertJSONArrayFromResponse(String responseBody, String key) throws ParseException {
@@ -113,9 +111,9 @@ public class RestAPIUtils {
 	 * Converts String to json objects.
 	 *
 	 * @param jsonData
-	 *            the json object
+	 *          the json object
 	 * @param key
-	 *            the project key
+	 *          the project key
 	 * @return the string data
 	 */
 	public String convertToString(JSONObject jsonData, String key) {

@@ -75,13 +75,27 @@ public class SonarControllerRTest {
 	@Test
 	public void getSonarKPIMetricReturnsValue() throws Exception {
 		// @formatter:off
-		String request = "{\n" + "  \"level\": 3,\n" + "  \"ids\": [\n" + "    \"OPRO Sprint 71_12138_10304_PR\",\n"
-				+ "    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ], " + "  \"kpiList\": [\n" + "    {\n"
-				+ "      \"id\": \"5b753628d42937acd035b7ef\",\n" + "      \"kpiId\": \"kpi38\",\n"
-				+ "      \"kpiName\": \"Sonar Violations\",\n" + "      \"isDeleted\": \"False\",\n"
-				+ "      \"kpiCategory\": \"Quality\",\n" + "      \"kpiUnit\": \"SQALE Rating\",\n"
-				+ "      \"kpiSource\": \"Sonar\",\n" + "      \"maxValue\": \"\",\n"
-				+ "      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ]" + "}";
+		String request =
+				"{\n"
+						+ "  \"level\": 3,\n"
+						+ "  \"ids\": [\n"
+						+ "    \"OPRO Sprint 71_12138_10304_PR\",\n"
+						+ "    \"OPRO Sprint 72_12139_10304_PR\"\n"
+						+ "  ], "
+						+ "  \"kpiList\": [\n"
+						+ "    {\n"
+						+ "      \"id\": \"5b753628d42937acd035b7ef\",\n"
+						+ "      \"kpiId\": \"kpi38\",\n"
+						+ "      \"kpiName\": \"Sonar Violations\",\n"
+						+ "      \"isDeleted\": \"False\",\n"
+						+ "      \"kpiCategory\": \"Quality\",\n"
+						+ "      \"kpiUnit\": \"SQALE Rating\",\n"
+						+ "      \"kpiSource\": \"Sonar\",\n"
+						+ "      \"maxValue\": \"\",\n"
+						+ "      \"chartType\": \"gaugeChart\"\n"
+						+ "    }\n"
+						+ "  ]"
+						+ "}";
 		// @formatter:on
 
 		List<KpiElement> kpiElementList = new ArrayList<>();
@@ -95,30 +109,35 @@ public class SonarControllerRTest {
 		when(sonarService.process(Mockito.any())).thenReturn(kpiElementList);
 		mockMvc.perform(post("/sonar/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
-
 	}
 
 	@Test
 	public void getSonarKPIMetricReturns400() throws Exception {
 		// @formatter:off
-		String request = "{\n" + "  \"level\": 3,\n" + "  \"ids\": [\n" + "    \"OPRO Sprint 71_12138_10304_PR\",\n"
-				+ "    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
+		String request =
+				"{\n"
+						+ "  \"level\": 3,\n"
+						+ "  \"ids\": [\n"
+						+ "    \"OPRO Sprint 71_12138_10304_PR\",\n"
+						+ "    \"OPRO Sprint 72_12139_10304_PR\"\n"
+						+ "  ],\n"
+						+ "  \"kpiList\": []\n"
+						+ "}";
 		// @formatter:on
 
 		mockMvc.perform(post("/sonar/kpi").contentType(MediaType.APPLICATION_JSON).content(request)).andDo(print())
 				.andExpect(status().isBadRequest());
-
 	}
 
 	@Test
 	public void getSonarKPIMetricKanbanReturnsValue() throws Exception {
 
-		String request = "{\n" + "  \"level\": 2,\n" + "  \"ids\": [\n" + "    \"PR\",\n" + "    \"10304_PR\"\n"
-				+ "  ], " + "  \"kpiList\": [\n" + "    {\n" + "      \"id\": \"5b753628d42937acd035b7ef\",\n"
-				+ "      \"kpiId\": \"kpi64\",\n" + "      \"kpiName\": \"Sonar Violations Kanban\",\n"
-				+ "      \"isDeleted\": \"False\",\n" + "      \"kpiCategory\": \"Quality\",\n"
-				+ "      \"kpiUnit\": \"SQALE Rating\",\n" + "      \"kpiSource\": \"SonarKanban\",\n"
-				+ "      \"maxValue\": \"\",\n" + "      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ]" + "}";
+		String request = "{\n" + "  \"level\": 2,\n" + "  \"ids\": [\n" + "    \"PR\",\n" + "    \"10304_PR\"\n" + "  ], " +
+				"  \"kpiList\": [\n" + "    {\n" + "      \"id\": \"5b753628d42937acd035b7ef\",\n" +
+				"      \"kpiId\": \"kpi64\",\n" + "      \"kpiName\": \"Sonar Violations Kanban\",\n" +
+				"      \"isDeleted\": \"False\",\n" + "      \"kpiCategory\": \"Quality\",\n" +
+				"      \"kpiUnit\": \"SQALE Rating\",\n" + "      \"kpiSource\": \"SonarKanban\",\n" +
+				"      \"maxValue\": \"\",\n" + "      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ]" + "}";
 
 		KpiRequest req = new KpiRequest();
 		req.setLevel(0);
@@ -138,13 +157,18 @@ public class SonarControllerRTest {
 	@Test
 	public void getSonarKPIMetricKanbanReturns400() throws Exception {
 		// @formatter:off
-		String request = "{\n" + "  \"level\": 3,\n" + "  \"ids\": [\n" + "    \"OPRO Sprint 71_12138_10304_PR\",\n"
-				+ "    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
+		String request =
+				"{\n"
+						+ "  \"level\": 3,\n"
+						+ "  \"ids\": [\n"
+						+ "    \"OPRO Sprint 71_12138_10304_PR\",\n"
+						+ "    \"OPRO Sprint 72_12139_10304_PR\"\n"
+						+ "  ],\n"
+						+ "  \"kpiList\": []\n"
+						+ "}";
 		// @formatter:on
 
-		mockMvc.perform(post("/sonarkanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
-				.andDo(print()).andExpect(status().isBadRequest());
-
+		mockMvc.perform(post("/sonarkanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request)).andDo(print())
+				.andExpect(status().isBadRequest());
 	}
-
 }

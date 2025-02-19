@@ -17,15 +17,16 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1220;
 
-import io.mongock.api.annotations.ChangeUnit;
-import io.mongock.api.annotations.Execution;
-import io.mongock.api.annotations.RollbackExecution;
+import java.util.Arrays;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
-import java.util.Arrays;
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
 
 /**
  * @author kunkambl
@@ -55,5 +56,4 @@ public class SprintVelocityMaturityUpdate {
 		update.set("calculateMaturity", false);
 		mongoTemplate.updateFirst(query, update, "kpi_master");
 	}
-
 }

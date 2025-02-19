@@ -20,13 +20,13 @@ package com.publicissapient.kpidashboard.common.model.userboardconfig;
 import java.util.List;
 
 import com.publicissapient.kpidashboard.common.model.application.Filters;
+
 import lombok.Data;
 
 /**
  * DTO of board
- * 
- * @author narsingh9
  *
+ * @author narsingh9
  */
 @Data
 public class BoardDTO {

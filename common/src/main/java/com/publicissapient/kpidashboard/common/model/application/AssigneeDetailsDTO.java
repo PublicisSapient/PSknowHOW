@@ -52,5 +52,4 @@ public class AssigneeDetailsDTO {
 		}
 		return false;
 	}
-
 }

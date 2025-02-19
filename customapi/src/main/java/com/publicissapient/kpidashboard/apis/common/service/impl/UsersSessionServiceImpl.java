@@ -49,11 +49,11 @@ public class UsersSessionServiceImpl implements UsersSessionService {
 	 * Method to create user login history info
 	 *
 	 * @param userInfo
-	 *            user info
+	 *          user info
 	 * @param status
-	 *            event status
+	 *          event status
 	 * @param event
-	 *            authentication event
+	 *          authentication event
 	 * @return user login history
 	 */
 	@Override
@@ -74,13 +74,13 @@ public class UsersSessionServiceImpl implements UsersSessionService {
 	 * Method to get last logout of user
 	 *
 	 * @param username
-	 *            username
+	 *          username
 	 * @return last login time
 	 */
 	@Override
 	public LocalDateTime getLastLogoutTimeOfUser(String username) {
-		UsersSession lastLogout = usersSessionRepository
-				.findTopByUserNameAndEventOrderByTimeStampDesc(username, AuthenticationEvent.LOGOUT);
+		UsersSession lastLogout = usersSessionRepository.findTopByUserNameAndEventOrderByTimeStampDesc(username,
+				AuthenticationEvent.LOGOUT);
 		return lastLogout != null ? lastLogout.getTimeStamp() : null;
 	}
 
@@ -88,9 +88,9 @@ public class UsersSessionServiceImpl implements UsersSessionService {
 	 * Audit logout.
 	 *
 	 * @param userName
-	 *            the userName
+	 *          the userName
 	 * @param status
-	 *            the status {@link Status}
+	 *          the status {@link Status}
 	 */
 	@Override
 	public void auditLogout(String userName, Status status) {
@@ -100,5 +100,4 @@ public class UsersSessionServiceImpl implements UsersSessionService {
 			this.createUsersSessionInfo(userinfo, AuthenticationEvent.LOGOUT, status);
 		}
 	}
-
 }

@@ -27,18 +27,18 @@ import org.springframework.data.repository.CrudRepository;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarDetails;
 
-/**
- * Repository for {@link SonarDetails} data.
- */
+/** Repository for {@link SonarDetails} data. */
 public interface SonarDetailsRepository
-		extends CrudRepository<SonarDetails, ObjectId>, QuerydslPredicateExecutor<SonarDetails> {
+		extends
+			CrudRepository<SonarDetails, ObjectId>,
+			QuerydslPredicateExecutor<SonarDetails> {
 
 	/**
 	 * Finds the {@link SonarDetails} data point for a list of
 	 * {@link ProcessorItem}.
 	 *
 	 * @param processorItemIdList
-	 *            processor item id list
+	 *          processor item id list
 	 * @return a {@link SonarDetails}
 	 */
 	List<SonarDetails> findByProcessorItemIdIn(List<ObjectId> processorItemIdList);
@@ -48,16 +48,16 @@ public interface SonarDetailsRepository
 	 * {@link ProcessorItem}.
 	 *
 	 * @param processorItemId
-	 *            processor item id
+	 *          processor item id
 	 * @return a {@link SonarDetails}
 	 */
 	SonarDetails findByProcessorItemId(ObjectId processorItemId);
 
 	/**
 	 * delete all documents with matching ids
-	 * 
+	 *
 	 * @param processorItemIds
-	 *            processor item id
+	 *          processor item id
 	 */
 	void deleteByProcessorItemIdIn(List<ObjectId> processorItemIds);
 }

@@ -189,13 +189,12 @@ public class BambooClientBuildImplTest {
 	@Test
 	public void verifyBasicAuth() throws Exception {
 		HttpHeaders headers = bambooClientBuild.createHeaders("Aladdin:open sesame");
-		assertEquals("verifyBasicAuth", "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==",
-				headers.getFirst(HttpHeaders.AUTHORIZATION));
+		assertEquals("verifyBasicAuth", "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==", headers.getFirst(HttpHeaders.AUTHORIZATION));
 	}
 
 	@Test
 	public void verifyAuthCredentials() throws Exception {
-		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@SuppressWarnings({"rawtypes", "unchecked"})
 		HttpEntity headers = new HttpEntity(bambooClientBuild.createHeaders(DOES_MATTER));
 		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class)))
 				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
@@ -218,53 +217,70 @@ public class BambooClientBuildImplTest {
 
 	@Test
 	public void verifyGetLogUrl() throws Exception {
-		@SuppressWarnings({ "unchecked", "rawtypes" })
+		@SuppressWarnings({"unchecked", "rawtypes"})
 		HttpEntity headers = new HttpEntity(bambooClientBuild.createHeaders(DOES_MATTER));
 		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class)))
 				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 		bambooClientBuild.getLog(HTTP_BAMBOO_COM, BAMBOO_SAMPLE_SERVER_PLAN, true);
-		verify(restClient).exchange(URI.create(HTTP_BAMBOO_COM + "/consoleText"), HttpMethod.GET, headers,
-				String.class);
+		verify(restClient).exchange(URI.create(HTTP_BAMBOO_COM + "/consoleText"), HttpMethod.GET, headers, String.class);
 	}
 
 	@Test
-	public void instanceJobsEmptyResponseReturnsEmptyMap() throws MalformedURLException, ParseException {
-		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET),
-				ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
-						.thenReturn(new ResponseEntity<>("{\"plans\":{\"plan\":[]}}", HttpStatus.OK));
-		Map<ObjectId, Set<Build>> jobs = bambooClientBuild.getJobsFromServer(BAMBOO_SAMPLE_BRANCH, proBasicConfig);
+	public void instanceJobsEmptyResponseReturnsEmptyMap()
+			throws MalformedURLException, ParseException {
+		when(restClient.exchange(
+						ArgumentMatchers.any(URI.class),
+						eq(HttpMethod.GET),
+						ArgumentMatchers.any(HttpEntity.class),
+						eq(String.class)))
+				.thenReturn(new ResponseEntity<>("{\"plans\":{\"plan\":[]}}", HttpStatus.OK));
+		Map<ObjectId, Set<Build>> jobs =
+				bambooClientBuild.getJobsFromServer(BAMBOO_SAMPLE_BRANCH, proBasicConfig);
 		assertThat("instanceJobsEmptyResponseReturnsEmptyMap", jobs.size(), is(0));
 	}
 
 	@Test
 	public void instanceJobsTestReturnsMapForBranch() throws Exception {
 		when(restClient.exchange(
-				eq(URI.create("http://does:matter@xyz/rest/api/latest/plan/HDEP-AST/branch.json?max-result=2000")),
-				eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
-						.thenReturn(new ResponseEntity<>("{\"plans\":{\"plan\":[]}}", HttpStatus.OK));
-//		when(settings.getDockerLocalHostIP()).thenReturn("someIp");
-		Map<ObjectId, Set<Build>> jobs = bambooClientBuild.getJobsFromServer(BAMBOO_SAMPLE_BRANCH, proBasicConfig);
+						eq(
+								URI.create(
+										"http://does:matter@xyz/rest/api/latest/plan/HDEP-AST/branch.json?max-result=2000")),
+						eq(HttpMethod.GET),
+						ArgumentMatchers.any(HttpEntity.class),
+						eq(String.class)))
+				.thenReturn(new ResponseEntity<>("{\"plans\":{\"plan\":[]}}", HttpStatus.OK));
+		//		when(settings.getDockerLocalHostIP()).thenReturn("someIp");
+		Map<ObjectId, Set<Build>> jobs =
+				bambooClientBuild.getJobsFromServer(BAMBOO_SAMPLE_BRANCH, proBasicConfig);
 		assertThat("instanceJobsTestReturnsMap", jobs.size(), is(0));
 	}
 
 	@Test
 	public void buildDetailsEmptyJson() throws Exception {
-		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET),
-				ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
-						.thenReturn(new ResponseEntity<>("{}", HttpStatus.OK));
-		Build build = bambooClientBuild.getBuildDetailsFromServer(HTTP_SERVER_JOB_JOB2_2, "https://xyz.com/bamboo/",
-				BAMBOO_SAMPLE_SERVER_PLAN);
+		when(restClient.exchange(
+						ArgumentMatchers.any(URI.class),
+						eq(HttpMethod.GET),
+						ArgumentMatchers.any(HttpEntity.class),
+						eq(String.class)))
+				.thenReturn(new ResponseEntity<>("{}", HttpStatus.OK));
+		Build build =
+				bambooClientBuild.getBuildDetailsFromServer(
+						HTTP_SERVER_JOB_JOB2_2, "https://xyz.com/bamboo/", BAMBOO_SAMPLE_SERVER_PLAN);
 		assertNull("buildDetailsEmptyJson", build);
 	}
 
 	@Test
 	public void buildDetailsFull1() throws Exception {
-		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET),
-				ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
-						.thenReturn(new ResponseEntity<>(getJson("buildDetails_full.json"), HttpStatus.OK));
+		when(restClient.exchange(
+						ArgumentMatchers.any(URI.class),
+						eq(HttpMethod.GET),
+						ArgumentMatchers.any(HttpEntity.class),
+						eq(String.class)))
+				.thenReturn(new ResponseEntity<>(getJson("buildDetails_full.json"), HttpStatus.OK));
 		when(settings.isSaveLog()).thenReturn(true);
-		Build build = bambooClientBuild.getBuildDetailsFromServer(HTTP_SERVER_JOB_JOB2_2, "https://xyz.com/bamboo",
-				BAMBOO_SAMPLE_SERVER_PLAN);
+		Build build =
+				bambooClientBuild.getBuildDetailsFromServer(
+						HTTP_SERVER_JOB_JOB2_2, "https://xyz.com/bamboo", BAMBOO_SAMPLE_SERVER_PLAN);
 
 		assertThat("buildDetailsFull getTimestamp", build.getTimestamp(), notNullValue());
 		assertThat("buildDetailsFull getNumber", build.getNumber(), is("15"));
@@ -273,17 +289,20 @@ public class BambooClientBuildImplTest {
 		assertThat("buildDetailsFull getEndTime", build.getEndTime(), is(1472119653736L));
 		assertThat("buildDetailsFull getDuration", build.getDuration(), is(143193L));
 		assertThat("buildDetailsFull getBuildStatus", build.getBuildStatus(), is(BuildStatus.SUCCESS));
-
 	}
 
 	@Test
 	public void buildDetailsFull2() throws Exception {
-		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET),
-				ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
-						.thenReturn(new ResponseEntity<>(getJson("buildDetails_full.json"), HttpStatus.OK));
+		when(restClient.exchange(
+						ArgumentMatchers.any(URI.class),
+						eq(HttpMethod.GET),
+						ArgumentMatchers.any(HttpEntity.class),
+						eq(String.class)))
+				.thenReturn(new ResponseEntity<>(getJson("buildDetails_full.json"), HttpStatus.OK));
 		when(settings.isSaveLog()).thenReturn(true);
-		Build build = bambooClientBuild.getBuildDetailsFromServer(HTTP_SERVER_JOB_JOB2_2, "https://xyz.com/bamboo",
-				BAMBOO_SAMPLE_SERVER_PLAN);
+		Build build =
+				bambooClientBuild.getBuildDetailsFromServer(
+						HTTP_SERVER_JOB_JOB2_2, "https://xyz.com/bamboo", BAMBOO_SAMPLE_SERVER_PLAN);
 
 		assertThat("buildDetailsFull getTimestamp", build.getTimestamp(), notNullValue());
 		assertThat("buildDetailsFull getNumber", build.getNumber(), is("15"));
@@ -292,12 +311,10 @@ public class BambooClientBuildImplTest {
 		assertThat("buildDetailsFull getEndTime", build.getEndTime(), is(1472119653736L));
 		assertThat("buildDetailsFull getDuration", build.getDuration(), is(143193L));
 		assertThat("buildDetailsFull getBuildStatus", build.getBuildStatus(), is(BuildStatus.SUCCESS));
-
 	}
 
 	private String getJson(String fileName) throws IOException {
 		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
 		return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 	}
-
 }

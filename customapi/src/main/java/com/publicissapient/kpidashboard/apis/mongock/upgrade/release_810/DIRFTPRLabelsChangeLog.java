@@ -76,5 +76,4 @@ public class DIRFTPRLabelsChangeLog {
 	public void rollbackFieldMappingStructure() {
 		// provide rollback script
 	}
-
 }

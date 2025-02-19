@@ -25,5 +25,4 @@ public class RefreshAuditDetails {
 
 	private long refreshedOn;
 	private String refreshBy;
-
 }

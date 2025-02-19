@@ -18,11 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.repotools.model;
 
-import lombok.Data;
-
 import java.util.List;
+
+import lombok.Data;
 
 @Data
 public class RepoToolKpiBulkMetricResponse {
-    private List<List<RepoToolKpiMetricResponse>> values;
+	private List<List<RepoToolKpiMetricResponse>> values;
 }

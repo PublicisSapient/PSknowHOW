@@ -42,7 +42,6 @@ public class KpiColumnConfigDataFactory {
 	private ObjectMapper mapper;
 
 	private KpiColumnConfigDataFactory() {
-
 	}
 
 	public static KpiColumnConfigDataFactory newInstance(String filePath) {
@@ -79,7 +78,6 @@ public class KpiColumnConfigDataFactory {
 			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		}
-
 	}
 
 	public List<KpiColumnConfig> getKpiColumnConfigs() {

@@ -21,11 +21,10 @@ package com.publicissapient.kpidashboard.common.model.excel;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCapacity;
-import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCapacity;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
@@ -36,9 +35,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The type Kanban capacity.
- */
+/** The type Kanban capacity. */
 @Data
 @Builder
 @Getter
@@ -55,5 +52,4 @@ public class KanbanCapacity extends BasicModel {
 	private ObjectId basicProjectConfigId;
 	private List<AdditionalFilterCapacity> additionalFilterCapacityList;
 	private List<AssigneeCapacity> assigneeCapacity;
-
 }

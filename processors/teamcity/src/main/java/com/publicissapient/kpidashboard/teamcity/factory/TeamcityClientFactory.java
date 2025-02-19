@@ -25,10 +25,7 @@ import com.publicissapient.kpidashboard.teamcity.processor.adapter.TeamcityClien
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.impl.DefaultTeamcityClient;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.impl.Teamcity2Client;
 
-/**
- * Provides factory to create Teamcity Clients.
- *
- */
+/** Provides factory to create Teamcity Clients. */
 @Component
 public class TeamcityClientFactory {
 
@@ -45,25 +42,24 @@ public class TeamcityClientFactory {
 
 	/**
 	 * Provides instance of Teamcity client.
-	 * 
+	 *
 	 * @param client
-	 *            the required Teamcity client
+	 *          the required Teamcity client
 	 * @return returns the instance of Teamcity Client
 	 */
 	public TeamcityClient getTeamcityClient(String client) {
 		TeamcityClient temp = null;
 		switch (client == null ? "" : client) {
-		case TEAMCITY_CLIENT:
-			temp = teamcityClient;
-			break;
-		case TEAMCITY2_CLIENT:
-			temp = teamcity2Client;
-			break;
-		default:
-			temp = teamcityClient;
-			break;
+			case TEAMCITY_CLIENT :
+				temp = teamcityClient;
+				break;
+			case TEAMCITY2_CLIENT :
+				temp = teamcity2Client;
+				break;
+			default :
+				temp = teamcityClient;
+				break;
 		}
 		return temp;
 	}
-
 }

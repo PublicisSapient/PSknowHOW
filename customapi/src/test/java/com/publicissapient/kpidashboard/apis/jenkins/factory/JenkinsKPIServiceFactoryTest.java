@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.jenkins.factory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -93,5 +92,4 @@ public class JenkinsKPIServiceFactoryTest {
 			fail("Failed to access the private field: " + e.getMessage());
 		}
 	}
-
 }

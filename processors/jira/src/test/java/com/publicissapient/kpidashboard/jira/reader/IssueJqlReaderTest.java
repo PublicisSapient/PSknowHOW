@@ -152,9 +152,12 @@ public class IssueJqlReaderTest {
 		field.setAccessible(true);
 		field.set(targetObject, fieldValue);
 	}
+
 	@Test
 	public void testReadData() throws Exception {
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(anyString(), anyString()))
+		when(processorExecutionTraceLogRepo
+						.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(
+								anyString(), anyString()))
 				.thenReturn(pl);
 		when(jiraCommonService.fetchIssuesBasedOnJql(any(), any(), anyInt(), anyString()))
 				.thenReturn(issues);
@@ -225,7 +228,7 @@ public class IssueJqlReaderTest {
 	@Test
 	public void testFetchIssues() throws Exception {
 		issueJqlReader.projectConfFieldMapping = projectConfFieldMapping;
-		//doThrow(new Exception()).when(retryHelper).executeWithRetry(any());
+		// doThrow(new Exception()).when(retryHelper).executeWithRetry(any());
 		// Use reflection to access the private method
 		Method method = IssueJqlReader.class.getDeclaredMethod("fetchIssues", ProcessorJiraRestClient.class);
 		method.setAccessible(true); // Make the private method accessible
@@ -236,5 +239,4 @@ public class IssueJqlReaderTest {
 		// Add assertions based on your actual implementation
 		// Add additional assertions based on your actual implementation
 	}
-
 }

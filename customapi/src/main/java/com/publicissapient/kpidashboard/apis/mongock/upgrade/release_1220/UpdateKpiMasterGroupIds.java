@@ -11,9 +11,7 @@ import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 
-/**
- * prijain3
- */
+/** prijain3 */
 @ChangeUnit(id = "update_kpi_master_group_ids", order = "12204", author = "prijain3", systemVersion = "12.2.0")
 public class UpdateKpiMasterGroupIds {
 	private final MongoTemplate mongoTemplate;
@@ -28,12 +26,12 @@ public class UpdateKpiMasterGroupIds {
 	@Execution
 	public void execution() {
 		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection(KPI_MASTER);
-        //update KPI group ids
+		// update KPI group ids
 		changeFieldValue("kpi149", GROUP_ID, 4, kpiMaster);
 		changeFieldValue("kpi114", GROUP_ID, 5, kpiMaster);
-        changeFieldValue("kpi74", GROUP_ID, 5, kpiMaster);
-        changeFieldValue("kpi8", GROUP_ID, 30, kpiMaster);
-        changeFieldValue("kpi172", GROUP_ID, 30, kpiMaster);
+		changeFieldValue("kpi74", GROUP_ID, 5, kpiMaster);
+		changeFieldValue("kpi8", GROUP_ID, 30, kpiMaster);
+		changeFieldValue("kpi172", GROUP_ID, 30, kpiMaster);
 		changeFieldValue("kpi66", GROUP_ID, 31, kpiMaster);
 		changeFieldValue("kpi46", GROUP_ID, 1, kpiMaster);
 		changeFieldValue("kpi40", GROUP_ID, 1, kpiMaster);
@@ -89,7 +87,7 @@ public class UpdateKpiMasterGroupIds {
 
 	@RollbackExecution
 	public void rollback() {
-        MongoCollection<Document> kpiMaster = mongoTemplate.getCollection(KPI_MASTER);
+		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection(KPI_MASTER);
 		// update KPI group ids
 		changeFieldValue("kpi149", GROUP_ID, 16, kpiMaster);
 		changeFieldValue("kpi114", GROUP_ID, 4, kpiMaster);
@@ -147,13 +145,10 @@ public class UpdateKpiMasterGroupIds {
 		changeFieldValue("kpi159", GROUP_ID, 1, kpiMaster);
 		changeFieldValue("kpi65", GROUP_ID, 1, kpiMaster);
 		changeFieldValue("kpi169", GROUP_ID, 9, kpiMaster);
-
 	}
 
 	private void changeFieldValue(String kpiId, String field, Integer value, MongoCollection<Document> kpiMaster) {
 		kpiMaster.updateMany(new Document(KPI_ID, new Document("$in", List.of(kpiId))),
 				new Document("$set", new Document(field, value)));
 	}
-
-
 }

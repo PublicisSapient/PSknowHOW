@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,7 @@ import org.springframework.data.mongodb.core.query.Update;
 
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingStructureDataFactory;
+import com.publicissapient.kpidashboard.common.model.application.BaseFieldMappingStructure;
 import com.publicissapient.kpidashboard.common.model.application.ConfigurationHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingMeta;
@@ -53,8 +55,8 @@ class FieldMappingHelperTest {
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		scrumFieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		List<ConfigurationHistoryChangeLog> configurationHistoryChangeLogList = new ArrayList<>();
-		configurationHistoryChangeLogList.add(
-				new ConfigurationHistoryChangeLog("", "customField", "currentUser", LocalDateTime.now().toString()));
+		configurationHistoryChangeLogList
+				.add(new ConfigurationHistoryChangeLog("", "customField", "currentUser", LocalDateTime.now().toString()));
 		scrumFieldMapping.setHistorysprintName(configurationHistoryChangeLogList);
 		ConfigurationHistoryChangeLog configurationHistoryChangeLog = new ConfigurationHistoryChangeLog();
 		configurationHistoryChangeLog.setChangedTo("Customfield");
@@ -62,10 +64,8 @@ class FieldMappingHelperTest {
 		configurationHistoryChangeLog.setChangedBy("currentUser");
 		configurationHistoryChangeLog.setUpdatedOn(java.time.LocalDateTime.now().toString());
 		scrumFieldMapping.setHistoryrootCauseIdentifier(Arrays.asList(configurationHistoryChangeLog));
-		FieldMappingStructureDataFactory fieldMappingStructureDataFactory = FieldMappingStructureDataFactory
-				.newInstance();
+		FieldMappingStructureDataFactory fieldMappingStructureDataFactory = FieldMappingStructureDataFactory.newInstance();
 		fieldMappingStructureList = fieldMappingStructureDataFactory.getFieldMappingStructureList();
-
 	}
 
 	@Test
@@ -83,8 +83,8 @@ class FieldMappingHelperTest {
 	void testGetAccessibleFieldHistory() throws NoSuchFieldException, IllegalAccessException {
 		List<ConfigurationHistoryChangeLog> result = FieldMappingHelper.getAccessibleFieldHistory(scrumFieldMapping,
 				"sprintName");
-		ConfigurationHistoryChangeLog configurationHistoryChangeLog = new ConfigurationHistoryChangeLog("",
-				"customField", "currentUser", LocalDateTime.now().toString());
+		ConfigurationHistoryChangeLog configurationHistoryChangeLog = new ConfigurationHistoryChangeLog("", "customField",
+				"currentUser", LocalDateTime.now().toString());
 		List<ConfigurationHistoryChangeLog> configurationHistoryChangeLogList = new ArrayList<>();
 		configurationHistoryChangeLogList.add(configurationHistoryChangeLog);
 		Assertions.assertNull(result.get(0).getReleaseNodeId());
@@ -106,8 +106,8 @@ class FieldMappingHelperTest {
 
 	@Test
 	void testGetFieldMappingData() throws NoSuchFieldException, IllegalAccessException {
-		Object result = FieldMappingHelper.getFieldMappingData(scrumFieldMapping, FieldMapping.class, "sprintName",
-				null, false);
+		Object result = FieldMappingHelper.getFieldMappingData(scrumFieldMapping, FieldMapping.class, "sprintName", null,
+				false);
 		Assertions.assertEquals("customfield_12700", result);
 	}
 
@@ -141,8 +141,10 @@ class FieldMappingHelperTest {
 	@Test
 	void testGetNestedField() throws NoSuchFieldException, IllegalAccessException {
 		Object result = FieldMappingHelper.getNestedField(scrumFieldMapping, FieldMapping.class, "CustomField",
-				fieldMappingStructureList.stream().filter(fieldMappingStructure -> fieldMappingStructure.getFieldName()
-						.equalsIgnoreCase("rootCauseIdentifier")).toList().get(0));
+				fieldMappingStructureList.stream()
+						.filter(
+								fieldMappingStructure -> fieldMappingStructure.getFieldName().equalsIgnoreCase("rootCauseIdentifier"))
+						.toList().get(0));
 		Assertions.assertEquals("CustomField-customfield_19121", result);
 	}
 
@@ -172,7 +174,8 @@ class FieldMappingHelperTest {
 
 	@Test
 	void testSetFieldValue() throws IllegalAccessException {
-		FieldMappingHelper.setFieldValue(scrumFieldMapping, "fieldName", "value");
+		FieldMappingHelper.setFieldValue(scrumFieldMapping, "sprintName", "value");
+		FieldMappingHelper.setFieldValue(scrumFieldMapping, "fielName", "value");
 	}
 
 	@Test
@@ -207,17 +210,17 @@ class FieldMappingHelperTest {
 
 	@Test
 	void testSetMappingResponseWithGeneratedField() throws NoSuchFieldException, IllegalAccessException {
-		FieldMappingHelper.setMappingResponseWithGeneratedField(new FieldMappingResponse("fieldName", "originalValue",
-				"previousValue", List.of(new ConfigurationHistoryChangeLog("changedFrom", "changedTo", "changedBy",
-						"updatedOn", "releaseNodeId"))),
+		FieldMappingHelper.setMappingResponseWithGeneratedField(
+				new FieldMappingResponse("fieldName", "originalValue", "previousValue", List.of(
+						new ConfigurationHistoryChangeLog("changedFrom", "changedTo", "changedBy", "updatedOn", "releaseNodeId"))),
 				scrumFieldMapping);
 	}
 
 	@Test
 	void testSetFieldMappingResponse() throws NoSuchFieldException, IllegalAccessException {
-		FieldMappingHelper.setFieldMappingResponse(new FieldMappingResponse("sprintName", "originalValue",
-				"previousValue", List.of(new ConfigurationHistoryChangeLog("changedFrom", "changedTo", "changedBy",
-						"updatedOn", "releaseNodeId"))),
+		FieldMappingHelper.setFieldMappingResponse(
+				new FieldMappingResponse("sprintName", "originalValue", "previousValue", List.of(
+						new ConfigurationHistoryChangeLog("changedFrom", "changedTo", "changedBy", "updatedOn", "releaseNodeId"))),
 				scrumFieldMapping, null);
 	}
 
@@ -227,8 +230,8 @@ class FieldMappingHelperTest {
 		response.setFieldName("rootCauseIdentifier");
 		response.setOriginalValue("CustomField");
 		response.setPreviousValue("");
-		FieldMappingHelper.setNodeSpecificFields(fieldMappingStructureList.get(0), response, scrumFieldMapping,
-				"nodeId", null);
+		FieldMappingHelper.setNodeSpecificFields(fieldMappingStructureList.get(0), response, scrumFieldMapping, "nodeId",
+				null);
 	}
 
 	@Test
@@ -283,20 +286,18 @@ class FieldMappingHelperTest {
 
 	@Test
 	void testCreateHistoryChangeLog() {
-		ConfigurationHistoryChangeLog result = FieldMappingHelper
-				.createHistoryChangeLog(
-						new FieldMappingMeta(
-								List.of(new FieldMappingResponse("fieldName", "originalValue", "previousValue",
-										List.of(new ConfigurationHistoryChangeLog("changedFrom", "changedTo",
-												"changedBy", "updatedOn", "releaseNodeId")))),
-								List.of(new FieldMappingResponse("fieldName", "originalValue", "previousValue",
-										List.of(new ConfigurationHistoryChangeLog("changedFrom", "changedTo",
-												"changedBy", "updatedOn", "releaseNodeId")))),
-								"metaTemplateCode", "releaseNodeId"),
-						new FieldMappingResponse("fieldName", "originalValue", "previousValue",
-								List.of(new ConfigurationHistoryChangeLog("changedFrom", "changedTo", "changedBy",
-										"updatedOn", "releaseNodeId"))),
-						fieldMappingStructureList.get(0), "loggedInUser");
+		ConfigurationHistoryChangeLog result = FieldMappingHelper.createHistoryChangeLog(
+				new FieldMappingMeta(
+						List.of(new FieldMappingResponse("fieldName", "originalValue", "previousValue",
+								List.of(new ConfigurationHistoryChangeLog("changedFrom", "changedTo", "changedBy", "updatedOn",
+										"releaseNodeId")))),
+						List.of(new FieldMappingResponse("fieldName", "originalValue", "previousValue",
+								List.of(new ConfigurationHistoryChangeLog("changedFrom", "changedTo", "changedBy", "updatedOn",
+										"releaseNodeId")))),
+						"metaTemplateCode", "releaseNodeId"),
+				new FieldMappingResponse("fieldName", "originalValue", "previousValue", List.of(
+						new ConfigurationHistoryChangeLog("changedFrom", "changedTo", "changedBy", "updatedOn", "releaseNodeId"))),
+				fieldMappingStructureList.get(0), "loggedInUser");
 		Assertions.assertNull(result.getReleaseNodeId());
 	}
 
@@ -307,15 +308,14 @@ class FieldMappingHelperTest {
 		ConfigurationHistoryChangeLog result = FieldMappingHelper.createHistoryChangeLog(
 				new FieldMappingMeta(
 						List.of(new FieldMappingResponse("fieldName", "originalValue", "previousValue",
-								List.of(new ConfigurationHistoryChangeLog("changedFrom", "changedTo", "changedBy",
-										"updatedOn", "releaseNodeId")))),
+								List.of(new ConfigurationHistoryChangeLog("changedFrom", "changedTo", "changedBy", "updatedOn",
+										"releaseNodeId")))),
 						List.of(new FieldMappingResponse("fieldName", "originalValue", "previousValue",
-								List.of(new ConfigurationHistoryChangeLog("changedFrom", "changedTo", "changedBy",
-										"updatedOn", "releaseNodeId")))),
+								List.of(new ConfigurationHistoryChangeLog("changedFrom", "changedTo", "changedBy", "updatedOn",
+										"releaseNodeId")))),
 						"metaTemplateCode", "releaseNodeId"),
-				new FieldMappingResponse("fieldName", "originalValue", "previousValue",
-						List.of(new ConfigurationHistoryChangeLog("changedFrom", "changedTo", "changedBy", "updatedOn",
-								"releaseNodeId"))),
+				new FieldMappingResponse("fieldName", "originalValue", "previousValue", List.of(
+						new ConfigurationHistoryChangeLog("changedFrom", "changedTo", "changedBy", "updatedOn", "releaseNodeId"))),
 				fieldMappingStructure, "loggedInUser");
 		Assertions.assertEquals("releaseNodeId", result.getReleaseNodeId());
 	}
@@ -326,12 +326,11 @@ class FieldMappingHelperTest {
 		mappingResponse.setFieldName("startDateCountKPI150");
 		mappingResponse.setOriginalValue(17);
 		mappingResponse.setPreviousValue(0);
-		FieldMappingStructure startDateCountKPI150 = fieldMappingStructureList.stream().filter(
-				fieldMappingStructure -> fieldMappingStructure.getFieldName().equalsIgnoreCase("startDateCountKPI150"))
+		FieldMappingStructure startDateCountKPI150 = fieldMappingStructureList.stream()
+				.filter(fieldMappingStructure -> fieldMappingStructure.getFieldName().equalsIgnoreCase("startDateCountKPI150"))
 				.toList().get(0);
 		Update update = new Update();
-		FieldMappingHelper.setNodeSpecificFields(startDateCountKPI150, mappingResponse, scrumFieldMapping, "node1",
-				update);
+		FieldMappingHelper.setNodeSpecificFields(startDateCountKPI150, mappingResponse, scrumFieldMapping, "node1", update);
 		Assertions.assertNotNull(update);
 	}
 
@@ -341,8 +340,8 @@ class FieldMappingHelperTest {
 		mappingResponse.setFieldName("startDateCountKPI150");
 		mappingResponse.setOriginalValue(17);
 		mappingResponse.setPreviousValue(0);
-		FieldMappingStructure startDateCountKPI150 = fieldMappingStructureList.stream().filter(
-				fieldMappingStructure -> fieldMappingStructure.getFieldName().equalsIgnoreCase("startDateCountKPI150"))
+		FieldMappingStructure startDateCountKPI150 = fieldMappingStructureList.stream()
+				.filter(fieldMappingStructure -> fieldMappingStructure.getFieldName().equalsIgnoreCase("startDateCountKPI150"))
 				.toList().get(0);
 		ConfigurationHistoryChangeLog configurationHistoryChangeLog = new ConfigurationHistoryChangeLog();
 		configurationHistoryChangeLog.setChangedTo(78);
@@ -352,8 +351,87 @@ class FieldMappingHelperTest {
 		configurationHistoryChangeLog.setReleaseNodeId("node1");
 		scrumFieldMapping.setHistorystartDateCountKPI150(List.of(configurationHistoryChangeLog));
 		Update update = new Update();
-		FieldMappingHelper.setNodeSpecificFields(startDateCountKPI150, mappingResponse, scrumFieldMapping, "node1",
-				update);
+		FieldMappingHelper.setNodeSpecificFields(startDateCountKPI150, mappingResponse, scrumFieldMapping, "node1", update);
 		Assertions.assertNotNull(update);
+	}
+
+	@Test
+	void testNestedFieldsPresent() throws NoSuchFieldException, IllegalAccessException {
+		FieldMappingResponse response = new FieldMappingResponse();
+		response.setFieldName("jiraDevDueDateField");
+		response.setOriginalValue("original");
+
+		FieldMappingResponse nestedResponse = new FieldMappingResponse();
+		nestedResponse.setFieldName("jiraDevDueDateField");
+		nestedResponse.setOriginalValue("nestedValue");
+
+		List<FieldMappingResponse> responseList = Arrays.asList(nestedResponse);
+
+		BaseFieldMappingStructure nestedField = new BaseFieldMappingStructure();
+		nestedField.setFieldName("jiraDevDueDateField");
+		nestedField.setFilterGroup(Arrays.asList("Due Date"));
+
+		FieldMappingStructure mappingStructure = new FieldMappingStructure();
+		mappingStructure.setNestedFields(Arrays.asList(nestedField));
+
+		FieldMapping fieldMapping = new FieldMapping();
+
+		fieldMappingHelper.generateHistoryForNestedFields(responseList, response, mappingStructure, fieldMapping);
+
+		Assert.assertEquals("original", response.getOriginalValue());
+	}
+
+	@Test
+	void testNoNestedFields() throws NoSuchFieldException, IllegalAccessException {
+		FieldMappingResponse response = new FieldMappingResponse();
+		response.setOriginalValue("original");
+
+		FieldMappingStructure mappingStructure = new FieldMappingStructure();
+		mappingStructure.setNestedFields(new ArrayList<>()); // No nested fields
+
+		FieldMapping fieldMapping = new FieldMapping();
+
+		fieldMappingHelper.generateHistoryForNestedFields(new ArrayList<>(), response, mappingStructure, fieldMapping);
+
+		Assert.assertEquals("original", response.getOriginalValue());
+	}
+
+	@Test
+	void testNoMatchingNestedFields() throws NoSuchFieldException, IllegalAccessException {
+		FieldMappingResponse response = new FieldMappingResponse();
+		response.setFieldName("jiraDevDueDateField");
+		response.setOriginalValue("original");
+
+		BaseFieldMappingStructure nestedField = new BaseFieldMappingStructure();
+		nestedField.setFieldName("nestedField");
+		nestedField.setFilterGroup(Arrays.asList("nonMatchingFilter"));
+
+		FieldMappingStructure mappingStructure = new FieldMappingStructure();
+		mappingStructure.setNestedFields(Arrays.asList(nestedField));
+
+		FieldMapping fieldMapping = new FieldMapping();
+
+		fieldMappingHelper.generateHistoryForNestedFields(new ArrayList<>(), response, mappingStructure, fieldMapping);
+
+		Assert.assertEquals("original", response.getOriginalValue());
+	}
+
+	@Test
+	void testNullParameters() {
+		Assert.assertThrows(NullPointerException.class, () -> {
+			fieldMappingHelper.generateHistoryForNestedFields(null, null, null, null);
+		});
+	}
+
+	@Test
+	void testEmptyFieldMappingResponseList() throws NoSuchFieldException, IllegalAccessException {
+		FieldMappingResponse response = new FieldMappingResponse();
+		response.setOriginalValue("original");
+
+		FieldMappingStructure mappingStructure = new FieldMappingStructure();
+		FieldMapping fieldMapping = new FieldMapping();
+		fieldMappingHelper.generateHistoryForNestedFields(new ArrayList<>(), response, mappingStructure, fieldMapping);
+
+		Assert.assertEquals("original", response.getOriginalValue());
 	}
 }

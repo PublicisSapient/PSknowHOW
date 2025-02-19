@@ -92,8 +92,8 @@ public class FieldMappingController {
 			ServiceResponse response;
 			try {
 				FieldMapping fieldMapping = new FieldMapping();
-				boolean allfieldFound = fieldMappingService.convertToFieldMappingAndCheckIsFieldPresent(
-						fieldMappingMeta.getFieldMappingRequests(), fieldMapping);
+				boolean allfieldFound = fieldMappingService
+						.convertToFieldMappingAndCheckIsFieldPresent(fieldMappingMeta.getFieldMappingRequests(), fieldMapping);
 				fieldMappingService.addFieldMapping(projectToolConfigId, fieldMapping,
 						projectToolConfig.getBasicProjectConfigId());
 				if (!allfieldFound) {
@@ -152,8 +152,8 @@ public class FieldMappingController {
 			List<FieldMappingResponse> kpiSpecificFieldsAndHistory = new ArrayList<>();
 			if (!Objects.equals(kpi.getKpiId(), KPICode.INVALID.getKpiId())) {
 				try {
-					kpiSpecificFieldsAndHistory = fieldMappingService.getKpiSpecificFieldsAndHistory(kpi,
-							projectToolConfig, requestData);
+					kpiSpecificFieldsAndHistory = fieldMappingService.getKpiSpecificFieldsAndHistory(kpi, projectToolConfig,
+							requestData);
 				} catch (NoSuchFieldException | IllegalAccessException e) {
 					log.error("Field/ Class not found in FieldMapping collection");
 				}
@@ -166,7 +166,6 @@ public class FieldMappingController {
 				FieldMappingMeta fieldMappingMeta = new FieldMappingMeta(kpiSpecificFieldsAndHistory,
 						projectToolConfig.getMetadataTemplateCode());
 				response = new ServiceResponse(true, "field mappings", fieldMappingMeta);
-
 			}
 		}
 
@@ -213,22 +212,19 @@ public class FieldMappingController {
 	}
 
 	private boolean checkTool(ProjectToolConfig projectToolConfig) {
-		return (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)
-				|| projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.AZURE));
+		return (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA) ||
+				projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.AZURE));
 	}
 
 	private boolean checkCustomTemplateCode(ProjectToolConfig projectToolConfig) {
-		return projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM)
-				|| projectToolConfig.getMetadataTemplateCode()
-						.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN);
+		return projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM) ||
+				projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN);
 	}
 
 	private Optional<ProjectToolConfig> getProjectToolConfig(String projectToolConfigId) {
 		List<ProjectToolConfig> projectToolConfigs = (List<ProjectToolConfig>) configHelperService
 				.loadAllProjectToolConfig();
 		String finalProjectToolConfigId = projectToolConfigId;
-		return projectToolConfigs.stream().filter(t -> t.getId().toString().equals(finalProjectToolConfigId))
-				.findFirst();
+		return projectToolConfigs.stream().filter(t -> t.getId().toString().equals(finalProjectToolConfigId)).findFirst();
 	}
-
 }

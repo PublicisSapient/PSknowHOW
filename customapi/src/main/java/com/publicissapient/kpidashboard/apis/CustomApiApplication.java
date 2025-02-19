@@ -18,12 +18,10 @@
 
 package com.publicissapient.kpidashboard.apis;
 
-
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-
 import javax.net.ssl.SSLContext;
 
 import org.apache.hc.client5.http.classic.HttpClient;
@@ -59,21 +57,20 @@ import io.mongock.runner.springboot.EnableMongock;
 
 /**
  * CustomApiApplication class is the entry point of all Sprint boot application.
+ *
  * <p>
  * CustomApiApplication configuration and bootstrap
- * 
+ *
  * @author girpatha
  */
 @SpringBootApplication
 @EnableCaching
 @EnableMongock
-@EnableMongoRepositories(basePackages = { "com.publicissapient.**.repository" })
-@ComponentScan(basePackages = { "com.publicissapient.kpidashboard" })
+@EnableMongoRepositories(basePackages = {"com.publicissapient.**.repository"})
+@ComponentScan(basePackages = {"com.publicissapient.kpidashboard"})
 public class CustomApiApplication extends SpringBootServletInitializer {
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 
 	/**
 	 * This method run CustomApiApplication.run() because this method starts whole
@@ -90,12 +87,10 @@ public class CustomApiApplication extends SpringBootServletInitializer {
 		imageInsertor.insertDefaultImage();
 	}
 
-
-
 	/**
 	 * This method provide the instance of LocalValidatorFactoryBean which supports
 	 * Bean Validation 1.0 and 1.1
-	 * 
+	 *
 	 * @return Bean of Validator class
 	 */
 	@Bean
@@ -107,7 +102,7 @@ public class CustomApiApplication extends SpringBootServletInitializer {
 	 * This method define a MethodValidationPostProcessor bean so that the
 	 * annotations like @Validated could work and method level validation can be
 	 * done
-	 * 
+	 *
 	 * @return Bean of MethodValidationPostProcessor
 	 */
 	@Bean
@@ -122,34 +117,32 @@ public class CustomApiApplication extends SpringBootServletInitializer {
 	 *
 	 * @return RestTemplate RestTemplate
 	 * @throws KeyStoreException
-	 *             KeyStoreException
+	 *           KeyStoreException
 	 * @throws NoSuchAlgorithmException
-	 *             NoSuchAlgorithmException
+	 *           NoSuchAlgorithmException
 	 * @throws KeyManagementException
-	 *             KeyManagementException
+	 *           KeyManagementException
 	 */
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public RestTemplate restTemplate()  throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+	public RestTemplate restTemplate() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
 		final RestTemplate restTemplate = new RestTemplate();
 
 		SSLContext sslContext = SSLContextBuilder.create()
-				.loadTrustMaterial((X509Certificate[] certificateChain, String authType) -> true)  // <--- accepts each certificate
+				.loadTrustMaterial((X509Certificate[] certificateChain, String authType) -> true) // <--- accepts each
+				// certificate
 				.build();
 
 		Registry<ConnectionSocketFactory> socketRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
 				.register(URIScheme.HTTPS.getId(), new SSLConnectionSocketFactory(sslContext))
-				.register(URIScheme.HTTP.getId(), new PlainConnectionSocketFactory())
-				.build();
+				.register(URIScheme.HTTP.getId(), new PlainConnectionSocketFactory()).build();
 
 		HttpClient httpClient = HttpClientBuilder.create()
-				.setConnectionManager(new PoolingHttpClientConnectionManager(socketRegistry))
-				.setConnectionManagerShared(true)
+				.setConnectionManager(new PoolingHttpClientConnectionManager(socketRegistry)).setConnectionManagerShared(true)
 				.build();
 
 		ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		restTemplate.setRequestFactory(requestFactory);
 		return restTemplate;
 	}
-
 }

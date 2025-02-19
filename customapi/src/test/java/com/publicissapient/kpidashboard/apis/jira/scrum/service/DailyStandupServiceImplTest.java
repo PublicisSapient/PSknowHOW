@@ -128,7 +128,7 @@ public class DailyStandupServiceImplTest {
 		kpiRequest.setLabel("PROJECT");
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
-				.newInstance();
+				.newInstance("/json/default/project_hierarchy_filter_data.json");
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 
 		setMockProjectConfig();
@@ -152,7 +152,6 @@ public class DailyStandupServiceImplTest {
 		JiraIssueReleaseStatusDataFactory jiraIssueReleaseStatusDataFactory = JiraIssueReleaseStatusDataFactory
 				.newInstance("/json/default/jira_issue_release_status.json");
 		jiraReleasStatus = createJiraReleasStatus(jiraIssueReleaseStatusDataFactory.getJiraIssueReleaseStatusList());
-
 	}
 
 	private JiraIssueReleaseStatus createJiraReleasStatus(List<JiraIssueReleaseStatus> jiraIssueReleaseStatusList) {
@@ -185,7 +184,6 @@ public class DailyStandupServiceImplTest {
 		KpiElement kpiData = dailyStandupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 		assertNotNull(kpiData.getTrendValueList());
-
 	}
 
 	/*
@@ -220,7 +218,6 @@ public class DailyStandupServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	/*
@@ -261,14 +258,14 @@ public class DailyStandupServiceImplTest {
 			List<DailyStandupServiceImpl.UserWiseCardDetail> unassigned = trendValueList.stream()
 					.filter(issue -> issue.getRole().equalsIgnoreCase("Unassigned")).collect(Collectors.toList());
 			Assert.assertEquals(unassigned.size(), 5);
-			Assert.assertEquals(trendValueList.stream()
-					.filter(issue -> issue.getRole().equalsIgnoreCase(Role.TESTER.getRoleValue()))
-					.collect(Collectors.toList()).size(), 1);
+			Assert.assertEquals(
+					trendValueList.stream().filter(issue -> issue.getRole().equalsIgnoreCase(Role.TESTER.getRoleValue()))
+							.collect(Collectors.toList()).size(),
+					1);
 
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	/*
@@ -299,8 +296,7 @@ public class DailyStandupServiceImplTest {
 		capacityKpiData.setAssigneeCapacity(capacityList);
 		when(configHelperService.getToolItemMap()).thenReturn(setToolMapAzure());
 		when(capacityKpiDataRepository.findBySprintIDAndBasicProjectConfigId(any(), any())).thenReturn(capacityKpiData);
-		when(azureStateCategoryRepository.findByBasicProjectConfigId(anyString()))
-				.thenReturn(createAzureStateCategory());
+		when(azureStateCategoryRepository.findByBasicProjectConfigId(anyString())).thenReturn(createAzureStateCategory());
 		try {
 			KpiElement kpiElement = dailyStandupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
@@ -310,14 +306,14 @@ public class DailyStandupServiceImplTest {
 			List<DailyStandupServiceImpl.UserWiseCardDetail> unassigned = trendValueList.stream()
 					.filter(issue -> issue.getRole().equalsIgnoreCase("Unassigned")).collect(Collectors.toList());
 			Assert.assertEquals(unassigned.size(), 5);
-			Assert.assertEquals(trendValueList.stream()
-					.filter(issue -> issue.getRole().equalsIgnoreCase(Role.TESTER.getRoleValue()))
-					.collect(Collectors.toList()).size(), 1);
+			Assert.assertEquals(
+					trendValueList.stream().filter(issue -> issue.getRole().equalsIgnoreCase(Role.TESTER.getRoleValue()))
+							.collect(Collectors.toList()).size(),
+					1);
 
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	private AzureStateCategory createAzureStateCategory() {
@@ -378,5 +374,4 @@ public class DailyStandupServiceImplTest {
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
 		return toolMap;
 	}
-
 }

@@ -15,10 +15,15 @@ export class DecodeUrlGuard implements CanActivate {
         const decodedUrl = decodeURIComponent(state.url);
 
         // Compare decoded URL with the current state URL
-        if (state.url.length > 50 && state.url.indexOf('?stateFilters=') == -1) {
+        if (state.url.indexOf('stateFilters') != -1 && state.url.indexOf('?stateFilters=') == -1) {
             // If the decoded URL differs, navigate to the decoded URL
             this.router.navigateByUrl(decodedUrl, { replaceUrl: true });
             return false; // Prevent further navigation until the URL is corrected
+        }
+
+        // hack
+        if(state.url.indexOf('undefined') !== -1) {
+            return false;
         }
 
         // Allow navigation

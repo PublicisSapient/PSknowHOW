@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.auth.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,11 +37,10 @@ import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.common.exceptions.ApplicationException;
+import com.publicissapient.kpidashboard.common.service.NotificationService;
 
 /**
- * 
  * @author vijmishr1
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ForgotPasswordServiceImplTest {
@@ -65,9 +63,7 @@ public class ForgotPasswordServiceImplTest {
 	@InjectMocks
 	private ForgotPasswordServiceImpl forgotPasswordService;
 
-	/**
-	 * Test processForgotPassword with success result
-	 */
+	/** Test processForgotPassword with success result */
 	@Test
 	public void processForgotPasswordTestOK() {
 
@@ -84,9 +80,7 @@ public class ForgotPasswordServiceImplTest {
 		Assert.assertEquals(response.getUsername(), authentication.getUsername());
 	}
 
-	/**
-	 * Test processForgotPassword with no registered email
-	 */
+	/** Test processForgotPassword with no registered email */
 	@Test
 	public void processForgotPasswordTestNull() {
 
@@ -101,10 +95,7 @@ public class ForgotPasswordServiceImplTest {
 		Assert.assertNull(response);
 	}
 
-	/**
-	 * Test validate email token with valid token expiry date
-	 */
-
+	/** Test validate email token with valid token expiry date */
 	@Test
 	public void validateEmailTokenTestOk() {
 		String token = "abc-xyz";
@@ -114,13 +105,9 @@ public class ForgotPasswordServiceImplTest {
 		ResetPasswordTokenStatusEnum responseEnum = forgotPasswordService.validateEmailToken(token);
 		Assert.assertNotNull(responseEnum);
 		Assert.assertEquals(ResetPasswordTokenStatusEnum.VALID, responseEnum);
-
 	}
 
-	/**
-	 * Test validate email token with invalid token
-	 */
-
+	/** Test validate email token with invalid token */
 	@Test
 	public void validateEmailTokenTestNull() {
 		String token = "abc-xyz";
@@ -129,13 +116,9 @@ public class ForgotPasswordServiceImplTest {
 		ResetPasswordTokenStatusEnum responseEnum = forgotPasswordService.validateEmailToken(token);
 		Assert.assertNotNull(responseEnum);
 		Assert.assertEquals(ResetPasswordTokenStatusEnum.INVALID, responseEnum);
-
 	}
 
-	/**
-	 * Test validate email token with expired token
-	 */
-
+	/** Test validate email token with expired token */
 	@Test
 	public void validateEmailTokenTestExpiredToken() {
 		String token = "abc-xyz";
@@ -145,7 +128,6 @@ public class ForgotPasswordServiceImplTest {
 		ResetPasswordTokenStatusEnum responseEnum = forgotPasswordService.validateEmailToken(token);
 		Assert.assertNotNull(responseEnum);
 		Assert.assertEquals(ResetPasswordTokenStatusEnum.EXPIRED, responseEnum);
-
 	}
 
 	/*
@@ -172,7 +154,7 @@ public class ForgotPasswordServiceImplTest {
 
 	/**
 	 * Return exception when user not found
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test(expected = Exception.class)
@@ -193,7 +175,7 @@ public class ForgotPasswordServiceImplTest {
 
 	/**
 	 * Return exception when token is invalid
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test(expected = Exception.class)
@@ -267,5 +249,4 @@ public class ForgotPasswordServiceImplTest {
 			forgotPasswordService.resetPassword(updatedPasswordRequest);
 		});
 	}
-
 }

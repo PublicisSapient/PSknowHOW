@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 
@@ -15,8 +15,10 @@ export class RecentCommentsComponent {
   kpiObj: object = {};
   nodeChildName: string = '';
 
-  constructor(private httpService: HttpService, private sharedService: SharedService) { }
+  @ViewChild('commentsDialog') commentsDialog: ElementRef;
 
+  constructor(private httpService: HttpService, private sharedService: SharedService) { }
+  
   getRecentComments() {
     this.showSpinner = true;
     this.displayCommentModal = true;
@@ -42,7 +44,7 @@ export class RecentCommentsComponent {
     return filterData.filter((x) => x.nodeId == nodeId)[0]?.nodeName;
   }
 
-  createReqObj(){
+  createReqObj() {
     let filterApplyData: object = this.sharedService.sharedObject['filterApplyData'];
     let kpiList: Array<object> = this.sharedService.sharedObject['masterData']?.kpiList;
     this.selectedTab = this.sharedService.sharedObject['selectedTab'];
@@ -55,14 +57,14 @@ export class RecentCommentsComponent {
       "nodes": []
     }
 
-    if(this.selectedTab?.toLowerCase() == 'backlog'){
+    if (this.selectedTab?.toLowerCase() == 'backlog') {
       reqObj['nodeChildId'] = "";
     }
 
     kpiList.forEach(x => {
       this.kpiObj[x['kpiId']] = x['kpiName'];
     });
-    
+
     if (this.selectedTab?.toLowerCase() == 'iteration' || this.selectedTab?.toLowerCase() == 'release') {
       reqObj['nodes'] = [...filterData.filter(x => x.nodeId == filterApplyData?.['ids'][0])[0]?.parentId];
       this.nodeChildName = filterData.filter(x => x.nodeId == reqObj.nodeChildId)[0]?.nodeName;
@@ -70,5 +72,21 @@ export class RecentCommentsComponent {
       reqObj['nodes'] = [...filterApplyData?.['selectedMap']['project']];
     }
     return reqObj;
+  }
+
+  onDialogShow() {
+    setTimeout(() => {
+      const dialogElement = this.commentsDialog.nativeElement;
+      const focusableElements = dialogElement.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      
+      if (focusableElements.length > 0) {
+        (focusableElements[0] as HTMLElement).focus();
+      } else {
+        // If no focusable elements, focus on the dialog itself
+        dialogElement.focus();
+      }
+    });
   }
 }

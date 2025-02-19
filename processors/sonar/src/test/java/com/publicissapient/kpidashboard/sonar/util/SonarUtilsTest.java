@@ -31,9 +31,7 @@ public class SonarUtilsTest {
 		StringBuilder stringBuilder = new StringBuilder("Test message");
 		SonarUtils.addSpaceIfNeeded(stringBuilder);
 		Assert.assertEquals(' ', stringBuilder.toString().charAt(stringBuilder.length() - 1));
-
 	}
-
 
 	@Test
 	public void testFormatDuration() {
@@ -44,7 +42,6 @@ public class SonarUtilsTest {
 		String actual = SonarUtils.formatDuration(days, hours, minutes, isNegative);
 
 		Assert.assertEquals("1d", actual);
-
 	}
 
 	@Test
@@ -55,7 +52,6 @@ public class SonarUtilsTest {
 		boolean isNegative = false;
 		String actual = SonarUtils.formatDuration(days, hours, minutes, isNegative);
 		Assert.assertEquals("2d 3h", actual);
-
 	}
 
 	@Test
@@ -68,7 +64,6 @@ public class SonarUtilsTest {
 
 		String actual = SonarUtils.formatDuration(days, hours, minutes, isNegative);
 		Assert.assertEquals("3h 5min", actual);
-
 	}
 
 	@Test
@@ -81,6 +76,5 @@ public class SonarUtilsTest {
 
 		String actual = SonarUtils.formatDuration(days, hours, minutes, isNegative);
 		Assert.assertEquals("-3h 5min", actual);
-
 	}
 }

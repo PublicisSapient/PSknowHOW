@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application;//NOPMD
+package com.publicissapient.kpidashboard.common.model.application; // NOPMD
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,8 +26,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * @author shi6
- * for each node under "additional filter", saving the capacity of
+ * @author shi6 for each node under "additional filter", saving the capacity of
  *         each leaf
  */
 @Data
@@ -39,5 +38,4 @@ import lombok.Setter;
 public class LeafNodeCapacity {
 	private String additionalFilterId;
 	private Double additionalFilterCapacity;
-
 }

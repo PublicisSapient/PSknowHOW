@@ -22,6 +22,8 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,7 +33,6 @@ import lombok.Setter;
 
 /**
  * @author narsingh9
- *
  */
 @Data
 @Builder
@@ -39,13 +40,20 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProjectBasicConfigDTO {
 	private ObjectId id;
+	private String projectNodeId;
+
 	private String projectName;
+	private String projectDisplayName;
+
 	private String createdAt;
 	private String createdBy;
 	private String updatedAt;
 	private String updatedBy;
+
+	@Deprecated
 	private String consumerCreatedOn;
 	private boolean kanban;
 	private List<HierarchyValueDTO> hierarchy;
@@ -65,7 +73,7 @@ public class ProjectBasicConfigDTO {
 	 * set isKanban value
 	 *
 	 * @param isKanban
-	 *            boolean value
+	 *          boolean value
 	 */
 	public void setIsKanban(boolean isKanban) {
 		this.kanban = isKanban;

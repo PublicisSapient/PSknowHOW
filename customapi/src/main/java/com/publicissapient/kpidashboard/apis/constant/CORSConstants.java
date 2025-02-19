@@ -20,9 +20,8 @@ package com.publicissapient.kpidashboard.apis.constant;
 
 /**
  * Cors constants
- * 
+ *
  * @author anisingh4
- * 
  */
 public final class CORSConstants {
 

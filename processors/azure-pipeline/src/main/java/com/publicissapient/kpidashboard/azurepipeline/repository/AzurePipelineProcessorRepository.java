@@ -23,9 +23,7 @@ import org.springframework.stereotype.Repository;
 import com.publicissapient.kpidashboard.azurepipeline.model.AzurePipelineProcessor;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 
-/**
- * Processor repository for the AzurePipelineProcessor subclass.
- */
+/** Processor repository for the AzurePipelineProcessor subclass. */
 @Repository
 public interface AzurePipelineProcessorRepository extends ProcessorRepository<AzurePipelineProcessor> {
 }

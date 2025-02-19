@@ -33,9 +33,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents the details of code quality.
- */
+/** Represents the details of code quality. */
 @Getter
 @Setter
 @Builder
@@ -59,10 +57,9 @@ public class SonarDetails extends BasicModel {
 	 * Add metric.
 	 *
 	 * @param metric
-	 *            the metric
+	 *          the metric
 	 */
 	public void addMetric(SonarMetric metric) {
 		this.metrics.add(metric);
 	}
-
 }

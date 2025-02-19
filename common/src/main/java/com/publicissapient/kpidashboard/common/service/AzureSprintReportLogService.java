@@ -26,30 +26,30 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
 /**
  * AzureSprintReportLogService
- * 
+ *
  * @author shunaray
  */
 public interface AzureSprintReportLogService {
 	/**
 	 * Save Sprint Refresh Log
-	 * 
+	 *
 	 * @param sprintDetails
-	 *            sprintDetails
+	 *          sprintDetails
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @param refreshOn
-	 *            time of refresh
+	 *          time of refresh
 	 * @param refreshBy
-	 *            user who refreshed
+	 *          user who refreshed
 	 */
 	void saveSprintRefreshLog(SprintDetails sprintDetails, ObjectId basicProjectConfigId, long refreshOn,
 			String refreshBy);
 
 	/**
 	 * Get Sprint Refresh Logs
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return List of SprintRefreshLogDTO
 	 */
 	List<SprintRefreshLogDTO> getSprintRefreshLogs(ObjectId basicProjectConfigId);

@@ -20,9 +20,7 @@ package com.publicissapient.kpidashboard.apis.auth.exceptions;
 
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 
-/**
- * Can be thrown if user does not exists.
- */
+/** Can be thrown if user does not exists. */
 public class UserNotFoundException extends RuntimeException {
 
 	private static final long serialVersionUID = -8596676033217258687L;
@@ -33,12 +31,11 @@ public class UserNotFoundException extends RuntimeException {
 	 * Instantiates a new User not found exception.
 	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @param authType
-	 *            the auth type
+	 *          the auth type
 	 */
 	public UserNotFoundException(String username, AuthType authType) {
 		super(String.format(MESSAGE, username, authType.name()));
 	}
-
 }

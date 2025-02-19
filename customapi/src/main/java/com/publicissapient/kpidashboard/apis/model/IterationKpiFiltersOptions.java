@@ -39,5 +39,4 @@ import lombok.Setter;
 public class IterationKpiFiltersOptions {
 	private String filterType;
 	private Set<String> options;
-
 }

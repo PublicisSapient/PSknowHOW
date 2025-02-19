@@ -35,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
- *
  */
 @Service
 @Slf4j
@@ -46,9 +45,9 @@ public class JiraProcessorCacheEvictor {
 
 	/**
 	 * @param cacheEndPoint
-	 *            cacheEndPoint
+	 *          cacheEndPoint
 	 * @param cacheName
-	 *            cacheName
+	 *          cacheName
 	 * @return boolean
 	 */
 	public boolean evictCache(String cacheEndPoint, String cacheName) {
@@ -83,11 +82,11 @@ public class JiraProcessorCacheEvictor {
 
 	/**
 	 * @param cacheEndPoint
-	 *            cacheEndPoint
+	 *          cacheEndPoint
 	 * @param param1
-	 *            parameter 1
+	 *          parameter 1
 	 * @param param2
-	 *            parameter 2
+	 *          parameter 2
 	 * @return boolean
 	 */
 	public boolean evictCache(String cacheEndPoint, String param1, String param2) {
@@ -123,5 +122,4 @@ public class JiraProcessorCacheEvictor {
 		}
 		return cleaned;
 	}
-
 }

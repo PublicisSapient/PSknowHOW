@@ -55,17 +55,15 @@ public class ScrumHandleAzureIssueHistory {
 		if (key.trim().equalsIgnoreCase(AzureConstants.ASSIGNEE)) {
 			jiraHistoryChangeLog.setChangedFrom(handleAssigneeStr(value, OLD_VALUE));
 			jiraHistoryChangeLog.setChangedTo(handleAssigneeStr(value, NEW_VALUE));
-		}
-		else if (key.trim().equalsIgnoreCase(AzureConstants.WORKLOG)) {
+		} else if (key.trim().equalsIgnoreCase(AzureConstants.WORKLOG)) {
 			jiraHistoryChangeLog.setChangedFrom(convertToSeconds(value, OLD_VALUE));
 			jiraHistoryChangeLog.setChangedTo(convertToSeconds(value, NEW_VALUE));
-		}
-		else {
+		} else {
 			jiraHistoryChangeLog.setChangedFrom(handleStr(value, OLD_VALUE));
 			jiraHistoryChangeLog.setChangedTo(handleStr(value, NEW_VALUE));
 		}
-		jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.parse(AzureProcessorUtil.getFormattedDate(
-				AzureProcessorUtil.deodeUTF8String(changelogItem.getSystemChangedDate().getNewValue()))));
+		jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.parse(AzureProcessorUtil
+				.getFormattedDate(AzureProcessorUtil.deodeUTF8String(changelogItem.getSystemChangedDate().getNewValue()))));
 		return jiraHistoryChangeLog;
 	}
 
@@ -73,8 +71,7 @@ public class ScrumHandleAzureIssueHistory {
 		List<JiraHistoryChangeLog> fieldHistoryLog = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(updateValueList)) {
 			for (Value history : updateValueList) {
-				com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields changelogItem = history
-						.getFields();
+				com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields changelogItem = history.getFields();
 				if (changelogItem != null && changelogItem.getSystemState() != null) {
 					JiraHistoryChangeLog jiraHistoryChangeLog = new JiraHistoryChangeLog();
 					String oldValue = changelogItem.getSystemState().getOldValue() != null
@@ -85,7 +82,6 @@ public class ScrumHandleAzureIssueHistory {
 					jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.parse(AzureProcessorUtil.getFormattedDate(
 							AzureProcessorUtil.deodeUTF8String(changelogItem.getSystemChangedDate().getNewValue()))));
 					fieldHistoryLog.add(jiraHistoryChangeLog);
-
 				}
 			}
 		}
@@ -103,7 +99,6 @@ public class ScrumHandleAzureIssueHistory {
 			} else {
 				finalSprintPath = sprintPath.substring(sepPos + separator.length());
 			}
-
 		}
 		return finalSprintPath;
 	}
@@ -114,8 +109,7 @@ public class ScrumHandleAzureIssueHistory {
 
 		if (CollectionUtils.isNotEmpty(updateValueList)) {
 			for (Value history : updateValueList) {
-				com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields changelogItem = history
-						.getFields();
+				com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields changelogItem = history.getFields();
 				if (changelogItem != null && changelogItem.getSystemIterationPath() != null) {
 					JiraHistoryChangeLog jiraHistoryChangeLog = new JiraHistoryChangeLog();
 					String oldValue = changelogItem.getSystemIterationPath().getOldValue() != null
@@ -130,7 +124,6 @@ public class ScrumHandleAzureIssueHistory {
 							AzureProcessorUtil.deodeUTF8String(changelogItem.getSystemChangedDate().getNewValue()))));
 					fieldHistoryLog.add(jiraHistoryChangeLog);
 				}
-
 			}
 		}
 
@@ -138,9 +131,9 @@ public class ScrumHandleAzureIssueHistory {
 	}
 
 	private String parseStringToLocalDateTime(String date) {
-		return StringUtils.isEmpty(date) ? ""
-				: LocalDateTime.parse(AzureProcessorUtil.getFormattedDate(AzureProcessorUtil.deodeUTF8String(date)))
-						.toString();
+		return StringUtils.isEmpty(date)
+				? ""
+				: LocalDateTime.parse(AzureProcessorUtil.getFormattedDate(AzureProcessorUtil.deodeUTF8String(date))).toString();
 	}
 
 	private List<JiraHistoryChangeLog> getDueDateChangeLog(List<Value> changeLogList, FieldMapping fieldMapping,
@@ -149,8 +142,8 @@ public class ScrumHandleAzureIssueHistory {
 			String field = "";
 			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE))
 				field = AzureConstants.DUE_DATE;
-			else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
-					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
+			else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField()) &&
+					ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
 				field = fields.get(fieldMapping.getJiraDueDateCustomField()).toString();
 			}
 			return createDueDateChangeLogs(changeLogList, field);
@@ -162,19 +155,17 @@ public class ScrumHandleAzureIssueHistory {
 		List<JiraHistoryChangeLog> fieldHistoryLog = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(changeLogList)) {
 			for (Value history : changeLogList) {
-				com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields changelogItem = history
-						.getFields();
+				com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields changelogItem = history.getFields();
 				if (changelogItem != null) {
 					changelogItem.getAdditionalProperties().forEach((key, value) -> {
 						if (key.trim().equalsIgnoreCase(field)) {
 							JiraHistoryChangeLog jiraHistoryChangeLog = new JiraHistoryChangeLog();
-							jiraHistoryChangeLog.setChangedFrom(
-									parseStringToLocalDateTime(handleStr((Map<String, Object>) value, OLD_VALUE)));
-							jiraHistoryChangeLog.setChangedTo(
-									parseStringToLocalDateTime(handleStr((Map<String, Object>) value, NEW_VALUE)));
-							jiraHistoryChangeLog.setUpdatedOn(
-									LocalDateTime.parse(AzureProcessorUtil.getFormattedDate(AzureProcessorUtil
-											.deodeUTF8String(changelogItem.getSystemChangedDate().getNewValue()))));
+							jiraHistoryChangeLog
+									.setChangedFrom(parseStringToLocalDateTime(handleStr((Map<String, Object>) value, OLD_VALUE)));
+							jiraHistoryChangeLog
+									.setChangedTo(parseStringToLocalDateTime(handleStr((Map<String, Object>) value, NEW_VALUE)));
+							jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.parse(AzureProcessorUtil.getFormattedDate(
+									AzureProcessorUtil.deodeUTF8String(changelogItem.getSystemChangedDate().getNewValue()))));
 							fieldHistoryLog.add(jiraHistoryChangeLog);
 						}
 					});
@@ -187,8 +178,7 @@ public class ScrumHandleAzureIssueHistory {
 	private void splitMultipleSprintsAndStoreLastSprint(List<JiraHistoryChangeLog> sprintChangeLog) {
 		int index = 0;
 		for (JiraHistoryChangeLog jiraHistoryChangeLog : sprintChangeLog) {
-			jiraHistoryChangeLog
-					.setChangedFrom(spiltStringAndFetchLastValue(jiraHistoryChangeLog.getChangedFrom(), ","));
+			jiraHistoryChangeLog.setChangedFrom(spiltStringAndFetchLastValue(jiraHistoryChangeLog.getChangedFrom(), ","));
 			jiraHistoryChangeLog.setChangedTo(spiltStringAndFetchLastValue(jiraHistoryChangeLog.getChangedTo(), ","));
 			sprintChangeLog.set(index, jiraHistoryChangeLog);
 			index++;
@@ -208,7 +198,7 @@ public class ScrumHandleAzureIssueHistory {
 			return changeValues.get(valueState).toString();
 		return "";
 	}
-	
+
 	public String convertToSeconds(Map<String, Object> changeValues, String valueState) {
 		String mutlipliedValue = "";
 		try {
@@ -222,7 +212,6 @@ public class ScrumHandleAzureIssueHistory {
 		}
 		return mutlipliedValue;
 	}
-
 
 	private String handleAssigneeStr(Map<String, Object> changeValues, String valueState) {
 		if (changeValues.containsKey(valueState)) {
@@ -257,5 +246,4 @@ public class ScrumHandleAzureIssueHistory {
 		jiraIssueCustomHistory.setSprintUpdationLog(sprintChangeLog);
 		jiraIssueCustomHistory.setWorkLog(workLog);
 	}
-
 }

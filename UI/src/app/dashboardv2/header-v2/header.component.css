@@ -3,13 +3,20 @@ header {
   border-bottom: 2px solid #eaedf0;
   padding: 0 20px;
 }
-.logo > img {
+
+.logo>img {
   height: 40px;
 }
 
 .logo .die-container img {
   width: 40px;
 }
+
+.icon-dice-container {
+  border: none;
+  background: transparent;
+}
+
 .count {
   position: absolute;
   font-size: 0.75rem;
@@ -24,24 +31,24 @@ header {
   align-items: center;
   justify-content: center;
 }
+
 .noti-count {
   top: -6px;
 }
+
 .list-style-none {
   list-style: none;
 }
+
 .custom-navbar .link {
   color: var(--color-black);
 }
+
 ::ng-deep .custom-menu .p-menu .p-menuitem-link {
   padding: 1rem 0.5rem;
 }
-::ng-deep
-  .custom-menu
-  .p-tabmenu
-  .p-tabmenu-nav
-  li.p-highlight
-  .p-menuitem-link:focus {
+
+::ng-deep .custom-menu .p-tabmenu .p-tabmenu-nav li.p-highlight .p-menuitem-link:focus {
   background-color: none;
 }
 
@@ -62,7 +69,7 @@ header {
   border-right: 3px solid var(--color-secondary-blue);
 }
 
-::ng-deep p-menu.app-switch .p-menu .p-menuitem-link-active .p-menuitem-text{
+::ng-deep p-menu.app-switch .p-menu .p-menuitem-link-active .p-menuitem-text {
   color: var(--color-secondary-blue);
 }
 
@@ -75,9 +82,11 @@ header {
   align-items: center;
   justify-content: center;
 }
+
 .profile-budge {
   font-size: 0.725rem;
 }
+
 .back-btn-wraper {
   display: flex;
   justify-content: center;
@@ -107,4 +116,39 @@ header {
   border-top: 5px solid var(--color-black);
   z-index: 1;
   margin-top: -2px;
+}
+
+
+.tab-container {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 1rem;
+  align-items: flex-end;
+  height: 50px;
+}
+
+.tab-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.tab-button {
+  margin-right: 1rem;
+}
+
+.tab-button button {
+  border: none;
+  background: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.tab-button button.active {
+  color: #007bff;
+  border-bottom: 2px solid #007bff;
+}
+
+.tab-button button:hover {
+  color: #0056b3;
 }

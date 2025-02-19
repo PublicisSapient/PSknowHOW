@@ -35,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author anisingh4
  */
-
 @Slf4j
 public class ConnectionsDataFactory {
 
@@ -89,13 +88,11 @@ public class ConnectionsDataFactory {
 
 	public Connection findConnectionById(String id) {
 
-		return connections.stream().filter(connection -> connection.getId().toString().equals(id)).findFirst()
-				.orElse(null);
+		return connections.stream().filter(connection -> connection.getId().toString().equals(id)).findFirst().orElse(null);
 	}
 
 	public List<Connection> findConnectionsByType(String type) {
 
-		return connections.stream().filter(connection -> connection.getType().equals(type))
-				.collect(Collectors.toList());
+		return connections.stream().filter(connection -> connection.getType().equals(type)).collect(Collectors.toList());
 	}
 }

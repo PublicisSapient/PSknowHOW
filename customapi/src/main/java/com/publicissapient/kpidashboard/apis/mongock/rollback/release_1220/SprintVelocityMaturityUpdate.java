@@ -56,5 +56,4 @@ public class SprintVelocityMaturityUpdate {
 		update.set("calculateMaturity", true);
 		mongoTemplate.updateFirst(query, update, "kpi_master");
 	}
-
 }

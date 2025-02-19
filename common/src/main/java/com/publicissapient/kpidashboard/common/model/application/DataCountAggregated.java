@@ -26,10 +26,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * Data count used for response of all the kpis having kpi level filters.
- */
-
+/** Data count used for response of all the kpis having kpi level filters. */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -39,5 +36,4 @@ public class DataCountAggregated implements Serializable {
 	private static final long serialVersionUID = -2956276113452875220L;
 	private String kpiFilterType;
 	private Long value;
-
 }

@@ -45,7 +45,7 @@ public final class JiraProcessorUtil {
 	 * This method return UTF-8 decoded string response
 	 *
 	 * @param jiraResponse
-	 *            Object of the Jira Response
+	 *          Object of the Jira Response
 	 * @return Decoded String
 	 */
 	public static String deodeUTF8String(Object jiraResponse) {
@@ -72,7 +72,7 @@ public final class JiraProcessorUtil {
 	 * Formats Input date using ISODateTimeFormatter
 	 *
 	 * @param date
-	 *            date to be formatted
+	 *          date to be formatted
 	 * @return formatted Date String
 	 */
 	public static String getFormattedDate(String date) {
@@ -115,5 +115,4 @@ public final class JiraProcessorUtil {
 
 		return stringBuilder.toString();
 	}
-
 }

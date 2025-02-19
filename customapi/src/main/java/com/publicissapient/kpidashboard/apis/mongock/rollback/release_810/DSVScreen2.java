@@ -62,19 +62,15 @@ public class DSVScreen2 {
 
 		// Define the update operation to remove elements from the "workflow" array
 		Document update = new Document("$pull",
-				new Document("workflow",
-						new Document("type",
-								new Document("$in", Arrays.asList("firstDevstatus", "jiraStatusForInProgressKPI154",
-										"jiraStatusStartDevelopmentKPI154", "storyFirstStatusKPI154")))));
+				new Document("workflow", new Document("type", new Document("$in", Arrays.asList("firstDevstatus",
+						"jiraStatusForInProgressKPI154", "jiraStatusStartDevelopmentKPI154", "storyFirstStatusKPI154")))));
 
 		// Perform the update operation
 		identifier.updateMany(indentifierFilter, update);
-
 	}
 
 	@RollbackExecution
 	public void rollback() {
 		// not required
 	}
-
 }

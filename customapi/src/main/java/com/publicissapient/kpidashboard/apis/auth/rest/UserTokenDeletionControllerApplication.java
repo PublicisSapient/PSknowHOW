@@ -49,7 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Rest controller to handle logout requests.
- * 
+ *
  * @author anisingh4
  */
 @Slf4j
@@ -72,7 +72,7 @@ public class UserTokenDeletionControllerApplication {
 	 * Instantiates a new User token deletion controller.
 	 *
 	 * @param userTokenDeletionService
-	 *            the user token deletion service
+	 *          the user token deletion service
 	 */
 	@Autowired
 	public UserTokenDeletionControllerApplication(UserTokenDeletionService userTokenDeletionService) {
@@ -83,10 +83,11 @@ public class UserTokenDeletionControllerApplication {
 	 * Logout user from central service.
 	 *
 	 * @param request
-	 *            the request
+	 *          the request
 	 */
 	@RequestMapping(value = "/centralUserlogout", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ServiceResponse> deleteUserTokenForCentralAuth(HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<ServiceResponse> deleteUserTokenForCentralAuth(HttpServletRequest request,
+			HttpServletResponse response) {
 		String userName = AuthenticationUtil.getUsernameFromContext();
 		Cookie authCookie = cookieUtil.getAuthCookie(request);
 		String authCookieToken = authCookie.getValue();
@@ -107,14 +108,13 @@ public class UserTokenDeletionControllerApplication {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(false, "Error while Logout from Central Auth", false));
 		}
-
 	}
 
 	/**
 	 * Logout user from local auth.
 	 *
 	 * @param request
-	 *            the request
+	 *          the request
 	 */
 	@RequestMapping(value = "/userlogout", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> deleteUserToken(HttpServletRequest request, HttpServletResponse response) {
@@ -135,5 +135,4 @@ public class UserTokenDeletionControllerApplication {
 					.body(new ServiceResponse(false, "Error while Logout from local auth", false));
 		}
 	}
-
 }

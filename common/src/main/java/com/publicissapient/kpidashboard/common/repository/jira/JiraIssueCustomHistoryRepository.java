@@ -28,20 +28,21 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 
-/**
- * Repository for FeatureCollector.
- */
+/** Repository for FeatureCollector. */
 @Repository
-public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIssueCustomHistory, String>,
-		QuerydslPredicateExecutor<JiraIssueCustomHistory>, JiraIssueHistoryCustomQueryRepository {
+public interface JiraIssueCustomHistoryRepository
+		extends
+			CrudRepository<JiraIssueCustomHistory, String>,
+			QuerydslPredicateExecutor<JiraIssueCustomHistory>,
+			JiraIssueHistoryCustomQueryRepository {
 
 	/**
 	 * Find by story id list.
 	 *
 	 * @param storyID
-	 *            the story id
+	 *          the story id
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return the JiraIssueCustomHistory
 	 */
 	@Query(fields = "{ 'storyID' : 1, 'createdDate' : 1, 'estimate' : 1, 'bufferedEstimateTime': 1 }")
@@ -51,7 +52,7 @@ public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIss
 	 * Find by story id in list.
 	 *
 	 * @param storyList
-	 *            the story list
+	 *          the story list
 	 * @return the list
 	 */
 	@Query(value = "{ 'storyID' : { $in: ?0 } }", fields = "{ 'storyID' : 1, 'storySprintDetails' : 1, 'statusUpdationLog' : 1, 'createdDate':1}")
@@ -59,9 +60,9 @@ public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIss
 
 	/**
 	 * Deletes all documents that matches with given projectID.
-	 * 
+	 *
 	 * @param projectID
-	 *            String projectID
+	 *          String projectID
 	 */
 	void deleteByBasicProjectConfigId(String projectID);
 
@@ -69,9 +70,9 @@ public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIss
 	 * Find by story id list.
 	 *
 	 * @param storyID
-	 *            the story id
+	 *          the story id
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return the list
 	 */
 	List<JiraIssueCustomHistory> findByStoryIDInAndBasicProjectConfigIdIn(List<String> storyID,
@@ -81,6 +82,5 @@ public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIss
 	List<JiraIssueCustomHistory> findByBasicProjectConfigIdIn(String basicProjectConfigId);
 
 	@Query(value = "{ 'storyID' : { $in: ?0 } , 'basicProjectConfigId' : ?1  }", fields = "{ 'storyID':1,'statusUpdationLog':1, 'assigneeUpdationLog':1, 'assigneeUpdationLog':1, 'workLog':1}")
-	List<JiraIssueCustomHistory> findByStoryIDInAndBasicProjectConfigId(Set<String> storyID,
-			String basicProjectConfigId);
+	List<JiraIssueCustomHistory> findByStoryIDInAndBasicProjectConfigId(Set<String> storyID, String basicProjectConfigId);
 }

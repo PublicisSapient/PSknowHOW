@@ -27,39 +27,36 @@ import com.publicissapient.kpidashboard.common.model.processortool.ProcessorTool
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
 
-/**
- * BitBucketClient for getting all commits and merge requests from BitBucket
- */
+/** BitBucketClient for getting all commits and merge requests from BitBucket */
 public interface BitBucketClient {
 
 	/**
 	 * Get all commits.
 	 *
 	 * @param bitbucketRepo
-	 *            the bitbucketRepo
+	 *          the bitbucketRepo
 	 * @param firstTimeRun
-	 *            the first time run
+	 *          the first time run
 	 * @param bitBucketInfo
-	 *            bitBucketInfo like url,userId
+	 *          bitBucketInfo like url,userId
 	 * @return the list
 	 * @throws FetchingCommitException
-	 *             the exception
+	 *           the exception
 	 */
 	List<CommitDetails> fetchAllCommits(BitbucketRepo bitbucketRepo, boolean firstTimeRun,
 			ProcessorToolConnection bitBucketInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException;
 
 	/**
 	 * @param bitbucketRepo
-	 *            the bitbucketRepo
+	 *          the bitbucketRepo
 	 * @param firstTimeRun
-	 *            the first time run
+	 *          the first time run
 	 * @param bitBucketInfo
-	 *            bitBucketInfo like url,userId
+	 *          bitBucketInfo like url,userId
 	 * @return the list of merge request Detail
 	 * @throws FetchingCommitException
-	 *             the exception
+	 *           the exception
 	 */
 	List<MergeRequests> fetchMergeRequests(BitbucketRepo bitbucketRepo, boolean firstTimeRun,
 			ProcessorToolConnection bitBucketInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException;
-
 }

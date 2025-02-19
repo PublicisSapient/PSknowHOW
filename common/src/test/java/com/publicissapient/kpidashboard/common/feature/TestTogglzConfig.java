@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.common.feature;
 
 import org.springframework.context.annotation.Bean;
@@ -28,11 +27,9 @@ import org.togglz.core.manager.FeatureManagerBuilder;
 @Configuration
 public class TestTogglzConfig {
 
-    @Bean
-    @Primary
-    public FeatureManager featureManager() {
-        return new FeatureManagerBuilder()
-                .featureEnum(FeatureEnum.class)
-                .build();
-    }
+	@Bean
+	@Primary
+	public FeatureManager featureManager() {
+		return new FeatureManagerBuilder().featureEnum(FeatureEnum.class).build();
+	}
 }

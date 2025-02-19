@@ -47,5 +47,4 @@ public class ProjectBasicDup {
 	private boolean saveAssigneeDetails;
 	private boolean developerKpiEnabled;
 	private boolean projectOnHold;
-
 }

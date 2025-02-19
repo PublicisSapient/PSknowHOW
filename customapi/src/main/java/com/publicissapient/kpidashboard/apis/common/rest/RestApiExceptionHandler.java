@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.common.rest;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -54,9 +53,7 @@ import com.publicissapient.kpidashboard.common.util.UnsafeDeleteException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Controller advice to handle exceptions globally.
- */
+/** Controller advice to handle exceptions globally. */
 @EnableWebMvc
 @ControllerAdvice(annotations = RestController.class)
 @Slf4j
@@ -64,7 +61,6 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	public static final String ERROR_CODE_STR = "Error code=: ";
 
 	/**
-	 * 
 	 * @param ex
 	 * @param body
 	 * @param headers
@@ -74,7 +70,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	 */
 	@Override
 	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
-															 HttpStatusCode status, WebRequest request) {
+			HttpStatusCode status, WebRequest request) {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		log.error(ex.getMessage());
 		ErrorResponse errorResponse = createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -84,7 +80,6 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	/**
-	 * 
 	 * @param ex
 	 * @param headers
 	 * @param status
@@ -92,8 +87,8 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	 * @return {@code ResponseEntity<Object>}
 	 */
 	@Override
-	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
+			HttpStatusCode status, WebRequest request) {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		log.warn("Bad Request - bind exception: ", ex);
 		return new ResponseEntity<>(ErrorResponse.fromBindException(ex), headers, status);
@@ -101,7 +96,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 	/**
 	 * Handles Unrecognized property exception
-	 * 
+	 *
 	 * @param ex
 	 * @param request
 	 * @return {@code ResponseEntity<ErrorResponse>}
@@ -115,7 +110,6 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	/**
-	 * 
 	 * @param ex
 	 * @param request
 	 * @return {@code ResponseEntity<Map<String, String>>}
@@ -131,7 +125,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 	/**
 	 * Handles Runtime Exception
-	 * 
+	 *
 	 * @param exeption
 	 * @return {@code ResponseEntity<Object>}
 	 */
@@ -146,7 +140,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 	/**
 	 * Handles Speedy Exceptions
-	 * 
+	 *
 	 * @param applicationException
 	 * @return {@code ResponseEntity<Object>}
 	 */
@@ -154,39 +148,35 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	public ResponseEntity<Object> handleSpeedyException(ApplicationException applicationException) {
 		log.error(applicationException.getMessage(), applicationException);
 		switch (applicationException.getErrorCode()) {
-		case ApplicationException.ERROR_INSERTING_DATA:
-		case ApplicationException.COLLECTOR_CREATE_ERROR:
-		case ApplicationException.COLLECTOR_ITEM_CREATE_ERROR:
-
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-							HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-							"Internal logError." + applicationException.getMessage() + ERROR_CODE_STR
-									+ applicationException.getErrorCode()));
-		case ApplicationException.DUPLICATE_DATA:
-		case ApplicationException.JSON_FORMAT_ERROR:
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body(createErrorResponse(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(),
-							"Bad request. " + applicationException.getMessage() + ERROR_CODE_STR
-									+ applicationException.getErrorCode()));
-		case ApplicationException.NOTHING_TO_UPDATE:
-			return ResponseEntity.status(HttpStatus.NOT_MODIFIED)
-					.body(createErrorResponse(HttpStatus.NOT_MODIFIED.value(),
-							HttpStatus.NOT_MODIFIED.getReasonPhrase(),
-							"Internal logError. " + applicationException.getMessage() + ERROR_CODE_STR
-									+ applicationException.getErrorCode()));
-		default:
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-							HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-							"Internal logError. " + applicationException.getMessage() + ERROR_CODE_STR
-									+ applicationException.getErrorCode()));
+			case ApplicationException.ERROR_INSERTING_DATA :
+			case ApplicationException.COLLECTOR_CREATE_ERROR :
+			case ApplicationException.COLLECTOR_ITEM_CREATE_ERROR :
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body(createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+								HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "Internal logError." +
+										applicationException.getMessage() + ERROR_CODE_STR + applicationException.getErrorCode()));
+			case ApplicationException.DUPLICATE_DATA :
+			case ApplicationException.JSON_FORMAT_ERROR :
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body(createErrorResponse(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(),
+								"Bad request. " + applicationException.getMessage() + ERROR_CODE_STR +
+										applicationException.getErrorCode()));
+			case ApplicationException.NOTHING_TO_UPDATE :
+				return ResponseEntity.status(HttpStatus.NOT_MODIFIED)
+						.body(createErrorResponse(HttpStatus.NOT_MODIFIED.value(), HttpStatus.NOT_MODIFIED.getReasonPhrase(),
+								"Internal logError. " + applicationException.getMessage() + ERROR_CODE_STR +
+										applicationException.getErrorCode()));
+			default :
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body(createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+								HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "Internal logError. " +
+										applicationException.getMessage() + ERROR_CODE_STR + applicationException.getErrorCode()));
 		}
 	}
 
 	/**
 	 * Handles Access Denied Exception
-	 * 
+	 *
 	 * @param accessDeniedException
 	 * @return {@code ResponseEntity<Object>}
 	 */
@@ -200,7 +190,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 	/**
 	 * Handles Delete Last Admin Exception
-	 * 
+	 *
 	 * @param deleteLastAdminException
 	 * @return {@code ResponseEntity<Object>}
 	 */
@@ -214,7 +204,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 	/**
 	 * Handles UserNotFound exception
-	 * 
+	 *
 	 * @param exception
 	 * @return {@code ResponseEntity<Object>}
 	 */

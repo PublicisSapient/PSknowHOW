@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.service;
 
 import static org.junit.Assert.assertEquals;

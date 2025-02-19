@@ -67,11 +67,11 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 	 * Instantiates a new bit bucket cloud client.
 	 *
 	 * @param settings
-	 *            the settings
+	 *          the settings
 	 * @param bitbucketRestOperations
-	 *            the rest operations supplier
+	 *          the rest operations supplier
 	 * @param aesEncryptionService
-	 *            the aesEncryptionService
+	 *          the aesEncryptionService
 	 */
 	@Autowired
 	public BitBucketCloudClient(BitBucketConfig settings, BitbucketRestOperations bitbucketRestOperations,
@@ -89,19 +89,18 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 	 * Fetch all commits.
 	 *
 	 * @param bitbucketRepo
-	 *            the bitbucketRepo
+	 *          the bitbucketRepo
 	 * @param initialRunOccurrence
-	 *            the initialRunOccurrence
+	 *          the initialRunOccurrence
 	 * @param bitBucketServerInfo
-	 *            the connection details
+	 *          the connection details
 	 * @return the list
 	 * @throws FetchingCommitException
-	 *             the exception
+	 *           the exception
 	 */
 	@Override
 	public List<CommitDetails> fetchAllCommits(BitbucketRepo bitbucketRepo, boolean initialRunOccurrence,
-			ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig)
-			throws FetchingCommitException {
+			ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
 		List<CommitDetails> commits = new ArrayList<>();
 		try {
 			String restUrl = new BitBucketCloudURIBuilder(bitbucketRepo, config, bitBucketServerInfo).build();
@@ -111,8 +110,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 			long sinceTime = new DateTime().minusDays(config.getSinceDaysCloud()).getMillis();
 			while (!last) {
 				String plainTxtPassword = decryptPassword(bitBucketServerInfo.getPassword());
-				ResponseEntity<String> response = getResponse(bitBucketServerInfo.getUsername(), plainTxtPassword,
-						cloneUrl);
+				ResponseEntity<String> response = getResponse(bitBucketServerInfo.getUsername(), plainTxtPassword, cloneUrl);
 				JSONObject jsonParentObject = getJSONFromResponse(response.getBody());
 				JSONArray jsonArray = (JSONArray) jsonParentObject.get(BitBucketConstants.RESP_VALUES_KEY);
 
@@ -176,7 +174,6 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 	/**
 	 * Checks if is last page.
 	 *
-	 *
 	 * @return true, if is last page
 	 */
 	private boolean isLastPage(Object next, long commitTimePageWise, long sinceTime) {
@@ -189,8 +186,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 
 	@Override
 	public List<MergeRequests> fetchMergeRequests(BitbucketRepo repo, boolean firstRun,
-			ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig)
-			throws FetchingCommitException {
+			ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
 		String restUri = null;
 		List<MergeRequests> mergeRequests = new ArrayList<>();
 		try {
@@ -282,5 +278,4 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 			mergeRequests.add(mergeReq);
 		}
 	}
-
 }

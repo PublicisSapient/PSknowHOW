@@ -25,9 +25,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The Comment.
- */
+/** The Comment. */
 @Data
 @Builder
 @Getter
@@ -39,5 +37,4 @@ public class Comment {
 	private long createdAt;
 	private long updatedAt;
 	private String body;
-
 }

@@ -25,9 +25,7 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 
-/**
- * The interface Kanban feature history repo custom.
- */
+/** The interface Kanban feature history repo custom. */
 @Repository
 public interface KanbanJiraIssueHistoryRepoCustom {
 
@@ -35,32 +33,31 @@ public interface KanbanJiraIssueHistoryRepoCustom {
 	 * Find kanban feature custom history by status and date.
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @param uniqueProjectMap
-	 *            the unique project map
+	 *          the unique project map
 	 * @param dateFrom
-	 *            the date from
+	 *          the date from
 	 * @param dateTo
-	 *            the date to
+	 *          the date to
 	 * @param mapStatusCriteria
-	 *            the map status criteria
+	 *          the map status criteria
 	 * @return list
 	 */
 	List<KanbanIssueCustomHistory> findIssuesByStatusAndDate(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo,
-			String mapStatusCriteria);
+			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo, String mapStatusCriteria);
 
 	/**
 	 * This method find issue history by created date.
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @param uniqueProjectMap
-	 *            the unique project map
+	 *          the unique project map
 	 * @param dateFrom
-	 *            the date from
+	 *          the date from
 	 * @param dateTo
-	 *            the date to
+	 *          the date to
 	 * @return list
 	 */
 	List<KanbanIssueCustomHistory> findIssuesByCreatedDateAndType(Map<String, List<String>> mapOfFilters,

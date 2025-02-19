@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.apis.pushdata.model.dto;
 
 import java.util.Set;
-
 import javax.validation.Valid;
 
 import lombok.AllArgsConstructor;

@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.common.client;
 import java.io.IOException;
 import java.security.Principal;
 import java.security.PrivilegedAction;
-
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
 
@@ -48,9 +47,7 @@ import org.springframework.web.client.RestClientException;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Kerberos client to connect with SPNEGO jira client
- */
+/** Kerberos client to connect with SPNEGO jira client */
 @Slf4j
 public class KerberosClient {
 	private static final String COOKIE_HEADER = "Cookie";
@@ -71,17 +68,17 @@ public class KerberosClient {
 
 	/**
 	 * Kerberos client constructor
-	 * 
+	 *
 	 * @param jaasConfigFilePath
-	 *            path to a file that contains login information
+	 *          path to a file that contains login information
 	 * @param krb5ConfigFilePath
-	 *            path to a file that contains kerberos server information
+	 *          path to a file that contains kerberos server information
 	 * @param JaasUser
-	 *            username whose properties need to be fetch from jaasConfigFilePath
+	 *          username whose properties need to be fetch from jaasConfigFilePath
 	 * @param samlEndPoint
-	 *            saml endpoint
+	 *          saml endpoint
 	 * @param jiraHost
-	 *            jira host.
+	 *          jira host.
 	 */
 	public KerberosClient(String jaasConfigFilePath, String krb5ConfigFilePath, String JaasUser, String samlEndPoint,
 			String jiraHost) {
@@ -97,7 +94,7 @@ public class KerberosClient {
 
 	/**
 	 * Get cookie store
-	 * 
+	 *
 	 * @return basic cookie store.
 	 */
 	public BasicCookieStore getCookieStore() {
@@ -106,7 +103,7 @@ public class KerberosClient {
 
 	/**
 	 * Get jira host
-	 * 
+	 *
 	 * @return jira host string
 	 */
 	public String getJiraHost() {
@@ -115,7 +112,7 @@ public class KerberosClient {
 
 	/**
 	 * This method build a Http client with SPNEGO scheme factory and cookie store
-	 * 
+	 *
 	 * @return http client
 	 */
 	private HttpClient buildLoginHttpClient() {
@@ -127,25 +124,22 @@ public class KerberosClient {
 		credentialsProvider.setCredentials(new AuthScope((String) null, -1, (String) null), credentials);
 		builder.setDefaultCredentialsProvider(credentialsProvider);
 		RequestConfig requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
-		CloseableHttpClient httpClient = builder.setDefaultCookieStore(cookieStore)
-				.setDefaultRequestConfig(requestConfig).build();
+		CloseableHttpClient httpClient = builder.setDefaultCookieStore(cookieStore).setDefaultRequestConfig(requestConfig)
+				.build();
 		return httpClient;
 	}
 
 	/**
 	 * This method build simple Http client with cookie store
-	 * 
+	 *
 	 * @return http client
 	 */
 	private HttpClient buildHttpClient() {
 		RequestConfig requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
-		return HttpClientBuilder.create().setDefaultCookieStore(cookieStore).setDefaultRequestConfig(requestConfig)
-				.build();
+		return HttpClientBuilder.create().setDefaultCookieStore(cookieStore).setDefaultRequestConfig(requestConfig).build();
 	}
 
-	/**
-	 * This method set system level configuration for SPNEGO
-	 */
+	/** This method set system level configuration for SPNEGO */
 	private void setKerberosProperties() {
 		System.setProperty(AUTH_LOGIN_CONFIG, this.jaasConfigFilePath);
 		System.setProperty(KERB_CONFIG, this.krb5ConfigFilePath);
@@ -153,9 +147,7 @@ public class KerberosClient {
 		System.setProperty(AUTH_PREFERENCES, "SPNEGO");
 	}
 
-	/**
-	 * This method clear system level configuration for SPNEGO
-	 */
+	/** This method clear system level configuration for SPNEGO */
 	private void clearKerberosProperties() {
 		System.clearProperty(AUTH_LOGIN_CONFIG);
 		System.clearProperty(KERB_CONFIG);
@@ -166,7 +158,7 @@ public class KerberosClient {
 	/**
 	 * This method fetch login cookies necessary to establish connection with spnego
 	 * jira client
-	 * 
+	 *
 	 * @param samlTokenStartString
 	 * @param samlTokenEndString
 	 * @param samlUrlStartString
@@ -183,8 +175,7 @@ public class KerberosClient {
 			Subject serviceSubject = lc.getSubject();
 			PrivilegedAction<String> action = () -> {
 				try {
-					return loginCall(loginURL, samlTokenStartString, samlTokenEndString, samlUrlStartString,
-							samlUrlEndString);
+					return loginCall(loginURL, samlTokenStartString, samlTokenEndString, samlUrlStartString, samlUrlEndString);
 				} catch (IOException e) {
 					throw new RestClientException("error while logging in" + e.getMessage());
 				}
@@ -198,7 +189,7 @@ public class KerberosClient {
 
 	/**
 	 * This method execute login call with http client
-	 * 
+	 *
 	 * @param loginURL
 	 * @param samlTokenStartString
 	 * @param samlTokenEndString
@@ -226,7 +217,7 @@ public class KerberosClient {
 
 	/**
 	 * This method generate the cookies required for connection
-	 * 
+	 *
 	 * @param loginResponse
 	 * @param samlTokenStartString
 	 * @param samlTokenEndString
@@ -239,8 +230,7 @@ public class KerberosClient {
 		String samlToken = extractString(loginResponse, samlTokenStartString, samlTokenEndString);
 		String samlURL = extractString(loginResponse, samlUrlStartString, samlUrlEndString);
 		log.debug("Saml URL extracted from login response: {}", samlURL);
-		HttpUriRequest postRequest = RequestBuilder.post().setUri(samlURL)
-				.setHeader(HttpHeaders.ACCEPT, "application/json")
+		HttpUriRequest postRequest = RequestBuilder.post().setUri(samlURL).setHeader(HttpHeaders.ACCEPT, "application/json")
 				.setHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded")
 				.addParameter("SAMLResponse", samlToken).build();
 
@@ -249,9 +239,9 @@ public class KerberosClient {
 
 	/**
 	 * This method return the response of http request submitted
-	 * 
+	 *
 	 * @param httpUriRequest
-	 *            httpUriRequest
+	 *          httpUriRequest
 	 * @return string response
 	 * @throws IOException
 	 */
@@ -263,9 +253,9 @@ public class KerberosClient {
 
 	/**
 	 * This method perform http request provided by user
-	 * 
+	 *
 	 * @param httpUriRequest
-	 *            httpUriRequest
+	 *          httpUriRequest
 	 * @return string http response
 	 * @throws IOException
 	 */
@@ -276,13 +266,13 @@ public class KerberosClient {
 
 	/**
 	 * This is a utility method which fetch data from login response
-	 * 
+	 *
 	 * @param input
-	 *            input string
+	 *          input string
 	 * @param start
-	 *            start string
+	 *          start string
 	 * @param end
-	 *            end string
+	 *          end string
 	 * @return fetched string based on start and end
 	 */
 	private String extractString(String input, String start, String end) {
@@ -298,19 +288,17 @@ public class KerberosClient {
 
 	/**
 	 * This method get Cookie object and convert it into string
-	 * 
+	 *
 	 * @return string containing cookie.
 	 */
 	public String getCookies() {
 		StringBuilder cookieHeaderBuilder = new StringBuilder();
-		this.getCookieStore().getCookies().forEach(cookie -> cookieHeaderBuilder.append(cookie.getName()).append("=")
-				.append(cookie.getValue()).append(";"));
+		this.getCookieStore().getCookies().forEach(
+				cookie -> cookieHeaderBuilder.append(cookie.getName()).append("=").append(cookie.getValue()).append(";"));
 		return cookieHeaderBuilder.toString();
 	}
 
-	/**
-	 * Null credential inner class used to create login client.
-	 */
+	/** Null credential inner class used to create login client. */
 	private static class NullCredentials implements Credentials {
 		private NullCredentials() {
 		}

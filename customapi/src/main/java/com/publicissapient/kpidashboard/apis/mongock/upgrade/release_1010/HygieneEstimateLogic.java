@@ -70,5 +70,4 @@ public class HygieneEstimateLogic {
 		mongoTemplate.getCollection("field_mapping_structure")
 				.deleteMany(new Document("fieldName", new Document("$in", fieldNames)));
 	}
-
 }

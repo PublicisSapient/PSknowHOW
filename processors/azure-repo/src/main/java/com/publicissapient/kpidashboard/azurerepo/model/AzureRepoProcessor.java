@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
 /**
  * AzurerepoProcessor represents a class which holds azurerepo prototyping and
  * executes the azurerepo data and stores in DB .
- * 
+ *
  * @see Processor
  */
 @NoArgsConstructor
@@ -46,9 +46,7 @@ public class AzureRepoProcessor extends Processor {
 	}
 
 	public static AzureRepoProcessor prototype() {
-		return AzureRepoProcessor.processorBuilder().processorName(ProcessorConstants.AZUREREPO).online(true)
-				.enabled(true).processorType(ProcessorType.SCM).lastExecuted(System.currentTimeMillis())
-				.isLastSuccess(false).build();
+		return AzureRepoProcessor.processorBuilder().processorName(ProcessorConstants.AZUREREPO).online(true).enabled(true)
+				.processorType(ProcessorType.SCM).lastExecuted(System.currentTimeMillis()).isLastSuccess(false).build();
 	}
-
 }

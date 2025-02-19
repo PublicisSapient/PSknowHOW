@@ -26,7 +26,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
-
 import javax.swing.*;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -53,12 +52,9 @@ public class FileExtensionValidator implements ConstraintValidator<ValidExtensio
 	}
 
 	/**
-	 * 
-	 * <p>
 	 * Validates <tt>file</tt> by checking the size,format and extension of the
 	 * file.
-	 * </p>
-	 * 
+	 *
 	 * @param file
 	 * @param context
 	 * @return true if <tt>file</tt> size is greater than 0 and less than
@@ -86,10 +82,10 @@ public class FileExtensionValidator implements ConstraintValidator<ValidExtensio
 				isValidFileFormat = true;
 
 				String extension = multipartFile.getOriginalFilename();
-				isValidFileExtension = (null != extension) && (extension.endsWith(".png") || extension.endsWith(".PNG")
-						|| extension.endsWith(".JPEG") || extension.endsWith(".jpeg") || extension.endsWith(".jpg")
-						|| extension.endsWith(".JPG") || extension.endsWith(".gif") || extension.endsWith(".GIF")
-						|| extension.endsWith(".bmp") || extension.endsWith(".BMP"));
+				isValidFileExtension = (null != extension) && (extension.endsWith(".png") || extension.endsWith(".PNG") ||
+						extension.endsWith(".JPEG") || extension.endsWith(".jpeg") || extension.endsWith(".jpg") ||
+						extension.endsWith(".JPG") || extension.endsWith(".gif") || extension.endsWith(".GIF") ||
+						extension.endsWith(".bmp") || extension.endsWith(".BMP"));
 
 				isValidSize = multipartFile.getSize() > 0 && multipartFile.getSize() <= MAX_FILE_SIZE;
 
@@ -100,12 +96,11 @@ public class FileExtensionValidator implements ConstraintValidator<ValidExtensio
 		}
 
 		return isValidFileExtension && isValidFileFormat && isValidSize;
-
 	}
 
 	/**
 	 * Writes to file from <tt>content</tt>
-	 * 
+	 *
 	 * @param fileName
 	 * @param content
 	 * @throws IOException
@@ -118,7 +113,7 @@ public class FileExtensionValidator implements ConstraintValidator<ValidExtensio
 
 	/**
 	 * Reads the the content from file
-	 * 
+	 *
 	 * @param fileName
 	 * @return the content of file in byte[]
 	 * @throws IOException
@@ -138,5 +133,4 @@ public class FileExtensionValidator implements ConstraintValidator<ValidExtensio
 			return os.toByteArray();
 		}
 	}
-
 }

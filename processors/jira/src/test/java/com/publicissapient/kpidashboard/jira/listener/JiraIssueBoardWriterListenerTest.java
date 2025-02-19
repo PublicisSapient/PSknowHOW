@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.listener;
 
 import static org.mockito.Mockito.anyList;
@@ -32,7 +31,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,6 +43,7 @@ import org.springframework.batch.item.Chunk;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 
@@ -63,7 +62,6 @@ public class JiraIssueBoardWriterListenerTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.openMocks(this);
-		
 	}
 
 	@Test
@@ -82,9 +80,9 @@ public class JiraIssueBoardWriterListenerTest {
 		compositeResults.add(compositeResult);
 
 		// Mock the repository's behavior
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(eq(JiraConstants.JIRA),
-				anyList())).thenReturn(List.of()); // For the case where trace log
-																					   // is not present
+		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(eq(JiraConstants.JIRA), anyList()))
+				.thenReturn(List.of()); // For the case where trace log
+		// is not present
 
 		// Act
 		listener.afterWrite(compositeResults);
@@ -97,7 +95,6 @@ public class JiraIssueBoardWriterListenerTest {
 
 		// Additional assertions based on the requirements of your application
 		assertEquals(0, savedLogs.size());
-
 	}
 
 	@Test
@@ -134,14 +131,14 @@ public class JiraIssueBoardWriterListenerTest {
 		// Arrange
 		Chunk<CompositeResult> compositeResults = createSampleCompositeResults();
 
-		ProcessorExecutionTraceLog processorExecutionTraceLog=new ProcessorExecutionTraceLog();
+		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setBasicProjectConfigId("abc");
 		processorExecutionTraceLog.setBoardId("abc");
 		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
 
 		// Mock the repository behavior
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(),
-				anyList())).thenReturn(List.of(processorExecutionTraceLog));
+		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), anyList()))
+				.thenReturn(List.of(processorExecutionTraceLog));
 
 		// Act
 		listener.afterWrite(compositeResults);
@@ -149,20 +146,21 @@ public class JiraIssueBoardWriterListenerTest {
 		// Assert
 		verify(processorExecutionTraceLogRepo, times(1)).saveAll(anyList());
 	}
+
 	@Test
 	public void afterWrite_ExistingLog_Success_last_Success() {
 		// Arrange
 		Chunk<CompositeResult> compositeResults = createSampleCompositeResults();
 
-		ProcessorExecutionTraceLog processorExecutionTraceLog=new ProcessorExecutionTraceLog();
+		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setBasicProjectConfigId("abc");
 		processorExecutionTraceLog.setBoardId("abc");
 		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
 		processorExecutionTraceLog.setLastSuccessfulRun("2022-02-02T10:00:00");
 
 		// Mock the repository behavior
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(),
-				anyList())).thenReturn(List.of(processorExecutionTraceLog));
+		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), anyList()))
+				.thenReturn(List.of(processorExecutionTraceLog));
 
 		// Act
 		listener.afterWrite(compositeResults);
@@ -175,5 +173,4 @@ public class JiraIssueBoardWriterListenerTest {
 	public void testAfterWriteWithEmptyValue() {
 		listener.afterWrite(new Chunk<>());
 	}
-
 }

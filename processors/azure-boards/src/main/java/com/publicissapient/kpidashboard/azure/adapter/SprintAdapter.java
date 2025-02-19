@@ -7,7 +7,6 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
 /**
  * @author Hiren Babariya
- *
  */
 public interface SprintAdapter {
 
@@ -15,11 +14,10 @@ public interface SprintAdapter {
 	 * this method fetch sprints from azure server
 	 *
 	 * @param projectConfFieldMapping
-	 *            projectConfFieldMapping
+	 *          projectConfFieldMapping
 	 * @param teamName
-	 *            teamName
+	 *          teamName
 	 * @return List of SprintDetails
 	 */
 	List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfFieldMapping, String teamName);
-
 }

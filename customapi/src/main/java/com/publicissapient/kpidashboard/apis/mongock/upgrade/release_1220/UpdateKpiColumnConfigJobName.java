@@ -17,42 +17,43 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1220;
 
-import io.mongock.api.annotations.ChangeUnit;
-import io.mongock.api.annotations.Execution;
-import io.mongock.api.annotations.RollbackExecution;
+import java.util.Arrays;
+
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.util.Arrays;
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
 
 /**
- * Change Unit to update columnName from "Job Name" to "Job Name / Pipeline Name" for kpiIds "kpi66","kpi8","kpi116","kpi184","kpi172"
+ * Change Unit to update columnName from "Job Name" to "Job Name / Pipeline
+ * Name" for kpiIds "kpi66","kpi8","kpi116","kpi184","kpi172"
+ *
  * @author girpatha
  */
 @ChangeUnit(id = "update_kpi_column_config_job_name", order = "12202", author = "girpatha", systemVersion = "12.2.0")
 public class UpdateKpiColumnConfigJobName {
 
-    private final MongoTemplate mongoTemplate;
+	private final MongoTemplate mongoTemplate;
 
-    public UpdateKpiColumnConfigJobName(MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
-    }
+	public UpdateKpiColumnConfigJobName(MongoTemplate mongoTemplate) {
+		this.mongoTemplate = mongoTemplate;
+	}
 
-    @Execution
-    public void execution() {
-        mongoTemplate.getCollection("kpi_column_configs").updateMany(
-                new Document("kpiId", new Document("$in", Arrays.asList("kpi66", "kpi8","kpi116","kpi184","kpi172")))
-                        .append("kpiColumnDetails.columnName", "Job Name"),
-                new Document("$set", new Document("kpiColumnDetails.$.columnName", "Job Name / Pipeline Name"))
-        );
-    }
+	@Execution
+	public void execution() {
+		mongoTemplate.getCollection("kpi_column_configs").updateMany(
+				new Document("kpiId", new Document("$in", Arrays.asList("kpi66", "kpi8", "kpi116", "kpi184", "kpi172")))
+						.append("kpiColumnDetails.columnName", "Job Name"),
+				new Document("$set", new Document("kpiColumnDetails.$.columnName", "Job Name / Pipeline Name")));
+	}
 
-    @RollbackExecution
-    public void rollback() {
-        mongoTemplate.getCollection("kpi_column_configs").updateMany(
-                new Document("kpiId", new Document("$in", Arrays.asList("kpi66", "kpi8","kpi116","kpi184","kpi172")))
-                        .append("kpiColumnDetails.columnName", "Job Name / Pipeline Name"),
-                new Document("$set", new Document("kpiColumnDetails.$.columnName", "Job Name"))
-        );
-    }
+	@RollbackExecution
+	public void rollback() {
+		mongoTemplate.getCollection("kpi_column_configs").updateMany(
+				new Document("kpiId", new Document("$in", Arrays.asList("kpi66", "kpi8", "kpi116", "kpi184", "kpi172")))
+						.append("kpiColumnDetails.columnName", "Job Name / Pipeline Name"),
+				new Document("$set", new Document("kpiColumnDetails.$.columnName", "Job Name")));
+	}
 }

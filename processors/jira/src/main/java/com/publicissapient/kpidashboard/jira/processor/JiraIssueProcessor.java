@@ -26,23 +26,21 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 /**
  * @author pankumar8
- *
  */
 public interface JiraIssueProcessor {
 
 	/**
 	 * @param currentPagedJiraRs
-	 *            currentPagedJiraRs
+	 *          currentPagedJiraRs
 	 * @param projectConfig
-	 *            projectConfig
+	 *          projectConfig
 	 * @param boardId
-	 *            boardId
+	 *          boardId
 	 * @param processorId
-     * @return JiraIssue
+	 * @return JiraIssue
 	 * @throws JSONException
-	 *             JSONException
+	 *           JSONException
 	 */
-	JiraIssue convertToJiraIssue(Issue currentPagedJiraRs, ProjectConfFieldMapping projectConfig, String boardId, ObjectId processorId)
-			throws JSONException;
-
+	JiraIssue convertToJiraIssue(Issue currentPagedJiraRs, ProjectConfFieldMapping projectConfig, String boardId,
+			ObjectId processorId) throws JSONException;
 }

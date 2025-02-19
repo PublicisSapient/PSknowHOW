@@ -31,7 +31,7 @@ public class JiraProcessor extends Processor {
 
 	/**
 	 * retruns jira processor propotype
-	 * 
+	 *
 	 * @return JiraProcessor
 	 */
 	public static JiraProcessor prototype() {
@@ -44,5 +44,4 @@ public class JiraProcessor extends Processor {
 		protoType.setProcessorType(ProcessorType.AGILE_TOOL);
 		return protoType;
 	}
-
 }

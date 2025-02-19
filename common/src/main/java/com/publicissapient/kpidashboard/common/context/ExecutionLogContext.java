@@ -137,5 +137,4 @@ public class ExecutionLogContext implements Serializable {
 	public void setThreadId(int threadId) {
 		this.threadId = threadId;
 	}
-
 }

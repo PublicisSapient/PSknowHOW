@@ -67,8 +67,8 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 	public static List<KanbanJiraIssue> filterKanbanDataBasedOnStartAndEndDate(List<KanbanJiraIssue> issueList,
 			LocalDate startDate, LocalDate endDate) {
 		Predicate<KanbanJiraIssue> predicate = issue -> LocalDateTime
-				.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER).isAfter(startDate.atTime(0, 0, 0))
-				&& LocalDateTime.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER).isAfter(startDate.atTime(0, 0, 0)) &&
+				LocalDateTime.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
 						.isBefore(endDate.atTime(23, 59, 59));
 		return issueList.stream().filter(predicate).collect(Collectors.toList());
 	}
@@ -76,8 +76,8 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 	public static Map<String, Long> filterKanbanDataBasedOnStartAndEndDateAndIssueType(List<KanbanJiraIssue> issueList,
 			List<String> issueTypeList, LocalDate startDate, LocalDate endDate) {
 		Predicate<KanbanJiraIssue> predicate = issue -> LocalDateTime
-				.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER).isAfter(startDate.atTime(0, 0, 0))
-				&& LocalDateTime.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER).isAfter(startDate.atTime(0, 0, 0)) &&
+				LocalDateTime.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
 						.isBefore(endDate.atTime(23, 59, 59));
 		List<KanbanJiraIssue> filteredIssue = issueList.stream().filter(predicate).collect(Collectors.toList());
 		Map<String, Long> projectIssueTypeMap = filteredIssue.stream().map(KanbanJiraIssue::getTypeName)
@@ -109,8 +109,8 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 	 * @throws ApplicationException
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		log.info("kpiname", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
@@ -148,8 +148,7 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
 
-		log.debug(
-				"[STORY OPEN RATE BY ISSUE-KANBAN-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
+		log.debug("[STORY OPEN RATE BY ISSUE-KANBAN-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
 				kpiRequest.getRequestTrackerId(), root);
 		return kpiElement;
 	}
@@ -196,16 +195,15 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 						fieldMapping.getTicketCountIssueType().stream().distinct().collect(Collectors.toList()));
 			}
 			uniqueProjectMap.put(leaf.getProjectFilter().getId(), mapOfProjectFilters);
-
 		});
 
-		/** additional filter **/
-		String subGroupCategory = KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.KANBAN,
-				DEV, flterHelperService);
+		/** additional filter * */
+		String subGroupCategory = KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.KANBAN, DEV,
+				flterHelperService);
 		mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				projectList.stream().distinct().collect(Collectors.toList()));
-		resultListMap.put(TICKET_LIST, kanbanJiraIssueRepository.findIssuesByDateAndType(mapOfFilters, uniqueProjectMap,
-				startDate, endDate, RANGE));
+		resultListMap.put(TICKET_LIST,
+				kanbanJiraIssueRepository.findIssuesByDateAndType(mapOfFilters, uniqueProjectMap, startDate, endDate, RANGE));
 		resultListMap.put(SUBGROUPCATEGORY, subGroupCategory);
 		resultListMap.put(PROJECT_WISE_ISSUETYPES, projectWiseIssueTypeMap);
 
@@ -220,7 +218,6 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 	 * @param leafNodeList
 	 * @param kpiElement
 	 * @param kpiRequest
-	 *
 	 */
 	@SuppressWarnings("unchecked")
 	private void dateWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> leafNodeList, KpiElement kpiElement,
@@ -251,7 +248,6 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 		kpiWithoutFilter(projectWiseJiraIssue, mapTmp, leafNodeList, kpiElement, kpiRequest);
 
 		kpiWithFilter(projectWiseJiraIssue, mapTmp, leafNodeList, kpiElement, kpiRequest);
-
 	}
 
 	private void kpiWithoutFilter(Map<String, List<KanbanJiraIssue>> projectWiseJiraIssue, Map<String, Node> mapTmp,
@@ -323,8 +319,8 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 
 					// create a map based on your kpi in this case story open rate it will be map of
 					// story type and count
-					Map<String, Long> issueTypeCountMap = filterKanbanDataBasedOnStartAndEndDateAndIssueType(
-							kanbanIssueList, issueTypeList, dateRange.getStartDate(), dateRange.getEndDate());
+					Map<String, Long> issueTypeCountMap = filterKanbanDataBasedOnStartAndEndDateAndIssueType(kanbanIssueList,
+							issueTypeList, dateRange.getStartDate(), dateRange.getEndDate());
 					// make it based on month, week and day
 					// This kpi is week wise
 
@@ -340,8 +336,7 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 					} else {
 						currentDate = currentDate.minusDays(1);
 					}
-					String projectName = projectNodeId.substring(0,
-							projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
+					String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 					populateValidationDataObject(kpiElement, requestTrackerId, validationDataMap, kanbanIssueList,
 							date + Constant.UNDERSCORE + projectName);
 				}
@@ -391,8 +386,7 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 		return dataCount;
 	}
 
-	private DataCount getDataCountObject(Map<String, Long> value, String projectName, String date,
-			String projectNodeId) {
+	private DataCount getDataCountObject(Map<String, Long> value, String projectName, String date, String projectNodeId) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);

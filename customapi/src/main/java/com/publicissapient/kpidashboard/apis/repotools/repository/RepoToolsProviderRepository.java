@@ -25,6 +25,5 @@ import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
 
 public interface RepoToolsProviderRepository extends MongoRepository<RepoToolsProvider, ObjectId> {
 
-    RepoToolsProvider findByToolName(String toolName);
-
+	RepoToolsProvider findByToolName(String toolName);
 }

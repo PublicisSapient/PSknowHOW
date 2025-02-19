@@ -23,13 +23,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -114,24 +114,21 @@ public class DefectCountByServiceImpl extends JiraIterationKPIService {
 						Collections.singletonList(basicProjectConfigId));
 
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> totalIssueList = IterationKpiHelper.getFilteredJiraIssue(totalIssues,
-							totalJiraIssueList);
-					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getTotalIssues(), totalIssueList);
+					List<JiraIssue> totalIssueList = IterationKpiHelper.getFilteredJiraIssue(totalIssues, totalJiraIssueList);
+					Set<JiraIssue> filtersIssuesList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
+							sprintDetails, sprintDetails.getTotalIssues(), totalIssueList);
 
 					// fetched all defects which is linked to current sprint report stories
-					List<JiraIssue> linkedDefects = jiraIssueRepository.findLinkedDefects(mapOfFilters,
-							totalSprintReportStories, uniqueProjectMap);
+					List<JiraIssue> linkedDefects = jiraIssueRepository.findLinkedDefects(mapOfFilters, totalSprintReportStories,
+							uniqueProjectMap);
 
 					// filter defects which is issue type not coming in sprint report
 					List<JiraIssue> subTaskDefects = linkedDefects.stream()
-							.filter(jiraIssue -> !totalSprintReportDefects.contains(jiraIssue.getNumber()))
-							.toList();
+							.filter(jiraIssue -> !totalSprintReportDefects.contains(jiraIssue.getNumber())).toList();
 
 					List<JiraIssue> totalSubTaskTaggedToSprint = subTaskDefects.stream()
-							.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList())
-									&& jiraIssue.getSprintIdList().contains(sprintId.split("_")[0]))
+							.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList()) &&
+									jiraIssue.getSprintIdList().contains(sprintId.split("_")[0]))
 							.toList();
 
 					List<JiraIssue> allIssues = new ArrayList<>();
@@ -175,8 +172,7 @@ public class DefectCountByServiceImpl extends JiraIterationKPIService {
 						.toList();
 				log.info("DefectCountByServiceImpl -> allCompletedDefects ->  : {}", allCompletedDefects);
 				// Creating map of modal Objects
-				Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper
-						.createMapOfIssueModal(allCompletedDefects);
+				Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper.createMapOfIssueModal(allCompletedDefects);
 				allCompletedDefects.forEach(defect -> {
 					KPIExcelUtility.populateIssueModal(defect, fieldMapping, issueKpiModalObject);
 					IssueKpiModalValue data = issueKpiModalObject.get(defect.getNumber());
@@ -191,8 +187,8 @@ public class DefectCountByServiceImpl extends JiraIterationKPIService {
 				});
 
 				kpiElement.setSprint(latestSprint.getName());
-				kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_STATUS_PIE_CHART
-						.getColumns(List.of(latestSprint), cacheService, filterHelperService));
+				kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_STATUS_PIE_CHART.getColumns(List.of(latestSprint),
+						cacheService, filterHelperService));
 
 				kpiElement.setIssueData(new HashSet<>(issueKpiModalObject.values()));
 				kpiElement.setFilterGroup(createFilterGroup());
@@ -260,7 +256,7 @@ public class DefectCountByServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates object to hold category related info.
-	 * 
+	 *
 	 * @return
 	 */
 	private CategoryData createCategoryData() {
@@ -276,7 +272,7 @@ public class DefectCountByServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates kpi data category object.
-	 * 
+	 *
 	 * @param categoryName
 	 * @param categoryValue
 	 * @param order

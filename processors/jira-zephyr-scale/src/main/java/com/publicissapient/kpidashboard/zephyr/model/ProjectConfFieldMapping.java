@@ -29,10 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The type Project conf field mapping.
- */
-
+/** The type Project conf field mapping. */
 @SuppressWarnings("PMD.TooManyFields")
 @Data
 @Builder
@@ -47,5 +44,4 @@ public class ProjectConfFieldMapping {
 	private ProcessorToolConnection processorToolConnection;
 	private ObjectId basicProjectConfigId;
 	private boolean isKanban;
-
 }

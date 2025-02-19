@@ -28,51 +28,48 @@ import com.publicissapient.kpidashboard.common.model.processortool.ProcessorTool
 
 /**
  * @author narsingh9
- * 
+ *         <p>
  *         service class for mapping {@link ProjectToolConfig} and
  *         {@link Connection}
- *
  */
 public interface ProcessorToolConnectionService {
 
 	/**
 	 * Method to get list of {@link ProcessorToolConnection}
-	 * 
+	 *
 	 * @param toolName
-	 *            name of tool
-	 * 
+	 *          name of tool
 	 * @return list of {@link ProcessorToolConnection}
 	 */
 	List<ProcessorToolConnection> findByTool(String toolName);
 
 	/**
 	 * Method to get list of {@link ProcessorToolConnection}
-	 * 
+	 *
 	 * @param toolName
-	 *            name of tool
+	 *          name of tool
 	 * @param configId
-	 *            basic project config id
-	 * 
+	 *          basic project config id
 	 * @return list of {@link ProcessorToolConnection}
 	 */
 	List<ProcessorToolConnection> findByToolAndBasicProjectConfigId(String toolName, ObjectId configId);
 
 	/**
 	 * Method to update the flag of breaking connection
-	 * 
+	 *
 	 * @param connection
-	 *            connection
+	 *          connection
 	 * @param connectionErrorMsg
-	 *            connectionErrorMsg
+	 *          connectionErrorMsg
 	 */
 	void updateBreakingConnection(ObjectId connection, String connectionErrorMsg);
 
 	/**
 	 * Method to validate the broken connection and update the flag for all tools
 	 * except Jira and Azure
-	 * 
+	 *
 	 * @param toolConnection
-	 *            toolConnection
+	 *          toolConnection
 	 */
 	void validateConnectionFlag(ProcessorToolConnection toolConnection);
 
@@ -81,7 +78,7 @@ public interface ProcessorToolConnectionService {
 	 * Azure
 	 *
 	 * @param toolConfig
-	 *            toolConfig
+	 *          toolConfig
 	 */
 	void validateJiraAzureConnFlag(ProjectToolConfig toolConfig);
 }

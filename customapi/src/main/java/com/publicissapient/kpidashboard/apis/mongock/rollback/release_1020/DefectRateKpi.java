@@ -50,16 +50,14 @@ public class DefectRateKpi {
 				.append("chartType", "line")
 				.append("kpiInfo", new Document()
 						.append("definition", "The percentage of merged pull requests that are addressing defects.")
-						.append("details", Collections.singletonList(new Document().append("type", "link").append(
-								"kpiLinkDetail",
+						.append("details", Collections.singletonList(new Document().append("type", "link").append("kpiLinkDetail",
 								new Document().append("text", "Detailed Information at").append("link",
 										"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/226394113/Developer+Defect+Rate")))))
-				.append("xAxisLabel", "Days/Weeks/Months").append("yAxisLabel", "Percentage")
-				.append("isPositiveTrend", false).append("upperThresholdBG", "red").append("lowerThresholdBG", "white")
-				.append("showTrend", true).append("kpiFilter", "dropDown").append("aggregationCriteria", "average")
-				.append("isAdditionalFilterSupport", false).append("calculateMaturity", false)
-				.append("hideOverallFilter", true).append("isRepoToolKpi", true).append("kpiCategory", "Developer")
-				.append("maturityRange", null);
+				.append("xAxisLabel", "Days/Weeks/Months").append("yAxisLabel", "Percentage").append("isPositiveTrend", false)
+				.append("upperThresholdBG", "red").append("lowerThresholdBG", "white").append("showTrend", true)
+				.append("kpiFilter", "dropDown").append("aggregationCriteria", "average")
+				.append("isAdditionalFilterSupport", false).append("calculateMaturity", false).append("hideOverallFilter", true)
+				.append("isRepoToolKpi", true).append("kpiCategory", "Developer").append("maturityRange", null);
 
 		mongoTemplate.getCollection("kpi_master").insertOne(kpiDocument);
 	}
@@ -68,10 +66,11 @@ public class DefectRateKpi {
 		Document thresholdValueMapping = new Document("fieldName", "thresholdValueKPI186")
 				.append("fieldLabel", "Target KPI Value").append("fieldType", "number")
 				.append("section", "Project Level Threshold").append("tooltip",
-						new Document("definition", "Target KPI value denotes the bare "
-								+ "minimum a project should maintain for a KPI. User should just input the number and"
-								+ " the unit like percentage, hours will automatically be considered."
-								+ " If the threshold is empty, then a common target KPI line will be shown"));
+						new Document("definition",
+								"Target KPI value denotes the bare " +
+										"minimum a project should maintain for a KPI. User should just input the number and" +
+										" the unit like percentage, hours will automatically be considered." +
+										" If the threshold is empty, then a common target KPI line will be shown"));
 
 		mongoTemplate.getCollection("field_mapping_structure").insertOne(thresholdValueMapping);
 	}
@@ -87,7 +86,6 @@ public class DefectRateKpi {
 	}
 
 	public void fieldMappingStructureDelete() {
-		mongoTemplate.getCollection("field_mapping_structure")
-				.deleteOne(new Document("fieldName", "thresholdValueKPI186"));
+		mongoTemplate.getCollection("field_mapping_structure").deleteOne(new Document("fieldName", "thresholdValueKPI186"));
 	}
 }

@@ -29,11 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * 
- * BitBucketConfig represents a class which holds BitBucketConfig details.
- *
- */
+/** BitBucketConfig represents a class which holds BitBucketConfig details. */
 @Component
 @ConfigurationProperties(prefix = "bitbucket")
 @Data
@@ -45,8 +41,10 @@ import lombok.Setter;
 public class BitBucketConfig {
 	private String host;
 	private String cron;
+
 	@Value("${aesEncryptionKey}")
 	private String aesEncryptionKey;
+
 	private int initialRunOccurrenceInDays;
 	private String api;
 	private String customApiBaseUrl;

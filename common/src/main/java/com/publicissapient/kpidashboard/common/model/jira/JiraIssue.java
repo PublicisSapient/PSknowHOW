@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.jira;//NOPMD
+package com.publicissapient.kpidashboard.common.model.jira; // NOPMD
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,7 +37,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@SuppressWarnings({ "javadoc" })
+@SuppressWarnings({"javadoc"})
 @Getter
 @Setter
 @Builder
@@ -161,7 +161,6 @@ public class JiraIssue extends BasicModel implements Cloneable {
 	private String projectEndDate;
 	private String projectBeginDate;
 	private String projectName;
-	private String projectID;
 	private String projectKey;
 	private String jiraProjectName;
 	private Integer bufferedEstimateTime; // buffered estimate in days
@@ -199,9 +198,7 @@ public class JiraIssue extends BasicModel implements Cloneable {
 	private String storyDemonstratedFieldValue;
 	private LocalDateTime storyDemonstratedFieldValueDate;
 
-	/**
-	 * Device Platform (iOS/Android/Desktop)
-	 */
+	/** Device Platform (iOS/Android/Desktop) */
 	private String devicePlatform;
 
 	private String defectRaisedBy;
@@ -262,5 +259,4 @@ public class JiraIssue extends BasicModel implements Cloneable {
 	public int hashCode() {
 		return Objects.hash(number);
 	}
-
 }

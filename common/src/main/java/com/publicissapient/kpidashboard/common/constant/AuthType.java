@@ -18,11 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.constant;
 
-/**
- * The Auth Type Enum
- */
+/** The Auth Type Enum */
 public enum AuthType {
-
-	STANDARD, LDAP, CROWDSSO, APIKEY, SSO , SAML;
-
+	STANDARD, LDAP, CROWDSSO, APIKEY, SSO, SAML;
 }

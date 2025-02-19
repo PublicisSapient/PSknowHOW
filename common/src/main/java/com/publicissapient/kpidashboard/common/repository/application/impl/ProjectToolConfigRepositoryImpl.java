@@ -33,9 +33,7 @@ import com.mongodb.client.MongoCursor;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigProcessorItem;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
 
-/**
- * An implementation of {@link ProjectToolConfigRepositoryCustom}
- */
+/** An implementation of {@link ProjectToolConfigRepositoryCustom} */
 public class ProjectToolConfigRepositoryImpl implements ProjectToolConfigRepositoryCustom {
 
 	@Autowired
@@ -75,5 +73,4 @@ public class ProjectToolConfigRepositoryImpl implements ProjectToolConfigReposit
 		}
 		return tools;
 	}
-
 }

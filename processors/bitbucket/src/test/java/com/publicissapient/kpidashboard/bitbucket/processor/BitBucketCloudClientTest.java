@@ -75,7 +75,8 @@ class BitBucketCloudClientTest {
 		config.setPageSize(2);
 		config.setAesEncryptionKey("708C150A5363290AAE3F579BF3746AD5");
 
-		bucketCloudClient = new BitBucketCloudClient(config, bitbucketRestOperations, aesEncryptionService);
+		bucketCloudClient =
+				new BitBucketCloudClient(config, bitbucketRestOperations, aesEncryptionService);
 	}
 
 	@Test
@@ -98,8 +99,7 @@ class BitBucketCloudClientTest {
 		connectionDetail.setUsername("User");
 		String restUri = new BitBucketServerURIBuilder(repo, config, connectionDetail).build();
 		when(restTemplate.exchange(ArgumentMatchers.anyString(), ArgumentMatchers.any(HttpMethod.class),
-				ArgumentMatchers.<HttpEntity<?>>any(), ArgumentMatchers.<Class<String>>any()))
-						.thenReturn(responseEntity);
+				ArgumentMatchers.<HttpEntity<?>>any(), ArgumentMatchers.<Class<String>>any())).thenReturn(responseEntity);
 		List<CommitDetails> commits = bucketCloudClient.fetchAllCommits(repo, true, connectionDetail, proBasicConfig);
 		Assert.assertEquals(2, commits.size());
 	}
