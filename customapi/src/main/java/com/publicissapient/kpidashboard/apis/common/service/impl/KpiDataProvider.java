@@ -33,6 +33,7 @@ import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
+import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
@@ -41,6 +42,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
@@ -60,6 +62,7 @@ public class KpiDataProvider {
 	private static final Integer SP_CONSTANT = 3;
 	public static final String TOTAL_ISSUE = "totalIssue";
 	public static final String SPRINT_DETAILS = "sprintDetails";
+	private static final String HAPPINESS_INDEX_DETAILS = "happinessIndexDetails";
 	public static final String SCOPE_CHANGE_ISSUE_HISTORY = "scopeChangeIssuesHistories";
 	private static final String PROJECT_WISE_TOTAL_ISSUE = "projectWiseTotalIssues";
 	private static final String SPRINT_WISE_PREDICTABILITY = "predictability";
@@ -95,6 +98,8 @@ public class KpiDataProvider {
 	private CustomApiConfig customApiConfig;
 	@Autowired
 	private ProjectReleaseRepo projectReleaseRepo;
+	@Autowired
+	private HappinessKpiDataRepository happinessKpiDataRepository;
 
 	/**
 	 * Fetches data from DB for the given project and sprints combination.
@@ -740,6 +745,28 @@ public class KpiDataProvider {
 			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetails);
 			resultListMap.put(STORY_LIST, jiraIssueRepository.findIssueAndDescByNumber(new ArrayList<>(totalIssue)));
 		}
+		return resultListMap;
+	}
+
+	/**
+	 * Fetches sprint Predictability data from the database for the given project
+	 * and sprints combination.
+	 *
+	 * @param sprintList
+	 *            The list of sprint IDs.
+	 * @return A map containing sprint details and Happiness KPI Data list.
+	 */
+	public Map<String, Object> fetchHappinessIndexDataFromDb(List<String> sprintList) {
+
+		Map<String, Object> resultListMap = new HashMap<>();
+		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
+		List<HappinessKpiData> happinessKpiDataList = happinessKpiDataRepository.findBySprintIDIn(sprintList);
+		// filtering rating of 0 i.e not entered any rating
+		happinessKpiDataList.forEach(happinessKpiData -> happinessKpiData.getUserRatingList().removeIf(
+				userRatingData -> userRatingData.getRating() == null || userRatingData.getRating().equals(0)));
+		resultListMap.put(SPRINT_DETAILS, sprintDetails);
+		resultListMap.put(HAPPINESS_INDEX_DETAILS, happinessKpiDataList);
+
 		return resultListMap;
 	}
 }

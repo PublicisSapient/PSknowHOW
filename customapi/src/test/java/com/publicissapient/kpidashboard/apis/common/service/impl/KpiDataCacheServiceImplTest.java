@@ -150,6 +150,14 @@ public class KpiDataCacheServiceImplTest {
 	}
 
 	@Test
+	public void fetchHappinessIndexData_shouldReturnCorrectData_whenValidInput() {
+		when(kpiDataProvider.fetchHappinessIndexDataFromDb(any())).thenReturn(new HashMap<>());
+		Map<String, Object> result = kpiDataCacheService.fetchHappinessIndexData( new ObjectId(),
+				new ArrayList<>(), "kpi149");
+		assertNotNull(result);
+	}
+
+	@Test
 	public void fetchSprintVelocityData_shouldReturnCorrectData_whenValidInput() {
 		when(kpiDataProvider.fetchSprintVelocityDataFromDb(any(), any())).thenReturn(new HashMap<>());
 		Map<String, Object> result =
