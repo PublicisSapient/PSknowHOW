@@ -138,10 +138,10 @@ public class SprintGoalServiceImpl extends JiraKPIService<Double, List<Object>, 
 			}
 
 			// Populate sprint details
-			Set<ProjectSprintDetails.SprintDTO> sprintDetailSet = projectSprintDetails.getSprintDetails();
+			Set<ProjectSprintDetails.SprintDTO> sprintDetailSet = projectSprintDetails.getSprintGoals();
 			if (sprintDetailSet == null) {
 				sprintDetailSet = new HashSet<>();
-				projectSprintDetails.setSprintDetails(sprintDetailSet);
+				projectSprintDetails.setSprintGoals(sprintDetailSet);
 			}
 
 			List<SprintDetails> sprints = projectWiseSprints.get(new ObjectId(projectId));

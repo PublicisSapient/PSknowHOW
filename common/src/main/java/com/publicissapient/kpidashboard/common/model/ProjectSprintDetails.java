@@ -34,7 +34,7 @@ public class ProjectSprintDetails {
 	private String name;
 	private String projectId;
 	private List<HierarchyValueDTO> hierarchy;
-	private Set<SprintDTO> sprintDetails;
+	private Set<SprintDTO> sprintGoals;
 
 	@Data
 	public static class SprintDTO {
