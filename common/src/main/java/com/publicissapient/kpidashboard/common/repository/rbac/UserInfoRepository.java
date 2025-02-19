@@ -27,28 +27,25 @@ import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 
-/**
- * Repository for {@link UserInfo}.
- */
+/** Repository for {@link UserInfo}. */
 public interface UserInfoRepository extends CrudRepository<UserInfo, ObjectId> {
 
 	/**
 	 * Find by username UserInfo.
 	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @return the UserInfo
 	 */
-
 	UserInfo findByUsername(String username);
 
 	/**
 	 * Finds by username and auth type.
 	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @param authType
-	 *            the auth type
+	 *          the auth type
 	 * @return the user info
 	 */
 	UserInfo findByUsernameAndAuthType(String username, AuthType authType);
@@ -57,7 +54,7 @@ public interface UserInfoRepository extends CrudRepository<UserInfo, ObjectId> {
 	 * Finds by user role.
 	 *
 	 * @param roleAdmin
-	 *            the role admin
+	 *          the role admin
 	 * @return the collection of UserInfo
 	 */
 	List<UserInfo> findByAuthoritiesIn(List<String> roleAdmin);
@@ -71,7 +68,7 @@ public interface UserInfoRepository extends CrudRepository<UserInfo, ObjectId> {
 
 	/**
 	 * delete projectAccess by username
-	 * 
+	 *
 	 * @param username
 	 */
 	void deleteByUsernameAndProjectsAccessIn(String username, List<ProjectsAccess> projectsAccesses);
@@ -85,26 +82,24 @@ public interface UserInfoRepository extends CrudRepository<UserInfo, ObjectId> {
 
 	/**
 	 * Find by authType and authorities in
-	 * 
+	 *
 	 * @param authType
-	 *            authType
+	 *          authType
 	 * @param roles
-	 *            roles
+	 *          roles
 	 * @return list of users
 	 */
 	List<UserInfo> findByAuthTypeAndAuthoritiesIn(String authType, List<String> roles);
 
 	/**
 	 * find all the users by auth type
-	 * 
+	 *
 	 * @param authType
-	 *            auth types
+	 *          auth types
 	 * @return list of users
 	 */
 	List<UserInfo> findByAuthType(String authType);
 
-	/**
-	 * find all the users
-	 */
+	/** find all the users */
 	List<UserInfo> findAll();
 }

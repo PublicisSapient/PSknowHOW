@@ -48,7 +48,6 @@ public class CacheControllerTest {
 		doNothing().when(cacheService).clearCache(Mockito.anyString());
 		cacheController.clearCache("abc");
 		verify(cacheService, times(1)).clearCache(Mockito.anyString());
-
 	}
 
 	@Test

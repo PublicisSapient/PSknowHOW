@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
-import com.publicissapient.kpidashboard.apis.model.Node;
 import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -50,7 +48,7 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -70,7 +68,6 @@ public class ReleaseDefectCountByStatusServiceImplTest {
 	ConfigHelperService configHelperService;
 	@Mock
 	JiraReleaseServiceR jiraService;
-
 
 	@InjectMocks
 	private ReleaseDefectCountByStatusServiceImpl defectCountByStatusService;
@@ -97,8 +94,7 @@ public class ReleaseDefectCountByStatusServiceImplTest {
 
 	@Test
 	public void getQualifierType() {
-		assertThat(defectCountByStatusService.getQualifierType(),
-				equalTo(KPICode.DEFECT_COUNT_BY_STATUS_RELEASE.name()));
+		assertThat(defectCountByStatusService.getQualifierType(), equalTo(KPICode.DEFECT_COUNT_BY_STATUS_RELEASE.name()));
 	}
 
 	@Test

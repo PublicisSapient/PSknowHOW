@@ -118,7 +118,6 @@ public class AzureProcessorJobExecutorTest {
 		prepareProjectConfig();
 		prepareToolConfig();
 		AzureProcessor processor = new AzureProcessor();
-
 	}
 
 	@Test
@@ -157,7 +156,6 @@ public class AzureProcessorJobExecutorTest {
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		ProjectBasicConfig projectConfig = objectMapper.readValue(file, ProjectBasicConfig.class);
 		projectConfigList.add(projectConfig);
-
 	}
 
 	private void prepareToolConfig() {
@@ -196,6 +194,5 @@ public class AzureProcessorJobExecutorTest {
 		azureServer.setApiVersion("5.1");
 		azureServer.setUsername("");
 		return azureServer;
-
 	}
 }

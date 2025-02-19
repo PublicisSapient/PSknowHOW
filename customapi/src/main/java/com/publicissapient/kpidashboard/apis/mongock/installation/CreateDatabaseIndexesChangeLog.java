@@ -86,8 +86,7 @@ public class CreateDatabaseIndexesChangeLog {
 		mongoTemplate.getCollection(JIRA_ISSUE).createIndex(new Document("_id", 1), new IndexOptions().name("_id_"));
 
 		// Index 2
-		mongoTemplate.getCollection(JIRA_ISSUE).createIndex(
-				new Document(BASIC_PROJECT_CONFIG_ID, 1).append(TYPE_NAME, 1),
+		mongoTemplate.getCollection(JIRA_ISSUE).createIndex(new Document(BASIC_PROJECT_CONFIG_ID, 1).append(TYPE_NAME, 1),
 				new IndexOptions().name("basicProjectConfigId_1_typeName_1"));
 
 		// Index 3
@@ -110,8 +109,7 @@ public class CreateDatabaseIndexesChangeLog {
 				new IndexOptions().name("typeName_1_defectStoryID_1"));
 
 		// Index 7
-		mongoTemplate.getCollection(JIRA_ISSUE).createIndex(
-				new Document(BASIC_PROJECT_CONFIG_ID, 1).append("number", 1),
+		mongoTemplate.getCollection(JIRA_ISSUE).createIndex(new Document(BASIC_PROJECT_CONFIG_ID, 1).append("number", 1),
 				new IndexOptions().name("basicProjectConfigId_1_number_1"));
 
 		// Index 8
@@ -144,10 +142,8 @@ public class CreateDatabaseIndexesChangeLog {
 				new IndexOptions().name("basicProjectConfigId_1_typeName_1_status_1"));
 
 		// Index 14
-		mongoTemplate.getCollection(JIRA_ISSUE).createIndex(
-				new Document(SPRINT_ID, -1).append(BASIC_PROJECT_CONFIG_ID, 1),
+		mongoTemplate.getCollection(JIRA_ISSUE).createIndex(new Document(SPRINT_ID, -1).append(BASIC_PROJECT_CONFIG_ID, 1),
 				new IndexOptions().name("sprintID_-1_basicProjectConfigId_1"));
-
 	}
 
 	public void clearAndExecuteJiraIssueCustomHistoryIndexes() {
@@ -204,8 +200,8 @@ public class CreateDatabaseIndexesChangeLog {
 	public void clearAndExecuteKanbanIssueCustomHistoryIndexes() {
 		mongoTemplate.getDb().getCollection(KANBAN_JIRA_ISSUE_CUSTOM_HISTORY).dropIndexes();
 		// Index 1
-		mongoTemplate.getCollection(KANBAN_JIRA_ISSUE_CUSTOM_HISTORY).createIndex(
-				new Document(BASIC_PROJECT_CONFIG_ID, 1), new IndexOptions().name(BASIC_PROJECT_CONFIG_ID_1));
+		mongoTemplate.getCollection(KANBAN_JIRA_ISSUE_CUSTOM_HISTORY).createIndex(new Document(BASIC_PROJECT_CONFIG_ID, 1),
+				new IndexOptions().name(BASIC_PROJECT_CONFIG_ID_1));
 
 		// Index 2
 		mongoTemplate.getCollection(KANBAN_JIRA_ISSUE_CUSTOM_HISTORY).createIndex(
@@ -243,8 +239,7 @@ public class CreateDatabaseIndexesChangeLog {
 				new IndexOptions().name("sprintID_1"));
 
 		// Index 3
-		mongoTemplate.getCollection(SPRINT_DETAILS).createIndex(
-				new Document(BASIC_PROJECT_CONFIG_ID, 1).append("state", 1),
+		mongoTemplate.getCollection(SPRINT_DETAILS).createIndex(new Document(BASIC_PROJECT_CONFIG_ID, 1).append("state", 1),
 				new IndexOptions().name("basicProjectConfigId_1_state_1"));
 	}
 
@@ -301,9 +296,8 @@ public class CreateDatabaseIndexesChangeLog {
 				new IndexOptions().name("basicProjectConfigId_1_deploymentStatus_1"));
 
 		// Index 2
-		mongoTemplate.getCollection(DEPLOYMENTS).createIndex(
-				new Document("deploymentStatus", 1).append("startTime", 1).append("endTime", 1)
-						.append("projectToolConfigId", 1),
+		mongoTemplate.getCollection(DEPLOYMENTS).createIndex(new Document("deploymentStatus", 1).append("startTime", 1)
+				.append("endTime", 1).append("projectToolConfigId", 1),
 				new IndexOptions().name("depStatus_1_stTime_1_endTime_1_projToolConfId_1"));
 	}
 
@@ -325,8 +319,7 @@ public class CreateDatabaseIndexesChangeLog {
 
 	public void clearAndExecuteMergeRequestsIndexes() {
 		mongoTemplate.getDb().getCollection(MERGE_REQUESTS).dropIndexes();
-		mongoTemplate.getCollection(MERGE_REQUESTS).createIndex(new Document("_id", 1),
-				new IndexOptions().name("_id_"));
+		mongoTemplate.getCollection(MERGE_REQUESTS).createIndex(new Document("_id", 1), new IndexOptions().name("_id_"));
 
 		// Create index for PROCESSOR_ITEM_ID field in the collection
 		mongoTemplate.getCollection(MERGE_REQUESTS).createIndex(new Document(PROCESSOR_ITEM_ID, 1),
@@ -334,17 +327,14 @@ public class CreateDatabaseIndexesChangeLog {
 
 		// Create compound index for PROCESSOR_ITEM_ID, CREATED_DATE, "fromBranch", and
 		// "closedDate" fields in the collection
-		mongoTemplate.getCollection(MERGE_REQUESTS)
-				.createIndex(
-						new Document(PROCESSOR_ITEM_ID, 1).append(CREATED_DATE, 1).append("fromBranch", 1)
-								.append("closedDate", 1),
-						new IndexOptions().name("processorItmId_1_creDt_1_fromBranch_1_clsDt_1"));
+		mongoTemplate.getCollection(MERGE_REQUESTS).createIndex(
+				new Document(PROCESSOR_ITEM_ID, 1).append(CREATED_DATE, 1).append("fromBranch", 1).append("closedDate", 1),
+				new IndexOptions().name("processorItmId_1_creDt_1_fromBranch_1_clsDt_1"));
 	}
 
 	public void clearAndExecuteProcessorItemsIndexes() {
 		mongoTemplate.getDb().getCollection(PROCESSOR_ITEMS).dropIndexes();
-		mongoTemplate.getCollection(PROCESSOR_ITEMS).createIndex(new Document("_id", 1),
-				new IndexOptions().name("_id_"));
+		mongoTemplate.getCollection(PROCESSOR_ITEMS).createIndex(new Document("_id", 1), new IndexOptions().name("_id_"));
 
 		// Create index for "toolConfigId" field in the collection
 		mongoTemplate.getCollection(PROCESSOR_ITEMS).createIndex(new Document("toolConfigId", 1),
@@ -355,6 +345,7 @@ public class CreateDatabaseIndexesChangeLog {
 		IndexOperations indexOps = mongoTemplate.indexOps("users_session");
 		indexOps.ensureIndex(new Index().on("expiresOn", Sort.Direction.ASC).expire(0));
 	}
+
 	@RollbackExecution
 	public void rollback() {
 		// We are inserting the documents through DDL, no rollback to any collections.

@@ -17,33 +17,33 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.common.model.rbac;
 
+import java.util.Objects;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Objects;
 
 @Getter
 @Setter
 public class AccessItemDTO {
-    private String itemId;
-    private String itemName;
+	private String itemId;
+	private String itemName;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-        AccessItemDTO that = (AccessItemDTO) o;
+		AccessItemDTO that = (AccessItemDTO) o;
 
-        return Objects.equals(itemId, that.itemId);
-    }
+		return Objects.equals(itemId, that.itemId);
+	}
 
-    @Override
-    public int hashCode() {
-        return itemId != null ? itemId.hashCode() : 0;
-    }
+	@Override
+	public int hashCode() {
+		return itemId != null ? itemId.hashCode() : 0;
+	}
 }

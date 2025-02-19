@@ -52,7 +52,7 @@ public final class AzureIssueClientUtil {
 	 * Builds Filed Map
 	 *
 	 * @param fields
-	 *            IssueField Iterable
+	 *          IssueField Iterable
 	 * @return Map of FieldIssue ID and FieldIssue Object
 	 */
 	public static Map<String, Object> buildFieldMap(Fields fields) {

@@ -27,12 +27,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +39,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintWiseStoryDataFactory;
@@ -52,6 +49,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -100,8 +98,6 @@ public class KpiDataHelperTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
-
-
 	}
 
 	@Test
@@ -133,7 +129,7 @@ public class KpiDataHelperTest {
 
 		Map<String, Object> mapOfFilters = new HashMap<>();
 
-		KpiDataHelper.createAdditionalFilterMapForCapacity(kpiRequest, mapOfFilters,flterHelperService);
+		KpiDataHelper.createAdditionalFilterMapForCapacity(kpiRequest, mapOfFilters, flterHelperService);
 		assertEquals(2, mapOfFilters.size());
 	}
 
@@ -151,9 +147,8 @@ public class KpiDataHelperTest {
 	@Test
 	public void testProcessSprintIssues_NoSprintMatch() {
 		Map<String, List<JiraHistoryChangeLog>> issueKeyWiseHistoryMap = jiraIssueCustomHistory.stream()
-				.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID,
-						JiraIssueCustomHistory::getSprintUpdationLog, (existingValue, newValue) -> newValue,
-						LinkedHashMap::new));
+				.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, JiraIssueCustomHistory::getSprintUpdationLog,
+						(existingValue, newValue) -> newValue, LinkedHashMap::new));
 		Map<String, String> stringMap = KpiDataHelper.processSprintIssues(stories, "sprint1", issueKeyWiseHistoryMap,
 				CommonConstant.ADDED);
 		assertEquals(0, stringMap.size());
@@ -163,9 +158,8 @@ public class KpiDataHelperTest {
 	public void testProcessSprintIssues_Added() {
 
 		Map<String, List<JiraHistoryChangeLog>> issueKeyWiseHistoryMap = jiraIssueCustomHistory.stream()
-				.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID,
-						JiraIssueCustomHistory::getSprintUpdationLog, (existingValue, newValue) -> newValue,
-						LinkedHashMap::new));
+				.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, JiraIssueCustomHistory::getSprintUpdationLog,
+						(existingValue, newValue) -> newValue, LinkedHashMap::new));
 
 		issueKeyWiseHistoryMap.forEach((history, list) -> {
 			list.forEach(a -> a.setChangedTo("sprint1"));
@@ -179,9 +173,8 @@ public class KpiDataHelperTest {
 	public void testProcessSprintIssues_Removed() {
 
 		Map<String, List<JiraHistoryChangeLog>> issueKeyWiseHistoryMap = jiraIssueCustomHistory.stream()
-				.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID,
-						JiraIssueCustomHistory::getSprintUpdationLog, (existingValue, newValue) -> newValue,
-						LinkedHashMap::new));
+				.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, JiraIssueCustomHistory::getSprintUpdationLog,
+						(existingValue, newValue) -> newValue, LinkedHashMap::new));
 
 		issueKeyWiseHistoryMap.forEach((history, list) -> {
 			list.forEach(a -> a.setChangedFrom("sprint1"));
@@ -192,15 +185,13 @@ public class KpiDataHelperTest {
 	}
 
 	@Test
-	public void testCalculateStoryPoints(){
+	public void testCalculateStoryPoints() {
 		fieldMapping.setEstimationCriteria("test");
 		double v = KpiDataHelper.calculateStoryPoints(stories, fieldMapping);
-		assertEquals(92.25,v, 0.0d);
+		assertEquals(92.25, v, 0.0d);
 		fieldMapping.setEstimationCriteria("");
 		v = KpiDataHelper.calculateStoryPoints(stories, fieldMapping);
-		assertEquals(92.25,v, 0.0d);
-
-
+		assertEquals(92.25, v, 0.0d);
 	}
 
 	private KpiRequest createKpiRequest() {
@@ -217,7 +208,7 @@ public class KpiDataHelperTest {
 		kpiElement.setChartType("gaugeChart");
 		kpiList.add(kpiElement);
 		kpiRequest.setLevel(2);
-		kpiRequest.setIds(new String[] { "Alpha_Tower_Id" }); // This is
+		kpiRequest.setIds(new String[]{"Alpha_Tower_Id"}); // This is
 		// immaterial as
 		// all the sprint
 		// in Account
@@ -229,5 +220,4 @@ public class KpiDataHelperTest {
 		kpiRequest.setSelectedMap(selectedMap);
 		return kpiRequest;
 	}
-
 }

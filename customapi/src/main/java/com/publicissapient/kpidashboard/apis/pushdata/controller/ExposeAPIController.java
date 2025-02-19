@@ -49,7 +49,7 @@ public class ExposeAPIController {
 	/**
 	 * API to generate token for push data based and generate token has permission
 	 * only superadmin and project admin of particular project
-	 * 
+	 *
 	 * @param exposeAPITokenRequestDTO
 	 * @return
 	 */

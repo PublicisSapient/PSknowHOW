@@ -24,7 +24,5 @@ package com.publicissapient.kpidashboard.common.model.userboardconfig;
  * @author shunaray
  */
 public enum ConfigLevel {
-
 	PROJECT, USER;
-
 }

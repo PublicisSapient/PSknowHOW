@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.argocd.dto;
 
 import lombok.Data;

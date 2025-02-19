@@ -22,5 +22,4 @@ public class CompositeResult {
 	private AssigneeDetails assigneeDetails;
 	private KanbanJiraIssue kanbanJiraIssue;
 	private KanbanIssueCustomHistory kanbanIssueCustomHistory;
-
 }

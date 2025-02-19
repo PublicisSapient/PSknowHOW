@@ -70,16 +70,11 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 /**
  * Test class for testing CommitmentReliability implementation
- * 
- * @author chimudga
  *
+ * @author chimudga
  */
 @RunWith(MockitoJUnitRunner.class)
 public class CommitmentReliabilityServiceImplTest {
@@ -92,19 +87,11 @@ public class CommitmentReliabilityServiceImplTest {
 	List<JiraIssue> totalIssueList = new ArrayList<>();
 	List<SprintDetails> sprintDetailsList = new ArrayList<>();
 	@Mock
-	JiraIssueRepository jiraIssueRepository;
-	@Mock
-	SprintRepository sprintRepository;
-	@Mock
 	CacheService cacheService;
 	@Mock
 	ConfigHelperService configHelperService;
 	@InjectMocks
 	CommittmentReliabilityServiceImpl commitmentReliabilityImpl;
-	@Mock
-	ProjectBasicConfigRepository projectConfigRepository;
-	@Mock
-	FieldMappingRepository fieldMappingRepository;
 	@Mock
 	CustomApiConfig customApiConfig;
 	@Mock
@@ -126,9 +113,7 @@ public class CommitmentReliabilityServiceImplTest {
 	@Mock
 	private KpiHelperService kpiHelperService;
 
-	/**
-	 * Set up the data
-	 */
+	/** Set up the data */
 	@Before
 	public void setup() {
 
@@ -173,7 +158,6 @@ public class CommitmentReliabilityServiceImplTest {
 
 		kpiWiseAggregation.put(COMMITMENTRELIABILITY, "average");
 		setTreadValuesDataCount();
-
 	}
 
 	private void setTreadValuesDataCount() {
@@ -200,7 +184,6 @@ public class CommitmentReliabilityServiceImplTest {
 		dataCountList2.add(dataCountValue2);
 
 		trendValueMap.put("Issue Count", dataCountList2);
-
 	}
 
 	private DataCount createDataCount(String data, String sprint, String sprintName, int delivered, int commited) {
@@ -216,19 +199,14 @@ public class CommitmentReliabilityServiceImplTest {
 		dataCount.setValue(Long.valueOf(data));
 		dataCount.setKpiGroup("Story Point");
 		return dataCount;
-
 	}
 
-	/**
-	 * clean up method
-	 */
+	/** clean up method */
 	@After
 	public void cleanup() {
 	}
 
-	/**
-	 * Test the data when fetched from db
-	 */
+	/** Test the data when fetched from db */
 	@Test
 	public void testFetchKPIDataFromDbData() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
@@ -250,9 +228,7 @@ public class CommitmentReliabilityServiceImplTest {
 				equalTo(20));
 	}
 
-	/**
-	 * Test the method to calculate commitment reliability
-	 */
+	/** Test the method to calculate commitment reliability */
 	@Test
 	public void testGetSprintCommitmentReliability() throws ApplicationException {
 
@@ -282,24 +258,21 @@ public class CommitmentReliabilityServiceImplTest {
 			KpiElement kpiElement = commitmentReliabilityImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(dc -> {
-
 				String status = dc.getFilter();
 				switch (status) {
-				case "Story Point":
-					assertThat("Story Point :", dc.getValue().size(), equalTo(1));
-					break;
-				case "Issue Count":
-					assertThat("Issue Count :", dc.getValue().size(), equalTo(1));
-					break;
-				default:
-					break;
+					case "Story Point" :
+						assertThat("Story Point :", dc.getValue().size(), equalTo(1));
+						break;
+					case "Issue Count" :
+						assertThat("Issue Count :", dc.getValue().size(), equalTo(1));
+						break;
+					default :
+						break;
 				}
-
 			});
 
 		} catch (ApplicationException e) {
 			e.printStackTrace();
-
 		}
 	}
 

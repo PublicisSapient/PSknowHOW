@@ -1,6 +1,4 @@
-/**
- *
- */
+/** */
 package com.publicissapient.kpidashboard.apis.jira.kanban.service;
 
 import static org.junit.Assert.assertNull;
@@ -13,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,12 +36,12 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 
 /**
  * @author swalamba
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectVersionKanbanServiceImplTest {
@@ -122,8 +119,7 @@ public class ProjectVersionKanbanServiceImplTest {
 	public void testFetchKPIDataFromDbNoFilterData() {
 		List<Node> leafNodeList = new ArrayList<>();
 		Mockito.when(projectReleaseRepo.findByConfigIdIn(any())).thenReturn(null);
-		assertNull(projectVersionKanbanService.fetchKPIDataFromDb(leafNodeList, null, null, null)
-				.get("projectReleaseDetail"));
+		assertNull(
+				projectVersionKanbanService.fetchKPIDataFromDb(leafNodeList, null, null, null).get("projectReleaseDetail"));
 	}
-
 }

@@ -168,11 +168,9 @@ public class JenkinsProcessorTaskTests {
 		build.setBuildUrl("JOB1_1_URL");
 		build.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
 		build.setStartedBy("TestUser");
-		when(client2.getBuildJobsFromServer(any(), any()))
-				.thenReturn(oneJobWithBuilds(JENKINSSAMPLESERVER.getId(), build));
+		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(oneJobWithBuilds(JENKINSSAMPLESERVER.getId(), build));
 		when(buildRepository.findByProjectToolConfigIdAndNumber(any(), any())).thenReturn(build);
 		task.execute(jenkinsProcessor);
-
 	}
 
 	@Test
@@ -213,8 +211,7 @@ public class JenkinsProcessorTaskTests {
 		pl.add(processorExecutionTraceLog);
 		projectConfig.setId(new ObjectId("62171d0f26dd266803fa87da"));
 		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
-		when(client2.getBuildJobsFromServer(any(), any()))
-				.thenReturn(twoJobsWithTwoBuilds(JENKINSSAMPLESERVER.getId()));
+		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(twoJobsWithTwoBuilds(JENKINSSAMPLESERVER.getId()));
 		when(processorExecutionTraceLogService.getTraceLogs("Jenkins", "62171d0f26dd266803fa87da")).thenReturn(pl);
 		task.execute(processorWithOneServer());
 		assertTrue(task.execute(processorWithOneServer()));
@@ -239,8 +236,7 @@ public class JenkinsProcessorTaskTests {
 		build.setBuildUrl("JOB1_1_URL");
 		JenkinsClient client2 = mock(JenkinsClient.class);
 		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
-		when(client2.getBuildJobsFromServer(any(), any()))
-				.thenReturn(oneJobWithBuilds(JENKINSSAMPLESERVER.getId(), build));
+		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(oneJobWithBuilds(JENKINSSAMPLESERVER.getId(), build));
 
 		task.execute(processor);
 		assertTrue(task.execute(processor));
@@ -281,8 +277,7 @@ public class JenkinsProcessorTaskTests {
 		Build build = build("1", "JOB1_1_URL");
 		JenkinsClient client2 = mock(JenkinsClient.class);
 		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
-		when(client2.getBuildJobsFromServer(any(), any()))
-				.thenReturn(oneJobWithBuilds(JENKINSSAMPLESERVER.getId(), build));
+		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(oneJobWithBuilds(JENKINSSAMPLESERVER.getId(), build));
 		when(buildRepository.findByProjectToolConfigIdAndNumber(JENKINSSAMPLESERVER.getId(), build.getNumber()))
 				.thenReturn(null);
 		assertTrue(task.execute(processor));
@@ -302,7 +297,6 @@ public class JenkinsProcessorTaskTests {
 		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(new HashMap<ObjectId, Set<Build>>());
 
 		assertTrue(task.execute(processor));
-
 	}
 
 	@Test
@@ -311,8 +305,7 @@ public class JenkinsProcessorTaskTests {
 		JenkinsClient client2 = mock(JenkinsClient.class);
 
 		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
-		when(client2.getBuildJobsFromServer(any(), any()))
-				.thenReturn(twoJobsWithTwoBuilds(JENKINSSAMPLESERVER.getId()));
+		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(twoJobsWithTwoBuilds(JENKINSSAMPLESERVER.getId()));
 
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId("Jenkins",
 				new ObjectId("62171d0f26dd266803fa87da"))).thenReturn(connList);
@@ -387,5 +380,4 @@ public class JenkinsProcessorTaskTests {
 		conn.get().setId(new ObjectId("5f9014743cb73ce896167658"));
 		return conn;
 	}
-
 }

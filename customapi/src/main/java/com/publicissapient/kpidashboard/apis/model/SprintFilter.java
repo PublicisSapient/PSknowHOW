@@ -22,14 +22,12 @@ import java.io.Serializable;
 
 /**
  * @author tauakram
- *
  */
 public class SprintFilter implements Serializable {
 
-	/**
-	 * 
-	 */
+	/** */
 	private static final long serialVersionUID = 1L;
+
 	private String id;
 	private String name;
 	private String startDate;
@@ -39,7 +37,6 @@ public class SprintFilter implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @param sprintId
 	 * @param sprintName
 	 * @param sprintStartDate
@@ -54,7 +51,6 @@ public class SprintFilter implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return id
 	 */
 	public String getId() {
@@ -62,7 +58,6 @@ public class SprintFilter implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return name
 	 */
 	public String getName() {
@@ -70,7 +65,6 @@ public class SprintFilter implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return startDate
 	 */
 	public String getStartDate() {
@@ -78,11 +72,9 @@ public class SprintFilter implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return endDate
 	 */
 	public String getEndDate() {
 		return endDate;
 	}
-
 }

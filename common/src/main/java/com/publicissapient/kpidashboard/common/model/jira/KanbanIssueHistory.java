@@ -26,9 +26,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * Model class to hold history of kanban feature..
- */
+/** Model class to hold history of kanban feature.. */
 @Data
 @Builder
 @Getter
@@ -49,5 +47,4 @@ public class KanbanIssueHistory {
 
 	/** The activity date. */
 	private String activityDate;
-
 }

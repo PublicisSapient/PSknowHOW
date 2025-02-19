@@ -257,6 +257,5 @@ public class QADDServiceImplTest {
 		KpiElement kpiElement = qaddServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		return kpiElement.getTrendValueList();
-
 	}
 }

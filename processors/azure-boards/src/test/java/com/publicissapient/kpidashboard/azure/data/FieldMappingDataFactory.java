@@ -57,5 +57,4 @@ public class FieldMappingDataFactory {
 	public FieldMapping getFieldMappings() {
 		return fieldMappings;
 	}
-
 }

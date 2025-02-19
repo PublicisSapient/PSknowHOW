@@ -23,7 +23,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 
 /**
  * @author vijkumar18
- *
  */
 public class ReleaseVersion {
 	/** The release name. */
@@ -56,7 +55,7 @@ public class ReleaseVersion {
 	 * Sets the release name.
 	 *
 	 * @param releaseName
-	 *            the new release name
+	 *          the new release name
 	 */
 	public void setReleaseName(String releaseName) {
 		this.releaseName = releaseName;
@@ -75,7 +74,7 @@ public class ReleaseVersion {
 	 * Sets the release date.
 	 *
 	 * @param releaseDate
-	 *            the new release date
+	 *          the new release date
 	 */
 	public void setReleaseDate(DateTime releaseDate) {
 		this.releaseDate = releaseDate;
@@ -90,10 +89,10 @@ public class ReleaseVersion {
 			return false;
 		}
 		ReleaseVersion version = (ReleaseVersion) obj;
-		return (releaseName == version.releaseName
-				|| (releaseName != null && releaseName.equals(version.getReleaseName())))
-				&& (releaseDate == version.getReleaseDate()
-						|| (releaseDate != null && releaseDate.equals(version.getReleaseDate())));
+		return (releaseName == version.releaseName ||
+				(releaseName != null && releaseName.equals(version.getReleaseName()))) &&
+				(releaseDate == version.getReleaseDate() ||
+						(releaseDate != null && releaseDate.equals(version.getReleaseDate())));
 	}
 
 	@Override
@@ -104,5 +103,4 @@ public class ReleaseVersion {
 		result = prime * result + ((releaseDate == null) ? 0 : releaseDate.hashCode());
 		return result;
 	}
-
 }

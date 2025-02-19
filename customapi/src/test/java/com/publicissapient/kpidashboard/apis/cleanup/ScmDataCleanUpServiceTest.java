@@ -95,8 +95,8 @@ public class ScmDataCleanUpServiceTest {
 		doNothing().when(processorItemRepository).deleteByToolConfigId(Mockito.any(ObjectId.class));
 		doNothing().when(mergReqRepo).deleteByProcessorItemIdIn(Mockito.anyList());
 		doNothing().when(cacheService).clearCache(CommonConstant.BITBUCKET_KPI_CACHE);
-		doNothing().when(processorExecutionTraceLogRepository)
-				.deleteByBasicProjectConfigIdAndProcessorName(Mockito.any(), Mockito.anyString());
+		doNothing().when(processorExecutionTraceLogRepository).deleteByBasicProjectConfigIdAndProcessorName(Mockito.any(),
+				Mockito.anyString());
 
 		scmDataCleanUpService.clean("5e9e4593e4b0c8ece56710c3");
 
@@ -122,8 +122,8 @@ public class ScmDataCleanUpServiceTest {
 		doNothing().when(commitRepository).deleteByProcessorItemIdIn(Mockito.anyList());
 		doNothing().when(processorItemRepository).deleteByToolConfigId(Mockito.any(ObjectId.class));
 		doNothing().when(cacheService).clearCache(CommonConstant.GITLAB_KPI_CACHE);
-		doNothing().when(processorExecutionTraceLogRepository)
-				.deleteByBasicProjectConfigIdAndProcessorName(Mockito.any(), Mockito.anyString());
+		doNothing().when(processorExecutionTraceLogRepository).deleteByBasicProjectConfigIdAndProcessorName(Mockito.any(),
+				Mockito.anyString());
 
 		scmDataCleanUpService.clean("5e9e4593e4b0c8ece56710c3");
 
@@ -132,6 +132,5 @@ public class ScmDataCleanUpServiceTest {
 		verify(processorItemRepository, times(1)).deleteByToolConfigId(new ObjectId("5e9e4593e4b0c8ece56710c3"));
 		verify(processorExecutionTraceLogRepository, times(1))
 				.deleteByBasicProjectConfigIdAndProcessorName("5e9db8f1e4b0caefbfa8e0c7", ProcessorConstants.GITLAB);
-
 	}
 }

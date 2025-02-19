@@ -25,7 +25,6 @@ import static com.atlassian.jira.rest.client.api.IssueRestClient.Expandos.SCHEMA
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
-
 import javax.annotation.Nullable;
 import javax.ws.rs.core.UriBuilder;
 
@@ -52,8 +51,7 @@ import io.atlassian.util.concurrent.Promise;
 
 public class ProcessorAsynchSearchRestClient extends AbstractAsynchronousRestClient implements SearchRestClient {
 
-	private static final Function<IssueRestClient.Expandos, String> EXPANDO_TO_PARAM = from -> from.name()
-			.toLowerCase(); // NOSONAR
+	private static final Function<IssueRestClient.Expandos, String> EXPANDO_TO_PARAM = from -> from.name().toLowerCase(); // NOSONAR
 	private final CustomSearchResultJsonParser searchResultJsonParser = new CustomSearchResultJsonParser();
 	private final FilterJsonParser filterJsonParser = new FilterJsonParser();
 	private final GenericJsonArrayParser<Filter> filtersParser = GenericJsonArrayParser.create(new FilterJsonParser());
@@ -65,9 +63,9 @@ public class ProcessorAsynchSearchRestClient extends AbstractAsynchronousRestCli
 	 * initialize URIs
 	 *
 	 * @param baseUri
-	 *            Jira Base URI
+	 *          Jira Base URI
 	 * @param asyncHttpClient
-	 *            Async http Client
+	 *          Async http Client
 	 */
 	public ProcessorAsynchSearchRestClient(final URI baseUri, final HttpClient asyncHttpClient) {
 		super(asyncHttpClient);
@@ -80,7 +78,7 @@ public class ProcessorAsynchSearchRestClient extends AbstractAsynchronousRestCli
 	 * Searches JQL
 	 *
 	 * @param jql
-	 *            Serach Jql query
+	 *          Serach Jql query
 	 */
 	@Override
 	public Promise<SearchResult> searchJql(@Nullable String jql) {
@@ -91,17 +89,17 @@ public class ProcessorAsynchSearchRestClient extends AbstractAsynchronousRestCli
 	 * Searches JQL
 	 *
 	 * @param jql
-	 *            JQL query string
+	 *          JQL query string
 	 * @param maxResults
-	 *            maximum result count
+	 *          maximum result count
 	 * @param startAt
-	 *            search page start at
+	 *          search page start at
 	 * @param fields
-	 *            Fields to search
+	 *          Fields to search
 	 */
 	@Override
-	public Promise<SearchResult> searchJql(@Nullable String jql, @Nullable Integer maxResults,
-			@Nullable Integer startAt, @Nullable Set<String> fields) {
+	public Promise<SearchResult> searchJql(@Nullable String jql, @Nullable Integer maxResults, @Nullable Integer startAt,
+			@Nullable Set<String> fields) {
 		final Iterable<String> expandosValues = Iterables.transform(java.util.List.of(SCHEMA, NAMES, CHANGELOG),
 				EXPANDO_TO_PARAM);
 		final String notNullJql = StringUtils.defaultString(jql);
@@ -116,15 +114,15 @@ public class ProcessorAsynchSearchRestClient extends AbstractAsynchronousRestCli
 	 * Search using JQL query
 	 *
 	 * @param maxResults
-	 *            maximum results
+	 *          maximum results
 	 * @param startAt
-	 *            page search at start at
+	 *          page search at start at
 	 * @param expandosValues
-	 *            List of String expandos
+	 *          List of String expandos
 	 * @param jql
-	 *            Jql query String
+	 *          Jql query String
 	 * @param fields
-	 *            Fields
+	 *          Fields
 	 * @return Promise of SearchResult
 	 */
 	private Promise<SearchResult> searchJqlImplGet(@Nullable Integer maxResults, @Nullable Integer startAt,
@@ -142,13 +140,13 @@ public class ProcessorAsynchSearchRestClient extends AbstractAsynchronousRestCli
 
 	/**
 	 * Adds optional query params
-	 * 
+	 *
 	 * @param uriBuilder
-	 *            URI Builder
+	 *          URI Builder
 	 * @param key
-	 *            Key
+	 *          Key
 	 * @param values
-	 *            optional param values
+	 *          optional param values
 	 */
 	private void addOptionalQueryParam(final UriBuilder uriBuilder, final String key, final Object... values) {
 		if (values != null && values.length > 0 && values[0] != null) {
@@ -158,15 +156,15 @@ public class ProcessorAsynchSearchRestClient extends AbstractAsynchronousRestCli
 
 	/**
 	 * @param maxResults
-	 *            Maximum results
+	 *          Maximum results
 	 * @param startAt
-	 *            start At page number
+	 *          start At page number
 	 * @param expandosValues
-	 *            Iterable String
+	 *          Iterable String
 	 * @param jql
-	 *            Jql Query String
+	 *          Jql Query String
 	 * @param fields
-	 *            query fields
+	 *          query fields
 	 * @return Promise of SearchResult
 	 */
 	private Promise<SearchResult> searchJqlImplPost(@Nullable Integer maxResults, @Nullable Integer startAt,
@@ -175,11 +173,12 @@ public class ProcessorAsynchSearchRestClient extends AbstractAsynchronousRestCli
 		try {
 			postEntity.put(JiraConstants.JQL_ATTRIBUTE, jql)
 					.put(JiraConstants.EXPAND_ATTRIBUTE, ImmutableList.copyOf(expandosValues))
-					.putOpt(JiraConstants.START_AT_ATTRIBUTE, startAt)
-					.putOpt(JiraConstants.MAX_RESULTS_ATTRIBUTE, maxResults);
+					.putOpt(JiraConstants.START_AT_ATTRIBUTE, startAt).putOpt(JiraConstants.MAX_RESULTS_ATTRIBUTE, maxResults);
 
 			if (fields != null) {
-				postEntity.put(JiraConstants.FIELDS_ATTRIBUTE, List.of("*all","-attachment","-worklog","-comment","-votes","-watches")); // putOpt doesn't work with collections
+				postEntity.put(JiraConstants.FIELDS_ATTRIBUTE,
+						List.of("*all", "-attachment", "-worklog", "-comment", "-votes", "-watches")); // putOpt doesn't work with
+				// collections
 			}
 		} catch (JSONException e) {
 			throw new RestClientException(e);
@@ -201,7 +200,7 @@ public class ProcessorAsynchSearchRestClient extends AbstractAsynchronousRestCli
 	 * Gets Filter
 	 *
 	 * @param filterUri
-	 *            Filter URI
+	 *          Filter URI
 	 * @return Promise of Filter
 	 */
 	@Override
@@ -213,12 +212,11 @@ public class ProcessorAsynchSearchRestClient extends AbstractAsynchronousRestCli
 	 * Gets Filter
 	 *
 	 * @param id
-	 *            filter ID
+	 *          filter ID
 	 * @return Promise of Filter Type
 	 */
 	@Override
 	public Promise<Filter> getFilter(long id) {
 		return getFilter(UriBuilder.fromUri(baseUri).path(String.format(JiraConstants.FILTER_PATH_FORMAT, id)).build());
 	}
-
 }

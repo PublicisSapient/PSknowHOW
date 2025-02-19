@@ -35,19 +35,16 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.powermock.reflect.Whitebox;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
@@ -57,7 +54,6 @@ import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 import com.publicissapient.kpidashboard.sonar.config.SonarConfig;
-import com.publicissapient.kpidashboard.sonar.model.Paging;
 import com.publicissapient.kpidashboard.sonar.model.SonarProcessorItem;
 import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar8Client;
 
@@ -123,17 +119,14 @@ public class Sonar8ClientTest {
 		String projectsUrl = SONAR_URL + URL_RESOURCES;
 		when(sonarSettings.getPageSize()).thenReturn(500);
 		doReturn(new ResponseEntity<>(projectJson, HttpStatus.OK)).when(rest).exchange(ArgumentMatchers.eq(projectsUrl),
-				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 
 		SONAR_SERVER.setUsername(USER_NAME);
 		SONAR_SERVER.setPassword(PASSWORD);
 		List<SonarProcessorItem> projects = sonar8Client.getSonarProjectList(SONAR_SERVER);
 		assertThat("Projects count: ", projects.size(), is(2));
-		assertThat("First Project name: ", projects.get(0).getProjectName(),
-				is("testPackage.sonar:TestProject"));
-		assertThat("Second Project name: ", projects.get(1).getProjectName(),
-				is("testPackage.sonar:AnotherTestProject"));
+		assertThat("First Project name: ", projects.get(0).getProjectName(), is("testPackage.sonar:TestProject"));
+		assertThat("Second Project name: ", projects.get(1).getProjectName(), is("testPackage.sonar:AnotherTestProject"));
 		assertThat("First Project id: ", projects.get(0).getProjectId(), is("AVu3b-MAphY78UZXuYHp"));
 		assertThat("Second Project id: ", projects.get(1).getProjectId(), is("BVx3b-MAphY78UZXuYHp"));
 	}
@@ -146,8 +139,7 @@ public class Sonar8ClientTest {
 				project.getKey(), METRICS, DEFAULT_DATE);
 
 		doThrow(new RestClientException("rest client exception")).when(rest).exchange(ArgumentMatchers.eq(historyUrl),
-				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 
 		SONAR_SERVER.setUsername(USER_NAME);
 		SONAR_SERVER.setPassword(PASSWORD);
@@ -189,8 +181,7 @@ public class Sonar8ClientTest {
 				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).append("&p=2").toString(),
 				project.getKey(), METRICS, DEFAULT_DATE);
 		doReturn(new ResponseEntity<>(historyJson, HttpStatus.OK)).when(rest).exchange(ArgumentMatchers.eq(historyUrl),
-				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 
 		doReturn(new ResponseEntity<>(history2Json, HttpStatus.OK)).when(rest).exchange(
 				ArgumentMatchers.eq(historyEmptyUrl), ArgumentMatchers.eq(HttpMethod.GET),
@@ -216,8 +207,7 @@ public class Sonar8ClientTest {
 				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).append("&p=2").toString(),
 				project.getKey(), METRICS, DEFAULT_DATE);
 		doReturn(new ResponseEntity<>(historyJson, HttpStatus.OK)).when(rest).exchange(ArgumentMatchers.eq(historyUrl),
-				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 
 		doReturn(new ResponseEntity<>(history2Json, HttpStatus.OK)).when(rest).exchange(
 				ArgumentMatchers.eq(historyEmptyUrl), ArgumentMatchers.eq(HttpMethod.GET),
@@ -245,14 +235,13 @@ public class Sonar8ClientTest {
 		String projectsUrl = SONAR_URL + URL_RESOURCES;
 		when(sonarSettings.getPageSize()).thenReturn(500);
 		doReturn(new ResponseEntity<>(projectJson, HttpStatus.EXPECTATION_FAILED)).when(rest).exchange(
-				ArgumentMatchers.eq(projectsUrl), ArgumentMatchers.eq(HttpMethod.GET),
-				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(projectsUrl), ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
+				ArgumentMatchers.eq(String.class));
 
 		SONAR_SERVER.setUsername(USER_NAME);
 		SONAR_SERVER.setPassword(PASSWORD);
 		List<SonarProcessorItem> projects = sonar8Client.getSonarProjectList(SONAR_SERVER);
 		Assert.assertEquals("Project size is: ", 0, projects.size());
-
 	}
 
 	@Test(expected = NullPointerException.class)

@@ -116,7 +116,6 @@ public class ZephyrProcessorJobExecutorTest {
 
 		projectConfFieldMapping = new ProjectConfFieldMapping();
 		projectConfFieldMapping.setProjectKey("TEST");
-
 	}
 
 	@Test

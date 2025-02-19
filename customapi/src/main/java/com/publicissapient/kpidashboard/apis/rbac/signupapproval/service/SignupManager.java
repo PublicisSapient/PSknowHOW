@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -24,9 +23,8 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.NotificationCustomDataEnum;
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.policy.GrantApprovalListener;
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.policy.RejectApprovalListener;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+import com.publicissapient.kpidashboard.common.service.NotificationService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -83,7 +81,6 @@ public class SignupManager {
 				sendEmailNotification(emailAddresses, customData, APPROVAL_SUBJECT_KEY, NOTIFICATION_KEY_SUCCESS);
 			}
 		}
-
 	}
 
 	/**
@@ -111,18 +108,19 @@ public class SignupManager {
 	 * @param notKey
 	 */
 	public void sendEmailNotification(List<String> emailAddresses, Map<String, String> customData, String subjectKey,
-									  String notKey) {
+			String notKey) {
 		Map<String, String> notificationSubjects = customApiConfig.getNotificationSubject();
-		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(emailAddresses)
-				&& MapUtils.isNotEmpty(notificationSubjects)) {
+		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(emailAddresses) &&
+				MapUtils.isNotEmpty(notificationSubjects)) {
 			String subject = notificationSubjects.get(subjectKey);
 			log.info("Notification message sent to kafka with key : {}", notKey);
-			String templateKey = customApiConfig.getMailTemplate().getOrDefault(notKey,"");
+			String templateKey = customApiConfig.getMailTemplate().getOrDefault(notKey, "");
 			notificationService.sendNotificationEvent(emailAddresses, customData, subject, notKey,
-					customApiConfig.getKafkaMailTopic(),customApiConfig.isNotificationSwitch(),kafkaTemplate,templateKey,customApiConfig.isMailWithoutKafka());
+					customApiConfig.getKafkaMailTopic(), customApiConfig.isNotificationSwitch(), kafkaTemplate, templateKey,
+					customApiConfig.isMailWithoutKafka());
 		} else {
-			log.error("Notification Event not sent : No email address found "
-					+ "or Property - notificationSubject.accessRequest not set in property file ");
+			log.error("Notification Event not sent : No email address found " +
+					"or Property - notificationSubject.accessRequest not set in property file ");
 		}
 	}
 
@@ -169,7 +167,6 @@ public class SignupManager {
 				listener.onSuccess(updatedAuthenticationRequest);
 			}
 		}
-
 	}
 
 	/**
@@ -215,12 +212,10 @@ public class SignupManager {
 	 * @param email
 	 */
 	public void sendUserPreApprovalRequestEmailToAdmin(String username, String email) {
-		List<String> emailAddresses = commonService
-				.getEmailAddressBasedOnRoles(Arrays.asList(Constant.ROLE_SUPERADMIN));
+		List<String> emailAddresses = commonService.getEmailAddressBasedOnRoles(Arrays.asList(Constant.ROLE_SUPERADMIN));
 		String serverPath = getServerPath();
 		Map<String, String> customData = createCustomData(username, email, serverPath, "");
 		sendEmailNotification(emailAddresses, customData, PRE_APPROVAL_NOTIFICATION_SUBJECT_KEY,
 				PRE_APPROVAL_NOTIFICATION_KEY);
 	}
-
 }

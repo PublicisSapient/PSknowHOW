@@ -28,9 +28,8 @@ import org.togglz.core.user.UserProvider;
 @Configuration
 public class ToggleConfiguration {
 
-    @Bean
-    public UserProvider userProvider() {
-        return new NoOpUserProvider();
-    }
+	@Bean
+	public UserProvider userProvider() {
+		return new NoOpUserProvider();
+	}
 }
-

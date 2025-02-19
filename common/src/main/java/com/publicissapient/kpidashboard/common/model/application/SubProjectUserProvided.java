@@ -18,10 +18,10 @@
 
 /**
  * Represents a SubProject Basic configuration.
- * 
+ *
  * @author pankumar8
  */
-package com.publicissapient.kpidashboard.common.model.application;//NOPMD
+package com.publicissapient.kpidashboard.common.model.application; // NOPMD
 
 import java.util.List;
 
@@ -45,5 +45,4 @@ public class SubProjectUserProvided extends BasicModel {
 	private String subProjectUserProvidedDependOn;
 	private List<String> subProjectUserProvidedDependOnList;
 	private String subProjectUserProvidedDependCustomField;
-
 }

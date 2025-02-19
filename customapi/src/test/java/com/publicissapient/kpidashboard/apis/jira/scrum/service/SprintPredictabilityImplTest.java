@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -46,6 +45,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
@@ -175,8 +175,7 @@ public class SprintPredictabilityImplTest {
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		FieldMapping fieldMappingWithActualEstimation = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingWithActualEstimation.setEstimationCriteria("Actual Estimation");
-		fieldMappingMapForActualEstimation.put(fieldMapping.getBasicProjectConfigId(),
-				fieldMappingWithActualEstimation);
+		fieldMappingMapForActualEstimation.put(fieldMapping.getBasicProjectConfigId(), fieldMappingWithActualEstimation);
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
@@ -187,9 +186,7 @@ public class SprintPredictabilityImplTest {
 		Map<String, Object> resultListMap = new HashMap<>();
 		resultListMap.put(SPRINT_WISE_PREDICTABILITY, sprintWiseStoryList);
 		resultListMap.put(SPRINT_WISE_SPRINT_DETAILS, sprintDetailsList);
-		when(kpiDataProvider.fetchSprintPredictabilityDataFromDb(eq(kpiRequest), any(), any()))
-				.thenReturn(resultListMap);
-
+		when(kpiDataProvider.fetchSprintPredictabilityDataFromDb(eq(kpiRequest), any(), any())).thenReturn(resultListMap);
 
 		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
@@ -202,14 +199,12 @@ public class SprintPredictabilityImplTest {
 			projectConfigMap.put(projectConfigs.getProjectName(), projectConfigs);
 		});
 		when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
-
 	}
 
 	@After
 	public void cleanup() {
 		sprintWiseStoryList = null;
 		jiraIssueRepository.deleteAll();
-
 	}
 
 	@Test
@@ -314,8 +309,7 @@ public class SprintPredictabilityImplTest {
 		Set<String> set = new HashSet<>();
 		set.add("6335363749794a18e8a4479b");
 		duplicateIssues.put(new ObjectId("6335363749794a18e8a4479b"), set);
-		when(kpiDataProvider.fetchSprintPredictabilityDataFromDb(eq(kpiRequest), any(), any()))
-				.thenReturn(resultListMap);
+		when(kpiDataProvider.fetchSprintPredictabilityDataFromDb(eq(kpiRequest), any(), any())).thenReturn(resultListMap);
 		Map<String, Object> sprintWisePredictability = sprintPredictability.fetchKPIDataFromDb(leafNodeList, startDate,
 				endDate, kpiRequest);
 	}

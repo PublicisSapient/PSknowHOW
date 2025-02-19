@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.filter.service;
 
 import static org.junit.Assert.assertEquals;
@@ -36,16 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.OrganizationHierarchyDataFactory;
-import com.publicissapient.kpidashboard.apis.data.ProjectBasicConfigDataFactory;
-import com.publicissapient.kpidashboard.apis.data.ProjectHierarchyDataFactory;
-import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
-import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
-import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
-import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,22 +50,29 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchiesDataFactory;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
+import com.publicissapient.kpidashboard.apis.data.OrganizationHierarchyDataFactory;
+import com.publicissapient.kpidashboard.apis.data.ProjectBasicConfigDataFactory;
+import com.publicissapient.kpidashboard.apis.data.ProjectHierarchyDataFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 import com.publicissapient.kpidashboard.apis.model.AccountFilterRequest;
 import com.publicissapient.kpidashboard.apis.model.AccountFilteredData;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
+import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 
 /**
  * @author tauakram
- *
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class AccountHierarchyServiceImplTest {
 	@Mock
@@ -125,35 +120,40 @@ public class AccountHierarchyServiceImplTest {
 		hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
 		SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance();
 		List<SprintDetails> sprintDetails = sprintDetailsDataFactory.getSprintDetails();
-//		when(sprintRepository.findBySprintIDIn(anyList())).thenReturn(sprintDetails);
+		// when(sprintRepository.findBySprintIDIn(anyList())).thenReturn(sprintDetails);
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
 
-		ProjectBasicConfigDataFactory projectBasicConfigDataFactory=ProjectBasicConfigDataFactory.newInstance("/json/basicConfig/project_basic_config_request.json");
+		ProjectBasicConfigDataFactory projectBasicConfigDataFactory = ProjectBasicConfigDataFactory
+				.newInstance("/json/basicConfig/project_basic_config_request.json");
 		ProjectBasicConfig projectBasicConfig = projectBasicConfigDataFactory.getProjectBasicConfigs().get(1);
 		projectBasicConfig.setIsKanban(false);
 
 		List<HierarchyValue> hierarchyList = new ArrayList<>();
-		hierarchyList.add(new HierarchyValue(new HierarchyLevel(1, "bu", "BU",""), "hierarchyLevelOne_unique_001", "Sample One Value"));
-		hierarchyList.add(new HierarchyValue(new HierarchyLevel(2, "ver", "Vertical",""), "hierarchyLevelTwo_unique_001", "Sample Two Value"));
-		hierarchyList.add(new HierarchyValue(new HierarchyLevel(3, "acc", "Account",""), "hierarchyLevelThree_unique_001", "Sample Three Value"));
+		hierarchyList.add(
+				new HierarchyValue(new HierarchyLevel(1, "bu", "BU", ""), "hierarchyLevelOne_unique_001", "Sample One Value"));
+		hierarchyList.add(new HierarchyValue(new HierarchyLevel(2, "ver", "Vertical", ""), "hierarchyLevelTwo_unique_001",
+				"Sample Two Value"));
+		hierarchyList.add(new HierarchyValue(new HierarchyLevel(3, "acc", "Account", ""), "hierarchyLevelThree_unique_001",
+				"Sample Three Value"));
 		projectBasicConfig.setHierarchy(hierarchyList);
 
-		when(projectBasicConfigService.getAllProjectsBasicConfigs(anyBoolean())).thenReturn(Arrays.asList(projectBasicConfig));
+		when(projectBasicConfigService.getAllProjectsBasicConfigs(anyBoolean()))
+				.thenReturn(Arrays.asList(projectBasicConfig));
 
-		OrganizationHierarchyDataFactory organizationHierarchyDataFactory=OrganizationHierarchyDataFactory.newInstance();
-		ProjectHierarchyDataFactory projectHierarchyDataFactory=ProjectHierarchyDataFactory.newInstance();
-		List<OrganizationHierarchy> organizationHierarchies=organizationHierarchyDataFactory.getOrganizationHierarchies();
+		OrganizationHierarchyDataFactory organizationHierarchyDataFactory = OrganizationHierarchyDataFactory.newInstance();
+		ProjectHierarchyDataFactory projectHierarchyDataFactory = ProjectHierarchyDataFactory.newInstance();
+		List<OrganizationHierarchy> organizationHierarchies = organizationHierarchyDataFactory.getOrganizationHierarchies();
 		when(organizationHierarchyService.findAll()).thenReturn(organizationHierarchies);
-		when(projectHierarchyService.findAllByBasicProjectConfigIds(anyList())).thenReturn(projectHierarchyDataFactory.getProjectHierarchies());
+		when(projectHierarchyService.findAllByBasicProjectConfigIds(anyList()))
+				.thenReturn(projectHierarchyDataFactory.getProjectHierarchies());
 		Map<String, Object> permissionMap = new HashMap<>();
 
 		permissionMap.put("role", "ROLE_SUPERADMIN");
 		userAccessProjects.add("6335363749794a18e8a4479b");
-
 	}
 
 	@Test
@@ -168,7 +168,8 @@ public class AccountHierarchyServiceImplTest {
 
 		// no filter selected
 		Set<AccountFilteredData> filterList = accountHierarchyServiceImpl.getFilteredList(request);
-		//TBD: To be depreciated soon with project_hierarchy_filter_data.json, fixing for build failure
+		// TBD: To be depreciated soon with project_hierarchy_filter_data.json, fixing
+		// for build failure
 		Assert.assertEquals(9, filterList.size());
 	}
 
@@ -207,7 +208,5 @@ public class AccountHierarchyServiceImplTest {
 		List<AccountHierarchyData> accountHierarchies = accountHierarchyServiceImpl.createHierarchyData();
 
 		Assert.assertEquals(3, accountHierarchies.size());
-
 	}
-
 }

@@ -58,9 +58,8 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class calculates the DIR and trend analysis of the DIR.
- * 
- * @author pkum34
  *
+ * @author pkum34
  */
 @Component
 @Slf4j
@@ -82,31 +81,25 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	@Autowired
 	private CustomApiConfig customApiConfig;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public String getQualifierType() {
 		return KPICode.DEFECT_INJECTION_RATE.name();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-
 			if (Filters.getFilter(k) == Filters.SPRINT) {
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
-
 		});
 
 		log.debug("[DIR-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
@@ -121,9 +114,7 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		return kpiElement;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
@@ -144,9 +135,7 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		return resultListMap;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> filterComponentIdWiseFCHMap) {
 		return null;
@@ -155,39 +144,38 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	/**
 	 * This method populates KPI value to sprint leaf nodes. It also gives the trend
 	 * analysis at sprint wise.
-	 * 
+	 *
 	 * @param mapTmp
-	 *            node is map
+	 *          node is map
 	 * @param sprintLeafNodeList
-	 *            sprint nodes list
+	 *          sprint nodes list
 	 * @param trendValueList
-	 *            list to hold trend data
+	 *          list to hold trend data
 	 * @param kpiElement
-	 *            KpiElement
+	 *          KpiElement
 	 * @param kpiRequest
-	 *            KpiRequest
+	 *          KpiRequest
 	 */
 	@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
+		sprintLeafNodeList.sort(
+				(node1, node2) -> node1.getSprintFilter().getStartDate().compareTo(node2.getSprintFilter().getStartDate()));
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 		long jiraTime = System.currentTimeMillis();
 
-		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
-				kpiRequest);
+		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
 		log.info("DIR taking fetchKPIDataFromDb:{}", System.currentTimeMillis() - jiraTime);
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap.get(STORY_DATA);
 		List<JiraIssue> jiraIssueList = (List<JiraIssue>) storyDefectDataListMap.get(ISSUE_DATA);
 		Map<String, Set<JiraIssue>> projectWiseStories = jiraIssueList.stream()
 				.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.toSet()));
 
-		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
-				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
+		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(
+				Collectors.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
 
 		Map<Pair<String, String>, Double> sprintWiseDIRMap = new HashMap<>();
 
@@ -204,8 +192,8 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			sprintWiseTotalStoryIdList.put(sprint, totalStoryIdList);
 
 			List<JiraIssue> defectList = ((List<JiraIssue>) storyDefectDataListMap.get(DEFECT_DATA)).stream()
-					.filter(f -> sprint.getKey().equals(f.getBasicProjectConfigId())
-							&& CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
+					.filter(f -> sprint.getKey().equals(f.getBasicProjectConfigId()) &&
+							CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
 					.collect(Collectors.toList());
 			sprintWiseDefectListMap.put(sprint, defectList);
 
@@ -223,8 +211,8 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		sprintLeafNodeList.forEach(node -> {
 			String trendLineName = node.getProjectFilter().getName();
 			String currentSprintComponentId = node.getSprintFilter().getId();
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
+			Pair<String, String> currentNodeIdentifier = Pair.of(node.getProjectFilter().getBasicProjectConfigId().toString(),
+					currentSprintComponentId);
 
 			double defectInjectionRateForCurrentLeaf;
 
@@ -239,15 +227,15 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					Map<String, JiraIssue> issueMapping = new HashMap<>();
 					jiraIssues.stream().forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue));
 
-					KPIExcelUtility.populateDirExcelData(totalStoryIdList, defectList, excelData, issueMapping,
-							fieldMapping, customApiConfig);
+					KPIExcelUtility.populateDirExcelData(totalStoryIdList, defectList, excelData, issueMapping, fieldMapping,
+							customApiConfig);
 				}
 			} else {
 				defectInjectionRateForCurrentLeaf = 0.0d;
 			}
 
-			log.debug("[DIR-SPRINT-WISE][{}]. DIR for sprint {}  is {}", requestTrackerId,
-					node.getSprintFilter().getName(), defectInjectionRateForCurrentLeaf);
+			log.debug("[DIR-SPRINT-WISE][{}]. DIR for sprint {}  is {}", requestTrackerId, node.getSprintFilter().getName(),
+					defectInjectionRateForCurrentLeaf);
 
 			DataCount dataCount = new DataCount();
 			dataCount.setData(String.valueOf(Math.round(defectInjectionRateForCurrentLeaf)));
@@ -270,15 +258,15 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	/**
 	 * This method sets the defect and story count for each leaf node to show data
 	 * on trend line on mouse hover.
-	 * 
+	 *
 	 * @param sprintWiseHowerMap
-	 *            map of sprint key and hover value
+	 *          map of sprint key and hover value
 	 * @param sprint
-	 *            key to identify sprint
+	 *          key to identify sprint
 	 * @param storyIdList
-	 *            story id list
+	 *          story id list
 	 * @param sprintWiseDefectList
-	 *            defects linked to story
+	 *          defects linked to story
 	 */
 	private void setHowerMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
 			Pair<String, String> sprint, List<String> storyIdList, List<JiraIssue> sprintWiseDefectList) {

@@ -12,7 +12,6 @@ import lombok.Setter;
  *
  * @author Hiren Babariya
  */
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -23,5 +22,4 @@ public class EmailServerDetail {
 	private int emailPort;
 	private String fromEmail;
 	private List<String> feedbackEmailIds;
-
 }

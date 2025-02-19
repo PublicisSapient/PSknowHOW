@@ -25,10 +25,7 @@ import com.publicissapient.kpidashboard.jenkins.processor.adapter.JenkinsClient;
 import com.publicissapient.kpidashboard.jenkins.processor.adapter.impl.JenkinsBuildClient;
 import com.publicissapient.kpidashboard.jenkins.processor.adapter.impl.JenkinsDeployClient;
 
-/**
- * Provides factory to create Jenkins Clients.
- *
- */
+/** Provides factory to create Jenkins Clients. */
 @Component
 public class JenkinsClientFactory {
 
@@ -45,7 +42,7 @@ public class JenkinsClientFactory {
 
 	/**
 	 * Provides instance of Jenkins client.
-	 * 
+	 *
 	 * @param jobType
 	 * @return returns the instance of Jenkins Client
 	 */
@@ -58,5 +55,4 @@ public class JenkinsClientFactory {
 		}
 		return jenkinsClient;
 	}
-
 }

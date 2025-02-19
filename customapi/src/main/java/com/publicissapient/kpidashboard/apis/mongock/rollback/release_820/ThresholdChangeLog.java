@@ -33,7 +33,7 @@ import io.mongock.api.annotations.RollbackExecution;
 
 /**
  * provide rollback scripts
- * 
+ *
  * @author shunaray
  */
 @ChangeUnit(id = "r_threshold_change_log", order = "08208", author = "shunaray", systemVersion = "8.2.0")
@@ -57,7 +57,6 @@ public class ThresholdChangeLog {
 		rollBackFieldMappingStructure();
 		rollbackThresholdAndBg();
 		return true;
-
 	}
 
 	public void rollBackFieldMappingStructure() {
@@ -72,16 +71,16 @@ public class ThresholdChangeLog {
 		// Delete documents that match the filter
 		fieldMappingStructure.deleteMany(filter);
 	}
+
 	private void rollbackThresholdAndBg() {
-		List<String> kpiIds = Arrays.asList("kpi126", "kpi42", "kpi168", "kpi70", "kpi40", "kpi5", "kpi39", "kpi46",
-				"kpi8", "kpi73", "kpi113", "kpi149", "kpi153", "kpi162", "kpi116", "kpi156", "kpi118", "kpi127",
-				"kpi170", "kpi139","kpi166");
+		List<String> kpiIds = Arrays.asList("kpi126", "kpi42", "kpi168", "kpi70", "kpi40", "kpi5", "kpi39", "kpi46", "kpi8",
+				"kpi73", "kpi113", "kpi149", "kpi153", "kpi162", "kpi116", "kpi156", "kpi118", "kpi127", "kpi170", "kpi139",
+				"kpi166");
 
 		Document filter = new Document("kpiId", new Document("$in", kpiIds));
 
-		Document update = new Document("$unset", new Document("thresholdValue", "")
-				.append("lowerThresholdBG", "")
-				.append("upperThresholdBG", ""));
+		Document update = new Document("$unset",
+				new Document("thresholdValue", "").append("lowerThresholdBG", "").append("upperThresholdBG", ""));
 
 		kpiMaster.updateMany(filter, update);
 	}
@@ -95,5 +94,4 @@ public class ThresholdChangeLog {
 	public void rollbackBeforeExecution() {
 		// do not require the implementation
 	}
-
 }

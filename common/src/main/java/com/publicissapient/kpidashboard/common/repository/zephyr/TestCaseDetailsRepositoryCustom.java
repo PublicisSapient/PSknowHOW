@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.repository.zephyr;//NOPMD
+package com.publicissapient.kpidashboard.common.repository.zephyr; // NOPMD
 
 import java.util.List;
 import java.util.Map;
@@ -25,9 +25,7 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 
-/**
- * Repository for TestCaseDetails with custom methods.
- */
+/** Repository for TestCaseDetails with custom methods. */
 @Repository
 public interface TestCaseDetailsRepositoryCustom {
 
@@ -36,9 +34,9 @@ public interface TestCaseDetailsRepositoryCustom {
 	 * not be considered
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @param uniqueProjectMap
-	 *            the unique project map
+	 *          the unique project map
 	 * @return list of feature
 	 */
 	List<TestCaseDetails> findNonRegressionTestDetails(Map<String, List<String>> mapOfFilters,
@@ -48,12 +46,11 @@ public interface TestCaseDetailsRepositoryCustom {
 	 * Find TestCase by unique parameters and Folder list.
 	 *
 	 * @param mapOfFilters
-	 *            the map of filters
+	 *          the map of filters
 	 * @param uniqueProjectMap
-	 *            the unique project map
+	 *          the unique project map
 	 * @return list of feature
 	 */
 	List<TestCaseDetails> findTestDetails(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap, String mapStatusCriteria);
-
 }

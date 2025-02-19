@@ -27,9 +27,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents Commit count.
- */
+/** Represents Commit count. */
 @Data
 @Builder
 @Getter
@@ -47,13 +45,12 @@ public class CommitCount {
 	 * Instantiates a new Commit count.
 	 *
 	 * @param date
-	 *            the date
+	 *          the date
 	 * @param count
-	 *            the count
+	 *          the count
 	 */
 	public CommitCount(String date, Long count) {
 		this.date = date;
 		this.count = count;
 	}
-
 }

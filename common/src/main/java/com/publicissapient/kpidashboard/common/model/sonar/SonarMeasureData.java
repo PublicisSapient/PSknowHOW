@@ -28,9 +28,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Class representing Sonar metrics and history.
- */
+/** Class representing Sonar metrics and history. */
 @Data
 @Builder
 @Getter
@@ -40,5 +38,4 @@ import lombok.Setter;
 public class SonarMeasureData {
 	private String metric;
 	private List<SonarMetric> history = new ArrayList<>();
-
 }

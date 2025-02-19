@@ -159,6 +159,23 @@ describe('ngOnChanges', () => {
 
     expect(component.generateFlatArray).toHaveBeenCalled();
   });
+
+  it('should push an empty object to dataObj when hierarchyName is missing', () => {
+    component.trendData = [
+      { hierarchyId: '123', value: '50', trend: 'Up' }, // No hierarchyName
+    ];
+    component.colorObj = [{ nodeId: '123', color: 'red' }]; // Mocking colorObj to avoid errors
+
+    spyOn(component, 'generateFlatArray').and.callFake((data) => data); // Mock generateFlatArray
+    const changes: SimpleChanges = {
+      trendData: new SimpleChange(null, component.trendData, true)
+    };
+
+    component.ngOnChanges(changes); // Simulate initialization
+
+    expect(component.dataObj.length).toBe(1);
+    expect(component.dataObj[0]).toEqual({}); // Ensuring empty object is pushed
+  });
 });
 
 });

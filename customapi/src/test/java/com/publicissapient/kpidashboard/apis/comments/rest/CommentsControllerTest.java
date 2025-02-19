@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.comments.rest;
 
 import static org.mockito.Mockito.verify;
@@ -90,20 +89,16 @@ public class CommentsControllerTest {
 		comment.setCommentsInfo(commentsInfo);
 
 		when(commentsService.submitComment(comment)).thenReturn(true);
-		mockMvc.perform(MockMvcRequestBuilders.post("/comments/submitComments")
-				.content(mapper.writeValueAsString(comment)).contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isOk());
+		mockMvc.perform(MockMvcRequestBuilders.post("/comments/submitComments").content(mapper.writeValueAsString(comment))
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
 		verify(commentsService).submitComment(comment);
-
 	}
 
 	@Test
 	public void submitCommentsIssueTest() throws Exception {
 		CommentSubmitDTO comment = Mockito.mock(CommentSubmitDTO.class);
-		mockMvc.perform(MockMvcRequestBuilders.post("/comments/submitComments")
-				.content(mapper.writeValueAsString(comment)).contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isOk());
-
+		mockMvc.perform(MockMvcRequestBuilders.post("/comments/submitComments").content(mapper.writeValueAsString(comment))
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
 	}
 
 	@Test
@@ -120,7 +115,6 @@ public class CommentsControllerTest {
 		when(commentsService.findCommentByKPIId(node, level, sprintId, kpiId)).thenReturn(mappedCollection);
 		mockMvc.perform(post("/comments/getCommentsByKpiId").content(mapper.writeValueAsString(commentRequestDTO))
 				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
-
 	}
 
 	@Test
@@ -133,10 +127,10 @@ public class CommentsControllerTest {
 		commentRequestDTO.setNodeChildId(sprintId);
 		commentRequestDTO.setKpiId(kpiId);
 
-		mockMvc.perform(post("/comments/getCommentsByKpiId").content(mapper.writeValueAsString(commentRequestDTO))
-				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
-				.andExpect(MockMvcResultMatchers.content().json(expectedResponse));
-
+		mockMvc
+				.perform(post("/comments/getCommentsByKpiId").content(mapper.writeValueAsString(commentRequestDTO))
+						.contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().json(expectedResponse));
 	}
 
 	@Test
@@ -165,10 +159,10 @@ public class CommentsControllerTest {
 		commentViewResponseDTO.setCommentBy("SUPERADMIN");
 
 		commentViewResponseDTOList.add(commentViewResponseDTO);
-		when(commentsService.findLatestCommentSummary(nodes, level, sprintId, kpiIds)).thenReturn(commentViewResponseDTOList);
+		when(commentsService.findLatestCommentSummary(nodes, level, sprintId, kpiIds))
+				.thenReturn(commentViewResponseDTOList);
 		mockMvc.perform(post("/comments/commentsSummary").content(mapper.writeValueAsString(commentViewRequestDTO))
 				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
-
 	}
 
 	@After

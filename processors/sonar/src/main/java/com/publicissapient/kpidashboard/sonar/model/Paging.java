@@ -23,10 +23,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Provides pagination properties.
- *
- */
+/** Provides pagination properties. */
 @Getter
 @Setter
 @NoArgsConstructor

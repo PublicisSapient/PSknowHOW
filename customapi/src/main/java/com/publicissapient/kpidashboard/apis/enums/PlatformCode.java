@@ -24,7 +24,6 @@ import java.util.Arrays;
  * @author pkum34 Mapping of Platform id with Platform Name
  */
 public enum PlatformCode {
-
 	ANDROID("1", "Android"), IOS("2", "iOS"), INVALID("3", "Invalid");
 
 	private String platformdId;
@@ -49,5 +48,4 @@ public enum PlatformCode {
 	public String getPlatformName() {
 		return platformName;
 	}
-
 }

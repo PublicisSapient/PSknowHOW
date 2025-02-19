@@ -20,9 +20,7 @@ package com.publicissapient.kpidashboard.apis.model;
 
 import java.util.Map;
 
-/**
- * Represents Kpi wise aggregation type
- */
+/** Represents Kpi wise aggregation type */
 public class ConfigDetails {
 	private Map<String, String> kpiWiseAggregationType;
 	private Double percentile;
@@ -60,7 +58,7 @@ public class ConfigDetails {
 	 * Sets kpi wise aggregation type.
 	 *
 	 * @param kpiWiseAggregationType
-	 *            the kpi wise aggregation type
+	 *          the kpi wise aggregation type
 	 */
 	public void setKpiWiseAggregationType(Map<String, String> kpiWiseAggregationType) {
 		this.kpiWiseAggregationType = kpiWiseAggregationType;
@@ -79,7 +77,7 @@ public class ConfigDetails {
 	 * Sets percentile.
 	 *
 	 * @param percentile
-	 *            the percentile
+	 *          the percentile
 	 */
 	public void setPercentile(Double percentile) {
 		this.percentile = percentile;

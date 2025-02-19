@@ -24,12 +24,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +32,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JwtAuthenticationFilterTest {
@@ -68,14 +68,16 @@ public class JwtAuthenticationFilterTest {
 
 	@Test
 	public void testDoFilter() throws Exception {
-		when(authService.validateAuthentication(any(HttpServletRequest.class), any(HttpServletResponse.class)))
+		when(authService.validateAuthentication(
+						any(HttpServletRequest.class), any(HttpServletResponse.class)))
 				.thenReturn(authentication);
 		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(cookie);
 		filter.doFilter(request, response, filterChain);
 		assertNotNull(SecurityContextHolder.getContext().getAuthentication());
 		assertEquals(authentication, SecurityContextHolder.getContext().getAuthentication());
 
-		verify(authService).validateAuthentication(any(HttpServletRequest.class), any(HttpServletResponse.class));
+		verify(authService)
+				.validateAuthentication(any(HttpServletRequest.class), any(HttpServletResponse.class));
 		verify(filterChain).doFilter(request, response);
 	}
 
@@ -85,5 +87,4 @@ public class JwtAuthenticationFilterTest {
 		filter.doFilter(request, response, filterChain);
 		verify(filterChain).doFilter(request, response);
 	}
-
 }

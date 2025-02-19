@@ -30,18 +30,17 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
  */
 @SpringBootApplication
 @EnableCaching
-@ComponentScan({ "com.publicissapient" })
-@EnableMongoRepositories(basePackages = { "com.publicissapient.**.repository" })
+@ComponentScan({"com.publicissapient"})
+@EnableMongoRepositories(basePackages = {"com.publicissapient.**.repository"})
 public class AzureRepoApplication {
 
 	/**
 	 * Main thread from where AzureRepoApplication starts.
-	 * 
+	 *
 	 * @param args
-	 *            the command line argument
+	 *          the command line argument
 	 */
 	public static void main(final String[] args) {
 		SpringApplication.run(AzureRepoApplication.class, args);
 	}
-
 }

@@ -16,13 +16,10 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.parser;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-
-import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +28,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JsonWeakParserForJsonObjectTest {
@@ -64,8 +63,7 @@ public class JsonWeakParserForJsonObjectTest {
 		String nonJsonObjectInput = "TestString";
 
 		parser.parse(nonJsonObjectInput);
-		// If the code reaches this point, the test should fail because it should throw a JSONException.
+		// If the code reaches this point, the test should fail because it should throw
+		// a JSONException.
 	}
-
-
 }

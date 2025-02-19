@@ -37,7 +37,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
@@ -63,7 +62,6 @@ import com.publicissapient.kpidashboard.jira.model.ReadData;
 import com.publicissapient.kpidashboard.jira.service.FetchEpicData;
 import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
-import org.springframework.batch.core.JobParametersBuilder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssueBoardReaderTest {
@@ -137,9 +135,10 @@ public class IssueBoardReaderTest {
 		projectConfigsList = IssueReaderUtil.getMockProjectConfig();
 		connection = IssueReaderUtil.getMockConnection(connectionId);
 		fieldMapping = IssueReaderUtil.getMockFieldMapping(projectId);
-		projectConfFieldMapping = IssueReaderUtil.createProjectConfigMap(projectConfigsList, connection, fieldMapping, projectToolConfigs);
+		projectConfFieldMapping = IssueReaderUtil.createProjectConfigMap(projectConfigsList, connection, fieldMapping,
+				projectToolConfigs);
 		pl = IssueReaderUtil.mockProcessorExecutionTraceLog(projectId);
-		issues =IssueReaderUtil.createIssue();
+		issues = IssueReaderUtil.createIssue();
 		boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
 		issueIterator = issues.iterator();
 		when(jiraProcessorConfig.getPageSize()).thenReturn(1);
@@ -147,7 +146,6 @@ public class IssueBoardReaderTest {
 		when(jiraClientService.getRestClientMap(null)).thenReturn(client);
 		when(jiraClientService.getKerberosClientMap(null)).thenReturn(krb5Client);
 		setPrivateField(issueBoardReader, "processorId", "63bfa0d5b7617e260763ca21");
-
 	}
 
 	private void setPrivateField(Object targetObject, String fieldName, String fieldValue) throws Exception {
@@ -155,12 +153,15 @@ public class IssueBoardReaderTest {
 		field.setAccessible(true);
 		field.set(targetObject, fieldValue);
 	}
+
 	@Test
 	public void testReadData() throws Exception {
-		//when(mockRetryableOperation.execute()).thenReturn(issues);
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(anyString(), anyString()))
+		// when(mockRetryableOperation.execute()).thenReturn(issues);
+		when(processorExecutionTraceLogRepo
+						.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(
+								anyString(), anyString()))
 				.thenReturn(pl);
-		//when(retryHelper.executeWithRetry(any())).thenReturn(issues);
+		// when(retryHelper.executeWithRetry(any())).thenReturn(issues);
 		when(jiraCommonService.fetchIssueBasedOnBoard(any(), any(), anyInt(), anyString(), anyString()))
 				.thenReturn(issues);
 		when(fetchEpicData.fetchEpic(any(), anyString(), any(), any())).thenReturn(issues);
@@ -173,7 +174,6 @@ public class IssueBoardReaderTest {
 		// Assert
 		assertEquals(mockReadData.getIssue(), result.getIssue());
 	}
-
 
 	@Test
 	public void testGetDeltaDateFromTraceLog() throws Exception {
@@ -232,7 +232,7 @@ public class IssueBoardReaderTest {
 	@Test
 	public void testFetchIssues() throws Exception {
 		issueBoardReader.projectConfFieldMapping = projectConfFieldMapping;
-		//doThrow(new Exception()).when(retryHelper).executeWithRetry(any());
+		// doThrow(new Exception()).when(retryHelper).executeWithRetry(any());
 		// Use reflection to access the private method
 		Method method = IssueBoardReader.class.getDeclaredMethod("fetchIssues", ProcessorJiraRestClient.class);
 		method.setAccessible(true); // Make the private method accessible
@@ -247,7 +247,7 @@ public class IssueBoardReaderTest {
 	@Test
 	public void testFetchEpic() throws Exception {
 		issueBoardReader.projectConfFieldMapping = projectConfFieldMapping;
-		//doThrow(new Exception()).when(retryHelper).executeWithRetry(any());
+		// doThrow(new Exception()).when(retryHelper).executeWithRetry(any());
 		// Use reflection to access the private method
 		Method method = IssueBoardReader.class.getDeclaredMethod("fetchEpics", KerberosClient.class,
 				ProcessorJiraRestClient.class);
@@ -260,5 +260,4 @@ public class IssueBoardReaderTest {
 		// Add assertions based on your actual implementation
 		// Add additional assertions based on your actual implementation
 	}
-
 }

@@ -24,9 +24,7 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.jira.MetadataIdentifier;
 
-/**
- * Repository for BoardMetadata.
- */
+/** Repository for BoardMetadata. */
 @Repository
 public interface MetadataIdentifierRepository extends CrudRepository<MetadataIdentifier, ObjectId> {
 
@@ -35,5 +33,4 @@ public interface MetadataIdentifierRepository extends CrudRepository<MetadataIde
 	MetadataIdentifier findByToolAndIsKanban(String tool, Boolean isKanban);
 
 	MetadataIdentifier findByTemplateCodeAndToolAndIsKanban(String templateCode, String tool, Boolean isKanban);
-
 }

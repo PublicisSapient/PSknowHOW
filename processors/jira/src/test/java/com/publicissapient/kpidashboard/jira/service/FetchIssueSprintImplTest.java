@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.service;
 
 import static org.junit.Assert.assertEquals;
@@ -161,8 +160,7 @@ public class FetchIssueSprintImplTest {
 		when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
 				.thenReturn(promisedRs);
 		when(promisedRs.claim()).thenReturn(searchResult);
-		List<Issue> result = fetchIssueSprint.fetchIssuesSprintBasedOnJql(createProjectConfig(false), client, 50,
-				sprintID);
+		List<Issue> result = fetchIssueSprint.fetchIssuesSprintBasedOnJql(createProjectConfig(false), client, 50, sprintID);
 
 		assertEquals(0, result.size());
 	}
@@ -177,8 +175,7 @@ public class FetchIssueSprintImplTest {
 		projectBasicConfig.setId(new ObjectId("5ba8e182d3735010e7f1fa45"));
 		projectBasicConfig.setProjectName("test-project");
 
-		List<Issue> result = fetchIssueSprint.fetchIssuesSprintBasedOnJql(createProjectConfig(false),null, 50,
-				sprintID);
+		List<Issue> result = fetchIssueSprint.fetchIssuesSprintBasedOnJql(createProjectConfig(false), null, 50, sprintID);
 
 		assertEquals(0, result.size());
 	}
@@ -222,8 +219,7 @@ public class FetchIssueSprintImplTest {
 	}
 
 	private Optional<Connection> getMockConnection() {
-		ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory
-				.newInstance("/json/default/connections.json");
+		ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory.newInstance("/json/default/connections.json");
 		return connectionDataFactory.findConnectionById("5fd99f7bc8b51a7b55aec836");
 	}
 
@@ -261,25 +257,23 @@ public class FetchIssueSprintImplTest {
 		Worklog worklog = new Worklog(new URI("self"), new URI("self"), basicUser, basicUser, null, DateTime.now(),
 				DateTime.now(), DateTime.now(), 60, null);
 		List<Worklog> workLogs = Arrays.asList(worklog);
-		ChangelogItem changelogItem = new ChangelogItem(FieldType.JIRA, "field1", "from", "fromString", "to",
-				"toString");
+		ChangelogItem changelogItem = new ChangelogItem(FieldType.JIRA, "field1", "from", "fromString", "to", "toString");
 		ChangelogGroup changelogGroup = new ChangelogGroup(basicUser, DateTime.now(), Arrays.asList(changelogItem));
 
 		Issue issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType1, status1, "story",
-				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
-				DateTime.now(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFields, comments,
-				null, createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
+				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(), DateTime.now(),
+				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFields, comments, null,
+				createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
 				Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label1")));
 		Issue issue1 = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType2, status1, "Defect",
-				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
-				DateTime.now(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFields, comments,
-				null, createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
+				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(), DateTime.now(),
+				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFields, comments, null,
+				createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
 				Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label1")));
 		issues.add(issue);
 		issues.add(issue1);
 
 		searchResult = new SearchResult(0, 10, 2, issues);
-
 	}
 
 	private List<IssueLink> createIssueLinkData() throws URISyntaxException {

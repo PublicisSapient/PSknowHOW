@@ -100,14 +100,14 @@ public class JiraCommonService {
 
 	/**
 	 * @param projectConfig
-	 *            projectConfig
+	 *          projectConfig
 	 * @param url
-	 *            url
+	 *          url
 	 * @param krb5Client
-	 *            krb5Client
+	 *          krb5Client
 	 * @return String
 	 * @throws IOException
-	 *             IOException
+	 *           IOException
 	 */
 	public String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url, KerberosClient krb5Client)
 			throws IOException {
@@ -127,14 +127,15 @@ public class JiraCommonService {
 
 	/**
 	 * @param url
-	 *            url
+	 *          url
 	 * @param connectionOptional
-	 *            connectionOptional
+	 *          connectionOptional
 	 * @return String
 	 * @throws IOException
-	 *             IOException
+	 *           IOException
 	 */
-	public String getDataFromServer(URL url, Optional<Connection> connectionOptional, ObjectId projectConfigId) throws IOException {
+	public String getDataFromServer(URL url, Optional<Connection> connectionOptional, ObjectId projectConfigId)
+			throws IOException {
 		HttpURLConnection request = (HttpURLConnection) url.openConnection();
 
 		String username = null;
@@ -185,13 +186,13 @@ public class JiraCommonService {
 
 	/**
 	 * Method to process client error and update the connection broken flag
-	 * 
+	 *
 	 * @param connectionOptional
-	 *            connectionOptional
+	 *          connectionOptional
 	 * @param request
-	 *            request
+	 *          request
 	 * @throws IOException
-	 *             throw IO Error
+	 *           throw IO Error
 	 */
 	private void processClientError(Optional<Connection> connectionOptional, HttpURLConnection request,
 			ObjectId basicProjectConfigId) throws IOException {
@@ -219,7 +220,8 @@ public class JiraCommonService {
 				processorToolConnectionService.updateBreakingConnection(connection.getId(), errMsg);
 			});
 			log.error("Exception when reading from server {} - {}", responseCode, errorMessage);
-			// Throw exception for non-404 errors, as 404 indicates the resource mightn't exist
+			// Throw exception for non-404 errors, as 404 indicates the resource mightn't
+			// exist
 			if (responseCode != 404) {
 				request.disconnect();
 				throw new IOException(String.format("Error: %d - %s", responseCode, errorMessage));
@@ -248,12 +250,12 @@ public class JiraCommonService {
 		}
 		return ""; // Default or unknown impact
 	}
+
 	/**
-	 * 
 	 * @param connectionOptional
-	 *            connectionOptional
+	 *          connectionOptional
 	 * @param matcher
-	 *            matcher
+	 *          matcher
 	 */
 	private void isClientException(Optional<Connection> connectionOptional, Matcher matcher) {
 		if (matcher.find()) {
@@ -268,7 +270,7 @@ public class JiraCommonService {
 
 	/**
 	 * @param encryptedPassword
-	 *            encryptedPassword
+	 *          encryptedPassword
 	 * @return String
 	 */
 	public String decryptJiraPassword(String encryptedPassword) {
@@ -277,9 +279,9 @@ public class JiraCommonService {
 
 	/**
 	 * @param username
-	 *            username
+	 *          username
 	 * @param password
-	 *            password
+	 *          password
 	 * @return String
 	 */
 	public String encodeCredentialsToBase64(String username, String password) {
@@ -289,16 +291,16 @@ public class JiraCommonService {
 
 	/**
 	 * @param projectConfig
-	 *            projectConfig
+	 *          projectConfig
 	 * @param clientIncoming
-	 *            clientIncoming
+	 *          clientIncoming
 	 * @param pageNumber
-	 *            pageNumber
+	 *          pageNumber
 	 * @param deltaDate
-	 *            deltaDate
+	 *          deltaDate
 	 * @return List of Issue
 	 * @throws InterruptedException
-	 *             InterruptedException
+	 *           InterruptedException
 	 */
 	public List<Issue> fetchIssuesBasedOnJql(ProjectConfFieldMapping projectConfig,
 			ProcessorJiraRestClient clientIncoming, int pageNumber, String deltaDate) throws InterruptedException {
@@ -315,21 +317,20 @@ public class JiraCommonService {
 
 			SearchResult searchResult = getJqlIssues(projectConfig, queryDate, pageNumber);
 			issues = JiraHelper.getIssuesFromResult(searchResult);
-
 		}
 		return issues;
 	}
 
 	/**
 	 * @param projectConfig
-	 *            projectConfig
+	 *          projectConfig
 	 * @param deltaDate
-	 *            deltaDate
+	 *          deltaDate
 	 * @param pageStart
-	 *            pageStart
+	 *          pageStart
 	 * @return SearchResult
 	 * @throws InterruptedException
-	 *             InterruptedException
+	 *           InterruptedException
 	 */
 	public SearchResult getJqlIssues(ProjectConfFieldMapping projectConfig, String deltaDate, int pageStart)
 			throws InterruptedException {
@@ -337,22 +338,19 @@ public class JiraCommonService {
 		String[] jiraIssueTypeNames = projectConfig.getFieldMapping().getJiraIssueTypeNames();
 		if (client == null) {
 			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
-		} else if (StringUtils.isEmpty(projectConfig.getProjectToolConfig().getProjectKey())
-				|| StringUtils.isEmpty(projectConfig.getProjectToolConfig().getBoardQuery())
-				|| null == jiraIssueTypeNames) {
+		} else if (StringUtils.isEmpty(projectConfig.getProjectToolConfig().getProjectKey()) ||
+				StringUtils.isEmpty(projectConfig.getProjectToolConfig().getBoardQuery()) || null == jiraIssueTypeNames) {
 			log.error(
 					"Either Project key is empty or Jql Query not provided or jiraIssueTypeNames not configured in fieldmapping . key {} jql query {} ",
-					projectConfig.getProjectToolConfig().getProjectKey(),
-					projectConfig.getProjectToolConfig().getBoardQuery());
+					projectConfig.getProjectToolConfig().getProjectKey(), projectConfig.getProjectToolConfig().getBoardQuery());
 		} else {
 			try {
-				String issueTypes = Arrays.stream(jiraIssueTypeNames)
-						.map(array -> "\"" + String.join("\", \"", array) + "\"").collect(Collectors.joining(", "));
+				String issueTypes = Arrays.stream(jiraIssueTypeNames).map(array -> "\"" + String.join("\", \"", array) + "\"")
+						.collect(Collectors.joining(", "));
 				StringBuilder query = new StringBuilder("project in (")
 						.append(projectConfig.getProjectToolConfig().getProjectKey()).append(") and ");
 
-				String userQuery = projectConfig.getJira().getBoardQuery().toLowerCase()
-						.split(JiraConstants.ORDERBY)[0];
+				String userQuery = projectConfig.getJira().getBoardQuery().toLowerCase().split(JiraConstants.ORDERBY)[0];
 				query.append(userQuery);
 				query.append(" and issuetype in (" + issueTypes + " ) and updatedDate>='" + deltaDate + "' ");
 				query.append(" order BY updatedDate asc");
@@ -374,20 +372,19 @@ public class JiraCommonService {
 				}
 				throw e;
 			}
-
 		}
 		return searchResult;
 	}
 
 	/**
 	 * Method to save the search details in context.
-	 * 
+	 *
 	 * @param searchResult
-	 *            searchResult
+	 *          searchResult
 	 * @param pageStart
-	 *            pageStart
+	 *          pageStart
 	 * @param stepContext
-	 *            stepContext
+	 *          stepContext
 	 */
 	public void saveSearchDetailsInContext(SearchResult searchResult, int pageStart, String boardId,
 			StepContext stepContext) {
@@ -408,20 +405,20 @@ public class JiraCommonService {
 
 	/**
 	 * @param projectConfig
-	 *            projectConfig
+	 *          projectConfig
 	 * @param clientIncoming
-	 *            clientIncoming
+	 *          clientIncoming
 	 * @param pageNumber
-	 *            pageNumber
+	 *          pageNumber
 	 * @param boardId
-	 *            boardId
+	 *          boardId
 	 * @param deltaDate
-	 *            deltaDate
+	 *          deltaDate
 	 * @return List of Issue
 	 * @throws InterruptedException
-	 *             InterruptedException
+	 *           InterruptedException
 	 * @throws IOException
-	 *             throws IOException *
+	 *           throws IOException *
 	 */
 	public List<Issue> fetchIssueBasedOnBoard(ProjectConfFieldMapping projectConfig,
 			ProcessorJiraRestClient clientIncoming, int pageNumber, String boardId, String deltaDate)
@@ -444,16 +441,16 @@ public class JiraCommonService {
 
 	/**
 	 * @param boardId
-	 *            boardId
+	 *          boardId
 	 * @param projectConfig
-	 *            projectConfig
+	 *          projectConfig
 	 * @param deltaDate
-	 *            deltaDate
+	 *          deltaDate
 	 * @param pageStart
-	 *            pageStart
+	 *          pageStart
 	 * @return SearchResult
 	 * @throws InterruptedException
-	 *             InterruptedException
+	 *           InterruptedException
 	 */
 	public SearchResult getBoardIssues(String boardId, ProjectConfFieldMapping projectConfig, String deltaDate,
 			int pageStart) throws InterruptedException {
@@ -461,8 +458,8 @@ public class JiraCommonService {
 		String[] jiraIssueTypeNames = projectConfig.getFieldMapping().getJiraIssueTypeNames();
 		if (client == null) {
 			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
-		} else if (StringUtils.isEmpty(projectConfig.getProjectToolConfig().getProjectKey())
-				|| null == jiraIssueTypeNames) {
+		} else if (StringUtils.isEmpty(projectConfig.getProjectToolConfig().getProjectKey()) ||
+				null == jiraIssueTypeNames) {
 			log.error("Either Project key is empty or jiraIssueTypeNames not provided. key {} ",
 					projectConfig.getProjectToolConfig().getProjectKey());
 		} else {
@@ -472,8 +469,7 @@ public class JiraCommonService {
 						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
 				searchResult = promisedRs.claim();
 				if (searchResult != null) {
-					saveSearchDetailsInContext(searchResult, pageStart, boardId,
-							StepSynchronizationManager.getContext());
+					saveSearchDetailsInContext(searchResult, pageStart, boardId, StepSynchronizationManager.getContext());
 					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
 							Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
 							searchResult.getTotal()));
@@ -493,14 +489,14 @@ public class JiraCommonService {
 
 	/**
 	 * @param projectConfig
-	 *            projectConfig
+	 *          projectConfig
 	 * @param krb5Client
-	 *            krb5Client
+	 *          krb5Client
 	 * @return List of ProjectVersion
 	 * @throws IOException
-	 *             IOException
+	 *           IOException
 	 * @throws ParseException
-	 *             ParseException
+	 *           ParseException
 	 */
 	public List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
 			throws IOException, ParseException {
@@ -512,11 +508,10 @@ public class JiraCommonService {
 				parseVersionData(getDataFromClient(projectConfig, url, krb5Client), projectVersionList);
 			}
 		} catch (RestClientException rce) {
-			if (rce.getStatusCode().isPresent() && rce.getStatusCode().get() >= 400
-					&& rce.getStatusCode().get() < 500) {
+			if (rce.getStatusCode().isPresent() && rce.getStatusCode().get() >= 400 && rce.getStatusCode().get() < 500) {
 				String errMsg = ClientErrorMessageEnum.fromValue(rce.getStatusCode().get()).getReasonPhrase();
-				processorToolConnectionService
-						.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
+				processorToolConnectionService.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(),
+						errMsg);
 			}
 			log.error("Client exception when fetching versions " + rce);
 			throw rce;
@@ -538,7 +533,6 @@ public class JiraCommonService {
 		serverURL = serverURL.replace("{projectKey}", projectConfig.getJira().getProjectKey());
 		String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
 		return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
-
 	}
 
 	private void parseVersionData(String dataFromServer, List<ProjectVersion> projectVersionDetailList)
@@ -549,22 +543,17 @@ public class JiraCommonService {
 				if (null != obj) {
 					((JSONArray) new JSONParser().parse(dataFromServer)).forEach(values -> {
 						ProjectVersion projectVersion = new ProjectVersion();
-						projectVersion.setId(
-								Long.valueOf(Objects.requireNonNull(getOptionalString((JSONObject) values, "id"))));
+						projectVersion.setId(Long.valueOf(Objects.requireNonNull(getOptionalString((JSONObject) values, "id"))));
 						projectVersion.setName(getOptionalString((JSONObject) values, "name"));
-						projectVersion
-								.setArchived(Boolean.parseBoolean(getOptionalString((JSONObject) values, "archived")));
-						projectVersion
-								.setReleased(Boolean.parseBoolean(getOptionalString((JSONObject) values, "released")));
+						projectVersion.setArchived(Boolean.parseBoolean(getOptionalString((JSONObject) values, "archived")));
+						projectVersion.setReleased(Boolean.parseBoolean(getOptionalString((JSONObject) values, "released")));
 						if (getOptionalString((JSONObject) values, "startDate") != null) {
 							projectVersion.setStartDate(DateUtil.stringToDateTime(
-									Objects.requireNonNull(getOptionalString((JSONObject) values, "startDate")),
-									"yyyy-MM-dd"));
+									Objects.requireNonNull(getOptionalString((JSONObject) values, "startDate")), "yyyy-MM-dd"));
 						}
 						if (getOptionalString((JSONObject) values, "releaseDate") != null) {
 							projectVersion.setReleaseDate(DateUtil.stringToDateTime(
-									Objects.requireNonNull(getOptionalString((JSONObject) values, "releaseDate")),
-									"yyyy-MM-dd"));
+									Objects.requireNonNull(getOptionalString((JSONObject) values, "releaseDate")), "yyyy-MM-dd"));
 						}
 						projectVersionDetailList.add(projectVersion);
 					});
@@ -573,7 +562,6 @@ public class JiraCommonService {
 				log.error("Parser exception when parsing versions", pe);
 				throw pe;
 			}
-
 		}
 	}
 
@@ -587,10 +575,10 @@ public class JiraCommonService {
 
 	/**
 	 * * Gets api host
-	 * 
+	 *
 	 * @return apiHost
 	 * @throws UnknownHostException
-	 *             UnknownHostException
+	 *           UnknownHostException
 	 */
 	public String getApiHost() throws UnknownHostException {
 
@@ -604,5 +592,4 @@ public class JiraCommonService {
 
 		return urlPath.toString();
 	}
-
 }

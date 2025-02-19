@@ -17,6 +17,19 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.datamigration;
 
+import java.util.List;
+import java.util.function.Function;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.BulkOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.stereotype.Repository;
+
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -54,19 +67,8 @@ import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRe
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.AccessRequestsRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.BulkOperations;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.function.Function;
+import lombok.extern.slf4j.Slf4j;
 
 @Repository
 @Slf4j
@@ -124,7 +126,6 @@ public class BulkUpdateRepository {
 		// Save new data
 		organizationHierarchyRepository.saveAll(nodeWiseOrganizationHierarchyList);
 		log.info("Organization Hierarchy successfully saved to the database.");
-
 	}
 
 	public void saveToBasicConfig(List<ProjectBasicConfig> projectBasicConfigList) {
@@ -162,19 +163,16 @@ public class BulkUpdateRepository {
 		// Bulk operations for another collection (e.g., AdditionalFilterCapacity)
 		if (CollectionUtils.isNotEmpty(kanbanCapacityList)) {
 
-			processBulkUpdatesInBatches(kanbanCapacityList, KanbanCapacity.class,
-					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
-							new Update().set(PROJECT_ID, data.getProjectId())),
+			processBulkUpdatesInBatches(kanbanCapacityList, KanbanCapacity.class, data -> Pair
+					.of(new Query(Criteria.where("_id").is(data.getId())), new Update().set(PROJECT_ID, data.getProjectId())),
 					"KanbanCapacity Data", 1);
-
 		}
 	}
 
 	public void bulkUpdateHappiness(List<HappinessKpiData> happienss) {
 		if (CollectionUtils.isNotEmpty(happienss)) {
-			processBulkUpdatesInBatches(happienss, HappinessKpiData.class,
-					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
-							new Update().set(SPRINT_ID, data.getSprintID())),
+			processBulkUpdatesInBatches(happienss, HappinessKpiData.class, data -> Pair
+					.of(new Query(Criteria.where("_id").is(data.getId())), new Update().set(SPRINT_ID, data.getSprintID())),
 					"Happiness Kpi Data", 1);
 			// Execute bulk operations for CapacityKpiData
 
@@ -185,20 +183,17 @@ public class BulkUpdateRepository {
 	public void bulkUpdateJiraIssue(List<JiraIssue> scrumJiraIssueList, List<KanbanJiraIssue> kanbanJiraIssueList) {
 		// Process Scrum Jira Issues in batches
 		if (CollectionUtils.isNotEmpty(scrumJiraIssueList)) {
-			processBulkUpdatesInBatches(scrumJiraIssueList, JiraIssue.class,
-					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
-							new Update().set(SPRINT_ID, data.getSprintID())),
+			processBulkUpdatesInBatches(scrumJiraIssueList, JiraIssue.class, data -> Pair
+					.of(new Query(Criteria.where("_id").is(data.getId())), new Update().set(SPRINT_ID, data.getSprintID())),
 					"Scrum JiraIssue", 10000);
 		}
 
 		// Process Kanban Jira Issues in batches
 		if (CollectionUtils.isNotEmpty(kanbanJiraIssueList)) {
-			processBulkUpdatesInBatches(kanbanJiraIssueList, KanbanJiraIssue.class,
-					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
-							new Update().set("projectID", data.getProjectID())),
+			processBulkUpdatesInBatches(kanbanJiraIssueList, KanbanJiraIssue.class, data -> Pair
+					.of(new Query(Criteria.where("_id").is(data.getId())), new Update().set("projectID", data.getProjectID())),
 					"Kanban JiraIssue", 10000);
 		}
-
 	}
 
 	public void bulkUpdateTestExecution(List<TestExecution> testExecutionList,
@@ -224,8 +219,8 @@ public class BulkUpdateRepository {
 		if (CollectionUtils.isNotEmpty(projectReleaseList)) {
 
 			processBulkUpdatesInBatches(projectReleaseList, ProjectRelease.class,
-					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())), new Update()
-							.set(PROJECT_ID, data.getProjectId()).set("projectName", data.getProjectName())),
+					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
+							new Update().set(PROJECT_ID, data.getProjectId()).set("projectName", data.getProjectName())),
 					"Project Release", 1);
 			log.info("Project Release Data successfully saved to the database.");
 		}
@@ -234,13 +229,11 @@ public class BulkUpdateRepository {
 	public void bulkUpdateSprintTraceLog(List<SprintTraceLog> sprintTraceLogList) {
 		if (CollectionUtils.isNotEmpty(sprintTraceLogList)) {
 
-			processBulkUpdatesInBatches(sprintTraceLogList, SprintTraceLog.class,
-					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
-							new Update().set("sprintId", data.getSprintId())),
+			processBulkUpdatesInBatches(sprintTraceLogList, SprintTraceLog.class, data -> Pair
+					.of(new Query(Criteria.where("_id").is(data.getId())), new Update().set("sprintId", data.getSprintId())),
 					"Sprint Trace Logs", 100);
 			log.info("Sprint Trace Log Data successfully saved to the database.");
 		}
-
 	}
 
 	public void bulkUpdateUserInfo(List<UserInfo> userInfoList, List<AccessRequest> accessRequestList) {
@@ -252,9 +245,8 @@ public class BulkUpdateRepository {
 			log.info("UserInfo Data successfully saved to the database.");
 		}
 		if (CollectionUtils.isNotEmpty(accessRequestList)) {
-			processBulkUpdatesInBatches(accessRequestList, AccessRequest.class,
-					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
-							new Update().set("accessNode", data.getAccessNode())),
+			processBulkUpdatesInBatches(accessRequestList, AccessRequest.class, data -> Pair
+					.of(new Query(Criteria.where("_id").is(data.getId())), new Update().set("accessNode", data.getAccessNode())),
 					"Access Request", 100);
 			log.info("Access Request Data successfully saved to the database.");
 		}
@@ -272,9 +264,8 @@ public class BulkUpdateRepository {
 
 	public void saveToSprintDetails(List<SprintDetails> sprintDetailsList) {
 		if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
-			processBulkUpdatesInBatches(sprintDetailsList, SprintDetails.class,
-					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
-							new Update().set(SPRINT_ID, data.getSprintID())),
+			processBulkUpdatesInBatches(sprintDetailsList, SprintDetails.class, data -> Pair
+					.of(new Query(Criteria.where("_id").is(data.getId())), new Update().set(SPRINT_ID, data.getSprintID())),
 					"SprintDetails", 1000);
 			log.info("Sprint Details Data successfully saved to the database.");
 		}
@@ -296,8 +287,7 @@ public class BulkUpdateRepository {
 		int batchSize = batchCollection; // Set an appropriate batch size
 		List<List<T>> batches = Lists.partition(updates, batchSize);
 
-		log.info("Starting bulk update for {}. Total records: {}, Batch size: {}", entityType, updates.size(),
-				batchSize);
+		log.info("Starting bulk update for {}. Total records: {}, Batch size: {}", entityType, updates.size(), batchSize);
 		int batchNumber = 1;
 
 		for (List<T> batch : batches) {
@@ -308,8 +298,7 @@ public class BulkUpdateRepository {
 					bulkOps.updateOne(queryUpdatePair.getLeft(), queryUpdatePair.getRight());
 				}
 				bulkOps.execute();
-				log.info("Batch {} for {} successfully processed. Records in batch: {}", batchNumber, entityType,
-						batch.size());
+				log.info("Batch {} for {} successfully processed. Records in batch: {}", batchNumber, entityType, batch.size());
 			} catch (Exception e) {
 				log.error("Error in processing batch {} for {}. Error: {}", batchNumber, entityType, e.getMessage(), e);
 				log.error("Recommended to restore your backup and restart customapi");

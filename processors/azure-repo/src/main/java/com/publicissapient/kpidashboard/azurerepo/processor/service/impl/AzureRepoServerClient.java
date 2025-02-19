@@ -51,7 +51,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-
 public class AzureRepoServerClient extends BasicAzureRepoClient implements AzureRepoClient {
 
 	private static String skip = "&$skip=";
@@ -60,11 +59,11 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 	 * Instantiates a new azure repo server client.
 	 *
 	 * @param config
-	 *            the config
+	 *          the config
 	 * @param azurerepoRestOperations
-	 *            the rest operations supplier
+	 *          the rest operations supplier
 	 * @param aesEncryptionService
-	 *            aesencryptionservice
+	 *          aesencryptionservice
 	 */
 	@Autowired
 	public AzureRepoServerClient(AzureRepoConfig config, AzureRepoRestOperations azurerepoRestOperations,
@@ -76,20 +75,19 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 	 * Fetch all commits.
 	 *
 	 * @param repo
-	 *            the repo
+	 *          the repo
 	 * @param firstRun
-	 *            the first run
+	 *          the first run
 	 * @param azureRepoProcessorInfo
-	 *            azure Processor Info Like branch,pat
+	 *          azure Processor Info Like branch,pat
 	 * @return the list
 	 * @throws FetchingCommitException
-	 *             the exception
+	 *           the exception
 	 */
 	@Override
-
 	public List<CommitDetails> fetchAllCommits(AzureRepoModel repo, boolean firstRun,
 			ProcessorToolConnection azureRepoProcessorInfo, ProjectBasicConfig projectBasicConfig)
-			throws FetchingCommitException {// NOSONAR
+			throws FetchingCommitException { // NOSONAR
 
 		String restUri = null;
 		List<CommitDetails> commits = new ArrayList<>();
@@ -174,11 +172,10 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 		return mergeRequests;
 	}
 
-	private boolean parseResponse(JSONArray jsonArray, boolean firstRun, String nextPageIndex,
-			JSONObject responseJson) {
+	private boolean parseResponse(JSONArray jsonArray, boolean firstRun, String nextPageIndex, JSONObject responseJson) {
 		boolean isLast = false;
-		if (CollectionUtils.isEmpty(jsonArray) || (firstRun
-				&& config.getInitialPageSize() <= Integer.parseInt(nextPageIndex == null ? "0" : nextPageIndex))) {
+		if (CollectionUtils.isEmpty(jsonArray) ||
+				(firstRun && config.getInitialPageSize() <= Integer.parseInt(nextPageIndex == null ? "0" : nextPageIndex))) {
 			isLast = true;
 		} else {
 
@@ -237,7 +234,6 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 			}
 
 			commitDetails(commits, commitId, comment, author, timestamp, azureRepoProcessorInfo, projectBasicConfig);
-
 		}
 	}
 
@@ -297,9 +293,9 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 				mergeReq.setReviewers(reviewersList);
 				mergeRequestList.add(mergeReq);
 			}
-
 		}
 	}
+
 	private static void setAssigneeDetail(ProjectBasicConfig proBasicConfig, String author, MergeRequests mergeReq) {
 		if (proBasicConfig.isSaveAssigneeDetails()) {
 			mergeReq.setAuthor(author);
@@ -337,5 +333,4 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 
 		commits.add(azureRepoCommit);
 	}
-
 }

@@ -23,34 +23,28 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -61,7 +55,8 @@ import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,7 +68,7 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 	private static final String COD_DATA = "costOfDelayData";
 	private static final String COD_DATA_HISTORY = "costOfDelayDataHistory";
 	private static final String FIELD_MAPPING = "fieldMapping";
-	
+
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
@@ -89,18 +84,16 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
-
 			Filters filters = Filters.getFilter(k);
 			if (Filters.PROJECT == filters) {
 				projectWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, getRequestTrackerId(), kpiRequest);
 			}
-
 		});
 
 		log.debug("[PROJECT-WISE][{}]. Values of leaf node after KPI calculation {}", kpiRequest.getRequestTrackerId(),
@@ -119,11 +112,16 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 	/**
 	 * Fetches KPI data from the database for the given list of project nodes.
 	 *
-	 * @param leafNodeList the list of project nodes
-	 * @param startDate the start date for the KPI data (not used in this implementation)
-	 * @param endDate the end date for the KPI data (not used in this implementation)
-	 * @param kpiRequest the KPI request object containing additional request details
-	 * @return a map containing the fetched KPI data, with keys "costOfDelayData" and "costOfDelayDataHistory"
+	 * @param leafNodeList
+	 *          the list of project nodes
+	 * @param startDate
+	 *          the start date for the KPI data (not used in this implementation)
+	 * @param endDate
+	 *          the end date for the KPI data (not used in this implementation)
+	 * @param kpiRequest
+	 *          the KPI request object containing additional request details
+	 * @return a map containing the fetched KPI data, with keys "costOfDelayData"
+	 *         and "costOfDelayDataHistory"
 	 */
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
@@ -136,7 +134,6 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 				ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 				basicProjectConfigIds.add(basicProjectConfigId);
 			});
-
 		}
 		List<JiraIssue> codList = new ArrayList<>();
 		List<JiraIssueCustomHistory> codHistory = new ArrayList<>();
@@ -163,13 +160,13 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 	 * Calculate KPI value for selected project nodes.
 	 *
 	 * @param projectLeafNodeList
-	 *            list of sprint leaf nodes
+	 *          list of sprint leaf nodes
 	 * @param trendValueList
-	 *            list containing data to show on KPI
+	 *          list containing data to show on KPI
 	 * @param kpiElement
-	 *            kpiElement
+	 *          kpiElement
 	 * @param kpiRequest
-	 *            KpiRequest
+	 *          KpiRequest
 	 */
 	private void projectWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> projectLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, String requestTrackerId, KpiRequest kpiRequest) {
@@ -177,8 +174,8 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 		Map<String, Object> resultMap = fetchKPIDataFromDb(projectLeafNodeList, null, null, kpiRequest);
 		List<KPIExcelData> excelData = new ArrayList<>();
 
-		projectLeafNodeList.forEach(
-				node -> setProjectNodeValue(mapTmp, node, resultMap, trendValueList, requestTrackerId, excelData));
+		projectLeafNodeList
+				.forEach(node -> setProjectNodeValue(mapTmp, node, resultMap, trendValueList, requestTrackerId, excelData));
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(
 				KPIExcelColumn.COST_OF_DELAY.getColumns(projectLeafNodeList, cacheService, flterHelperService));
@@ -188,17 +185,17 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 	 * Sets the KPI value for a project node.
 	 *
 	 * @param mapTmp
-	 *            a map containing the KPI values for each node
+	 *          a map containing the KPI values for each node
 	 * @param node
-	 *            the project node
+	 *          the project node
 	 * @param resultMap
-	 *            a map containing the fetched KPI data
+	 *          a map containing the fetched KPI data
 	 * @param trendValueList
-	 *            a list containing the data to show on the KPI
+	 *          a list containing the data to show on the KPI
 	 * @param requestTrackerId
-	 *            the request tracker ID
+	 *          the request tracker ID
 	 * @param excelData
-	 *            a list containing the data to be shown in the Excel sheet
+	 *          a list containing the data to be shown in the Excel sheet
 	 */
 	@SuppressWarnings("unchecked")
 	private void setProjectNodeValue(Map<String, Node> mapTmp, Node node, Map<String, Object> resultMap,
@@ -213,8 +210,7 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 				(List<JiraIssueCustomHistory>) resultMap.get(COD_DATA_HISTORY),
 				JiraIssueCustomHistory::getBasicProjectConfigId);
 		Map<String, List<String>> fieldMappingMap = (Map<String, List<String>>) resultMap.get(FIELD_MAPPING);
-		List<JiraIssue> jiraIssues = filterWiseDataMap
-				.get(node.getProjectFilter().getBasicProjectConfigId().toString());
+		List<JiraIssue> jiraIssues = filterWiseDataMap.get(node.getProjectFilter().getBasicProjectConfigId().toString());
 		List<JiraIssueCustomHistory> jiraIssueCustomHistories = filterWiseHistoryDataMap
 				.get(node.getProjectFilter().getBasicProjectConfigId().toString());
 		List<String> closedStatues = fieldMappingMap.get(node.getProjectFilter().getBasicProjectConfigId().toString());
@@ -226,14 +222,12 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 			Optional<String> epicEndDateOpt = jiraIssueCustomHistories.stream()
 					.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equals(number)).findFirst()
 					.flatMap(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStatusUpdationLog().stream()
-							.filter(jiraHistoryChangeLog -> closedStatues
-									.contains(jiraHistoryChangeLog.getChangedTo().toLowerCase()))
+							.filter(jiraHistoryChangeLog -> closedStatues.contains(jiraHistoryChangeLog.getChangedTo().toLowerCase()))
 							.findFirst().map(jiraHistoryChangeLog -> jiraHistoryChangeLog.getUpdatedOn().toString()));
 			String epicEndDate = epicEndDateOpt.orElse(null);
 			js.setEpicEndDate(epicEndDate);
 			if (epicEndDate != null) {
-				DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.DATE_FORMAT)
-						.toFormatter();
+				DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.DATE_FORMAT).toFormatter();
 				LocalDate dateValue = LocalDate.parse(epicEndDate.split("T")[0], formatter);
 				String date = dateValue.getYear() + Constant.DASH + dateValue.getMonthValue();
 				lastNMonthMap.computeIfPresent(date, (key, value) -> {
@@ -249,9 +243,7 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 					}
 					return value + costOfDelay;
 				});
-
 			}
-
 		}
 
 		List<DataCount> dcList = new ArrayList<>();
@@ -264,23 +256,25 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 			dataCount.setHoverValue(new HashMap<>());
 			dcList.add(dataCount);
 			trendValueList.add(dataCount);
-
 		});
 		mapTmp.get(node.getId()).setValue(dcList);
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			KPIExcelUtility.populateCODExcelData(projectName, epicList, excelData);
 		}
-
 	}
 
 	/**
 	 * Groups a list of items by a project ID extracted using the provided function.
 	 *
-	 * @param <T> the type of items in the list
-	 * @param resultList the list of items to be grouped
-	 * @param projectIdExtractor a function to extract the project ID from an item
-	 * @return a map where the keys are project IDs and the values are lists of items associated with those project IDs
+	 * @param <T>
+	 *          the type of items in the list
+	 * @param resultList
+	 *          the list of items to be grouped
+	 * @param projectIdExtractor
+	 *          a function to extract the project ID from an item
+	 * @return a map where the keys are project IDs and the values are lists of
+	 *         items associated with those project IDs
 	 */
 	private <T> Map<String, List<T>> createProjectWiseGrouping(List<T> resultList,
 			Function<T, String> projectIdExtractor) {
@@ -297,5 +291,4 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI113(), KPICode.COST_OF_DELAY.getKpiId());
 	}
-
 }

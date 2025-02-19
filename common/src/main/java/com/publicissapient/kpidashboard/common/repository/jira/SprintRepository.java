@@ -26,68 +26,66 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
 /**
  * @author yasbano
- *
  */
-
 @Repository
 public interface SprintRepository extends MongoRepository<SprintDetails, ObjectId> {
 
 	/**
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return SprintDetails
 	 */
 	SprintDetails findTopByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
 	/**
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId in object form
+	 *          basicProjectConfigId in object form
 	 * @param state
-	 *            state
+	 *          state
 	 * @return SprintDetails
 	 */
 	SprintDetails findTopByBasicProjectConfigIdAndState(ObjectId basicProjectConfigId, String state);
 
 	/**
 	 * @param id
-	 *            id
+	 *          id
 	 * @return SprintDetails
 	 */
 	SprintDetails findBySprintID(String id);
 
 	/**
 	 * Find all which matches provided ids
-	 * 
+	 *
 	 * @param sprintIDs
-	 *            sprint ids
+	 *          sprint ids
 	 * @return list of sprint details
 	 */
 	List<SprintDetails> findBySprintIDIn(List<String> sprintIDs);
 
 	/**
 	 * delete using project basic config id
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 */
 	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
 	/**
 	 * find all the sprints of the project
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return list of sprints
 	 */
 	List<SprintDetails> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
 	/**
 	 * find all sprints of projects and based on status of sprint
-	 * 
+	 *
 	 * @param basicProjectConfigIds
-	 *            basicProjectConfigIds
+	 *          basicProjectConfigIds
 	 * @param sprintStatusList
-	 *            sprintStatusList
+	 *          sprintStatusList
 	 * @return SprintDetails
 	 */
 	@Query(value = "{ 'basicProjectConfigId' : { $in: ?0 }, 'state' : { $in: ?1} }", fields = "{ 'sprintID' : 1, 'state': 1, 'basicProjectConfigId' : 1, 'notCompletedIssues' : 1, 'completedIssues' : 1, 'sprintName' : 1, 'startDate' : 1, 'completeDate' : 1, 'totalIssues' : 1}", sort = "{ 'startDate' : -1 }")
@@ -96,9 +94,9 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 
 	/**
 	 * Find all which matches provided ids
-	 * 
+	 *
 	 * @param sprintIDs
-	 *            sprint ids
+	 *          sprint ids
 	 * @return list of sprint details
 	 */
 	@Query(value = "{ 'sprintID' : { $in: ?0 } }", fields = "{ 'sprintID' : 1, 'state' : 1 , 'startDate' : 1 , 'endDate': 1 }")
@@ -116,9 +114,9 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 	 * Deletes sprint details by sprint IDs and basic project config ID.
 	 *
 	 * @param sprintIDs
-	 *            List of sprint IDs to delete
+	 *          List of sprint IDs to delete
 	 * @param basicProjectConfigId
-	 *            Basic project configuration ID
+	 *          Basic project configuration ID
 	 */
 	@Query(value = "{ 'sprintID': { $in: ?0 }, 'basicProjectConfigId': ?1 }", delete = true)
 	void deleteBySprintIDInAndBasicProjectConfigId(List<String> sprintIDs, ObjectId basicProjectConfigId);
@@ -128,7 +126,7 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 	 * sorted by start date.
 	 *
 	 * @param basicProjectConfigId
-	 *            the basic project configuration ID
+	 *          the basic project configuration ID
 	 * @return list of sprint details with specific fields sorted by start date
 	 */
 	@Query(value = "{ 'basicProjectConfigId': ?0 }", fields = "{ 'sprintID': 1, 'startDate': 1, 'endDate': 1, 'sprintName': 1 }", sort = "{ 'startDate': 1 }")
@@ -136,5 +134,4 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 
 	@Query(value = "{ 'basicProjectConfigId': { $in: ?0 } }", fields = "{ '_id': 1 , 'basicProjectConfigId':1 , 'sprintID': 1, 'originalSprintId':1}")
 	List<SprintDetails> findByBasicProjectConfigIdIn(List<ObjectId> basicProjectConfigIds);
-
 }

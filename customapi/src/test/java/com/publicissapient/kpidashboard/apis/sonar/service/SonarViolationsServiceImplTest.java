@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
@@ -71,7 +69,6 @@ import com.publicissapient.kpidashboard.common.repository.sonar.SonarHistoryRepo
 
 /**
  * @author prigupta8
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SonarViolationsServiceImplTest {
@@ -134,7 +131,6 @@ public class SonarViolationsServiceImplTest {
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONAR.name()))
 				.thenReturn(kpiRequestTrackerId);
-
 	}
 
 	private void setToolMap() {
@@ -174,7 +170,6 @@ public class SonarViolationsServiceImplTest {
 
 	@After
 	public void cleanup() {
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -203,7 +198,7 @@ public class SonarViolationsServiceImplTest {
 
 	/**
 	 * agg criteria percentile
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -234,7 +229,7 @@ public class SonarViolationsServiceImplTest {
 
 	/**
 	 * agg criteria median
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -266,7 +261,7 @@ public class SonarViolationsServiceImplTest {
 
 	/**
 	 * agg criteria average
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -299,7 +294,7 @@ public class SonarViolationsServiceImplTest {
 
 	/**
 	 * agg criteria sum
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -322,10 +317,8 @@ public class SonarViolationsServiceImplTest {
 			KpiElement kpiElement = svServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			Map<String, Object> dataMap = (Map<String, Object>) kpiElement.getValue();
-			assertSame(((List<DataCount>) dataMap.get(Constant.AGGREGATED_VALUE)).get(0).getData(),
-					vioList.get(0).getData());
-			assertThat("Count :", ((List<DataCount>) dataMap.get(Constant.AGGREGATED_VALUE)).get(0).getCount(),
-					equalTo(96));
+			assertSame(((List<DataCount>) dataMap.get(Constant.AGGREGATED_VALUE)).get(0).getData(), vioList.get(0).getData());
+			assertThat("Count :", ((List<DataCount>) dataMap.get(Constant.AGGREGATED_VALUE)).get(0).getCount(), equalTo(96));
 		} catch (Exception enfe) {
 
 		}
@@ -333,7 +326,7 @@ public class SonarViolationsServiceImplTest {
 
 	/**
 	 * agg criteria percentile
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -404,5 +397,4 @@ public class SonarViolationsServiceImplTest {
 
 		svServiceImpl.getSonarKpiData(projectList, treeAggregatorDetail.getMapTmp(), kpiElement);
 	}
-
 }

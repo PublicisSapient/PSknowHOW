@@ -29,8 +29,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 public class WebSecurityConfig {
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().requestMatchers("/processor/run", "/togglz-console/*");
-    }
+	@Bean
+	public WebSecurityCustomizer webSecurityCustomizer() {
+		return web -> web.ignoring().requestMatchers("/processor/run", "/togglz-console/*");
+	}
 }

@@ -16,10 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
-
+/** */
 package com.publicissapient.kpidashboard.common.repository.application;
 
 import java.util.List;
@@ -33,26 +30,27 @@ import com.publicissapient.kpidashboard.common.repository.excel.KanbanTestExecut
 
 /**
  * @author sansharm13
- *
  */
-public interface KanbanTestExecutionRepository extends CrudRepository<KanbanTestExecution, ObjectId>,
-		QuerydslPredicateExecutor<KanbanTestExecution>, KanbanTestExecutionRepositoryCustom {
+public interface KanbanTestExecutionRepository
+		extends
+			CrudRepository<KanbanTestExecution, ObjectId>,
+			QuerydslPredicateExecutor<KanbanTestExecution>,
+			KanbanTestExecutionRepositoryCustom {
 
 	/**
 	 * Gets Test Execution by date And projectId.
 	 *
 	 * @param executionDate
-	 *            the Execution date
+	 *          the Execution date
 	 * @param projectNodeId
-	 *            projectNodeId
+	 *          projectNodeId
 	 * @return the TestExecution
 	 */
-
 	KanbanTestExecution findByExecutionDateAndProjectNodeId(String executionDate, String projectNodeId);
 
 	/**
 	 * find by project config id
-	 * 
+	 *
 	 * @param basicProjectConfigId
 	 * @return list of test execution
 	 */
@@ -60,9 +58,9 @@ public interface KanbanTestExecutionRepository extends CrudRepository<KanbanTest
 
 	/**
 	 * delete Testexecution project wise
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 */
 	void deleteByBasicProjectConfigId(String basicProjectConfigId);
 }

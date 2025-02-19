@@ -35,15 +35,14 @@ import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 
 /**
  * Interface to managing all requests to the Aggregated Dashboard KPIs
- * 
- * @author pkum34
  *
+ * @author pkum34
  */
 public interface AccountHierarchyService<R, S> {
 
 	/**
 	 * Gets Filter options.
-	 * 
+	 *
 	 * @param filter
 	 * @return {@code List<AccountFilterResponse>}
 	 */
@@ -51,14 +50,14 @@ public interface AccountHierarchyService<R, S> {
 
 	/**
 	 * Creates and Returns hierarchy data.
-	 * 
+	 *
 	 * @return hierarchy data
 	 */
 	R createHierarchyData();
 
 	/**
 	 * Gets qualifier type. For Example "Scrum" or "Kanban"
-	 * 
+	 *
 	 * @return qualifier type
 	 */
 	String getQualifierType();
@@ -72,10 +71,8 @@ public interface AccountHierarchyService<R, S> {
 	 * @param projectHierarchyService
 	 * @return
 	 */
-
 	default List<ProjectHierarchy> getConfigureProjectsHierarchies(List<ProjectBasicConfig> projectBasicConfigList,
-			OrganizationHierarchyService organizationHierarchyService,
-			ProjectHierarchyService projectHierarchyService) {
+			OrganizationHierarchyService organizationHierarchyService, ProjectHierarchyService projectHierarchyService) {
 		List<ObjectId> projectBasicConfigIds = projectBasicConfigList.stream().map(ProjectBasicConfig::getId)
 				.collect(Collectors.toList());
 
@@ -89,8 +86,8 @@ public interface AccountHierarchyService<R, S> {
 		Set<String> hierarchyNodes = projectBasicConfigList.stream().flatMap(a -> a.getHierarchy().stream())
 				.map(hierarchyValue -> hierarchyValue.getOrgHierarchyNodeId()).collect(Collectors.toSet());
 
-		hierarchyNodes.addAll(
-				projectBasicConfigList.stream().map(ProjectBasicConfig::getProjectNodeId).collect(Collectors.toSet()));
+		hierarchyNodes
+				.addAll(projectBasicConfigList.stream().map(ProjectBasicConfig::getProjectNodeId).collect(Collectors.toSet()));
 
 		List<OrganizationHierarchy> configureOrganizationHierarchyList = organizationHierarchyService.findAll().stream()
 				.filter(organizationHierarchy -> hierarchyNodes.contains(organizationHierarchy.getNodeId())).toList();
@@ -98,21 +95,19 @@ public interface AccountHierarchyService<R, S> {
 		// required only configured Project Below filters like sprint , squad , releases
 		List<ProjectHierarchy> configureHierarchies = projectHierarchyService
 				.findAllByBasicProjectConfigIds(projectBasicConfigIds);
-
+		projectHierarchyService.appendProjectName(projectBasicConfigList, configureHierarchies);
 		// configureOrganizationHierarchyList and projectHierarchyList merge into single
 		// list
 		configureOrganizationHierarchyList.stream().map(orgHierarchy -> {
 			if (orgHierarchy.getHierarchyLevelId().equalsIgnoreCase(CommonConstant.PROJECT)) {
 				ObjectId projectBasicId = projectNodeWiseBasicConfigIdMap.get(orgHierarchy.getNodeId());
 				return new ProjectHierarchy(orgHierarchy.getNodeId(), orgHierarchy.getNodeName(),
-						orgHierarchy.getNodeDisplayName(), orgHierarchy.getHierarchyLevelId(),
-						orgHierarchy.getParentId(), orgHierarchy.getCreatedDate(), orgHierarchy.getModifiedDate(),
-						projectBasicId);
+						orgHierarchy.getNodeDisplayName(), orgHierarchy.getHierarchyLevelId(), orgHierarchy.getParentId(),
+						orgHierarchy.getCreatedDate(), orgHierarchy.getModifiedDate(), projectBasicId);
 			} else {
 				return new ProjectHierarchy(orgHierarchy.getNodeId(), orgHierarchy.getNodeName(),
-						orgHierarchy.getNodeDisplayName(), orgHierarchy.getHierarchyLevelId(),
-						orgHierarchy.getParentId(), orgHierarchy.getCreatedDate(), orgHierarchy.getModifiedDate(),
-						null);
+						orgHierarchy.getNodeDisplayName(), orgHierarchy.getHierarchyLevelId(), orgHierarchy.getParentId(),
+						orgHierarchy.getCreatedDate(), orgHierarchy.getModifiedDate(), null);
 			}
 		}).forEach(configureHierarchies::add);
 		return configureHierarchies;

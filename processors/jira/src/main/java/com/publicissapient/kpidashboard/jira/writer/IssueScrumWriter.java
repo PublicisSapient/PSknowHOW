@@ -49,7 +49,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
- *
  */
 @Slf4j
 @Component
@@ -86,13 +85,13 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 
 		for (CompositeResult compositeResult : compositeResults) {
 			if (null != compositeResult.getJiraIssue()) {
-				String key = compositeResult.getJiraIssue().getNumber() + ","
-						+ compositeResult.getJiraIssue().getBasicProjectConfigId();
+				String key = compositeResult.getJiraIssue().getNumber() + "," +
+						compositeResult.getJiraIssue().getBasicProjectConfigId();
 				jiraIssues.putIfAbsent(key, compositeResult.getJiraIssue());
 			}
 			if (null != compositeResult.getJiraIssueCustomHistory()) {
-				String key = compositeResult.getJiraIssueCustomHistory().getStoryID() + ","
-						+ compositeResult.getJiraIssueCustomHistory().getBasicProjectConfigId();
+				String key = compositeResult.getJiraIssueCustomHistory().getStoryID() + "," +
+						compositeResult.getJiraIssueCustomHistory().getBasicProjectConfigId();
 				jiraHistoryItems.putIfAbsent(key, compositeResult.getJiraIssueCustomHistory());
 			}
 			if (null != compositeResult.getSprintDetailsSet()) {
@@ -130,8 +129,8 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 	 */
 	private static void addAssigness(Map<String, AssigneeDetails> assigneesToSave, Set<Assignee> assignee,
 			CompositeResult compositeResult) {
-		if (compositeResult.getAssigneeDetails() != null
-				&& CollectionUtils.isNotEmpty(compositeResult.getAssigneeDetails().getAssignee())) {
+		if (compositeResult.getAssigneeDetails() != null &&
+				CollectionUtils.isNotEmpty(compositeResult.getAssigneeDetails().getAssignee())) {
 			assignee.addAll(compositeResult.getAssigneeDetails().getAssignee());
 			compositeResult.getAssigneeDetails().setAssignee(assignee);
 			assigneesToSave.put(compositeResult.getAssigneeDetails().getBasicProjectConfigId(),

@@ -26,26 +26,25 @@ import org.togglz.core.context.FeatureContext;
  * @author purgupta2
  */
 public enum FeatureEnum implements Feature {
+	@EnabledByDefault
+	@Label("Custom-api Daily Standup")
+	DAILY_STANDUP,
 
-    @EnabledByDefault
-    @Label("Custom-api Daily Standup")
-    DAILY_STANDUP,
+	@EnabledByDefault
+	@Label("Google Analytics")
+	GOOGLE_ANALYTICS,
 
-    @EnabledByDefault
-    @Label("Google Analytics")
-    GOOGLE_ANALYTICS,
+	@Label("Recommendations")
+	RECOMMENDATIONS,
 
-    @Label("Recommendations")
-    RECOMMENDATIONS,
+	@EnabledByDefault
+	@Label("New UI")
+	NEW_UI_SWITCH,
 
-    @EnabledByDefault
-    @Label("New UI")
-    NEW_UI_SWITCH,
+	@Label("Reports")
+	REPORTS;
 
-    @Label("Reports")
-    REPORTS;
-
-    public boolean isActive() {
-        return FeatureContext.getFeatureManager().isActive(this);
-    }
+	public boolean isActive() {
+		return FeatureContext.getFeatureManager().isActive(this);
+	}
 }

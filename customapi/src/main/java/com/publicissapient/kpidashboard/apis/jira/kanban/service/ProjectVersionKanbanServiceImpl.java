@@ -85,8 +85,8 @@ public class ProjectVersionKanbanServiceImpl extends JiraKPIService<Double, List
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		log.info("[PROJECT-RELEASE-KANBAN-LEAF-NODE-VALUE][{}]", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
@@ -102,7 +102,8 @@ public class ProjectVersionKanbanServiceImpl extends JiraKPIService<Double, List
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.PROJECT_RELEASES_KANBAN);
 		// 3rd change : remove code to set trendValuelist and call getTrendValues method
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.PROJECT_RELEASES_KANBAN);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.PROJECT_RELEASES_KANBAN);
 		kpiElement.setTrendValueList(trendValues);
 		return kpiElement;
 	}
@@ -111,13 +112,13 @@ public class ProjectVersionKanbanServiceImpl extends JiraKPIService<Double, List
 	 * Calculate KPI value for selected project nodes.
 	 *
 	 * @param leafNodeList
-	 *            list of sprint leaf nodes
+	 *          list of sprint leaf nodes
 	 * @param mapTmp
-	 *            map containing data to show on KPI
+	 *          map containing data to show on KPI
 	 * @param kpiElement
-	 *            kpiElement
+	 *          kpiElement
 	 * @param kpiRequest
-	 *            KpiRequest
+	 *          KpiRequest
 	 */
 	private void projectWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> leafNodeList, KpiElement kpiElement,
 			KpiRequest kpiRequest, List<KPIExcelData> excelData) {
@@ -139,14 +140,12 @@ public class ProjectVersionKanbanServiceImpl extends JiraKPIService<Double, List
 				List<ProjectVersion> releasedVersions = projectRelease.getListProjectVersion().stream()
 						.filter(ProjectVersion::isReleased).toList();
 				for (ProjectVersion pv : releasedVersions) {
-					if (pv.getReleaseDate() != null && dateCount.keySet().contains(
-							pv.getReleaseDate().getYear() + Constant.DASH + pv.getReleaseDate().getMonthOfYear())) {
-						String yearMonth = pv.getReleaseDate().getYear() + Constant.DASH
-								+ pv.getReleaseDate().getMonthOfYear();
+					if (pv.getReleaseDate() != null && dateCount.keySet()
+							.contains(pv.getReleaseDate().getYear() + Constant.DASH + pv.getReleaseDate().getMonthOfYear())) {
+						String yearMonth = pv.getReleaseDate().getYear() + Constant.DASH + pv.getReleaseDate().getMonthOfYear();
 
 						projectVersionList.add(pv);
 						dateCount.put(yearMonth, dateCount.get(yearMonth) + 1);
-
 					}
 				}
 				dateCount.forEach((k, v) -> {
@@ -166,7 +165,6 @@ public class ProjectVersionKanbanServiceImpl extends JiraKPIService<Double, List
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.RELEASE_FREQUENCY_KANBAN.getColumns());
-
 	}
 
 	/**
@@ -186,8 +184,6 @@ public class ProjectVersionKanbanServiceImpl extends JiraKPIService<Double, List
 
 	@Override
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI74(),
-				KPICode.PROJECT_RELEASES_KANBAN.getKpiId());
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI74(), KPICode.PROJECT_RELEASES_KANBAN.getKpiId());
 	}
-
 }

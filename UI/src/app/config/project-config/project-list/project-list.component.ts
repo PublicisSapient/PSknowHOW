@@ -320,30 +320,9 @@ export class ProjectListComponent implements OnInit {
       return;
     }
     if (form.valid) {
-      const updatedDetails = {};
+      const updatedDetails = {...this.projectList.filter(x => x.projectDisplayName === this.selectedProject.name)[0]};
       updatedDetails['projectName'] = this.newProjectName;
       updatedDetails['projectDisplayName'] = this.newProjectName;
-      updatedDetails['projectNodeId'] = this.selectedProject?.projectNodeId;
-      updatedDetails['kanban'] = this.selectedProject?.type === 'Kanban' ? true : false;
-      updatedDetails['hierarchy'] = [];
-      updatedDetails['saveAssigneeDetails'] = this.selectedProject?.saveAssigneeDetails;
-      updatedDetails['id'] = this.selectedProject?.id;
-      updatedDetails["developerKpiEnabled"] = this.selectedProject?.developerKpiEnabled;
-      updatedDetails["projectOnHold"] = this.selectedProject?.projectOnHold;
-      let hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedProject?.type?.toLowerCase()];
-      for (let element of hierarchyData) {
-        if (element.hierarchyLevelId == 'project') {
-          break;
-        }
-        updatedDetails['hierarchy'].push({
-          hierarchyLevel: {
-            level: element.level,
-            hierarchyLevelId: element.hierarchyLevelId,
-            hierarchyLevelName: element.hierarchyLevelName
-          },
-          value: this.selectedProject[element.hierarchyLevelId]
-        });
-      }
       this.http.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
             if (response && response.serviceResponse && response.serviceResponse.success) {
               this.messenger.add({

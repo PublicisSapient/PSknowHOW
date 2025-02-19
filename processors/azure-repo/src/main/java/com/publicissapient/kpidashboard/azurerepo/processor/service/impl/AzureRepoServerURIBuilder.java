@@ -30,9 +30,7 @@ import com.publicissapient.kpidashboard.azurerepo.config.AzureRepoConfig;
 import com.publicissapient.kpidashboard.azurerepo.model.AzureRepoModel;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 
-/**
- * The Class AzureRepoServerURIBuilder.
- */
+/** The Class AzureRepoServerURIBuilder. */
 public class AzureRepoServerURIBuilder {
 
 	private static final String FORWARDSLASH = "/";
@@ -42,18 +40,19 @@ public class AzureRepoServerURIBuilder {
 
 	/** The config . */
 	private final AzureRepoConfig config;
+
 	/** The ProcessorToolConnection . */
 	private final ProcessorToolConnection azureRepoProcessor;
 
 	/**
 	 * Instantiates a new azure repo server URI builder.
-	 * 
+	 *
 	 * @param repo
-	 *            AzureRepoConfig
+	 *          AzureRepoConfig
 	 * @param config
-	 *            config
+	 *          config
 	 * @param azureRepoProcessor
-	 *            azureRepoProcessor
+	 *          azureRepoProcessor
 	 */
 	public AzureRepoServerURIBuilder(AzureRepoModel repo, AzureRepoConfig config,
 			ProcessorToolConnection azureRepoProcessor) {
@@ -67,7 +66,7 @@ public class AzureRepoServerURIBuilder {
 	 *
 	 * @return the string
 	 * @throws URISyntaxException
-	 *             the URISyntaxException
+	 *           the URISyntaxException
 	 */
 	public String build() throws URISyntaxException {
 		final URIBuilder builder = new URIBuilder();
@@ -145,7 +144,7 @@ public class AzureRepoServerURIBuilder {
 	 * @return the params
 	 */
 	private Map<String, String> getParams() { // additional parameter add to
-											  // builder type
+		// builder type
 		Map<String, String> map = new HashMap<>();
 
 		map.put("api.Version", String.valueOf(azureRepoProcessor.getApiVersion()));
@@ -172,7 +171,7 @@ public class AzureRepoServerURIBuilder {
 	 * Gets the path.
 	 *
 	 * @param uri
-	 *            the uri
+	 *          the uri
 	 * @return the path
 	 */
 	private String getPath(URI uri) {

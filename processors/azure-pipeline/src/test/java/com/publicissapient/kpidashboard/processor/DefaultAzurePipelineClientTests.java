@@ -125,7 +125,7 @@ public class DefaultAzurePipelineClientTests {
 		// fails, need to investigate
 		// HttpEntity<HttpHeaders> headers = new
 		// HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("user:pass"));
-		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@SuppressWarnings({"rawtypes", "unchecked"})
 		HttpEntity headers = new HttpEntity(AzurePipelineUtils.createHeaders("patKey"));
 		when(rest.exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.eq(headers),
 				Mockito.eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
@@ -141,7 +141,7 @@ public class DefaultAzurePipelineClientTests {
 		// fails, need to investigate
 		// HttpEntity<HttpHeaders> headers = new
 		// HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("does:matter"));
-		@SuppressWarnings({ "unchecked", "rawtypes" })
+		@SuppressWarnings({"unchecked", "rawtypes"})
 		HttpEntity headers = new HttpEntity(AzurePipelineUtils.createHeaders("patKey"));
 		when(rest.exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.eq(headers),
 				Mockito.eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
@@ -153,10 +153,15 @@ public class DefaultAzurePipelineClientTests {
 
 	@Test
 	public void instanceJobsEmptyResponseReturnsEmptyMap() {
-		when(rest.exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class),
-				Mockito.eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
-		Map<ObjectId, Set<Build>> jobs = azurePipelineClient.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER_ONE,
-				LASTUPDATEDTIME, projectBasicConfig);
+		when(rest.exchange(
+						Mockito.any(URI.class),
+						Mockito.eq(HttpMethod.GET),
+						Mockito.any(HttpEntity.class),
+						Mockito.eq(String.class)))
+				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
+		Map<ObjectId, Set<Build>> jobs =
+				azurePipelineClient.getInstanceJobs(
+						AZUREPIPELINE_SAMPLE_SERVER_ONE, LASTUPDATEDTIME, projectBasicConfig);
 
 		assertThat(jobs.size(), is(0));
 	}
@@ -167,7 +172,7 @@ public class DefaultAzurePipelineClientTests {
 		when(azurePipelineConfig.getApiEndPoint()).thenReturn("_apis/build/builds");
 		when(rest.exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class),
 				Mockito.eq(String.class)))
-						.thenReturn(new ResponseEntity<>(getJson("instance_jobs_1_job_1_build.json"), HttpStatus.OK));
+				.thenReturn(new ResponseEntity<>(getJson("instance_jobs_1_job_1_build.json"), HttpStatus.OK));
 		defaultAzurePipelineClient.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER_ONE, lastStartTimeOfBuilds,
 				projectBasicConfig);
 		assertEquals(0, lastStartTimeOfBuilds);
@@ -193,5 +198,4 @@ public class DefaultAzurePipelineClientTests {
 		InputStream inputStream = DefaultAzurePipelineClientTests.class.getResourceAsStream(fileName);
 		return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 	}
-
 }

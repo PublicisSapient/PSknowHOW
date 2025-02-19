@@ -23,15 +23,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeploy;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataResponse;
@@ -68,18 +68,16 @@ public class PushBuildServiceImpl implements PushBaseService {
 	 * validate pushed buildDeploy data and if all requested data is valid then only
 	 * saved in db , otherwise rejected all data and show errors msg of particular
 	 * failed data
-	 * 
+	 *
 	 * @param buildDeploy
 	 * @param projectConfigId
 	 * @return
 	 */
-
 	@Override
 	public PushDataResponse processPushDataInput(PushBuildDeploy buildDeploy, ObjectId projectConfigId) {
 		PushDataResponse pushDataResponse = new PushDataResponse();
 		pushDataResponse.setTotalRecords(getTotalRecords(buildDeploy));
-		log.info("Total Records input for " + projectConfigId.toHexString() + " are "
-				+ pushDataResponse.getTotalRecords());
+		log.info("Total Records input for " + projectConfigId.toHexString() + " are " + pushDataResponse.getTotalRecords());
 		List<Build> buildList = new ArrayList<>();
 		List<Deployment> deploymentList = new ArrayList<>();
 		List<PushErrorData> buildErrorList = new ArrayList<>();
@@ -93,16 +91,14 @@ public class PushBuildServiceImpl implements PushBaseService {
 		pushDataResponse.setDeploy(deployErrorList);
 		pushDataResponse.setTotalFailedRecords(buildFailedRecords + deployFailedRecords);
 		pushDataResponse.setTotalSavedRecords(buildList.size() + deploymentList.size());
-		log.info(
-				"Total Records for " + projectConfigId + " to be Saved are " + pushDataResponse.getTotalSavedRecords());
+		log.info("Total Records for " + projectConfigId + " to be Saved are " + pushDataResponse.getTotalSavedRecords());
 		totalSaveRecords(pushDataResponse, buildList, deploymentList, pushDataDetails, projectConfigId.toHexString());
 		return pushDataResponse;
-
 	}
 
 	/**
 	 * partial correct data will not be saved to respective dba
-	 * 
+	 *
 	 * @param pushDataResponse
 	 * @param buildList
 	 * @param deploymentList
@@ -125,30 +121,27 @@ public class PushBuildServiceImpl implements PushBaseService {
 		deployService.saveDeployments(deploymentList);
 		cacheService.clearCache(CommonConstant.JENKINS_KPI_CACHE);
 		List<String> kpiList = kpiDataCacheService.getKpiBasedOnSource(KPISource.JENKINS.name());
-		kpiList.forEach(
-				kpiId -> kpiDataCacheService.clearCache(projectConfigId, kpiId));
+		kpiList.forEach(kpiId -> kpiDataCacheService.clearCache(projectConfigId, kpiId));
 	}
 
 	/**
 	 * if input record is more than set value, then throw exception
-	 * 
+	 *
 	 * @param buildDeploy
 	 * @return
 	 */
 	public int getTotalRecords(PushBuildDeploy buildDeploy) {
-		if ((CollectionUtils.isNotEmpty(buildDeploy.getDeployments())
-				&& buildDeploy.getDeployments().size() > customApiConfig.getPushDataLimit())
-				|| (CollectionUtils.isNotEmpty(buildDeploy.getBuilds())
-						&& buildDeploy.getBuilds().size() > customApiConfig.getPushDataLimit())) {
+		if ((CollectionUtils.isNotEmpty(buildDeploy.getDeployments()) &&
+				buildDeploy.getDeployments().size() > customApiConfig.getPushDataLimit()) ||
+				(CollectionUtils.isNotEmpty(buildDeploy.getBuilds()) &&
+						buildDeploy.getBuilds().size() > customApiConfig.getPushDataLimit())) {
 			Set<PushDeploy> pushDeploys = Optional.ofNullable(buildDeploy.getDeployments()).orElse(new HashSet<>());
 			Set<PushBuild> pushBuilds = Optional.ofNullable(buildDeploy.getBuilds()).orElse(new HashSet<>());
-			pushDataTraceLogService.setExceptionTraceLog(
-					"Maximum Limit of build/deployment is " + customApiConfig.getPushDataLimit() + ", input-builds are "
-							+ pushBuilds.size() + " and input-deployments are " + pushDeploys.size(),
-					null);
+			pushDataTraceLogService
+					.setExceptionTraceLog("Maximum Limit of build/deployment is " + customApiConfig.getPushDataLimit() +
+							", input-builds are " + pushBuilds.size() + " and input-deployments are " + pushDeploys.size(), null);
 		}
-		return (CollectionUtils.isNotEmpty(buildDeploy.getDeployments()) ? buildDeploy.getDeployments().size() : 0)
-				+ (CollectionUtils.isNotEmpty(buildDeploy.getBuilds()) ? buildDeploy.getBuilds().size() : 0);
+		return (CollectionUtils.isNotEmpty(buildDeploy.getDeployments()) ? buildDeploy.getDeployments().size() : 0) +
+				(CollectionUtils.isNotEmpty(buildDeploy.getBuilds()) ? buildDeploy.getBuilds().size() : 0);
 	}
-
 }

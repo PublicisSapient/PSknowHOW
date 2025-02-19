@@ -18,15 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.sprinttracelog.service;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
-import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
-import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +32,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
+import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SprintTraceLogServiceImplTest {
@@ -55,21 +54,18 @@ public class SprintTraceLogServiceImplTest {
 	}
 
 	@Test
-    public void testGetActiveSprintFetchStatus_WhenValidSprintId_ReturnsSuccessResponse() {
+	public void testGetActiveSprintFetchStatus_WhenValidSprintId_ReturnsSuccessResponse() {
 
+		// Mock repository method call
+		when(sprintTraceLogRepository.findFirstBySprintId(validSprintId)).thenReturn(fetchRecord);
 
-        // Mock repository method call
-        when(sprintTraceLogRepository.findFirstBySprintId(validSprintId))
-                .thenReturn(fetchRecord);
+		// Call the method under test
+		ServiceResponse response = activeItrFetchService.getActiveSprintFetchStatus(validSprintId);
 
-        // Call the method under test
-        ServiceResponse response = activeItrFetchService.getActiveSprintFetchStatus(validSprintId);
-
-        // Assert the response
-        assertTrue(response.getSuccess());
-        assertEquals(response.getMessage(),"Sprint trace log");
-
-    }
+		// Assert the response
+		assertTrue(response.getSuccess());
+		assertEquals(response.getMessage(), "Sprint trace log");
+	}
 
 	@Test
 	public void testGetActiveSprintFetchStatus_WhenInvalidSprintId_ReturnsErrorResponse() {
@@ -83,7 +79,6 @@ public class SprintTraceLogServiceImplTest {
 		assertFalse(response.getSuccess());
 		assertEquals(response.getMessage(), "sprintId cannot be empty");
 		assertNull(response.getData());
-
 	}
 
 	@Test

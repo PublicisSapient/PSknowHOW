@@ -42,7 +42,7 @@ public class KPIMasterController {
 	 * Instantiates a new Kpi master controller.
 	 *
 	 * @param kPIHelperService
-	 *            the k pi helper service
+	 *          the k pi helper service
 	 */
 	@Autowired
 	public KPIMasterController(KpiHelperService kPIHelperService) {

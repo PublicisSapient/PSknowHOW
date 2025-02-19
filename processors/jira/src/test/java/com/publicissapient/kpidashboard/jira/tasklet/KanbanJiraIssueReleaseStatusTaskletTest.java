@@ -18,13 +18,12 @@
 
 package com.publicissapient.kpidashboard.jira.tasklet;
 
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
-import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.service.CreateJiraIssueReleaseStatus;
-import com.publicissapient.kpidashboard.jira.service.CreateKanbanJiraIssueReleaseStatusImpl;
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,11 +34,12 @@ import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.repeat.RepeatStatus;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.service.CreateKanbanJiraIssueReleaseStatusImpl;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 
 /**
  * @author kunkambl
@@ -47,37 +47,36 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class KanbanJiraIssueReleaseStatusTaskletTest {
 
-    @Mock
-    private FetchProjectConfiguration fetchProjectConfiguration;
+	@Mock
+	private FetchProjectConfiguration fetchProjectConfiguration;
 
-    @Mock
-    private JiraClientService jiraClientService;
+	@Mock
+	private JiraClientService jiraClientService;
 
-    @Mock
-    private CreateKanbanJiraIssueReleaseStatusImpl createJiraIssueReleaseStatus;
+	@Mock
+	private CreateKanbanJiraIssueReleaseStatusImpl createJiraIssueReleaseStatus;
 
-    @Mock
-    private JiraProcessorConfig jiraProcessorConfig;
+	@Mock
+	private JiraProcessorConfig jiraProcessorConfig;
 
-    @Mock
-    private StepContribution stepContribution;
+	@Mock
+	private StepContribution stepContribution;
 
-    @Mock
-    private ChunkContext chunkContext;
+	@Mock
+	private ChunkContext chunkContext;
 
-    @InjectMocks
-    private KanbanJiraIssueReleaseStatusTasklet jiraIssueReleaseStatusTasklet;
+	@InjectMocks
+	private KanbanJiraIssueReleaseStatusTasklet jiraIssueReleaseStatusTasklet;
 
-    @Before
-    public void setUp() {
-        // Mock any setup or common behavior needed before each test
-    }
+	@Before
+	public void setUp() {
+		// Mock any setup or common behavior needed before each test
+	}
 
-    @Test
+	@Test
 	public void testExecute() throws Exception {
 		// Arrange
-		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().projectName("KnowHow")
-				.build();
+		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().projectName("KnowHow").build();
 
 		when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfFieldMapping);
 
@@ -91,5 +90,4 @@ public class KanbanJiraIssueReleaseStatusTaskletTest {
 		verify(createJiraIssueReleaseStatus, times(1)).processAndSaveProjectStatusCategory(client, null);
 		assertEquals(RepeatStatus.FINISHED, result);
 	}
-
 }

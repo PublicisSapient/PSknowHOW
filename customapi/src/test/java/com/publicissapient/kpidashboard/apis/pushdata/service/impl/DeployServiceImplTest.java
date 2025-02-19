@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -76,7 +75,6 @@ public class DeployServiceImplTest {
 
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		validator = factory.getValidator();
-
 	}
 
 	@Test
@@ -85,8 +83,8 @@ public class DeployServiceImplTest {
 		Set<ConstraintViolation<PushBuildDeployDTO>> validate = validator
 				.validate(PushDataFactory.newInstance().getPushBuildDeploy().get(0));
 		if (validate.isEmpty()) {
-			pushBuildDeployCorrectData = new ModelMapper()
-					.map(PushDataFactory.newInstance().getPushBuildDeploy().get(0), PushBuildDeploy.class);
+			pushBuildDeployCorrectData = new ModelMapper().map(PushDataFactory.newInstance().getPushBuildDeploy().get(0),
+					PushBuildDeploy.class);
 		}
 		doReturn(deploymentList.get(0)).when(deploymentRepository)
 				.findByNumberAndJobNameAndBasicProjectConfigId(Mockito.anyString(), Mockito.anyString(), Mockito.any());
@@ -105,8 +103,8 @@ public class DeployServiceImplTest {
 		Set<ConstraintViolation<PushBuildDeployDTO>> validate = validator
 				.validate(PushDataFactory.newInstance().getPushBuildDeploy().get(1));
 		if (validate.isEmpty()) {
-			pushBuildDeployCorrectData = new ModelMapper()
-					.map(PushDataFactory.newInstance().getPushBuildDeploy().get(1), PushBuildDeploy.class);
+			pushBuildDeployCorrectData = new ModelMapper().map(PushDataFactory.newInstance().getPushBuildDeploy().get(1),
+					PushBuildDeploy.class);
 		}
 		Map<String, String> errorsMap = new HashMap<>();
 		errorsMap.put("EnvName", "EnvName is Blank");
@@ -120,10 +118,8 @@ public class DeployServiceImplTest {
 		Assert.assertEquals(2, deployFailedRecords);
 		Assert.assertEquals(0, deploymentList.size());
 		Assert.assertEquals(2,
-				errorDataList.stream()
-						.filter(buildDeployErrorData -> MapUtils.isNotEmpty(buildDeployErrorData.getErrors()))
+				errorDataList.stream().filter(buildDeployErrorData -> MapUtils.isNotEmpty(buildDeployErrorData.getErrors()))
 						.collect(Collectors.toList()).size());
-
 	}
 
 	@Test
@@ -139,8 +135,8 @@ public class DeployServiceImplTest {
 		Set<ConstraintViolation<PushBuildDeployDTO>> validate = validator
 				.validate(PushDataFactory.newInstance().getPushBuildDeploy().get(3));
 		if (validate.isEmpty()) {
-			pushBuildDeployCorrectData = new ModelMapper()
-					.map(PushDataFactory.newInstance().getPushBuildDeploy().get(3), PushBuildDeploy.class);
+			pushBuildDeployCorrectData = new ModelMapper().map(PushDataFactory.newInstance().getPushBuildDeploy().get(3),
+					PushBuildDeploy.class);
 		}
 		Map<String, String> errorsMap = new HashMap<>();
 		errorsMap.put("jobName", "jobName is Blank");
@@ -154,10 +150,7 @@ public class DeployServiceImplTest {
 		Assert.assertEquals(1, deployFailedRecords);
 		Assert.assertEquals(0, deploymentList.size());
 		Assert.assertEquals(1,
-				errorDataList.stream()
-						.filter(buildDeployErrorData -> MapUtils.isNotEmpty(buildDeployErrorData.getErrors()))
+				errorDataList.stream().filter(buildDeployErrorData -> MapUtils.isNotEmpty(buildDeployErrorData.getErrors()))
 						.collect(Collectors.toList()).size());
-
 	}
-
 }

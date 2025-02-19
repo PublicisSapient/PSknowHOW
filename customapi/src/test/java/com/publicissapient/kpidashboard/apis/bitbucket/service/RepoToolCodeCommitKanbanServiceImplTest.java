@@ -32,10 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
-import com.publicissapient.kpidashboard.common.model.jira.Assignee;
-import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,13 +44,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.RepoToolsKpiRequestDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -70,6 +66,9 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RepoToolCodeCommitKanbanServiceImplTest {
@@ -116,7 +115,7 @@ public class RepoToolCodeCommitKanbanServiceImplTest {
 		selectedMap.put(CommonConstant.date, Arrays.asList("DAYS"));
 		kpiRequest.setSelectedMap(selectedMap);
 		kpiRequest.setLabel("PROJECT");
-		String[] ids = { "5" };
+		String[] ids = {"5"};
 		kpiRequest.setIds(ids);
 
 		AccountHierarchyKanbanFilterDataFactory accountHierarchyKanbanFilterDataFactory = AccountHierarchyKanbanFilterDataFactory
@@ -153,8 +152,8 @@ public class RepoToolCodeCommitKanbanServiceImplTest {
 		Set<Assignee> assigneeSet = new HashSet<>();
 		assigneeSet.add(new Assignee("aks", "Akshat Shrivastava",
 				new HashSet<>(Arrays.asList("akshat.shrivastav@publicissapient.com"))));
-		assigneeSet.add(new Assignee("llid", "Hiren",
-				new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
+		assigneeSet
+				.add(new Assignee("llid", "Hiren", new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
 		assigneeDetails.setAssignee(assigneeSet);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
 		when(kpiHelperService.populateSCMToolsRepoList(anyMap())).thenReturn(toolList);
@@ -176,7 +175,6 @@ public class RepoToolCodeCommitKanbanServiceImplTest {
 		trendValues.add(dataCount);
 		trendValueMap.put("Overall#Overall", trendValues);
 		trendValueMap.put("BRANCH1->PR_10304#Overall", trendValues);
-
 	}
 
 	private DataCount createDataCount(String date, Long data) {
@@ -225,8 +223,8 @@ public class RepoToolCodeCommitKanbanServiceImplTest {
 				new ArrayList<>(), accountHierarchyKanbanDataList, "hierarchyLevelOne", 5);
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any())).thenReturn(
-				repoToolKpiMetricResponseList);
+		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any()))
+				.thenReturn(repoToolKpiMetricResponseList);
 		String kpiRequestTrackerId = "Excel-Bitbucket-5be544de025de212549176a9";
 		when(codeCommitServiceImpl.getRequestTrackerIdKanban()).thenReturn(kpiRequestTrackerId);
 		KpiElement kpiElement = codeCommitServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -234,17 +232,15 @@ public class RepoToolCodeCommitKanbanServiceImplTest {
 		((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(data -> {
 			String projectName = data.getFilter1();
 			switch (projectName) {
-			case "Overall":
-				assertThat("Overall Commit Details:", data.getValue().size(), equalTo(2));
-				break;
+				case "Overall" :
+					assertThat("Overall Commit Details:", data.getValue().size(), equalTo(2));
+					break;
 
-			case "BRANCH1->PR_10304":
-				assertThat("Branch1 Commit Details:", data.getValue().size(), equalTo(2));
-				break;
-
+				case "BRANCH1->PR_10304" :
+					assertThat("Branch1 Commit Details:", data.getValue().size(), equalTo(2));
+					break;
 			}
 		});
-
 	}
 
 	@Test
@@ -256,5 +252,4 @@ public class RepoToolCodeCommitKanbanServiceImplTest {
 	public void testCalculateKPIMetrics() {
 		assertThat(codeCommitServiceImpl.calculateKPIMetrics(null), equalTo(null));
 	}
-
 }

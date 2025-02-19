@@ -29,11 +29,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
-import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -46,17 +41,20 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
+import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -67,9 +65,9 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 @SuppressWarnings("javadoc")
 @RunWith(MockitoJUnitRunner.class)
@@ -111,7 +109,7 @@ public class CostOfDelayServiceImplTest {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance("");
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi113");
 		kpiRequest.setLabel("PROJECT");
-		List<ProjectBasicConfig> projectConfigList=new ArrayList<>();
+		List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
 		projectBasicConfig.setIsKanban(true);
@@ -147,12 +145,10 @@ public class CostOfDelayServiceImplTest {
 		codHistoryList.stream().map(JiraIssueCustomHistory::getStatusUpdationLog).forEach(f -> {
 			f.forEach(g -> g.setUpdatedOn(LocalDateTime.now().minusDays(2)));
 		});
-
 	}
 
 	@After
 	public void cleanup() {
-
 	}
 
 	@Test
@@ -160,7 +156,7 @@ public class CostOfDelayServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList , false);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 
@@ -201,7 +197,6 @@ public class CostOfDelayServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -230,7 +225,6 @@ public class CostOfDelayServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -246,5 +240,4 @@ public class CostOfDelayServiceImplTest {
 		String type = costOfDelayServiceImpl.getQualifierType();
 		assertThat("KPI NAME : ", type, equalTo(kpiName));
 	}
-
 }

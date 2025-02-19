@@ -14,9 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ProjectBasicConfigNode implements Serializable {
 
-	/**
-	 * 
-	 */
+	/** */
 	private static final long serialVersionUID = -3789596665503126275L;
 
 	private String value;
@@ -26,7 +24,7 @@ public class ProjectBasicConfigNode implements Serializable {
 
 	/**
 	 * Adds an entry to the Children Nodes list
-	 * 
+	 *
 	 * @param child
 	 */
 	public void addChild(ProjectBasicConfigNode child) {
@@ -65,5 +63,4 @@ public class ProjectBasicConfigNode implements Serializable {
 			return false;
 		return true;
 	}
-
 }

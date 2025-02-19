@@ -67,10 +67,8 @@ class ArgoCDClientTest {
 	@Test
 	void testGetApplications() throws JsonMappingException, JsonProcessingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		ApplicationsList applications = mapper.readValue(getStringFromJson("applications.json"),
-				ApplicationsList.class);
-		when(restTemplate.exchange(
-				Mockito.eq(URI.create(ARGOCD_URL + APPLICATIONS_ENDPOINT + "?" + APPLICATIONS_PARAM)),
+		ApplicationsList applications = mapper.readValue(getStringFromJson("applications.json"), ApplicationsList.class);
+		when(restTemplate.exchange(Mockito.eq(URI.create(ARGOCD_URL + APPLICATIONS_ENDPOINT + "?" + APPLICATIONS_PARAM)),
 				Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class), Mockito.<Class<ApplicationsList>>any()))
 				.thenReturn(new ResponseEntity<ApplicationsList>(applications, HttpStatus.OK));
 		ApplicationsList response = argoCDClient.getApplications(ARGOCD_URL, ACCESS_TOKEN);
@@ -80,43 +78,52 @@ class ArgoCDClientTest {
 	@Test
 	void testGetApplicationsWithException() {
 		when(restTemplate.exchange(
-				Mockito.eq(URI.create(ARGOCD_URL + APPLICATIONS_ENDPOINT + "?" + APPLICATIONS_PARAM)),
-				Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class), Mockito.<Class<ApplicationsList>>any()))
+						Mockito.eq(URI.create(ARGOCD_URL + APPLICATIONS_ENDPOINT + "?" + APPLICATIONS_PARAM)),
+						Mockito.eq(HttpMethod.GET),
+						Mockito.any(HttpEntity.class),
+						Mockito.<Class<ApplicationsList>>any()))
 				.thenThrow(RestClientException.class);
-		Assertions.assertThrows(RestClientException.class,
-				() -> argoCDClient.getApplications(ARGOCD_URL, ACCESS_TOKEN));
+		Assertions.assertThrows(
+				RestClientException.class, () -> argoCDClient.getApplications(ARGOCD_URL, ACCESS_TOKEN));
 	}
 
 	@Test
 	void testGestApplicationByName() {
-		when(restTemplate.exchange(Mockito.eq(URI.create(ARGOCD_URL + APPLICATIONS_ENDPOINT + "/application2")),
-				Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class), Mockito.<Class<Application>>any()))
+		when(restTemplate.exchange(
+						Mockito.eq(URI.create(ARGOCD_URL + APPLICATIONS_ENDPOINT + "/application2")),
+						Mockito.eq(HttpMethod.GET),
+						Mockito.any(HttpEntity.class),
+						Mockito.<Class<Application>>any()))
 				.thenReturn(new ResponseEntity<Application>(new Application(), HttpStatus.OK));
-		Application response = argoCDClient.getApplicationByName(ARGOCD_URL, "application2", ACCESS_TOKEN);
+		Application response =
+				argoCDClient.getApplicationByName(ARGOCD_URL, "application2", ACCESS_TOKEN);
 		assertNotNull(response);
 	}
 
 	@Test
 	void testGetApplicationByNameWithException() {
-		when(restTemplate.exchange(Mockito.eq(URI.create(ARGOCD_URL + APPLICATIONS_ENDPOINT + "/application2")),
-				Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class), Mockito.<Class<Application>>any()))
+		when(restTemplate.exchange(
+						Mockito.eq(URI.create(ARGOCD_URL + APPLICATIONS_ENDPOINT + "/application2")),
+						Mockito.eq(HttpMethod.GET),
+						Mockito.any(HttpEntity.class),
+						Mockito.<Class<Application>>any()))
 				.thenThrow(RestClientException.class);
-		Assertions.assertThrows(RestClientException.class,
+		Assertions.assertThrows(
+				RestClientException.class,
 				() -> argoCDClient.getApplicationByName(ARGOCD_URL, "application2", ACCESS_TOKEN));
 	}
 
 	private String getStringFromJson(String fileName) throws IOException {
 		String filePath = "src/test/resources/" + fileName;
 		return new String(Files.readAllBytes(Paths.get(filePath)));
-
 	}
 
 	@Test
 	void testGetClusterName() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonResponse = "{\"items\":[{\"server\":\"mdgsseunspdaks03\",\"name\":\"dev-auth\"}]}";
-		when(restTemplate.exchange(Mockito.eq(URI.create(ARGOCD_URL + ARGOCD_CLUSTER_ENDPOINT)),
-				Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class), Mockito.eq(String.class)))
+		when(restTemplate.exchange(Mockito.eq(URI.create(ARGOCD_URL + ARGOCD_CLUSTER_ENDPOINT)), Mockito.eq(HttpMethod.GET),
+				Mockito.any(HttpEntity.class), Mockito.eq(String.class)))
 				.thenReturn(new ResponseEntity<>(jsonResponse, HttpStatus.OK));
 
 		Map<String, String> response = argoCDClient.getClusterName(ARGOCD_URL, ACCESS_TOKEN);
@@ -127,11 +134,14 @@ class ArgoCDClientTest {
 
 	@Test
 	void testGetClusterNameWithException() {
-		when(restTemplate.exchange(Mockito.eq(URI.create(ARGOCD_URL + ARGOCD_CLUSTER_ENDPOINT)),
-				Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class), Mockito.eq(String.class)))
+		when(restTemplate.exchange(
+						Mockito.eq(URI.create(ARGOCD_URL + ARGOCD_CLUSTER_ENDPOINT)),
+						Mockito.eq(HttpMethod.GET),
+						Mockito.any(HttpEntity.class),
+						Mockito.eq(String.class)))
 				.thenThrow(RestClientException.class);
 
-		Assertions.assertThrows(RestClientException.class, () -> argoCDClient.getClusterName(ARGOCD_URL, ACCESS_TOKEN));
+		Assertions.assertThrows(
+				RestClientException.class, () -> argoCDClient.getClusterName(ARGOCD_URL, ACCESS_TOKEN));
 	}
-
 }

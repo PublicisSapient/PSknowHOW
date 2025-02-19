@@ -51,11 +51,11 @@ public class ReleaseBurnUpDevCompleteEnc {
 
 	public void insertFieldMappingStructure() {
 		// Document 1
-		Document document1 = new Document("fieldName", "populateByDevDoneKPI150")
-				.append("fieldLabel", "Prediction logic").append("fieldType", "toggle")
-				.append("toggleLabelLeft", "Overall Completion").append("toggleLabelRight", "Dev Completion*")
-				.append("section", "WorkFlow Status Mapping").append("processorCommon", false).append("tooltip",
-						new Document("definition", "Enabled State (KPI will populate w.r.t Dev Completion date), given that the Dev Completion Status is provided."));
+		Document document1 = new Document("fieldName", "populateByDevDoneKPI150").append("fieldLabel", "Prediction logic")
+				.append("fieldType", "toggle").append("toggleLabelLeft", "Overall Completion")
+				.append("toggleLabelRight", "Dev Completion*").append("section", "WorkFlow Status Mapping")
+				.append("processorCommon", false).append("tooltip", new Document("definition",
+						"Enabled State (KPI will populate w.r.t Dev Completion date), given that the Dev Completion Status is provided."));
 
 		// Document 2
 		Document document2 = new Document("fieldName", "jiraDevDoneStatusKPI150")
@@ -74,17 +74,15 @@ public class ReleaseBurnUpDevCompleteEnc {
 	}
 
 	public void updateToggleLabelKpi42() {
-		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).updateOne(
-				new Document("fieldName", "uploadDataKPI42"),
-				new Document("$rename", new Document("toggleLabel", "toggleLabelRight"))
-		);
+		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).updateOne(new Document("fieldName", "uploadDataKPI42"),
+				new Document("$rename", new Document("toggleLabel", "toggleLabelRight")));
 	}
+
 	public void updateToggleLabelKpi16() {
-		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).updateOne(
-				new Document("fieldName", "uploadDataKPI16"),
-				new Document("$rename", new Document("toggleLabel", "toggleLabelRight"))
-		);
+		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).updateOne(new Document("fieldName", "uploadDataKPI16"),
+				new Document("$rename", new Document("toggleLabel", "toggleLabelRight")));
 	}
+
 	@RollbackExecution
 	public void rollback() {
 		rollBackFieldMappingStructure();
@@ -106,17 +104,14 @@ public class ReleaseBurnUpDevCompleteEnc {
 				new Document("$set", new Document("kpiInfo.definition",
 						"It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release.")));
 	}
+
 	public void rollbackToggleLabelKpi42() {
-		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).updateOne(
-				new Document("fieldName", "uploadDataKPI42"),
-				new Document("$rename", new Document("toggleLabelRight", "toggleLabel"))
-		);
-	}
-	public void rollbackToggleLabelKpi16() {
-		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).updateOne(
-				new Document("fieldName", "uploadDataKPI16"),
-				new Document("$rename", new Document("toggleLabelRight", "toggleLabel"))
-		);
+		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).updateOne(new Document("fieldName", "uploadDataKPI42"),
+				new Document("$rename", new Document("toggleLabelRight", "toggleLabel")));
 	}
 
+	public void rollbackToggleLabelKpi16() {
+		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).updateOne(new Document("fieldName", "uploadDataKPI16"),
+				new Document("$rename", new Document("toggleLabelRight", "toggleLabel")));
+	}
 }

@@ -121,17 +121,17 @@ public class SonarToolConfigServiceImpl {
 	 * Provides the list of Sonar Project's Branch.
 	 *
 	 * @param connectionId
-	 *            the Sonar connection details
+	 *          the Sonar connection details
 	 * @param version
-	 *            the Sonar api version
+	 *          the Sonar api version
 	 * @param projectKey
-	 *            the Sonar project's key
+	 *          the Sonar project's key
 	 * @return the list of Sonar project's branch
 	 */
 	public ServiceResponse getSonarProjectBranchList(String connectionId, String version, String projectKey) {
 		List<String> branchList = null;
-		if (SONAR_SERVER_VERSION_BRANCH_SUPPORTED.stream().anyMatch(version::equalsIgnoreCase)
-				|| SONAR_CLOUD_VERSION_BRANCH_SUPPORTED.stream().anyMatch(version::equalsIgnoreCase)) {
+		if (SONAR_SERVER_VERSION_BRANCH_SUPPORTED.stream().anyMatch(version::equalsIgnoreCase) ||
+				SONAR_CLOUD_VERSION_BRANCH_SUPPORTED.stream().anyMatch(version::equalsIgnoreCase)) {
 			Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
 			if (optConnection.isPresent()) {
 				branchList = getSonarProjectBranchList(optConnection.get(), projectKey);
@@ -144,7 +144,6 @@ public class SonarToolConfigServiceImpl {
 		} else {
 			return new ServiceResponse(false, "sonar branch support not provided for this version", null);
 		}
-
 	}
 
 	/**
@@ -163,12 +162,11 @@ public class SonarToolConfigServiceImpl {
 
 			int nextPageIndex = paging.getPageIndex();
 			do {
-				SearchProjectsResponse response = getSearchProjectsResponse(connection, organizationKey, paging,
-						nextPageIndex);
+				SearchProjectsResponse response = getSearchProjectsResponse(connection, organizationKey, paging, nextPageIndex);
 
 				if (Objects.nonNull(response)) {
-					projectList.addAll(
-							response.getComponents().stream().map(SonarComponent::getKey).collect(Collectors.toList()));
+					projectList
+							.addAll(response.getComponents().stream().map(SonarComponent::getKey).collect(Collectors.toList()));
 					paging = response.getPaging();
 				} else {
 					paging = null;
@@ -186,21 +184,21 @@ public class SonarToolConfigServiceImpl {
 
 	/**
 	 * based on connection prepare rest api
-	 * 
+	 *
 	 * @param connection
 	 * @param organizationKey
 	 * @param paging
 	 * @param nextPageIndex
 	 * @return
 	 */
-	private SearchProjectsResponse getSearchProjectsResponse(Connection connection, String organizationKey,
-			Paging paging, int nextPageIndex) {
+	private SearchProjectsResponse getSearchProjectsResponse(Connection connection, String organizationKey, Paging paging,
+			int nextPageIndex) {
 		SearchProjectsResponse response;
 		String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
 		if (connection.isCloudEnv()) {
 			String sonarCloudUrl = String.format(
-					new StringBuilder(baseUrl).append(RESOURCE_CLOUD_PROJECT_ENDPOINT).toString(), organizationKey,
-					nextPageIndex, paging.getPageSize());
+					new StringBuilder(baseUrl).append(RESOURCE_CLOUD_PROJECT_ENDPOINT).toString(), organizationKey, nextPageIndex,
+					paging.getPageSize());
 			HttpEntity<?> httpEntity = createHeaders(connection);
 			response = searchProjects(sonarCloudUrl, httpEntity, connection);
 		} else {
@@ -264,17 +262,16 @@ public class SonarToolConfigServiceImpl {
 	}
 
 	/**
-	 * 
 	 * @param connection
-	 *            connection
+	 *          connection
 	 * @param exception
-	 *            exception
+	 *          exception
 	 */
 	private void isClientException(Connection connection, RestClientException exception) {
-		if (exception instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ClientErrorMessageEnum
-					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+		if (exception instanceof HttpClientErrorException &&
+				((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) exception).getStatusCode().value())
+					.getReasonPhrase();
 			connectionService.updateBreakingConnection(connection, errMsg);
 		}
 	}
@@ -308,10 +305,12 @@ public class SonarToolConfigServiceImpl {
 	}
 
 	private HttpEntity<?> createHeaders(Connection connection) {
-		String accessToken = connection.getAccessToken() == null ? null
+		String accessToken = connection.getAccessToken() == null
+				? null
 				: aesEncryptionService.decrypt(connection.getAccessToken(), customApiConfig.getAesEncryptionKey());
 		String username = connection.getUsername() == null ? null : connection.getUsername().trim();
-		String password = connection.getPassword() == null ? null
+		String password = connection.getPassword() == null
+				? null
 				: aesEncryptionService.decrypt(connection.getPassword(), customApiConfig.getAesEncryptionKey());
 
 		HttpEntity<?> httpEntity;

@@ -143,8 +143,6 @@ public class TicketOpenVsClosedByPriorityServiceImplTest {
 
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		when(cacheService.getFullKanbanHierarchyLevel()).thenReturn(hierachyLevelFactory.getHierarchyLevels());
-
-
 	}
 
 	@After
@@ -170,9 +168,7 @@ public class TicketOpenVsClosedByPriorityServiceImplTest {
 				.thenReturn(kanbanJiraIssueList);
 		when(kanbanJiraIssueHistoryRepository.findIssuesByStatusAndDate(any(), any(), any(), any(), any()))
 				.thenReturn(historyClosedList);
-//		when(customApiConfig.getpriorityP1()).thenReturn(P1);
-
-
+		// when(customApiConfig.getpriorityP1()).thenReturn(P1);
 
 		Map<String, List<DataCount>> trendMap = new HashMap<>();
 		trendMap.put("Overall", new ArrayList<>());
@@ -198,5 +194,4 @@ public class TicketOpenVsClosedByPriorityServiceImplTest {
 		assertThat("Kpi Name :", ticketOpenVsClosedByPriorityServiceImpl.getQualifierType(),
 				equalTo("TICKET_OPEN_VS_CLOSE_BY_PRIORITY"));
 	}
-
 }

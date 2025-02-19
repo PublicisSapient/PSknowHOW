@@ -151,8 +151,8 @@ public class RCAServiceImplTest {
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		defectList = jiraIssueDataFactory.getBugs();
 
-		totalStoryDefectLinkageBugList = defectList.stream()
-				.filter(f -> CollectionUtils.isNotEmpty(f.getDefectStoryID())).collect(Collectors.toList());
+		totalStoryDefectLinkageBugList = defectList.stream().filter(f -> CollectionUtils.isNotEmpty(f.getDefectStoryID()))
+				.collect(Collectors.toList());
 
 		SprintWiseStoryDataFactory sprintWiseStoryDataFactory = SprintWiseStoryDataFactory.newInstance();
 		sprintWiseStoryList = sprintWiseStoryDataFactory.getSprintWiseStories();
@@ -160,14 +160,12 @@ public class RCAServiceImplTest {
 		kpiWiseAggregation.put("defectRCA", "sum");
 
 		setTreadValuesDataCount();
-
 	}
 
 	@After
 	public void cleanup() {
 
 		featureRepository.deleteAll();
-
 	}
 
 	private void setTreadValuesDataCount() {
@@ -231,28 +229,26 @@ public class RCAServiceImplTest {
 					treeAggregatorDetail);
 
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(rca -> {
-
 				String rootCause = rca.getFilter();
 				switch (rootCause) {
-				case "code issue":
-					assertThat("RCA code issue Value :", rca.getValue().size(), equalTo(1));
-					break;
-				case "Environment Issue":
-					assertThat("RCA Environment Issue Value :", rca.getValue().size(), equalTo(1));
-					break;
-				case "External Dependency":
-					assertThat("RCA External Dependency Value :", rca.getValue().size(), equalTo(1));
-					break;
-				case "Functionality Not Clear":
-					assertThat("RCA Functionality Not Clear Value :", rca.getValue().size(), equalTo(1));
-					break;
-				case "Overall":
-					assertThat("RCA Overall Value :", rca.getValue().size(), equalTo(1));
-					break;
-				default:
-					break;
+					case "code issue" :
+						assertThat("RCA code issue Value :", rca.getValue().size(), equalTo(1));
+						break;
+					case "Environment Issue" :
+						assertThat("RCA Environment Issue Value :", rca.getValue().size(), equalTo(1));
+						break;
+					case "External Dependency" :
+						assertThat("RCA External Dependency Value :", rca.getValue().size(), equalTo(1));
+						break;
+					case "Functionality Not Clear" :
+						assertThat("RCA Functionality Not Clear Value :", rca.getValue().size(), equalTo(1));
+						break;
+					case "Overall" :
+						assertThat("RCA Overall Value :", rca.getValue().size(), equalTo(1));
+						break;
+					default :
+						break;
 				}
-
 			});
 		} catch (ApplicationException enfe) {
 
@@ -268,5 +264,4 @@ public class RCAServiceImplTest {
 	public void testCalculateKPIMetrics() {
 		assertThat("Total Defects value :", rcaServiceImpl.calculateKPIMetrics(null), equalTo(0L));
 	}
-
 }

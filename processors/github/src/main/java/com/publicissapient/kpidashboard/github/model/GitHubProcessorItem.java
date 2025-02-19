@@ -24,7 +24,7 @@ import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 
 /**
  * GitHubProcessorItem represents a class which contains github information
- * 
+ *
  * @see ProcessorItem
  */
 public class GitHubProcessorItem extends ProcessorItem {
@@ -72,7 +72,7 @@ public class GitHubProcessorItem extends ProcessorItem {
 	 * Sets userId.
 	 *
 	 * @param userId
-	 *            the new user id
+	 *          the new user id
 	 */
 	public void setUserId(String userId) {
 		getToolDetailsMap().put(USERID, userId);
@@ -91,7 +91,7 @@ public class GitHubProcessorItem extends ProcessorItem {
 	 * Sets repoUrl.
 	 *
 	 * @param instanceUrl
-	 *            the new repo url
+	 *          the new repo url
 	 */
 	public void setRepoUrl(String instanceUrl) {
 		getToolDetailsMap().put(URL, instanceUrl);
@@ -110,7 +110,7 @@ public class GitHubProcessorItem extends ProcessorItem {
 	 * Sets password.
 	 *
 	 * @param password
-	 *            the new password
+	 *          the new password
 	 */
 	public void setPassword(String password) {
 		getToolDetailsMap().put(PASSWORD, password);
@@ -129,7 +129,7 @@ public class GitHubProcessorItem extends ProcessorItem {
 	 * Sets branch.
 	 *
 	 * @param branch
-	 *            the new branch
+	 *          the new branch
 	 */
 	public void setBranch(String branch) {
 		getToolDetailsMap().put(REPO_BRANCH, branch);
@@ -149,7 +149,7 @@ public class GitHubProcessorItem extends ProcessorItem {
 	 * Sets lastUpdateTime.
 	 *
 	 * @param date
-	 *            the new last update time
+	 *          the new last update time
 	 */
 	public void setLastUpdatedTime(Date date) {
 		getToolDetailsMap().put(LAST_UPDATED_TIME, date);
@@ -168,7 +168,7 @@ public class GitHubProcessorItem extends ProcessorItem {
 	 * Sets lastUpdateCommit.
 	 *
 	 * @param sha
-	 *            the new last update commit
+	 *          the new last update commit
 	 */
 	public void setLastUpdatedCommit(String sha) {
 		getToolDetailsMap().put(LAST_UPDATED_COMMIT, sha);
@@ -187,14 +187,13 @@ public class GitHubProcessorItem extends ProcessorItem {
 	 * Sets GitLabAccessToken.
 	 *
 	 * @param gitLabAccessToken
-	 *            the new last update commit
+	 *          the new last update commit
 	 */
 	public void setGitLabAccessToken(String gitLabAccessToken) {
 		getToolDetailsMap().put(GIT_LAB_ACCESS_TOKEN, gitLabAccessToken);
 	}
 
 	/**
-	 * 
 	 * @return gitlab project id
 	 */
 	public String getGitLabProjectId() {
@@ -203,9 +202,9 @@ public class GitHubProcessorItem extends ProcessorItem {
 
 	/**
 	 * Set gitlab project id
-	 * 
+	 *
 	 * @param gitLabProjectId
-	 *            gitLabProjectId
+	 *          gitLabProjectId
 	 */
 	public void setGitLabProjectId(String gitLabProjectId) {
 		getToolDetailsMap().put(GIT_LAB_PROJECT_ID, gitLabProjectId);
@@ -220,9 +219,9 @@ public class GitHubProcessorItem extends ProcessorItem {
 
 	/**
 	 * This method set last commited timestamp
-	 * 
+	 *
 	 * @param lastCommitTimestamp
-	 *            lastCommitTimestamp
+	 *          lastCommitTimestamp
 	 */
 	public void setLastCommitTimestamp(String lastCommitTimestamp) {
 		getToolDetailsMap().put(GITLAB_LAST_COMMIT_TIMESTAMP, lastCommitTimestamp);
@@ -237,16 +236,15 @@ public class GitHubProcessorItem extends ProcessorItem {
 
 	/**
 	 * set repo name
-	 * 
+	 *
 	 * @param repoName
-	 *            repoName
+	 *          repoName
 	 */
 	public void setRepoName(String repoName) {
 		getToolDetailsMap().put(REPO_NAME, repoName);
 	}
 
 	/**
-	 * 
 	 * @return ownername
 	 */
 	public String getOwner() {
@@ -255,12 +253,11 @@ public class GitHubProcessorItem extends ProcessorItem {
 
 	/**
 	 * set owner name
-	 * 
+	 *
 	 * @param owner
-	 *            owner
+	 *          owner
 	 */
 	public void setOwner(String owner) {
 		getToolDetailsMap().put(OWNER, owner);
 	}
-
 }

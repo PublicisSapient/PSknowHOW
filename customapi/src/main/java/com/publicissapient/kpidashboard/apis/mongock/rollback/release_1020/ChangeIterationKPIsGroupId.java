@@ -40,8 +40,8 @@ public class ChangeIterationKPIsGroupId {
 
 	@Execution
 	public void execution() {
-		updateGroupId(Arrays.asList("kpi119", "kpi132", "kp136", "kpi140", "kpi123", "kpi122", "kpi134", "kpi131",
-				"kpi75", "kpi124", "kpi135", "kpi176", "kpi125"), 8);
+		updateGroupId(Arrays.asList("kpi119", "kpi132", "kp136", "kpi140", "kpi123", "kpi122", "kpi134", "kpi131", "kpi75",
+				"kpi124", "kpi135", "kpi176", "kpi125"), 8);
 	}
 
 	private void updateIterationKPIsGroupId() {
