@@ -41,7 +41,7 @@ import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHisto
 /**
  * This class provide implementation of KanbanFeatureHistoryRepoCustom
  * interface.
- * 
+ *
  * @author prijain3
  */
 @Service
@@ -68,8 +68,7 @@ public class KanbanJiraIssueHistoryRepositoryImpl implements KanbanJiraIssueHist
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<KanbanIssueCustomHistory> findIssuesByStatusAndDate(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo,
-			String mapStatusCriteria) {
+			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo, String mapStatusCriteria) {
 		List<AggregationOperation> list = new ArrayList<>();
 
 		String startDate = new StringBuilder(dateFrom).append(START_TIME).toString();
@@ -101,7 +100,6 @@ public class KanbanJiraIssueHistoryRepositoryImpl implements KanbanJiraIssueHist
 				});
 				projectCriteria.and(TICKET_ACTIVITY_DATE).gte(startDate).lte(endDate);
 				projectCriteriaList.add(projectCriteria);
-
 			});
 
 			Criteria criteriaAggregatedAtProjectLevelForStatus = new Criteria()
@@ -109,11 +107,11 @@ public class KanbanJiraIssueHistoryRepositoryImpl implements KanbanJiraIssueHist
 
 			list.add(Aggregation.match(criteriaAggregatedAtProjectLevelForStatus));
 		}
-		list.add(Aggregation.group(STORY_ID, STORY_TYPE, TICKET_PROJECT_ID_FIELD, TICKET_CREATED_DATE_FIELD, PRIORITY,
-				ESTIMATE_TIME, URL).push(HISTORY_DETAILS).as(HISTORY_DETAILS));
+		list.add(Aggregation
+				.group(STORY_ID, STORY_TYPE, TICKET_PROJECT_ID_FIELD, TICKET_CREATED_DATE_FIELD, PRIORITY, ESTIMATE_TIME, URL)
+				.push(HISTORY_DETAILS).as(HISTORY_DETAILS));
 		list.add(Aggregation.project(HISTORY_DETAILS));
-		TypedAggregation<KanbanIssueCustomHistory> agg = Aggregation.newAggregation(KanbanIssueCustomHistory.class,
-				list);
+		TypedAggregation<KanbanIssueCustomHistory> agg = Aggregation.newAggregation(KanbanIssueCustomHistory.class, list);
 
 		AggregationResults<IssueHistoryMappedData> aggregate = operations.aggregate(agg, KanbanIssueCustomHistory.class,
 				IssueHistoryMappedData.class);
@@ -135,7 +133,6 @@ public class KanbanJiraIssueHistoryRepositoryImpl implements KanbanJiraIssueHist
 			resultList.add(history);
 		});
 		return resultList;
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -163,12 +160,10 @@ public class KanbanJiraIssueHistoryRepositoryImpl implements KanbanJiraIssueHist
 			projectCriteriaList.add(projectCriteria);
 		});
 
-		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaAggregatedAtProjectLevel = new Criteria().orOperator(projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		Query query = new Query(criteriaProjectLevelAdded);
 		return operations.find(query, KanbanIssueCustomHistory.class);
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -216,18 +211,13 @@ public class KanbanJiraIssueHistoryRepositoryImpl implements KanbanJiraIssueHist
 			closedIssueCriteria.and(TICKET_ACTIVITY_DATE).gt(startDate);
 			projectCriteria.orOperator(historyCriteria, closedIssueCriteria);
 			projectCriteriaList.add(projectCriteria);
-
 		});
 		Criteria criteriaAggregatedAtProjectLevelForStatus = new Criteria()
 				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
 
 		list.add(Aggregation.match(criteriaAggregatedAtProjectLevelForStatus));
-		TypedAggregation<KanbanIssueCustomHistory> agg = Aggregation.newAggregation(KanbanIssueCustomHistory.class,
-				list);
+		TypedAggregation<KanbanIssueCustomHistory> agg = Aggregation.newAggregation(KanbanIssueCustomHistory.class, list);
 
-
-		return operations.aggregate(agg, KanbanIssueCustomHistory.class, KanbanIssueCustomHistory.class)
-				.getMappedResults();
+		return operations.aggregate(agg, KanbanIssueCustomHistory.class, KanbanIssueCustomHistory.class).getMappedResults();
 	}
-
 }

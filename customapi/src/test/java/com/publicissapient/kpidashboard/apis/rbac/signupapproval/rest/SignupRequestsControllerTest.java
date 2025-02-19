@@ -16,21 +16,13 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.rbac.signupapproval.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
-import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
-import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupManager;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
-import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -45,11 +37,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
+import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
+import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupManager;
+import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SignupRequestsControllerTest {
@@ -92,7 +88,7 @@ public class SignupRequestsControllerTest {
 
 	/**
 	 * method to get all unapproved requests when CA switch is Off
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -108,7 +104,7 @@ public class SignupRequestsControllerTest {
 	 */
 	@Test
 	public void testGetUnApprovedRequests_ForCentralAuth() throws Exception {
-		List<UserAccessApprovalResponseDTO> UserAccessApprovalResponseDTOList =new ArrayList<>();
+		List<UserAccessApprovalResponseDTO> UserAccessApprovalResponseDTOList = new ArrayList<>();
 		UserAccessApprovalResponseDTO userAccessApprovalResponseDTO = new UserAccessApprovalResponseDTO();
 		userAccessApprovalResponseDTO.setWhitelistDomainEmail(false);
 		userAccessApprovalResponseDTO.setEmail("abc.test@test.com");
@@ -122,6 +118,7 @@ public class SignupRequestsControllerTest {
 	/**
 	 * method to test GET /grantrequest/all restPoint ;
 	 *
+	 * <p>
 	 * Get all signup requests
 	 *
 	 * @throws Exception
@@ -131,5 +128,4 @@ public class SignupRequestsControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("/userapprovals/all").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
-
 }

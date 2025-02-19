@@ -33,7 +33,7 @@ import io.mongock.api.annotations.RollbackExecution;
 
 /**
  * add flow efficiency kpi and field mapping
- * 
+ *
  * @author shi6
  */
 @SuppressWarnings("java:S1192")
@@ -60,23 +60,20 @@ public class CycleTime {
 		MongoCollection<Document> fieldMappingStructure = mongoTemplate.getCollection("field_mapping_structure");
 
 		// Update document with "fieldName" equal to "jiraDorKPI3"
-		fieldMappingStructure.updateOne(Filters.eq("fieldName", "jiraDorKPI171"),
-				Updates.set("fieldName", "jiraDorKPI3"));
+		fieldMappingStructure.updateOne(Filters.eq("fieldName", "jiraDorKPI171"), Updates.set("fieldName", "jiraDorKPI3"));
 
 		// Update document with "fieldName" equal to "jiraDodKPI3"
-		fieldMappingStructure.updateOne(Filters.eq("fieldName", "jiraDodKPI171"),
-				Updates.set("fieldName", "jiraDodKPI3"));
+		fieldMappingStructure.updateOne(Filters.eq("fieldName", "jiraDodKPI171"), Updates.set("fieldName", "jiraDodKPI3"));
 
 		// Update document with "fieldName" equal to "storyFirstStatusKPI3"
 		fieldMappingStructure.updateOne(Filters.eq("fieldName", "storyFirstStatusKPI171"),
 				Updates.set("fieldName", "storyFirstStatusKPI3"));
-		fieldMappingStructure.deleteMany(new Document(FIELD_NAME,
-				new Document("$in", Arrays.asList("jiraLiveStatusKPI171", "jiraIssueTypeKPI171"))));
+		fieldMappingStructure.deleteMany(
+				new Document(FIELD_NAME, new Document("$in", Arrays.asList("jiraLiveStatusKPI171", "jiraIssueTypeKPI171"))));
 	}
 
 	@RollbackExecution
 	public void rollback() {
 		// no implementation required
 	}
-
 }

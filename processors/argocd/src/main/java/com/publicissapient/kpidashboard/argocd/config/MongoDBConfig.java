@@ -30,22 +30,21 @@ import com.mongodb.client.MongoClients;
 @PropertySource({"classpath:application.properties"})
 public class MongoDBConfig {
 
-    @Value("${mongodb.connection.atlas}")
-    private boolean useAtlasDB;
+	@Value("${mongodb.connection.atlas}")
+	private boolean useAtlasDB;
 
-    @Value("${spring.data.mongodb.uri}")
-    private String mongoDBUri;
+	@Value("${spring.data.mongodb.uri}")
+	private String mongoDBUri;
 
-    @Value("${spring.data.mongodb.atlas.uri}")
-    private String atlasUri;
+	@Value("${spring.data.mongodb.atlas.uri}")
+	private String atlasUri;
 
-    public String getMongoDBUri() {
-        return useAtlasDB ? atlasUri : mongoDBUri;
-    }
+	public String getMongoDBUri() {
+		return useAtlasDB ? atlasUri : mongoDBUri;
+	}
 
-    @Bean
-    public MongoClient mongoClient() {
-        return MongoClients.create(getMongoDBUri());
-    }
+	@Bean
+	public MongoClient mongoClient() {
+		return MongoClients.create(getMongoDBUri());
+	}
 }
-

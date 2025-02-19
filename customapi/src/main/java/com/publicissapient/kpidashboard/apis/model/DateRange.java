@@ -27,9 +27,7 @@ public class DateRange {
 	private String startDate;
 	private String endDate;
 
-	/**
-	 * Instantiates a new Date range.
-	 */
+	/** Instantiates a new Date range. */
 	public DateRange() {
 	}
 
@@ -37,9 +35,9 @@ public class DateRange {
 	 * Initializes a newly created DateRange with start and end dates
 	 *
 	 * @param startDate
-	 *            the start date
+	 *          the start date
 	 * @param endDate
-	 *            the end date
+	 *          the end date
 	 */
 	public DateRange(String startDate, String endDate) {
 		this.startDate = startDate;
@@ -59,7 +57,7 @@ public class DateRange {
 	 * Sets start date.
 	 *
 	 * @param startDate
-	 *            the start date
+	 *          the start date
 	 */
 	public void setStartDate(String startDate) {
 		this.startDate = startDate;
@@ -78,7 +76,7 @@ public class DateRange {
 	 * Sets end date.
 	 *
 	 * @param endDate
-	 *            the end date
+	 *          the end date
 	 */
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;

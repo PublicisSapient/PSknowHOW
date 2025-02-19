@@ -16,8 +16,6 @@
  */
 package com.publicissapient.kpidashboard.apis.mongock;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.datamigration.service.DataMigrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -25,6 +23,8 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.abac.policy.SimplePolicyDefinition;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.datamigration.service.DataMigrationService;
 import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
 
 /**
@@ -64,6 +64,5 @@ public class ApplicationStartupListener implements ApplicationListener<Applicati
 		cacheService.cacheSprintLevelData();
 		simplePolicyDefinition.init();
 		globalConfigRepository.findAll();
-
 	}
 }

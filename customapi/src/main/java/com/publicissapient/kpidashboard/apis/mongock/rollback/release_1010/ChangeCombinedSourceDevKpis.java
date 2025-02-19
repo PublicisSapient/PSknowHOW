@@ -69,5 +69,4 @@ public class ChangeCombinedSourceDevKpis {
 		updateDocument(kpiMaster, "kpi158", UPDATED_KPI_SOURCE);
 		updateDocument(kpiMaster, "kpi159", UPDATED_KPI_SOURCE);
 	}
-
 }

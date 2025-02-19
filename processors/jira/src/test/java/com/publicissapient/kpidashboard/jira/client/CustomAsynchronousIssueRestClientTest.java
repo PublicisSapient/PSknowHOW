@@ -72,7 +72,6 @@ public class CustomAsynchronousIssueRestClientTest {
 		customAsynchronousIssueRestClient = new CustomAsynchronousIssueRestClient(baseUri, mockClient,
 				mockSessionRestClient, mockMetadataRestClient);
 		assertNotNull(customAsynchronousIssueRestClient);
-
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -113,5 +112,4 @@ public class CustomAsynchronousIssueRestClientTest {
 		}
 		customAsynchronousIssueRestClient.searchBoardIssue("BoardId", sb.toString(), 12, 1, set);
 	}
-
 }

@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application;//NOPMD
+package com.publicissapient.kpidashboard.common.model.application; // NOPMD
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
@@ -33,9 +33,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * The type Field mapping. Represents Jira field mapping values
- */
+/** The type Field mapping. Represents Jira field mapping values */
 @SuppressWarnings("PMD.TooManyFields")
 @Getter
 @Setter
@@ -78,14 +76,19 @@ public class FieldMapping extends FieldMappingHistory implements Cloneable {
 	private List<String> jiraStatusForDevelopmentAVR;
 	private List<String> jiraStatusForDevelopmentKPI82;
 	private List<String> jiraStatusForDevelopmentKPI135;
+
 	@Builder.Default
 	private List<String> jiraStatusForQa = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
+
 	@Builder.Default
 	private List<String> jiraStatusForQaKPI148 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
+
 	@Builder.Default
 	private List<String> jiraStatusForQaKPI135 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
+
 	@Builder.Default
 	private List<String> jiraStatusForQaKPI82 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
+
 	// type of test cases
 	private List<String> jiraDefectInjectionIssueType;
 	private List<String> jiraDefectInjectionIssueTypeKPI14;
@@ -99,7 +102,6 @@ public class FieldMapping extends FieldMappingHistory implements Cloneable {
 	private List<String> jiraDodKPI142;
 	private List<String> jiraDodKPI144;
 	private List<String> jiraDodKPI143;
-
 
 	private String jiraDefectCreatedStatus;
 	private String jiraDefectCreatedStatusKPI14;
@@ -491,9 +493,9 @@ public class FieldMapping extends FieldMappingHistory implements Cloneable {
 	private String thresholdValueKPI185;
 	private String thresholdValueKPI186;
 
-	/** kanban kpis threshold fields starts **/
-
+	/** kanban kpis threshold fields starts * */
 	private String thresholdValueKPI51;
+
 	private String thresholdValueKPI55;
 	private String thresholdValueKPI54;
 	private String thresholdValueKPI50;
@@ -515,10 +517,11 @@ public class FieldMapping extends FieldMappingHistory implements Cloneable {
 	private String thresholdValueKPI184;
 	private String thresholdValueKPI183;
 
-	/** kanban kpi threshold fields ends **/
+	/** kanban kpi threshold fields ends * */
 
 	// Production Incident Mapping
 	private String jiraProductionIncidentIdentification;
+
 	private String jiraProdIncidentRaisedByCustomField;
 	private List<String> jiraProdIncidentRaisedByValue;
 
@@ -551,8 +554,9 @@ public class FieldMapping extends FieldMappingHistory implements Cloneable {
 	private List<String> issueTypesToConsiderKpi113;
 	private List<String> closedIssueStatusToConsiderKpi113;
 
-	//production defect ageing status to consider
+	// production defect ageing status to consider
 	private List<String> jiraStatusToConsiderKPI127;
+
 	/**
 	 * Get jira issue type names string [ ].
 	 *
@@ -566,7 +570,7 @@ public class FieldMapping extends FieldMappingHistory implements Cloneable {
 	 * Sets jira issue type names.
 	 *
 	 * @param jiraIssueTypeNames
-	 *            the jira issue type names
+	 *          the jira issue type names
 	 */
 	public void setJiraIssueTypeNames(String[] jiraIssueTypeNames) {
 		this.jiraIssueTypeNames = jiraIssueTypeNames == null ? null : jiraIssueTypeNames.clone();
@@ -593,7 +597,6 @@ public class FieldMapping extends FieldMappingHistory implements Cloneable {
 			for (Field field : historyFields) {
 				field.setAccessible(true);
 				field.set(cloned, null);
-
 			}
 			return cloned;
 		} catch (Exception e) {

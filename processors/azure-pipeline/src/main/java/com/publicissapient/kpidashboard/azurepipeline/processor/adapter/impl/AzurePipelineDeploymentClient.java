@@ -71,8 +71,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 	 * Instantiate AzurePipelineDeploymentClient .
 	 *
 	 * @param restOperationsFactory
-	 *            the object supplier for RestOperations
-	 *
+	 *          the object supplier for RestOperations
 	 */
 	@Autowired
 	RestOperationsFactory<RestOperations> restOperationsFactory;
@@ -157,8 +156,8 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 	}
 
 	private boolean checkDeploymentConditionsNotNull(Deployment deployment) {
-		if (deployment.getEnvName() == null || deployment.getStartTime() == null || deployment.getEndTime() == null
-				|| deployment.getDeploymentStatus() == null) {
+		if (deployment.getEnvName() == null || deployment.getStartTime() == null || deployment.getEndTime() == null ||
+				deployment.getDeploymentStatus() == null) {
 			log.error("deployments conditions not satisfied so that data is not saved in db {}", deployment);
 			return false;
 		} else {
@@ -216,18 +215,17 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 	private DeploymentStatus getDeploymentStatus(JSONObject jsonDeploy) {
 		String status = AzurePipelineUtils.getString(jsonDeploy, "deploymentStatus");
 		switch (status) {
-		case "succeeded":
-			return DeploymentStatus.SUCCESS;
-		case "partiallySucceeded":
-		case "notDeployed":
-			return DeploymentStatus.UNSTABLE;
-		case "failed":
-			return DeploymentStatus.FAILURE;
-		case "canceled":
-			return DeploymentStatus.ABORTED;
-		default:
-			return DeploymentStatus.UNKNOWN;
+			case "succeeded" :
+				return DeploymentStatus.SUCCESS;
+			case "partiallySucceeded" :
+			case "notDeployed" :
+				return DeploymentStatus.UNSTABLE;
+			case "failed" :
+				return DeploymentStatus.FAILURE;
+			case "canceled" :
+				return DeploymentStatus.ABORTED;
+			default :
+				return DeploymentStatus.UNKNOWN;
 		}
 	}
-
 }

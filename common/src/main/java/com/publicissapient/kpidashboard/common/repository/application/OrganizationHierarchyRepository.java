@@ -27,6 +27,6 @@ import com.publicissapient.kpidashboard.common.model.application.OrganizationHie
 @Repository
 public interface OrganizationHierarchyRepository extends MongoRepository<OrganizationHierarchy, ObjectId> {
 
-    @Query(value = "{ 'nodeId': ?0 }", delete = true)
-    void deleteByNodeId(String nodeId);
+	@Query(value = "{ 'nodeId': ?0 }", delete = true)
+	void deleteByNodeId(String nodeId);
 }

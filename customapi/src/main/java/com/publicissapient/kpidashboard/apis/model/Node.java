@@ -100,7 +100,6 @@ public class Node implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return value
 	 */
 	public Object getValue() {
@@ -109,7 +108,7 @@ public class Node implements Serializable {
 
 	/**
 	 * Sets value
-	 * 
+	 *
 	 * @param value
 	 */
 	public void setValue(Object value) {
@@ -117,7 +116,6 @@ public class Node implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return id
 	 */
 	public String getId() {
@@ -126,7 +124,7 @@ public class Node implements Serializable {
 
 	/**
 	 * Sets id
-	 * 
+	 *
 	 * @param id
 	 */
 	public void setId(String id) {
@@ -134,7 +132,6 @@ public class Node implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return parentId
 	 */
 	public String getParentId() {
@@ -143,7 +140,7 @@ public class Node implements Serializable {
 
 	/**
 	 * Sets parentId
-	 * 
+	 *
 	 * @param parentId
 	 */
 	public void setParentId(String parentId) {
@@ -151,7 +148,6 @@ public class Node implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return parent of type Node
 	 */
 	public Node getParent() {
@@ -160,7 +156,7 @@ public class Node implements Serializable {
 
 	/**
 	 * Sets parent
-	 * 
+	 *
 	 * @param parent
 	 */
 	public void setParent(Node parent) {
@@ -168,7 +164,6 @@ public class Node implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return List of children of type Node
 	 */
 	public List<Node> getChildren() {
@@ -177,7 +172,7 @@ public class Node implements Serializable {
 
 	/**
 	 * Sets children
-	 * 
+	 *
 	 * @param children
 	 */
 	public void setChildren(List<Node> children) {
@@ -186,7 +181,7 @@ public class Node implements Serializable {
 
 	/**
 	 * Adds an entry to the Children Nodes list
-	 * 
+	 *
 	 * @param child
 	 */
 	public void addChild(Node child) {
@@ -195,17 +190,14 @@ public class Node implements Serializable {
 		}
 	}
 
-	/**
-	 * toString() method of String by adding Parent and Children Nodes
-	 */
+	/** toString() method of String by adding Parent and Children Nodes */
 	@Override
 	public String toString() {
-		return "Node [id=" + id + ", parentId=" + parentId + ", value=" + value + ", children=" + children + ", level="
-				+ level + "]";
+		return "Node [id=" + id + ", parentId=" + parentId + ", value=" + value + ", children=" + children + ", level=" +
+				level + "]";
 	}
 
 	/**
-	 * 
 	 * @return groupName
 	 */
 	public String getGroupName() {
@@ -214,7 +206,7 @@ public class Node implements Serializable {
 
 	/**
 	 * Sets groupName
-	 * 
+	 *
 	 * @param groupName
 	 */
 	public void setGroupName(String groupName) {
@@ -222,7 +214,6 @@ public class Node implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return String
 	 */
 	public String getName() {
@@ -230,7 +221,6 @@ public class Node implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @param name
 	 */
 	public void setName(String name) {
@@ -284,10 +274,9 @@ public class Node implements Serializable {
 			return false;
 		}
 		Node other = (Node) obj;
-		if (obj instanceof Node && this.id.equals(other.id)
-				&& (null == this.parentId || this.parentId.equals(other.parentId))) {
+		if (obj instanceof Node && this.id.equals(other.id) &&
+				(null == this.parentId || this.parentId.equals(other.parentId))) {
 			isEqual = true;
-
 		}
 		return isEqual;
 	}
@@ -296,5 +285,4 @@ public class Node implements Serializable {
 	public int hashCode() {
 		return Objects.hash(this.id, this.parentId);
 	}
-
 }

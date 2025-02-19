@@ -39,7 +39,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
- *
  */
 @Slf4j
 @Component
@@ -62,13 +61,12 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.springframework.batch.item.ItemProcessor#process(java.lang.Object)
 	 */
 	@Override
 	public CompositeResult process(ReadData readData) throws Exception {
-		log.debug("Scrum processing started for the project : {}",
-				readData.getProjectConfFieldMapping().getProjectName());
+		log.debug("Scrum processing started for the project : {}", readData.getProjectConfFieldMapping().getProjectName());
 		CompositeResult compositeResult = null;
 		JiraIssue jiraIssue = convertIssueToJiraIssue(readData);
 		if (null != jiraIssue) {
@@ -95,7 +93,6 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 			}
 		}
 		return compositeResult;
-
 	}
 
 	private JiraIssue convertIssueToJiraIssue(ReadData readData) throws JSONException {
@@ -116,14 +113,11 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 
 	private Set<ProjectHierarchy> createAccountHierarchies(JiraIssue jiraIssue, ReadData readData,
 			Set<SprintDetails> sprintDetailsSet) {
-		return jiraIssueAccountHierarchyProcessor.createAccountHierarchy(jiraIssue,
-				readData.getProjectConfFieldMapping(), sprintDetailsSet);
-
+		return jiraIssueAccountHierarchyProcessor.createAccountHierarchy(jiraIssue, readData.getProjectConfFieldMapping(),
+				sprintDetailsSet);
 	}
 
 	private AssigneeDetails createAssigneeDetails(ReadData readData, JiraIssue jiraIssue) {
 		return jiraIssueAssigneeProcessor.createAssigneeDetails(readData.getProjectConfFieldMapping(), jiraIssue);
-
 	}
-
 }

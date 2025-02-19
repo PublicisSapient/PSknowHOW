@@ -16,12 +16,10 @@ package com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -33,10 +31,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
-import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import org.bson.types.ObjectId;
 import org.hamcrest.MatcherAssert;
 import org.junit.After;
@@ -54,12 +48,14 @@ import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.factory.JiraNonTrendKPIServiceFactory;
 import com.publicissapient.kpidashboard.apis.jira.scrum.service.IterationBurnupServiceImpl;
@@ -67,6 +63,8 @@ import com.publicissapient.kpidashboard.apis.jira.service.NonTrendKPIService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
@@ -97,9 +95,11 @@ public class JiraIterationServiceRTest {
 	private CacheService cacheService;
 	@Mock
 	private IterationBurnupServiceImpl iterationBurnupService;
+
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<JiraIterationKPIService> services;
+
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
 	private String[] projectKey;
@@ -167,9 +167,7 @@ public class JiraIterationServiceRTest {
 		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
 		when(cacheService.cacheSprintLevelData()).thenReturn(accountHierarchyDataList);
-
 	}
-
 
 	@Test
 	public void testKPI() throws Exception {
@@ -178,24 +176,22 @@ public class JiraIterationServiceRTest {
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
 		MatcherAssert.assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
-
 	}
 
 	@Test
 	public void TestProcess() throws Exception {
-		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean()))
+				.thenReturn(kpiRequest.getIds());
 		jiraServiceCache.put(KPICode.ITERATION_BURNUP.name(), iterationBurnupService);
 		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		MatcherAssert.assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
-
+		MatcherAssert.assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
 	}
 
 	@After
 	public void cleanup() {
-
 	}
-
 
 	@Test
 	public void TestProcess_pickFromCache() throws Exception {
@@ -210,23 +206,24 @@ public class JiraIterationServiceRTest {
 		assertEquals(0, resultList.size());
 	}
 
-
-
 	@org.junit.Test
 	public void TestProcess_ApplicationException() throws Exception {
 		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
-		when(iterationBurnupService.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
+		when(iterationBurnupService.getKpiData(any(), any(), any()))
+				.thenThrow(ApplicationException.class);
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		MatcherAssert.assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+		MatcherAssert.assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
 	}
-
 
 	@Test
 	public void TestProcess_NPException() throws Exception {
 		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
-		when(iterationBurnupService.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
+		when(iterationBurnupService.getKpiData(any(), any(), any()))
+				.thenThrow(NullPointerException.class);
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		MatcherAssert.assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+		MatcherAssert.assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
 	}
 
 	@Test
@@ -239,12 +236,12 @@ public class JiraIterationServiceRTest {
 	}
 
 	@Test
-	public void getJiraIssuesForCurrentSprint(){
+	public void getJiraIssuesForCurrentSprint() {
 		jiraServiceR.getJiraIssuesForCurrentSprint();
 	}
 
 	@Test
-	public void getJiraIssuesCustomHistoryForCurrentSprint(){
+	public void getJiraIssuesCustomHistoryForCurrentSprint() {
 		jiraServiceR.getJiraIssuesCustomHistoryForCurrentSprint();
 	}
 
@@ -254,7 +251,7 @@ public class JiraIterationServiceRTest {
 
 		addKpiElement(kpiList, KPICode.ITERATION_BURNUP.getKpiId(), KPICode.ITERATION_BURNUP.name(), "Iteration", "");
 		kpiRequest.setLevel(level);
-		kpiRequest.setIds(new String[] { "38296_Scrum Project_6335363749794a18e8a4479b" });
+		kpiRequest.setIds(new String[]{"38296_Scrum Project_6335363749794a18e8a4479b"});
 		kpiRequest.setKpiList(kpiList);
 		kpiRequest.setRequestTrackerId();
 		kpiRequest.setLabel("sprint");
@@ -265,8 +262,7 @@ public class JiraIterationServiceRTest {
 		return kpiRequest;
 	}
 
-	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category,
-			String kpiUnit) {
+	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category, String kpiUnit) {
 		KpiElement kpiElement = new KpiElement();
 		kpiElement.setKpiId(kpiId);
 		kpiElement.setKpiName(kpiName);

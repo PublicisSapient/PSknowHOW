@@ -47,8 +47,7 @@ public class FieldMappingStructureUpdate {
 
 	public FieldMappingStructureUpdate(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
-		FieldMappingStructureDataFactory fieldMappingStructureDataFactory = FieldMappingStructureDataFactory
-				.newInstance();
+		FieldMappingStructureDataFactory fieldMappingStructureDataFactory = FieldMappingStructureDataFactory.newInstance();
 		fieldMappingStructureList = fieldMappingStructureDataFactory.getFieldMappingStructureList();
 		FieldMappingStructureDataFactory fieldMappingStructureBackupDataFactory = FieldMappingStructureDataFactory
 				.newInstance(FILE_PATH_FIELD_MAPPING_LIST);

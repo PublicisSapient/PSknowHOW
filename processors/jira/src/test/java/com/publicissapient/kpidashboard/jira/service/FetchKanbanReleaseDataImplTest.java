@@ -16,20 +16,15 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.service;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.repository.application.ProjectHierarchyRepository;
-import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
-import com.publicissapient.kpidashboard.jira.dataFactories.HierachyLevelFactory;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.json.simple.parser.ParseException;
@@ -39,7 +34,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
@@ -48,9 +42,10 @@ import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHi
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.application.SubProjectConfig;
-import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
@@ -110,8 +105,7 @@ public class FetchKanbanReleaseDataImplTest {
 	public void processReleaseInfoNull() throws IOException, ParseException {
 		try {
 			fetchKanbanReleaseData.processReleaseInfo(kanbanProjectMapping, krb5Client);
-		}
-		catch (Exception ex){
+		} catch (Exception ex) {
 			Assert.fail(ex.getMessage());
 		}
 	}
@@ -121,12 +115,10 @@ public class FetchKanbanReleaseDataImplTest {
 		prepareKanbanAccountHierarchy2();
 		try {
 			fetchKanbanReleaseData.processReleaseInfo(kanbanProjectMapping, krb5Client);
-		}
-		catch (Exception ex){
+		} catch (Exception ex) {
 			Assert.fail(ex.getMessage());
 		}
 	}
-
 
 	private void prepareProjectConfig() {
 		// Online Project Config data
@@ -149,7 +141,6 @@ public class FetchKanbanReleaseDataImplTest {
 		kanbanProjectMapping.setProjectBasicConfig(kanbanBasicConfig);
 		kanbanProjectMapping.setKanban(true);
 		kanbanProjectMapping.setJira(jiraToolConfig);
-
 	}
 
 	private void prepareKanbanAccountHierarchy() {
@@ -165,7 +156,6 @@ public class FetchKanbanReleaseDataImplTest {
 		kanbanAccountHierarchy.setIsDeleted("False");
 		kanbanAccountHierarchy.setPath(("25071_TestHow_61160fa56c1b4842c1741fe1###TestHow_61160fa56c1b4842c1741fe1"));
 		kanbanAccountHierarchylist.add(kanbanAccountHierarchy);
-
 	}
 
 	private void prepareKanbanAccountHierarchy2() {
@@ -179,10 +169,9 @@ public class FetchKanbanReleaseDataImplTest {
 		kanbanAccountHierarchy.setParentId("TEST_1234_TEST");
 		kanbanAccountHierarchy.setBasicProjectConfigId(new ObjectId("5e15d8b195fe1300014538ce"));
 		kanbanAccountHierarchy.setIsDeleted("False");
-		kanbanAccountHierarchy.setPath(("TEST_1234_TEST###25071_TestHow_61160fa56c1b4842c1741fe1###TestHow_61160fa56c1b4842c1741fe1"));
+		kanbanAccountHierarchy
+				.setPath(("TEST_1234_TEST###25071_TestHow_61160fa56c1b4842c1741fe1###TestHow_61160fa56c1b4842c1741fe1"));
 		kanbanAccountHierarchy.setEndDate("2024-01-03T23:01:29.666+05:30");
 		kanbanAccountHierarchylist.add(kanbanAccountHierarchy);
-
 	}
-
 }

@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
@@ -61,19 +60,19 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanTestExecutionRepository;
 
 /**
  * @author anisingh4
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class TestExecutionKanbanServiceImplTest {
 
 	private static final String TEST_EXECUTION_DETAIL = "testExecutionDetail";
-	private final static String TESTCASEKEY = "testCaseData";
-	private final static String AUTOMATEDTESTCASEKEY = "automatedTestCaseData";
+	private static final String TESTCASEKEY = "testCaseData";
+	private static final String AUTOMATEDTESTCASEKEY = "automatedTestCaseData";
 	@InjectMocks
 	TestExecutionKanbanServiceImpl testExecutionKanbanService;
 	@Mock
@@ -114,7 +113,6 @@ public class TestExecutionKanbanServiceImplTest {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});
 		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
-
 
 		kpiWiseAggregation.put("testExecutionPercentage", "average");
 		AccountHierarchyKanbanFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyKanbanFilterDataFactory
@@ -186,8 +184,7 @@ public class TestExecutionKanbanServiceImplTest {
 		});
 		when(kanbanTestExecutionRepository.findTestExecutionDetailByFilters(any(), any(), any(), any()))
 				.thenReturn(testExecutionList);
-		Map<String, Object> resultMap = testExecutionKanbanService.fetchKPIDataFromDb(leafNodeList, null, null,
-				kpiRequest);
+		Map<String, Object> resultMap = testExecutionKanbanService.fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
 		assertThat("Total Result Count :", ((List<KanbanTestExecution>) (resultMap.get(TEST_EXECUTION_DETAIL))).size(),
 				equalTo(3));
 	}
@@ -197,5 +194,4 @@ public class TestExecutionKanbanServiceImplTest {
 		Double kpiValue = testExecutionKanbanService.calculateKpiValue(Arrays.asList(1.0, 2.0), "kpi70");
 		assertThat("Kpi value  :", kpiValue, equalTo(0.0));
 	}
-
 }

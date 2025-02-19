@@ -75,5 +75,4 @@ public class DatabaseLoggingConditionTest {
 
 		assertFalse(condition.matches(context, metadata));
 	}
-
 }

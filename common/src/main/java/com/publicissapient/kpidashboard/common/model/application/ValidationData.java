@@ -16,9 +16,9 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application;//NOPMD
+package com.publicissapient.kpidashboard.common.model.application; // NOPMD
 
-//Do not remove NOPMD comment. This is for ignoring ExcessivePublicCount violation
+// Do not remove NOPMD comment. This is for ignoring ExcessivePublicCount violation
 
 import java.util.List;
 import java.util.Map;
@@ -34,9 +34,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * Reprsents data to show on excel for different KPIs.
- */
+/** Reprsents data to show on excel for different KPIs. */
 @SuppressWarnings("PMD.TooManyFields")
 @JsonInclude(Include.NON_NULL)
 @Data

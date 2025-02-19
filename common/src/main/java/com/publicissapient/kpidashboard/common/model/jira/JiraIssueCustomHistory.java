@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.jira;//NOPMD
+package com.publicissapient.kpidashboard.common.model.jira; // NOPMD
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,10 +59,9 @@ public class JiraIssueCustomHistory extends BasicModel {
 
 	private DateTime createdDate;
 
-	/**
-	 * Device Platform (iOS/Android/Desktop)
-	 */
+	/** Device Platform (iOS/Android/Desktop) */
 	private String devicePlatform;
+
 	private String projectKey;
 
 	private String developerId;
@@ -94,13 +93,12 @@ public class JiraIssueCustomHistory extends BasicModel {
 
 	@Override
 	public String toString() {
-		return "FeatureCustomHistory [projectID=" + projectID + ", storyID=" + storyID + ", url=" + url + ", storyType="
-				+ storyType + ", defectStoryID=" + defectStoryID + ", estimate=" + estimate + ", bufferedEstimateTime="
-				+ bufferedEstimateTime + ", devicePlatform=" + devicePlatform + ", projectKey=" + projectKey
-				+ ", statusUpdationLog=" + statusUpdationLog + ", assigneeUpdationLog=" + assigneeUpdationLog
-				+ ", priorityUpdationLog=" + priorityUpdationLog + ", fixVersionUpdationLog=" + fixVersionUpdationLog
-				+ ", labelUpdationLog=" + labelUpdationLog + ", dueDateUpdationLog=" + dueDateUpdationLog
-				+ ", sprintUpdationLog=" + sprintUpdationLog + "]";
+		return "FeatureCustomHistory [projectID=" + projectID + ", storyID=" + storyID + ", url=" + url + ", storyType=" +
+				storyType + ", defectStoryID=" + defectStoryID + ", estimate=" + estimate + ", bufferedEstimateTime=" +
+				bufferedEstimateTime + ", devicePlatform=" + devicePlatform + ", projectKey=" + projectKey +
+				", statusUpdationLog=" + statusUpdationLog + ", assigneeUpdationLog=" + assigneeUpdationLog +
+				", priorityUpdationLog=" + priorityUpdationLog + ", fixVersionUpdationLog=" + fixVersionUpdationLog +
+				", labelUpdationLog=" + labelUpdationLog + ", dueDateUpdationLog=" + dueDateUpdationLog +
+				", sprintUpdationLog=" + sprintUpdationLog + "]";
 	}
-
 }

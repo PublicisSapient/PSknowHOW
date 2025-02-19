@@ -52,7 +52,6 @@ import lombok.extern.slf4j.Slf4j;
  * 8.1
  *
  * @author vijkumar18
- *
  */
 @Component
 @Slf4j
@@ -69,9 +68,9 @@ public class Sonar8Client implements SonarClient {
 	 * Instantiates a new Sonar 8 client.
 	 *
 	 * @param restOperationsFactory
-	 *            the rest operations supplier
+	 *          the rest operations supplier
 	 * @param sonarConfig
-	 *            the sonar settings
+	 *          the sonar settings
 	 */
 	@Autowired
 	public Sonar8Client(RestOperationsFactory<RestOperations> restOperationsFactory, SonarConfig sonarConfig,
@@ -85,7 +84,7 @@ public class Sonar8Client implements SonarClient {
 	 * Provides the list of Sonar Projects.
 	 *
 	 * @param sonarServer
-	 *            the Sonar server connection details
+	 *          the Sonar server connection details
 	 * @return the list of Sonar project
 	 */
 	@Override
@@ -98,11 +97,11 @@ public class Sonar8Client implements SonarClient {
 	 * Provides Current Sonar snapshot.
 	 *
 	 * @param project
-	 *            the Sonar project setup properties
+	 *          the Sonar project setup properties
 	 * @param httpHeaders
-	 *            the list of http header
+	 *          the list of http header
 	 * @param metrics
-	 *            the metrics
+	 *          the metrics
 	 * @return the current sonar data
 	 */
 	@Override
@@ -110,8 +109,7 @@ public class Sonar8Client implements SonarClient {
 			String metrics) {
 		String url;
 		if (!project.getToolDetailsMap().containsKey(SonarClientCommonUtils.BRANCH)) {
-			url = String.format(
-					new StringBuilder(project.getInstanceUrl()).append(RESOURCE_DETAILS_ENDPOINT).toString(),
+			url = String.format(new StringBuilder(project.getInstanceUrl()).append(RESOURCE_DETAILS_ENDPOINT).toString(),
 					project.getKey(), metrics);
 			log.info("getting sonar details for url = {}", url);
 		} else {
@@ -132,31 +130,27 @@ public class Sonar8Client implements SonarClient {
 
 				SonarDetails sonarDetail = new SonarDetails();
 				sonarDetail.setType(SonarAnalysisType.STATIC_ANALYSIS);
-				sonarDetail
-						.setName(SonarProcessorUtils.convertToString(resources, SonarClientCommonUtils.PROJECT_NAME));
+				sonarDetail.setName(SonarProcessorUtils.convertToString(resources, SonarClientCommonUtils.PROJECT_NAME));
 				sonarDetail.setUrl(new SonarDashboardUrl(project.getInstanceUrl(),
 						SonarProcessorUtils.convertToString(resources, SonarClientCommonUtils.PROJECT_KEY)).toString());
 				sonarDetail.setBranch(project.getBranch());
 
 				if (!project.getToolDetailsMap().containsKey(SonarClientCommonUtils.BRANCH)) {
-					url = String.format(
-							new StringBuilder(project.getInstanceUrl())
-									.append(SonarClientCommonUtils.PROJECT_ANALYSES_ENDPOINT).toString(),
+					url = String.format(new StringBuilder(project.getInstanceUrl())
+							.append(SonarClientCommonUtils.PROJECT_ANALYSES_ENDPOINT).toString(),
 							SonarProcessorUtils.convertToString(resources, SonarClientCommonUtils.PROJECT_KEY));
 				} else {
 					url = String.format(
-							new StringBuilder(project.getInstanceUrl())
-									.append(SonarClientCommonUtils.PROJECT_ANALYSES_ENDPOINT)
+							new StringBuilder(project.getInstanceUrl()).append(SonarClientCommonUtils.PROJECT_ANALYSES_ENDPOINT)
 									.append(SonarClientCommonUtils.BRANCH_ENDPOINT).toString(),
-							SonarProcessorUtils.convertToString(resources, SonarClientCommonUtils.PROJECT_KEY),
-							project.getBranch());
+							SonarProcessorUtils.convertToString(resources, SonarClientCommonUtils.PROJECT_KEY), project.getBranch());
 				}
 				key = "analyses";
 				JSONArray jsonResources = SonarProcessorUtils.parseData(url, restOperations, key, httpHeaders);
 				if (!jsonResources.isEmpty()) {
 					JSONObject resourcesLatestData = (JSONObject) jsonResources.get(0);
-					sonarDetail.setTimestamp(
-							SonarProcessorUtils.getTimestamp(resourcesLatestData, SonarClientCommonUtils.PROJECT_DATE));
+					sonarDetail
+							.setTimestamp(SonarProcessorUtils.getTimestamp(resourcesLatestData, SonarClientCommonUtils.PROJECT_DATE));
 					for (Object eventObj : (JSONArray) resourcesLatestData.get(SonarClientCommonUtils.PROJECT_EVENTS)) {
 						JSONObject eventJson = (JSONObject) eventObj;
 
@@ -186,11 +180,11 @@ public class Sonar8Client implements SonarClient {
 	 * Provides Past sonar data.
 	 *
 	 * @param project
-	 *            the Sonar server connection details
+	 *          the Sonar server connection details
 	 * @param httpHeaders
-	 *            the list of http header
+	 *          the list of http header
 	 * @param metrics
-	 *            the metrics
+	 *          the metrics
 	 * @return the list of code quality history
 	 */
 	@Override
@@ -198,5 +192,4 @@ public class Sonar8Client implements SonarClient {
 			String metrics) {
 		return SonarClientCommonUtils.getSonarHistories(project, httpHeaders, metrics, restOperations);
 	}
-
 }

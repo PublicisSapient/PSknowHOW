@@ -165,8 +165,7 @@ public class JiraTestProcessorJobExecutorTest {
 		ResponseEntity<String> response = new ResponseEntity<>("Success", HttpStatus.OK);
 		Mockito.when(restTemplate.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.GET),
 				ArgumentMatchers.eq(entity), ArgumentMatchers.eq(String.class))).thenReturn(response);
-		jiraTestProcessorJobExecutor.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
-				CommonConstant.TESTING_KPI_CACHE);
+		jiraTestProcessorJobExecutor.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.TESTING_KPI_CACHE);
 	}
 
 	@Test
@@ -176,7 +175,6 @@ public class JiraTestProcessorJobExecutorTest {
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 		Mockito.when(restTemplate.exchange(new URI("http://localhost:8080/api/cache/clearCache/testingKpiCache"),
 				HttpMethod.GET, entity, String.class)).thenReturn(null);
-		jiraTestProcessorJobExecutor.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
-				CommonConstant.TESTING_KPI_CACHE);
+		jiraTestProcessorJobExecutor.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.TESTING_KPI_CACHE);
 	}
 }

@@ -42,5 +42,4 @@ public class GlobalConfig extends BasicModel {
 	private String env;
 
 	private EmailServerDetail emailServerDetail;
-
 }

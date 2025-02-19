@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -55,6 +54,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
 
@@ -116,7 +116,6 @@ public class TeamCapacityServiceImplTest {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});
 		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
-
 	}
 
 	@After
@@ -144,8 +143,7 @@ public class TeamCapacityServiceImplTest {
 		try {
 			KpiElement kpiElement = teamCapacityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("Trend Value List Size is :", ((List<DataCount>) kpiElement.getTrendValueList()).size(),
-					equalTo(1));
+			assertThat("Trend Value List Size is :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 		}

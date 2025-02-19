@@ -27,7 +27,6 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-
 import javax.annotation.Nonnull;
 
 import com.atlassian.event.api.EventPublisher;
@@ -52,11 +51,11 @@ public class ProcessorAsynchHttpClientFactory extends AsynchronousHttpClientFact
 	 * Creates Speedy Client
 	 *
 	 * @param serverUri
-	 *            Jira server URI
+	 *          Jira server URI
 	 * @param authenticationHandler
-	 *            authentication handler instance
+	 *          authentication handler instance
 	 * @param jiraTestProcessorConfig
-	 *            Jira test processor configuration
+	 *          Jira test processor configuration
 	 * @return DisposableHttpClient
 	 */
 	@SuppressWarnings("unchecked")
@@ -134,9 +133,7 @@ public class ProcessorAsynchHttpClientFactory extends AsynchronousHttpClientFact
 			return baseUrl;
 		}
 
-		/**
-		 * We'll always have an absolute URL as a client.
-		 */
+		/** We'll always have an absolute URL as a client. */
 		@Nonnull
 		@Override
 		public String getBaseUrl(UrlMode urlMode) {
@@ -210,8 +207,8 @@ public class ProcessorAsynchHttpClientFactory extends AsynchronousHttpClientFact
 			final Properties props = new Properties();
 			InputStream resourceAsStream = null;
 			try {
-				resourceAsStream = MavenUtils.class.getResourceAsStream(
-						String.format("/META-INF/maven/%s/%s/pom.properties", groupId, artifactId));
+				resourceAsStream = MavenUtils.class
+						.getResourceAsStream(String.format("/META-INF/maven/%s/%s/pom.properties", groupId, artifactId));
 				props.load(resourceAsStream);
 				return props.getProperty("version", UNKNOWN_VERSION);
 			} catch (Exception e) {
@@ -229,5 +226,4 @@ public class ProcessorAsynchHttpClientFactory extends AsynchronousHttpClientFact
 			}
 		}
 	}
-
 }

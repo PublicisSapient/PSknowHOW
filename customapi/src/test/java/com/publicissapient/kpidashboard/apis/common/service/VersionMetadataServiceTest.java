@@ -50,7 +50,6 @@ public class VersionMetadataServiceTest {
 	public void setUp() throws Exception {
 
 		resourcePath = getVersionMetaDataFile();
-
 	}
 
 	@Test

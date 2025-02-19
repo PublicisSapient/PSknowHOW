@@ -45,8 +45,10 @@ public class SprintDetails extends BasicModel implements Cloneable, Serializable
 	public static final String SPRINT_STATE_CLOSED = "CLOSED";
 	public static final String SPRINT_STATE_ACTIVE = "ACTIVE";
 	public static final String SPRINT_STATE_FUTURE = "FUTURE";
+
 	@Indexed(unique = true)
 	private String sprintID;
+
 	private String sprintName;
 	private String originalSprintId;
 	private String state;
@@ -84,19 +86,19 @@ public class SprintDetails extends BasicModel implements Cloneable, Serializable
 	public Object clone() throws CloneNotSupportedException {
 		SprintDetails clonedSprintDetails = (SprintDetails) super.clone();
 
-		if(CollectionUtils.isNotEmpty(this.getCompletedIssues())) {
+		if (CollectionUtils.isNotEmpty(this.getCompletedIssues())) {
 			clonedSprintDetails.setCompletedIssues(deepCloneIssueSet(this.getCompletedIssues()));
 		}
-		if(CollectionUtils.isNotEmpty(this.getNotCompletedIssues())) {
+		if (CollectionUtils.isNotEmpty(this.getNotCompletedIssues())) {
 			clonedSprintDetails.setNotCompletedIssues(deepCloneIssueSet(this.getNotCompletedIssues()));
 		}
-		if(CollectionUtils.isNotEmpty(this.getPuntedIssues())) {
+		if (CollectionUtils.isNotEmpty(this.getPuntedIssues())) {
 			clonedSprintDetails.setPuntedIssues(deepCloneIssueSet(this.getPuntedIssues()));
 		}
-		if(CollectionUtils.isNotEmpty(this.getCompletedIssuesAnotherSprint())) {
+		if (CollectionUtils.isNotEmpty(this.getCompletedIssuesAnotherSprint())) {
 			clonedSprintDetails.setCompletedIssuesAnotherSprint(deepCloneIssueSet(this.getCompletedIssuesAnotherSprint()));
 		}
-		if(CollectionUtils.isNotEmpty(this.getTotalIssues())) {
+		if (CollectionUtils.isNotEmpty(this.getTotalIssues())) {
 			clonedSprintDetails.setTotalIssues(deepCloneIssueSet(this.getTotalIssues()));
 		}
 
@@ -113,14 +115,12 @@ public class SprintDetails extends BasicModel implements Cloneable, Serializable
 
 	private Set<SprintIssue> deepCloneIssueSet(Set<SprintIssue> originalSet) throws CloneNotSupportedException {
 		Set<SprintIssue> clonedSet = new HashSet<>();
-		if(CollectionUtils.isNotEmpty(originalSet)) {
+		if (CollectionUtils.isNotEmpty(originalSet)) {
 			for (SprintIssue issue : originalSet) {
 				clonedSet.add((SprintIssue) issue.clone());
 			}
 			return clonedSet;
 		}
 		return null;
-
 	}
-
 }

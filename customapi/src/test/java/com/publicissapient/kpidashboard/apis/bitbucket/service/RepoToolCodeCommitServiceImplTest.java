@@ -35,10 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
-import com.publicissapient.kpidashboard.common.model.jira.Assignee;
-import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,6 +48,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
@@ -73,6 +70,9 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RepoToolCodeCommitServiceImplTest {
@@ -173,14 +173,13 @@ public class RepoToolCodeCommitServiceImplTest {
 		Set<Assignee> assigneeSet = new HashSet<>();
 		assigneeSet.add(new Assignee("aks", "Akshat Shrivastava",
 				new HashSet<>(Arrays.asList("akshat.shrivastav@publicissapient.com"))));
-		assigneeSet.add(new Assignee("llid", "Hiren",
-				new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
+		assigneeSet
+				.add(new Assignee("llid", "Hiren", new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
 		assigneeDetails.setAssignee(assigneeSet);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
-		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any())).thenReturn(
-				repoToolKpiMetricResponseList);
+		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any()))
+				.thenReturn(repoToolKpiMetricResponseList);
 		when(kpiHelperService.populateSCMToolsRepoList(anyMap())).thenReturn(toolList3);
-
 	}
 
 	private void setTreadValuesDataCount() {
@@ -223,7 +222,6 @@ public class RepoToolCodeCommitServiceImplTest {
 
 		toolGroup.put(Constant.TOOL_BITBUCKET, toolList3);
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
-
 	}
 
 	private Tool createTool(String url, String toolType, List<ProcessorItem> collectorItemList) {
@@ -236,7 +234,6 @@ public class RepoToolCodeCommitServiceImplTest {
 		tool.setProcessorItemList(collectorItemList);
 		return tool;
 	}
-
 
 	@Test
 	public void testGetQualifierType() {
@@ -254,14 +251,13 @@ public class RepoToolCodeCommitServiceImplTest {
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(data -> {
 				String projectName = data.getFilter1();
 				switch (projectName) {
-				case "Overall":
-					assertThat("Overall Commit Details:", data.getValue().size(), equalTo(1));
-					break;
+					case "Overall" :
+						assertThat("Overall Commit Details:", data.getValue().size(), equalTo(1));
+						break;
 
-				case "master":
-					assertThat("Branch1 Commit Details:", data.getValue().size(), equalTo(2));
-					break;
-
+					case "master" :
+						assertThat("Branch1 Commit Details:", data.getValue().size(), equalTo(2));
+						break;
 				}
 			});
 		} catch (ApplicationException e) {
@@ -280,14 +276,13 @@ public class RepoToolCodeCommitServiceImplTest {
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(data -> {
 				String projectName = data.getFilter1();
 				switch (projectName) {
-				case "Overall":
-					assertThat("Overall Commit Details:", data.getValue().size(), equalTo(2));
-					break;
+					case "Overall" :
+						assertThat("Overall Commit Details:", data.getValue().size(), equalTo(2));
+						break;
 
-				case "master":
-					assertThat("Branch1 Commit Details:", data.getValue().size(), equalTo(2));
-					break;
-
+					case "master" :
+						assertThat("Branch1 Commit Details:", data.getValue().size(), equalTo(2));
+						break;
 				}
 			});
 		} catch (ApplicationException e) {

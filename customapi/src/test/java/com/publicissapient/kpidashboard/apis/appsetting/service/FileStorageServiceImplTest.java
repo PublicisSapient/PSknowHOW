@@ -55,7 +55,6 @@ public class FileStorageServiceImplTest {
 
 			@Override
 			public void transferTo(File dest) throws IOException, IllegalStateException {
-
 			}
 
 			@Override
@@ -93,7 +92,6 @@ public class FileStorageServiceImplTest {
 				return new byte[30];
 			}
 		};
-
 	}
 
 	@Test
@@ -101,14 +99,12 @@ public class FileStorageServiceImplTest {
 
 		BaseResponse response = fileStorageServiceImpl.upload(multipartFile);
 		Assert.assertTrue(null != response);
-
 	}
 
 	@Test
 	public void testUploadType() {
 		BaseResponse response = fileStorageServiceImpl.upload("type", multipartFile);
 		Assert.assertTrue(null != response);
-
 	}
 
 	@Test
@@ -118,5 +114,4 @@ public class FileStorageServiceImplTest {
 		Logo logo = fileStorageServiceImpl.getLogo();
 		Assert.assertTrue(null != logo);
 	}
-
 }

@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.filter.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -72,9 +70,7 @@ import com.publicissapient.kpidashboard.common.service.HierarchyLevelSuggestions
 
 /**
  * @author tauakram
- *
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class FilterHelperServiceImplTest {
 
@@ -176,18 +172,17 @@ public class FilterHelperServiceImplTest {
 
 		try {
 			filterHelperService.getFilteredBuildsKanban(
-					KpiRequestFactory.newInstance("/json/default/kanban_kpi_request.json").findKpiRequest("kpi55"),
-					"sqd");
+					KpiRequestFactory.newInstance("/json/default/kanban_kpi_request.json").findKpiRequest("kpi55"), "sqd");
 		} catch (EntityNotFoundException e) {
 			Assert.assertTrue(Boolean.TRUE);
 		}
-
 	}
 
 	@Test
 	public void filterCreationTest1() {
 		when(accountHierarchyRepository.findAll()).thenReturn(ahdList);
-		when(hierarchyLevelService.getFullHierarchyLevels(projectConfigScrum.isKanban())).thenReturn(hierarchyLevels);
+		when(hierarchyLevelService.getFullHierarchyLevels(projectConfigScrum.isKanban()))
+				.thenReturn(hierarchyLevels);
 		filterHelperService.filterCreation(projectConfigScrum);
 		assertThat(accountHierarchyRepository.findAll().size(), equalTo(9));
 	}
@@ -204,16 +199,23 @@ public class FilterHelperServiceImplTest {
 
 	@Test
 	public void cleanFilterData_Scrum() {
-		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(Mockito.anyString(),
-				Mockito.any(ObjectId.class)))
-						.thenReturn(ahdList.stream().filter(f -> f.getLabelName().equalsIgnoreCase("project"))
+		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(
+						Mockito.anyString(), Mockito.any(ObjectId.class)))
+				.thenReturn(
+						ahdList.stream()
+								.filter(f -> f.getLabelName().equalsIgnoreCase("project"))
 								.collect(Collectors.toList()));
-		when(accountHierarchyRepository.findByLabelNameAndPath(Mockito.anyString(), Mockito.anyString()))
+		when(accountHierarchyRepository.findByLabelNameAndPath(
+						Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(ahdList);
 		doNothing().when(accountHierarchyRepository).deleteByPathEndsWith(Mockito.anyString());
 		filterHelperService.cleanFilterData(projectConfigScrum);
-		assertThat(ahdList.stream().filter(f -> f.getLabelName().equalsIgnoreCase("project"))
-				.collect(Collectors.toList()).size(), equalTo(1));
+		assertThat(
+				ahdList.stream()
+						.filter(f -> f.getLabelName().equalsIgnoreCase("project"))
+						.collect(Collectors.toList())
+						.size(),
+				equalTo(1));
 	}
 
 	@Test
@@ -222,9 +224,9 @@ public class FilterHelperServiceImplTest {
 		List<KanbanAccountHierarchy> accountHierarchiesProjetLabel = ahdFactoryProjectLabel.getAccountHierarchies();
 
 		when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId(Mockito.anyString(),
-				Mockito.any(ObjectId.class))).thenReturn(
-						accountHierarchiesProjetLabel.stream().filter(f -> f.getLabelName().equalsIgnoreCase("project"))
-								.collect(Collectors.toList()));
+				Mockito.any(ObjectId.class)))
+				.thenReturn(accountHierarchiesProjetLabel.stream().filter(f -> f.getLabelName().equalsIgnoreCase("project"))
+						.collect(Collectors.toList()));
 
 		when(kanbanAccountHierarchyRepo.findByLabelNameAndPath(Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(accountHierarchiesProjetLabel);
@@ -239,13 +241,11 @@ public class FilterHelperServiceImplTest {
 		ObjectId projectBasicConfigId = new ObjectId("60b9f2ff5ce907343c3804ba");
 		when(hierarchyLevelService.getFullHierarchyLevels(projectConfigScrum.isKanban())).thenReturn(hierarchyLevels2);
 		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(Mockito.anyString(),
-				Mockito.any(ObjectId.class)))
-						.thenReturn(ahdList.stream().filter(f -> f.getLabelName().equalsIgnoreCase("project"))
-								.collect(Collectors.toList()));
-		when(cacheService.getFullHierarchyLevelMap()).thenReturn(
-				hierarchyLevels2.stream().collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x)));
+				Mockito.any(ObjectId.class))).thenReturn(
+						ahdList.stream().filter(f -> f.getLabelName().equalsIgnoreCase("project")).collect(Collectors.toList()));
+		when(cacheService.getFullHierarchyLevelMap())
+				.thenReturn(hierarchyLevels2.stream().collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x)));
 		filterHelperService.deleteAccountHierarchiesOfProject(projectBasicConfigId, false);
-
 	}
 
 	@Test
@@ -255,23 +255,24 @@ public class FilterHelperServiceImplTest {
 		List<KanbanAccountHierarchy> accountHierarchies = ahdFactoryProjectLabel.getAccountHierarchies();
 		when(hierarchyLevelService.getFullHierarchyLevels(projectConfigKanban.isKanban())).thenReturn(hierarchyLevels2);
 
-		when(cacheService.getFullKanbanHierarchyLevelMap()).thenReturn(
-				hierarchyLevels.stream().collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x)));
+		when(cacheService.getFullKanbanHierarchyLevelMap())
+				.thenReturn(hierarchyLevels.stream().collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x)));
 		when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId(Mockito.anyString(),
-				Mockito.any(ObjectId.class))).thenReturn(
-						accountHierarchies.stream().filter(f -> f.getLabelName().equalsIgnoreCase("project"))
-								.collect(Collectors.toList()));
+				Mockito.any(ObjectId.class)))
+				.thenReturn(accountHierarchies.stream().filter(f -> f.getLabelName().equalsIgnoreCase("project"))
+						.collect(Collectors.toList()));
 		filterHelperService.deleteAccountHierarchiesOfProject(projectConfigKanban.getId(), true);
-
 	}
 
 	@Test
 	public void getHierarachyLevelId() {
-		when(cacheService.getFullHierarchyLevelMap()).thenReturn(
-				hierarchyLevels2.stream().collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x)));
-		Assert.assertEquals(filterHelperService.getHierarachyLevelId(4, "project", projectConfigScrum.isKanban()),
+		when(cacheService.getFullHierarchyLevelMap())
+				.thenReturn(
+						hierarchyLevels2.stream()
+								.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x)));
+		Assert.assertEquals(
+				filterHelperService.getHierarachyLevelId(4, "project", projectConfigScrum.isKanban()),
 				"project");
-
 	}
 
 	@Test
@@ -287,7 +288,6 @@ public class FilterHelperServiceImplTest {
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(cacheService.getFullHierarchyLevelMap()).thenReturn(hierarchyMap);
 		Assert.assertEquals(filterHelperService.getHierarchyIdLevelMap(projectConfigScrum.isKanban()), map);
-
 	}
 
 	@Test
@@ -299,7 +299,5 @@ public class FilterHelperServiceImplTest {
 				.collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
 		when(cacheService.getAdditionalFilterHierarchyLevel()).thenReturn(additonalFilterMap);
 		Assert.assertEquals(filterHelperService.getAdditionalFilterHierarchyLevel(), additonalFilterMap);
-
 	}
-
 }

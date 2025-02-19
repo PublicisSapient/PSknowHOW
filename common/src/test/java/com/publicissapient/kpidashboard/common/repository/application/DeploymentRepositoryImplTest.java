@@ -17,15 +17,11 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.common.repository.application;
 
-import com.publicissapient.kpidashboard.common.model.application.Deployment;
-import org.bson.types.ObjectId;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,11 +31,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.bson.types.ObjectId;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import com.publicissapient.kpidashboard.common.model.application.Deployment;
 
 /**
  * @author shi6
@@ -47,44 +48,42 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 public class DeploymentRepositoryImplTest {
 
-    @Mock
-    private MongoTemplate mongoOperations;
+	@Mock
+	private MongoTemplate mongoOperations;
 
-    @InjectMocks
-    private DeploymentRepositoryImpl deploymentRepository;
+	@InjectMocks
+	private DeploymentRepositoryImpl deploymentRepository;
 
-    @Test
-    public void findDeploymentList() {
-        Map<String, List<String>> mapOfFilters = new HashMap<>();
-        mapOfFilters.put("status", Arrays.asList("SUCCESS", "FAILURE"));
-        Set<ObjectId> projectBasicConfigIds = new HashSet<>();
-        projectBasicConfigIds.add(new ObjectId("61d6d4235c76563333369f02"));
-        projectBasicConfigIds.add(new ObjectId("61d6d4235c76563333369f01"));
-        String startDate = "2022-01-01T00:00:00Z";
-        String endDate = "2022-01-10T00:00:00Z";
+	@Test
+	public void findDeploymentList() {
+		Map<String, List<String>> mapOfFilters = new HashMap<>();
+		mapOfFilters.put("status", Arrays.asList("SUCCESS", "FAILURE"));
+		Set<ObjectId> projectBasicConfigIds = new HashSet<>();
+		projectBasicConfigIds.add(new ObjectId("61d6d4235c76563333369f02"));
+		projectBasicConfigIds.add(new ObjectId("61d6d4235c76563333369f01"));
+		String startDate = "2022-01-01T00:00:00Z";
+		String endDate = "2022-01-10T00:00:00Z";
 
-        when(mongoOperations.find(any(Query.class), eq(Deployment.class))).thenReturn(Collections.emptyList());
+		when(mongoOperations.find(any(Query.class), eq(Deployment.class))).thenReturn(Collections.emptyList());
 
-        deploymentRepository.findDeploymentList(mapOfFilters, projectBasicConfigIds, startDate, endDate);
+		deploymentRepository.findDeploymentList(mapOfFilters, projectBasicConfigIds, startDate, endDate);
 
-        verify(mongoOperations, times(1)).find(any(Query.class), eq(Deployment.class));
+		verify(mongoOperations, times(1)).find(any(Query.class), eq(Deployment.class));
+	}
 
-    }
+	@Test
+	public void testFindDeploymentListWithEmptyFilters() {
+		Map<String, List<String>> mapOfFilters = new HashMap<>();
+		Set<ObjectId> projectBasicConfigIds = new HashSet<>();
+		projectBasicConfigIds.add(new ObjectId("61d6d4235c76563333369f02"));
+		projectBasicConfigIds.add(new ObjectId("61d6d4235c76563333369f01"));
+		String startDate = "2022-01-01T00:00:00Z";
+		String endDate = "2022-01-10T00:00:00Z";
 
-    @Test
-    public void testFindDeploymentListWithEmptyFilters() {
-        Map<String, List<String>> mapOfFilters = new HashMap<>();
-        Set<ObjectId> projectBasicConfigIds = new HashSet<>();
-        projectBasicConfigIds.add(new ObjectId("61d6d4235c76563333369f02"));
-        projectBasicConfigIds.add(new ObjectId("61d6d4235c76563333369f01"));
-        String startDate = "2022-01-01T00:00:00Z";
-        String endDate = "2022-01-10T00:00:00Z";
+		when(mongoOperations.find(any(Query.class), eq(Deployment.class))).thenReturn(Collections.emptyList());
 
-        when(mongoOperations.find(any(Query.class), eq(Deployment.class))).thenReturn(Collections.emptyList());
+		deploymentRepository.findDeploymentList(mapOfFilters, projectBasicConfigIds, startDate, endDate);
 
-        deploymentRepository.findDeploymentList(mapOfFilters, projectBasicConfigIds, startDate, endDate);
-
-        verify(mongoOperations, times(1)).find(any(Query.class), eq(Deployment.class));
-
-    }
+		verify(mongoOperations, times(1)).find(any(Query.class), eq(Deployment.class));
+	}
 }

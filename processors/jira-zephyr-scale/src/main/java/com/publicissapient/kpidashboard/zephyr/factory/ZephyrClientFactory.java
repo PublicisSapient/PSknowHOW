@@ -7,10 +7,7 @@ import com.publicissapient.kpidashboard.zephyr.client.ZephyrClient;
 import com.publicissapient.kpidashboard.zephyr.processor.service.impl.ZephyrCloudImpl;
 import com.publicissapient.kpidashboard.zephyr.processor.service.impl.ZephyrServerImpl;
 
-/**
- * Provides factory to create Zephyr Clients.
- *
- */
+/** Provides factory to create Zephyr Clients. */
 @Component
 public class ZephyrClientFactory {
 

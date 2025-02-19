@@ -32,7 +32,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -49,7 +48,6 @@ import com.publicissapient.kpidashboard.common.model.generic.Processor;
  *
  * @author pansharm5
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class ProcessorControllerTest {
 
@@ -61,18 +59,13 @@ public class ProcessorControllerTest {
 	@Mock
 	private ProcessorService processorService;
 
-	/**
-	 * method includes preprocesses for test cases
-	 */
+	/** method includes preprocesses for test cases */
 	@Before
 	public void before() {
 		mockMvc = MockMvcBuilders.standaloneSetup(processorController).build();
-
 	}
 
-	/**
-	 * method includes post processes for test cases
-	 */
+	/** method includes post processes for test cases */
 	@After
 	public void after() {
 		mockMvc = null;
@@ -111,9 +104,11 @@ public class ProcessorControllerTest {
 	@Test
 	public void metadata() throws Exception {
 		List<Processor> listProcessor = new ArrayList<>();
-		when(processorService.runMetadataStep(any())).thenReturn(new ServiceResponse(true, StringUtils.EMPTY, listProcessor));
-		mockMvc.perform(MockMvcRequestBuilders.post("/processor/metadata/step/abc").contentType(TestUtil.APPLICATION_JSON_UTF8))
+		when(processorService.runMetadataStep(any()))
+				.thenReturn(new ServiceResponse(true, StringUtils.EMPTY, listProcessor));
+		mockMvc
+				.perform(
+						MockMvcRequestBuilders.post("/processor/metadata/step/abc").contentType(TestUtil.APPLICATION_JSON_UTF8))
 				.andExpect(status().is2xxSuccessful());
 	}
-
 }

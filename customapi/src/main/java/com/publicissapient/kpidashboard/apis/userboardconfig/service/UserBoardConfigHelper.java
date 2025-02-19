@@ -44,7 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class UserBoardConfigHelper.
- * 
+ *
  * @author shunaray
  */
 @Slf4j
@@ -58,9 +58,9 @@ public final class UserBoardConfigHelper {
 	 * user's KPI list with the KPI master list.
 	 *
 	 * @param existingUserBoardConfig
-	 *            the existing user board configuration
+	 *          the existing user board configuration
 	 * @param kpiMasterMap
-	 *            a map of KPI master data
+	 *          a map of KPI master data
 	 * @return true if there is a difference in the number of KPIs between the
 	 *         user's configuration and the master list, false otherwise
 	 */
@@ -86,9 +86,9 @@ public final class UserBoardConfigHelper {
 	 * the provided set.
 	 *
 	 * @param existingUserBoardConfig
-	 *            the list of board configurations for the existing user
+	 *          the list of board configurations for the existing user
 	 * @param userKpiIdList
-	 *            the set to which the extracted KPI IDs will be added
+	 *          the set to which the extracted KPI IDs will be added
 	 */
 	public static void getKpiIdListFromExistingUser(List<BoardDTO> existingUserBoardConfig, Set<String> userKpiIdList) {
 		existingUserBoardConfig.forEach(kpiBoard -> {
@@ -103,9 +103,9 @@ public final class UserBoardConfigHelper {
 	 * configuration.
 	 *
 	 * @param existingUserBoardConfigDTO
-	 *            the existing user board configuration
+	 *          the existing user board configuration
 	 * @param kpiCategoryList
-	 *            a list of KPI categories
+	 *          a list of KPI categories
 	 * @return true if any default KPI categories are absent in the existing user
 	 *         board configuration, false otherwise
 	 */
@@ -130,9 +130,9 @@ public final class UserBoardConfigHelper {
 	 * Checks if any board subcategory is added or removed for an existing user.
 	 *
 	 * @param existingUserBoardConfigDTO
-	 *            the existing user board configuration
+	 *          the existing user board configuration
 	 * @param kpiMasterMap
-	 *            a map of KPI master data
+	 *          a map of KPI master data
 	 * @return true if the number of subcategories in the KPI master data does not
 	 *         match the number of subcategories in the existing user board
 	 *         configuration, false otherwise
@@ -156,11 +156,11 @@ public final class UserBoardConfigHelper {
 	/**
 	 * Updates the visibility of KPIs in the user board config based on selected
 	 * projects board config
-	 * 
+	 *
 	 * @param userBoardConfig
-	 *            user board config
+	 *          user board config
 	 * @param projectBoardConfigs
-	 *            selected project board configs
+	 *          selected project board configs
 	 */
 	public static void applyProjectConfigToUserBoard(UserBoardConfigDTO userBoardConfig,
 			ProjectListRequested listOfRequestedProj, List<UserBoardConfig> projectBoardConfigs) {
@@ -171,8 +171,7 @@ public final class UserBoardConfigHelper {
 		Map<String, Boolean> kpiWiseIsShownFlag = projectBoardConfigs.stream()
 				.flatMap(config -> Stream.of(config.getScrum(), config.getKanban(), config.getOthers())
 						.flatMap(Collection::stream).flatMap(board -> board.getKpis().stream()))
-				.filter(kpi -> !kpi.isShown())
-				.collect(Collectors.toMap(BoardKpis::getKpiId, kpi -> false, (a, b) -> a && b));
+				.filter(kpi -> !kpi.isShown()).collect(Collectors.toMap(BoardKpis::getKpiId, kpi -> false, (a, b) -> a && b));
 
 		log.debug("Applying project configuration: Disabled KPIs {} for user {} with selected project IDs {}",
 				kpiWiseIsShownFlag, userBoardConfig.getUsername(),
@@ -184,5 +183,4 @@ public final class UserBoardConfigHelper {
 					boardKpis.setShown(isShown);
 				}));
 	}
-
 }

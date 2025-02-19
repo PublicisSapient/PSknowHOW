@@ -17,15 +17,17 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1010;
 
-import com.mongodb.client.MongoCollection;
-import io.mongock.api.annotations.ChangeUnit;
-import io.mongock.api.annotations.Execution;
-import io.mongock.api.annotations.RollbackExecution;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.mongodb.client.MongoCollection;
+
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
 
 @ChangeUnit(id = "remove_repo_tool_tracelogs", order = "101014", author = "kunkambl", systemVersion = "10.1.0")
 public class RemoveRepoToolTraceLogs {
@@ -40,11 +42,9 @@ public class RemoveRepoToolTraceLogs {
 	@Execution
 	public void execution() {
 
-		MongoCollection<Document> projectToolConfigs = mongoTemplate
-				.getCollection("processor_execution_trace_log");
+		MongoCollection<Document> projectToolConfigs = mongoTemplate.getCollection("processor_execution_trace_log");
 		// Find and store the documents to be deleted
-		deletedDocuments = projectToolConfigs.find(new Document("processorName", "RepoTool"))
-				.into(new ArrayList<>());
+		deletedDocuments = projectToolConfigs.find(new Document("processorName", "RepoTool")).into(new ArrayList<>());
 
 		// Delete the documents
 		projectToolConfigs.deleteMany(new Document("processorName", "RepoTool"));

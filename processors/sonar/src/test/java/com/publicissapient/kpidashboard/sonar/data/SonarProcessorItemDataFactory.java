@@ -31,9 +31,7 @@ import com.publicissapient.kpidashboard.sonar.model.SonarProcessorItem;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- *
- */
+/** */
 @Slf4j
 public class SonarProcessorItemDataFactory {
 	private static final String FILE_PATH_BASIC_CONFIG = "/json/sonar_processor_item.json";
@@ -77,11 +75,9 @@ public class SonarProcessorItemDataFactory {
 			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		}
-
 	}
 
 	public List<SonarProcessorItem> getSonarProcessorItemList() {
 		return sonarProcessorItemList;
 	}
-
 }

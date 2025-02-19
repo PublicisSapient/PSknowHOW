@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.MapUtils;
@@ -49,7 +48,8 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 @Component
 public class NetOpenTicketCountByPriorityServiceImpl
-		extends JiraKPIService<Long, List<Object>, Map<String, Map<String, Map<String, Set<String>>>>> {
+		extends
+			JiraKPIService<Long, List<Object>, Map<String, Map<String, Map<String, Set<String>>>>> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(NetOpenTicketCountByPriorityServiceImpl.class);
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -83,8 +83,8 @@ public class NetOpenTicketCountByPriorityServiceImpl
 	 * @throws ApplicationException
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		LOGGER.info("NET-OPEN-TICKET-COUNT-BY-PRIORITY {}", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
@@ -131,7 +131,7 @@ public class NetOpenTicketCountByPriorityServiceImpl
 	@Override
 	public Map<String, Map<String, Map<String, Set<String>>>> fetchKPIDataFromDb(List<Node> leafNodeList,
 			String startDate, String endDate, KpiRequest kpiRequest) {
-		Map<ObjectId,Map<String,Object>> projectWiseMapping=new HashMap<>();
+		Map<ObjectId, Map<String, Object>> projectWiseMapping = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
@@ -141,11 +141,11 @@ public class NetOpenTicketCountByPriorityServiceImpl
 			fieldWise.put("RejectedStatus", fieldMapping.getJiraTicketRejectedStatusKPI50());
 			fieldWise.put("Ticket_Count_IssueType", fieldMapping.getTicketCountIssueTypeKPI50());
 			fieldWise.put("StoryFirstStatus", fieldMapping.getStoryFirstStatus());
-		 	projectWiseMapping.put(basicProjectConfigId, fieldWise);
+			projectWiseMapping.put(basicProjectConfigId, fieldWise);
 		});
 
 		resultListMap = kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(leafNodeList, startDate, endDate,
-				kpiRequest, FIELD_PRIORITY,projectWiseMapping);
+				kpiRequest, FIELD_PRIORITY, projectWiseMapping);
 
 		CustomDateRange dateRangeForCumulative = KpiDataHelper.getStartAndEndDatesForCumulative(kpiRequest);
 		String startDateForCumulative = dateRangeForCumulative.getStartDate().format(DATE_FORMATTER);
@@ -168,8 +168,8 @@ public class NetOpenTicketCountByPriorityServiceImpl
 		String endDate = dateRange.getEndDate().format(DATE_FORMATTER);
 
 		// past all tickets and given range ticket data fetch from db
-		Map<String, Map<String, Map<String, Set<String>>>> resultMap = fetchKPIDataFromDb(leafNodeList, startDate,
-				endDate, kpiRequest);
+		Map<String, Map<String, Map<String, Set<String>>>> resultMap = fetchKPIDataFromDb(leafNodeList, startDate, endDate,
+				kpiRequest);
 
 		kpiWithFilter(resultMap, mapTmp, leafNodeList, kpiElement, kpiRequest);
 	}
@@ -197,17 +197,14 @@ public class NetOpenTicketCountByPriorityServiceImpl
 
 					String date = getRange(dateRange, kpiRequest);
 
-					populateProjectFilterWiseDataMap(projectWisePriorityCountMap, trendValueMap,
-							node, date);
+					populateProjectFilterWiseDataMap(projectWisePriorityCountMap, trendValueMap, node, date);
 
 					currentDate = getNextRangeDate(kpiRequest, currentDate);
-
 				}
 				// Populates data in Excel for validation for tickets created before
-				populateExcelDataObject(requestTrackerId, jiraHistoryPriorityAndDateWiseIssueMap, node,
-						projectWisePriorityList,
-						new HashSet<>((List<KanbanIssueCustomHistory>) resultListMap.get(JIRA_ISSUE_HISTORY_DATA)),
-						excelData, kpiRequest);
+				populateExcelDataObject(requestTrackerId, jiraHistoryPriorityAndDateWiseIssueMap, node, projectWisePriorityList,
+						new HashSet<>((List<KanbanIssueCustomHistory>) resultListMap.get(JIRA_ISSUE_HISTORY_DATA)), excelData,
+						kpiRequest);
 				mapTmp.get(node.getId()).setValue(trendValueMap);
 			}
 		});
@@ -270,7 +267,7 @@ public class NetOpenTicketCountByPriorityServiceImpl
 	 * @param date
 	 */
 	private void populateProjectFilterWiseDataMap(Map<String, Long> projectWisePriorityMap,
-												  Map<String, List<DataCount>> projectFilterWiseDataMap, Node node, String date) {
+			Map<String, List<DataCount>> projectFilterWiseDataMap, Node node, String date) {
 
 		String projectName = node.getProjectFilter().getName();
 		String projectNodeId = node.getProjectFilter().getId();
@@ -284,8 +281,8 @@ public class NetOpenTicketCountByPriorityServiceImpl
 
 		Long aggLineValue = projectWisePriorityMap.values().stream().mapToLong(p -> p).sum();
 
-		projectFilterWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(getDataCountObject(
-				aggLineValue, projectName, date, projectNodeId, CommonConstant.OVERALL, hoverValueMap));
+		projectFilterWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>())
+				.add(getDataCountObject(aggLineValue, projectName, date, projectNodeId, CommonConstant.OVERALL, hoverValueMap));
 	}
 
 	/**
@@ -316,8 +313,8 @@ public class NetOpenTicketCountByPriorityServiceImpl
 		String range = null;
 		if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
-					DateUtil.DISPLAY_DATE_FORMAT) + " to "
-					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to " +
+					DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
 							DateUtil.DISPLAY_DATE_FORMAT);
 		} else if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.MONTH)) {
 			range = dateRange.getStartDate().getMonth().toString() + " " + dateRange.getStartDate().getYear();
@@ -359,22 +356,19 @@ public class NetOpenTicketCountByPriorityServiceImpl
 
 	private void populateExcelDataObject(String requestTrackerId,
 			Map<String, Map<String, Set<String>>> jiraHistoryPriorityAndDateWiseIssueMap, Node node,
-			Set<String> projectWisePriorityList, Set<KanbanIssueCustomHistory> kanbanJiraIssues,
-			List<KPIExcelData> excelData, KpiRequest kpiRequest) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& MapUtils.isNotEmpty(jiraHistoryPriorityAndDateWiseIssueMap)) {
+			Set<String> projectWisePriorityList, Set<KanbanIssueCustomHistory> kanbanJiraIssues, List<KPIExcelData> excelData,
+			KpiRequest kpiRequest) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				MapUtils.isNotEmpty(jiraHistoryPriorityAndDateWiseIssueMap)) {
 			String dateProjectKey = node.getProjectHierarchy().getNodeDisplayName();
 			String date = getRange(
-					KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(), kpiRequest.getDuration()),
-					kpiRequest);
-			KPIExcelUtility.prepareExcelForKanbanCumulativeDataMap(dateProjectKey,
-					jiraHistoryPriorityAndDateWiseIssueMap, projectWisePriorityList, kanbanJiraIssues, excelData, date,
-					KPICode.TICKET_COUNT_BY_PRIORITY.getKpiId());
+					KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(), kpiRequest.getDuration()), kpiRequest);
+			KPIExcelUtility.prepareExcelForKanbanCumulativeDataMap(dateProjectKey, jiraHistoryPriorityAndDateWiseIssueMap,
+					projectWisePriorityList, kanbanJiraIssues, excelData, date, KPICode.TICKET_COUNT_BY_PRIORITY.getKpiId());
 		}
 	}
 
-	private Map<String, List<DataCount>> sortTrendValueMap(Map<String, List<DataCount>> trendMap,
-			List<String> keyOrder) {
+	private Map<String, List<DataCount>> sortTrendValueMap(Map<String, List<DataCount>> trendMap, List<String> keyOrder) {
 		Map<String, List<DataCount>> sortedMap = new LinkedHashMap<>();
 		keyOrder.forEach(order -> {
 			if (null != trendMap.get(order)) {
@@ -386,8 +380,7 @@ public class NetOpenTicketCountByPriorityServiceImpl
 
 	private List<String> priorityTypes(boolean addOverall) {
 		if (addOverall) {
-			return Arrays.asList(CommonConstant.OVERALL, Constant.P1, Constant.P2, Constant.P3, Constant.P4,
-					Constant.MISC);
+			return Arrays.asList(CommonConstant.OVERALL, Constant.P1, Constant.P2, Constant.P3, Constant.P4, Constant.MISC);
 		} else {
 			return Arrays.asList(Constant.P1, Constant.P2, Constant.P3, Constant.P4, Constant.MISC);
 		}
@@ -395,8 +388,6 @@ public class NetOpenTicketCountByPriorityServiceImpl
 
 	@Override
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI50(),
-				KPICode.TICKET_COUNT_BY_PRIORITY.getKpiId());
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI50(), KPICode.TICKET_COUNT_BY_PRIORITY.getKpiId());
 	}
-
 }

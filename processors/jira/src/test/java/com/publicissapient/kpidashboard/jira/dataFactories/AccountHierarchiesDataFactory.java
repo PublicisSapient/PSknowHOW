@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -79,17 +78,18 @@ public class AccountHierarchiesDataFactory {
 			mapper.registerModule(new JavaTimeModule());
 			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
 		}
 	}
 
+	public List<AccountHierarchy> getAccountHierarchies() {
+		return accountHierarchies;
+	}
 
-    public List<AccountHierarchy> getAccountHierarchies() {
-        return accountHierarchies;
-    }
-
-    public List<AccountHierarchy> findByLabelNameAndBasicProjectConfigId(String labelName, String basicProjectConfigId){
-        return accountHierarchies.stream().filter(accountHierarchy -> accountHierarchy.getBasicProjectConfigId()
-                .toHexString().equals(basicProjectConfigId)&&accountHierarchy.getLabelName().equals(labelName)).collect(Collectors.toList());
-    }
+	public List<AccountHierarchy> findByLabelNameAndBasicProjectConfigId(String labelName, String basicProjectConfigId) {
+		return accountHierarchies.stream()
+				.filter(
+						accountHierarchy -> accountHierarchy.getBasicProjectConfigId().toHexString().equals(basicProjectConfigId) &&
+								accountHierarchy.getLabelName().equals(labelName))
+				.collect(Collectors.toList());
+	}
 }

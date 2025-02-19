@@ -30,9 +30,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -46,7 +43,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
@@ -73,7 +71,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -109,7 +106,7 @@ public class IssueCountServiceImplTest {
 	@Mock
 	private KpiDataCacheService kpiDataCacheService;
 	@Mock
-	private	KpiDataProvider kpiDataProvider;
+	private KpiDataProvider kpiDataProvider;
 	@Mock
 	private JiraServiceR jiraKPIService;
 
@@ -167,12 +164,10 @@ public class IssueCountServiceImplTest {
 
 		SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance();
 		sprintDetailsList = sprintDetailsDataFactory.getSprintDetails();
-
 	}
 
 	@After
 	public void cleanup() {
-
 	}
 
 	@Test
@@ -191,7 +186,7 @@ public class IssueCountServiceImplTest {
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 		Map<String, Object> result = new HashMap<>();
-		result.put(SPRINTSDETAILS,sprintDetailsList);
+		result.put(SPRINTSDETAILS, sprintDetailsList);
 		result.put(STORY_LIST, totalIssueList);
 		result.put(PROJECT_WISE_STORY_CATEGORIES, new HashMap<>());
 		result.put(PROJECT_WISE_TOTAL_CATEGORIES, new HashMap<>());
@@ -229,14 +224,13 @@ public class IssueCountServiceImplTest {
 		});
 
 		Map<String, Object> result = new HashMap<>();
-		result.put(SPRINTSDETAILS,sprintDetailsList);
+		result.put(SPRINTSDETAILS, sprintDetailsList);
 		result.put(STORY_LIST, totalIssueList);
 		result.put(PROJECT_WISE_STORY_CATEGORIES, projectWiseStoryCategories);
 		result.put(PROJECT_WISE_TOTAL_CATEGORIES, projectWiseJiraIdentification);
 
 		when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(false);
-		when(kpiDataProvider.fetchIssueCountDataFromDB(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(result);
+		when(kpiDataProvider.fetchIssueCountDataFromDB(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(result);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
@@ -252,24 +246,22 @@ public class IssueCountServiceImplTest {
 					treeAggregatorDetail);
 
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(dc -> {
-
 				String status = dc.getFilter();
 				switch (status) {
-				case "Story  Count":
-					assertThat("Story  Count :", dc.getValue().size(), equalTo(1));
-					break;
-				case "Total  Count":
-					assertThat("Total  Count :", dc.getValue().size(), equalTo(1));
-					break;
-				default:
-					break;
+					case "Story  Count" :
+						assertThat("Story  Count :", dc.getValue().size(), equalTo(1));
+						break;
+					case "Total  Count" :
+						assertThat("Total  Count :", dc.getValue().size(), equalTo(1));
+						break;
+					default :
+						break;
 				}
 			});
 
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -278,5 +270,4 @@ public class IssueCountServiceImplTest {
 		String type = issueCountServiceImpl.getQualifierType();
 		assertThat("KPI NAME : ", type, equalTo(kpiName));
 	}
-
 }

@@ -117,8 +117,9 @@ public class UnlinkedWorkItemsServiceImplTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(testCaseDetailsRepository.findNonRegressionTestDetails(Mockito.anyMap(), Mockito.anyMap(),
-				Mockito.anyString())).thenReturn(totalTestCaseList);
+		when(
+				testCaseDetailsRepository.findNonRegressionTestDetails(Mockito.anyMap(), Mockito.anyMap(), Mockito.anyString()))
+				.thenReturn(totalTestCaseList);
 		Map<String, Object> defectDataListMap = unlinkedWorkItemsService
 				.fetchKPIDataFromDbForTestWithoutStory(leafNodeList.get(0));
 		assertNotNull(defectDataListMap);
@@ -143,8 +144,8 @@ public class UnlinkedWorkItemsServiceImplTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> defectDataListMap = unlinkedWorkItemsService.fetchKPIDataFromDb(leafNodeList.get(0), null,
-				null, kpiRequest);
+		Map<String, Object> defectDataListMap = unlinkedWorkItemsService.fetchKPIDataFromDb(leafNodeList.get(0), null, null,
+				kpiRequest);
 		assertNotNull(defectDataListMap);
 	}
 

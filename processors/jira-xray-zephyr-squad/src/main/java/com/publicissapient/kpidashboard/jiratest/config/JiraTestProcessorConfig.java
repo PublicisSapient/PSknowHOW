@@ -22,13 +22,14 @@ public class JiraTestProcessorConfig {
 	private String customApiBaseUrl;
 	private Integer socketTimeOut;
 	private int threadPoolSize;
+
 	@Value("${aesEncryptionKey}")
 	private String aesEncryptionKey;
+
 	private String jiraCloudGetUserApi;
 	private String jiraServerGetUserApi;
 	private List<String> excludeLinks;
 	private String jiraDirectTicketLinkKey;
 	private String jiraCloudDirectTicketLinkKey;
 	private boolean considerStartDate;
-
 }

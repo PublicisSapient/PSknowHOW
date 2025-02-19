@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.processor;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -97,16 +96,16 @@ public class KanbanJiraIssueHistoryProcessorImplTest {
 		fieldMapping = fieldMappingDataFactory.findById("6335e4ea4fd2f76a82111843");
 		createIssue();
 		jiraIssue = getMockKanbanJiraIssue();
-
 	}
 
 	@Test
 	public void createIssueCustomHistory() {
 		when(kanbanIssueHistoryRepo.findByStoryIDAndBasicProjectConfigId(any(), any()))
 				.thenReturn(new KanbanIssueCustomHistory());
-		Assert.assertEquals("6335368249794a18e8a4479f",
+		Assert.assertEquals(
+				"6335368249794a18e8a4479f",
 				createJiraIssueHistory
-						.convertToKanbanIssueHistory(issue,createProjectConfig(), jiraIssue)
+						.convertToKanbanIssueHistory(issue, createProjectConfig(), jiraIssue)
 						.getBasicProjectConfigId());
 	}
 
@@ -118,19 +117,17 @@ public class KanbanJiraIssueHistoryProcessorImplTest {
 		kanbanIssueCustomHistoryList.add(jiraIssueHistory);
 		when(kanbanIssueHistoryRepo.findByStoryIDAndBasicProjectConfigId(any(), any()))
 				.thenReturn(kanbanIssueCustomHistoryList.get(0));
-		Assert.assertEquals("6335368249794a18e8a4479f",
-				createJiraIssueHistory
-						.convertToKanbanIssueHistory(issue,createProjectConfig(), jiraIssue)
-						.getBasicProjectConfigId());
+		Assert.assertEquals("6335368249794a18e8a4479f", createJiraIssueHistory
+				.convertToKanbanIssueHistory(issue, createProjectConfig(), jiraIssue).getBasicProjectConfigId());
 	}
 
 	private ProjectConfFieldMapping createProjectConfig() {
 		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 		projectConfFieldMapping.setBasicProjectConfigId(new ObjectId("63c04dc7b7617e260763ca4e"));
-        projectConfFieldMapping.setFieldMapping(fieldMapping);
-        Connection connection= Connection.builder().cloudEnv(false).build();
-        JiraToolConfig jiraToolConfig=JiraToolConfig.builder().connection(Optional.ofNullable(connection)).build();
-        projectConfFieldMapping.setJira(jiraToolConfig);
+		projectConfFieldMapping.setFieldMapping(fieldMapping);
+		Connection connection = Connection.builder().cloudEnv(false).build();
+		JiraToolConfig jiraToolConfig = JiraToolConfig.builder().connection(Optional.ofNullable(connection)).build();
+		projectConfFieldMapping.setJira(jiraToolConfig);
 
 		return projectConfFieldMapping;
 	}
@@ -356,16 +353,14 @@ public class KanbanJiraIssueHistoryProcessorImplTest {
 		Worklog worklog = new Worklog(new URI("self"), new URI("self"), basicUser, basicUser, null, DateTime.now(),
 				DateTime.now(), DateTime.now(), 60, null);
 		List<Worklog> workLogs = Arrays.asList(worklog);
-		ChangelogItem changelogItem = new ChangelogItem(FieldType.JIRA, "Status", "from", "fromString", "to",
-				"toString");
+		ChangelogItem changelogItem = new ChangelogItem(FieldType.JIRA, "Status", "from", "fromString", "to", "toString");
 		ChangelogGroup changelogGroup = new ChangelogGroup(basicUser, DateTime.now(), Arrays.asList(changelogItem));
 		changeLogList.add(changelogGroup);
 
-		issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType1, status1, "story",
-				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
-				DateTime.now(), new ArrayList<>(),null , new ArrayList<>(), null, issueFields, comments,
-				null, createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
-				Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label1")));
+		issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType1, status1, "story", basicPriority,
+				resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(), DateTime.now(), new ArrayList<>(),
+				null, new ArrayList<>(), null, issueFields, comments, null, createIssueLinkData(), basicVotes, workLogs, null,
+				Arrays.asList("expandos"), null, Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label1")));
 		// Issue issue1 = new Issue("summary1", new URI("self"), "key1", 1l, basicProj,
 		// issueType2, status1, "Defect",
 		// basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(),
@@ -388,5 +383,4 @@ public class KanbanJiraIssueHistoryProcessorImplTest {
 
 		return issueLinkList;
 	}
-
 }

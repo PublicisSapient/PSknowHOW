@@ -76,8 +76,8 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 @RunWith(MockitoJUnitRunner.class)
 public class DSRServiceImplTest {
-	private final static String UATBUGKEY = "uatBugData";
-	private final static String TOTALBUGKEY = "totalBugData";
+	private static final String UATBUGKEY = "uatBugData";
+	private static final String TOTALBUGKEY = "totalBugData";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	List<JiraIssue> uatBugList = new ArrayList<>();
@@ -155,13 +155,11 @@ public class DSRServiceImplTest {
 
 		kpiWiseAggregation.put("defectSeepageRate", "percentile");
 		priority.put("P3", Arrays.asList("P3 - Major"));
-
 	}
 
 	@After
 	public void cleanup() {
 		jiraIssueRepository.deleteAll();
-
 	}
 
 	@Test
@@ -195,8 +193,7 @@ public class DSRServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> defectDataListMap = dsrServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
-		assertThat("Total Defects value :", ((List<JiraIssue>) (defectDataListMap.get(TOTALBUGKEY))).size(),
-				equalTo(9));
+		assertThat("Total Defects value :", ((List<JiraIssue>) (defectDataListMap.get(TOTALBUGKEY))).size(), equalTo(9));
 	}
 
 	@Test
@@ -324,5 +321,4 @@ public class DSRServiceImplTest {
 	public void testGetQualifierType() {
 		assertThat("Kpi Name :", dsrServiceImpl.getQualifierType(), equalTo(KPICode.DEFECT_SEEPAGE_RATE.name()));
 	}
-
 }

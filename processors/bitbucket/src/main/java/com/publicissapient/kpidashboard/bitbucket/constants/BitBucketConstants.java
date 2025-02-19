@@ -83,6 +83,7 @@ public final class BitBucketConstants {
 
 	/** MergeRequests Constants */
 	public static final String RESP_TITLE = "title";
+
 	public static final String RESP_STATE = "state";
 	public static final String RESP_OPEN = "open";
 	public static final String RESP_CLOSED = "closed";
@@ -110,14 +111,13 @@ public final class BitBucketConstants {
 
 	/** The Constant Next. */
 	public static final String NEXT = "next";
+
 	public static final String LINKS = "links";
 	public static final String HTML_LINK = "html";
 	public static final String HREF = "href";
 	public static final String SELF = "self";
 
-	/**
-	 * Instantiates a new bit bucket constants.
-	 */
+	/** Instantiates a new bit bucket constants. */
 	private BitBucketConstants() {
 	}
 }

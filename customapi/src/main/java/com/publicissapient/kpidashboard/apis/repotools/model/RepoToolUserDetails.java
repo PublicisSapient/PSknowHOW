@@ -28,8 +28,10 @@ import lombok.Data;
 @Data
 public class RepoToolUserDetails {
 	private String email;
+
 	@JsonProperty("committer__email")
 	private String committerEmail;
+
 	private Double average;
 	private Long mergeRequests;
 	private Long linesChanged;
@@ -39,11 +41,15 @@ public class RepoToolUserDetails {
 	private Double userRevertRatePercentage;
 	private Double percentage;
 	private Long count;
+
 	@JsonProperty("mr_count")
 	private Long mrCount;
+
 	private Map<String, Double> mergeRequestsPT;
+
 	@JsonProperty("merge_requests")
 	private List<MergeRequests> mergeRequestList;
+
 	private int mergeRequestsNumber;
 	private double memberDefectMergeRequestPercentage;
 	private long addedLines;

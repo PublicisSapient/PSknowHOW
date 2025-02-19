@@ -85,5 +85,4 @@ public class AdditionalFilterCategoryFactory {
 	public List<AdditionalFilterCategory> getAdditionalFilterCategoryList() {
 		return additionalFilterCategoryList;
 	}
-
 }

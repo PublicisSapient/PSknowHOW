@@ -30,10 +30,7 @@ import com.publicissapient.kpidashboard.common.model.generic.ProcessorError;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-/**
- * Extension of Processor that stores current build server configuration.
- */
-
+/** Extension of Processor that stores current build server configuration. */
 @NoArgsConstructor
 public class JenkinsProcessor extends Processor {
 
@@ -45,7 +42,6 @@ public class JenkinsProcessor extends Processor {
 
 	/**
 	 * Provides buildProcessor processor.
-	 *
 	 *
 	 * @return the processor object with initial values
 	 */

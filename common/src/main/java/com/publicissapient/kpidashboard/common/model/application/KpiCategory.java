@@ -11,10 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Model class to represent kpi_category collection.
- */
-
+/** Model class to represent kpi_category collection. */
 @Data
 @Builder
 @Getter

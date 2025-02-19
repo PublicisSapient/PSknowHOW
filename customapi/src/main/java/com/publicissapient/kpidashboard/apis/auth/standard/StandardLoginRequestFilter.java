@@ -37,7 +37,6 @@ public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFi
 	CustomApiConfig customApiConfig;
 
 	/**
-	 * 
 	 * @param path
 	 * @param authManager
 	 * @param authenticationResultHandler
@@ -55,7 +54,7 @@ public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFi
 
 	/**
 	 * Attempts Authentication
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 * @return Authentication
@@ -63,7 +62,7 @@ public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFi
 	 */
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-			throws AuthenticationException {// NOSONAR //NOPMD
+			throws AuthenticationException { // NOSONAR //NOPMD
 
 		if (!request.getMethod().equals("POST")) {
 			throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
@@ -88,5 +87,4 @@ public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFi
 
 		return this.getAuthenticationManager().authenticate(authRequest);
 	}
-
 }

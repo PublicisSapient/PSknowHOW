@@ -17,5 +17,4 @@ public interface DeploymentRepositoryCustom {
 
 	List<Deployment> findDeploymentList(Map<String, List<String>> mapOfFilters, Set<ObjectId> projectBasicConfigIds,
 			String startDateUTC, String endDateUTC);
-
 }

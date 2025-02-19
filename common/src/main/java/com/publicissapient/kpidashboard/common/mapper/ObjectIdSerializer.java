@@ -26,13 +26,11 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
-/**
- * Serialize Mongo ObjectId's as Strings.
- */
+/** Serialize Mongo ObjectId's as Strings. */
 public class ObjectIdSerializer extends JsonSerializer<ObjectId> {
 	/**
 	 * Serializes @param value to String
-	 * 
+	 *
 	 * @param value
 	 * @param gen
 	 * @param serializers

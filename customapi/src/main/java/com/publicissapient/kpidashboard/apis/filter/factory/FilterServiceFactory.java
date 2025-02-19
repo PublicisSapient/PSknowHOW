@@ -16,15 +16,12 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.filter.factory;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +32,6 @@ import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServ
 
 /**
  * @author tauakram
- *
  */
 @Service
 public class FilterServiceFactory {
@@ -45,7 +41,6 @@ public class FilterServiceFactory {
 	private List<AccountHierarchyService<?, ?>> services;
 
 	/**
-	 *
 	 * @param type
 	 * @return AccountHierarchyService with mathching Qualifier Type
 	 * @throws ApplicationException
@@ -59,14 +54,11 @@ public class FilterServiceFactory {
 		return service;
 	}
 
-	/**
-	 * Initializes FilterServiceCache with QualifierType as Key
-	 */
+	/** Initializes FilterServiceCache with QualifierType as Key */
 	@PostConstruct
 	public void initMyServiceCache() {
 		for (AccountHierarchyService<?, ?> service : services) {
 			FILTER_SERVICE_CACHE.put(service.getQualifierType(), service);
 		}
 	}
-
 }

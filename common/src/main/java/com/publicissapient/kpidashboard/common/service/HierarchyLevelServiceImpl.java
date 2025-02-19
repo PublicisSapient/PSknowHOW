@@ -89,7 +89,6 @@ public class HierarchyLevelServiceImpl implements HierarchyLevelService {
 			hierarchyLevel.setLevel(1);
 		}
 		return hierarchyLevel;
-
 	}
 
 	private HierarchyLevel createSprintHierarchyLevel(List<HierarchyLevel> topHierarchies) {
@@ -104,7 +103,6 @@ public class HierarchyLevelServiceImpl implements HierarchyLevelService {
 			hierarchyLevel.setLevel(2);
 		}
 		return hierarchyLevel;
-
 	}
 
 	private HierarchyLevel createReleaseHierarchyLevel(List<HierarchyLevel> topHierarchies) {
@@ -119,6 +117,5 @@ public class HierarchyLevelServiceImpl implements HierarchyLevelService {
 			hierarchyLevel.setLevel(2);
 		}
 		return hierarchyLevel;
-
 	}
 }

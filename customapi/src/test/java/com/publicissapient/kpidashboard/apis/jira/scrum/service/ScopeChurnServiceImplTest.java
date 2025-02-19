@@ -21,8 +21,8 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -30,10 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.common.service.CommonService;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -46,6 +42,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
@@ -66,6 +65,7 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -185,12 +185,11 @@ public class ScopeChurnServiceImplTest {
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-        when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(false);
-        when(kpiDataProvider.fetchScopeChurnData(any(), any(), any())).thenReturn(resultListMap);
+		when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(false);
+		when(kpiDataProvider.fetchScopeChurnData(any(), any(), any())).thenReturn(resultListMap);
 
-        when(customApiSetting.getApplicationDetailedLogger()).thenReturn("on");
-		Map<String, Object> defectDataListMap = scopeChurnService.fetchKPIDataFromDb(leafNodeList, null, null,
-				kpiRequest);
+		when(customApiSetting.getApplicationDetailedLogger()).thenReturn("on");
+		Map<String, Object> defectDataListMap = scopeChurnService.fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
 		assertNotNull(defectDataListMap);
 	}
 
@@ -212,8 +211,7 @@ public class ScopeChurnServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(customApiSetting.getApplicationDetailedLogger()).thenReturn("on");
-		Map<String, Object> defectDataListMap = scopeChurnService.fetchKPIDataFromDb(leafNodeList, null, null,
-				kpiRequest);
+		Map<String, Object> defectDataListMap = scopeChurnService.fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
 		assertNotNull(defectDataListMap);
 	}
 
@@ -230,12 +228,12 @@ public class ScopeChurnServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(scopeChurnService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-        Map<String, Object> resultListMap = new HashMap<>();
-        resultListMap.put(SPRINT_DETAILS, sprintDetailsList);
-        resultListMap.put(TOTAL_ISSUE, totalIssueList);
-        resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, new ArrayList<>());
-        when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(true);
-        when(kpiDataCacheService.fetchScopeChurnData(any(), any(), any(), any())).thenReturn(resultListMap);
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(SPRINT_DETAILS, sprintDetailsList);
+		resultListMap.put(TOTAL_ISSUE, totalIssueList);
+		resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, new ArrayList<>());
+		when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(true);
+		when(kpiDataCacheService.fetchScopeChurnData(any(), any(), any(), any())).thenReturn(resultListMap);
 
 		try {
 			KpiElement kpiElement = scopeChurnService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -244,6 +242,7 @@ public class ScopeChurnServiceImplTest {
 		} catch (Exception exception) {
 		}
 	}
+
 	@Test
 	public void testGetData_BadScenario() throws ApplicationException {
 
@@ -258,12 +257,12 @@ public class ScopeChurnServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(scopeChurnService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 
-        Map<String, Object> resultListMap = new HashMap<>();
-        resultListMap.put(SPRINT_DETAILS, sprintDetailsList);
-        resultListMap.put(TOTAL_ISSUE, new ArrayList<>());
-        resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, new ArrayList<>());
-        when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(true);
-        when(kpiDataCacheService.fetchScopeChurnData(any(), any(), any(), any())).thenReturn(resultListMap);
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(SPRINT_DETAILS, sprintDetailsList);
+		resultListMap.put(TOTAL_ISSUE, new ArrayList<>());
+		resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, new ArrayList<>());
+		when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(true);
+		when(kpiDataCacheService.fetchScopeChurnData(any(), any(), any(), any())).thenReturn(resultListMap);
 		try {
 			KpiElement kpiElement = scopeChurnService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -286,12 +285,12 @@ public class ScopeChurnServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(scopeChurnService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 
-        Map<String, Object> resultListMap = new HashMap<>();
-        resultListMap.put(SPRINT_DETAILS, sprintDetailsList);
-        resultListMap.put(TOTAL_ISSUE, totalIssueList);
-        resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, jiraIssueCustomHistoryList);
-        when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(true);
-        when(kpiDataCacheService.fetchScopeChurnData(any(), any(), any(), any())).thenReturn(resultListMap);
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(SPRINT_DETAILS, sprintDetailsList);
+		resultListMap.put(TOTAL_ISSUE, totalIssueList);
+		resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, jiraIssueCustomHistoryList);
+		when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(true);
+		when(kpiDataCacheService.fetchScopeChurnData(any(), any(), any(), any())).thenReturn(resultListMap);
 
 		try {
 			KpiElement kpiElement = scopeChurnService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),

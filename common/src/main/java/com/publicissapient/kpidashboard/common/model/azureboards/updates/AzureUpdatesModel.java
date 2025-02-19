@@ -32,13 +32,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "count", "value" })
+@JsonPropertyOrder({"count", "value"})
 public class AzureUpdatesModel {
 
 	@JsonProperty("count")
 	private Integer count;
+
 	@JsonProperty("value")
 	private List<Value> value = null;
+
 	@JsonIgnore
 	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -77,5 +79,4 @@ public class AzureUpdatesModel {
 		return new ToStringBuilder(this).append("count", count).append("value", value)
 				.append("additionalProperties", additionalProperties).toString();
 	}
-
 }

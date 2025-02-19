@@ -226,7 +226,6 @@ public class JiraIssueCustomHistoryRepositoryImplTest {
 		statusUpdationLog.add(f3);
 		mockJiraJiraIssueCustomHistory5 = createFeatureHistory(projectID, storyID, storyType, statusUpdationLog);
 		mockJiraJiraIssueCustomHistory5.setDefectStoryID(defectStoryID);
-
 	}
 
 	@After
@@ -264,8 +263,7 @@ public class JiraIssueCustomHistoryRepositoryImplTest {
 		jiraIssueCustomHistory.setStoryID(testStoryId);
 		jiraIssueCustomHistory.setBasicProjectConfigId("676987987897");
 		jiraIssueCustomHistoryList.add(jiraIssueCustomHistory);
-		assertEquals("TestStory1", testStoryId,
-				jiraIssueCustomHistoryList.get(0).getStoryID());
+		assertEquals("TestStory1", testStoryId, jiraIssueCustomHistoryList.get(0).getStoryID());
 	}
 
 	private JiraIssueCustomHistory createFeatureHistory(String projectID, String storyID, String storyType,
@@ -285,14 +283,12 @@ public class JiraIssueCustomHistoryRepositoryImplTest {
 		jiraHistoryChangeLog.setChangedTo(fromStatus);
 		jiraHistoryChangeLog.setChangedFrom(status);
 		return jiraHistoryChangeLog;
-
 	}
 
 	@Test
 	public void testFindFeatureCustomHistoryStoryProjectWise() {
 		// Mock data
-		Map<String, List<String>> mapOfFilters = Collections.singletonMap("projectKey",
-				Arrays.asList("PROJ1", "PROJ2"));
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("projectKey", Arrays.asList("PROJ1", "PROJ2"));
 		Map<String, Map<String, Object>> uniqueProjectMap = Collections.singletonMap("PROJ1",
 				Collections.singletonMap("storyType", Arrays.asList(Pattern.compile("Story"))));
 
@@ -305,21 +301,18 @@ public class JiraIssueCustomHistoryRepositoryImplTest {
 		List<JiraIssueCustomHistory> result = repository.findFeatureCustomHistoryStoryProjectWise(mapOfFilters,
 				uniqueProjectMap, Sort.Direction.ASC);
 		verify(operations, times(1)).aggregate(any(), eq(JiraIssueCustomHistory.class), any());
-
 	}
 
 	@Test
 	public void testFindIssuesByCreatedDateAndType() {
 		// Mock data
-		Map<String, List<String>> mapOfFilters = Collections.singletonMap("projectKey",
-				Arrays.asList("PROJ1", "PROJ2"));
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("projectKey", Arrays.asList("PROJ1", "PROJ2"));
 		Map<String, Map<String, Object>> uniqueProjectMap = Collections.singletonMap("PROJ1",
 				Collections.singletonMap("storyType", Arrays.asList(Pattern.compile("Story"))));
 		String dateFrom = "2022-01-01";
 		String dateTo = "2022-01-10";
 
-		when(operations.find(any(Query.class), eq(JiraIssueCustomHistory.class)))
-				.thenReturn(Collections.emptyList());
+		when(operations.find(any(Query.class), eq(JiraIssueCustomHistory.class))).thenReturn(Collections.emptyList());
 
 		// Execute the method
 		repository.findIssuesByCreatedDateAndType(mapOfFilters, uniqueProjectMap, dateFrom, dateTo);
@@ -330,12 +323,10 @@ public class JiraIssueCustomHistoryRepositoryImplTest {
 	@Test
 	public void testFindByFilterAndFromStatusMap() {
 		// Mock data
-		Map<String, List<String>> mapOfFilters = Collections.singletonMap("projectKey",
-				Arrays.asList("PROJ1", "PROJ2"));
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("projectKey", Arrays.asList("PROJ1", "PROJ2"));
 		Map<String, Map<String, Object>> uniqueProjectMap = Collections.singletonMap("PROJ1",
 				Collections.singletonMap("storyType", Arrays.asList(Pattern.compile("Story"))));
-		when(operations.find(any(Query.class), eq(JiraIssueCustomHistory.class)))
-				.thenReturn(Collections.emptyList());
+		when(operations.find(any(Query.class), eq(JiraIssueCustomHistory.class))).thenReturn(Collections.emptyList());
 
 		// Execute the method
 		repository.findByFilterAndFromStatusMap(mapOfFilters, uniqueProjectMap);
@@ -350,8 +341,7 @@ public class JiraIssueCustomHistoryRepositoryImplTest {
 		List<Pattern> releaseList = Arrays.asList(Pattern.compile("Release1"), Pattern.compile("Release2"));
 
 		// Mock the query result
-		when(operations.find(any(Query.class), eq(JiraIssueCustomHistory.class)))
-				.thenReturn(Collections.emptyList());
+		when(operations.find(any(Query.class), eq(JiraIssueCustomHistory.class))).thenReturn(Collections.emptyList());
 
 		// Execute the method
 		repository.findByFilterAndFromReleaseMap(basicProjectConfigId, releaseList);
@@ -363,20 +353,17 @@ public class JiraIssueCustomHistoryRepositoryImplTest {
 	@Test
 	public void testFindByFilterAndFromStatusMapWithDateFilter() {
 		// Mock data
-		Map<String, List<String>> mapOfFilters = Collections.singletonMap("projectKey",
-				Arrays.asList("PROJ1", "PROJ2"));
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("projectKey", Arrays.asList("PROJ1", "PROJ2"));
 		Map<String, Map<String, Object>> uniqueProjectMap = Collections.singletonMap("PROJ1",
 				Collections.singletonMap("storyType", Arrays.asList(Pattern.compile("Story"))));
 		String dateFrom = "2022-01-01";
 		String dateTo = "2022-01-10";
 
 		// Mock the query result
-		when(operations.find(any(Query.class), eq(JiraIssueCustomHistory.class)))
-				.thenReturn(Collections.emptyList());
+		when(operations.find(any(Query.class), eq(JiraIssueCustomHistory.class))).thenReturn(Collections.emptyList());
 
 		// Execute the method
-		repository.findByFilterAndFromStatusMapWithDateFilter(mapOfFilters,
-				uniqueProjectMap, dateFrom, dateTo);
+		repository.findByFilterAndFromStatusMapWithDateFilter(mapOfFilters, uniqueProjectMap, dateFrom, dateTo);
 
 		// Assertions or verifications can be added based on the expected behavior.
 		verify(operations, times(1)).find(any(Query.class), eq(JiraIssueCustomHistory.class));
@@ -393,8 +380,8 @@ public class JiraIssueCustomHistoryRepositoryImplTest {
 		issueHistoryMappedData.setId(groupFields);
 		issueHistoryMappedData.setHistoryDetails(Arrays.asList(KanbanIssueHistory.builder().buildNumber("123")
 				.status("SUCESS").type("DEPLOY").activityDate(LocalDateTime.now().toString()).build()));
-		issueHistoryMappedData.setStatusUpdationLog(Arrays.asList(JiraHistoryChangeLog.builder().changedTo("end")
-				.changedFrom("start").updatedOn(LocalDateTime.now()).build()));
+		issueHistoryMappedData.setStatusUpdationLog(Arrays.asList(
+				JiraHistoryChangeLog.builder().changedTo("end").changedFrom("start").updatedOn(LocalDateTime.now()).build()));
 		return Arrays.asList(issueHistoryMappedData);
 	}
 }

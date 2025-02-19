@@ -18,14 +18,12 @@
 
 package com.publicissapient.kpidashboard.sonar.processor;
 
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestOperations;
-
 
 @ExtendWith(SpringExtension.class)
 public class SonarRestOperationsFactoryTest {
@@ -36,6 +34,6 @@ public class SonarRestOperationsFactoryTest {
 	@Test
 	public void get() {
 		RestOperations restOperations = sonarRestOperationsFactory.getTypeInstance();
-        Assertions.assertInstanceOf(RestOperations.class, restOperations);
+		Assertions.assertInstanceOf(RestOperations.class, restOperations);
 	}
 }

@@ -75,5 +75,4 @@ public class KeyValueLoggingConditionTest {
 
 		assertFalse(condition.matches(context, metadata));
 	}
-
 }

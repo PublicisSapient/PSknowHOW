@@ -18,14 +18,9 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -44,9 +39,7 @@ import org.springframework.stereotype.Service;
 import com.publicissapient.kpidashboard.common.model.jira.IssueHistoryMappedData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 
-/**
- * The Class FeatureCustomHistoryRepositoryImpl.
- */
+/** The Class FeatureCustomHistoryRepositoryImpl. */
 @Service
 public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCustomQueryRepository {
 
@@ -66,6 +59,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	public static final String URL = "url";
 	public static final String DESCRIPTION = "description";
 	public static final String ESTIMATE = "estimate";
+
 	/** The operations. */
 	@Autowired
 	private MongoOperations operations;
@@ -73,7 +67,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<JiraIssueCustomHistory> findFeatureCustomHistoryStoryProjectWise(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap , Sort.Direction sortMethod) {
+			Map<String, Map<String, Object>> uniqueProjectMap, Sort.Direction sortMethod) {
 
 		List<AggregationOperation> list = new ArrayList<>();
 		Criteria criteria = new Criteria();
@@ -93,8 +87,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 			projectCriteriaList.add(projectCriteria);
 		});
 
-		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaAggregatedAtProjectLevel = new Criteria().orOperator(projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaAggregatedForFirstMatchStage = new Criteria().andOperator(criteria,
 				criteriaAggregatedAtProjectLevel);
 
@@ -133,7 +126,6 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 			resultList.add(history);
 		});
 		return resultList;
-
 	}
 
 	/**
@@ -169,8 +161,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 			projectCriteriaList.add(projectCriteria);
 		});
 
-		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaAggregatedAtProjectLevel = new Criteria().orOperator(projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		Query query = new Query(criteriaProjectLevelAdded);
 		query.fields().include(STORY_ID);
@@ -182,7 +173,6 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		query.fields().include(DESCRIPTION);
 		return operations.find(query, JiraIssueCustomHistory.class);
 	}
-
 
 	@Override
 	public List<JiraIssueCustomHistory> findByFilterAndFromStatusMap(Map<String, List<String>> mapOfFilters,
@@ -216,9 +206,8 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		query.fields().include(STORY_ID);
 		query.fields().include(BASIC_PROJ_CONF_ID);
 		query.fields().include(STATUS_CHANGE_LOG);
-		//projectID,storyID,basicProjectConfigId,statusUpdationLog
+		// projectID,storyID,basicProjectConfigId,statusUpdationLog
 		return operations.find(query, JiraIssueCustomHistory.class);
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -235,8 +224,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		projectCriteriaList.add(projectCriteria1);
 		projectCriteriaList.add(projectCriteria2);
 
-		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaAggregatedAtProjectLevel = new Criteria().orOperator(projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		Query query = new Query(criteriaProjectLevelAdded);
 		query.fields().include(STORY_ID);
@@ -244,14 +232,12 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		query.fields().include(STATUS_CHANGE_LOG);
 		query.fields().include(VERSION_CHANGE_LOG);
 		return operations.find(query, JiraIssueCustomHistory.class);
-
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<JiraIssueCustomHistory> findByFilterAndFromStatusMapWithDateFilter(
-			Map<String, List<String>> mapOfFilters, Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom,
-			String dateTo) {
+	public List<JiraIssueCustomHistory> findByFilterAndFromStatusMapWithDateFilter(Map<String, List<String>> mapOfFilters,
+			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo) {
 		Criteria criteria = new Criteria();
 
 		DateTime startDate = new DateTime(new StringBuilder(dateFrom).append(START_TIME).toString(), DateTimeZone.UTC);
@@ -297,5 +283,4 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		query.fields().include(ESTIMATE);
 		return operations.find(query, JiraIssueCustomHistory.class);
 	}
-
 }
