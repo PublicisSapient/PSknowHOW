@@ -72,7 +72,7 @@ public class HappinessIndexServiceImplTest {
 
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-	private static final String SPRINT_DETAILS = "sprints";
+	private static final String SPRINT_DETAILS = "sprintDetails";
 	private static final String HAPPINESS_INDEX_DETAILS = "happinessIndexDetails";
 	@Mock
 	CacheService cacheService;
