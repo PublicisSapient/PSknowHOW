@@ -24,8 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.bson.types.ObjectId;
@@ -52,6 +50,7 @@ import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.helper.ReaderRetryHelper;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
+import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.service.FetchEpicData;
 import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
@@ -102,14 +101,13 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	@Value("#{jobParameters['processorId']}")
 	private String processorId;
 
-    public void initializeReader(String projectId) {
-        pageSize = jiraProcessorConfig.getPageSize();
-        projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-        retryHelper = new ReaderRetryHelper();
-        krb5Client = jiraClientService.getKerberosClientMap(projectId);
-        client = jiraClientService.getRestClientMap(projectId);
-
-    }
+	public void initializeReader(String projectId) {
+		pageSize = jiraProcessorConfig.getPageSize();
+		projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+		retryHelper = new ReaderRetryHelper();
+		krb5Client = jiraClientService.getKerberosClientMap(projectId);
+		client = jiraClientService.getRestClientMap(projectId);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -117,8 +115,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	 * @see org.springframework.batch.item.ItemReader#read()
 	 */
 	@Override
-	public ReadData read() throws Exception, UnexpectedInputException, ParseException,
-			NonTransientResourceException {
+	public ReadData read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
 
 		if (null == projectConfFieldMapping) {
 			log.info("Gathering data to fetch jira issues for the project : {}", projectId);
@@ -126,8 +123,8 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 		}
 		ReadData readData = null;
 		if (!fetchLastIssue) {
-			if (boardIterator == null
-					&& CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
+			if (boardIterator == null &&
+					CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
 				boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
 			}
 			if (checkIssueIterator()) {
@@ -161,8 +158,8 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 				readData.setProcessorId(new ObjectId(processorId));
 			}
 
-			if ((null == projectConfFieldMapping)
-					|| !boardIterator.hasNext() && (issueIterator != null && !issueIterator.hasNext() && boardIssueSize < pageSize)) {
+			if ((null == projectConfFieldMapping) || !boardIterator.hasNext() &&
+					(issueIterator != null && !issueIterator.hasNext() && boardIssueSize < pageSize)) {
 				log.info("Data has been fetched for the project : {}", getProjectName());
 				fetchLastIssue = true;
 				return readData;
@@ -186,8 +183,8 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	private void fetchIssues(ProcessorJiraRestClient client) throws Exception {
 
 		ReaderRetryHelper.RetryableOperation<Void> retryableOperation = () -> {
-			log.info("Reading issues for project: {} boardid: {}, page No: {}",
-					projectConfFieldMapping.getProjectName(), boardId, pageNumber / pageSize);
+			log.info("Reading issues for project: {} boardid: {}, page No: {}", projectConfFieldMapping.getProjectName(),
+					boardId, pageNumber / pageSize);
 
 			String deltaDate = getDeltaDateFromTraceLog();
 
@@ -201,8 +198,8 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 		try {
 			retryHelper.executeWithRetry(retryableOperation);
 		} catch (Exception e) {
-			log.error("Exception while fetching issues for project: {} boardid: {}, page No: {}",
-					getProjectName(), boardId, pageNumber / pageSize);
+			log.error("Exception while fetching issues for project: {} boardid: {}, page No: {}", getProjectName(), boardId,
+					pageNumber / pageSize);
 			log.error("All retries attempts are failed");
 
 			throw e;
@@ -214,13 +211,13 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 				LocalDateTime.now().minusMonths(jiraProcessorConfig.getPrevMonthCountToFetchData()),
 				JiraConstants.QUERYDATEFORMAT);
 
-		if (MapUtils.isEmpty(projectBoardWiseDeltaDate) || MapUtils
-				.isEmpty(projectBoardWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
+		if (MapUtils.isEmpty(projectBoardWiseDeltaDate) ||
+				MapUtils.isEmpty(projectBoardWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
 			setLastSuccessfulRunFromTraceLog(deltaDate);
 		}
 
-		if (MapUtils.isNotEmpty(projectBoardWiseDeltaDate) && MapUtils.isNotEmpty(
-				projectBoardWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
+		if (MapUtils.isNotEmpty(projectBoardWiseDeltaDate) && MapUtils
+				.isNotEmpty(projectBoardWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
 			deltaDate = updateDeltaDateFromBoardWiseData(deltaDate);
 		}
 
@@ -228,8 +225,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	}
 
 	private void setLastSuccessfulRunFromTraceLog(String deltaDate) {
-		log.info("fetching project status from trace log for project: {} board id :{}",
-				getProjectName(), boardId);
+		log.info("fetching project status from trace log for project: {} board id :{}", getProjectName(), boardId);
 
 		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
 				.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(JiraConstants.JIRA,
@@ -260,8 +256,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 
 			projectBoardWiseDeltaDate.put(projectConfFieldMapping.getBasicProjectConfigId().toString(), boardWiseDate);
 		} else {
-			log.info("project: {} not found in trace log so data will be fetched from beginning",
-					getProjectName());
+			log.info("project: {} not found in trace log so data will be fetched from beginning", getProjectName());
 			Map<String, String> boardWiseDate = new HashMap<>();
 			if (StringUtils.isEmpty(boardId)) {
 				boardWiseDate.put(boardId, deltaDate);
@@ -302,12 +297,10 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 		try {
 			return retryHelper.executeWithRetry(retryableOperation);
 		} catch (Exception e) {
-			log.error("Exception while fetching epics for project: {} boardid: {}",
-					getProjectName(), boardId);
+			log.error("Exception while fetching epics for project: {} boardid: {}", getProjectName(), boardId);
 			log.error("All retries attempts are failed");
 			// Re-throw the exception to allow for retries
 			throw e;
 		}
 	}
-
 }

@@ -116,8 +116,7 @@ public class DataCleanUpServiceFactoryTest {
 
 	@Test
 	public void getService_AzurePipeline() {
-		ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory
-				.getService(ProcessorConstants.AZUREPIPELINE);
+		ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory.getService(ProcessorConstants.AZUREPIPELINE);
 		assertTrue(dataCleanUpService instanceof BuildDataCleanUpService);
 	}
 
@@ -150,5 +149,4 @@ public class DataCleanUpServiceFactoryTest {
 		ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory.getService(ProcessorConstants.JIRA_TEST);
 		assertTrue(dataCleanUpService instanceof ZephyrDataCleanUpService);
 	}
-
 }

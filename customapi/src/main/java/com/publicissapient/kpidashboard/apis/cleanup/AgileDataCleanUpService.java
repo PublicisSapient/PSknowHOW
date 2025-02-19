@@ -20,13 +20,12 @@ package com.publicissapient.kpidashboard.apis.cleanup;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
-import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorType;
@@ -45,6 +44,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRe
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -108,8 +108,8 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 			if (flag) {
 				levelList.add(hierarchyLevel.getHierarchyLevelId());
 			}
-			if (StringUtils.isNotEmpty(hierarchyLevel.getHierarchyLevelId()) && hierarchyLevel.getHierarchyLevelId()
-					.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
+			if (StringUtils.isNotEmpty(hierarchyLevel.getHierarchyLevelId()) &&
+					hierarchyLevel.getHierarchyLevelId().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
 				flag = true;
 			}
 		}
@@ -129,7 +129,6 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 		deleteReleaseInfo(tool);
 		deleteSprintDetailsData(tool);
 		clearCache();
-
 	}
 
 	private ProjectBasicConfig getProjectBasicConfig(String basicProjectConfigId) {
@@ -149,8 +148,8 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 				List<String> levelList = new ArrayList<>();
 				List<HierarchyLevel> accountHierarchyList = cacheService.getFullKanbanHierarchyLevel();
 				getLevelIds(flag, levelList, accountHierarchyList);
-				kanbanAccountHierarchyRepository
-						.deleteByBasicProjectConfigIdAndLabelNameIn(tool.getBasicProjectConfigId(), levelList);
+				kanbanAccountHierarchyRepository.deleteByBasicProjectConfigIdAndLabelNameIn(tool.getBasicProjectConfigId(),
+						levelList);
 
 			} else {
 				jiraIssueRepository.deleteByBasicProjectConfigId(basicProjectConfigId);

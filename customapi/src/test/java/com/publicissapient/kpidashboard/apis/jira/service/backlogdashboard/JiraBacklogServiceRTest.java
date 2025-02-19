@@ -20,8 +20,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
@@ -33,10 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,11 +47,13 @@ import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.factory.JiraNonTrendKPIServiceFactory;
 import com.publicissapient.kpidashboard.apis.jira.scrum.service.FlowLoadServiceImpl;
@@ -65,9 +61,11 @@ import com.publicissapient.kpidashboard.apis.jira.service.NonTrendKPIService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -96,9 +94,11 @@ public class JiraBacklogServiceRTest {
 	private CacheService cacheService;
 	@Mock
 	private FlowLoadServiceImpl flowLoadService;
+
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<JiraBacklogKPIService> services;
+
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private String[] projectKey;
 	private List<HierarchyLevel> hierarchyLevels = new ArrayList<>();
@@ -154,14 +154,11 @@ public class JiraBacklogServiceRTest {
 
 		try (MockedStatic<JiraNonTrendKPIServiceFactory> utilities = Mockito
 				.mockStatic(JiraNonTrendKPIServiceFactory.class)) {
-			utilities.when((MockedStatic.Verification) JiraNonTrendKPIServiceFactory
-					.getJiraKPIService(KPICode.FLOW_LOAD.name())).thenReturn(flowLoadService);
+			utilities
+					.when((MockedStatic.Verification) JiraNonTrendKPIServiceFactory.getJiraKPIService(KPICode.FLOW_LOAD.name()))
+					.thenReturn(flowLoadService);
 			when(flowLoadService.getKpiData(any(), any(), any())).thenReturn(kpiRequest.getKpiList().get(0));
-
 		}
-
-
-
 	}
 
 	@Test(expected = Exception.class)
@@ -171,15 +168,17 @@ public class JiraBacklogServiceRTest {
 		kpiRequest.setSprintIncluded(null);
 
 		jiraServiceR.process(kpiRequest);
-
 	}
 
 	@Test
 	public void TestProcess_pickFromCache() throws Exception {
-		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
-		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean()))
+				.thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean()))
+				.thenReturn(kpiRequest.getIds());
 		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
-		when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
+		when(cacheService.getFromApplicationCache(
+						any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
 				.thenReturn(new ArrayList<KpiElement>());
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
@@ -188,12 +187,13 @@ public class JiraBacklogServiceRTest {
 
 	@Test
 	public void TestProcess() throws Exception {
-		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean()))
+				.thenReturn(kpiRequest.getIds());
 		jiraServiceCache.put(KPICode.FLOW_LOAD.name(), flowLoadService);
 		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
-
+		assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
 	}
 
 	@Test
@@ -202,9 +202,9 @@ public class JiraBacklogServiceRTest {
 		jiraServiceCache.put(KPICode.FLOW_LOAD.name(), flowLoadService);
 		when(flowLoadService.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+		assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
 	}
-
 
 	@Test
 	public void TestProcess_NPException() throws Exception {
@@ -212,9 +212,9 @@ public class JiraBacklogServiceRTest {
 		jiraServiceCache.put(KPICode.FLOW_LOAD.name(), flowLoadService);
 		when(flowLoadService.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+		assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
 	}
-
 
 	@Test
 	public void processWithExposedApiToken() throws EntityNotFoundException {
@@ -228,7 +228,9 @@ public class JiraBacklogServiceRTest {
 	public void testGetFutureSprintsList() throws NoSuchFieldException, IllegalAccessException {
 		// Creating test data
 		List<SprintDetails> futureSprintDetails = new ArrayList<>();
-		futureSprintDetails.add(new SprintDetails("s1","sone","1","future",String.valueOf(LocalDate.of(2024, 3, 8)),String.valueOf(LocalDate.of(2024, 4, 8)),"",null,null,null,null,null,null,null,null,null,null,null));
+		futureSprintDetails.add(new SprintDetails("s1", "sone", "1", "future", String.valueOf(LocalDate.of(2024, 3, 8)),
+				String.valueOf(LocalDate.of(2024, 4, 8)), "", null, null, null, null, null, null, null, null, null, null,
+				null));
 
 		// Using reflection to set the private field futureSprintDetails
 		Field field = JiraBacklogServiceR.class.getDeclaredField("futureSprintDetails");
@@ -243,17 +245,17 @@ public class JiraBacklogServiceRTest {
 	}
 
 	@Test
-	public void getJiraIssueReleaseForProject(){
+	public void getJiraIssueReleaseForProject() {
 		jiraServiceR.getJiraIssueReleaseForProject();
 	}
 
 	@Test
-	public void getJiraIssuesForCurrentSprint(){
+	public void getJiraIssuesForCurrentSprint() {
 		jiraServiceR.getJiraIssuesForCurrentSprint();
 	}
 
 	@Test
-	public void getJiraIssuesCustomHistoryForCurrentSprint(){
+	public void getJiraIssuesCustomHistoryForCurrentSprint() {
 		jiraServiceR.getJiraIssuesCustomHistoryForCurrentSprint();
 	}
 
@@ -263,7 +265,7 @@ public class JiraBacklogServiceRTest {
 
 		addKpiElement(kpiList, KPICode.FLOW_LOAD.getKpiId(), KPICode.FLOW_LOAD.name(), "Backlog", "");
 		kpiRequest.setLevel(level);
-		kpiRequest.setIds(new String[] { "Scrum Project_6335363749794a18e8a4479b" });
+		kpiRequest.setIds(new String[]{"Scrum Project_6335363749794a18e8a4479b"});
 		kpiRequest.setKpiList(kpiList);
 		kpiRequest.setRequestTrackerId();
 		kpiRequest.setLabel("project");
@@ -274,8 +276,7 @@ public class JiraBacklogServiceRTest {
 		return kpiRequest;
 	}
 
-	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category,
-			String kpiUnit) {
+	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category, String kpiUnit) {
 		KpiElement kpiElement = new KpiElement();
 		kpiElement.setKpiId(kpiId);
 		kpiElement.setKpiName(kpiName);
@@ -287,5 +288,4 @@ public class JiraBacklogServiceRTest {
 		kpiElement.setChartType("gaugeChart");
 		kpiList.add(kpiElement);
 	}
-
 }

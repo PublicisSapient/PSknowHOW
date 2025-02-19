@@ -38,7 +38,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author vijkumar18
- *
  */
 @Slf4j
 public class ApiAuditLogging extends DispatcherServlet {
@@ -97,7 +96,6 @@ public class ApiAuditLogging extends DispatcherServlet {
 			headers.put(headerName, request.getHeader(headerName));
 		}
 		return headers;
-
 	}
 
 	private Map<String, Object> getResponsetHeaders(ContentCachingResponseWrapper response) {

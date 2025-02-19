@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.bson.types.ObjectId;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 
 public interface ProjectHierarchyService {
@@ -43,4 +44,6 @@ public interface ProjectHierarchyService {
 	List<ProjectHierarchy> findAll();
 
 	void deleteByBasicProjectConfigId(ObjectId projectBasicConfigId);
+
+	void appendProjectName(List<ProjectBasicConfig> projectBasicConfigList, List<ProjectHierarchy> projectHierarchyList);
 }

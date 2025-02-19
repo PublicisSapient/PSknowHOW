@@ -35,7 +35,6 @@ import lombok.Setter;
  * @author narsingh9 mapping class of {@link ProjectToolConfig} and
  *         {@link Connection}
  */
-
 @Data
 @Getter
 @Setter

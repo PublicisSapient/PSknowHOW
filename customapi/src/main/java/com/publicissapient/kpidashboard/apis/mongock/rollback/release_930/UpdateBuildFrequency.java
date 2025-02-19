@@ -54,7 +54,6 @@ public class UpdateBuildFrequency {
 		mongoTemplate.updateFirst(getQueryByKpiId(), update, "kpi_master");
 	}
 
-
 	private Query getQueryByKpiId() {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("kpiId").is(KPI_ID));

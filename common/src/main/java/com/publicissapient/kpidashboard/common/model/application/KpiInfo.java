@@ -22,9 +22,7 @@ import java.util.List;
 import lombok.Data;
 
 /**
- *
  * @author yasbano
- *
  */
 @Data
 public class KpiInfo {
@@ -33,5 +31,4 @@ public class KpiInfo {
 	private List<KpiFormula> formula;
 	private List<KpiDetail> details;
 	private List<KpiMaturityLevel> maturityLevels;
-
 }

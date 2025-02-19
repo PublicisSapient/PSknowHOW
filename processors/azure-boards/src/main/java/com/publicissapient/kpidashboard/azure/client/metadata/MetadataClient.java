@@ -20,16 +20,14 @@ package com.publicissapient.kpidashboard.azure.client.metadata;
 
 import com.publicissapient.kpidashboard.azure.model.ProjectConfFieldMapping;
 
-/**
- * The Interface MetadataClient.
- */
+/** The Interface MetadataClient. */
 public interface MetadataClient {
 
 	/**
 	 * Process metadata.
 	 *
 	 * @param projectConfig
-	 *            the project config
+	 *          the project config
 	 */
 	boolean processMetadata(ProjectConfFieldMapping projectConfig);
 }

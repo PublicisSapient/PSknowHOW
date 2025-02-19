@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 @Service
 public final class AzureConstants {
 
-	public static final Set<String> ISSUE_FIELD_SET = new HashSet<>();// NOSONAR
+	public static final Set<String> ISSUE_FIELD_SET = new HashSet<>(); // NOSONAR
 	public static final String LABELS = "Labels";
 	public static final String CUSTOM_FIELD = "CustomField";
 	public static final String ISSUE_TYPE = "IssueType";
@@ -38,7 +38,6 @@ public final class AzureConstants {
 	public static final String STORY_POINTS = "StoryPoints";
 	public static final String SETTING_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 	public static final String FALSE = "False";
-	public static final String COMBINE_IDS_SYMBOL = "_";
 
 	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 	public static final String JIRA_ISSUE_CHANGE_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSS";
@@ -76,7 +75,5 @@ public final class AzureConstants {
 	}
 
 	private AzureConstants() {
-
 	}
-
 }

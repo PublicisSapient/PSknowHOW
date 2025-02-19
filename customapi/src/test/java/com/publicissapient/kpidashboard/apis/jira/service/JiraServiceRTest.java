@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -62,6 +61,7 @@ import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.factory.JiraKPIServiceFactory;
 import com.publicissapient.kpidashboard.apis.jira.scrum.service.RCAServiceImpl;
@@ -79,11 +79,8 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 /**
- *
  * @author tauakram
- *
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class JiraServiceRTest {
 	private static final String TESTJIRA = "TEST_JIRA";
@@ -106,9 +103,11 @@ public class JiraServiceRTest {
 	private RCAServiceImpl rcaServiceImpl;
 	@Mock
 	ConfigHelperService configHelperService;
+
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<JiraKPIService> services;
+
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
 	@Mock
@@ -174,14 +173,10 @@ public class JiraServiceRTest {
 		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
-
-
-
 	}
 
 	@After
 	public void cleanup() {
-
 	}
 
 	@Test(expected = Exception.class)
@@ -193,14 +188,13 @@ public class JiraServiceRTest {
 		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenThrow(ApplicationException.class);
 
 		jiraServiceR.process(kpiRequest);
-
 	}
 
 	@Test
 	public void TestProcess_pickFromCache() throws Exception {
 
 		KpiRequest kpiRequest = createKpiRequest(4);
-		String[] exampleStringList = { "exampleElement", "exampleElement" };
+		String[] exampleStringList = {"exampleElement", "exampleElement"};
 		// when(cacheService.getFromApplicationCache(eq(exampleStringList),
 		// eq(KPISource.JIRA.name()), eq(1), anyList()))
 		// .thenReturn(new ArrayList<KpiElement>());
@@ -212,7 +206,6 @@ public class JiraServiceRTest {
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
 		assertEquals(1, resultList.size());
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -228,39 +221,41 @@ public class JiraServiceRTest {
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 	}
 
-
-
 	@Test
 	public void testProcess() throws Exception {
 		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		KpiRequest kpiRequest = createKpiRequest(5);
-		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean()))
+				.thenReturn(kpiRequest.getIds());
 		when(service.getKpiData(any(), any(), any())).thenReturn(kpiRequest.getKpiList().get(0));
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
+		assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
 	}
 
 	@Test
 	public void testProcess_Application() throws Exception {
 		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		KpiRequest kpiRequest = createKpiRequest(5);
-		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean()))
+				.thenReturn(kpiRequest.getIds());
 		when(service.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+		assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
 	}
-
 
 	@Test
 	public void testProcess_NullPointer() throws Exception {
 		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		KpiRequest kpiRequest = createKpiRequest(5);
-		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean()))
+				.thenReturn(kpiRequest.getIds());
 		when(service.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+		assertThat(
+				"Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
 	}
-
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -280,22 +275,18 @@ public class JiraServiceRTest {
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
 		resultList.forEach(k -> {
-
 			KPICode kpi = KPICode.getKPI(k.getKpiId());
 
 			switch (kpi) {
+				case DEFECT_COUNT_BY_RCA :
+					assertThat("Kpi Name :", k.getKpiName(), equalTo("DEFECT_COUNT_BY_RCA"));
 
-			case DEFECT_COUNT_BY_RCA:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("DEFECT_COUNT_BY_RCA"));
+					break;
 
-				break;
-
-			default:
-				break;
+				default :
+					break;
 			}
-
 		});
-
 	}
 
 	private KpiRequest createKpiRequest(int level) {
@@ -304,7 +295,7 @@ public class JiraServiceRTest {
 
 		addKpiElement(kpiList, KPICode.TEST_JIRA.getKpiId(), KPICode.TEST_JIRA.name(), "Category One", "");
 		kpiRequest.setLevel(level);
-		kpiRequest.setIds(new String[] { "Scrum Project_6335363749794a18e8a4479b" });
+		kpiRequest.setIds(new String[]{"Scrum Project_6335363749794a18e8a4479b"});
 		kpiRequest.setKpiList(kpiList);
 		kpiRequest.setRequestTrackerId();
 		kpiRequest.setLabel("PROJECT");
@@ -315,8 +306,7 @@ public class JiraServiceRTest {
 		return kpiRequest;
 	}
 
-	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category,
-			String kpiUnit) {
+	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category, String kpiUnit) {
 		KpiElement kpiElement = new KpiElement();
 		kpiElement.setKpiId(kpiId);
 		kpiElement.setKpiName(kpiName);
@@ -346,7 +336,7 @@ public class JiraServiceRTest {
 
 		kpiRequest.setLevel(level);
 		kpiRequest.setLabel("PROJECT");
-		kpiRequest.setIds(new String[] { "Scrum Project_6335363749794a18e8a4479b" });
+		kpiRequest.setIds(new String[]{"Scrum Project_6335363749794a18e8a4479b"});
 		kpiRequest.setKpiList(kpiList);
 		kpiRequest.setRequestTrackerId();
 		kpiRequest.setSprintIncluded(Arrays.asList());
@@ -366,5 +356,4 @@ public class JiraServiceRTest {
 		List<KpiElement> resultList = jiraServiceR.processWithExposedApiToken(kpiRequest);
 		assertEquals(1, resultList.size());
 	}
-
 }

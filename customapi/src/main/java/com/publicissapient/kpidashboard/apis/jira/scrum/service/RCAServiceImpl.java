@@ -72,9 +72,8 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class proces the KPI request for Root Cause Analysis
- * 
- * @author tauakram
  *
+ * @author tauakram
  */
 @Component
 @Slf4j
@@ -99,9 +98,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 	@Autowired
 	private CacheService cacheService;
 
-	/**
-	 * Gets Qualifier Type from KPICode enum
-	 */
+	/** Gets Qualifier Type from KPICode enum */
 	@Override
 	public String getQualifierType() {
 		return KPICode.DEFECT_COUNT_BY_RCA.name();
@@ -109,26 +106,24 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 
 	/**
 	 * Gets Kpi data based on kpi request
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param kpiElement
 	 * @param treeAggregatorDetail
 	 * @throws ApplicationException
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-
 			if (Filters.getFilter(k) == Filters.SPRINT) {
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
-
 		});
 
 		log.debug("[RCA-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
@@ -166,7 +161,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 
 	/**
 	 * This method is not implemented yet
-	 * 
+	 *
 	 * @param objectMap
 	 * @return
 	 */
@@ -177,7 +172,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 
 	/**
 	 * Fetches KPI data from DB
-	 * 
+	 *
 	 * @param leafNodeList
 	 * @param startDate
 	 * @param endDate
@@ -211,12 +206,10 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 						CommonUtils.convertToPatternList(fieldMapping.getJiraDefectCountlIssueTypeKPI36()));
 			}
 			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
-					fieldMapping.getResolutionTypeForRejectionRCAKPI36(),
-					fieldMapping.getJiraDefectRejectionStatusRCAKPI36());
+					fieldMapping.getResolutionTypeForRejectionRCAKPI36(), fieldMapping.getJiraDefectRejectionStatusRCAKPI36());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-
 		});
-		/** additional filter **/
+		/** additional filter * */
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
 
 		mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
@@ -249,7 +242,6 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 		resultListMap.put(STORY_LIST, jiraIssueRepository.findIssueAndDescByNumber(storyIdList));
 
 		return resultListMap;
-
 	}
 
 	/**
@@ -271,21 +263,20 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 		String startDate;
 		String endDate;
 
-		Collections.sort(sprintLeafNodeList, (Node o1, Node o2) -> o1.getSprintFilter().getStartDate()
-				.compareTo(o2.getSprintFilter().getStartDate()));
+		Collections.sort(sprintLeafNodeList,
+				(Node o1, Node o2) -> o1.getSprintFilter().getStartDate().compareTo(o2.getSprintFilter().getStartDate()));
 
 		startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 
-		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
-				kpiRequest);
+		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
 
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap
 				.get(SPRINT_WISE_STORY_DATA);
 		List<JiraIssue> storyList = (List<JiraIssue>) storyDefectDataListMap.get(STORY_LIST);
 
-		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
-				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
+		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(
+				Collectors.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
 
 		Map<Pair<String, String>, Map<String, Long>> sprintWiseRCAMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
@@ -299,7 +290,6 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseDefectDataListMap = new HashMap<>();
 		sprintWiseMap.forEach((sprint, sprintWiseStories) -> {
-
 			List<String> storyIdList = new ArrayList<>();
 			sprintWiseStories.stream().map(SprintWiseStory::getStoryList).collect(Collectors.toList())
 					.forEach(storyIdList::addAll);
@@ -309,8 +299,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 					.stream().filter(f -> CollectionUtils.containsAny(f.getDefectStoryID(), storyIdList))
 					.collect(Collectors.toList());
 
-			Map<String, Long> rcaCountMap = sprintWiseDefectDataList.stream()
-					.flatMap(f -> f.getRootCauseList().stream())
+			Map<String, Long> rcaCountMap = sprintWiseDefectDataList.stream().flatMap(f -> f.getRootCauseList().stream())
 					.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
 			setSprintWiseLogger(sprint, storyIdList, sprintWiseDefectDataList, rcaCountMap);
@@ -323,11 +312,11 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 
 		sprintLeafNodeList.forEach(node -> {
 			String trendLineName = node.getProjectFilter().getName();
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
+			Pair<String, String> currentNodeIdentifier = Pair.of(node.getProjectFilter().getBasicProjectConfigId().toString(),
+					node.getSprintFilter().getId());
 
-			Set<String> allRCA = projectWiseRCA
-					.getOrDefault(node.getProjectFilter().getBasicProjectConfigId().toString(), new HashSet<>());
+			Set<String> allRCA = projectWiseRCA.getOrDefault(node.getProjectFilter().getBasicProjectConfigId().toString(),
+					new HashSet<>());
 			Map<String, Long> rcaMap = sprintWiseRCAMap.getOrDefault(currentNodeIdentifier, new HashMap<>());
 			List<JiraIssue> jiraIssueList = sprintWiseDefectDataListMap.get(currentNodeIdentifier);
 			Map<String, Long> finalMap = new HashMap<>();
@@ -373,12 +362,11 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
 			List<JiraIssue> sprintWiseDefectDataList, String name, List<JiraIssue> storyList) {
 
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& !Objects.isNull(sprintWiseDefectDataList) && !sprintWiseDefectDataList.isEmpty()) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				!Objects.isNull(sprintWiseDefectDataList) && !sprintWiseDefectDataList.isEmpty()) {
 			KPIExcelUtility.populateDefectRelatedExcelData(name, sprintWiseDefectDataList, excelData, customApiConfig,
 					storyList);
 		}
-
 	}
 
 	/**
@@ -403,8 +391,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 						defectLinkedWithSprint.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
 			}
 			if (null != removeStoryLinkedWithDefectFoundFromSprintLinkage) {
-				log.info("FilteredDefectLinkedWith->SPRINT[{}]: {}",
-						removeStoryLinkedWithDefectFoundFromSprintLinkage.size(),
+				log.info("FilteredDefectLinkedWith->SPRINT[{}]: {}", removeStoryLinkedWithDefectFoundFromSprintLinkage.size(),
 						removeStoryLinkedWithDefectFoundFromSprintLinkage.stream().map(JiraIssue::getNumber)
 								.collect(Collectors.toList()));
 			}
@@ -440,7 +427,6 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 	private void addJiraIssueTodefectListWoDrop(List<JiraIssue> defectLinkedWithStory, List<JiraIssue> defectListWoDrop,
 			Map<String, Map<String, List<String>>> droppedDefects) {
 		KpiHelperService.getDefectsWithoutDrop(droppedDefects, defectLinkedWithStory, defectListWoDrop);
-
 	}
 
 	@Override

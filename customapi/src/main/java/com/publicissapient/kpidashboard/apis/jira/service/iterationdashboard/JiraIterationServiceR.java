@@ -78,8 +78,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 
 	private final ThreadLocal<List<SprintDetails>> threadLocalSprintDetails = ThreadLocal.withInitial(ArrayList::new);
 	private final ThreadLocal<List<JiraIssue>> threadLocalJiraIssues = ThreadLocal.withInitial(ArrayList::new);
-	private final ThreadLocal<List<JiraIssueCustomHistory>> threadLocalHistory = ThreadLocal
-			.withInitial(ArrayList::new);
+	private final ThreadLocal<List<JiraIssueCustomHistory>> threadLocalHistory = ThreadLocal.withInitial(ArrayList::new);
 	@Autowired
 	private KpiHelperService kpiHelperService;
 	@Autowired
@@ -102,13 +101,13 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 	 * call service in multiple thread.
 	 *
 	 * @param kpiRequest
-	 *            JIRA KPI request true if flow for precalculated, false for direct
-	 *            flow.
+	 *          JIRA KPI request true if flow for precalculated, false for direct
+	 *          flow.
 	 * @return List of KPI data
 	 * @throws EntityNotFoundException
-	 *             EntityNotFoundException
+	 *           EntityNotFoundException
 	 */
-	@SuppressWarnings({ "PMD.AvoidCatchingGenericException", "unchecked" })
+	@SuppressWarnings({"PMD.AvoidCatchingGenericException", "unchecked"})
 	@Override
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
@@ -118,8 +117,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 		String[] projectKeyCache = null;
 		try {
 			Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
-			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(),
-					false);
+			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(), false);
 			if (null != groupName) {
 				kpiRequest.setLabel(groupName.toUpperCase());
 			} else {
@@ -131,23 +129,23 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList,
 						referFromProjectCache);
 
-				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest,
-						filteredAccountDataList, referFromProjectCache);
+				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest, filteredAccountDataList,
+						referFromProjectCache);
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
-				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(),
-						groupId, kpiRequest.getSprintIncluded());
-				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-						&& null != cachedData) {
+				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(), groupId,
+						kpiRequest.getSprintIncluded());
+				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+						null != cachedData) {
 					log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
 					return (List<KpiElement>) cachedData;
 				}
 
 				Node filteredNode = getFilteredNodes(filteredAccountDataList);
 				if (filteredNode != null) {
-					if (!CollectionUtils.isEmpty(origRequestedKpis)
-							&& StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory())) {
+					if (!CollectionUtils.isEmpty(origRequestedKpis) &&
+							StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory())) {
 						updateJiraIssueList(kpiRequest, filteredAccountDataList);
 					}
 					// set filter value to show on trend line. If subprojects are
@@ -156,8 +154,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 					// projects
 					kpiRequest.setFilterToShowOnTrend(groupName);
 
-					ExecutorService executorService = Executors
-							.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+					ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 					List<CompletableFuture<Void>> futures = new ArrayList<>();
 
@@ -178,10 +175,8 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 
 					executorService.shutdown();
 
-					List<KpiElement> missingKpis = origRequestedKpis.stream()
-							.filter(reqKpi -> responseList.stream()
-									.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
-							.toList();
+					List<KpiElement> missingKpis = origRequestedKpis.stream().filter(reqKpi -> responseList.stream()
+							.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId()))).toList();
 					responseList.addAll(missingKpis);
 
 					kpiHelperService.setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
@@ -204,11 +199,9 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 
 	private Node getFilteredNodes(List<AccountHierarchyData> filteredAccountDataList) {
 		Optional<Node> sprintNode = filteredAccountDataList.get(0).getNode().stream()
-				.filter(node -> node.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))
-				.findFirst();
+				.filter(node -> node.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)).findFirst();
 		Optional<Node> projectNode = filteredAccountDataList.get(0).getNode().stream()
-				.filter(node -> node.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT))
-				.findFirst();
+				.filter(node -> node.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)).findFirst();
 		if (sprintNode.isPresent() && projectNode.isPresent()) {
 			Node parentNode = projectNode.get();
 			Node filteredNode = sprintNode.get();
@@ -218,8 +211,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 			filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getParent().getId(),
 					filteredNode.getParent().getName(), filteredNode.getProjectHierarchy().getBasicProjectConfigId()));
 			filteredNode.setSprintFilter(new SprintFilter(filteredNode.getId(), filteredNode.getName(),
-					filteredNode.getProjectHierarchy().getBeginDate(),
-					filteredNode.getProjectHierarchy().getEndDate()));
+					filteredNode.getProjectHierarchy().getBeginDate(), filteredNode.getProjectHierarchy().getEndDate()));
 
 			return filteredNode;
 		}
@@ -227,8 +219,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 	}
 
 	private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest, String groupName) {
-		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
-				.cacheSprintLevelData();
+		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService.cacheSprintLevelData();
 
 		// Get the selected values for filtering
 		List<String> selectedValue = kpiRequest.getSelectedMap().getOrDefault(groupName, Collections.emptyList());
@@ -237,11 +228,10 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 
 		// Filter the data based on the groupName and sprint ID
 		return accountDataListAll.stream()
-				.filter(data -> data.getNode().stream().anyMatch(
-						d -> d.getGroupName().equalsIgnoreCase(groupName) && selectedValue.contains(d.getId())))
 				.filter(data -> data.getNode().stream()
-						.anyMatch(d -> d.getGroupName().equalsIgnoreCase(CommonConstant.SPRINT)
-								&& sprintSelectedValue.contains(d.getId())))
+						.anyMatch(d -> d.getGroupName().equalsIgnoreCase(groupName) && selectedValue.contains(d.getId())))
+				.filter(data -> data.getNode().stream().anyMatch(
+						d -> d.getGroupName().equalsIgnoreCase(CommonConstant.SPRINT) && sprintSelectedValue.contains(d.getId())))
 				.collect(Collectors.toList());
 	}
 
@@ -279,20 +269,18 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 		sprintDetails.stream().filter(sd -> sd.getBasicProjectConfigId().toString().equals(basicProjectConfigId))
 				.forEach(sprintDetails1 -> {
 					if (!CollectionUtils.isEmpty(sprintDetails1.getCompletedIssues())) {
-						totalIssuesList.addAll(
-								sprintDetails1.getCompletedIssues().stream().map(SprintIssue::getNumber).toList());
+						totalIssuesList.addAll(sprintDetails1.getCompletedIssues().stream().map(SprintIssue::getNumber).toList());
 					}
 					if (!CollectionUtils.isEmpty(sprintDetails1.getNotCompletedIssues())) {
-						totalIssuesList.addAll(
-								sprintDetails1.getNotCompletedIssues().stream().map(SprintIssue::getNumber).toList());
+						totalIssuesList
+								.addAll(sprintDetails1.getNotCompletedIssues().stream().map(SprintIssue::getNumber).toList());
 					}
 					if (!CollectionUtils.isEmpty(sprintDetails1.getPuntedIssues())) {
-						totalIssuesList
-								.addAll(sprintDetails1.getPuntedIssues().stream().map(SprintIssue::getNumber).toList());
+						totalIssuesList.addAll(sprintDetails1.getPuntedIssues().stream().map(SprintIssue::getNumber).toList());
 					}
 					if (!CollectionUtils.isEmpty(sprintDetails1.getCompletedIssuesAnotherSprint())) {
-						totalIssuesList.addAll(sprintDetails1.getCompletedIssuesAnotherSprint().stream()
-								.map(SprintIssue::getNumber).toList());
+						totalIssuesList
+								.addAll(sprintDetails1.getCompletedIssuesAnotherSprint().stream().map(SprintIssue::getNumber).toList());
 					}
 					if (!CollectionUtils.isEmpty(sprintDetails1.getAddedIssues())) {
 						totalIssuesList.addAll(sprintDetails1.getAddedIssues());
@@ -307,9 +295,8 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 
 	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId) {
 		List<String> issueList = jiraIssueList.stream().map(JiraIssue::getNumber).toList();
-		jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
-				.findByStoryIDInAndBasicProjectConfigIdIn(issueList, Collections.singletonList(basicProjectConfigId));
-
+		jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(issueList,
+				Collections.singletonList(basicProjectConfigId));
 	}
 
 	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentSprint() {
@@ -328,15 +315,13 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 				log.info("No need to fetch Throughput KPI data");
 			} else {
 				Node nodeDataClone = (Node) SerializationUtils.clone(filteredAccountNode);
-				if (Objects.nonNull(nodeDataClone)
-						&& kpiHelperService.isToolConfigured(kpi, kpiElement, nodeDataClone)) {
+				if (Objects.nonNull(nodeDataClone) && kpiHelperService.isToolConfigured(kpi, kpiElement, nodeDataClone)) {
 					kpiElement = jiraKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone);
 					kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
 					kpiHelperService.isMandatoryFieldSet(kpi, kpiElement, nodeDataClone);
 				}
 				long processTime = System.currentTimeMillis() - startTime;
-				log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-						processTime);
+				log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
 			}
 		} catch (ApplicationException exception) {
 			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
@@ -363,8 +348,8 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 
 		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())) {
 			for (Map.Entry<String, List<String>> entry : kpiRequest.getSelectedMap().entrySet()) {
-				if (CollectionUtils.isNotEmpty(entry.getValue())
-						&& null != addFilterCategory.get(entry.getKey().toUpperCase())) {
+				if (CollectionUtils.isNotEmpty(entry.getValue()) &&
+						null != addFilterCategory.get(entry.getKey().toUpperCase())) {
 					mapOfFilters.put(JiraFeature.ADDITIONAL_FILTERS_FILTERID.getFieldValueInFeature(),
 							Arrays.asList(entry.getKey()));
 					mapOfFilters.put(JiraFeature.ADDITIONAL_FILTERS_FILTERVALUES_VALUEID.getFieldValueInFeature(),
@@ -373,5 +358,4 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 			}
 		}
 	}
-
 }

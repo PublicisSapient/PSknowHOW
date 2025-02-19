@@ -72,6 +72,7 @@ public class CustomAnalyticsServiceImplTest {
 	private UserInfoServiceImpl service;
 	@Mock
 	private UsersSessionService usersSessionService;
+
 	@Test
 	public void testAddAnalyticsData() {
 		HttpServletResponse resp = Mockito.mock(HttpServletResponse.class);
@@ -90,8 +91,8 @@ public class CustomAnalyticsServiceImplTest {
 		JSONObject json = customAnalyticsServiceImpl.addAnalyticsData(resp, "test");
 		assertEquals("test", json.get("user_name"));
 		assertEquals(json.get("authorities"), user.getAuthorities());
-
 	}
+
 	@Test
 	public void testAddAnalyticsDataForCentralAuth() {
 		HttpServletResponse resp = Mockito.mock(HttpServletResponse.class);
@@ -107,10 +108,9 @@ public class CustomAnalyticsServiceImplTest {
 		when(userInfoRepository.findByUsername(Mockito.anyString())).thenReturn(user);
 		when(authenticationRepository.findByUsername(Mockito.anyString())).thenReturn(authentication);
 		when(projectAccessManager.getProjectAccessesWithRole(Mockito.anyString())).thenReturn(listRoleWiseProjects);
-		Map<String, Object> json = customAnalyticsServiceImpl.addAnalyticsDataAndSaveCentralUser(resp, "test" ,"token");
+		Map<String, Object> json = customAnalyticsServiceImpl.addAnalyticsDataAndSaveCentralUser(resp, "test", "token");
 		assertEquals("test", json.get("user_name"));
 		assertEquals(json.get("authorities"), user.getAuthorities());
-
 	}
 
 	@Test

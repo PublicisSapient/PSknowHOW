@@ -1,10 +1,10 @@
 package com.publicissapient.kpidashboard.common.model.application;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
@@ -14,5 +14,4 @@ public class AdditionalFilterCategory {
 	private int level;
 	private String filterCategoryId;
 	private String filterCategoryName;
-
 }

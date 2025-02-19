@@ -44,7 +44,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author purgupta2
- *
  */
 @Slf4j
 @Service
@@ -65,8 +64,7 @@ public class KanbanJiraIssueHistoryProcessorImpl implements KanbanJiraIssueHisto
 		return jiraIssueHistory;
 	}
 
-	private KanbanIssueCustomHistory getKanbanIssueCustomHistory(ProjectConfFieldMapping projectConfig,
-			String issueId) {
+	private KanbanIssueCustomHistory getKanbanIssueCustomHistory(ProjectConfFieldMapping projectConfig, String issueId) {
 		String basicProjectConfigId = projectConfig.getBasicProjectConfigId().toString();
 		KanbanIssueCustomHistory jiraIssueHistory = kanbanJiraIssueHistoryRepository
 				.findByStoryIDAndBasicProjectConfigId(issueId, basicProjectConfigId);
@@ -112,13 +110,12 @@ public class KanbanJiraIssueHistoryProcessorImpl implements KanbanJiraIssueHisto
 		} else {
 			addHistoryInJiraIssue(jiraIssueCustomHistory, jiraIssue, modChangeLogList);
 		}
-
 	}
 
-	private void addStoryHistory(KanbanIssueCustomHistory jiraIssueCustomHistory, KanbanJiraIssue jiraIssue,
-			Issue issue, List<ChangelogGroup> changeLogList, FieldMapping fieldMapping) {
-		List<KanbanIssueHistory> kanbanIssueHistoryList = getChangeLog(jiraIssue, changeLogList,
-				issue.getCreationDate(), fieldMapping);
+	private void addStoryHistory(KanbanIssueCustomHistory jiraIssueCustomHistory, KanbanJiraIssue jiraIssue, Issue issue,
+			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping) {
+		List<KanbanIssueHistory> kanbanIssueHistoryList = getChangeLog(jiraIssue, changeLogList, issue.getCreationDate(),
+				fieldMapping);
 		jiraIssueCustomHistory.setStoryID(jiraIssue.getNumber());
 		jiraIssueCustomHistory.setHistoryDetails(kanbanIssueHistoryList);
 		jiraIssueCustomHistory.setCreatedDate(issue.getCreationDate().toString());
@@ -128,7 +125,6 @@ public class KanbanJiraIssueHistoryProcessorImpl implements KanbanJiraIssueHisto
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 			jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
 		}
-
 	}
 
 	private void addHistoryInJiraIssue(KanbanIssueCustomHistory jiraIssueCustomHistory, KanbanJiraIssue jiraIssue,
@@ -150,12 +146,10 @@ public class KanbanJiraIssueHistoryProcessorImpl implements KanbanJiraIssueHisto
 					kanbanIssueHistory.setStatus(changelogItem.getToString());
 					kanbanIssueHistory.setActivityDate(history.getCreated().toString());
 					issueHistoryList.add(kanbanIssueHistory);
-
 				}
 			}
 			jiraIssueCustomHistory.setHistoryDetails(issueHistoryList);
 		}
-
 	}
 
 	private List<KanbanIssueHistory> getChangeLog(KanbanJiraIssue jiraIssue, List<ChangelogGroup> changeLogList,
@@ -181,8 +175,8 @@ public class KanbanJiraIssueHistoryProcessorImpl implements KanbanJiraIssueHisto
 		for (ChangelogItem changelogItem : history.getItems()) {
 			if (changelogItem.getField().equalsIgnoreCase(JiraConstants.TEST_AUTOMATED)) {
 				if (changelogItem.getToString().equalsIgnoreCase(JiraConstants.YES)) {
-					jiraIssue.setTestAutomatedDate(JiraProcessorUtil
-							.getFormattedDate(JiraProcessorUtil.deodeUTF8String(history.getCreated().toString())));
+					jiraIssue.setTestAutomatedDate(
+							JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(history.getCreated().toString())));
 				} else {
 					jiraIssue.setTestAutomatedDate("");
 				}
@@ -196,6 +190,5 @@ public class KanbanJiraIssueHistoryProcessorImpl implements KanbanJiraIssueHisto
 			}
 		}
 		return historyDetails;
-
 	}
 }

@@ -30,7 +30,6 @@ import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationServi
 import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 
-
 @Component
 public class ProjectAccessUtil {
 	@Autowired
@@ -45,15 +44,13 @@ public class ProjectAccessUtil {
 
 	public boolean configIdHasUserAccess(String basicConfigId) {
 		Set<String> basicProjectConfigIds = tokenAuthenticationService.getUserProjects();
-		return userAuthorizedProjectsService.ifSuperAdminUser()
-				|| (Optional.ofNullable(basicProjectConfigIds).isPresent()
-						&& basicProjectConfigIds.contains(basicConfigId));
+		return userAuthorizedProjectsService.ifSuperAdminUser() ||
+				(Optional.ofNullable(basicProjectConfigIds).isPresent() && basicProjectConfigIds.contains(basicConfigId));
 	}
 
 	public boolean ifConnectionNotAccessible(Connection connection) {
-		return !connection.isSharedConnection()
-				&& (!(connection.getCreatedBy().equals(authenticationService.getLoggedInUser())
-						|| userAuthorizedProjectsService.ifSuperAdminUser()));
+		return !connection.isSharedConnection() &&
+				(!(connection.getCreatedBy().equals(authenticationService.getLoggedInUser()) ||
+						userAuthorizedProjectsService.ifSuperAdminUser()));
 	}
-
 }

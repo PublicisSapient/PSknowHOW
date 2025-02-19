@@ -27,9 +27,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Bean to hold settings specific to the Teamcity processor.
- */
+/** Bean to hold settings specific to the Teamcity processor. */
 @Component
 @ConfigurationProperties(prefix = "teamcity")
 @Builder
@@ -42,8 +40,10 @@ public class TeamcityConfig {
 	private boolean includeLogs;
 	private String dockerHostIp;
 	private int pageSize;
+
 	@Value("${folderDepth:10}")
 	private int folderDepth;
+
 	private String customApiBaseUrl;
 
 	@Value("${aesEncryptionKey}")
@@ -51,12 +51,11 @@ public class TeamcityConfig {
 
 	/**
 	 * Provides the IP of Docker Localhost.
-	 * 
+	 *
 	 * @return the Localhost Docker IP
 	 */
 	public String getDockerHostIp() {
 
 		return dockerHostIp == null ? "" : dockerHostIp;
 	}
-
 }

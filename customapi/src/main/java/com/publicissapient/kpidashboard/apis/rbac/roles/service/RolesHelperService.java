@@ -22,15 +22,13 @@ import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
 
 /**
- *
  * @author anamital
  */
 public interface RolesHelperService {
 
 	/**
 	 * Gets all roles.
-	 * 
-	 * 
+	 *
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -38,7 +36,7 @@ public interface RolesHelperService {
 
 	/**
 	 * Gets all roles for this Id.
-	 * 
+	 *
 	 * @param id
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
@@ -47,10 +45,9 @@ public interface RolesHelperService {
 
 	/**
 	 * Modifies a role. Finds role by @param id and replaces it with @param role
-	 * 
+	 *
 	 * @param role,
-	 *            id
-	 * 
+	 *          id
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -58,12 +55,10 @@ public interface RolesHelperService {
 
 	/**
 	 * Creates a role.
-	 * 
+	 *
 	 * @param role
-	 * 
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
 	ServiceResponse createRole(RoleData role);
-
 }

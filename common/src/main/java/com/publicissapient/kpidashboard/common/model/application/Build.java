@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -54,5 +53,4 @@ public class Build extends BasicModel {
 	private String startedBy;
 	private String log;
 	private String updatedTime;
-
 }

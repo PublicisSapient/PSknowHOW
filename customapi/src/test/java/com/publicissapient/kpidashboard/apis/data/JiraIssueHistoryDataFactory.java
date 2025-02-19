@@ -39,7 +39,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author anisingh4
  */
-
 @Slf4j
 public class JiraIssueHistoryDataFactory {
 	private static final String FILE_PATH_JIRA_ISSUES = "/json/default/jira_issue_custom_history.json";
@@ -113,5 +112,4 @@ public class JiraIssueHistoryDataFactory {
 		return jiraHistoryIssues.stream().filter(jiraHistoryIssue -> uniqueStoryIds.add(jiraHistoryIssue.getStoryID()))
 				.collect(Collectors.toList());
 	}
-
 }

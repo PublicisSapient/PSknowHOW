@@ -61,9 +61,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author tauakram
  * @implNote {@link KpiIntegrationServiceImpl }
- *
  */
-
 @Service
 @Slf4j
 public class ZephyrService {
@@ -89,12 +87,12 @@ public class ZephyrService {
 	 * Process the zephyr based KPI requests.
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @return list of kpielement
 	 * @throws EntityNotFoundException
-	 *             EntityNotFoundException
+	 *           EntityNotFoundException
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
 		log.info("[ZEPHYR][{}]. Processing KPI calculation for data {}", kpiRequest.getIds(), kpiRequest.getKpiList());
@@ -103,15 +101,13 @@ public class ZephyrService {
 		String[] projectKeyCache = null;
 		try {
 			Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
-			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(),
-					false);
+			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(), false);
 			if (null != groupName) {
 				kpiRequest.setLabel(groupName.toUpperCase());
 			} else {
 				log.error("label name for selected hierarchy not found");
 			}
-			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
-					groupName);
+			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest, groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
 				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
 				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
@@ -119,19 +115,18 @@ public class ZephyrService {
 					return responseList;
 				}
 
-				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.ZEPHYR.name(),
-						groupId, kpiRequest.getSprintIncluded());
-				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-						&& null != cachedData) {
+				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.ZEPHYR.name(), groupId,
+						kpiRequest.getSprintIncluded());
+				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+						null != cachedData) {
 					log.info("[ZEPHYR][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
 							kpiRequest.getIds());
 					return (List<KpiElement>) cachedData;
 				}
 
 				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
-						filterHelperService.getHierarchyIdLevelMap(false)
-								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
+						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(), filterHelperService
+								.getHierarchyIdLevelMap(false).getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
 
 				updateTreeAggregatorDetail(kpiRequest, treeAggregatorDetail);
 
@@ -144,8 +139,9 @@ public class ZephyrService {
 				}
 
 				ForkJoinTask.invokeAll(listOfTask);
-				List<KpiElement> missingKpis = origRequestedKpis.stream().filter(reqKpi -> responseList.stream()
-						.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId()))).toList();
+				List<KpiElement> missingKpis = origRequestedKpis.stream().filter(
+						reqKpi -> responseList.stream().noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
+						.toList();
 				responseList.addAll(missingKpis);
 				setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
 			} else {
@@ -162,9 +158,9 @@ public class ZephyrService {
 
 	/**
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @param filteredAccountDataList
-	 *            filteredAccountDataList
+	 *          filteredAccountDataList
 	 * @return list of hierarchy
 	 */
 	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
@@ -192,24 +188,23 @@ public class ZephyrService {
 	 * Sets cache.
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @param responseList
-	 *            responseList
+	 *          responseList
 	 * @param groupId
-	 *            groupId
+	 *          groupId
 	 * @param projectKeyCache
-	 *            projectKeyCache
+	 *          projectKeyCache
 	 */
 	private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
 			String[] projectKeyCache) {
 		Integer sprintLevel = filterHelperService.getHierarchyIdLevelMap(false)
 				.get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
-		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& sprintLevel >= kpiRequest.getLevel()) {
+		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				sprintLevel >= kpiRequest.getLevel()) {
 			cacheService.setIntoApplicationCache(projectKeyCache, responseList, KPISource.ZEPHYR.name(), groupId,
 					kpiRequest.getSprintIncluded());
 		}
-
 	}
 
 	/**
@@ -218,28 +213,27 @@ public class ZephyrService {
 	 * filter out the sprint by sprintCountForKpiCalculation property
 	 *
 	 * @param kpiRequest
-	 *            KpiRequest object containing the selectedMap.
+	 *          KpiRequest object containing the selectedMap.
 	 * @param treeAggregatorDetail
-	 *            The TreeAggregatorDetail object to be updated.
+	 *          The TreeAggregatorDetail object to be updated.
 	 */
 	private void updateTreeAggregatorDetail(KpiRequest kpiRequest, TreeAggregatorDetail treeAggregatorDetail) {
-		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())
-				&& CollectionUtils.isEmpty(kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))
-				&& MapUtils.isNotEmpty(treeAggregatorDetail.getMapOfListOfLeafNodes())) {
+		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap()) &&
+				CollectionUtils.isEmpty(kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) &&
+				MapUtils.isNotEmpty(treeAggregatorDetail.getMapOfListOfLeafNodes())) {
 			List<Node> sprintList = new ArrayList<>();
-			if (CollectionUtils.isNotEmpty(
-					treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
+			if (CollectionUtils
+					.isNotEmpty(treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
 				treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT).stream()
 						.collect(Collectors.groupingBy(Node::getParentId)).forEach((proj, sprints) -> {
 							if (sprints.size() > customApiConfig.getSprintCountForKpiCalculation()) {
-								sprintList.addAll(new ArrayList<>(
-										sprints.subList(0, customApiConfig.getSprintCountForKpiCalculation())));
+								sprintList
+										.addAll(new ArrayList<>(sprints.subList(0, customApiConfig.getSprintCountForKpiCalculation())));
 							} else {
 								sprintList.addAll(sprints);
 							}
 						});
-				treeAggregatorDetail.getMapOfListOfLeafNodes().put(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
-						sprintList);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().put(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, sprintList);
 			}
 		}
 	}
@@ -248,7 +242,6 @@ public class ZephyrService {
 	 * This class is used to call Zephyr based KPIs service in parallel.
 	 *
 	 * @author prijain3
-	 *
 	 */
 	public class ParallelZephyrServices extends RecursiveAction {
 
@@ -277,9 +270,7 @@ public class ZephyrService {
 			this.treeAggregatorDetail = treeAggregatorDetail;
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
+		/** {@inheritDoc} */
 		@Override
 		public void compute() {
 			responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, treeAggregatorDetail));
@@ -290,11 +281,11 @@ public class ZephyrService {
 		 * method of these KPIs
 		 *
 		 * @param kpiRequest
-		 *            kpiRequest
+		 *          kpiRequest
 		 * @param kpiElement
-		 *            kpiElement
+		 *          kpiElement
 		 * @param treeAggregatorDetail
-		 *            treeAggregatorDetail
+		 *          treeAggregatorDetail
 		 * @return KpiElement kpielement
 		 */
 		private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -309,9 +300,8 @@ public class ZephyrService {
 				List<Node> projectNodes = treeAggregatorDetailClone.getMapOfListOfProjectNodes()
 						.get(CommonConstant.PROJECT.toLowerCase());
 
-				if (!projectNodes.isEmpty()
-						&& (projectNodes.size() > 1 || kpiHelperService.isRequiredTestToolConfigured(kpi, kpiElement,
-								projectNodes.get(0).getProjectFilter().getBasicProjectConfigId()))) {
+				if (!projectNodes.isEmpty() && (projectNodes.size() > 1 || kpiHelperService.isRequiredTestToolConfigured(kpi,
+						kpiElement, projectNodes.get(0).getProjectFilter().getBasicProjectConfigId()))) {
 					kpiElement = zephyrKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
 					kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
 					if (projectNodes.size() == 1) {
@@ -320,8 +310,7 @@ public class ZephyrService {
 				}
 
 				long processTime = System.currentTimeMillis() - startTime;
-				log.info("[ZEPHYR-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-						processTime);
+				log.info("[ZEPHYR-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
 			} catch (ApplicationException exception) {
 				kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
 				log.error("Kpi not found", exception);
@@ -338,11 +327,11 @@ public class ZephyrService {
 	 * This method is called when the request for kpi is done from exposed API
 	 *
 	 * @param kpiRequest
-	 *            Zephyr KPI request true if flow for precalculated, false for
-	 *            direct flow.
+	 *          Zephyr KPI request true if flow for precalculated, false for direct
+	 *          flow.
 	 * @return List of KPI data
 	 * @throws EntityNotFoundException
-	 *             EntityNotFoundException
+	 *           EntityNotFoundException
 	 */
 	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {
 		referFromProjectCache = false;
@@ -350,5 +339,4 @@ public class ZephyrService {
 		referFromProjectCache = true;
 		return kpiElementList;
 	}
-
 }

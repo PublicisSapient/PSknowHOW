@@ -19,19 +19,15 @@ package com.publicissapient.kpidashboard.jira.service;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectHierarchyRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
-import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
@@ -61,7 +57,7 @@ public class ProjectHierarchySyncServiceImpl implements ProjectHierarchySyncServ
 	 * entries.
 	 *
 	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
+	 *          the ID of the basic project configuration
 	 */
 	@Override
 	public void syncScrumSprintHierarchy(ObjectId basicProjectConfigId) {
@@ -90,15 +86,14 @@ public class ProjectHierarchySyncServiceImpl implements ProjectHierarchySyncServ
 	 * deleting non-matching entries.
 	 *
 	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
+	 *          the ID of the basic project configuration
 	 * @param fetchedReleasedHierarchy
-	 *            the list of fetched release hierarchy
+	 *          the list of fetched release hierarchy
 	 */
 	@Override
-	public void syncReleaseHierarchy(ObjectId basicProjectConfigId,
-										  List<ProjectHierarchy> fetchedReleasedHierarchy) {
-		List<String> distinctReleaseNodeIds = fetchedReleasedHierarchy.stream().map(ProjectHierarchy::getNodeId)
-				.distinct().toList();
+	public void syncReleaseHierarchy(ObjectId basicProjectConfigId, List<ProjectHierarchy> fetchedReleasedHierarchy) {
+		List<String> distinctReleaseNodeIds = fetchedReleasedHierarchy.stream().map(ProjectHierarchy::getNodeId).distinct()
+				.toList();
 
 		List<String> entriesToDelete = projectHierarchyRepository
 				.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(basicProjectConfigId, distinctReleaseNodeIds,
@@ -115,19 +110,18 @@ public class ProjectHierarchySyncServiceImpl implements ProjectHierarchySyncServ
 	 * do not match the provided list of distinct release node IDs.
 	 *
 	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
+	 *          the ID of the basic project configuration
 	 * @param nodeIdsToBeDeleted
-	 *            the list of node IDs to delete
+	 *          the list of node IDs to delete
 	 * @param hierarchyLevelId
-	 *            the hierarchy level ID
+	 *          the hierarchy level ID
 	 */
 	@Override
 	public void deleteNonMatchingEntries(ObjectId basicProjectConfigId, List<String> nodeIdsToBeDeleted,
 			String hierarchyLevelId) {
-			log.info("Syncing {} hierarchy of projectId {}. Deleting node IDs: {}", hierarchyLevelId,
-					basicProjectConfigId, nodeIdsToBeDeleted);
-			projectHierarchyRepository.deleteByBasicProjectConfigIdAndNodeIdIn(basicProjectConfigId,
-					nodeIdsToBeDeleted, hierarchyLevelId);
+		log.info("Syncing {} hierarchy of projectId {}. Deleting node IDs: {}", hierarchyLevelId, basicProjectConfigId,
+				nodeIdsToBeDeleted);
+		projectHierarchyRepository.deleteByBasicProjectConfigIdAndNodeIdIn(basicProjectConfigId, nodeIdsToBeDeleted,
+				hierarchyLevelId);
 	}
-
 }

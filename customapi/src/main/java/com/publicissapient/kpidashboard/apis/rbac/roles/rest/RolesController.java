@@ -64,9 +64,9 @@ public class RolesController {
 
 	/**
 	 * Fetch a role by id.
-	 * 
+	 *
 	 * @param id
-	 *            unique object id already present in the database
+	 *          unique object id already present in the database
 	 * @return responseEntity with data,message and status
 	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
@@ -77,13 +77,11 @@ public class RolesController {
 
 	/**
 	 * Modify/Update a role by id.
-	 * 
-	 * @param id
-	 *            unique object_id present in the database
-	 * @param roleDTO
-	 *            request object that replaces the role data present at object_id
-	 *            id.
 	 *
+	 * @param id
+	 *          unique object_id present in the database
+	 * @param roleDTO
+	 *          request object that replaces the role data present at object_id id.
 	 * @return responseEntity with data,message and status
 	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
@@ -100,8 +98,7 @@ public class RolesController {
 	 * Create a role in the database.
 	 *
 	 * @param roleDTO
-	 *            request object that is created in the database.
-	 *
+	 *          request object that is created in the database.
 	 * @return responseEntity with data,message and status
 	 */
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
@@ -112,5 +109,4 @@ public class RolesController {
 		log.info("created new role");
 		return ResponseEntity.status(HttpStatus.OK).body(rolesHelperService.createRole(role));
 	}
-
 }

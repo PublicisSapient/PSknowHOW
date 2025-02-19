@@ -45,9 +45,7 @@ import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepos
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Collects {@link AzureProcessor} data from feature content source system.
- */
+/** Collects {@link AzureProcessor} data from feature content source system. */
 @Component
 @Slf4j
 public class AzureProcessorJobExecutor extends ProcessorJobExecutor<AzureProcessor> {
@@ -82,9 +80,7 @@ public class AzureProcessorJobExecutor extends ProcessorJobExecutor<AzureProcess
 		return issueProcessorRepository;
 	}
 
-	/**
-	 * Gets current chronology setting, for the scheduler
-	 */
+	/** Gets current chronology setting, for the scheduler */
 	@Override
 	public String getCron() {
 		return azureProcessorConfig.getCron();
@@ -93,9 +89,9 @@ public class AzureProcessorJobExecutor extends ProcessorJobExecutor<AzureProcess
 	/**
 	 * Gets called on a schedule to gather data from the feature content source
 	 * system and update the repository with retrieved data.
-	 * 
+	 *
 	 * @param azureProcessor
-	 *            azureProcessor instance
+	 *          azureProcessor instance
 	 */
 	@Override
 	public boolean execute(AzureProcessor azureProcessor) {
@@ -152,22 +148,24 @@ public class AzureProcessorJobExecutor extends ProcessorJobExecutor<AzureProcess
 					CommonConstant.CACHE_ORGANIZATION_HIERARCHY);
 			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 					CommonConstant.CACHE_PROJECT_HIERARCHY);
-			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,	CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
+			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
+					CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
-            azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_SOURCE_ENDPOINT, CommonConstant.JIRA_KPI,
-                    "");
+			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_SOURCE_ENDPOINT, CommonConstant.JIRA_KPI, "");
 
-			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.CACHE_PROJECT_KPI_DATA);
+			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
+					CommonConstant.CACHE_PROJECT_KPI_DATA);
 		}
 		if (kanbanIssueCount.get() > 0) {
 			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 					CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN);
 			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 					CommonConstant.CACHE_ORGANIZATION_HIERARCHY);
-			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,	CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
-			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,	CommonConstant.CACHE_PROJECT_HIERARCHY);
 			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
-					CommonConstant.JIRAKANBAN_KPI_CACHE);
+					CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
+			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
+					CommonConstant.CACHE_PROJECT_HIERARCHY);
+			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRAKANBAN_KPI_CACHE);
 		}
 		return executionStatus;
 	}
@@ -175,7 +173,7 @@ public class AzureProcessorJobExecutor extends ProcessorJobExecutor<AzureProcess
 	/**
 	 * Return List of selected ProjectBasicConfig id if null then return all
 	 * ProjectBasicConfig ids
-	 * 
+	 *
 	 * @return List of ProjectBasicConfig
 	 */
 	private List<ProjectBasicConfig> getSelectedProjects() {
@@ -185,8 +183,8 @@ public class AzureProcessorJobExecutor extends ProcessorJobExecutor<AzureProcess
 		if (CollectionUtils.isEmpty(selectedProjectsBasicIds)) {
 			return allProjects;
 		}
-		return CollectionUtils.emptyIfNull(allProjects).stream().filter(
-				projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
+		return CollectionUtils.emptyIfNull(allProjects).stream()
+				.filter(projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
 				.collect(Collectors.toList());
 	}
 

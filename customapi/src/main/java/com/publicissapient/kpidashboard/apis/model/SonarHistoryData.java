@@ -16,9 +16,9 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.model;//NOPMD
+package com.publicissapient.kpidashboard.apis.model; // NOPMD
 
-//Do not remove NOPMD comment. This will ignore ExcessivePublicCount Violations
+// Do not remove NOPMD comment. This will ignore ExcessivePublicCount Violations
 // these are just getter and setter methods and required
 
 import java.io.Serializable;
@@ -30,10 +30,7 @@ import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
 
 import lombok.Data;
 
-/**
- * The Sonar History data.
- */
-
+/** The Sonar History data. */
 @Data
 public class SonarHistoryData implements Serializable {
 	private static final long serialVersionUID = 1L;

@@ -44,7 +44,6 @@ public class KpiSonarCodeQuality {
 		// Delete "Sonar Code Quality Kpi" from kpi_category_mapping collection
 		mongoTemplate.getCollection("kpi_category_mapping").findOneAndDelete(new Document("kpiId", "kpi168"));
 		return true;
-
 	}
 
 	@RollbackExecution

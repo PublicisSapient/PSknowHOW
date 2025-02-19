@@ -20,5 +20,4 @@ public class AutoApproveAccessConfigDTO {
 	public String toString() {
 		return "AutoAccessApprovalDTO [isAutoApproved=" + enableAutoApprove + ", roles=" + roles + "]";
 	}
-
 }

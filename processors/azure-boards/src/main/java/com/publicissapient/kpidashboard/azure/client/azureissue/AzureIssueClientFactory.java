@@ -36,7 +36,7 @@ public class AzureIssueClientFactory {
 	 * Gets AzureIssue Client based on the Project type (Kanban or Scrum)
 	 *
 	 * @param projectConfig
-	 *            user provided project Configuration mapping
+	 *          user provided project Configuration mapping
 	 * @return KanbanAzureIssueClient if isKanban true else ScrumAzureIssueClient
 	 */
 	public AzureIssueClient getAzureIssueDataClient(ProjectConfFieldMapping projectConfig) {

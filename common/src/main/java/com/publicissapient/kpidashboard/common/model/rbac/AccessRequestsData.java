@@ -34,9 +34,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Represents the access requests data.
- */
+/** Represents the access requests data. */
 @Data
 @Builder
 @Getter
@@ -88,5 +86,4 @@ public class AccessRequestsData {
 		this.projects = projects;
 		this.roles = roles;
 	}
-
 }

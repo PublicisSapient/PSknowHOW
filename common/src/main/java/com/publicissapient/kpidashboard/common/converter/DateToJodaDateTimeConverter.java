@@ -22,14 +22,10 @@ import java.util.Date;
 import org.joda.time.DateTime;
 import org.springframework.core.convert.converter.Converter;
 
-/**
- * Custom converter for converting java.util.Date to jodaDateTime
- */
-public class DateToJodaDateTimeConverter implements Converter<Date, DateTime>{
-    @Override
-    public DateTime convert(Date source) {
-        return new DateTime(source);
-    }
-
+/** Custom converter for converting java.util.Date to jodaDateTime */
+public class DateToJodaDateTimeConverter implements Converter<Date, DateTime> {
+	@Override
+	public DateTime convert(Date source) {
+		return new DateTime(source);
+	}
 }
-

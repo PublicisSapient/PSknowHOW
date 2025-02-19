@@ -31,7 +31,7 @@ import io.mongock.api.annotations.RollbackExecution;
 
 /**
  * add build frequency kpi and field mapping
- * 
+ *
  * @author aksshriv1
  */
 @ChangeUnit(id = "build_freq", order = "8331", author = "aksshriv1", systemVersion = "8.3.3")
@@ -63,22 +63,22 @@ public class BuildFrequencyKPI {
 		// Insert document into 'kpi_master' collection
 		Document kpiDocument = new Document().append(KPI_ID, KPI_172).append("kpiName", "Build Frequency")
 				.append("maxValue", "").append("kpiUnit", "").append("isDeleted", "False").append("defaultOrder", 24)
-				.append("kpiSource", "Jenkins").append("groupId", 1).append("thresholdValue", "8")
-				.append("kanban", false).append("chartType", "line")
-				.append("kpiInfo", new Document(DEFINITION,
-						"Build frequency refers the number of successful builds done in a specific time frame.")
-						.append("details", Arrays.asList(new Document("type", "link").append("kpiLinkDetail",
-								new Document("text", "Detailed Information at").append("link",
-										"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/92930049/Build+Frequency")))))
+				.append("kpiSource", "Jenkins").append("groupId", 1).append("thresholdValue", "8").append("kanban", false)
+				.append("chartType", "line")
+				.append("kpiInfo",
+						new Document(DEFINITION,
+								"Build frequency refers the number of successful builds done in a specific time frame.")
+								.append("details",
+										Arrays.asList(new Document("type", "link").append("kpiLinkDetail",
+												new Document("text", "Detailed Information at").append("link",
+														"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/92930049/Build+Frequency")))))
 				.append("upperThresholdBG", "white").append("lowerThresholdBG", "red").append("xAxisLabel", "Weeks")
 				.append("yAxisLabel", "Builds Count").append("isPositiveTrend", true).append("showTrend", true)
 				.append("kpiFilter", "dropDown").append("aggregationCriteria", "average")
-				.append("isAdditionalFilterSupport", false).append("calculateMaturity", true)
-				.append("hideOverallFilter", true)
+				.append("isAdditionalFilterSupport", false).append("calculateMaturity", true).append("hideOverallFilter", true)
 				.append("maturityRange", Arrays.asList("-1", "2-4", "5-8", "8-10", "10-"));
 		// Insert the document into the collection
 		mongoTemplate.getCollection("kpi_master").insertOne(kpiDocument);
-
 	}
 
 	public void addFieldToFieldMappingStructure() {
@@ -86,30 +86,24 @@ public class BuildFrequencyKPI {
 		Document thresholdValueMapping = new Document(FIELD_NAME, "thresholdValueKPI172")
 				.append("fieldLabel", "Target KPI Value").append("fieldType", "number")
 				.append("section", "Custom Fields Mapping").append("tooltip",
-						new Document(DEFINITION, "Target KPI value denotes the bare "
-								+ "minimum a project should maintain for a KPI. User should just input the number and"
-								+ " the unit like percentage, hours will automatically be considered."
-								+ " If the threshold is empty, then a common target KPI line will be shown"));
+						new Document(DEFINITION,
+								"Target KPI value denotes the bare " +
+										"minimum a project should maintain for a KPI. User should just input the number and" +
+										" the unit like percentage, hours will automatically be considered." +
+										" If the threshold is empty, then a common target KPI line will be shown"));
 
 		mongoTemplate.getCollection("field_mapping_structure").insertOne(thresholdValueMapping);
-
 	}
 
 	public void addToKpiColumnConfig() {
 
 		Document kpiColumnConfigsDocument = new Document().append("basicProjectConfigId", null).append(KPI_ID, KPI_172)
-				.append("kpiColumnDetails",
-						Arrays.asList(
-								new Document(COLUMN_NAME, "Project Name").append(ORDER, 0).append(IS_SHOWN, true)
-										.append(IS_DEFAULT, false),
-								new Document(COLUMN_NAME, "Job Name").append(ORDER, 1).append(IS_SHOWN, true)
-										.append(IS_DEFAULT, false),
-								new Document(COLUMN_NAME, "Weeks").append(ORDER, 2).append(IS_SHOWN, true)
-										.append(IS_DEFAULT, false),
-								new Document(COLUMN_NAME, "Start Date").append(ORDER, 3).append(IS_SHOWN, true)
-										.append(IS_DEFAULT, false),
-								new Document(COLUMN_NAME, "Build Url").append(ORDER, 4).append(IS_SHOWN, true)
-										.append(IS_DEFAULT, false)));
+				.append("kpiColumnDetails", Arrays.asList(
+						new Document(COLUMN_NAME, "Project Name").append(ORDER, 0).append(IS_SHOWN, true).append(IS_DEFAULT, false),
+						new Document(COLUMN_NAME, "Job Name").append(ORDER, 1).append(IS_SHOWN, true).append(IS_DEFAULT, false),
+						new Document(COLUMN_NAME, "Weeks").append(ORDER, 2).append(IS_SHOWN, true).append(IS_DEFAULT, false),
+						new Document(COLUMN_NAME, "Start Date").append(ORDER, 3).append(IS_SHOWN, true).append(IS_DEFAULT, false),
+						new Document(COLUMN_NAME, "Build Url").append(ORDER, 4).append(IS_SHOWN, true).append(IS_DEFAULT, false)));
 
 		mongoTemplate.getCollection("kpi_column_configs").insertOne(kpiColumnConfigsDocument);
 	}

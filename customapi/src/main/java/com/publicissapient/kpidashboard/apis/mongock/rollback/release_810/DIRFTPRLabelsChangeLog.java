@@ -51,7 +51,6 @@ public class DIRFTPRLabelsChangeLog {
 
 	@RollbackExecution
 	public void rollback() {
-		//rollback
+		// rollback
 	}
-
 }

@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.*;
 import org.assertj.core.api.Assertions;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -54,6 +53,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -63,7 +63,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 /**
  * test file of release progress of backlog dashboard
- * 
+ *
  * @author shi6
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -120,13 +120,13 @@ public class BacklogEpicProgressServiceImplTest {
 		epicProgressService.sorting(dataCountList);
 		assertThat(dataCountList).isSortedAccordingTo((dataCount1, dataCount2) -> {
 			long sum1 = ((List<DataCount>) dataCount1.getValue()).stream()
-					.filter(subfilter -> subfilter.getSubFilter().equalsIgnoreCase(TO_DO)
-							|| subfilter.getSubFilter().equalsIgnoreCase(IN_PROGRESS))
+					.filter(subfilter -> subfilter.getSubFilter().equalsIgnoreCase(TO_DO) ||
+							subfilter.getSubFilter().equalsIgnoreCase(IN_PROGRESS))
 					.mapToLong(a -> (long) a.getValue()).sum();
 
 			long sum2 = ((List<DataCount>) dataCount2.getValue()).stream()
-					.filter(subfilter -> subfilter.getSubFilter().equalsIgnoreCase(TO_DO)
-							|| subfilter.getSubFilter().equalsIgnoreCase(IN_PROGRESS))
+					.filter(subfilter -> subfilter.getSubFilter().equalsIgnoreCase(TO_DO) ||
+							subfilter.getSubFilter().equalsIgnoreCase(IN_PROGRESS))
 					.mapToLong(a -> (long) a.getValue()).sum();
 
 			return Long.compare(sum1, sum2);
@@ -206,8 +206,8 @@ public class BacklogEpicProgressServiceImplTest {
 	public void testGetStatusWiseCountListNegative() {
 		List<JiraIssue> jiraIssueList = null;
 		EpicMetaData epicMetaData = new EpicMetaData("EPIC", "url", "2024-06-04T13:24:14.2500000");
-		DataCount dataCount = epicProgressService.getStatusWiseCountList(jiraIssueList,
-				jiraIssueReleaseStatusList.get(0), epicMetaData, fieldMapping);
+		DataCount dataCount = epicProgressService.getStatusWiseCountList(jiraIssueList, jiraIssueReleaseStatusList.get(0),
+				epicMetaData, fieldMapping);
 		assertThat(dataCount.getData()).isEqualTo("0");
 	}
 
@@ -291,7 +291,5 @@ public class BacklogEpicProgressServiceImplTest {
 		fullDataCount2.setCreatedDate("2024-06-04T13:24:14.2500000");
 		fullDataCount.add(fullDataCount2);
 		return fullDataCount;
-
 	}
-
 }

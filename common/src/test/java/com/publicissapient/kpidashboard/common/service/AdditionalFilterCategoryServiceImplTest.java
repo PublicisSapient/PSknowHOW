@@ -38,44 +38,44 @@ import com.publicissapient.kpidashboard.common.repository.application.Additional
 @ExtendWith(SpringExtension.class)
 public class AdditionalFilterCategoryServiceImplTest {
 
-    @Mock
-    private AdditionalFilterCategoryRepository additionalFilterCategoryRepository;
+	@Mock
+	private AdditionalFilterCategoryRepository additionalFilterCategoryRepository;
 
-    @InjectMocks
-    private AdditionalFilterCategoryServiceImpl additionalFilterCategoryService;
+	@InjectMocks
+	private AdditionalFilterCategoryServiceImpl additionalFilterCategoryService;
 
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
+	@BeforeEach
+	public void setup() {
+		MockitoAnnotations.openMocks(this);
+	}
 
-    @Test
-    public void testGetAdditionalFilterCategories() {
-        // Arrange
-        AdditionalFilterCategory category1 = new AdditionalFilterCategory();
-        category1.setLevel(1);
-        category1.setFilterCategoryId("Category ID1");
-        category1.setFilterCategoryName("Category A");
-        AdditionalFilterCategory category2 = new AdditionalFilterCategory();
-        category2.setLevel(2);
-        category2.setFilterCategoryId("Category ID2");
-        category2.setFilterCategoryName("Category B");
-        List<AdditionalFilterCategory> mockCategories = Arrays.asList(category1, category2);
+	@Test
+	public void testGetAdditionalFilterCategories() {
+		// Arrange
+		AdditionalFilterCategory category1 = new AdditionalFilterCategory();
+		category1.setLevel(1);
+		category1.setFilterCategoryId("Category ID1");
+		category1.setFilterCategoryName("Category A");
+		AdditionalFilterCategory category2 = new AdditionalFilterCategory();
+		category2.setLevel(2);
+		category2.setFilterCategoryId("Category ID2");
+		category2.setFilterCategoryName("Category B");
+		List<AdditionalFilterCategory> mockCategories = Arrays.asList(category1, category2);
 
-        // Mocking repository behavior
-        when(additionalFilterCategoryRepository.findAllByOrderByLevel()).thenReturn(mockCategories);
+		// Mocking repository behavior
+		when(additionalFilterCategoryRepository.findAllByOrderByLevel()).thenReturn(mockCategories);
 
-        // Act
-        List<AdditionalFilterCategory> result = additionalFilterCategoryService.getAdditionalFilterCategories();
+		// Act
+		List<AdditionalFilterCategory> result = additionalFilterCategoryService.getAdditionalFilterCategories();
 
-        // Assert
-        assertEquals(2, result.size());
-        assertEquals("Category ID1", result.get(0).getFilterCategoryId());
-        assertEquals(1, result.get(0).getLevel());
-        assertEquals("Category ID2", result.get(1).getFilterCategoryId());
-        assertEquals(2, result.get(1).getLevel());
+		// Assert
+		assertEquals(2, result.size());
+		assertEquals("Category ID1", result.get(0).getFilterCategoryId());
+		assertEquals(1, result.get(0).getLevel());
+		assertEquals("Category ID2", result.get(1).getFilterCategoryId());
+		assertEquals(2, result.get(1).getLevel());
 
-        // Verify that the repository method was called
-        verify(additionalFilterCategoryRepository, times(1)).findAllByOrderByLevel();
-    }
+		// Verify that the repository method was called
+		verify(additionalFilterCategoryRepository, times(1)).findAllByOrderByLevel();
+	}
 }

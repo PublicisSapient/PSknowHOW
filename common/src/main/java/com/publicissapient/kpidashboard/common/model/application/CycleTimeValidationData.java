@@ -28,9 +28,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * Cycle time validation data to show in excel.
- */
+/** Cycle time validation data to show in excel. */
 @Data
 @Builder
 @Getter
@@ -51,5 +49,4 @@ public class CycleTimeValidationData {
 	private Long intakeTime;
 	private Long dorTime;
 	private Long dodTime;
-
 }

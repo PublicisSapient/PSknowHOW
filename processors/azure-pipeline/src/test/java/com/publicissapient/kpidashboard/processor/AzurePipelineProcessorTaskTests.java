@@ -192,22 +192,25 @@ public class AzurePipelineProcessorTaskTests {
 	@Test
 	public void collectNoBuildServersNothingAdded() {
 		when(azurePipelineFactory.getAzurePipelineClient("Build")).thenReturn(buildClient);
-		when(projectBasicConfigRepository.findActiveProjects(anyBoolean())).thenReturn(listProjectBasicConfig);
-		when(buildRepository.findByProjectToolConfigIdAndBuildJob(any(), any())).thenReturn(new ArrayList<Build>());
+		when(projectBasicConfigRepository.findActiveProjects(anyBoolean()))
+				.thenReturn(listProjectBasicConfig);
+		when(buildRepository.findByProjectToolConfigIdAndBuildJob(any(), any()))
+				.thenReturn(new ArrayList<Build>());
 		when(buildClient.getInstanceJobs(any(), any(Long.class), any()))
 				.thenReturn(new HashMap<ObjectId, Set<Build>>());
-		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(azurePipelineJob());
+		when(projectToolConfigRepository.findByToolName("AzurePipeline"))
+				.thenReturn(azurePipelineJob());
 		AzurePipelineProcessor azurePipelineProcessor = new AzurePipelineProcessor();
 		task.execute(azurePipelineProcessor);
 		assertTrue(task.execute(azurePipelineProcessor));
-
 	}
 
 	@Test
 	public void collectNoJobsOnServerNothingAdded() {
 		when(azurePipelineClient.getInstanceJobs(any(), any(Long.class), any()))
 				.thenReturn(new HashMap<ObjectId, Set<Build>>());
-		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(azurePipelineJob());
+		when(projectToolConfigRepository.findByToolName("AzurePipeline"))
+				.thenReturn(azurePipelineJob());
 		task.execute(processorWithOneServer());
 		verifyNoMoreInteractions(buildRepository);
 	}
@@ -248,9 +251,9 @@ public class AzurePipelineProcessorTaskTests {
 		when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(basicConfigs);
 		when(azurePipelineClient.getInstanceJobs(Mockito.any(), anyLong(), any()))
 				.thenReturn(twoJobsWithTwoBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
-		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
-				ProcessorConstants.AZUREPIPELINE, "63da71facaac4d289c38744d"))
-						.thenReturn(optionalProcessorExecutionTraceLog);
+		when(processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.AZUREPIPELINE, "63da71facaac4d289c38744d"))
+				.thenReturn(optionalProcessorExecutionTraceLog);
 		task.execute(processor);
 		assertTrue(task.execute(processor));
 	}
@@ -274,9 +277,9 @@ public class AzurePipelineProcessorTaskTests {
 		when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(basicConfigs);
 		when(azurePipelineClient.getInstanceJobs(Mockito.any(), anyLong(), any()))
 				.thenReturn(twoJobsWithTwoBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
-		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
-				ProcessorConstants.AZUREPIPELINE, "63da71facaac4d289c38744d"))
-						.thenReturn(optionalProcessorExecutionTraceLog);
+		when(processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.AZUREPIPELINE, "63da71facaac4d289c38744d"))
+				.thenReturn(optionalProcessorExecutionTraceLog);
 		task.execute(processor);
 		assertTrue(task.execute(processor));
 	}
@@ -296,8 +299,7 @@ public class AzurePipelineProcessorTaskTests {
 		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(azurePipelineJob());
 		when(deploymentRepository.findByProcessorIdIn(Mockito.any())).thenReturn(deployments);
 		when(deploymentRepository.saveAll(Mockito.anyList())).thenReturn(null);
-		when(deploymentRepository.findByProjectToolConfigIdAndJobName(Mockito.any(), Mockito.anyString()))
-				.thenReturn(null);
+		when(deploymentRepository.findByProjectToolConfigIdAndJobName(Mockito.any(), Mockito.anyString())).thenReturn(null);
 		when(deploymentRepository.findByProcessorIdIn(anyCollection())).thenReturn(listOfDeployments());
 
 		boolean actualStatus = task.execute(processor);
@@ -402,8 +404,8 @@ public class AzurePipelineProcessorTaskTests {
 		AzurePipelineClient client2 = mock(AzurePipelineClient.class);
 		when(client2.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER, LASTUPDATEDTIME, projectBasicConfig))
 				.thenReturn(oneJobWithBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
-		when(buildRepository.findByProjectToolConfigIdAndBuildJob(AZUREPIPELINE_SAMPLE_SERVER.getId(),
-				build.getNumber())).thenReturn(null);
+		when(buildRepository.findByProjectToolConfigIdAndBuildJob(AZUREPIPELINE_SAMPLE_SERVER.getId(), build.getNumber()))
+				.thenReturn(null);
 		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(azurePipelineJob());
 		task.execute(processor);
 		verify(buildRepository, never()).save(build);
@@ -435,7 +437,6 @@ public class AzurePipelineProcessorTaskTests {
 		when(client2.getInstanceJobs(any(), any(Long.class), any())).thenReturn(new HashMap<ObjectId, Set<Build>>());
 		task.execute(processor);
 		assertTrue(task.execute(processor));
-
 	}
 
 	@Test
@@ -543,5 +544,4 @@ public class AzurePipelineProcessorTaskTests {
 
 		return releases;
 	}
-
 }

@@ -31,7 +31,6 @@ public class ReleaseDefectAssigneeEnh {
 		MongoCollection<Document> fieldMappingStructure = mongoTemplate.getCollection("field_mapping_structure");
 		fieldMappingStructure
 				.deleteOne(new Document(FIELD_NAME, new Document("$in", Collections.singletonList("jiraDodKPI143"))));
-
 	}
 
 	@RollbackExecution

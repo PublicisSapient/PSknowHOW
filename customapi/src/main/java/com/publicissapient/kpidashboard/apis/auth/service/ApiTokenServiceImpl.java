@@ -52,11 +52,10 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 	}
 
 	/**
-	 *
 	 * @param argA
-	 *            firstDate
+	 *          firstDate
 	 * @param argB
-	 *            secondDate
+	 *          secondDate
 	 * @return 0 = equal, -1 = firstDate is before secondDate, 1 = firstDate is
 	 *         after secondDate
 	 */
@@ -74,7 +73,6 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 		} else { // if argA is after argument.
 			return 1;
 		}
-
 	}
 
 	@Override
@@ -92,8 +90,9 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 			apiTokenRepository.save(apiToken);
 		} else {
 			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss", Locale.US);
-			throw new ApplicationException("Token already exists for " + apiUser + " expiring "
-					+ sdf.format(new Date(apiToken.getExpirationDt())), ApplicationException.DUPLICATE_DATA);
+			throw new ApplicationException(
+					"Token already exists for " + apiUser + " expiring " + sdf.format(new Date(apiToken.getExpirationDt())),
+					ApplicationException.DUPLICATE_DATA);
 		}
 		return apiKey;
 	}
@@ -113,7 +112,6 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 
 					return new UsernamePasswordAuthenticationToken(username, password, createAuthorities(roles));
 				}
-
 			}
 		}
 

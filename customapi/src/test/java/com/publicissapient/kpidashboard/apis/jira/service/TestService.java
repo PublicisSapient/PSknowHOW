@@ -30,7 +30,7 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 
 /**
  * test service for testing service class for scrum and kanban
- * 
+ *
  * @author shi6
  */
 @Component
@@ -52,8 +52,8 @@ public class TestService extends JiraKPIService<Object, Object, Object> {
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 		return null;
 	}
 }

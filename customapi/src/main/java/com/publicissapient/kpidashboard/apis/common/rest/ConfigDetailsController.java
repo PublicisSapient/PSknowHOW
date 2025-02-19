@@ -33,9 +33,7 @@ import com.publicissapient.kpidashboard.apis.model.ConfigDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Rest controller to handle configuration properties
- */
+/** Rest controller to handle configuration properties */
 @Slf4j
 @RestController
 public class ConfigDetailsController {
@@ -49,12 +47,12 @@ public class ConfigDetailsController {
 
 	/**
 	 * Returns required properties from application.prop
-	 * 
+	 *
 	 * @param request
-	 *            request
+	 *          request
 	 * @return ResponseEntity<ConfigDetails>
 	 */
-	//Todo: to be removed after V2 become primary view
+	// Todo: to be removed after V2 become primary view
 	@RequestMapping(value = "/configDetails", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ConfigDetails> getConfigDetails(HttpServletRequest request) {
 		log.info("ConfigDetailsController::getConfigDetails start");
@@ -62,5 +60,4 @@ public class ConfigDetailsController {
 		log.info("ConfigDetailsController::getConfigDetails end");
 		return ResponseEntity.status(HttpStatus.OK).body(configDetails);
 	}
-
 }

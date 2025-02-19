@@ -64,7 +64,7 @@ import com.publicissapient.kpidashboard.common.repository.application.FieldMappi
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 
-@SuppressWarnings({ "javadoc", "deprecation" })
+@SuppressWarnings({"javadoc", "deprecation"})
 @RunWith(MockitoJUnitRunner.class)
 public class CostOfDelayKanbanServiceImplTest {
 
@@ -103,8 +103,7 @@ public class CostOfDelayKanbanServiceImplTest {
 		accountHierarchyKanbanDataList = accountHierarchyKanbanFilterDataFactory.getAccountHierarchyKanbanDataList();
 
 		KanbanJiraIssueDataFactory kanbanJiraIssueDataFactory = KanbanJiraIssueDataFactory.newInstance();
-		kanbanJiraIssueDataList = kanbanJiraIssueDataFactory
-				.getKanbanJiraIssueDataListByTypeName(Arrays.asList("Story"));
+		kanbanJiraIssueDataList = kanbanJiraIssueDataFactory.getKanbanJiraIssueDataListByTypeName(Arrays.asList("Story"));
 		kanbanJiraIssueDataList.stream().forEach(f -> f.setChangeDate(LocalDateTime.now().minusDays(2).toString()));
 		jiraKanbanIssueRepository.saveAll(kanbanJiraIssueDataList);
 		kpiWiseAggregation.put("cost_Of_Delay", "sum");
@@ -121,7 +120,6 @@ public class CostOfDelayKanbanServiceImplTest {
 	@After
 	public void cleanup() {
 		jiraKanbanIssueRepository.deleteAll();
-
 	}
 
 	@Test
@@ -132,56 +130,62 @@ public class CostOfDelayKanbanServiceImplTest {
 				.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 
 		when(jiraKanbanIssueRepository.findCostOfDelayByType(Mockito.any())).thenReturn(kanbanJiraIssueDataList);
-		Map<String, Object> dataList = costOfDelayKanbanServiceImpl.fetchKPIDataFromDb(projectList, null, null,
-				kpiRequest);
+		Map<String, Object> dataList = costOfDelayKanbanServiceImpl.fetchKPIDataFromDb(projectList, null, null, kpiRequest);
 		assertThat("Total Release : ", dataList.size(), equalTo(1));
 	}
 
 	@Test
 	public void testGetKPIList() throws ApplicationException {
-		when(jiraKanbanIssueRepository.findCostOfDelayByType(Mockito.any())).thenReturn(kanbanJiraIssueDataList);
+		when(jiraKanbanIssueRepository.findCostOfDelayByType(Mockito.any()))
+				.thenReturn(kanbanJiraIssueDataList);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name()))
+		when(cacheService.getFromApplicationCache(
+						Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(5);
 
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
-		when(cacheService.getFullKanbanHierarchyLevel()).thenReturn(hierachyLevelFactory.getHierarchyLevels());
-		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-				new ArrayList<>(), accountHierarchyKanbanDataList, "hierarchyLevelOne", 4);
+		when(cacheService.getFullKanbanHierarchyLevel())
+				.thenReturn(hierachyLevelFactory.getHierarchyLevels());
+		TreeAggregatorDetail treeAggregatorDetail =
+				KPIHelperUtil.getTreeLeafNodesGroupedByFilter(
+						kpiRequest, new ArrayList<>(), accountHierarchyKanbanDataList, "hierarchyLevelOne", 4);
 
 		try {
-			KpiElement kpiElement = costOfDelayKanbanServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+			KpiElement kpiElement =
+					costOfDelayKanbanServiceImpl.getKpiData(
+							kpiRequest, kpiRequest.getKpiList().get(0), treeAggregatorDetail);
 			assertThat("KpiElement : ", kpiElement.getValue(), equalTo(null));
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
 	public void testGetStoryListCalculated() throws ApplicationException {
 
-		when(jiraKanbanIssueRepository.findCostOfDelayByType(Mockito.any())).thenReturn(kanbanJiraIssueDataList);
+		when(jiraKanbanIssueRepository.findCostOfDelayByType(Mockito.any()))
+				.thenReturn(kanbanJiraIssueDataList);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name()))
+		when(cacheService.getFromApplicationCache(
+						Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(5);
 
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
-		when(cacheService.getFullKanbanHierarchyLevel()).thenReturn(hierachyLevelFactory.getHierarchyLevels());
-		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-				new ArrayList<>(), accountHierarchyKanbanDataList, "hierarchyLevelOne", 4);
+		when(cacheService.getFullKanbanHierarchyLevel())
+				.thenReturn(hierachyLevelFactory.getHierarchyLevels());
+		TreeAggregatorDetail treeAggregatorDetail =
+				KPIHelperUtil.getTreeLeafNodesGroupedByFilter(
+						kpiRequest, new ArrayList<>(), accountHierarchyKanbanDataList, "hierarchyLevelOne", 4);
 
 		try {
-			KpiElement kpiElement = costOfDelayKanbanServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+			KpiElement kpiElement =
+					costOfDelayKanbanServiceImpl.getKpiData(
+							kpiRequest, kpiRequest.getKpiList().get(0), treeAggregatorDetail);
 			assertThat("KpiElement : ", kpiElement.getValue(), equalTo(null));
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
-
 }

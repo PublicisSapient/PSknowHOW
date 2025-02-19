@@ -24,9 +24,8 @@ import lombok.Data;
 
 /**
  * Change password request
- * 
- * @author vijkumar18
  *
+ * @author vijkumar18
  */
 @Data
 public class ChangePasswordRequest {
@@ -42,5 +41,4 @@ public class ChangePasswordRequest {
 
 	@NotNull
 	private String user;
-
 }

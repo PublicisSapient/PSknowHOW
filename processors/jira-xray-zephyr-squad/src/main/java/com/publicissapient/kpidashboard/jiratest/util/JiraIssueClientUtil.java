@@ -52,10 +52,10 @@ public final class JiraIssueClientUtil {
 	 * Gets list from json object or array
 	 *
 	 * @param issueField
-	 *            Atlassian IssueField
+	 *          Atlassian IssueField
 	 * @return list return from JsonObject or Array
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public static Collection getListFromJson(IssueField issueField) {
 
 		Object value = issueField.getValue();
@@ -83,7 +83,7 @@ public final class JiraIssueClientUtil {
 	 * Builds Filed Map
 	 *
 	 * @param fields
-	 *            IssueField Iterable
+	 *          IssueField Iterable
 	 * @return Map of FieldIssue ID and FieldIssue Object
 	 */
 	public static Map<String, IssueField> buildFieldMap(Iterable<IssueField> fields) {
@@ -102,7 +102,7 @@ public final class JiraIssueClientUtil {
 	 * Sorts Change Log group
 	 *
 	 * @param issue
-	 *            Atlassian Issue object
+	 *          Atlassian Issue object
 	 * @return List of ChangelogGroup
 	 */
 	public static List<ChangelogGroup> sortChangeLogGroup(Issue issue) {

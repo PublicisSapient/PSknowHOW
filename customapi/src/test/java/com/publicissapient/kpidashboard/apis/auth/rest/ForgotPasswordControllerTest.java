@@ -22,8 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
-
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,10 +42,10 @@ import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.apis.util.TestUtil;
 import com.publicissapient.kpidashboard.common.exceptions.ApplicationException;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 /**
- * 
  * @author vijmishr1
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ForgotPasswordControllerTest extends Mockito {
@@ -90,8 +88,12 @@ public class ForgotPasswordControllerTest extends Mockito {
 		when(forgotPasswordService.processForgotPassword(any(), any())).thenReturn(null);
 		ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();
 		forgotPasswordRequest.setEmail("abc@xyz.com");
-		mockMvc.perform(MockMvcRequestBuilders.post("/forgotPassword").contentType(TestUtil.APPLICATION_JSON_UTF8)
-				.content(TestUtil.convertObjectToJsonBytes(forgotPasswordRequest))).andExpect(status().isOk());
+		mockMvc
+				.perform(
+						MockMvcRequestBuilders.post("/forgotPassword")
+								.contentType(TestUtil.APPLICATION_JSON_UTF8)
+								.content(TestUtil.convertObjectToJsonBytes(forgotPasswordRequest)))
+				.andExpect(status().isOk());
 	}
 
 	@Test()
@@ -99,9 +101,12 @@ public class ForgotPasswordControllerTest extends Mockito {
 		when(customApiConfig.getUiHost()).thenReturn("localhost");
 		when(customApiConfig.getUiPort()).thenReturn("9999");
 
-		when(forgotPasswordService.validateEmailToken(any())).thenReturn(ResetPasswordTokenStatusEnum.VALID);
-		mockMvc.perform(MockMvcRequestBuilders.get("/validateEmailToken").contentType(TestUtil.APPLICATION_JSON_UTF8)
-				.param("token", UUID.randomUUID().toString()));
+		when(forgotPasswordService.validateEmailToken(any()))
+				.thenReturn(ResetPasswordTokenStatusEnum.VALID);
+		mockMvc.perform(
+				MockMvcRequestBuilders.get("/validateEmailToken")
+						.contentType(TestUtil.APPLICATION_JSON_UTF8)
+						.param("token", UUID.randomUUID().toString()));
 	}
 
 	@Test
@@ -118,8 +123,11 @@ public class ForgotPasswordControllerTest extends Mockito {
 		when(forgotPasswordService.resetPassword(any()))
 				.thenThrow(new ApplicationException("Token is ", ApplicationException.BAD_DATA));
 		ResetPasswordRequest resetPasswordRequest = new ResetPasswordRequest();
-		mockMvc.perform(MockMvcRequestBuilders.post("/resetPassword").contentType(TestUtil.APPLICATION_JSON_UTF8)
-				.content(TestUtil.convertObjectToJsonBytes(resetPasswordRequest))).andExpect(status().isBadRequest());
+		mockMvc
+				.perform(
+						MockMvcRequestBuilders.post("/resetPassword")
+								.contentType(TestUtil.APPLICATION_JSON_UTF8)
+								.content(TestUtil.convertObjectToJsonBytes(resetPasswordRequest)))
+				.andExpect(status().isBadRequest());
 	}
-
 }

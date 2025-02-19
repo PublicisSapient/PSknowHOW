@@ -52,6 +52,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 	private UsersSessionService usersSessionService;
 	@Autowired
 	private UserInfoRepository userInfoRepository;
+
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
 			AuthenticationException exception) throws IOException, ServletException {
@@ -73,7 +74,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 
 		String username = httpServletRequest.getParameter(USERNAME);
 		UserInfo userinfo = userInfoRepository.findByUsername(username);
-		if(userinfo != null) {
+		if (userinfo != null) {
 			usersSessionService.createUsersSessionInfo(userinfo, AuthenticationEvent.LOGIN, Status.FAIL);
 		}
 

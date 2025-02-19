@@ -39,7 +39,6 @@ import com.publicissapient.kpidashboard.apis.model.FeedbackSubmitDTO;
 
 /**
  * @author sanbhand1
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class FeedbackControllerTest {
@@ -56,9 +55,7 @@ public class FeedbackControllerTest {
 	@Mock
 	private AuthenticationService authenticationService;
 
-	/**
-	 * method includes pre-processes for test cases
-	 */
+	/** method includes pre-processes for test cases */
 	@Before
 	public void before() {
 		testUsername = "admin77";
@@ -68,46 +65,42 @@ public class FeedbackControllerTest {
 		feedbackSubmitDTO = new FeedbackSubmitDTO();
 		feedbackSubmitDTO.setUsername(testUsername);
 		feedbackSubmitDTO.setFeedback("feedback");
-
 	}
 
-	/**
-	 * method includes post processes for test cases
-	 */
+	/** method includes post processes for test cases */
 	@After
 	public void after() {
 		mockMvc = null;
 		feedbackSubmitDTO = null;
 		testUsername = null;
-
 	}
 
 	/**
 	 * method to test GET /feedback/categories restPoint ;
-	 * 
+	 *
+	 * <p>
 	 * Get all feedback categories
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
 	public void testGetFeedbackCategories() throws Exception {
-		mockMvc.perform(
-				MockMvcRequestBuilders.get("/feedback/categories").contentType(MediaType.APPLICATION_JSON_VALUE))
+		mockMvc.perform(MockMvcRequestBuilders.get("/feedback/categories").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
 
 	/**
 	 * method to test POST /feedback/submitfeedback restPoint ; to submit all
 	 * feedback
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
 	public void testSubmitFeedback() throws Exception {
 
-		mockMvc.perform(MockMvcRequestBuilders.post("/feedback/submitfeedback")
-				.content(mapper.writeValueAsString(feedbackSubmitDTO)).contentType(MediaType.APPLICATION_JSON_VALUE))
+		mockMvc
+				.perform(MockMvcRequestBuilders.post("/feedback/submitfeedback")
+						.content(mapper.writeValueAsString(feedbackSubmitDTO)).contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
-
 	}
 }

@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Assert;
@@ -47,6 +46,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
@@ -96,13 +96,13 @@ public class PIPredictabilityServiceImplTest {
 	@Mock
 	private CustomApiConfig customApiSetting;
 
-    @Mock
-    private KpiDataCacheService kpiDataCacheService;
+	@Mock
+	private KpiDataCacheService kpiDataCacheService;
 
-    @Mock
-    private FilterHelperService filterHelperService;
+	@Mock
+	private FilterHelperService filterHelperService;
 
-    @Mock
+	@Mock
 	private JiraServiceR jiraKPIService;
 
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
@@ -145,7 +145,6 @@ public class PIPredictabilityServiceImplTest {
 		// set aggregation criteria kpi wise
 		kpiWiseAggregation.put("PI_PREDICTABILITY", "sum");
 		prepareReleaseWisePIList(releaseWisePIList);
-
 	}
 
 	@After
@@ -165,9 +164,9 @@ public class PIPredictabilityServiceImplTest {
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		List<JiraIssue> piWiseEpicList = jiraIssueDataFactory.getJiraIssues();
 
-        when(kpiDataCacheService.fetchPiPredictabilityData(Mockito.any(), Mockito.any())).thenReturn(piWiseEpicList);
-      	Map<String, Object> defectDataListMap = piPredictabilityService.fetchKPIDataFromDb(leafNodeList, startDate,
-				endDate, kpiRequest);
+		when(kpiDataCacheService.fetchPiPredictabilityData(Mockito.any(), Mockito.any())).thenReturn(piWiseEpicList);
+		Map<String, Object> defectDataListMap = piPredictabilityService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
+				kpiRequest);
 		assertNotNull(defectDataListMap);
 	}
 
@@ -190,8 +189,8 @@ public class PIPredictabilityServiceImplTest {
 		List<ReleaseWisePI> objects = new ArrayList<>();
 
 		objects.add(release1);
-		Map<String, Object> defectDataListMap = piPredictabilityService.fetchKPIDataFromDb(leafNodeList, startDate,
-				endDate, kpiRequest);
+		Map<String, Object> defectDataListMap = piPredictabilityService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
+				kpiRequest);
 		assertNotNull(defectDataListMap);
 	}
 
@@ -248,7 +247,7 @@ public class PIPredictabilityServiceImplTest {
 		when(piPredictabilityService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		List<ReleaseWisePI> releaseWisePIList = new ArrayList<>();
 		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(5);
-        when(kpiDataCacheService.fetchPiPredictabilityData(Mockito.any(), Mockito.any())).thenReturn(piWiseEpicList);
+		when(kpiDataCacheService.fetchPiPredictabilityData(Mockito.any(), Mockito.any())).thenReturn(piWiseEpicList);
 		try {
 			KpiElement kpiElement = piPredictabilityService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -310,6 +309,7 @@ public class PIPredictabilityServiceImplTest {
 	@Test
 	public void calculateThresholdValue() {
 		fieldMapping.setThresholdValueKPI153("15");
-		 Assert.assertEquals(Double.valueOf(15D),piPredictabilityService.calculateThresholdValue(fieldMapping.getThresholdValueKPI153(), KPICode.PI_PREDICTABILITY.getKpiId()));
+		Assert.assertEquals(Double.valueOf(15D), piPredictabilityService
+				.calculateThresholdValue(fieldMapping.getThresholdValueKPI153(), KPICode.PI_PREDICTABILITY.getKpiId()));
 	}
 }

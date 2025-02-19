@@ -90,8 +90,8 @@ public class TeamCapacityServiceImpl extends JiraKPIService<Double, List<Object>
 	 * @throws ApplicationException
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
@@ -216,8 +216,8 @@ public class TeamCapacityServiceImpl extends JiraKPIService<Double, List<Object>
 		List<KanbanCapacity> kanbanCapacityList = new ArrayList<>();
 
 		Double capacity = 0.0d;
-		for (LocalDate currentDate = dateRange.getStartDate(); currentDate.compareTo(dateRange.getStartDate()) >= 0
-				&& dateRange.getEndDate().compareTo(currentDate) >= 0; currentDate = currentDate.plusDays(1)) {
+		for (LocalDate currentDate = dateRange.getStartDate(); currentDate.compareTo(dateRange.getStartDate()) >= 0 &&
+				dateRange.getEndDate().compareTo(currentDate) >= 0; currentDate = currentDate.plusDays(1)) {
 			List<KanbanCapacity> dummyList = new ArrayList<>();
 			dummyList.add(KanbanCapacity.builder().capacity(0.0d).startDate(currentDate).endDate(currentDate)
 					.projectName(projectName).build());
@@ -230,7 +230,6 @@ public class TeamCapacityServiceImpl extends JiraKPIService<Double, List<Object>
 	}
 
 	/**
-	 *
 	 * @param kpiRequest
 	 * @param currentDate
 	 * @return
@@ -255,8 +254,8 @@ public class TeamCapacityServiceImpl extends JiraKPIService<Double, List<Object>
 	private String getRange(CustomDateRange dateRange, KpiRequest kpiRequest) {
 		String range = null;
 		if (CommonConstant.WEEK.equalsIgnoreCase(kpiRequest.getDuration())) {
-			range = DateUtil.localDateTimeConverter(dateRange.getStartDate()) + " to "
-					+ DateUtil.localDateTimeConverter(dateRange.getEndDate());
+			range = DateUtil.localDateTimeConverter(dateRange.getStartDate()) + " to " +
+					DateUtil.localDateTimeConverter(dateRange.getEndDate());
 		} else if (CommonConstant.MONTH.equalsIgnoreCase(kpiRequest.getDuration())) {
 			range = dateRange.getStartDate().getMonth().toString() + " " + dateRange.getStartDate().getYear();
 		} else {
@@ -274,5 +273,4 @@ public class TeamCapacityServiceImpl extends JiraKPIService<Double, List<Object>
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI58(), KPICode.TEAM_CAPACITY.getKpiId());
 	}
-
 }

@@ -112,70 +112,100 @@ public class KpiDataCacheServiceImplTest {
 	}
 
 	@Test
-    public void testFetchIssueCountData() {
-        when(kpiDataProvider.fetchIssueCountDataFromDB(any(), any(), any())).thenReturn(new HashMap<>());
-        assertNotNull(kpiDataCacheService.fetchIssueCountData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi1"));
-    }
+	public void testFetchIssueCountData() {
+		when(kpiDataProvider.fetchIssueCountDataFromDB(any(), any(), any()))
+				.thenReturn(new HashMap<>());
+		assertNotNull(
+				kpiDataCacheService.fetchIssueCountData(
+						new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi1"));
+	}
 
 	@Test
 	public void testfetchBuildFrequencydata() {
-		when(kpiDataProvider.fetchBuildFrequencyData(any(), any(), any())).thenReturn(new ArrayList<>());
-		List<Build> result = kpiDataCacheService.fetchBuildFrequencyData(new ObjectId(), "",
-				"", "kpi1");
+		when(kpiDataProvider.fetchBuildFrequencyData(any(), any(), any()))
+				.thenReturn(new ArrayList<>());
+		List<Build> result =
+				kpiDataCacheService.fetchBuildFrequencyData(new ObjectId(), "", "", "kpi1");
 		assertNotNull(result);
 	}
 
 	@Test
 	public void fetchSprintCapacityData_shouldReturnCorrectData_whenValidInput() {
-		when(kpiDataProvider.fetchSprintCapacityDataFromDb(any(), any(), any())).thenReturn(new HashMap<>());
-		Map<String, Object> result = kpiDataCacheService.fetchSprintCapacityData(new KpiRequest(), new ObjectId(),
-				new ArrayList<>(), "kpi1");
+		when(kpiDataProvider.fetchSprintCapacityDataFromDb(any(), any(), any()))
+				.thenReturn(new HashMap<>());
+		Map<String, Object> result =
+				kpiDataCacheService.fetchSprintCapacityData(
+						new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi1");
 		assertNotNull(result);
 	}
 
 	@Test
 	public void fetchSprintPredictabilityData_shouldReturnCorrectData_whenValidInput() {
-		when(kpiDataProvider.fetchSprintPredictabilityDataFromDb(any(), any(), any())).thenReturn(new HashMap<>());
-		Map<String, Object> result = kpiDataCacheService.fetchSprintPredictabilityData(new KpiRequest(), new ObjectId(),
-				new ArrayList<>(), "kpi5");
+		when(kpiDataProvider.fetchSprintPredictabilityDataFromDb(any(), any(), any()))
+				.thenReturn(new HashMap<>());
+		Map<String, Object> result =
+				kpiDataCacheService.fetchSprintPredictabilityData(
+						new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi5");
 		assertNotNull(result);
 	}
 
 	@Test
 	public void fetchSprintVelocityData_shouldReturnCorrectData_whenValidInput() {
 		when(kpiDataProvider.fetchSprintVelocityDataFromDb(any(), any())).thenReturn(new HashMap<>());
-		Map<String, Object> result = kpiDataCacheService.fetchSprintVelocityData(new KpiRequest(), new ObjectId(),
-				"kpi39");
+		Map<String, Object> result =
+				kpiDataCacheService.fetchSprintVelocityData(new KpiRequest(), new ObjectId(), "kpi39");
 		assertNotNull(result);
 	}
 
 	@Test
 	public void testFetchScopeChurnData() {
 		when(kpiDataProvider.fetchScopeChurnData(any(), any(), any())).thenReturn(new HashMap<>());
-		assertNotNull(kpiDataCacheService.fetchScopeChurnData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi1"));
+		assertNotNull(
+				kpiDataCacheService.fetchScopeChurnData(
+						new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi1"));
 	}
 
 	@Test
 	public void testFetchCommitmentReliabilityData() {
-		when(kpiDataProvider.fetchCommitmentReliabilityData(any(), any(), any())).thenReturn(new HashMap<>());
-		assertNotNull(kpiDataCacheService.fetchCommitmentReliabilityData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi1"));
+		when(kpiDataProvider.fetchCommitmentReliabilityData(any(), any(), any()))
+				.thenReturn(new HashMap<>());
+		assertNotNull(
+				kpiDataCacheService.fetchCommitmentReliabilityData(
+						new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi1"));
 	}
 
 	@Test
 	public void testFetchCostOfDelayData() {
 		when(kpiDataProvider.fetchCostOfDelayData(any())).thenReturn(new HashMap<>());
-		assertNotNull(kpiDataCacheService.fetchCostOfDelayData(new ObjectId(), KPICode.COST_OF_DELAY.getKpiId()));
+		assertNotNull(
+				kpiDataCacheService.fetchCostOfDelayData(new ObjectId(), KPICode.COST_OF_DELAY.getKpiId()));
 	}
 
 	@Test
 	public void testFetchProjectReleaseData() {
 		when(kpiDataProvider.fetchProjectReleaseData(any())).thenReturn(new ArrayList<>());
-		assertNotNull(kpiDataCacheService.fetchProjectReleaseData(new ObjectId(), KPICode.PROJECT_RELEASES.getKpiId()));
+		assertNotNull(
+				kpiDataCacheService.fetchProjectReleaseData(
+						new ObjectId(), KPICode.PROJECT_RELEASES.getKpiId()));
 	}
 
 	@Test
 	public void testFetchPiPredictabilityData() {
 		when(kpiDataProvider.fetchPiPredictabilityData(any())).thenReturn(new ArrayList<>());
-		assertNotNull(kpiDataCacheService.fetchPiPredictabilityData(new ObjectId(), KPICode.PI_PREDICTABILITY.getKpiId()));
+		assertNotNull(
+				kpiDataCacheService.fetchPiPredictabilityData(
+						new ObjectId(), KPICode.PI_PREDICTABILITY.getKpiId()));
+	}
+
+	@Test
+	public void testFetchCreatedVsResolvedData() {
+		when(kpiDataProvider.fetchCreatedVsResolvedData(any(), any(), any()))
+				.thenReturn(new HashMap<>());
+		assertNotNull(
+				kpiDataCacheService.fetchCreatedVsResolvedData(
+						new KpiRequest(),
+						new ObjectId(),
+						new ArrayList<>(),
+						KPICode.CREATED_VS_RESOLVED_DEFECTS.getKpiId()));
 	}
 }

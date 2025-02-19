@@ -3,7 +3,6 @@ package com.publicissapient.kpidashboard.apis.auth.token;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
-
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,12 +41,10 @@ public class CookieUtil {
 			cookie.setDomain(authProperties.getDomain());
 		}
 		return cookie;
-
 	}
 
 	public ResponseCookie deleteAccessTokenCookie() {
 		return ResponseCookie.from(AUTH_COOKIE, "").build();
-
 	}
 
 	public Cookie getAuthCookie(HttpServletRequest request) {
@@ -111,6 +108,5 @@ public class CookieUtil {
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 		headers.add(HttpHeaders.COOKIE, AUTH_COOKIE + "=" + token);
 		return headers;
-
 	}
 }

@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.parser;
 
 import org.codehaus.jettison.json.JSONArray;
@@ -28,7 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -51,15 +49,13 @@ public class CustomChangelogJsonParserTest {
 
 	ChangelogItem changelogItem;
 
-
-
 	JSONArray mockData = new JSONArray();
 
 	@Before
 	public void setup() throws JSONException {
 		changelogItem = mockChangeLogData();
-		//sampleJson = mockJSONData();
-		mockData =  mockJSONArray();
+		// sampleJson = mockJSONData();
+		mockData = mockJSONArray();
 	}
 
 	@Test

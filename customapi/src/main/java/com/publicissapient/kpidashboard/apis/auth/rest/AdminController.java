@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.auth.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.Collection;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +38,9 @@ import com.publicissapient.kpidashboard.apis.auth.service.ApiTokenService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.common.util.EncryptionException;
 
-//import com.sapient.
+// import com.sapient.
 
-/**
- * Rest Controller to handle admin request
- */
+/** Rest Controller to handle admin request */
 @RestController
 @RequestMapping("/admin")
 @Admin

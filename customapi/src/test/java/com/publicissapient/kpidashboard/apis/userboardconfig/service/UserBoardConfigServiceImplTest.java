@@ -80,7 +80,6 @@ import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBo
 
 /**
  * @author yasbano
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class UserBoardConfigServiceImplTest {
@@ -157,8 +156,7 @@ public class UserBoardConfigServiceImplTest {
 		when(userBoardConfigMapper.toDto(any())).thenReturn(userBoardConfigDTO);
 		when(authenticationService.getLoggedInUser()).thenReturn(username);
 		when(userBoardConfigRepository.save(getData(username, true))).thenReturn(getData(username, true));
-		ServiceResponse response = userBoardConfigServiceImpl.saveBoardConfig(userBoardConfigDTO, ConfigLevel.USER,
-				projId);
+		ServiceResponse response = userBoardConfigServiceImpl.saveBoardConfig(userBoardConfigDTO, ConfigLevel.USER, projId);
 		assertNotNull(response);
 	}
 
@@ -171,8 +169,7 @@ public class UserBoardConfigServiceImplTest {
 		when(userBoardConfigRepository.save(getData(username, true))).thenReturn(getData(username, true));
 		when(userBoardConfigMapper.toEntity(userBoardConfigDTO)).thenReturn(getData(username, true));
 
-		ServiceResponse response = userBoardConfigServiceImpl.saveBoardConfig(userBoardConfigDTO, ConfigLevel.USER,
-				projId);
+		ServiceResponse response = userBoardConfigServiceImpl.saveBoardConfig(userBoardConfigDTO, ConfigLevel.USER, projId);
 		assertNotNull(response);
 	}
 
@@ -184,8 +181,7 @@ public class UserBoardConfigServiceImplTest {
 		when(userBoardConfigMapper.toEntity(userBoardConfigDTO)).thenReturn(getData(username, true));
 		when(userBoardConfigMapper.toDto(any())).thenReturn(userBoardConfigDTO);
 		when(authenticationService.getLoggedInUser()).thenReturn(username);
-		ServiceResponse response = userBoardConfigServiceImpl.saveBoardConfig(userBoardConfigDTO, ConfigLevel.USER,
-				projId);
+		ServiceResponse response = userBoardConfigServiceImpl.saveBoardConfig(userBoardConfigDTO, ConfigLevel.USER, projId);
 		assertNotNull(response.getData());
 	}
 
@@ -215,8 +211,7 @@ public class UserBoardConfigServiceImplTest {
 		when(userBoardConfigMapper.toDto(any())).thenReturn(userBoardConfigDTO);
 		when(authenticationService.getLoggedInUser()).thenReturn(username);
 
-		assertNotNull(
-				userBoardConfigServiceImpl.saveBoardConfig(userBoardConfigDTO, ConfigLevel.USER, projId).getData());
+		assertNotNull(userBoardConfigServiceImpl.saveBoardConfig(userBoardConfigDTO, ConfigLevel.USER, projId).getData());
 	}
 
 	@Test
@@ -373,9 +368,9 @@ public class UserBoardConfigServiceImplTest {
 		String username = "user";
 		doReturn(username).when(authenticationService).getLoggedInUser();
 		KpiMasterDataFactory kpiMasterDataFactory = KpiMasterDataFactory.newInstance();
-		List<String> kpiIdList = Arrays.asList("kpi14", "kpi82", "kpi111", "kpi35", "kpi34", "kpi37", "kpi121",
-				"kpi119", "kpi128", "kpi75", "kpi55", "kpi54", "kpi50", "kpi51", "kpi48", "kpi997", "kpi63", "kpi79",
-				"kpi80", "kpi127", "kpi989");
+		List<String> kpiIdList = Arrays.asList("kpi14", "kpi82", "kpi111", "kpi35", "kpi34", "kpi37", "kpi121", "kpi119",
+				"kpi128", "kpi75", "kpi55", "kpi54", "kpi50", "kpi51", "kpi48", "kpi997", "kpi63", "kpi79", "kpi80", "kpi127",
+				"kpi989");
 		List<KpiMaster> kpiMasters = kpiMasterDataFactory.getSpecificKpis(kpiIdList);
 		when(configHelperService.loadKpiMaster()).thenReturn(kpiMasters);
 		when(kpiCategoryRepository.findAll()).thenReturn(kpiCategoryList);
@@ -391,9 +386,8 @@ public class UserBoardConfigServiceImplTest {
 		String username = "testuser";
 		doReturn(username).when(authenticationService).getLoggedInUser();
 		KpiMasterDataFactory kpiMasterDataFactory = KpiMasterDataFactory.newInstance();
-		List<String> kpiIdList = Arrays.asList("kpi14", "kpi82", "kpi111", "kpi35", "kpi34", "kpi37", "kpi121",
-				"kpi119", "kpi128", "kpi75", "kpi55", "kpi54", "kpi50", "kpi51", "kpi48", "kpi63", "kpi79", "kpi80",
-				"kpi127", "kpi989");
+		List<String> kpiIdList = Arrays.asList("kpi14", "kpi82", "kpi111", "kpi35", "kpi34", "kpi37", "kpi121", "kpi119",
+				"kpi128", "kpi75", "kpi55", "kpi54", "kpi50", "kpi51", "kpi48", "kpi63", "kpi79", "kpi80", "kpi127", "kpi989");
 		List<KpiMaster> kpiMasters = kpiMasterDataFactory.getSpecificKpis(kpiIdList);
 		when(configHelperService.loadKpiMaster()).thenReturn(kpiMasters);
 		when(kpiCategoryRepository.findAll()).thenReturn(kpiCategoryList);
@@ -418,9 +412,9 @@ public class UserBoardConfigServiceImplTest {
 		String username = "testuser";
 		doReturn(username).when(authenticationService).getLoggedInUser();
 		KpiMasterDataFactory kpiMasterDataFactory = KpiMasterDataFactory.newInstance();
-		List<String> kpiIdList = Arrays.asList("kpi14", "kpi82", "kpi111", "kpi35", "kpi34", "kpi37", "kpi121",
-				"kpi119", "kpi128", "kpi75", "kpi55", "kpi54", "kpi50", "kpi51", "kpi48", "kpi997", "kpi63", "kpi79",
-				"kpi80", "kpi127", "kpi989");
+		List<String> kpiIdList = Arrays.asList("kpi14", "kpi82", "kpi111", "kpi35", "kpi34", "kpi37", "kpi121", "kpi119",
+				"kpi128", "kpi75", "kpi55", "kpi54", "kpi50", "kpi51", "kpi48", "kpi997", "kpi63", "kpi79", "kpi80", "kpi127",
+				"kpi989");
 		List<KpiMaster> kpiMasters = kpiMasterDataFactory.getSpecificKpis(kpiIdList);
 		kpiMasters.addAll(kpiMasterDataFactory.getSpecificKpis(Arrays.asList("kpi124")));
 		when(configHelperService.loadKpiMaster()).thenReturn(kpiMasters);
@@ -455,14 +449,12 @@ public class UserBoardConfigServiceImplTest {
 				createUserInfo("poorao",
 						Arrays.asList(createProjectAccess("ROLE_PROJECT_ADMIN",
 								Arrays.asList(createAccessNode("project",
-										Arrays.asList(createAccessItem("proj1", "proj1"),
-												createAccessItem("proj2", "proj2"))))))),
+										Arrays.asList(createAccessItem("proj1", "proj1"), createAccessItem("proj2", "proj2"))))))),
 				createUserInfo("andtejas",
 						Arrays.asList(createProjectAccess("ROLE_PROJECT_ADMIN",
-								Arrays.asList(createAccessNode("project",
-										Arrays.asList(createAccessItem("proj2", "proj2"))))))),
-				createUserInfo("palaggar2", Arrays.asList(createProjectAccess("ROLE_SUPERADMIN", Arrays
-						.asList(createAccessNode("project", Arrays.asList(createAccessItem("proj2", "proj2"))))))));
+								Arrays.asList(createAccessNode("project", Arrays.asList(createAccessItem("proj2", "proj2"))))))),
+				createUserInfo("palaggar2", Arrays.asList(createProjectAccess("ROLE_SUPERADMIN",
+						Arrays.asList(createAccessNode("project", Arrays.asList(createAccessItem("proj2", "proj2"))))))));
 		return users;
 	}
 
@@ -498,9 +490,9 @@ public class UserBoardConfigServiceImplTest {
 		String username = "testuser";
 		doReturn(username).when(authenticationService).getLoggedInUser();
 		KpiMasterDataFactory kpiMasterDataFactory = KpiMasterDataFactory.newInstance();
-		List<String> kpiIdList = Arrays.asList("kpi14", "kpi82", "kpi111", "kpi35", "kpi34", "kpi37", "kpi121",
-				"kpi119", "kpi128", "kpi75", "kpi55", "kpi54", "kpi50", "kpi51", "kpi48", "kpi997", "kpi63", "kpi79",
-				"kpi80", "kpi127", "kpi989");
+		List<String> kpiIdList = Arrays.asList("kpi14", "kpi82", "kpi111", "kpi35", "kpi34", "kpi37", "kpi121", "kpi119",
+				"kpi128", "kpi75", "kpi55", "kpi54", "kpi50", "kpi51", "kpi48", "kpi997", "kpi63", "kpi79", "kpi80", "kpi127",
+				"kpi989");
 		List<KpiMaster> kpiMasters = kpiMasterDataFactory.getSpecificKpis(kpiIdList);
 		kpiMasters.addAll(kpiMasterDataFactory.getSpecificKpis(Arrays.asList("kpi124", "kpi125")));
 		when(configHelperService.loadKpiMaster()).thenReturn(kpiMasters);
@@ -533,9 +525,9 @@ public class UserBoardConfigServiceImplTest {
 		String username = "testuser";
 		doReturn(username).when(authenticationService).getLoggedInUser();
 		KpiMasterDataFactory kpiMasterDataFactory = KpiMasterDataFactory.newInstance();
-		List<String> kpiIdList = Arrays.asList("kpi14", "kpi82", "kpi111", "kpi35", "kpi34", "kpi37", "kpi121",
-				"kpi119", "kpi128", "kpi75", "kpi55", "kpi54", "kpi50", "kpi51", "kpi48", "kpi997", "kpi63", "kpi79",
-				"kpi80", "kpi127", "kpi989");
+		List<String> kpiIdList = Arrays.asList("kpi14", "kpi82", "kpi111", "kpi35", "kpi34", "kpi37", "kpi121", "kpi119",
+				"kpi128", "kpi75", "kpi55", "kpi54", "kpi50", "kpi51", "kpi48", "kpi997", "kpi63", "kpi79", "kpi80", "kpi127",
+				"kpi989");
 		List<KpiMaster> kpiMasters = kpiMasterDataFactory.getSpecificKpis(kpiIdList);
 		kpiMasters.addAll(kpiMasterDataFactory.getSpecificKpis(Arrays.asList("kpi124")));
 		when(configHelperService.loadKpiMaster()).thenReturn(kpiMasters);
@@ -568,9 +560,9 @@ public class UserBoardConfigServiceImplTest {
 		String username = "testuser";
 		doReturn(username).when(authenticationService).getLoggedInUser();
 		KpiMasterDataFactory kpiMasterDataFactory = KpiMasterDataFactory.newInstance();
-		List<String> kpiIdList = Arrays.asList("kpi14", "kpi82", "kpi111", "kpi35", "kpi34", "kpi37", "kpi121",
-				"kpi119", "kpi128", "kpi75", "kpi55", "kpi54", "kpi50", "kpi51", "kpi48", "kpi997", "kpi63", "kpi79",
-				"kpi80", "kpi127", "kpi989");
+		List<String> kpiIdList = Arrays.asList("kpi14", "kpi82", "kpi111", "kpi35", "kpi34", "kpi37", "kpi121", "kpi119",
+				"kpi128", "kpi75", "kpi55", "kpi54", "kpi50", "kpi51", "kpi48", "kpi997", "kpi63", "kpi79", "kpi80", "kpi127",
+				"kpi989");
 		List<KpiMaster> kpiMasters = kpiMasterDataFactory.getSpecificKpis(kpiIdList);
 		kpiMasters.addAll(kpiMasterDataFactory.getSpecificKpis(Arrays.asList("kpi124")));
 		when(configHelperService.loadKpiMaster()).thenReturn(kpiMasters);
@@ -690,7 +682,6 @@ public class UserBoardConfigServiceImplTest {
 		boardKpisList.add(createKpi("kpi75", "Estimate vs Actual", true, true, 5));
 		board.setKpis(boardKpisList);
 		return board;
-
 	}
 
 	private Board createMyKnowBord() {
@@ -706,7 +697,6 @@ public class UserBoardConfigServiceImplTest {
 		boardKpisList.add(createKpi("kpi37", "Defect Rejection Rate", true, true, 6));
 		board.setKpis(boardKpisList);
 		return board;
-
 	}
 
 	private Board createMyKnowHowKanbanBord() {
@@ -723,7 +713,6 @@ public class UserBoardConfigServiceImplTest {
 		boardKpisList.add(createKpi("kpi63", "Regression Automation Coverage", true, true, 7));
 		board.setKpis(boardKpisList);
 		return board;
-
 	}
 
 	private Board createCategoryOneBoard() {
@@ -739,7 +728,6 @@ public class UserBoardConfigServiceImplTest {
 
 		board.setKpis(boardKpisList);
 		return board;
-
 	}
 
 	private Board createCategoryOneKanbanBoard() {
@@ -756,7 +744,6 @@ public class UserBoardConfigServiceImplTest {
 		boardKpisList.add(createKpi("kpi50", "Net Open Ticket Count by Priority", true, true, 7));
 		board.setKpis(boardKpisList);
 		return board;
-
 	}
 
 	private BoardKpis createKpi(String id, String name, boolean b, boolean shown, int order) {

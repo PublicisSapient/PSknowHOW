@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * @author sanbhand1
- *
  */
 @Data
 @Builder
@@ -21,5 +20,4 @@ public class FeedbackSubmitDTO {
 	public String toString() {
 		return "FeedbackSubmitDTO [username=" + this.username + ", feedback=" + this.feedback + "]";
 	}
-
 }

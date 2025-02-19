@@ -32,7 +32,7 @@ import lombok.Data;
 
 /**
  * Stores board configuration details of user/project
- * 
+ *
  * @author yasbano
  */
 @Data
@@ -41,7 +41,7 @@ public class UserBoardConfig {
 	@Id
 	private ObjectId id;
 	private String username;
-	private String basicProjectConfigId;// for proj level configs
+	private String basicProjectConfigId; // for proj level configs
 	private List<Board> scrum;
 	private List<Board> kanban;
 	private List<Board> others;

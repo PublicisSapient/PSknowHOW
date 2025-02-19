@@ -29,11 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * 
- * GitLabConfig represents a class which holds GitLabConfig details.
- *
- */
+/** GitLabConfig represents a class which holds GitLabConfig details. */
 @Component
 @ConfigurationProperties(prefix = "gitlab")
 @Data
@@ -44,8 +40,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GitLabConfig {
 	private String cron;
+
 	@Value("${aesEncryptionKey}")
 	private String aesEncryptionKey;
+
 	private int initialRunOccurrenceInDays;
 	private String api;
 	private String customApiBaseUrl;

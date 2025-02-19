@@ -28,7 +28,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.repository.application.ProjectHierarchyRepository;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.json.simple.parser.ParseException;
@@ -48,7 +47,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.application.SubProjectConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
@@ -195,10 +194,9 @@ public class FetchScrumReleaseDataImplTest {
 		accountHierarchy.setParentId("TEST_1234_TEST");
 		accountHierarchy.setBasicProjectConfigId(new ObjectId("5e15d8b195fe1300014538ce"));
 		accountHierarchy.setIsDeleted("False");
-		accountHierarchy.setPath(
-				("TEST_1234_TEST###25071_TestHow_61160fa56c1b4842c1741fe1###TestHow_61160fa56c1b4842c1741fe1"));
+		accountHierarchy
+				.setPath(("TEST_1234_TEST###25071_TestHow_61160fa56c1b4842c1741fe1###TestHow_61160fa56c1b4842c1741fe1"));
 		accountHierarchy.setEndDate("2024-01-03T23:01:29.666+05:30");
 		accountHierarchylist.add(accountHierarchy);
 	}
-
 }

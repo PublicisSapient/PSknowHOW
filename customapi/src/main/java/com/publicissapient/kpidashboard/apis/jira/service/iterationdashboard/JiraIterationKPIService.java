@@ -85,7 +85,7 @@ public abstract class JiraIterationKPIService implements NonTrendKPIService {
 	 * to maintain values upto 2 places of decimal
 	 *
 	 * @param value
-	 *            value
+	 *          value
 	 * @return double
 	 */
 	public double roundingOff(double value) {
@@ -96,29 +96,29 @@ public abstract class JiraIterationKPIService implements NonTrendKPIService {
 	 * For Assigning IterationKPiData
 	 *
 	 * @param label
-	 *            label
+	 *          label
 	 * @param fieldMapping
-	 *            fieldMapping
+	 *          fieldMapping
 	 * @param issueCount
-	 *            issueCount
+	 *          issueCount
 	 * @param storyPoint
-	 *            storyPoint
+	 *          storyPoint
 	 * @param originalEstimate
-	 *            originalEstimate
+	 *          originalEstimate
 	 * @param modalvalue
-	 *            modalvalue
+	 *          modalvalue
 	 * @return IterationKpiData
 	 */
 	public IterationKpiData createIterationKpiData(String label, FieldMapping fieldMapping, Integer issueCount,
 			Double storyPoint, Double originalEstimate, List<IterationKpiModalValue> modalvalue) {
 		IterationKpiData iterationKpiData;
-		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(storyPoint), null,
-					"", CommonConstant.SP, modalvalue);
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+				fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(storyPoint), null, "",
+					CommonConstant.SP, modalvalue);
 		} else {
-			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(originalEstimate),
-					null, "", CommonConstant.DAY, modalvalue);
+			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(originalEstimate), null,
+					"", CommonConstant.DAY, modalvalue);
 		}
 		return iterationKpiData;
 	}

@@ -21,5 +21,4 @@ public interface KpiCommentsHistoryRepository extends MongoRepository<KpiComment
 	@Query("{ 'node' : { $in : ?0 }, 'level' : ?1, 'nodeChildId' : ?2, 'kpiId' : { $in : ?3 }}")
 	List<KpiCommentsHistory> findCommentsByBoard(List<String> nodes, String level, String nodeChildId,
 			List<String> kpiIds);
-
 }

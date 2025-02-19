@@ -28,10 +28,7 @@ import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar8Clien
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Provides factory to create Sonar Clients.
- *
- */
+/** Provides factory to create Sonar Clients. */
 @Component
 @Slf4j
 public class SonarClientFactory {
@@ -45,11 +42,11 @@ public class SonarClientFactory {
 
 	/**
 	 * Instantiate SonarClientFactory.
-	 * 
+	 *
 	 * @param sonar8Client
-	 *            the Sonar version 8 Client
+	 *          the Sonar version 8 Client
 	 * @param sonar6And7Client
-	 *            the Sonar version 6 Client
+	 *          the Sonar version 6 Client
 	 */
 	@Autowired
 	public SonarClientFactory(Sonar8Client sonar8Client, Sonar6And7Client sonar6And7Client) {
@@ -60,9 +57,9 @@ public class SonarClientFactory {
 	/**
 	 * Provides the respective Sonar client based on client specified in properties
 	 * file.
-	 * 
+	 *
 	 * @param version
-	 *            the required version
+	 *          the required version
 	 * @return the Sonar Client
 	 */
 	public SonarClient getSonarClient(String version) {
@@ -82,5 +79,4 @@ public class SonarClientFactory {
 		}
 		return temp;
 	}
-
 }

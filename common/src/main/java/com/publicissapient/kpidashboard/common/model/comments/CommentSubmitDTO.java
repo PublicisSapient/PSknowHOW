@@ -22,5 +22,4 @@ public class CommentSubmitDTO {
 	private String nodeChildId;
 	private String kpiId;
 	private List<CommentsInfo> commentsInfo;
-
 }

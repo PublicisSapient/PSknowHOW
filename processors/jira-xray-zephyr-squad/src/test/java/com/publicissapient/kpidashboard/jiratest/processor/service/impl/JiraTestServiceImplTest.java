@@ -135,8 +135,8 @@ class JiraTestServiceImplTest {
 		when(aesEncryptionService.decrypt(anyString(), anyString())).thenReturn("PLAIN_TEXT_PASSWORD");
 		JiraInfo jiraInfo = JiraInfo.builder()
 				.jiraConfigBaseUrl(projectConfFieldMapping.getProcessorToolConnection().getUrl())
-				.username(projectConfFieldMapping.getProcessorToolConnection().getUsername())
-				.password("PLAIN_TEXT_PASSWORD").jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build();
+				.username(projectConfFieldMapping.getProcessorToolConnection().getUsername()).password("PLAIN_TEXT_PASSWORD")
+				.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build();
 
 		when(jiraRestClientFactory.getJiraClient(jiraInfo)).thenReturn(client);
 		when(jiraTestProcessorConfig.getStartDate()).thenReturn("2020-01-01T00:00:00.0000000");
@@ -177,8 +177,7 @@ class JiraTestServiceImplTest {
 		List<String> canBeAutomatedTestValue = new ArrayList<>();
 		canBeAutomatedTestValue.add("Y");
 		List<IssueField> issuesFields = new ArrayList<>();
-		IssueField customIssueField1 = new IssueField("customfield_43701", "Automation Field", "List",
-				automatedTestValue);
+		IssueField customIssueField1 = new IssueField("customfield_43701", "Automation Field", "List", automatedTestValue);
 		IssueField customIssueField2 = new IssueField("customfield_43702", "Can Be Automation", "List",
 				canBeAutomatedTestValue);
 		issuesFields.add(customIssueField1);
@@ -198,20 +197,19 @@ class JiraTestServiceImplTest {
 		};
 
 		Issue issue1 = new Issue("summary 1", null, "XYZ-1", 101L, null,
-				new IssueType(null, 11L, "Test", true, "Description 1", null),
-				new Status(null, null, "Open", null, null, null), "description", null, null, null, null, null,
-				DateTime.now(), DateTime.now(), null, null, null, null, null, issuesFields, null, null, issueLinks,
-				null, null, null, null, null, null, null, labelSet1);
+				new IssueType(null, 11L, "Test", true, "Description 1", null), new Status(null, null, "Open", null, null, null),
+				"description", null, null, null, null, null, DateTime.now(), DateTime.now(), null, null, null, null, null,
+				issuesFields, null, null, issueLinks, null, null, null, null, null, null, null, labelSet1);
 		Issue issue2 = new Issue("summary", null, "XYZ-2", 102L, null,
 				new IssueType(null, 11L, "TestCase", true, "Description 2", null),
 				new Status(null, null, "In Process", null, null, null), "description", null, null, null, null, null,
-				DateTime.now(), DateTime.now(), null, null, null, null, null, issuesFields, null, null, null, null,
-				null, null, null, null, null, null, labelSet1);
+				DateTime.now(), DateTime.now(), null, null, null, null, null, issuesFields, null, null, null, null, null, null,
+				null, null, null, null, labelSet1);
 		Issue issue3 = new Issue("summary", null, "XYZ-3", 103L, null,
 				new IssueType(null, 11L, "Test", true, "Description 3", null),
 				new Status(null, null, "In Testing", null, null, null), "description", null, null, null, null, null,
-				DateTime.now(), DateTime.now(), null, null, null, null, null, issuesFields, null, null, null, null,
-				null, null, null, null, null, null, labelSet2);
+				DateTime.now(), DateTime.now(), null, null, null, null, null, issuesFields, null, null, null, null, null, null,
+				null, null, null, null, labelSet2);
 		issues.add(issue1);
 		issues.add(issue2);
 		issues.add(issue3);
@@ -223,5 +221,4 @@ class JiraTestServiceImplTest {
 		};
 		SearchResult searchResult = new SearchResult(0, 0, 1, issueIterable);
 	}
-
 }

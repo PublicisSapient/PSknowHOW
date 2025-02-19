@@ -155,7 +155,6 @@ public class WorkRemainingServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -183,7 +182,6 @@ public class WorkRemainingServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -194,6 +192,5 @@ public class WorkRemainingServiceImplTest {
 	@After
 	public void cleanup() {
 		jiraIssueRepository.deleteAll();
-
 	}
 }

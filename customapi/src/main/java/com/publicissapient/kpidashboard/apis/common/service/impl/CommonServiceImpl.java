@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,11 +59,9 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Implementation of {@link CommonService} to get maturity level
- * 
- * @author anisingh4
  *
+ * @author anisingh4
  */
-
 @Service
 @Slf4j
 public class CommonServiceImpl implements CommonService {
@@ -86,7 +83,6 @@ public class CommonServiceImpl implements CommonService {
 
 	@Autowired
 	private ProjectBasicConfigRepository projectBasicConfigRepository;
-
 
 	@SuppressWarnings("PMD.AvoidCatchingGenericException")
 	@Override
@@ -127,7 +123,7 @@ public class CommonServiceImpl implements CommonService {
 
 	/**
 	 * Returns true if maturity level matched with actual value
-	 * 
+	 *
 	 * @param maturityRangeList
 	 * @param actualMaturityVal
 	 * @param index
@@ -141,17 +137,16 @@ public class CommonServiceImpl implements CommonService {
 
 	/**
 	 * Returns true actual value is matched with down range
-	 * 
+	 *
 	 * @param actualVal
 	 * @param boundaries
 	 * @return
 	 */
 	private boolean isValueMatchedForDownRange(Double actualVal, String[] boundaries) {
 		if (boundaries.length == 2) {
-			if ((boundaries[0].equalsIgnoreCase(Constant.EMPTY_STRING) && actualVal > Double.valueOf(boundaries[1]))
-					|| (!boundaries[0].equalsIgnoreCase(Constant.EMPTY_STRING)
-							&& actualVal <= Double.valueOf(boundaries[0])
-							&& actualVal > Double.valueOf(boundaries[1]))) {
+			if ((boundaries[0].equalsIgnoreCase(Constant.EMPTY_STRING) && actualVal > Double.valueOf(boundaries[1])) ||
+					(!boundaries[0].equalsIgnoreCase(Constant.EMPTY_STRING) && actualVal <= Double.valueOf(boundaries[0]) &&
+							actualVal > Double.valueOf(boundaries[1]))) {
 				return true;
 			}
 		} else {
@@ -164,7 +159,7 @@ public class CommonServiceImpl implements CommonService {
 
 	/**
 	 * Returns true actual value is matched with Up range
-	 * 
+	 *
 	 * @param actualVal
 	 * @param boundaries
 	 * @return
@@ -172,10 +167,9 @@ public class CommonServiceImpl implements CommonService {
 	private boolean isValueMatchedForUpRange(Double actualVal, String[] boundaries) {
 
 		if (boundaries.length == 2) {
-			if ((boundaries[0].equalsIgnoreCase(Constant.EMPTY_STRING) && actualVal < Double.valueOf(boundaries[1]))
-					|| (!boundaries[0].equalsIgnoreCase(Constant.EMPTY_STRING)
-							&& actualVal >= Double.valueOf(boundaries[0])
-							&& actualVal < Double.valueOf(boundaries[1]))) {
+			if ((boundaries[0].equalsIgnoreCase(Constant.EMPTY_STRING) && actualVal < Double.valueOf(boundaries[1])) ||
+					(!boundaries[0].equalsIgnoreCase(Constant.EMPTY_STRING) && actualVal >= Double.valueOf(boundaries[0]) &&
+							actualVal < Double.valueOf(boundaries[1]))) {
 				return true;
 			}
 		} else {
@@ -193,8 +187,8 @@ public class CommonServiceImpl implements CommonService {
 	 * @return
 	 */
 	private boolean hasSingleValueList(String type) {
-		return KPICode.SONAR_CODE_QUALITY.getKpiId().equalsIgnoreCase(type)
-				|| KPICode.CODE_QUALITY_KANBAN.getKpiId().equalsIgnoreCase(type);
+		return KPICode.SONAR_CODE_QUALITY.getKpiId().equalsIgnoreCase(type) ||
+				KPICode.CODE_QUALITY_KANBAN.getKpiId().equalsIgnoreCase(type);
 	}
 
 	/**
@@ -209,8 +203,9 @@ public class CommonServiceImpl implements CommonService {
 	}
 
 	/**
-	 * This method is to search the email addresses based on roles and which have notification enabled
-	 * 
+	 * This method is to search the email addresses based on roles and which have
+	 * notification enabled
+	 *
 	 * @param roles
 	 * @return list of email addresses
 	 */
@@ -219,8 +214,8 @@ public class CommonServiceImpl implements CommonService {
 		List<UserInfo> superAdminUsersList = userInfoRepository.findByAuthoritiesIn(roles);
 		if (CollectionUtils.isNotEmpty(superAdminUsersList)) {
 			List<UserInfo> notificationEnableUsersList = superAdminUsersList.stream()
-					.filter(userInfo -> userInfo.getNotificationEmail() != null
-							&& userInfo.getNotificationEmail().get(CommonConstant.ACCESS_ALERT_NOTIFICATION))
+					.filter(userInfo -> userInfo.getNotificationEmail() != null &&
+							userInfo.getNotificationEmail().get(CommonConstant.ACCESS_ALERT_NOTIFICATION))
 					.collect(Collectors.toList());
 			emailAddresses
 					.addAll(notificationEnableUsersList.stream().filter(user -> StringUtils.isNotEmpty(user.getEmailAddress()))
@@ -230,8 +225,7 @@ public class CommonServiceImpl implements CommonService {
 			if (CollectionUtils.isNotEmpty(usernameList)) {
 				List<Authentication> authentications = authenticationRepository.findByUsernameIn(usernameList);
 				if (CollectionUtils.isNotEmpty(authentications)) {
-					emailAddresses
-							.addAll(authentications.stream().map(Authentication::getEmail).collect(Collectors.toSet()));
+					emailAddresses.addAll(authentications.stream().map(Authentication::getEmail).collect(Collectors.toSet()));
 				}
 			}
 		}
@@ -240,9 +234,9 @@ public class CommonServiceImpl implements CommonService {
 
 	/**
 	 * This method get list of project admin email address
-	 * 
+	 *
 	 * @param projectConfigId
-	 *            projectConfigId
+	 *          projectConfigId
 	 * @return list of email address based on projectconfigid
 	 */
 	public List<String> getProjectAdminEmailAddressBasedProjectId(String projectConfigId) {
@@ -250,8 +244,8 @@ public class CommonServiceImpl implements CommonService {
 		List<String> usernameList = new ArrayList<>();
 		List<UserInfo> usersList = userInfoRepository.findByAuthoritiesIn(Arrays.asList(Constant.ROLE_PROJECT_ADMIN));
 		List<UserInfo> notificationEnableUsersList = usersList.stream()
-				.filter(userInfo -> userInfo.getNotificationEmail() != null
-						&& userInfo.getNotificationEmail().get(CommonConstant.ACCESS_ALERT_NOTIFICATION))
+				.filter(userInfo -> userInfo.getNotificationEmail() != null &&
+						userInfo.getNotificationEmail().get(CommonConstant.ACCESS_ALERT_NOTIFICATION))
 				.collect(Collectors.toList());
 		Map<String, String> projectMap = getHierarchyMap(projectConfigId);
 		if (CollectionUtils.isNotEmpty(notificationEnableUsersList)) {
@@ -260,8 +254,8 @@ public class CommonServiceImpl implements CommonService {
 						.filter(access -> access.getRole().equalsIgnoreCase(Constant.ROLE_PROJECT_ADMIN)).findAny();
 				if (projectAccess.isPresent()) {
 					projectAccess.get().getAccessNodes().stream().forEach(accessNode -> {
-						if (accessNode.getAccessItems().stream().anyMatch(item -> item.getItemId()
-								.equalsIgnoreCase(projectMap.get(accessNode.getAccessLevel())))) {
+						if (accessNode.getAccessItems().stream()
+								.anyMatch(item -> item.getItemId().equalsIgnoreCase(projectMap.get(accessNode.getAccessLevel())))) {
 							usernameList.add(action.getUsername());
 							emailAddresses.add(action.getEmailAddress().toLowerCase());
 						}
@@ -273,8 +267,7 @@ public class CommonServiceImpl implements CommonService {
 		if (CollectionUtils.isNotEmpty(usernameList)) {
 			List<Authentication> authentications = authenticationRepository.findByUsernameIn(usernameList);
 			if (CollectionUtils.isNotEmpty(authentications)) {
-				emailAddresses
-						.addAll(authentications.stream().map(Authentication::getEmail).collect(Collectors.toSet()));
+				emailAddresses.addAll(authentications.stream().map(Authentication::getEmail).collect(Collectors.toSet()));
 			}
 		}
 		return emailAddresses.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
@@ -282,18 +275,18 @@ public class CommonServiceImpl implements CommonService {
 
 	/**
 	 * This method createaproject map
-	 * 
+	 *
 	 * @param projectConfigId
-	 *            projectConfigId
+	 *          projectConfigId
 	 * @return map
 	 */
 	private Map<String, String> getHierarchyMap(String projectConfigId) {
 		Map<String, String> map = new HashMap<>();
-			ProjectBasicConfig projectBasicConfig = projectBasicConfigRepository.findByProjectNodeId(projectConfigId);
-		if (projectBasicConfig!=null) {
+		ProjectBasicConfig projectBasicConfig = projectBasicConfigRepository.findByProjectNodeId(projectConfigId);
+		if (projectBasicConfig != null) {
 			CollectionUtils.emptyIfNull(projectBasicConfig.getHierarchy()).stream()
-					.sorted(Comparator.comparing(
-							(HierarchyValue hierarchyValue) -> hierarchyValue.getHierarchyLevel().getLevel()))
+					.sorted(
+							Comparator.comparing((HierarchyValue hierarchyValue) -> hierarchyValue.getHierarchyLevel().getLevel()))
 					.forEach(hierarchyValue -> map.put(hierarchyValue.getHierarchyLevel().getHierarchyLevelId(),
 							hierarchyValue.getValue()));
 			map.put(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, projectBasicConfig.getId().toHexString());
@@ -302,10 +295,7 @@ public class CommonServiceImpl implements CommonService {
 		return map;
 	}
 
-	/**
-	 * 
-	 * Gets api host
-	 **/
+	/** Gets api host */
 	public String getApiHost() throws UnknownHostException {
 
 		StringBuilder urlPath = new StringBuilder();
@@ -323,9 +313,7 @@ public class CommonServiceImpl implements CommonService {
 		return urlPath.toString();
 	}
 
-	/**
-	 * Sort trend value map.
-	 */
+	/** Sort trend value map. */
 	public Map<String, List<DataCount>> sortTrendValueMap(Map<String, List<DataCount>> trendMap) {
 		Map<String, List<DataCount>> sortedMap = new LinkedHashMap<>();
 		if (null != trendMap.get(CommonConstant.OVERALL)) {
@@ -344,5 +332,4 @@ public class CommonServiceImpl implements CommonService {
 		sortedMap.putAll(temp);
 		return sortedMap;
 	}
-
 }

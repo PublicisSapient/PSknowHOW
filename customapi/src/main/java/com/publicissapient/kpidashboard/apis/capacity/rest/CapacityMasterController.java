@@ -1,11 +1,9 @@
 package com.publicissapient.kpidashboard.apis.capacity.rest;
 
 import java.util.List;
-
 import javax.validation.Valid;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,14 +21,12 @@ import com.publicissapient.kpidashboard.apis.abac.ContextAwarePolicyEnforcement;
 import com.publicissapient.kpidashboard.apis.capacity.service.CapacityMasterService;
 import com.publicissapient.kpidashboard.apis.capacity.service.HappinessKpiCapacityImpl;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.Role;
 import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
 import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiDTO;
 
 /**
  * @author narsingh9
- *
  */
 @RestController
 @RequestMapping("/capacity")
@@ -47,9 +43,9 @@ public class CapacityMasterController {
 
 	/**
 	 * This api saves capacity data.
-	 * 
+	 *
 	 * @param capacityMaster
-	 *            data to be saved
+	 *          data to be saved
 	 * @return service response entity
 	 */
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -106,5 +102,4 @@ public class CapacityMasterController {
 	public ResponseEntity<ServiceResponse> saveHappinessKPIData(@Valid @RequestBody HappinessKpiDTO happinessKpiDTO) {
 		return ResponseEntity.status(HttpStatus.OK).body(happinessKpiService.saveHappinessKpiData(happinessKpiDTO));
 	}
-
 }

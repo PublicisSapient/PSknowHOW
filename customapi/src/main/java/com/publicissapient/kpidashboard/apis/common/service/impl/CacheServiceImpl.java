@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
-import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -48,14 +45,17 @@ import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.repository.application.AdditionalFilterCategoryRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Implementation of {@link CacheService}.
- * 
+ *
  * @author anisingh4
  */
 @Service
@@ -68,9 +68,11 @@ public class CacheServiceImpl implements CacheService {
 	private AccountHierarchyServiceImpl accountHierarchyService;
 	@Autowired
 	private AccountHierarchyServiceKanbanImpl accountHierarchyServiceKanban;
+
 	@Autowired
 	@Qualifier("cacheManager")
 	private CacheManager cacheManager;
+
 	@Autowired
 	private ConfigHelperService configHelperService;
 	@Autowired
@@ -109,17 +111,15 @@ public class CacheServiceImpl implements CacheService {
 	public Object cacheSprintLevelData() {
 		return accountHierarchyDataList.stream()
 				.filter(data -> data.getNode().stream()
-						.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
-								&& node.getProjectHierarchy().getSprintState() != null))
+						.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT) &&
+								node.getProjectHierarchy().getSprintState() != null))
 				.toList();
-
 	}
 
 	@Cacheable(CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN)
 	@Override
 	public Object cacheAccountHierarchyKanbanData() {
 		return accountHierarchyServiceKanban.createHierarchyData();
-
 	}
 
 	@Cacheable(CommonConstant.CACHE_PROJECT_CONFIG_MAP)
@@ -128,12 +128,11 @@ public class CacheServiceImpl implements CacheService {
 		log.info("Creating Project Config Cache");
 		configHelperService.loadConfigData();
 		return filterOnHoldProjectBasicConfig();
-
 	}
 
 	/**
 	 * this method will be current updated map store in cache
-	 * 
+	 *
 	 * @return
 	 */
 	@CachePut(CommonConstant.CACHE_PROJECT_CONFIG_MAP)
@@ -149,12 +148,11 @@ public class CacheServiceImpl implements CacheService {
 		log.info("Creating All Project Config Cache");
 		configHelperService.loadConfigData();
 		return configHelperService.getConfigMapData(CommonConstant.CACHE_PROJECT_CONFIG_MAP);
-
 	}
 
 	/**
 	 * this method will be current updated map store in cache
-	 * 
+	 *
 	 * @return
 	 */
 	@CachePut(CommonConstant.CACHE_ALL_PROJECT_CONFIG_MAP)
@@ -169,7 +167,8 @@ public class CacheServiceImpl implements CacheService {
 		Map<String, ProjectBasicConfig> projectConfigMap = (Map<String, ProjectBasicConfig>) configHelperService
 				.getConfigMapData(CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 
-		return projectConfigMap == null ? Collections.emptyMap()
+		return projectConfigMap == null
+				? Collections.emptyMap()
 				: projectConfigMap.entrySet().stream()
 						.filter(entry -> entry.getValue() != null && !entry.getValue().isProjectOnHold())
 						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -181,7 +180,6 @@ public class CacheServiceImpl implements CacheService {
 		log.info("updating FieldMapping Cache");
 		configHelperService.loadConfigData();
 		return configHelperService.getConfigMapData(CommonConstant.CACHE_FIELD_MAPPING_MAP);
-
 	}
 
 	@Cacheable(CommonConstant.CACHE_BOARD_META_DATA_MAP)
@@ -190,7 +188,6 @@ public class CacheServiceImpl implements CacheService {
 		log.info("updating BoardMetaData Cache");
 		configHelperService.loadBoardMetaData();
 		return configHelperService.getConfigMapData(CommonConstant.CACHE_BOARD_META_DATA_MAP);
-
 	}
 
 	@Cacheable(CommonConstant.CACHE_TOOL_CONFIG_MAP)
@@ -199,7 +196,6 @@ public class CacheServiceImpl implements CacheService {
 		log.info("updating Tool Config Cache");
 		configHelperService.loadToolConfig();
 		return configHelperService.getConfigMapData(CommonConstant.CACHE_TOOL_CONFIG_MAP);
-
 	}
 
 	@Cacheable(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP)
@@ -208,7 +204,6 @@ public class CacheServiceImpl implements CacheService {
 		log.info("updating project Tool Config Cache");
 		configHelperService.loadProjectToolConfig();
 		return configHelperService.getConfigMapData(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
-
 	}
 
 	@Override
@@ -312,7 +307,6 @@ public class CacheServiceImpl implements CacheService {
 	public Map<String, HierarchyLevel> getFullHierarchyLevelMap() {
 		log.info("Caching Hierarchy level Map");
 		return getFullHierarchyLevel().stream().collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
-
 	}
 
 	@Cacheable(Constant.CACHE_KANBAN_HIERARCHY_LEVEL_MAP)
@@ -321,7 +315,6 @@ public class CacheServiceImpl implements CacheService {
 		log.info("Caching Hierarchy level kanban Map");
 		return getFullKanbanHierarchyLevel().stream()
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
-
 	}
 
 	@Cacheable(Constant.CACHE_ADDITIONAL_FILTER_HIERARCHY_LEVEL)
@@ -329,9 +322,7 @@ public class CacheServiceImpl implements CacheService {
 	public Map<String, AdditionalFilterCategory> getAdditionalFilterHierarchyLevel() {
 		log.info("Caching Additional Filter Category Map");
 		List<AdditionalFilterCategory> hierarchyLevels = additionalFilterCategoryRepository.findAll();
-		return hierarchyLevels.stream()
-				.collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
-
+		return hierarchyLevels.stream().collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
 	}
 
 	@Cacheable(CommonConstant.CACHE_PROJECT_HIERARCHY)

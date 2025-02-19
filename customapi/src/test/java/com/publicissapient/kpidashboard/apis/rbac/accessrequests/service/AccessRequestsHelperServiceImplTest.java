@@ -30,8 +30,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
-import com.publicissapient.kpidashboard.common.model.rbac.AccessRequestDTO;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -53,12 +51,14 @@ import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.constant.NotificationEnum;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessItem;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessNode;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
+import com.publicissapient.kpidashboard.common.model.rbac.AccessRequestDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.NotificationDataDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsForAccessRequest;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
@@ -129,9 +129,7 @@ public class AccessRequestsHelperServiceImplTest {
 	@Mock
 	private OrganizationHierarchyService organizationHierarchyService;
 
-	/**
-	 * method includes preprocesses for test cases
-	 */
+	/** method includes preprocesses for test cases */
 	@Before
 	public void setUp() {
 		testStatus = "Pending";
@@ -176,10 +174,7 @@ public class AccessRequestsHelperServiceImplTest {
 		testAccessRequestsData = new AccessRequest();
 	}
 
-	/**
-	 * 1. database call has an error and returns null
-	 *
-	 */
+	/** 1. database call has an error and returns null */
 	@Test
 	public void testGetAllAccessRequests1() {
 		when(accessRequestsRepository.findAll()).thenReturn(null);
@@ -187,10 +182,7 @@ public class AccessRequestsHelperServiceImplTest {
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 	}
 
-	/**
-	 * 2. database call has no records and returns empty array
-	 *
-	 */
+	/** 2. database call has no records and returns empty array */
 	@Test
 	public void testGetAllAccessRequests2() {
 		when(accessRequestsRepository.findAll()).thenReturn(new ArrayList<>());
@@ -199,18 +191,15 @@ public class AccessRequestsHelperServiceImplTest {
 		assertThat("Data should exist but empty: ", response.getData(), equalTo(new ArrayList<>()));
 	}
 
-	/**
-	 * 3. database call has records and returns them as an array
-	 *
-	 */
+	/** 3. database call has records and returns them as an array */
 	@Test
 	public void testGetAllAccessRequests3() {
 		List<AccessRequest> testListAccessRequestsData = new ArrayList<>();
 		testListAccessRequestsData.add(testAccessRequestsData);
 		List<AccessRequestDTO> testListAccessRequestsDatadto = new ArrayList<>();
 		AccessRequestDTO testAccessRequestsDatadto;
-		ModelMapper mapper=new ModelMapper();
-		testAccessRequestsDatadto=mapper.map(testAccessRequestsData, AccessRequestDTO.class);
+		ModelMapper mapper = new ModelMapper();
+		testAccessRequestsDatadto = mapper.map(testAccessRequestsData, AccessRequestDTO.class);
 		testListAccessRequestsDatadto.add(testAccessRequestsDatadto);
 		when(accessRequestsRepository.findAll()).thenReturn(testListAccessRequestsData);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAllAccessRequests();
@@ -218,10 +207,7 @@ public class AccessRequestsHelperServiceImplTest {
 		assertThat("Data should exist but empty: ", response.getData(), equalTo(testListAccessRequestsDatadto));
 	}
 
-	/**
-	 * 4. Input String id is null
-	 *
-	 */
+	/** 4. Input String id is null */
 	@Test
 	public void testGetAccessRequestById1() {
 		testId = null;
@@ -230,10 +216,7 @@ public class AccessRequestsHelperServiceImplTest {
 		assertThat("Data should not exist: ", response.getData(), equalTo(null));
 	}
 
-	/**
-	 * 5. Input String id creates invalid ObjectId
-	 *
-	 */
+	/** 5. Input String id creates invalid ObjectId */
 	@Test
 	public void testGetAccessRequestById2() {
 		testId = "UnitTest";
@@ -245,7 +228,6 @@ public class AccessRequestsHelperServiceImplTest {
 	/**
 	 * 6. Input String id is valid but data at this id does not exist in the
 	 * database.
-	 *
 	 */
 	@Test
 	public void testGetAccessRequestById3() {
@@ -256,10 +238,7 @@ public class AccessRequestsHelperServiceImplTest {
 		assertThat("Data should not exist: ", response.getData(), equalTo(null));
 	}
 
-	/**
-	 * 7. Input String id is valid and data at this id exists in the database.
-	 *
-	 */
+	/** 7. Input String id is valid and data at this id exists in the database. */
 	@Test
 	public void testGetAccessRequestById4() {
 		testId = "5ca455aa70c53c4f50076e34";
@@ -271,10 +250,7 @@ public class AccessRequestsHelperServiceImplTest {
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 	}
 
-	/**
-	 * 8. Input String testUsername is null.
-	 *
-	 */
+	/** 8. Input String testUsername is null. */
 	@Test
 	public void testGetAccessRequestByUsername1() {
 		testUsername = null;
@@ -286,7 +262,6 @@ public class AccessRequestsHelperServiceImplTest {
 	/**
 	 * 9. Input String testUsername is not null but data at this username does not
 	 * exist in the database.
-	 *
 	 */
 	@Test
 	public void testGetAccessRequestByUsername2() {
@@ -298,10 +273,7 @@ public class AccessRequestsHelperServiceImplTest {
 		assertEquals(response.getData(), new ArrayList<>());
 	}
 
-	/**
-	 * 10. Input String testUsername is not null but data is returned null.
-	 *
-	 */
+	/** 10. Input String testUsername is not null but data is returned null. */
 	@Test
 	public void testGetAccessRequestByUsername3() {
 		testUsername = "UnitTest";
@@ -310,13 +282,11 @@ public class AccessRequestsHelperServiceImplTest {
 		when(accessRequestsRepository.findByUsername(testUsername)).thenReturn(null);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestByUsername(testUsername);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-
 	}
 
 	/**
 	 * 11. Input String testUsername is not null and data at this username exists in
 	 * the database and is returned as array.
-	 *
 	 */
 	@Test
 	public void testGetAccessRequestByUsername4() {
@@ -325,8 +295,8 @@ public class AccessRequestsHelperServiceImplTest {
 		testListAccessRequestsData.add(testAccessRequestsData);
 		List<AccessRequestDTO> testListAccessRequestsDatadto = new ArrayList<>();
 		AccessRequestDTO testAccessRequestsDatadto;
-		ModelMapper mapper=new ModelMapper();
-		testAccessRequestsDatadto=mapper.map(testAccessRequestsData, AccessRequestDTO.class);
+		ModelMapper mapper = new ModelMapper();
+		testAccessRequestsDatadto = mapper.map(testAccessRequestsData, AccessRequestDTO.class);
 		testListAccessRequestsDatadto.add(testAccessRequestsDatadto);
 		when(accessRequestsRepository.findByUsername(testUsername)).thenReturn(testListAccessRequestsData);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestByUsername(testUsername);
@@ -334,10 +304,7 @@ public class AccessRequestsHelperServiceImplTest {
 		assertEquals(testListAccessRequestsDatadto, response.getData());
 	}
 
-	/**
-	 * 12. Input String testStatus is null.
-	 *
-	 */
+	/** 12. Input String testStatus is null. */
 	@Test
 	public void testGetAccessRequestByStatus1() {
 		testStatus = null;
@@ -351,7 +318,6 @@ public class AccessRequestsHelperServiceImplTest {
 	/**
 	 * 14. Input String testUsername is not null but data at this status does not
 	 * exist in the database.
-	 *
 	 */
 	@Test
 	public void testGetAccessRequestByStatus3() {
@@ -370,15 +336,14 @@ public class AccessRequestsHelperServiceImplTest {
 	/**
 	 * 15. Input String testUsername is not null and data at this status exists in
 	 * the database.
-	 *
 	 */
 	@Test
 	public void testGetAccessRequestByStatus4() {
 		List<AccessRequest> testListAccessRequestsData = new ArrayList<>();
 		List<AccessRequestDTO> testListAccessRequestsDatadto = new ArrayList<>();
 		AccessRequestDTO testAccessRequestsDatadto;
-		ModelMapper mapper=new ModelMapper();
-		testAccessRequestsDatadto=mapper.map(testAccessRequestsData, AccessRequestDTO.class);
+		ModelMapper mapper = new ModelMapper();
+		testAccessRequestsDatadto = mapper.map(testAccessRequestsData, AccessRequestDTO.class);
 		testListAccessRequestsDatadto.add(testAccessRequestsDatadto);
 		testListAccessRequestsData.add(testAccessRequestsData);
 		when(accessRequestsRepository.findByStatus(testStatus)).thenReturn(testListAccessRequestsData);
@@ -391,10 +356,7 @@ public class AccessRequestsHelperServiceImplTest {
 		assertEquals(testListAccessRequestsDatadto, response.getData());
 	}
 
-	/**
-	 * 16. Input String testStatus is null.
-	 *
-	 */
+	/** 16. Input String testStatus is null. */
 	@Test
 	public void testGetAccessRequestByUsernameAndStatus1() {
 		testStatus = null;
@@ -407,10 +369,7 @@ public class AccessRequestsHelperServiceImplTest {
 		assertEquals(null, response.getData());
 	}
 
-	/**
-	 * 17. Input String testUsername is null.
-	 *
-	 */
+	/** 17. Input String testUsername is null. */
 	@Test
 	public void testGetAccessRequestByUsernameAndStatus2() {
 		testUsername = null;
@@ -425,7 +384,6 @@ public class AccessRequestsHelperServiceImplTest {
 	/**
 	 * 18. Input String testUsername and testStatus are not null but database did
 	 * not return anything.
-	 *
 	 */
 	@Test
 	public void testGetAccessRequestByUsernameAndStatus3() {
@@ -436,13 +394,11 @@ public class AccessRequestsHelperServiceImplTest {
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestByUsernameAndStatus(testUsername,
 				testStatus);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-
 	}
 
 	/**
 	 * 19. Input String testUsername and testStatus are not null but data at this
 	 * status does not exist in the database.
-	 *
 	 */
 	@Test
 	public void testGetAccessRequestByUsernameAndStatus4() {
@@ -460,7 +416,6 @@ public class AccessRequestsHelperServiceImplTest {
 	/**
 	 * 20. Input String testUsername and testStatus are not null but data at this
 	 * username does not exist in the database.
-	 *
 	 */
 	@Test
 	public void testGetAccessRequestByUsernameAndStatus5() {
@@ -477,7 +432,6 @@ public class AccessRequestsHelperServiceImplTest {
 	/**
 	 * 21. Input String testUsername and testStatus are not null and data at this
 	 * status and username exists in the database.
-	 *
 	 */
 	@Test
 	public void testGetAccessRequestByUsernameAndStatus6() {
@@ -486,8 +440,8 @@ public class AccessRequestsHelperServiceImplTest {
 		testListAccessRequestsData.add(testAccessRequestsData);
 		List<AccessRequestDTO> testListAccessRequestsDatadto = new ArrayList<>();
 		AccessRequestDTO testAccessRequestsDatadto;
-		ModelMapper mapper=new ModelMapper();
-		testAccessRequestsDatadto=mapper.map(testAccessRequestsData, AccessRequestDTO.class);
+		ModelMapper mapper = new ModelMapper();
+		testAccessRequestsDatadto = mapper.map(testAccessRequestsData, AccessRequestDTO.class);
 		testListAccessRequestsDatadto.add(testAccessRequestsDatadto);
 		when(accessRequestsRepository.findByUsernameAndStatus(testUsername, testStatus))
 				.thenReturn(testListAccessRequestsData);
@@ -499,11 +453,11 @@ public class AccessRequestsHelperServiceImplTest {
 
 	/**
 	 * create ProjectsForAccessRequest object
-	 * 
+	 *
 	 * @param projectName
-	 *            projectName
+	 *          projectName
 	 * @param projectId
-	 *            projectId
+	 *          projectId
 	 * @return object
 	 */
 	private ProjectsForAccessRequest createProjectsForAccessRequest(String projectName, String projectId) {
@@ -524,7 +478,6 @@ public class AccessRequestsHelperServiceImplTest {
 	 * 44. Input String testStatus is not null but database did not return anything
 	 * and approvedStatus is false then database did not return anything for
 	 * Superadmin.
-	 *
 	 */
 	@Test
 	public void testGetNotificationByStatus1_superadmin() {
@@ -536,7 +489,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(userInfoServiceImpl.getUserInfo(any())).thenReturn(userInfo);
 		when(accessRequestsRepository.findByStatus(testStatus)).thenReturn(null);
 		when(authenticationRepository.findByApproved(approvedStatus)).thenReturn(null);
-		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus , false);
+		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus, false);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertEquals(createNotificationDataResponseTest(0, 0), response.getData());
 	}
@@ -544,7 +497,6 @@ public class AccessRequestsHelperServiceImplTest {
 	/**
 	 * 45. Input String testStatus is not null but database return data and
 	 * approvedStatus is false then database did not return anything for Superadmin.
-	 *
 	 */
 	@Test
 	public void testGetNotificationByStatus2_superadmin() {
@@ -558,7 +510,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(userInfoServiceImpl.getUserInfo(any())).thenReturn(userInfo);
 		when(accessRequestsRepository.findByStatus(testStatus)).thenReturn(testListAccessRequestsData);
 		when(authenticationRepository.findByApproved(approvedStatus)).thenReturn(null);
-		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus , false);
+		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus, false);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertEquals(createNotificationDataResponseTest(1, 0), response.getData());
 	}
@@ -566,7 +518,6 @@ public class AccessRequestsHelperServiceImplTest {
 	/**
 	 * 46. Input String testStatus is not null but database did not return anything
 	 * and approvedStatus is false then database return data for Superadmin
-	 *
 	 */
 	@Test
 	public void testGetNotificationByStatus3_superadmin() {
@@ -580,15 +531,12 @@ public class AccessRequestsHelperServiceImplTest {
 		when(userInfoServiceImpl.getUserInfo(any())).thenReturn(userInfo);
 		when(accessRequestsRepository.findByStatus(testStatus)).thenReturn(null);
 		when(authenticationRepository.findByApproved(approvedStatus)).thenReturn(testListAuthentication);
-		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus , false);
+		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus, false);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertEquals(createNotificationDataResponseTest(0, 1), response.getData());
 	}
 
-	/**
-	 * if PROJECT_ACCESS count and USER_APPROVAL count is zero
-	 *
-	 */
+	/** if PROJECT_ACCESS count and USER_APPROVAL count is zero */
 	private List<NotificationDataDTO> createNotificationDataResponseTest(int count1, int count2) {
 		NotificationDataDTO notificationDataDTO1 = new NotificationDataDTO();
 		List<NotificationDataDTO> notificationDataDTOList = new ArrayList<>();
@@ -605,7 +553,6 @@ public class AccessRequestsHelperServiceImplTest {
 	/**
 	 * 47. Input String testStatus is not null but database did not return anything
 	 * for Non-Superadmin user.
-	 *
 	 */
 	@Test
 	public void testGetNotificationByStatus1_Nonsuperadmin() {
@@ -617,7 +564,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(userInfoServiceImpl.getUserInfo(any())).thenReturn(nonSuperadminUserInfo);
 		when(accessRequestsRepository.findByUsernameAndStatus(testUsername, testStatus)).thenReturn(null);
 
-		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus ,false);
+		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus, false);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertEquals(createNotificationDataResponseTest4(0), response.getData());
 	}
@@ -625,7 +572,6 @@ public class AccessRequestsHelperServiceImplTest {
 	/**
 	 * 45. Input String testStatus is not null but database return data for
 	 * Non-Superadmin user.
-	 *
 	 */
 	@Test
 	public void testGetNotificationByStatus2_Nonsuperadmin() {
@@ -639,7 +585,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(userInfoServiceImpl.getUserInfo(any())).thenReturn(nonSuperadminUserInfo);
 		when(accessRequestsRepository.findByUsernameAndStatus(testUsername, testStatus))
 				.thenReturn(testListAccessRequestsData);
-		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus , false);
+		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus, false);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertEquals(createNotificationDataResponseTest4(1), response.getData());
 	}
@@ -662,9 +608,7 @@ public class AccessRequestsHelperServiceImplTest {
 		assertEquals("605aaf595a160c3fe46fdbbc", updatedRequest.getId().toHexString());
 	}
 
-	/**
-	 * access request by status -> projectadmin
-	 */
+	/** access request by status -> projectadmin */
 	@Test
 	public void testAccessRequestByStatus_ProjectAdmin() {
 		List<String> basicconfigList = new ArrayList<>();
@@ -684,9 +628,7 @@ public class AccessRequestsHelperServiceImplTest {
 		assertEquals(Boolean.TRUE, response.getSuccess());
 	}
 
-	/**
-	 * notification method test by project admin
-	 */
+	/** notification method test by project admin */
 	@Test
 	public void testGetNotificationByStatus_projectadmin() {
 		testStatus = "Pending";
@@ -721,7 +663,5 @@ public class AccessRequestsHelperServiceImplTest {
 		accessRequestsData.setRole("ROLE_PROJECT_VIEWER");
 
 		return accessRequestsData;
-
 	}
-
 }

@@ -86,7 +86,6 @@ public class CapacityServiceImpl extends JiraIterationKPIService {
 					basicProjectConfigId);
 
 			resultListMap.put(CAPACITY_DATA, getCapacityDataForAdditionalFilter(kpiRequest, capacityKpiData));
-
 		}
 		return resultListMap;
 	}
@@ -96,9 +95,9 @@ public class CapacityServiceImpl extends JiraIterationKPIService {
 	 * request.
 	 *
 	 * @param kpiRequest
-	 *            the KPI request containing selected filters
+	 *          the KPI request containing selected filters
 	 * @param capacityKpiData
-	 *            the current capacity KPI data
+	 *          the current capacity KPI data
 	 * @return a new CapacityKpiData object with updated capacity per sprint if
 	 *         additional capacity was found, otherwise returns the original
 	 *         capacityKpiData
@@ -106,9 +105,8 @@ public class CapacityServiceImpl extends JiraIterationKPIService {
 	private CapacityKpiData getCapacityDataForAdditionalFilter(KpiRequest kpiRequest, CapacityKpiData capacityKpiData) {
 		// Create a map of additional filter categories with keys in uppercase for
 		// case-insensitive matching
-		Map<String, AdditionalFilterCategory> addFilterCategory = filterHelperService
-				.getAdditionalFilterHierarchyLevel().entrySet().stream()
-				.collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
+		Map<String, AdditionalFilterCategory> addFilterCategory = filterHelperService.getAdditionalFilterHierarchyLevel()
+				.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
 
 		boolean additionalCapacity = false;
 		Double capacity = 0.0D;
@@ -120,11 +118,10 @@ public class CapacityServiceImpl extends JiraIterationKPIService {
 
 			// Check if the filter has a non-empty value list, exists in the additional
 			// filter categories, and capacity data is not empty
-			if (CollectionUtils.isNotEmpty(value) && addFilterCategory.containsKey(key.toUpperCase())
-					&& ObjectUtils.isNotEmpty(capacityKpiData)) {
+			if (CollectionUtils.isNotEmpty(value) && addFilterCategory.containsKey(key.toUpperCase()) &&
+					ObjectUtils.isNotEmpty(capacityKpiData)) {
 
-				List<AdditionalFilterCapacity> additionalFilterCapacityList = capacityKpiData
-						.getAdditionalFilterCapacityList();
+				List<AdditionalFilterCapacity> additionalFilterCapacityList = capacityKpiData.getAdditionalFilterCapacityList();
 
 				// If there are additional filter capacities, calculate the total capacity
 				if (CollectionUtils.isNotEmpty(additionalFilterCapacityList)) {
@@ -134,12 +131,11 @@ public class CapacityServiceImpl extends JiraIterationKPIService {
 
 					// Sum the capacities matching the filter criteria
 					capacity += additionalFilterCapacityList.stream()
-							.filter(additionalFilterCapacity -> upperCaseKey
-									.equals(additionalFilterCapacity.getFilterId().toUpperCase()))
-							.flatMap(
-									additionalFilterCapacity -> additionalFilterCapacity.getNodeCapacityList().stream())
-							.filter(leaf -> additionalFilter.contains(leaf.getAdditionalFilterId())
-									&& leaf.getAdditionalFilterCapacity() != null)
+							.filter(
+									additionalFilterCapacity -> upperCaseKey.equals(additionalFilterCapacity.getFilterId().toUpperCase()))
+							.flatMap(additionalFilterCapacity -> additionalFilterCapacity.getNodeCapacityList().stream())
+							.filter(leaf -> additionalFilter.contains(leaf.getAdditionalFilterId()) &&
+									leaf.getAdditionalFilterCapacity() != null)
 							.mapToDouble(LeafNodeCapacity::getAdditionalFilterCapacity).sum();
 				}
 			}

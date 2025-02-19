@@ -39,5 +39,4 @@ public class GitLabInfo {
 	private String branch;
 	private String createdAt;
 	private String updatedAt;
-
 }

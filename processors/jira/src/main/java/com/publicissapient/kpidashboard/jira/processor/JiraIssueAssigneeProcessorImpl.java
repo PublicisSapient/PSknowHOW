@@ -36,7 +36,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
- *
  */
 @Slf4j
 @Service
@@ -80,5 +79,4 @@ public class JiraIssueAssigneeProcessorImpl implements JiraIssueAssigneeProcesso
 		}
 		return assigneeDetails;
 	}
-
 }

@@ -150,7 +150,6 @@ public class LeadTimeServiceImplTest {
 		kpiWiseAggregation.put(LEAD_TIME, "average");
 
 		when(customApiConfig.getLeadTimeRange()).thenReturn(xAxisRange);
-
 	}
 
 	@After
@@ -223,6 +222,5 @@ public class LeadTimeServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 }

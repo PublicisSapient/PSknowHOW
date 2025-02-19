@@ -50,5 +50,4 @@ public class ProjectFilter implements Serializable {
 	public ObjectId getBasicProjectConfigId() {
 		return basicProjectConfigId;
 	}
-
 }

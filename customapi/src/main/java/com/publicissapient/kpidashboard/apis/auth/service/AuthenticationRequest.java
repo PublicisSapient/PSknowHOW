@@ -22,9 +22,7 @@ import javax.validation.constraints.NotNull;
 
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 
-/**
- * The Authentication request.
- */
+/** The Authentication request. */
 public class AuthenticationRequest {
 
 	@NotNull
@@ -51,7 +49,7 @@ public class AuthenticationRequest {
 	 * Sets username.
 	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 */
 	public void setUsername(String username) {
 		this.username = username;
@@ -70,7 +68,7 @@ public class AuthenticationRequest {
 	 * Sets password.
 	 *
 	 * @param password
-	 *            the password
+	 *          the password
 	 */
 	public void setPassword(String password) {
 		this.password = password;
@@ -89,7 +87,7 @@ public class AuthenticationRequest {
 	 * Sets email.
 	 *
 	 * @param email
-	 *            the email to set
+	 *          the email to set
 	 */
 	public void setEmail(String email) {
 		this.email = email;
@@ -108,7 +106,7 @@ public class AuthenticationRequest {
 	 * Copy to authentication.
 	 *
 	 * @param authentication
-	 *            the authentication
+	 *          the authentication
 	 * @return the authentication
 	 */
 	public Authentication copyTo(Authentication authentication) {
@@ -124,5 +122,4 @@ public class AuthenticationRequest {
 	public void setUserRole(String uRole) {
 		userRole = uRole;
 	}
-
 }

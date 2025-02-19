@@ -42,15 +42,12 @@ public class ReleasePlanEnhc {
 	}
 
 	public void updateKpiFilter(String radioButton) {
-		mongoTemplate.getCollection("kpi_master").updateOne(
-				new Document("kpiId", "kpi179"),
-				new Document("$set", new Document("kpiFilter", radioButton))
-		);
+		mongoTemplate.getCollection("kpi_master").updateOne(new Document("kpiId", "kpi179"),
+				new Document("$set", new Document("kpiFilter", radioButton)));
 	}
 
 	public void updateFieldMappingStructure(String section) {
-		mongoTemplate.getCollection("field_mapping_structure").updateOne(
-				new Document("fieldName", "startDateCountKPI150"),
+		mongoTemplate.getCollection("field_mapping_structure").updateOne(new Document("fieldName", "startDateCountKPI150"),
 				new Document("$set", new Document("section", section)));
 	}
 
@@ -59,5 +56,4 @@ public class ReleasePlanEnhc {
 		updateFieldMappingStructure("Issue Types Mapping");
 		updateKpiFilter("");
 	}
-
 }

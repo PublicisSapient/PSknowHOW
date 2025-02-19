@@ -142,8 +142,7 @@ public class FirstTimePassRateServiceImplTest {
 		when(configHelperService.calculateCriteria()).thenReturn(kpiWiseAggregation);
 
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
-		maturityRangeMap.put(KPICode.FIRST_TIME_PASS_RATE.name(),
-				Arrays.asList("-25", "25-50", "50-75", "75-90", "90-"));
+		maturityRangeMap.put(KPICode.FIRST_TIME_PASS_RATE.name(), Arrays.asList("-25", "25-50", "50-75", "75-90", "90-"));
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
@@ -177,8 +176,8 @@ public class FirstTimePassRateServiceImplTest {
 
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 
-		List<JiraIssue> issues = jiraIssueDataFactory.getJiraIssues().stream().filter(
-				jiraIssue -> jiraIssue.getJiraStatus().equals("Closed") && jiraIssue.getTypeName().equals("Story"))
+		List<JiraIssue> issues = jiraIssueDataFactory.getJiraIssues().stream()
+				.filter(jiraIssue -> jiraIssue.getJiraStatus().equals("Closed") && jiraIssue.getTypeName().equals("Story"))
 				.collect(Collectors.toList());
 
 		Set<String> stories = issues.stream().map(JiraIssue::getNumber).collect(Collectors.toSet());
@@ -197,8 +196,9 @@ public class FirstTimePassRateServiceImplTest {
 		priorityMap.put(P4, Stream.of("p4", "p4 - minor", "minor", "4", "low").collect(Collectors.toList()));
 		priorityMap.put(P5, Stream.of("p5 - trivial", "5", "trivial").collect(Collectors.toList()));
 
-		List<String> resultSet = Stream.of("p1", "P1 - Blocker", "blocker", "1", "0", "p0", "urgent", "p2", "critical",
-				"P2 - Critical", "2", "high").collect(Collectors.toList());
+		List<String> resultSet = Stream
+				.of("p1", "P1 - Blocker", "blocker", "1", "0", "p0", "urgent", "p2", "critical", "P2 - Critical", "2", "high")
+				.collect(Collectors.toList());
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(customApiSetting.getPriority()).thenReturn(priorityMap);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
@@ -224,12 +224,10 @@ public class FirstTimePassRateServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
 	public void calculateKPIMetrics() {
 		assertThat(firstTimePassRateService.calculateKPIMetrics(new HashMap<>()), equalTo(0.0));
 	}
-
 }

@@ -59,7 +59,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
- *
  */
 @RestController
 @RequestMapping("/api/job")
@@ -75,24 +74,31 @@ public class JobController {
 	private static final String PROCESSOR_ID = "processorId";
 	@Autowired
 	JobLauncher jobLauncher;
+
 	@Qualifier("fetchIssueScrumBoardJob")
 	@Autowired
 	Job fetchIssueScrumBoardJob;
+
 	@Qualifier("fetchIssueScrumJqlJob")
 	@Autowired
 	Job fetchIssueScrumJqlJob;
+
 	@Qualifier("fetchIssueKanbanBoardJob")
 	@Autowired
 	Job fetchIssueKanbanBoardJob;
+
 	@Qualifier("fetchIssueKanbanJqlJob")
 	@Autowired
 	Job fetchIssueKanbanJqlJob;
+
 	@Qualifier("fetchIssueSprintJob")
 	@Autowired
 	Job fetchIssueSprintJob;
+
 	@Qualifier("runMetaDataStep")
 	@Autowired
 	Job runMetaDataStep;
+
 	@Autowired
 	private ProjectToolConfigRepository toolRepository;
 	@Autowired
@@ -106,16 +112,15 @@ public class JobController {
 
 	/**
 	 * This method is used to start job for the Scrum projects with board setup
-	 * 
+	 *
 	 * @return ResponseEntity
 	 */
-
 	@GetMapping("/startscrumboardjob")
 	public ResponseEntity<String> startScrumBoardJob() {
 		log.info("Request come for job for Scrum project configured with board via controller");
 		int totalProjects = 0;
-		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
-				false, false);
+		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA, false,
+				false);
 		totalProjects = scrumBoardbasicProjConfIds.size();
 		log.info("Total projects to fun for Scrum - Board Wise : {}", totalProjects);
 		log.info("Scrum - Board Wise Projects : {}", scrumBoardbasicProjConfIds);
@@ -128,12 +133,10 @@ public class JobController {
 				try {
 					jobLauncher.run(fetchIssueScrumBoardJob, params);
 				} catch (Exception e) {
-					log.info(
-							"Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+					log.info("Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID), e);
 				}
 			});
-
 		}
 		executorService.shutdown();
 		return ResponseEntity.ok().body("job started for scrum board");
@@ -141,16 +144,15 @@ public class JobController {
 
 	/**
 	 * This method is used to start job for the Scrum projects with JQL setup
-	 * 
+	 *
 	 * @return ResponseEntity
 	 */
-
 	@GetMapping("/startscrumjqljob")
 	public ResponseEntity<String> startScrumJqlJob() {
 		log.info("Request come for job for Scrum project configured with JQL via controller");
 
-		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
-				true, false);
+		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA, true,
+				false);
 
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
 		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
@@ -191,14 +193,14 @@ public class JobController {
 
 	/**
 	 * This method is used to start job for the Kanban projects with board setup
-	 * 
+	 *
 	 * @return ResponseEntity
 	 */
 	@GetMapping("/startkanbanboardjob")
 	public ResponseEntity<String> startKanbanJob() {
 		log.info("Request come for job for Kanban project configured with Board via controller");
-		List<String> kanbanBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
-				false, true);
+		List<String> kanbanBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA, false,
+				true);
 		List<JobParameters> parameterSets = getDynamicParameterSets(kanbanBoardbasicProjConfIds);
 		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -208,8 +210,7 @@ public class JobController {
 				try {
 					jobLauncher.run(fetchIssueKanbanBoardJob, params);
 				} catch (Exception e) {
-					log.info(
-							"Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+					log.info("Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID), e);
 				}
 			});
@@ -220,16 +221,15 @@ public class JobController {
 
 	/**
 	 * This method is used to start job for the Kanban projects with JQL setup
-	 * 
+	 *
 	 * @return ResponseEntity
-	 * 
 	 */
 	@GetMapping("/startkanbanjqljob")
 	public ResponseEntity<String> startKanbanJqlJob() {
 		log.info("Request come for job for Kanban project configured with JQL via controller");
 
-		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
-				true, true);
+		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA, true,
+				true);
 
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
 		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
@@ -251,9 +251,9 @@ public class JobController {
 
 	/**
 	 * This method is used to fetch the sprint report data
-	 * 
+	 *
 	 * @param sprintId
-	 *            sprintId
+	 *          sprintId
 	 * @return ResponseEntity
 	 */
 	@PostMapping(value = "/startfetchsprintjob", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -269,8 +269,8 @@ public class JobController {
 			try {
 				jobLauncher.run(fetchIssueSprintJob, params);
 			} catch (Exception e) {
-				log.info("Jira Sprint data fetch failed for SprintId : {}, with exception : {}",
-						params.getString(SPRINT_ID), e);
+				log.info("Jira Sprint data fetch failed for SprintId : {}, with exception : {}", params.getString(SPRINT_ID),
+						e);
 			}
 		});
 		return ResponseEntity.ok().body("job started for Sprint : " + sprintId);
@@ -278,9 +278,9 @@ public class JobController {
 
 	/**
 	 * This method is used to fetch the jira issues based on project id
-	 * 
+	 *
 	 * @param processorExecutionBasicConfig
-	 *            processorExecutionBasicConfig
+	 *          processorExecutionBasicConfig
 	 * @return ResponseEntity
 	 */
 	@PostMapping("/startprojectwiseissuejob")
@@ -307,15 +307,14 @@ public class JobController {
 			jobParametersBuilder.addString(PROCESSOR_ID, jiraProcessorId.toString());
 			JobParameters params = jobParametersBuilder.toJobParameters();
 
-
 			try {
 				Optional<ProjectBasicConfig> projBasicConfOpt = projectConfigRepository
 						.findById(new ObjectId(basicProjectConfigId));
 
 				runProjectBasedOnConfig(basicProjectConfigId, params, projBasicConfOpt);
 			} catch (Exception e) {
-				log.error("Jira fetch failed for BasicProjectConfigId : {}, with exception : {}",
-						params.getString(PROJECT_ID), e);
+				log.error("Jira fetch failed for BasicProjectConfigId : {}, with exception : {}", params.getString(PROJECT_ID),
+						e);
 			}
 		});
 		return ResponseEntity.ok().body("Job started for BasicProjectConfigId: " + basicProjectConfigId);
@@ -325,7 +324,7 @@ public class JobController {
 	 * This method is used to fetch the metadata
 	 *
 	 * @param projectBasicConfigId
-	 *            projectBasicConfigId
+	 *          projectBasicConfigId
 	 * @return ResponseEntity
 	 */
 	@PostMapping(value = "/runMetadataStep", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -350,8 +349,8 @@ public class JobController {
 	}
 
 	private void runProjectBasedOnConfig(String basicProjectConfigId, JobParameters params,
-			Optional<ProjectBasicConfig> projBasicConfOpt) throws JobExecutionAlreadyRunningException,
-			JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+			Optional<ProjectBasicConfig> projBasicConfOpt) throws JobExecutionAlreadyRunningException, JobRestartException,
+			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		if (projBasicConfOpt.isPresent()) {
 			ProjectBasicConfig projectBasicConfig = projBasicConfOpt.get();
 			List<ProjectToolConfig> projectToolConfigs = toolRepository
@@ -406,5 +405,4 @@ public class JobController {
 			ongoingExecutionsService.markExecutionAsCompleted(basicProjectConfigId);
 		}
 	}
-
 }

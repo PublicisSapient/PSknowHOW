@@ -15,11 +15,11 @@
 
 package com.publicissapient.kpidashboard.apis.stringshortener.util;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class UniqueShortKeyGenerator {
@@ -44,5 +44,4 @@ public class UniqueShortKeyGenerator {
 			throw new IllegalStateException("Error generating short key", e);
 		}
 	}
-
 }
