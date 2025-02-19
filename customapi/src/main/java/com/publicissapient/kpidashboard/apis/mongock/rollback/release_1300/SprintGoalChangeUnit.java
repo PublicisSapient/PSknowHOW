@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1300;
+package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1300;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author shunaray
  */
-@ChangeUnit(id = "sprint_goals", order = "13001", author = "shunaray", systemVersion = "13.0.0")
+@ChangeUnit(id = "r_sprint_goals", order = "013001", author = "shunaray", systemVersion = "13.0.0")
 public class SprintGoalChangeUnit {
 
 	private final MongoTemplate mongoTemplate;
@@ -40,6 +40,11 @@ public class SprintGoalChangeUnit {
 
 	@Execution
 	public void execution() {
+		mongoTemplate.getCollection("kpi_master").deleteOne(new Document("kpiId", "kpi187"));
+	}
+
+	@RollbackExecution
+	public void rollback() {
 		Document kpiDocument = new Document().append("kpiId", "kpi187").append("kpiName", "Sprint Goals")
 				.append("isDeleted", "False").append("defaultOrder", 31).append("kpiUnit", "")
 				.append("showTrend", false).append("calculateMaturity", false).append("hideOverallFilter", false)
@@ -53,11 +58,6 @@ public class SprintGoalChangeUnit {
 
 		mongoTemplate.getCollection("kpi_master").insertOne(kpiDocument);
 
-	}
-
-	@RollbackExecution
-	public void rollback() {
-		mongoTemplate.getCollection("kpi_master").deleteOne(new Document("kpiId", "kpi187"));
 	}
 
 }
