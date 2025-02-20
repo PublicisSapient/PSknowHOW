@@ -63,8 +63,6 @@ public class KpiDataProvider {
 	public static final String TOTAL_ISSUE = "totalIssue";
 	public static final String SPRINT_DETAILS = "sprintDetails";
 	private static final String HAPPINESS_INDEX_DETAILS = "happinessIndexDetails";
-	private static final String STORY_DATA = "storyData";
-	private static final String DEFECT_DATA = "defectData";
 	public static final String SCOPE_CHANGE_ISSUE_HISTORY = "scopeChangeIssuesHistories";
 	private static final String PROJECT_WISE_TOTAL_ISSUE = "projectWiseTotalIssues";
 	private static final String SPRINT_WISE_PREDICTABILITY = "predictability";
