@@ -64,6 +64,21 @@ public class OrganizationHierarchy extends BasicModel implements Serializable {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime modifiedDate;
 
+	@Indexed(unique = true)
+	private String externalId;
+
+	public OrganizationHierarchy(String nodeId, String nodeName, String nodeDisplayName, String hierarchyLevelId,
+			String parentId, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+		this.nodeId = nodeId;
+		this.nodeName = nodeName;
+		this.nodeDisplayName = nodeDisplayName;
+		this.hierarchyLevelId = hierarchyLevelId;
+		this.createdDate = createdDate;
+		this.modifiedDate = modifiedDate;
+		this.parentId = parentId;
+
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -74,6 +89,8 @@ public class OrganizationHierarchy extends BasicModel implements Serializable {
 		OrganizationHierarchy that = (OrganizationHierarchy) o;
 
 		if (!nodeId.equals(that.nodeId))
+			return false;
+		if (!externalId.equals(that.externalId))
 			return false;
 		if (!nodeName.equals(that.nodeName))
 			return false;
@@ -88,6 +105,7 @@ public class OrganizationHierarchy extends BasicModel implements Serializable {
 		result = 31 * result + nodeName.hashCode();
 		result = 31 * result + hierarchyLevelId.hashCode();
 		result = 31 * result + parentId.hashCode();
+		result = 31 * result + externalId.hashCode();
 		return result;
 	}
 }
