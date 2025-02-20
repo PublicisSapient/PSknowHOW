@@ -57,6 +57,7 @@ import com.atlassian.jira.rest.client.api.domain.IssueLink;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.User;
 import com.atlassian.jira.rest.client.api.domain.Version;
+import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -219,9 +220,17 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	}
 
 	private void setEpicLinked(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {
-		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink()) && fields.get(fieldMapping.getEpicLink()) != null &&
-				fields.get(fieldMapping.getEpicLink()).getValue() != null) {
-			jiraIssue.setEpicLinked(fields.get((fieldMapping.getEpicLink()).trim()).getValue().toString());
+		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink()) && fields.get(fieldMapping.getEpicLink()) != null
+				&& fields.get(fieldMapping.getEpicLink()).getValue() != null) {
+			final Object epicLink = fields.get((fieldMapping.getEpicLink()).trim()).getValue();
+			if (epicLink instanceof String) {
+				jiraIssue.setEpicLinked(epicLink.toString());
+			} else if (epicLink instanceof JSONObject epicLinkJson) {
+				String epicKey = JsonParseUtil.getOptionalString(epicLinkJson, "key");
+				if (epicKey != null) {
+					jiraIssue.setEpicLinked(epicKey);
+				}
+			}
 		}
 	}
 
