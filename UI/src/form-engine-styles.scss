@@ -1,0 +1,23 @@
+
+//Below styles commented out since related component not used in application
+
+// @import '@trmt/form-engine-service-lib/styles/guided-tour';
+// @import '@trmt/form-engine-service-lib/styles/imports/font-awesome';
+// @import '@trmt/form-engine-service-lib/styles/imports/guided-tour';
+// @import '@trmt/form-engine-service-lib/styles/imports/quill';
+
+
+form-submit {
+
+  label {
+    background-color: white !important
+  }
+  @import '@trmt/form-engine-service-lib/styles/common';
+  @import '@trmt/form-engine-service-lib/styles/formio';
+  @import '@trmt/form-engine-service-lib/styles/imports/bootstrap';
+  @import '@trmt/form-engine-service-lib/styles/primeng';
+  @import '@trmt/form-engine-service-lib/styles/imports/quill';
+  @import '@trmt/form-engine-service-lib/styles/imports/font-awesome';
+}
+
+

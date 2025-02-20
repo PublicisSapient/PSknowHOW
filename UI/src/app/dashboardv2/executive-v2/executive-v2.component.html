@@ -460,3 +460,22 @@
         </p-table>
     </div>
 </p-dialog>
+
+<p-dialog [(visible)]="isFormRenderer" [modal]="true" styleClass="field-mapping">
+    <form-submit *ngIf="isFormRenderer"[formId]="formId" 
+    [submit]="submit" 
+    (submitError)="onSaveError($event)" 
+    (submitDone)="OnSubmitDone($event)" 
+    (renderEvent)="onRender($event)"
+    (changeEvent)="onChange($event)" 
+    (draftDone)="OnDraftDone($event)"
+    (canSubmit)="canSubmit($event)"
+    (loadError)="onLoadError($event)" ></form-submit>
+
+    <!-- <button (click)="submit.emit()">test button</button> -->
+     <div class="p-d-flex p-justify-center p-mb-4">
+        <button pButton pRipple type="button" class="p-button-sm p-button-success p-button-raised"
+        iconPos="left" label="Submit" (click)="submit.emit()" ></button>
+     </div>
+
+</p-dialog>

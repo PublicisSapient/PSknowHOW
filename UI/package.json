@@ -46,6 +46,7 @@
     "@angular/platform-browser-dynamic": "^14.2.7",
     "@angular/platform-server": "^14.2.7",
     "@angular/router": "^14.2.7",
+    "@formio/angular": "~5.4.0-rc.2",
     "@fortawesome/angular-fontawesome": "^0.10.1",
     "@fortawesome/fontawesome-free": "^5.15.1",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
@@ -53,17 +54,18 @@
     "@fullcalendar/core": "^5.3.1",
     "@ng-select/ng-select": "9.0.2",
     "@popperjs/core": "^2.11.6",
+    "@trmt/form-engine-service-lib": "^4.0.5",
     "chart.js": "^2.9.4",
     "d3": "^7.6.1",
     "events": "^3.0.0",
     "exceljs": "^4.3.0",
     "file-saver": "^2.0.0-rc.3",
+    "formiojs": "^4.21.6",
     "primeflex": "^2.0.0",
     "primeicons": "^6.0.1",
     "primeng": "14.1.2",
-    "rxjs": "^6.6.3",
+    "rxjs": "^7.0.0",
     "uuid": "^9.0.0",
-
     "zone.js": "^0.11.2"
   },
   "devDependencies": {
@@ -99,6 +101,7 @@
     "karma-jasmine-html-reporter": "^1.5.0",
     "lint-staged": "^12.2.2",
     "prettier": "^2.5.1",
+    "sass": "^1.83.4",
     "sonar-scanner": "^3.1.0",
     "ts-node": "~10.4.0",
     "typescript": "4.6.4"

@@ -38,6 +38,11 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MenuModule } from 'primeng/menu';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ScrollTopModule } from 'primeng/scrolltop';
+
+import { FormEngineConfigurationModule, SubformComponentModule, CustomComponentModule } from '@trmt/form-engine-service-lib';
+import {  FormioModule} from '@formio/angular';
+import { FormEngineModule } from '@trmt/form-engine-service-lib';
+
 /******************************************************/
 
 /******************* components   ***********************/
@@ -128,6 +133,12 @@ import { RecommendationsComponent } from './component/recommendations/recommenda
 
 import { StickyHeaderV2Component } from './dashboardv2/sticky-header-v2/sticky-header-v2.component';
 import { KpiHelperService } from './services/kpi-helper.service';
+import { StackedBarComponent } from './component/stacked-bar/stacked-bar.component';
+import { SemiCircleDonutChartComponent } from './component/semi-circle-donut-chart/semi-circle-donut-chart.component';
+import { TabularKpiV2Component } from './component/tabular-kpi-v2/tabular-kpi-v2.component';
+import { GroupedBarChartComponent } from './component/grouped-bar-chart/grouped-bar-chart.component';
+import { TabularKpiWithDonutChartComponent } from './component/tabular-kpi-with-donut-chart/tabular-kpi-with-donut-chart.component';
+import { environment } from 'src/environments/environment';
 import { SelectButtonModule } from 'primeng/selectbutton';
 
 
@@ -232,6 +243,13 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         BlockUIModule,
         InputTextModule,
         ScrollTopModule,
+        FormEngineModule,
+        FormioModule,
+        CustomComponentModule,
+        SubformComponentModule,
+        FormEngineConfigurationModule.forRoot({
+            baseURL: `${environment.baseUrl}/api/form-engine/forward`
+          }),
         SelectButtonModule
     ],
     providers: [

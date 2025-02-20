@@ -67,7 +67,7 @@ import io.mongock.runner.springboot.EnableMongock;
 @EnableCaching
 @EnableMongock
 @EnableMongoRepositories(basePackages = {"com.publicissapient.**.repository"})
-@ComponentScan(basePackages = {"com.publicissapient.kpidashboard"})
+@ComponentScan(basePackages = {"com.publicissapient.kpidashboard","com.tremend.trmt.form.engine"})
 public class CustomApiApplication extends SpringBootServletInitializer {
 
 	/** {@inheritDoc} */

@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** Importing Services **/
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef,EventEmitter } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
@@ -26,6 +26,18 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, distinctUntilChanged, first, mergeMap } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { ExcelService } from 'src/app/services/excel.service';
+// import { FormioSubmission } from '@formio/angular';
+// import {
+//   FormioBaseComponent,
+//   FormioChangeEvent,
+//   FormioFilterEvent,
+//   FormioRefreshEvent,
+//   FormioSubformComponent,
+//   getErrorMessage, IFormSubmission,
+//   IMetadata,
+//   IMetadataChangeEvent,
+//   jsonToString,
+// } from '@trmt/form-engine-service-lib';
 import { throwError } from 'rxjs';
 import { Location } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -127,6 +139,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   selectedTrend: any = [];
   iterationKPIData = {};
   dailyStandupKPIDetails = {};
+  isFormRenderer : boolean = false;
+  formId : number = 2;
+  submit: EventEmitter<void> = new EventEmitter();
   refreshCounter: number = 0;
   queryParamsSubscription!: Subscription;
 
@@ -205,6 +220,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // const selectedTab = window.location.hash.substring(1);
     // this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
 
+    this.service.openAIModel.subscribe(value=>{
+      this.isFormRenderer = value;
+    })
     this.subscriptions.push(this.service.onScrumKanbanSwitch.subscribe((data) => {
       this.resetToDefaults();
       this.selectedtype = data.selectedType;
@@ -3117,4 +3135,33 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
   }
 
+  onSaveError(error) {
+    // When error will came at the time for form saving otherwise will not  execute
+   console.log("Responce came ",error)
+  }
+
+  onChange(event){
+    console.log("it will perform on any field change change",event)
+  }
+
+  onRender(event){
+    console.log("render Event",event)
+  }
+
+  OnSubmitDone(event){
+     console.log("on submit odne",event)
+     this.isFormRenderer = false;
+  }
+
+  OnDraftDone(event){
+  console.log("On draft donw",event)
+  }
+
+  canSubmit(event){
+   console.log("this is can submit()",event)
+  }
+
+  onLoadError(evet){
+   console.log("this is load erro",evet)
+  }
 }
