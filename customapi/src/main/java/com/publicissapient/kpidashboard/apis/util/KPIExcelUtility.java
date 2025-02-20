@@ -39,7 +39,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.Node;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -61,6 +60,7 @@ import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.LeadTimeChangeData;
 import com.publicissapient.kpidashboard.apis.model.MeanTimeRecoverData;
+import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterValue;
@@ -159,7 +159,7 @@ public class KPIExcelUtility {
 			List<KPIExcelData> kpiExcelData, Map<String, JiraIssue> issueData, FieldMapping fieldMapping,
 			CustomApiConfig customApiConfig, Node node) {
 		if (CollectionUtils.isNotEmpty(storyIds)) {
-			setQualityKPIExcelData(storyIds, defects, kpiExcelData, issueData, fieldMapping, customApiConfig,node);
+			setQualityKPIExcelData(storyIds, defects, kpiExcelData, issueData, fieldMapping, customApiConfig, node);
 		}
 	}
 
@@ -175,16 +175,16 @@ public class KPIExcelUtility {
 					KPIExcelData excelData = new KPIExcelData();
 					Map<String, JiraIssue> defectIssueMap = Collections.singletonMap(defect.getNumber(), defect);
 					JiraIssue jiraIssue = issueData.get(story);
-					setQualityCommonExcelData(jiraIssue, story, defectIssueMap, excelData, defect.getNumber(),
-							customApiConfig, node);
+					setQualityCommonExcelData(jiraIssue, story, defectIssueMap, excelData, defect.getNumber(), customApiConfig,
+							node);
 					setStoryPoint(fieldMapping, excelData, jiraIssue);
 					kpiExcelData.add(excelData);
 				});
 			} else {
 				KPIExcelData excelData = new KPIExcelData();
 				JiraIssue jiraIssue = issueData.get(story);
-				setQualityCommonExcelData(jiraIssue, story, Collections.emptyMap(), excelData, Constant.BLANK,
-						customApiConfig,node);
+				setQualityCommonExcelData(jiraIssue, story, Collections.emptyMap(), excelData, Constant.BLANK, customApiConfig,
+						node);
 				setStoryPoint(fieldMapping, excelData, jiraIssue);
 				kpiExcelData.add(excelData);
 			}

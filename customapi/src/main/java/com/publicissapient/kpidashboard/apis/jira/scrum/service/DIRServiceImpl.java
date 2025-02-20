@@ -227,8 +227,8 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					Map<String, JiraIssue> issueMapping = new HashMap<>();
 					jiraIssues.stream().forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue));
 
-					KPIExcelUtility.populateDirExcelData(totalStoryIdList, defectList, excelData, issueMapping,
-							fieldMapping, customApiConfig, node);
+					KPIExcelUtility.populateDirExcelData(totalStoryIdList, defectList, excelData, issueMapping, fieldMapping,
+							customApiConfig, node);
 				}
 			} else {
 				defectInjectionRateForCurrentLeaf = 0.0d;

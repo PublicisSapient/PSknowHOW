@@ -753,7 +753,7 @@ public class KpiDataProvider {
 	 * and sprints combination.
 	 *
 	 * @param sprintList
-	 *            The list of sprint IDs.
+	 *          The list of sprint IDs.
 	 * @return A map containing sprint details and Happiness KPI Data list.
 	 */
 	public Map<String, Object> fetchHappinessIndexDataFromDb(List<String> sprintList) {
@@ -762,8 +762,8 @@ public class KpiDataProvider {
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
 		List<HappinessKpiData> happinessKpiDataList = happinessKpiDataRepository.findBySprintIDIn(sprintList);
 		// filtering rating of 0 i.e not entered any rating
-		happinessKpiDataList.forEach(happinessKpiData -> happinessKpiData.getUserRatingList().removeIf(
-				userRatingData -> userRatingData.getRating() == null || userRatingData.getRating().equals(0)));
+		happinessKpiDataList.forEach(happinessKpiData -> happinessKpiData.getUserRatingList()
+				.removeIf(userRatingData -> userRatingData.getRating() == null || userRatingData.getRating().equals(0)));
 		resultListMap.put(SPRINT_DETAILS, sprintDetails);
 		resultListMap.put(HAPPINESS_INDEX_DETAILS, happinessKpiDataList);
 
