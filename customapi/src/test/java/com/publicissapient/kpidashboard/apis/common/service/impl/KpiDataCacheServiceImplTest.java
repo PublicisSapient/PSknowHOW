@@ -152,8 +152,8 @@ public class KpiDataCacheServiceImplTest {
 	@Test
 	public void fetchHappinessIndexData_shouldReturnCorrectData_whenValidInput() {
 		when(kpiDataProvider.fetchHappinessIndexDataFromDb(any())).thenReturn(new HashMap<>());
-		Map<String, Object> result = kpiDataCacheService.fetchHappinessIndexData( new ObjectId(),
-				new ArrayList<>(), "kpi149");
+		Map<String, Object> result =
+				kpiDataCacheService.fetchHappinessIndexData(new ObjectId(), new ArrayList<>(), "kpi149");
 		assertNotNull(result);
 	}
 

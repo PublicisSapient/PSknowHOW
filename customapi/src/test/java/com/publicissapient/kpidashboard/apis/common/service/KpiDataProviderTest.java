@@ -248,7 +248,6 @@ public class KpiDataProviderTest {
 				.thenReturn(Arrays.asList(happinessKpiData));
 		List<String> sprintList = List.of("sprint1", "sprint2");
 		Map<String, Object> result = kpiDataProvider.fetchHappinessIndexDataFromDb(sprintList);
-		
 	}
 
 	@Test
