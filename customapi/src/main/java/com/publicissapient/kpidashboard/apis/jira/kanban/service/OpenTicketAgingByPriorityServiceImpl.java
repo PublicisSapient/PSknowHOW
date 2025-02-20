@@ -250,7 +250,7 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 								trendValueMap, node.getProjectFilter().getName(), rangeMonth));
 
 				// Populates data in Excel for validation for tickets created before
-				populateExcelDataObject(requestTrackerId, node.getProjectFilter().getId(), excelData, projectWiseJiraIssueList);
+				populateExcelDataObject(requestTrackerId, node.getProjectFilter().getName(), excelData, projectWiseJiraIssueList);
 			}
 			mapTmp.get(node.getId()).setValue(trendValueMap);
 		});
@@ -351,11 +351,10 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 		return dataCount;
 	}
 
-	public void populateExcelDataObject(String requestTrackerId, String projectNodeId, List<KPIExcelData> excelData,
+	public void populateExcelDataObject(String requestTrackerId, String projectName, List<KPIExcelData> excelData,
 			List<KanbanJiraIssue> projectWiseJiraIssueList) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 			KPIExcelUtility.populateOpenTicketByAgeingExcelData(projectName, projectWiseJiraIssueList, excelData);
 		}
 	}
