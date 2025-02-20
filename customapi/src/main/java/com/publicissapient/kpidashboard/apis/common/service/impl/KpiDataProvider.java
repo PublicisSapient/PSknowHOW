@@ -39,7 +39,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
@@ -802,20 +801,8 @@ public class KpiDataProvider {
 	 */
 	public Map<String, Object> fetchDefectInjectionRateDataFromDb(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList) {
-		long startTime = System.currentTimeMillis();
 
-		Map<String, Object> resultListMap = kpiHelperService.fetchDIRDataFromDb(basicProjectConfigId, kpiRequest,
-				sprintList);
-
-		if (log.isDebugEnabled()) {
-			List<SprintWiseStory> storyDataList = (List<SprintWiseStory>) resultListMap.get(STORY_DATA);
-			List<JiraIssue> defectDataList = (List<JiraIssue>) resultListMap.get(DEFECT_DATA);
-			long processTime = System.currentTimeMillis() - startTime;
-			log.info("[DIR-DB-QUERY][]. storyData count: {} defectData count: {}  time: {}", storyDataList.size(),
-					defectDataList.size(), processTime);
-		}
-
-		return resultListMap;
+		return kpiHelperService.fetchDIRDataFromDb(basicProjectConfigId, kpiRequest, sprintList);
 
 	}
 }
