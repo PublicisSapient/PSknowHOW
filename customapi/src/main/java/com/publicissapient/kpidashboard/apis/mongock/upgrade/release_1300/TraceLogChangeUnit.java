@@ -29,7 +29,7 @@ import io.mongock.api.annotations.RollbackExecution;
  * 
  * @author shunaray
  */
-@ChangeUnit(id = "jira_trace_clean", order = "13002", author = "shunaray", systemVersion = "13.0.0")
+@ChangeUnit(id = "jira_trace_clean", order = "13003", author = "shunaray", systemVersion = "13.0.0")
 public class TraceLogChangeUnit {
 
 	private final MongoTemplate mongoTemplate;
