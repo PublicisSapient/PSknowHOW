@@ -8,11 +8,13 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
+import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -58,7 +60,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.SprintRepositoryC
 
 @RunWith(MockitoJUnitRunner.class)
 public class KpiDataProviderTest {
-
 	private static final String STORY_LIST = "stories";
 	private static final String SPRINTSDETAILS = "sprints";
 	private static final String JIRA_ISSUE_HISTORY_DATA = "JiraIssueHistoryData";
@@ -413,5 +414,23 @@ public class KpiDataProviderTest {
 				sprintList);
 		assertThat("createdVsResolved value :", ((List<JiraIssue>) (result.get("createdVsResolvedKey"))).size(),
 				equalTo(totalIssueList.size()));
+	}
+
+	@Test
+	public void testFetchDIR() {
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+		SprintWiseStoryDataFactory sprintWiseStoryDataFactory = SprintWiseStoryDataFactory.newInstance();
+		List<SprintWiseStory> storyData = sprintWiseStoryDataFactory.getSprintWiseStories();
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		List<JiraIssue> defectData = jiraIssueDataFactory.getBugs();
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put("storyData", storyData);
+		resultListMap.put("defectData", defectData);
+		resultListMap.put("issueData", new ArrayList<>());
+		when(kpiHelperService.fetchDIRDataFromDb(any(), any(), any())).thenReturn(resultListMap);
+		Map<String, Object> defectDataListMap = kpiDataProvider.fetchDefectInjectionRateDataFromDb(kpiRequest, basicProjectConfigId, sprintList);
+		assertThat("Total Story value :", ((List<JiraIssue>) (defectDataListMap.get("storyData"))).size(), equalTo(5));
+		assertThat("Total Defects value :", ((List<JiraIssue>) (defectDataListMap.get("defectData"))).size(), equalTo(20));
 	}
 }
