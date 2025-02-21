@@ -18,11 +18,36 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.2.0</version>
+    <relativePath/>
+  </parent>
   <groupId>com.publicissapient.kpidashboard</groupId>
   <artifactId>processors</artifactId>
   <version>6.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
+  <modules>
+    <module>jira-zephyr-scale</module>
+    <module>bitbucket</module>
+    <module>gitlab</module>
+    <module>github</module>
+    <module>github-action</module>
+    <module>sonar</module>
+    <module>jira</module>
+    <module>jira-xray-zephyr-squad</module>
+    <module>jenkins</module>
+    <module>bamboo</module>
+    <module>teamcity</module>
+    <module>azure-pipeline</module>
+    <module>azure-repo</module>
+    <module>azure-boards</module>
+    <module>argocd</module>
+    <module>../kafka-consumers/notification-consumer</module>
+  </modules>
   <properties>
+    <spring.parent.version>3.2.0</spring.parent.version>
     <jacoco.destfile>${project.basedir}/../../target/jacoco.exec</jacoco.destfile>
     <sonar.coverage.exclusions>**com/publicissapient/kpidashboard/**/*Application.java,
             **com/publicissapient/kpidashboard/**/model/**,
@@ -98,6 +123,67 @@
                   <goal>report-aggregate</goal>
                 </goals>
                 <phase>verify</phase>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>com.diffplug.spotless</groupId>
+            <artifactId>spotless-maven-plugin</artifactId>
+            <version>2.42.0</version>
+            <configuration>
+              <!-- Java-specific configurations -->
+              <java>
+                <!-- These are the defaults, you can override if you want -->
+                <includes>
+                  <include>**/*.java</include>
+                </includes>
+                <googleJavaFormat/>
+                <eclipse>
+                  <file>${project.basedir}/../eclipse-formatter-config.xml</file>
+                </eclipse>
+                <indent>
+                  <tabs>true</tabs>
+                  <spacesPerTab>2</spacesPerTab>
+                </indent>
+                <importOrder>
+                  <order>java|javax,org,com</order>
+                </importOrder>
+                <removeUnusedImports/>
+              </java>
+              <pom>
+                <!-- These are the defaults, you can override if you want -->
+                <includes>
+                  <include>**/pom.xml</include>
+                </includes>
+                <sortPom>
+                  <encoding>UTF-8</encoding>
+                  <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
+                  <keepBlankLines>false</keepBlankLines>
+                  <expandEmptyElements>false</expandEmptyElements>
+                </sortPom>
+              </pom>
+              <!-- Custom formatting for other file types -->
+              <formats>
+                <format>
+                  <includes>
+                    <include>**/*.yml</include>
+                  </includes>
+                  <prettier>
+                    <configFile>${project.basedir}/../.prettierrc</configFile>
+                  </prettier>
+                </format>
+              </formats>
+            </configuration>
+            <executions>
+              <!-- Automatically apply formatting during the build process -->
+              <execution>
+                <id>spotless-apply</id>
+                <!-- Run Spotless apply during the validate phase -->
+                <goals>
+                  <goal>apply</goal>
+                  <!-- Apply formatting -->
+                </goals>
+                <phase>validate</phase>
               </execution>
             </executions>
           </plugin>

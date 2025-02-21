@@ -147,19 +147,6 @@
                     <configFile>${project.basedir}/.prettierrc</configFile>
                   </prettier>
                 </format>
-                <!-- XML formatting -->
-                <!--<format>
-                                        <includes>
-                                            <include>**/*.xml</include>
-                                        </includes>
-                                        <excludes>
-                                            <exclude>eclipse-formatter-config.xml</exclude>
-                                            <exclude>pom.xml</exclude>
-                                        </excludes>
-                                        <prettier>
-                                            <configFile>${project.basedir}/.prettierrc</configFile>
-                                        </prettier>
-                                    </format>-->
               </formats>
             </configuration>
             <executions>
