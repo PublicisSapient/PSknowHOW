@@ -21,7 +21,9 @@ package com.publicissapient.kpidashboard.apis.common.service;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import org.bson.types.ObjectId;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -239,4 +241,20 @@ public interface KpiDataCacheService {
 	 */
 	Map<String, Object> fetchCreatedVsResolvedData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList, String kpiId);
+
+	/**
+	 * Fetches DRR KPI data from the database and caches the result.
+	 *
+	 * @param kpiRequest
+	 *          The KPI request object.
+	 * @param basicProjectConfigId
+	 *          The project config ID.
+	 * @param sprintList
+	 *          The list of sprint IDs.
+	 * @param kpiId
+	 *          The KPI ID.
+	 * @return A map containing sprint details, Sub-tasks, Sub-task history.
+	 */
+	Map<String, Object> fetchDRRData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+                                     List<String> sprintList, String kpiId);
 }

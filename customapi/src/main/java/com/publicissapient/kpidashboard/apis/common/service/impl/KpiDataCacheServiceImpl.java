@@ -220,4 +220,12 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 				kpiId);
 		return kpiDataProvider.fetchHappinessIndexDataFromDb(sprintList);
 	}
+
+	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
+	@Override
+	public Map<String, Object> fetchDRRData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+											List<String> sprintList, String kpiId) {
+		log.info("Fetching DRR KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
+		return kpiDataProvider.fetchDRRData(kpiRequest, basicProjectConfigId, sprintList);
+	}
 }
