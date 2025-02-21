@@ -23,11 +23,26 @@ import lombok.Data;
 @Data
 public class HierarchyNode {
 
-	@JsonProperty("Opportunity")
-	private String opportunity;
-
 	@JsonProperty("Opportunity_unique_id")
 	private String opportunityUniqueId;
+
+	@JsonProperty("Portfolio_unique_id")
+	private String portfolioUniqueId;
+
+	@JsonProperty("Account_unique_id")
+	private String accountUniqueId;
+
+	@JsonProperty("Vertical_unique_id")
+	private String verticalUniqueId;
+
+	@JsonProperty("BU_unique_id")
+	private String buUniqueId;
+
+	@JsonProperty("Root_unique_id")
+	private String rootUniqueId;
+
+	@JsonProperty("Opportunity")
+	private String opportunity;
 
 	@JsonProperty("Opportunity_id")
 	private String opportunityId;
@@ -80,17 +95,11 @@ public class HierarchyNode {
 	@JsonProperty("Portfolio")
 	private String portfolio;
 
-	@JsonProperty("Portfolio_unique_id")
-	private String portfolioUniqueId;
-
 	@JsonProperty("Portfolio_id")
 	private String portfolioId;
 
 	@JsonProperty("Account")
 	private String account;
-
-	@JsonProperty("Account_unique_id")
-	private String accountUniqueId;
 
 	@JsonProperty("Account_id")
 	private String accountId;
@@ -98,17 +107,11 @@ public class HierarchyNode {
 	@JsonProperty("Vertical")
 	private String vertical;
 
-	@JsonProperty("Vertical_unique_id")
-	private String verticalUniqueId;
-
 	@JsonProperty("Vertical_id")
 	private String verticalId;
 
 	@JsonProperty("BU")
 	private String bu;
-
-	@JsonProperty("BU_unique_id")
-	private String buUniqueId;
 
 	@JsonProperty("BU_id")
 	private String buId;
@@ -116,8 +119,6 @@ public class HierarchyNode {
 	@JsonProperty("Root")
 	private String root;
 
-	@JsonProperty("Root_unique_id")
-	private String rootUniqueId;
 
 	@JsonProperty("Root_id")
 	private String rootId;

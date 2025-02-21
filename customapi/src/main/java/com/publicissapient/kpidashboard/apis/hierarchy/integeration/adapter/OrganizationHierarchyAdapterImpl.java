@@ -21,8 +21,11 @@ package com.publicissapient.kpidashboard.apis.hierarchy.integeration.adapter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -42,19 +45,17 @@ public class OrganizationHierarchyAdapterImpl implements OrganizationHierarchyAd
 	 * add logic of converting input datalist to Organization Hierarchy
 	 */
 	@Override
-	public List<OrganizationHierarchy> convertToOrganizationHierarchy(HierarchyDetails hierarchyDetails) {
+	public Set<OrganizationHierarchy> convertToOrganizationHierarchy(HierarchyDetails hierarchyDetails) {
 
-		List<OrganizationHierarchy> transformedList = new ArrayList<>();
-
+		Set<OrganizationHierarchy> transformedList = new HashSet<>();
 		List<HierarchyNode> hierarchyNodes = hierarchyDetails.getHierarchyNode();
-
 		ensureHierarchyExists(hierarchyNodes, transformedList);
 		// List<HierarchyLevel> hierarchyLevels = hierarchyDetails.getHierarchyLevels();
 		return transformedList;
 
 	}
 
-	public void ensureHierarchyExists(List<HierarchyNode> nodes, List<OrganizationHierarchy> transformedList) {
+	public void ensureHierarchyExists(List<HierarchyNode> nodes, Set<OrganizationHierarchy> transformedList) {
 		for (HierarchyNode node : nodes) {
 			List<OrganizationHierarchy> fullNode = new ArrayList<>();
 			try {
@@ -113,7 +114,7 @@ public class OrganizationHierarchyAdapterImpl implements OrganizationHierarchyAd
 			OrganizationHierarchy existingNode = hierarchyMap.get(nodeId);
 
 			// Ensure child has only one parent
-			if (!existingNode.getParentId().equals(parentId)) {
+			if (!Objects.equals(existingNode.getParentId(), parentId)) {
 				throw new IllegalStateException("Node " + nodeId + " cannot have multiple parents!");
 			}
 			return existingNode;

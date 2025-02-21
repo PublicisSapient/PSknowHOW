@@ -19,6 +19,7 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -104,7 +105,7 @@ public class OrganizationHierarchy extends BasicModel implements Serializable {
 		int result = nodeId.hashCode();
 		result = 31 * result + nodeName.hashCode();
 		result = 31 * result + hierarchyLevelId.hashCode();
-		result = 31 * result + parentId.hashCode();
+		result = 31 * result + (Objects.nonNull(parentId) ? parentId.hashCode() : 0);
 		result = 31 * result + externalId.hashCode();
 		return result;
 	}

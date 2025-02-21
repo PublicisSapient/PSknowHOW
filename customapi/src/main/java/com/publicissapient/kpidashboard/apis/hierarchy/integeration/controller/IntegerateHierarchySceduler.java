@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.hierarchy.integeration.controller;
 
-import com.publicissapient.kpidashboard.apis.hierarchy.integeration.dto.HierarchyDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -26,14 +25,17 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.publicissapient.kpidashboard.apis.hierarchy.integeration.dto.HierarchyDetails;
 import com.publicissapient.kpidashboard.apis.hierarchy.integeration.service.HierarchyDetailParser;
 import com.publicissapient.kpidashboard.apis.hierarchy.integeration.service.IntegerationService;
 import com.publicissapient.kpidashboard.apis.hierarchy.integeration.service.SF360Parser;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class IntegerateHierarchySceduler {
 
 	@Autowired
@@ -46,8 +48,8 @@ public class IntegerateHierarchySceduler {
 		String apiUrl = "https://hierarchy.tools.publicis.sapient.com/api/data/fetch/hierarchy/MAP/SF360Hierarchy";
 
 		HttpHeaders headers = new HttpHeaders();
-		//add x-api-key
-	
+		// add x-api-key
+
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
@@ -57,10 +59,9 @@ public class IntegerateHierarchySceduler {
 			// json response to central hierarchy list
 			HierarchyDetailParser hierarchyDetailParser = new SF360Parser();
 			HierarchyDetails hierarchyDetails = hierarchyDetailParser.convertToHierachyDetail(response.getBody());
-			integerationService
-					.syncOrganizationHierarchy(integerationService.convertHieracyResponseToOrganizationHierachy(hierarchyDetails));
-		} catch (HttpClientErrorException exception) {
-
+			integerationService.convertHieracyResponseToOrganizationHierachy(hierarchyDetails);
+		} catch (Exception exception) {
+			log.error("Exception" + exception);
 		}
 	}
 }

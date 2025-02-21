@@ -21,11 +21,9 @@ package com.publicissapient.kpidashboard.apis.hierarchy.integeration.service;
 import com.publicissapient.kpidashboard.apis.hierarchy.integeration.dto.HierarchyDetails;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 
-import java.util.List;
+import java.util.Set;
 
 public interface IntegerationService {
 
-    void syncOrganizationHierarchy(List<OrganizationHierarchy> externalList);
-
-    List<OrganizationHierarchy> convertHieracyResponseToOrganizationHierachy(HierarchyDetails hierarchyDetails);
+    Set<OrganizationHierarchy> convertHieracyResponseToOrganizationHierachy(HierarchyDetails hierarchyDetails);
 }

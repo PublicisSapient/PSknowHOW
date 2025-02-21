@@ -18,11 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.hierarchy.integeration.adapter;
 
-import java.util.List;
+import java.util.Set;
 
 import com.publicissapient.kpidashboard.apis.hierarchy.integeration.dto.HierarchyDetails;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 
 public interface OrganizationHierarchyAdapter {
-	List<OrganizationHierarchy> convertToOrganizationHierarchy(HierarchyDetails hierarchyDetails);
+	Set<OrganizationHierarchy> convertToOrganizationHierarchy(HierarchyDetails hierarchyDetails);
 }
