@@ -249,7 +249,8 @@ public class KpiHelperServiceTest {
 		when(customApiConfig.getPriority()).thenReturn(priority);
 		List<String> sprintList = List.of("sprint1", "sprint2");
 		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
-		Map<String, Object> resultMap = kpiHelperService.fetchDIRDataFromDb(basicProjectConfigId, kpiRequest, sprintList);
+		Map<String, Object> resultMap = kpiHelperService.fetchDIRDataFromDb(basicProjectConfigId, kpiRequest,
+				sprintList);
 		assertEquals(3, resultMap.size());
 	}
 
@@ -267,8 +268,9 @@ public class KpiHelperServiceTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		when(customApiConfig.getPriority()).thenReturn(priority);
-
-		Map<String, Object> resultMap = kpiHelperService.fetchQADDFromDb(leafNodeList, kpiRequest);
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+		Map<String, Object> resultMap = kpiHelperService.fetchQADDFromDb(basicProjectConfigId, kpiRequest, sprintList);
 		assertEquals(3, resultMap.size());
 	}
 
@@ -348,7 +350,8 @@ public class KpiHelperServiceTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 
-		Map<String, Object> resultMap = kpiHelperService.fetchTeamCapacityDataFromDb(leafNodeList, "", "", kpiRequest, "");
+		Map<String, Object> resultMap = kpiHelperService.fetchTeamCapacityDataFromDb(leafNodeList, "", "", kpiRequest,
+				"");
 		assertEquals(2, resultMap.size());
 	}
 
@@ -492,7 +495,8 @@ public class KpiHelperServiceTest {
 		fieldMappingMap.put("LiveStatus", "Live");
 		fieldMappingMap.put("RejectedStatus", Arrays.asList("Dropped"));
 		fieldMappingMap.put("RCA_Count_IssueType", Arrays.asList("Defect"));
-		leafNodeList.forEach(node -> projectMap.put(node.getProjectFilter().getBasicProjectConfigId(), fieldMappingMap));
+		leafNodeList
+				.forEach(node -> projectMap.put(node.getProjectFilter().getBasicProjectConfigId(), fieldMappingMap));
 		Map<String, Object> resultMap = kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(leafNodeList, "", "",
 				kpiRequest, "rca", projectMap);
 		assertEquals(5, resultMap.size());
@@ -511,7 +515,8 @@ public class KpiHelperServiceTest {
 		historyDataResultMap.put("projectWiseOpenStatus", projectWiseOpenStatus);
 
 		Map<String, Map<String, Map<String, Set<String>>>> result = kpiHelperService
-				.computeProjectWiseJiraHistoryByStatusAndDate(projectWiseNonClosedTickets, "2022-07-01", historyDataResultMap);
+				.computeProjectWiseJiraHistoryByStatusAndDate(projectWiseNonClosedTickets, "2022-07-01",
+						historyDataResultMap);
 		assertNotNull(result);
 	}
 
@@ -533,8 +538,8 @@ public class KpiHelperServiceTest {
 		historyDataResultMap.put("projectWiseClosedStoryStatus", projectWiseClosedStatus);
 
 		Map<String, Map<String, Map<String, Set<String>>>> result = kpiHelperService
-				.computeProjectWiseJiraHistoryByFieldAndDate(projectWiseNonClosedTickets, "2022-07-01", historyDataResultMap,
-						"rca");
+				.computeProjectWiseJiraHistoryByFieldAndDate(projectWiseNonClosedTickets, "2022-07-01",
+						historyDataResultMap, "rca");
 		assertNotNull(result);
 	}
 
@@ -577,7 +582,7 @@ public class KpiHelperServiceTest {
 
 		addKpiElement(kpiList, KPICode.ITERATION_BURNUP.getKpiId(), KPICode.ITERATION_BURNUP.name(), "Iteration", "");
 		kpiRequest.setLevel(level);
-		kpiRequest.setIds(new String[]{"38296_Scrum Project_6335363749794a18e8a4479b"});
+		kpiRequest.setIds(new String[] { "38296_Scrum Project_6335363749794a18e8a4479b" });
 		kpiRequest.setKpiList(kpiList);
 		kpiRequest.setRequestTrackerId();
 		kpiRequest.setLabel("sprint");
@@ -588,7 +593,8 @@ public class KpiHelperServiceTest {
 		return kpiRequest;
 	}
 
-	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category, String kpiUnit) {
+	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category,
+			String kpiUnit) {
 		KpiElement kpiElement = new KpiElement();
 		kpiElement.setKpiId(kpiId);
 		kpiElement.setKpiName(kpiName);
@@ -605,7 +611,8 @@ public class KpiHelperServiceTest {
 	public void getScmToolJobsReturnsAllTools() {
 		setToolMap();
 		Node node = new Node();
-		List<Tool> result = kpiHelperService.getScmToolJobs(toolMap.get(new ObjectId("6335363749794a18e8a4479b")), node);
+		List<Tool> result = kpiHelperService.getScmToolJobs(toolMap.get(new ObjectId("6335363749794a18e8a4479b")),
+				node);
 		assertEquals(1, result.size());
 	}
 
@@ -644,8 +651,8 @@ public class KpiHelperServiceTest {
 		when(fieldMapping.isUploadDataKPI16()).thenReturn(true);
 
 		KpiElement kpiElement = new KpiElement();
-		assertTrue(
-				kpiHelperService.isRequiredTestToolConfigured(KPICode.INSPRINT_AUTOMATION_COVERAGE, kpiElement, projectId));
+		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.INSPRINT_AUTOMATION_COVERAGE, kpiElement,
+				projectId));
 	}
 
 	@Test
@@ -660,8 +667,8 @@ public class KpiHelperServiceTest {
 		when(fieldMapping.isUploadDataKPI42()).thenReturn(true);
 
 		KpiElement kpiElement = new KpiElement();
-		assertTrue(
-				kpiHelperService.isRequiredTestToolConfigured(KPICode.REGRESSION_AUTOMATION_COVERAGE, kpiElement, projectId));
+		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.REGRESSION_AUTOMATION_COVERAGE, kpiElement,
+				projectId));
 	}
 
 	@Test
@@ -716,8 +723,8 @@ public class KpiHelperServiceTest {
 		FieldMapping fieldMapping = mock(FieldMapping.class);
 		when(configHelperService.getFieldMappingMap()).thenReturn(Map.of(projectId, fieldMapping));
 		KpiElement kpiElement = new KpiElement();
-		assertTrue(
-				kpiHelperService.isRequiredTestToolConfigured(KPICode.INSPRINT_AUTOMATION_COVERAGE, kpiElement, projectId));
+		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.INSPRINT_AUTOMATION_COVERAGE, kpiElement,
+				projectId));
 	}
 
 	private void setToolMap() {

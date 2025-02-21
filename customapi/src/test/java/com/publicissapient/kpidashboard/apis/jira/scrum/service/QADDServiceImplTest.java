@@ -250,7 +250,7 @@ public class QADDServiceImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(kpiHelperService.fetchQADDFromDb(any(), any())).thenReturn(resultListMap);
+		when(kpiHelperService.fetchQADDFromDb(any(), any(), any())).thenReturn(resultListMap);
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
