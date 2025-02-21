@@ -87,10 +87,10 @@
 
     <div class="p-d-flex p-jc-between p-ai-center">
       
-      <div class="show-hide-container cursor-pointer" pTooltip="Sprint Goals" tooltipPosition="top" tooltipEvent="hover"
+      <div class="show-hide-container" pTooltip="Sprint Goals" tooltipPosition="top" tooltipEvent="hover"
         tooltipStyleClass="tooltiptext">
         <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleSprintGoals()">
-          <i class="pi pi-check-square" style="font-size: 1rem"></i>
+          <i class="pi pi-check-square cursor-pointer" style="font-size: 1rem"></i>
         </span>
       </div>
 
@@ -184,9 +184,6 @@
 </div>
 
 
-<div *ngIf="showSprintGoalsPanel" class="p-col-12 p-p-2">
-  <app-collapsible-panel></app-collapsible-panel>
-</div>
 <p-dialog [(visible)]="displayModal" [modal]="true">
   <p-header>Are you sure you want to refresh?</p-header>
   <p-footer>
