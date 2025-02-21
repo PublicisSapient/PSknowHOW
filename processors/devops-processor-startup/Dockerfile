@@ -20,6 +20,19 @@ ENV APP_DIR="/app" \
     keystorefile="/usr/lib/jvm/java-17-amazon-corretto/lib/security/cacerts" \
     JAVA_OPTS=""
 
+# Define environment variables to control which jars to run (can be set during container run)
+ENV RUN_JENKINS=true \
+    RUN_BAMBOO=true \
+    RUN_GITLAB=true \
+    RUN_ZEPHYR=true \
+    RUN_SONAR=true \
+    RUN_BITBUCKET=true \
+    RUN_TEAMCITY=true \
+    RUN_GITHUB=true \
+    RUN_GITHUBACTION=true \
+    RUN_JIRATEST=true \
+    RUN_ARGOCD=true
+
 # Set the working directory
 WORKDIR $APP_DIR
 
@@ -37,6 +50,7 @@ ARG TEAMCITY_JAR_FILE=processors/teamcity/target/teamcity-processor.jar
 ARG GITLAB_JAR_FILE=processors/gitlab/target/gitlab-processor.jar
 ARG GITHUB_JAR_FILE=processors/github/target/github-processor.jar
 ARG GITHUBACTION_JAR_FILE=processors/github-action/target/githubaction-processor.jar
+ARG ARGOCD_JAR_FILE=processors/argocd/target/argocd-processor.jar
 
 # Set the properties file names
 ARG JENKINS_PROPERTIES_FILE_NAME=jenkins.properties
@@ -49,6 +63,7 @@ ARG TEAMCITY_PROPERTIES_FILE_NAME=teamcity.properties
 ARG GITLAB_PROPERTIES_FILE_NAME=gitlab.properties
 ARG GITHUB_PROPERTIES_FILE_NAME=github.properties
 ARG GITHUBACTION_PROPERTIES_FILE_NAME=githubaction.properties
+ARG ARGOCD_PROPERTIES_FILE_NAME=argocd.properties
 
 # Copy JAR files
 ADD ${ZEPHYR_JAR_FILE} $APP_DIR/zephyr.jar
@@ -60,7 +75,8 @@ ADD ${BITBUCKET_JAR_FILE} $APP_DIR/bitbucket.jar
 ADD ${TEAMCITY_JAR_FILE} $APP_DIR/teamcity.jar
 ADD ${GITLAB_JAR_FILE} $APP_DIR/gitlab.jar
 ADD ${GITHUB_JAR_FILE} $APP_DIR/github.jar
-ADD ${GITHUBACTION_JAR_FILE} $APP_DIR/githubaction.jar 
+ADD ${GITHUBACTION_JAR_FILE} $APP_DIR/githubaction.jar
+ADD ${ARGOCD_JAR_FILE} $APP_DIR/argocd.jar
 
 # Expose ports
 EXPOSE 50001
@@ -73,6 +89,7 @@ EXPOSE 50014
 EXPOSE 50019
 EXPOSE 50020
 EXPOSE 50022
+EXPOSE 50023
 
 # Copy startup script
 ADD processors/devops-processor-startup/start_combined_collector.sh $APP_DIR/start_combined_collector.sh
