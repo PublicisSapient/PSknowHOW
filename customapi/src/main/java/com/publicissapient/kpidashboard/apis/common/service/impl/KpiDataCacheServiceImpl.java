@@ -113,7 +113,7 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 						KPICode.SPRINT_VELOCITY.getKpiId(), KPICode.PROJECT_RELEASES.getKpiId(),
 						KPICode.PI_PREDICTABILITY.getKpiId(), KPICode.CREATED_VS_RESOLVED_DEFECTS.getKpiId(),
 						KPICode.HAPPINESS_INDEX_RATE.getKpiId(), KPICode.DEFECT_INJECTION_RATE.getKpiId(),
-						KPICode.DEFECT_DENSITY.getKpiId()));
+						KPICode.DEFECT_DENSITY.getKpiId(), KPICode.DEFECT_REJECTION_RATE.getKpiId()));
 		kpiMap.put(KPISource.JIRAKANBAN.name(), new ArrayList<>());
 		kpiMap.put(KPISource.SONAR.name(), new ArrayList<>());
 		kpiMap.put(KPISource.SONARKANBAN.name(), new ArrayList<>());
@@ -156,7 +156,7 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	@Override
 	public Map<String, Object> fetchDefectDensityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList, String kpiId) {
-		log.info("Fetching DIR KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
+		log.info("Fetching Defect Density KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
 		return kpiDataProvider.fetchDefectDensityDataFromDb(kpiRequest, basicProjectConfigId, sprintList);
 	}
 
@@ -238,7 +238,7 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	@Override
 	public Map<String, Object> fetchHappinessIndexData(ObjectId basicProjectConfigId, List<String> sprintList,
 			String kpiId) {
-		log.info("Fetching Sprint Predictability KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(),
+		log.info("Fetching Happiness Index KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(),
 				kpiId);
 		return kpiDataProvider.fetchHappinessIndexDataFromDb(sprintList);
 	}

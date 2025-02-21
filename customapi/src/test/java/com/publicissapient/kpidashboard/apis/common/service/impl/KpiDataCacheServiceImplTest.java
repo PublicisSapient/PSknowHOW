@@ -231,4 +231,16 @@ public class KpiDataCacheServiceImplTest {
 						new ArrayList<>(),
 						KPICode.CREATED_VS_RESOLVED_DEFECTS.getKpiId()));
 	}
+
+	@Test
+	public void testFetchDRRData() {
+		when(kpiDataProvider.fetchDRRData(any(), any(), any()))
+				.thenReturn(new HashMap<>());
+		assertNotNull(
+				kpiDataCacheService.fetchDRRData(
+						new KpiRequest(),
+						new ObjectId(),
+						new ArrayList<>(),
+						KPICode.DEFECT_REJECTION_RATE.getKpiId()));
+	}
 }
