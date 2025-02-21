@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,14 +29,18 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -43,6 +48,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
@@ -57,12 +63,19 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 
-	private static final String SPRINT_DETAILS = "sprints";
+	private static final String SPRINT_DETAILS = "sprintDetails";
 	private static final String HAPPINESS_INDEX_DETAILS = "happinessIndexDetails";
 	@Autowired
 	private SprintRepository sprintRepository;
 	@Autowired
 	private HappinessKpiDataRepository happinessKpiDataRepository;
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
+	@Autowired
+	private FilterHelperService flterHelperService;
+	@Autowired
+	private KpiDataProvider kpiDataProvider;
+	private List<String> sprintIdList = Collections.synchronizedList(new ArrayList<>());
 
 	/**
 	 * Gets Qualifier Type
@@ -89,7 +102,8 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-
+		sprintIdList = treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.SPRINT_MASTER).stream()
+				.map(node -> node.getSprintFilter().getId()).collect(Collectors.toList());
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			Filters filters = Filters.getFilter(k);
 			if (Filters.SPRINT == filters) {
@@ -240,17 +254,34 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 
-		List<String> sprintList = new ArrayList<>();
 		Map<String, Object> resultListMap = new HashMap<>();
+		Map<ObjectId, List<String>> projectWiseSprints = new HashMap<>();
 
-		leafNodeList.forEach(leaf -> sprintList.add(leaf.getSprintFilter().getId()));
+		leafNodeList.forEach(leaf -> {
+			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
+			String sprint = leaf.getSprintFilter().getId();
+			projectWiseSprints.putIfAbsent(basicProjectConfigId, new ArrayList<>());
+			projectWiseSprints.get(basicProjectConfigId).add(sprint);
+		});
 
-		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
-		List<HappinessKpiData> happinessKpiDataList = happinessKpiDataRepository.findBySprintIDIn(sprintList);
-		// filtering rating of 0 i.e not entered any rating
-		happinessKpiDataList.forEach(happinessKpiData -> happinessKpiData.getUserRatingList()
-				.removeIf(userRatingData -> userRatingData.getRating() == null || userRatingData.getRating().equals(0)));
-		resultListMap.put(SPRINT_DETAILS, sprintDetails);
+		List<SprintDetails> projectWiseSprintDetails = new ArrayList<>();
+		List<HappinessKpiData> happinessKpiDataList = new ArrayList<>();
+		boolean fetchCachedData = flterHelperService.isFilterSelectedTillSprintLevel(kpiRequest.getLevel(), false);
+		projectWiseSprints.forEach((basicProjectConfigId, sprintList) -> {
+			Map<String, Object> result;
+			if (fetchCachedData) { // fetch data from cache only if Filter is selected till Sprint
+				// level.
+				result = kpiDataCacheService.fetchHappinessIndexData(basicProjectConfigId, sprintIdList,
+						KPICode.HAPPINESS_INDEX_RATE.getKpiId());
+			} else { // fetch data from DB if filters below Sprint level (i.e. additional filters)
+				result = kpiDataProvider.fetchHappinessIndexDataFromDb(sprintList);
+			}
+
+			happinessKpiDataList.addAll((List<HappinessKpiData>) result.get(HAPPINESS_INDEX_DETAILS));
+			projectWiseSprintDetails.addAll((List<SprintDetails>) result.get(SPRINT_DETAILS));
+		});
+
+		resultListMap.put(SPRINT_DETAILS, projectWiseSprintDetails);
 		resultListMap.put(HAPPINESS_INDEX_DETAILS, happinessKpiDataList);
 
 		return resultListMap;

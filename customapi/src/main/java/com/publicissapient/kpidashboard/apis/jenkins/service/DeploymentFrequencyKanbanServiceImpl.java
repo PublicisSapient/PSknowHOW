@@ -148,8 +148,7 @@ public class DeploymentFrequencyKanbanServiceImpl
 			List<DataCount> dataCountAggList = new ArrayList<>();
 			String trendLineName = node.getProjectFilter().getName();
 			ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
-			String projectNodeId = node.getProjectFilter().getId();
-			String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
+			String projectName = node.getProjectFilter().getName();
 			List<Deployment> deploymentListProjectWise = deploymentGroup.get(basicProjectConfigId);
 
 			if (CollectionUtils.isNotEmpty(deploymentListProjectWise)) {

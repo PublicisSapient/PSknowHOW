@@ -241,7 +241,7 @@ export class ChartWithFiltersComponent implements OnInit, OnChanges {
   }
 
   categorySelect(event) {
-    this.dataCopy = this.data.filter(issue => issue.Category.includes(event.option.categoryName));
+    this.dataCopy = this.data.filter(issue => issue?.Category?.includes(event.option.categoryName));
     this.modifiedData = this.groupData(this.dataCopy, this.selectedMainFilter.filterKey);
     setTimeout(() => {this.draw(this.modifiedData);}, 0);
     this.legendData = [];

@@ -778,8 +778,8 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 				jiraIssueModalObject.setDevDelayInDays(Constant.BLANK);
 			}
 		}
-		if (StringUtils.isNotEmpty(jiraIssue.getDueDate()) && issueWiseDelay.containsKey(jiraIssue.getNumber())
-				&& issueWiseDelay.get(jiraIssue.getNumber()).isMaxMarker()) {
+		if (StringUtils.isNotEmpty(jiraIssue.getDueDate()) && issueWiseDelay.containsKey(jiraIssue.getNumber()) &&
+				issueWiseDelay.get(jiraIssue.getNumber()).isMaxMarker()) {
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
 			jiraIssueModalObject.setPotentialDelay(iterationPotentialDelay.getPotentialDelay() + "d");
 			jiraIssueModalObject.setPredictedCompletionDate(DateUtil.dateTimeConverter(

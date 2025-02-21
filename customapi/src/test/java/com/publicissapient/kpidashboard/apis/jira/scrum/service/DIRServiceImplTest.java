@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +32,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -102,6 +105,10 @@ public class DIRServiceImplTest {
 	private CommonService commonService;
 	@Mock
 	private ConfigHelperService configHelperService;
+	@Mock
+	KpiDataProvider kpiDataProvider;
+	@Mock
+	KpiDataCacheService kpiDataCacheService;
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
@@ -177,7 +184,6 @@ public class DIRServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(kpiHelperService.fetchDIRDataFromDb(any(), any())).thenReturn(resultListMap);
 		String kpiRequestTrackerId = "Excel-dirtrack001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
@@ -187,7 +193,8 @@ public class DIRServiceImplTest {
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		FieldMapping fieldMapping = mock(FieldMapping.class);
-		// when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
+		when(kpiDataProvider.fetchDefectInjectionRateDataFromDb(eq(kpiRequest), any(), any())).thenReturn(resultListMap);
+
 		try {
 			KpiElement kpiElement = dirServiceImpl.getKpiData(this.kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -216,8 +223,10 @@ public class DIRServiceImplTest {
 		Map<String, Object> resultListMap = new HashMap<>();
 		resultListMap.put("storyData", storyData);
 		resultListMap.put("defectData", defectData);
+		resultListMap.put("issueData", new ArrayList<>());
 
-		when(kpiHelperService.fetchDIRDataFromDb(any(), any())).thenReturn(resultListMap);
+//		when(kpiHelperService.fetchDIRDataFromDb(any(), any(), any())).thenReturn(resultListMap);
+		when(kpiDataProvider.fetchDefectInjectionRateDataFromDb(eq(kpiRequest), any(), any())).thenReturn(resultListMap);
 
 		Map<String, Object> defectDataListMap = dirServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
