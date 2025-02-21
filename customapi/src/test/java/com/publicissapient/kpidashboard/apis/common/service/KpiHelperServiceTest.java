@@ -265,8 +265,6 @@ public class KpiHelperServiceTest {
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
 				new ArrayList<>(), "hierarchyLevelOne", 5);
-		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		when(customApiConfig.getPriority()).thenReturn(priority);
 		List<String> sprintList = List.of("sprint1", "sprint2");
 		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
