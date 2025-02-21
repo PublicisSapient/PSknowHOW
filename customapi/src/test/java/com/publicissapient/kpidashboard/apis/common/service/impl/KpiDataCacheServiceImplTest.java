@@ -48,7 +48,6 @@ import com.publicissapient.kpidashboard.common.model.application.Build;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KpiDataCacheServiceImplTest {
-
 	@Mock
 	private CacheManager cacheManager;
 
@@ -154,6 +153,22 @@ public class KpiDataCacheServiceImplTest {
 		when(kpiDataProvider.fetchHappinessIndexDataFromDb(any())).thenReturn(new HashMap<>());
 		Map<String, Object> result =
 				kpiDataCacheService.fetchHappinessIndexData(new ObjectId(), new ArrayList<>(), "kpi149");
+		assertNotNull(result);
+	}
+
+	@Test
+	public void fetchDIRData_shouldReturnCorrectData_whenValidInput() {
+		when(kpiDataProvider.fetchDefectInjectionRateDataFromDb(any(), any(), any())).thenReturn(new HashMap<>());
+		Map<String, Object> result =
+				kpiDataCacheService.fetchDefectInjectionRateData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi14");
+		assertNotNull(result);
+	}
+
+	@Test
+	public void fetchDDData_shouldReturnCorrectData_whenValidInput() {
+		when(kpiDataProvider.fetchDefectDensityDataFromDb(any(), any(), any())).thenReturn(new HashMap<>());
+		Map<String, Object> result =
+				kpiDataCacheService.fetchDefectDensityData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi111");
 		assertNotNull(result);
 	}
 

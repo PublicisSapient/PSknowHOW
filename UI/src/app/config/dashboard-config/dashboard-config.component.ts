@@ -248,12 +248,11 @@
     this.noProjectsForSelectedCategory = false;
     this.httpService.getUserProjects()
       .subscribe(response => {
-        console.log('dashboard config',response)
         if (response[0] !== 'error' && !response.error) {
           if (this.getAuthorizationService.checkIfSuperUser()) {
             that.userProjects = [];
             that.userProjects = response.data.map((filteredProj) => ({
-                name: filteredProj.projectName,
+                name: filteredProj.projectDisplayName?filteredProj.projectDisplayName:filteredProj.projectName,
                 id: filteredProj.id,
                 type : filteredProj.kanban ? 'kanban' : 'scrum'
               }));
@@ -261,7 +260,7 @@
             that.userProjects = [];
             that.userProjects = response.data.filter(proj => !this.getAuthorizationService.checkIfViewer(proj))
               .map((filteredProj) => ({
-                  name: filteredProj.projectName,
+                  name: filteredProj.projectDisplayName?filteredProj.projectDisplayName:filteredProj.projectName,
                   id: filteredProj.id,
                   type : filteredProj.kanban ? 'kanban' : 'scrum'
                 }));
