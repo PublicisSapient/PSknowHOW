@@ -618,7 +618,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	}
 
 	private void deleteFilterData(ProjectBasicConfig projectBasicConfig) {
-		filterHelperService.deleteAccountHierarchiesOfProject(projectBasicConfig.getId(), projectBasicConfig.getIsKanban());
+		filterHelperService.deleteAccountHierarchiesOfProject(projectBasicConfig);
 	}
 
 	private void deleteToolsAndCleanData(ProjectBasicConfig projectBasicConfig) {

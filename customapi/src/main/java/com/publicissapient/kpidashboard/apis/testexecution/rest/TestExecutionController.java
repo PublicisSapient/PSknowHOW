@@ -64,9 +64,6 @@ public class TestExecutionController {
 	public ResponseEntity<ServiceResponse> addTestExecutionData(@RequestBody TestExecutionData testExecution) {
 		ServiceResponse response = new ServiceResponse(false, "Failed to add  Test Execution Data", null);
 		try {
-			String projectNodeId = testExecution.getProjectNodeId();
-			testExecution.setBasicProjectConfigId(
-					projectNodeId.substring(projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE) + 1, projectNodeId.length()));
 			policy.checkPermission(testExecution, TEST_EXECUTION_STATUS);
 			testExecution = testExecutionService.processTestExecutionData(testExecution);
 			if (null != testExecution) {

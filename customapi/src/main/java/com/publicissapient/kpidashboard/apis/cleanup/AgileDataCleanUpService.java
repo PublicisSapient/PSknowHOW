@@ -161,7 +161,6 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 				accountHierarchyRepository.deleteByBasicProjectConfigIdAndLabelNameIn(tool.getBasicProjectConfigId(),
 						levelList);
 			}
-			organizationHierarchyService.deleteByNodeId(projectBasicConfig.getProjectNodeId());
 			projectHierarchyService.deleteByBasicProjectConfigId(projectBasicConfig.getId());
 		}
 	}
