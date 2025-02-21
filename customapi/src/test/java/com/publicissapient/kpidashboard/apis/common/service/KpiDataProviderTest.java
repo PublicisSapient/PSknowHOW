@@ -433,4 +433,22 @@ public class KpiDataProviderTest {
 		assertThat("Total Story value :", ((List<JiraIssue>) (defectDataListMap.get("storyData"))).size(), equalTo(5));
 		assertThat("Total Defects value :", ((List<JiraIssue>) (defectDataListMap.get("defectData"))).size(), equalTo(20));
 	}
+
+	@Test
+	public void testFetchDD() {
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+		SprintWiseStoryDataFactory sprintWiseStoryDataFactory = SprintWiseStoryDataFactory.newInstance();
+		List<SprintWiseStory> storyData = sprintWiseStoryDataFactory.getSprintWiseStories();
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		List<JiraIssue> defectData = jiraIssueDataFactory.getBugs();
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put("storyData", storyData);
+		resultListMap.put("defectData", defectData);
+		resultListMap.put("storyPoints", new ArrayList<>());
+		when(kpiHelperService.fetchQADDFromDb(any(), any(), any())).thenReturn(resultListMap);
+		Map<String, Object> defectDataListMap = kpiDataProvider.fetchDefectDensityDataFromDb(kpiRequest, basicProjectConfigId, sprintList);
+		assertThat("Total Story value :", ((List<JiraIssue>) (defectDataListMap.get("storyData"))).size(), equalTo(5));
+		assertThat("Total Defects value :", ((List<JiraIssue>) (defectDataListMap.get("defectData"))).size(), equalTo(20));
+	}
 }

@@ -803,4 +803,24 @@ public class KpiDataProvider {
 		return kpiHelperService.fetchDIRDataFromDb(basicProjectConfigId, kpiRequest, sprintList);
 
 	}
+
+	/**
+	 * Fetches DD KPI data from the database for the given project and sprints
+	 * combination.
+	 *
+	 * @param kpiRequest
+	 *            The KPI request object.
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @param sprintList
+	 *            The list of sprint IDs.
+	 * @return A map containing list of jira issues and list of defects
+	 *
+	 */
+	public Map<String, Object> fetchDefectDensityDataFromDb(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+			List<String> sprintList) {
+
+		return kpiHelperService.fetchQADDFromDb(basicProjectConfigId, kpiRequest, sprintList);
+
+	}
 }

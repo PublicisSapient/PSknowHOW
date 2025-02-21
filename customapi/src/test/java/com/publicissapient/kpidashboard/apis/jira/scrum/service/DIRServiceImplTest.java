@@ -184,7 +184,6 @@ public class DIRServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-//		when(kpiHelperService.fetchDIRDataFromDb(any(), any(), any())).thenReturn(resultListMap);
 		String kpiRequestTrackerId = "Excel-dirtrack001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
