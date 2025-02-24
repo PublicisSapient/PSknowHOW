@@ -1138,6 +1138,7 @@ public class KPIExcelUtility {
 				excelData.setMeanTimetoMerge(repoToolValidationData.getMeanTimeToMerge().toString());
 				excelData.setPrRaisedTime(repoToolValidationData.getPrRaisedTime());
 				excelData.setPrMergedTime(repoToolValidationData.getPrActivityTime());
+				excelData.setMrComments(repoToolValidationData.getMergeRequestComment());
 				Map<String, String> mergeUrl = new HashMap<>();
 				mergeUrl.put(repoToolValidationData.getMergeRequestUrl(), repoToolValidationData.getMergeRequestUrl());
 				excelData.setMergeRequestUrl(mergeUrl);
