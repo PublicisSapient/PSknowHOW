@@ -20,7 +20,10 @@
 package com.publicissapient.kpidashboard.jira.processor;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.InvocationTargetException;
@@ -37,7 +40,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -85,6 +87,7 @@ import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.dataFactories.ConnectionsDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.JiraIssueDataFactory;
@@ -131,6 +134,11 @@ public class KanbanJiraIssueProcessorImplTest {
 	@Mock
 	private IssueField issueField;
 
+	@Mock
+	private KanbanJiraIssue jiraIssue;
+
+	private Map<String, IssueField> fields;
+
 	Set<Assignee> assigneeSetToSave = new HashSet<>();
 
 	@Before
@@ -152,6 +160,7 @@ public class KanbanJiraIssueProcessorImplTest {
 				.thenReturn(assigneeDetailsToBeSave);
 		createProjectConfigMap();
 		createIssue();
+		fields = new HashMap<>();
 	}
 
 	@Test
@@ -471,4 +480,102 @@ public class KanbanJiraIssueProcessorImplTest {
 		Double estimation = (Double) method.invoke(transformFetchedIssueToKanbanJiraIssue, issueField, "UnknownCriteria");
 		Assert.assertEquals(0.0, estimation, 0.001);
 	}
+
+	@Test
+	public void testSetEpicLinked_StringEpicLink() throws Exception {
+		// Arrange
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		KanbanJiraIssue jiraIssue = mock(KanbanJiraIssue.class);
+		Map<String, IssueField> fields = new HashMap<>();
+		fields.put("epicLinkField", new IssueField("epicLinkField", "Epic Link", null, "EPIC-123"));
+
+		when(fieldMapping.getEpicLink()).thenReturn("epicLinkField");
+
+		// Act
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked", FieldMapping.class, KanbanJiraIssue.class, Map.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToKanbanJiraIssue, fieldMapping, jiraIssue, fields);
+
+		// Assert
+		verify(jiraIssue).setEpicLinked("EPIC-123");
+	}
+
+	@Test
+	public void testSetEpicLinked_JSONObjectEpicLinkWithKey() throws Exception {
+		// Arrange
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		KanbanJiraIssue jiraIssue = mock(KanbanJiraIssue.class);
+		Map<String, IssueField> fields = new HashMap<>();
+		fields.put("epicLinkField", new IssueField("epicLinkField", "Epic Link", null, "EPIC-123"));
+
+		when(fieldMapping.getEpicLink()).thenReturn("epicLinkField");
+		JSONObject epicLinkJson = new JSONObject();
+		epicLinkJson.put("key", "EPIC-123");
+		fields.put("epicLinkField", new IssueField("epicLinkField", "Epic Link", null, epicLinkJson));
+
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked", FieldMapping.class,
+				KanbanJiraIssue.class, Map.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToKanbanJiraIssue, fieldMapping, jiraIssue, fields);
+
+		verify(jiraIssue).setEpicLinked("EPIC-123");
+	}
+
+	@Test
+	public void testSetEpicLinked_JSONObjectEpicLinkWithoutKey() throws Exception {
+		// Arrange
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		KanbanJiraIssue jiraIssue = mock(KanbanJiraIssue.class);
+		Map<String, IssueField> fields = new HashMap<>();
+		fields.put("epicLinkField", new IssueField("epicLinkField", "Epic Link", null, "EPIC-123"));
+
+		when(fieldMapping.getEpicLink()).thenReturn("epicLinkField");
+		JSONObject epicLinkJson = new JSONObject();
+		fields.put("epicLinkField", new IssueField("epicLinkField", "Epic Link", null, epicLinkJson));
+
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked", FieldMapping.class,
+				KanbanJiraIssue.class, Map.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToKanbanJiraIssue, fieldMapping, jiraIssue, fields);
+
+		verify(jiraIssue, never()).setEpicLinked(anyString());
+	}
+
+	@Test
+	public void testSetEpicLinked_NullEpicLink() throws Exception {
+		// Arrange
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		KanbanJiraIssue jiraIssue = mock(KanbanJiraIssue.class);
+		Map<String, IssueField> fields = new HashMap<>();
+		fields.put("epicLinkField", new IssueField("epicLinkField", "Epic Link", null, "EPIC-123"));
+
+		when(fieldMapping.getEpicLink()).thenReturn("epicLinkField");
+		fields.put("epicLinkField", new IssueField("epicLinkField", "Epic Link", null, null));
+
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked", FieldMapping.class,
+				KanbanJiraIssue.class, Map.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToKanbanJiraIssue, fieldMapping, jiraIssue, fields);
+
+		verify(jiraIssue, never()).setEpicLinked(anyString());
+	}
+
+	@Test
+	public void testSetEpicLinked_FieldNotPresent() throws Exception {
+		// Arrange
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		KanbanJiraIssue jiraIssue = mock(KanbanJiraIssue.class);
+		Map<String, IssueField> fields = new HashMap<>();
+		fields.put("epicLinkField", new IssueField("epicLinkField", "Epic Link", null, "EPIC-123"));
+
+		when(fieldMapping.getEpicLink()).thenReturn("epicLinkField");
+
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked", FieldMapping.class,
+				KanbanJiraIssue.class, Map.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToKanbanJiraIssue, fieldMapping, jiraIssue, fields);
+
+		verify(jiraIssue, never()).setEpicLinked(anyString());
+	}
+
 }

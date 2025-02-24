@@ -21,6 +21,9 @@ package com.publicissapient.kpidashboard.jira.processor;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.InvocationTargetException;
@@ -40,7 +43,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -89,6 +91,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.dataFactories.ConnectionsDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.ProjectBasicConfigDataFactory;
@@ -113,7 +116,6 @@ public class JiraIssueProcessorImplTest {
 	@Mock
 	JiraProcessor jiraProcessor;
 
-	FieldMapping fieldMapping;
 	List<ProjectBasicConfig> projectConfigsList;
 	List<ProjectToolConfig> projectToolConfigsForJQL;
 	List<ProjectToolConfig> projectToolConfigsForBoard;
@@ -143,7 +145,13 @@ public class JiraIssueProcessorImplTest {
 
 	@Mock
 	private AssigneeDetails assigneeDetails;
+	@Mock
+	private FieldMapping fieldMapping;
 
+	@Mock
+	private JiraIssue jiraIssue;
+
+	private Map<String, IssueField> fields;
 	Set<Assignee> assigneeSetToSave = new HashSet<>();
 
 	@Before
@@ -169,6 +177,7 @@ public class JiraIssueProcessorImplTest {
 		createProjectConfigMapForJQL();
 		createProjectConfigMapForBoard();
 		createProjectConfigMapForElse();
+		fields = new HashMap<>();
 	}
 
 	@Test
@@ -807,4 +816,70 @@ public class JiraIssueProcessorImplTest {
 		method.setAccessible(true);
 		method.invoke(transformFetchedIssueToJiraIssue,jiraIssue,"UAT",list);
 	}
+	@Test
+	public void testSetEpicLinked_StringEpicLink() throws Exception {
+		when(fieldMapping.getEpicLink()).thenReturn("epicLinkField");
+		fields.put("epicLinkField", new IssueField("epicLinkField", "Epic Link", null, "EPIC-123"));
+
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked", FieldMapping.class, JiraIssue.class, Map.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToJiraIssue, fieldMapping, jiraIssue, fields);
+
+		verify(jiraIssue).setEpicLinked("EPIC-123");
+	}
+
+	@Test
+	public void testSetEpicLinked_JSONObjectEpicLinkWithKey() throws Exception {
+		when(fieldMapping.getEpicLink()).thenReturn("epicLinkField");
+		JSONObject epicLinkJson = new JSONObject();
+		epicLinkJson.put("key", "EPIC-123");
+		fields.put("epicLinkField", new IssueField("epicLinkField", "Epic Link", null, epicLinkJson));
+
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked", FieldMapping.class,
+				JiraIssue.class, Map.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToJiraIssue, fieldMapping, jiraIssue, fields);
+
+		verify(jiraIssue).setEpicLinked("EPIC-123");
+	}
+
+	@Test
+	public void testSetEpicLinked_JSONObjectEpicLinkWithoutKey() throws Exception {
+		when(fieldMapping.getEpicLink()).thenReturn("epicLinkField");
+		JSONObject epicLinkJson = new JSONObject();
+		fields.put("epicLinkField", new IssueField("epicLinkField", "Epic Link", null, epicLinkJson));
+
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked", FieldMapping.class,
+				JiraIssue.class, Map.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToJiraIssue, fieldMapping, jiraIssue, fields);
+
+		verify(jiraIssue, never()).setEpicLinked(anyString());
+	}
+
+	@Test
+	public void testSetEpicLinked_NullEpicLink() throws Exception {
+		when(fieldMapping.getEpicLink()).thenReturn("epicLinkField");
+		fields.put("epicLinkField", new IssueField("epicLinkField", "Epic Link", null, null));
+
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked", FieldMapping.class,
+				JiraIssue.class, Map.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToJiraIssue, fieldMapping, jiraIssue, fields);
+
+		verify(jiraIssue, never()).setEpicLinked(anyString());
+	}
+
+	@Test
+	public void testSetEpicLinked_FieldNotPresent() throws Exception {
+		when(fieldMapping.getEpicLink()).thenReturn("epicLinkField");
+
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked", FieldMapping.class,
+				JiraIssue.class, Map.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToJiraIssue, fieldMapping, jiraIssue, fields);
+
+		verify(jiraIssue, never()).setEpicLinked(anyString());
+	}
+
 }
