@@ -77,22 +77,12 @@ public class SprintGoalServiceImpl extends JiraKPIService<Double, List<Object>, 
 		log.debug("[SPRINT-GOAL-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
-		/*
-		 * Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-		 * calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.SPRINT_GOALS);
-		 * List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement,
-		 * nodeWiseKPIValue, KPICode.SPRINT_GOALS);
-		 * kpiElement.setTrendValueList(trendValues);
-		 */
-
 		return kpiElement;
 	}
 
 	@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
-
-		String requestTrackerId = getRequestTrackerId();
 
 		sprintLeafNodeList.sort(Comparator.comparing(node -> node.getSprintFilter().getStartDate()));
 
@@ -130,7 +120,7 @@ public class SprintGoalServiceImpl extends JiraKPIService<Double, List<Object>, 
 					ModelMapper mapper = new ModelMapper();
 					projectBasicDTO = mapper.map(projectConfig, ProjectBasicConfigDTO.class);
 				}
-
+				assert projectBasicDTO != null;
 				List<HierarchyValueDTO> projectHierarchy = projectBasicDTO.getHierarchy();
 				projectSprintDetails.setHierarchy(projectHierarchy);
 
@@ -156,6 +146,8 @@ public class SprintGoalServiceImpl extends JiraKPIService<Double, List<Object>, 
 			}
 		}
 		kpiElement.setTrendValueList(new ArrayList<>(projectSprintDetailsMap.values()));
+		log.debug(trendValueList.toString());
+		log.debug(mapTmp.toString());
 	}
 
 	@Override
