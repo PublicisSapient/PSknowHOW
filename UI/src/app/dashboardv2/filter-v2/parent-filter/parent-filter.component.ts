@@ -36,6 +36,7 @@ export class ParentFilterComponent implements OnChanges {
           }
         });
         this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level.nodeName));
+        this.service.setDataForSprintGoal({filterLevels : this.filterLevels})
         this.stateFilters = (this.service.getBackupOfUrlFilters() && JSON.parse(this.service.getBackupOfUrlFilters())['parent_level']) || this.service.getBackupOfFilterSelectionState('parent_level');
         Promise.resolve().then(() => {
           if (this.stateFilters && typeof this.stateFilters === 'string') {
@@ -47,6 +48,7 @@ export class ParentFilterComponent implements OnChanges {
           } else {
             this.selectedLevel = this.filterLevels[this.filterLevels.length - 1];
           }
+          this.service.setDataForSprintGoal({selectedLevel : this.selectedLevel})
           this.handleSelectedLevelChange();
         });
       } else {
@@ -80,6 +82,7 @@ export class ParentFilterComponent implements OnChanges {
             this.handleSelectedLevelChange(true);
             return;
           }
+          this.service.setDataForSprintGoal({selectedLevel : this.selectedLevel})
           this.handleSelectedLevelChange();
         });
       }
@@ -125,6 +128,7 @@ export class ParentFilterComponent implements OnChanges {
         }
       }
     }
+    this.service.setDataForSprintGoal({selectedLevel : this.selectedLevel})
   }
 
 /**

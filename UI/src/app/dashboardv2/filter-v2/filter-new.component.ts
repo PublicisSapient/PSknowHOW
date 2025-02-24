@@ -391,6 +391,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }, {});
       this.setCategories();
     }
+    this.service.setDataForSprintGoal({filterDataArr : this.filterDataArr[this.selectedType]})
   }
 
   setCategories() {
@@ -1569,6 +1570,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   toggleSprintGoals() {
     this.showSprintGoalsPanel = !this.showSprintGoalsPanel;
+    this.service.updateSprintGoalFlag(this.showSprintGoalsPanel);
   }
 
 }
