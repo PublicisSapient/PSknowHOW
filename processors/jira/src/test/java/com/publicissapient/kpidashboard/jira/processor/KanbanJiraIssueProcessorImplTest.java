@@ -566,16 +566,15 @@ public class KanbanJiraIssueProcessorImplTest {
 		FieldMapping fieldMapping = mock(FieldMapping.class);
 		KanbanJiraIssue jiraIssue = mock(KanbanJiraIssue.class);
 		Map<String, IssueField> fields = new HashMap<>();
-		fields.put("epicLinkField", new IssueField("epicLinkField", "Epic Link", null, "EPIC-123"));
 
 		when(fieldMapping.getEpicLink()).thenReturn("epicLinkField");
 
-		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked", FieldMapping.class,
-				KanbanJiraIssue.class, Map.class);
+		// Act
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked", FieldMapping.class, KanbanJiraIssue.class, Map.class);
 		method.setAccessible(true);
 		method.invoke(transformFetchedIssueToKanbanJiraIssue, fieldMapping, jiraIssue, fields);
 
+		// Assert
 		verify(jiraIssue, never()).setEpicLinked(anyString());
 	}
-
 }
