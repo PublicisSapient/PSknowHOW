@@ -38,8 +38,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.atlassian.jira.rest.client.api.domain.Version;
-import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,6 +53,8 @@ import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.IssueLink;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.User;
+import com.atlassian.jira.rest.client.api.domain.Version;
+import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -64,6 +64,7 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -285,10 +286,18 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 		return assigneeName;
 	}
 
-	private void setEpicLinked(FieldMapping fieldMapping, KanbanJiraIssue jiraIssue, Map<String, IssueField> fields) {
+	private void setEpicLinked(FieldMapping fieldMapping, KanbanJiraIssue kanbanJiraIssue, Map<String, IssueField> fields) {
 		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink()) && fields.get(fieldMapping.getEpicLink()) != null
 				&& fields.get(fieldMapping.getEpicLink()).getValue() != null) {
-			jiraIssue.setEpicLinked(fields.get((fieldMapping.getEpicLink()).trim()).getValue().toString());
+			final Object epicLink = fields.get((fieldMapping.getEpicLink()).trim()).getValue();
+			if (epicLink instanceof String) {
+				kanbanJiraIssue.setEpicLinked(epicLink.toString());
+			} else if (epicLink instanceof JSONObject epicLinkJson) {
+				String epicKey = JsonParseUtil.getOptionalString(epicLinkJson, "key");
+				if (epicKey != null) {
+					kanbanJiraIssue.setEpicLinked(epicKey);
+				}
+			}
 		}
 	}
 
