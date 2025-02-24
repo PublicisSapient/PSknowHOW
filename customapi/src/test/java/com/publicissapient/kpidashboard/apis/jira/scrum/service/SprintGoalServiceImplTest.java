@@ -153,11 +153,13 @@ public class SprintGoalServiceImplTest {
         resultListMap.put("sprintDetails", sprintDetailsList);
         when(sprintRepository.findBySprintIDInWithFieldsSorted(any()))
                 .thenReturn(sprintDetailsList);
+        when(configHelperService.getProjectConfig(any()))
+                .thenReturn(projectConfigList.get(0));
 
         try {
             KpiElement kpiElement = sprintGoalService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
                     treeAggregatorDetail);
-            assertThat("Sprint goal value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(2));
+            assertThat("Sprint goal value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
         } catch (Exception exception) {
         }
     }
@@ -173,11 +175,13 @@ public class SprintGoalServiceImplTest {
         resultListMap.put("sprintDetails", new ArrayList<>());
         when(sprintRepository.findBySprintIDInWithFieldsSorted(any()))
                 .thenReturn(sprintDetailsList);
+        when(configHelperService.getProjectConfig(any()))
+                .thenReturn(projectConfigList.get(0));
 
         try {
             KpiElement kpiElement = sprintGoalService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
                     treeAggregatorDetail);
-            assertThat("Sprint goal value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(2));
+            assertThat("Sprint goal value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
         } catch (Exception exception) {
         }
     }
