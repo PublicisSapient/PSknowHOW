@@ -114,8 +114,8 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Act
 		Node node = new Node();
-		node.setSprintFilter(new SprintFilter("sprint-id", "TEST| KnowHOW|PI_10|Opensource_Scrum Project", LocalDateTime.now().toString(),
-				LocalDateTime.now().toString()));
+		node.setSprintFilter(new SprintFilter("sprint-id", "TEST| KnowHOW|PI_10|Opensource_Scrum Project",
+				LocalDateTime.now().toString(), LocalDateTime.now().toString()));
 
 		excelUtility.populateFTPRExcelData(storyIds, jiraIssues, kpiExcelData, issueData, defects, customApiConfig,
 				fieldMapping, node);
@@ -696,8 +696,8 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Act
 		Node node = new Node();
-		node.setSprintFilter(new SprintFilter("sprint-id", "TEST| KnowHOW|PI_10|Opensource_Scrum Project", LocalDateTime.now().toString(),
-				LocalDateTime.now().toString()));
+		node.setSprintFilter(new SprintFilter("sprint-id", "TEST| KnowHOW|PI_10|Opensource_Scrum Project",
+				LocalDateTime.now().toString(), LocalDateTime.now().toString()));
 
 		KPIExcelUtility.populateDirExcelData(storyIds, defects, kpiExcelData, issueData, fieldMapping, customApiConfig,
 				node);
@@ -734,8 +734,8 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Act
 		Node node = new Node();
-		node.setSprintFilter(new SprintFilter("sprint-id", "TEST| KnowHOW|PI_10|Opensource_Scrum Project", LocalDateTime.now().toString(),
-				LocalDateTime.now().toString()));
+		node.setSprintFilter(new SprintFilter("sprint-id", "TEST| KnowHOW|PI_10|Opensource_Scrum Project",
+				LocalDateTime.now().toString(), LocalDateTime.now().toString()));
 
 		KPIExcelUtility.populateDefectDensityExcelData(storyIds, defects, kpiExcelData, issueData, fieldMapping,
 				customApiConfig, node);

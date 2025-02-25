@@ -169,7 +169,7 @@ export class BarchartComponent implements OnInit {
         this.tooltip
           .style('display', 'block')
           .html(
-            `<strong>${d.category}:</strong> ${d.value}${unit === 'Count' ? '' : ` ${unit}`}`
+            `<strong>${d.category}:</strong> ${parseFloat(d.value.toFixed(2))}${unit === 'Count' ? '' : ` ${unit}`}`
           );
       })
       .on('mousemove', (event, d) => {

@@ -22,7 +22,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -31,10 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +41,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
@@ -53,6 +51,7 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -126,7 +125,6 @@ public class HappinessIndexServiceImplTest {
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-
 	}
 
 	@Test
@@ -150,8 +148,7 @@ public class HappinessIndexServiceImplTest {
 		Map<String, Object> resultListMap = new HashMap<>();
 		resultListMap.put(HAPPINESS_INDEX_DETAILS, Arrays.asList(new ArrayList<>()));
 		resultListMap.put(SPRINT_DETAILS, new ArrayList<>());
-		when(kpiDataProvider.fetchHappinessIndexDataFromDb(any()))
-				.thenReturn(resultListMap);
+		when(kpiDataProvider.fetchHappinessIndexDataFromDb(any())).thenReturn(resultListMap);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
@@ -161,7 +158,6 @@ public class HappinessIndexServiceImplTest {
 		List<DataCount> dataCountList = (List<DataCount>) kpiElement.getTrendValueList();
 
 		assertEquals("Story Count : ", 1, dataCountList.size());
-
 	}
 
 	@Test
@@ -185,14 +181,11 @@ public class HappinessIndexServiceImplTest {
 		Map<String, Object> resultListMap = new HashMap<>();
 		resultListMap.put(HAPPINESS_INDEX_DETAILS, Arrays.asList(happinessKpiData));
 		resultListMap.put(SPRINT_DETAILS, Arrays.asList(sprintDetails));
-		when(kpiDataProvider.fetchHappinessIndexDataFromDb(any()))
-				.thenReturn(resultListMap);
+		when(kpiDataProvider.fetchHappinessIndexDataFromDb(any())).thenReturn(resultListMap);
 		KpiElement kpiElement = happinessIndexImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		List<DataCount> dataCountList = (List<DataCount>) kpiElement.getTrendValueList();
 
 		assertEquals("Story Count : ", 1, dataCountList.size());
-
 	}
-
 }
