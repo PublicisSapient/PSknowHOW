@@ -20,7 +20,7 @@
     </div>
 
     <hr />
-    <button pButton pRipple (click)="toggleAll()" class="p-mb-2">
+    <button *ngIf="rawData.length" pButton pRipple (click)="toggleAll()" class="p-mb-2">
         {{ isAllExpanded ? 'Collapse All' : 'Expand All' }}
     </button>
     
