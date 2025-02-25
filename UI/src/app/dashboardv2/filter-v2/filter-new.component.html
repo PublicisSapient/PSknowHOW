@@ -1,14 +1,25 @@
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
-<div class="filter-container p-m-0 p-fluid">
-  <div class="p-d-flex p-col-fixed p-pl-0 p-pr-0 scrum-kanban-switch">
+<div class="filter-container p-m-0 p-fluid" role="region" aria-label="Dashboard Filters">
+  <div class="p-d-flex p-col-fixed p-pl-0 p-pr-0 scrum-kanban-switch" role="tablist">
     <div class="tabs">
       <div class="tab" (click)="setSelectedType('Scrum')"
-        [ngClass]="{ 'active': selectedType === 'scrum', 'disabled': !kanbanRequired?.enabled || !scrumProjectsAvailable }">
+        [ngClass]="{ 'active': selectedType === 'scrum', 'disabled': !kanbanRequired?.enabled || !scrumProjectsAvailable }"
+        role="tab" 
+        tabindex="0" 
+        [attr.aria-selected]="selectedType === 'scrum'"
+        (keydown.enter)="setSelectedType('Scrum')"
+      >
         Scrum
       </div>
       <div class="tab" (click)="setSelectedType('Kanban')"
-        [ngClass]="{ 'active': selectedType === 'kanban', 'disabled': !kanbanRequired?.enabled || !kanbanProjectsAvailable }">
-        Kanban</div>
+        [ngClass]="{ 'active': selectedType === 'kanban', 'disabled': !kanbanRequired?.enabled || !kanbanProjectsAvailable }"
+        role="tab" 
+        tabindex="0" 
+        [attr.aria-selected]="selectedType === 'kanban'"
+        (keydown.enter)="setSelectedType('Kanban')"
+      >
+        Kanban
+      </div>
     </div>
   </div>
 
@@ -28,17 +39,17 @@
     </ng-container>
   </div>
 </div>
-<div class="selected-filter-container p-d-flex p-jc-between p-pl-3 p-pr-3">
+<div class="selected-filter-container p-d-flex p-jc-between p-pl-3 p-pr-3" role="region" aria-label="Selected Filters">
   <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
     <ng-container *ngIf="objectKeys(colorObj).length">
       <ng-container *ngFor="let item of objectKeys(colorObj); let i = index;">
-        <li class="selectedfilter cursor-pointer p-mr-3" pTooltip="{{ getTooltipText(item.tooltip) }}" tooltipPosition="bottom" [tooltipEscape]="false" tooltipEvent="hover">
+        <li class="selectedfilter cursor-pointer p-mr-3" role="listitem" pTooltip="{{ getTooltipText(item.tooltip) }}" tooltipPosition="bottom" [tooltipEscape]="false" tooltipEvent="hover">
           <div class="selected-node">
-            <div class="selected-node-label p-pl-0" >
-              <span class="align-list-marker" [ngStyle]="{'background':item?.color}"></span>
+            <div class="selected-node-label p-pl-0" [title]="item?.nodeDisplayName" tabindex="0" [attr.aria-label]="item?.nodeDisplayName">
+              <span class="align-list-marker" [ngStyle]="{'background':colorObj[item]?.color}"tabindex="0" [attr.aria-label]="colorObj[item]?.color"></span>
               <span class="p-l-1">{{filterType | uppercase}} {{ item?.nodeDisplayName?.length<= 20 ?
                   item?.nodeDisplayName : item?.nodeDisplayName?.slice(0,20)+'...'}} <span class="remove-node"
-                  (click)="removeFilter(item?.nodeId)">&times;</span>
+                  (click)="removeFilter(colorObj[item]?.nodeId)" tabindex="0" (keydown.enter)="removeFilter(colorObj[item]?.nodeId)">&times;</span>
               </span>
             </div>
           </div>
@@ -47,35 +58,52 @@
     </ng-container>
   </ul>
   <ng-container>
-    <div class="p-d-flex p-col-fixed p-jc-end p-pl-0 p-pr-0 duration-container" *ngIf="additionalData">
-      <div class="p-d-inline-block p-mr-2">
-        <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-clock"></i></span>
+    <div class="p-d-flex p-col-fixed p-jc-end p-pl-0 p-pr-0 duration-container" *ngIf="additionalData" role="region" aria-label="Iteration Details">
+      <div class="p-d-inline-block p-mr-2" role="group" aria-label="Days Left">
+        <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-clock" aria-hidden="true"></i></span>
         <span class="text-container p-d-inline-block p-mr-2">Days Left:</span>
-        <span class="p-text-bold p-d-inline-block data-container p-mr-3">{{iterationConfigData?.daysLeft}}</span>
+        <span class="p-text-bold p-d-inline-block data-container p-mr-3"
+          aria-live="polite" 
+          tabindex="0" 
+          aria-label="Number of days left in iteration">
+          {{iterationConfigData?.daysLeft}}
+        </span>
       </div>
-      <div class="p-d-inline-block p-mr-2">
-        <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-calendar-times"></i></span>
+      <div class="p-d-inline-block p-mr-2" role="group" aria-label="Iteration Duration">
+        <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-calendar-times" aria-hidden="true"></i></span>
         <span class="text-container p-d-inline-block p-mr-2">Duration:</span>
-        <span class="p-text-bold p-d-inline-block data-container p-mr-3">{{combinedDate}}</span>
+        <span class="p-text-bold p-d-inline-block data-container p-mr-3"
+          aria-live="polite" 
+          tabindex="0" 
+          aria-label="Iteration duration details">
+          {{combinedDate}}
+        </span>
       </div>
       <div class="p-d-inline-block p-mr-2"
-        *ngIf="iterationConfigData?.capacity !== undefined && selectedTab?.toLowerCase() !== 'release'">
-        <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-chart-line"></i></span>
+        *ngIf="iterationConfigData?.capacity !== undefined && selectedTab?.toLowerCase() !== 'release'"
+        role="group" aria-label="Iteration Capacity">
+        <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-chart-line" aria-hidden="true"></i></span>
         <span class="text-container p-d-inline-block p-mr-2">Capacity:</span>
-        <span class="p-text-bold p-d-inline-block data-container p-mr-3">
+        <span class="p-text-bold p-d-inline-block data-container p-mr-3"
+        aria-live="polite" 
+        tabindex="0" 
+        aria-label="Iteration capacity in Hours">
           {{iterationConfigData.capacity?.value?.value ? iterationConfigData.capacity?.value?.value + ' Hours' : 'N/A'}}
         </span>
       </div>
 
       <div class="p-mr-2"
-        *ngIf="this.selectedSprint?.['sprintState']?.toLowerCase() === 'active' && selectedTab?.toLowerCase() === 'iteration'">
-        <span class="refresh-state p-p-2" (click)="displayModal = true"
-          *ngIf=" ((lastSyncData | json) == '{}' || lastSyncData.errorInFetch) && isAzureProect === false ">
-          <img src="../../../assets/img/icon-refresh.svg" class="p-mr-1" alt="Refresh" />Refresh
+        *ngIf="this.selectedSprint?.['sprintState']?.toLowerCase() === 'active' && selectedTab?.toLowerCase() === 'iteration'"
+        role="region" aria-label="Sync Status">
+        <span class="refresh-state p-p-2" (click)="displayModal = true" (keydown.enter)="displayModal = true" (keydown.space)="displayModal = true"
+          *ngIf=" ((lastSyncData | json) == '{}' || lastSyncData.errorInFetch) && isAzureProect === false"
+          role="button" tabindex="0" aria-label="Refresh Sprint Data">
+          <img src="../../../assets/img/icon-refresh.svg" class="p-mr-1" alt="Refresh" aria-hidden="true" />Refresh
         </span>
         <span class="refresh-state p-p-2"
+        aria-live="polite"
           *ngIf=" !((lastSyncData | json) == '{}') && !lastSyncData.fetchSuccessful && !lastSyncData.errorInFetch">
-          <img src="../../../assets/img/icon-syncing.svg" class="p-mr-1" alt="Sync" />Syncing
+          <img src="../../../assets/img/icon-syncing.svg" class="p-mr-1" alt="Sync" aria-hidden="true" />Syncing
         </span>
       </div>
 
@@ -83,82 +111,91 @@
     <div class="p-d-flex p-jc-between p-ai-center">
       <div class="view-tabs p-pl-2 p-pr-2"
         *ngIf="this.selectedTab?.toLowerCase()  !== 'release' && this.selectedTab?.toLowerCase()  !== 'backlog' && this.selectedTab?.toLowerCase()  !== 'dora'&& this.selectedTab?.toLowerCase()  !== 'developer' && this.selectedTab?.toLowerCase()  !== 'iteration' && this.selectedTab?.toLowerCase()  !== 'kpi-maturity'">
-        <div aria-hidden="true" pTooltip="Chart View" tooltipPosition="top" tooltipEvent="hover"
-          tooltipStyleClass="tooltiptext">
-          <input id="chart-view" class="chart-view" type="radio" name="view" [checked]="showChart === 'chart'">
-          <label class="label1" for="chart-view" (click)="showChartToggle('chart')" id="Layout-Chart">
-            <img src="../../../assets/img/ico-graph-white.svg" alt="Chart View" class="ico-active" />
-            <img src="../../../assets/img/ico-graph-black.svg" alt="Chart View" class="ico-default" />
-          </label>
-        </div>
-        <div aria-hidden="true" pTooltip="Table View" tooltipPosition="top" tooltipEvent="hover"
-          tooltipStyleClass="tooltiptext">
-          <input id="table-view" class="table-view" type="radio" name="view" [checked]="showChart === 'table'">
-          <label class="label2" for="table-view" (click)="showChartToggle('table')" id="Layout-Table">
-            <img src="../../../assets/img/ico-table-black.svg" alt="Table View" class="ico-default" />
-            <img src="../../../assets/img/ico-table-white.svg" alt="Table View" class="ico-active" />
-          </label>
-        </div>
+        <div role="radiogroup" aria-label="View Type Selection" class="p-d-flex">
+          <div pTooltip="Chart View" tooltipPosition="top" tooltipEvent="hover"
+            tooltipStyleClass="tooltiptext">
+            <input id="chart-view" class="chart-view" type="radio" name="view" [checked]="showChart === 'chart'" aria-label="Switch to Chart View">
+            <label class="label1" for="chart-view" (click)="showChartToggle('chart')" (keydown.enter)="showChartToggle('chart')" id="Layout-Chart" tabindex="0">
+              <img src="../../../assets/img/ico-graph-white.svg" alt="Chart View" class="ico-active" />
+              <img src="../../../assets/img/ico-graph-black.svg" alt="Chart View" class="ico-default" />
+            </label>
+          </div>
+          <div pTooltip="Table View" tooltipPosition="top" tooltipEvent="hover"
+            tooltipStyleClass="tooltiptext">
+            <input id="table-view" class="table-view" type="radio" name="view" [checked]="showChart === 'table'" tabindex="0" aria-label="Switch to Table View">
+            <label class="label2" for="table-view" (click)="showChartToggle('table')" (keydown.enter)="showChartToggle('table')" tabindex="0" id="Layout-Table">
+              <img src="../../../assets/img/ico-table-black.svg" alt="Table View" class="ico-default" />
+              <img src="../../../assets/img/ico-table-white.svg" alt="Table View" class="ico-active" />
+            </label>
+          </div>
       </div>
-      <div aria-hidden="true" pTooltip="Share URL" tooltipPosition="bottom" tooltipEvent="hover"
+      </div>
+      <div pTooltip="Share URL" tooltipPosition="bottom" tooltipEvent="hover"
         tooltipStyleClass="tooltiptext" class="share-url-btn" *ngIf="buttonStyleClass === 'default'">
-        <span class="icon-container p-d-inline-block p-mr-2 p-cursor-pointer" (click)="copyUrlToClipboard($event)"
-          [ngClass]="buttonStyleClass">
+        <span class="icon-container p-d-inline-block p-mr-2 p-cursor-pointer" (click)="copyUrlToClipboard($event)" (keydown.enter)="copyUrlToClipboard($event)" [ngClass]="buttonStyleClass" aria-label="Copy URL" tabindex="0">
           <img src="../../../assets/img/Vector.svg" *ngIf="!isSuccess" style="height: 18px; margin-left: -2px;"
             alt="Table View" class="ico-default" />
           <img src="../../../assets/img/Check-white.svg" *ngIf="isSuccess" style="height: 18px; margin-left: -2px;"
             alt="Table View" class="ico-active" />
         </span>
       </div>
-      <div class="show-hide-container cursor-pointer" pTooltip="Show/Hide" tooltipPosition="top" tooltipEvent="hover"
-        tooltipStyleClass="tooltiptext"
+      <!-- START: Show/Hide Dropdown -->
+      <!-- NOTE: Multiselect Dropdown limitation same as Multiselect Filter dropdowns which is currently ON HOLD due NGPrime default behavior -->
+      <div class="show-hide-container cursor-pointer" pTooltip="Show/Hide" tooltipPosition="bottom" tooltipEvent="hover"
+        tooltipStyleClass="tooltiptext" role="region" aria-label="KPI Visibility Control"
         *ngIf="selectedTab !== 'iteration' && selectedTab?.toLowerCase() !== 'kpi-maturity' && !noFilterApplyData">
-        <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleShowHideMenu($event)">
-          <i class="pi pi-pause" style="font-size: 1rem"></i>
+        <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleShowHideMenu($event)" role="button" tabindex="0" aria-label="Toggle Show/Hide KPI Menu"
+        (keydown.enter)="toggleShowHideMenu($event)" (keydown.space)="toggleShowHideMenu($event)">
+          <i class="pi pi-pause" style="font-size: 1rem" aria-hidden="true"></i>
         </span>
         <p-multiSelect #showHideDdn [styleClass]="'showHideDdn'" [options]="masterDataCopy['kpiList']"
-          optionLabel="kpiName">
+          optionLabel="kpiName" aria-label="Select KPIs to Show or Hide" [attr.aria-expanded]="showHideDdn?.overlayVisible">
           <ng-template pTemplate="header">
             <p-checkbox [styleClass]="'showHideDdnSelectAll'" name="showHideSelectAll" [(ngModel)]="showHideSelectAll"
-              [binary]="true" (onChange)="showHideSelectAllApply();disableShowHideApply = false;"></p-checkbox>
+              [binary]="true" (onChange)="showHideSelectAllApply();disableShowHideApply = false;" aria-label="Select or Deselect All KPIs"></p-checkbox>
           </ng-template>
           <ng-template let-option pTemplate="item">
-            <div class="filter-item">
+            <div class="filter-item" role="checkbox" [attr.aria-checked]="option.isEnabled">
               <p-checkbox name="{{ option.kpiId }}" [(ngModel)]="option.isEnabled" [binary]="true"
-                (onChange)="setSelectAll(); disableShowHideApply = false;"></p-checkbox>
+                (onChange)="setSelectAll(); disableShowHideApply = false;" [attr.aria-label]="'Toggle visibility for ' + option.kpiName" tabindex="0"></p-checkbox>
               <span>{{option.kpiName}}</span>
             </div>
           </ng-template>
           <ng-template pTemplate="footer">
             <div class="p-p-3 p-text-right">
               <p-button label="Apply" (onClick)="showHideKPIs()" [style]="{backgroundColor: '#0B4BC8'}"
-                [disabled]="disableShowHideApply"></p-button>
+                [disabled]="disableShowHideApply" aria-label="Apply KPI Visibility Changes"></p-button>
             </div>
           </ng-template>
         </p-multiSelect>
       </div>
+      <!-- END: Show/Hide Dropdown -->
 
       <div class="date-filter-container cursor-pointer"
-        *ngIf="(kanban || selectedTab?.toLowerCase() === 'developer') && selectedTab.toLowerCase() != 'kpi-maturity' && !(kanban && selectedTab.toLowerCase() === 'dora')">
+        *ngIf="(kanban || selectedTab?.toLowerCase() === 'developer') && selectedTab.toLowerCase() != 'kpi-maturity' && !(kanban && selectedTab.toLowerCase() === 'dora')"
+        role="region" aria-label="Date Filter Options">
         <!-- Date filter start -->
         <div class="position-relative">
           <div class="p-d-flex p-align-center p-p-2 rounded p-ml-2 date-filter-btn" #dateToggleButton
-            [ngClass]="{'active': toggleDateDropdown}" (click)="toggleDateDropdown = !toggleDateDropdown">
-            <i class="pi pi-calendar-plus p-mr-2"></i>
+            [ngClass]="{'active': toggleDateDropdown}" (click)="toggleDateDropdown = !toggleDateDropdown"
+            role="button" tabindex="0" aria-haspopup="true" [attr.aria-expanded]="toggleDateDropdown" aria-label="Open Date Filter Options"
+            (keydown.enter)="toggleDateDropdown = !toggleDateDropdown" (keydown.escape)="toggleDateDropdown = false">
+            <i class="pi pi-calendar-plus p-mr-2" aria-hidden="true"></i>
             Date Filter
           </div>
-          <div class="filter-options-container date-filter-dropdown" *ngIf="toggleDateDropdown" #dateDrpmenu>
+          <div class="filter-options-container date-filter-dropdown" *ngIf="toggleDateDropdown" #dateDrpmenu
+          role="dialog" aria-label="Date Filter Options">
             <div class="filter-options filter-date p-d-flex p-jc-evenly">
               <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.counts"
-                [(ngModel)]="selectedDateValue"></p-dropdown>
+                [(ngModel)]="selectedDateValue" aria-label="Select Date Range Count"></p-dropdown>
               <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.types"
-                [(ngModel)]="selectedDayType" (onChange)="setSelectedDateType($event.value)"></p-dropdown>
+                [(ngModel)]="selectedDayType" (onChange)="setSelectedDateType($event.value)" aria-label="Select Date Range Type"></p-dropdown>
             </div>
             <div class="p-d-flex p-justify-end p-align-center btn-container">
               <button pButton pRipple label="Apply" class="p-button-secondary p-button-sm btn-apply p-mr-1"
-                (click)="applyDateFilter()"></button>
-              <button pButton pRipple label="Cancel" class="p-button-secondary p-button-sm btn-apply"
-                (click)="closeDateFilterModel()"></button>
+                (click)="applyDateFilter()" tabindex="0" aria-label="Apply Date Filter"></button>
+              <button pButton pRipple label="Cancel" class="p-button-secondary p-button-sm btn-apply" tabindex="0"
+                (click)="closeDateFilterModel()" aria-label="Close Date Filter"></button>
             </div>
           </div>
         </div>
@@ -167,14 +204,14 @@
   </ng-container>
 </div>
 
-<p-dialog [(visible)]="displayModal" [modal]="true">
+<p-dialog [(visible)]="displayModal" [modal]="true" role="dialog" (onShow)="onRefreshDialogShow()">
   <p-header>Are you sure you want to refresh?</p-header>
   <p-footer>
     <div class="ui-dialog-buttonpane ui-helper-clearfix">
       <button type="button" pButton pRipple icon="pi pi-times" (click)="displayModal = false" label="Cancel"
-        class="p-button p-button-danger p-button-raised"></button>
+        class="p-button p-button-danger p-button-raised" (keydown.enter)="displayModal = false" tabindex="0" aria-label="Cancel Refresh"></button>
       <button type="button" pButton pRipple icon="fa fa-check" (click)="fetchData()" label="Ok"
-        class="p-button p-button-success p-button-raised"></button>
+        class="p-button p-button-success p-button-raised" (keydown.enter)="fetchData()" tabindex="0" aria-label="Confirm Refresh"></button>
     </div>
   </p-footer>
 </p-dialog>
