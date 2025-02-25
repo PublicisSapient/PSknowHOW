@@ -20,8 +20,12 @@
     </div>
 
     <hr />
-    <p-accordion *ngIf="rawData.length; else noData">
-        <ng-container *ngFor="let data of rawData">
+    <button pButton pRipple (click)="toggleAll()" class="p-mb-2">
+        {{ isAllExpanded ? 'Collapse All' : 'Expand All' }}
+    </button>
+    
+    <p-accordion *ngIf="rawData.length; else noData" [activeIndex]="activeIndices" [multiple]="true">
+        <ng-container *ngFor="let data of rawData; let i = index">
             <p-accordionTab [header]="'Project: ' + data.name">
             <p-table [columns]="cols" [value]="data?.sprintGoals" styleClass="p-datatable-striped p-datatable-gridlines" [scrollable]="true" scrollHeight="40vh" 
             [loading]="loader" loadingIcon="loading-img">

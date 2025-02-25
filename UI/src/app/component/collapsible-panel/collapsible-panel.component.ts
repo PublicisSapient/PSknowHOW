@@ -15,6 +15,8 @@ export class CollapsiblePanelComponent implements OnInit {
   selectedFilters : any = {};
   addtionalFIlters = ['sprint','release','sqd']
   filterDataArr : any = {};
+  activeIndices: number[] = [];
+  isAllExpanded = false;
 
 @ViewChild('sprintGoalContainer') sprintGoalContainer!: ElementRef;
 @HostListener('document:click', ['$event'])
@@ -26,9 +28,6 @@ export class CollapsiblePanelComponent implements OnInit {
       return;
     }
 
-    if (this.sprintGoalContainer && !this.sprintGoalContainer.nativeElement.contains(event.target)) {
-      this.sharedService.updateSprintGoalFlag(false) // Hide div if clicked outside
-    }
   }
 
   constructor(private sharedService : SharedService) { }
@@ -53,6 +52,14 @@ export class CollapsiblePanelComponent implements OnInit {
       field : 'goal'
     }
   ]
+
+  this.sharedService.onScrumKanbanSwitch.subscribe(type => {
+    this.sharedService.updateSprintGoalFlag(false)
+  })
+
+  this.sharedService.onTabSwitch.subscribe((tab)=>{
+    this.sharedService.updateSprintGoalFlag(false) 
+  })
   
   }
 
@@ -64,6 +71,15 @@ export class CollapsiblePanelComponent implements OnInit {
 
   onSelectionChange(event){
     console.log("on change")
+  }
+
+  toggleAll() {
+    if (this.isAllExpanded) {
+      this.activeIndices = [];
+    } else {
+      this.activeIndices = this.rawData.map((_, index) => index); 
+    }
+    this.isAllExpanded = !this.isAllExpanded;
   }
   
 }
