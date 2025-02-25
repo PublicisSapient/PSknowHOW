@@ -21,11 +21,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -40,9 +38,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.common.model.ProjectSprintDetails;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyValueDTO;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
@@ -63,14 +59,12 @@ public class SprintGoalServiceImpl extends JiraKPIService<Double, List<Object>, 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
-		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			Filters filters = Filters.getFilter(k);
 			if (Filters.SPRINT == filters) {
-				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
+				sprintWiseLeafNodeValue(v, kpiElement, kpiRequest);
 			}
 		});
 
@@ -81,20 +75,16 @@ public class SprintGoalServiceImpl extends JiraKPIService<Double, List<Object>, 
 	}
 
 	@SuppressWarnings("unchecked")
-	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
-			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void sprintWiseLeafNodeValue(List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		sprintLeafNodeList.sort(Comparator.comparing(node -> node.getSprintFilter().getStartDate()));
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
 
-		Map<Pair<String, String>, String> sprintWiseGoals = new HashMap<>();
-
 		List<SprintDetails> sprintDetails = (List<SprintDetails>) resultMap.get(SPRINT_DETAILS);
 
-		if (CollectionUtils.isNotEmpty(sprintDetails)) {
-			sprintDetails.forEach(sd -> sprintWiseGoals
-					.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()), sd.getGoal()));
+		if (CollectionUtils.isEmpty(sprintDetails)) {
+			return;
 		}
 
 		final Map<ObjectId, List<SprintDetails>> projectWiseSprints = sprintDetails.stream()
@@ -103,35 +93,22 @@ public class SprintGoalServiceImpl extends JiraKPIService<Double, List<Object>, 
 		Map<String, ProjectSprintDetails> projectSprintDetailsMap = new HashMap<>();
 
 		for (Node node : sprintLeafNodeList) {
-
-			// Leaf node wise data
-			String projectName = node.getProjectFilter().getName();
 			String projectId = node.getProjectFilter().getBasicProjectConfigId().toString();
 
-			ProjectSprintDetails projectSprintDetails = projectSprintDetailsMap.get(projectId);
-			if (projectSprintDetails == null) {
-				projectSprintDetails = new ProjectSprintDetails();
-				projectSprintDetails.setName(projectName);
-				projectSprintDetails.setProjectId(projectId);
+			ProjectSprintDetails projectSprintDetails = projectSprintDetailsMap.computeIfAbsent(projectId, id -> {
+				ProjectSprintDetails details = new ProjectSprintDetails();
+				details.setName(node.getProjectFilter().getName());
+				details.setProjectId(id);
 
-				ProjectBasicConfig projectConfig = configHelperService.getProjectConfig(projectId);
-				ProjectBasicConfigDTO projectBasicDTO = null;
-				if (projectConfig != null) {
-					ModelMapper mapper = new ModelMapper();
-					projectBasicDTO = mapper.map(projectConfig, ProjectBasicConfigDTO.class);
-				}
-				assert projectBasicDTO != null;
-				List<HierarchyValueDTO> projectHierarchy = projectBasicDTO.getHierarchy();
-				projectSprintDetails.setHierarchy(projectHierarchy);
+				ProjectBasicConfig config = configHelperService.getProjectConfig(id);
+				ProjectBasicConfigDTO dto = new ModelMapper().map(config, ProjectBasicConfigDTO.class);
+				details.setHierarchy(dto.getHierarchy());
 
-				projectSprintDetailsMap.put(projectId, projectSprintDetails);
-			}
+				return details;
+			});
 
-			// Populate sprint details
-			Set<ProjectSprintDetails.SprintDTO> sprintDetailSet = projectSprintDetails.getSprintGoals();
-			if (sprintDetailSet == null) {
-				sprintDetailSet = new HashSet<>();
-				projectSprintDetails.setSprintGoals(sprintDetailSet);
+			if (projectSprintDetails.getSprintGoals() == null) {
+				projectSprintDetails.setSprintGoals(new HashSet<>());
 			}
 
 			List<SprintDetails> sprints = projectWiseSprints.get(new ObjectId(projectId));
@@ -141,13 +118,11 @@ public class SprintGoalServiceImpl extends JiraKPIService<Double, List<Object>, 
 					sprintDetail.setName(sprint.getSprintName());
 					sprintDetail.setSprintId(sprint.getSprintID());
 					sprintDetail.setGoal(sprint.getGoal());
-					sprintDetailSet.add(sprintDetail);
+					projectSprintDetails.getSprintGoals().add(sprintDetail);
 				}
 			}
 		}
 		kpiElement.setTrendValueList(new ArrayList<>(projectSprintDetailsMap.values()));
-		log.debug(trendValueList.toString());
-		log.debug(mapTmp.toString());
 	}
 
 	@Override
