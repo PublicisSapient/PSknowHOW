@@ -1,7 +1,6 @@
 <div class="sprint-goals-container p-p-3" #sprintGoalContainer>
-    <div class="p-d-flex p-jc-between">
-        <h3>Sprint Goals</h3>
-        <div class="p-d-flex p-jc-between">
+    <h3>Sprint Goals</h3>
+        <div class="p-d-flex p-jc-center">
             <span class="p-float-label p-mr-2">
                 <p-dropdown [options]="filterLevels" optionLabel="hierarchyLevelName" [(ngModel)]="selectedLevel"
                     filter="true" placeholder="parent filter"
@@ -18,13 +17,12 @@
                 </p-multiSelect>
                 <label class="floating-label" for="multiselectFilter">Select {{selectedLevel.hierarchyLevelName}}</label>
             </span>
-        </div>
     </div>
 
     <hr />
     <p-accordion *ngIf="rawData.length; else noData">
         <ng-container *ngFor="let data of rawData">
-            <p-accordionTab [header]="'Project : ' + data.name">
+            <p-accordionTab [header]="'Project: ' + data.name">
             <p-table [columns]="cols" [value]="data?.sprintGoals" styleClass="p-datatable-striped p-datatable-gridlines" [scrollable]="true" scrollHeight="40vh" 
             [loading]="loader" loadingIcon="loading-img">
                 <ng-template pTemplate="header" let-columns>
