@@ -305,7 +305,8 @@ public class KpiIntegrationServiceImpl {
 	 */
 	private List<KpiElement> getDeveloperKpiMaturity(KpiRequest kpiRequest) throws EntityNotFoundException {
 		MDC.put("DeveloperKpiRequest", kpiRequest.getRequestTrackerId());
-		log.info("Received Developer KPI request {}", kpiRequest.getRequestTrackerId().replaceAll("[\\r\\n]", "_"));
+		String sanitizedRequestTrackerId = kpiRequest.getRequestTrackerId().replaceAll("[^a-zA-Z0-9-_]", "_");
+		log.info("Received Developer KPI request {}", sanitizedRequestTrackerId);
 		long developerRequestStartTime = System.currentTimeMillis();
 		MDC.put("JenkinsRequestStartTime", String.valueOf(developerRequestStartTime));
 		List<KpiElement> responseList = bitBucketServiceR.processWithExposedApiToken(kpiRequest);
