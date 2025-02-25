@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>com.publicissapient.kpidashboard</groupId>
 	<artifactId>notification-consumer</artifactId>
-	<version>12.2.0-SNAPSHOT</version>
+	<version>12.2.1</version>
 	<name>notification-consumer</name>
 	<description>Notification consumer for Apache Kafka</description>
 	<properties>
@@ -212,7 +212,7 @@
 	</build>
 
 	<scm>
-		<tag>4.6.1</tag>
+		<tag>12.2.1</tag>
 	</scm>
 
 </project>
