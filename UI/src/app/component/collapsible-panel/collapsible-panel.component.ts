@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ElementRef, HostListener, OnChanges, SimpleChanges } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
@@ -6,7 +6,7 @@ import { SharedService } from 'src/app/services/shared.service';
   templateUrl: './collapsible-panel.component.html',
   styleUrls: ['./collapsible-panel.component.css']
 })
-export class CollapsiblePanelComponent implements OnInit {
+export class CollapsiblePanelComponent implements OnInit, OnChanges {
   @Input() rawData: any;
   cols: any;
   filterLevels : any  = [];
@@ -17,6 +17,7 @@ export class CollapsiblePanelComponent implements OnInit {
   filterDataArr : any = {};
   activeIndices: number[] = [];
   isAllExpanded = false;
+  levelDetails;
 
 @ViewChild('sprintGoalContainer') sprintGoalContainer!: ElementRef;
 @HostListener('document:click', ['$event'])
@@ -33,15 +34,7 @@ export class CollapsiblePanelComponent implements OnInit {
   constructor(private sharedService : SharedService) { }
 
   ngOnInit(): void {
-  const filterRawData = this.sharedService.getDataForSprintGoal();
-  this.filterDataArr =  filterRawData.filterDataArr;
-  console.log(filterRawData)
-  const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))['scrum'];
-  const selectedLevelFullDetails = levelDetails.find(details=>details.hierarchyLevelName === filterRawData.selectedLevel.nodeDisplayName)
-  this.filterLevels = levelDetails.filter(details=>details.level >= selectedLevelFullDetails.level && !this.addtionalFIlters.includes(details.hierarchyLevelId) )
-  this.filters = filterRawData.filters;
-  this.selectedLevel = selectedLevelFullDetails;
-  this.selectedFilters = filterRawData.selectedFilters;
+   this.levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))['scrum'];
   this.cols = [
     {
       header : 'Sprint Name',
@@ -63,6 +56,18 @@ export class CollapsiblePanelComponent implements OnInit {
   
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    const filterRawData = this.sharedService.getDataForSprintGoal();
+  this.filterDataArr =  filterRawData.filterDataArr;
+  this.selectedFilters = filterRawData.selectedFilters;
+  this.filters = filterRawData.filters;
+
+  const selectedLevelFullDetails = this.levelDetails.find(details=>details.hierarchyLevelName === filterRawData.selectedLevel.nodeDisplayName)
+  this.filterLevels = this.levelDetails.filter(details=>details.level >= selectedLevelFullDetails.level && !this.addtionalFIlters.includes(details.hierarchyLevelId) )
+ 
+  this.selectedLevel = selectedLevelFullDetails;
+  }
+
   onHierarchyDropdownChange(event){
     this.filters = this.filterDataArr[event.value.hierarchyLevelName]
     this.selectedFilters = [this.filters[0]]
@@ -70,7 +75,7 @@ export class CollapsiblePanelComponent implements OnInit {
   }
 
   onSelectionChange(event){
-    console.log("on change")
+    console.log("on change",event)
   }
 
   toggleAll() {
