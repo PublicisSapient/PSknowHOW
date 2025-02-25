@@ -46,10 +46,10 @@
         <li class="selectedfilter cursor-pointer p-mr-3" role="listitem" pTooltip="{{ getTooltipText(item.tooltip) }}" tooltipPosition="bottom" [tooltipEscape]="false" tooltipEvent="hover">
           <div class="selected-node">
             <div class="selected-node-label p-pl-0" [title]="item?.nodeDisplayName" tabindex="0" [attr.aria-label]="item?.nodeDisplayName">
-              <span class="align-list-marker" [ngStyle]="{'background':colorObj[item]?.color}"tabindex="0" [attr.aria-label]="colorObj[item]?.color"></span>
+              <span class="align-list-marker" [ngStyle]="{'background':item?.color}"tabindex="0" [attr.aria-label]="item?.color"></span>
               <span class="p-l-1">{{filterType | uppercase}} {{ item?.nodeDisplayName?.length<= 20 ?
                   item?.nodeDisplayName : item?.nodeDisplayName?.slice(0,20)+'...'}} <span class="remove-node"
-                  (click)="removeFilter(colorObj[item]?.nodeId)" tabindex="0" (keydown.enter)="removeFilter(colorObj[item]?.nodeId)">&times;</span>
+                  (click)="removeFilter(item?.nodeId)" tabindex="0" (keydown.enter)="removeFilter(item?.nodeId)">&times;</span>
               </span>
             </div>
           </div>

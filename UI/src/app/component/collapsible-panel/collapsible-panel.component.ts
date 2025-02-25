@@ -17,7 +17,9 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges {
   filterDataArr : any = {};
   activeIndices: number[] = [];
   isAllExpanded = false;
+  filterRawData;
   levelDetails;
+  selectedLevelFullDetails;
 
 @ViewChild('sprintGoalContainer') sprintGoalContainer!: ElementRef;
 @HostListener('document:click', ['$event'])
@@ -34,7 +36,8 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges {
   constructor(private sharedService : SharedService) { }
 
   ngOnInit(): void {
-   this.levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))['scrum'];
+  this.levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))['scrum'];
+  this.setUpPanel();
   this.cols = [
     {
       header : 'Sprint Name',
@@ -57,15 +60,10 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    const filterRawData = this.sharedService.getDataForSprintGoal();
-  this.filterDataArr =  filterRawData.filterDataArr;
-  this.selectedFilters = filterRawData.selectedFilters;
-  this.filters = filterRawData.filters;
-
-  const selectedLevelFullDetails = this.levelDetails.find(details=>details.hierarchyLevelName === filterRawData.selectedLevel.nodeDisplayName)
-  this.filterLevels = this.levelDetails.filter(details=>details.level >= selectedLevelFullDetails.level && !this.addtionalFIlters.includes(details.hierarchyLevelId) )
- 
-  this.selectedLevel = selectedLevelFullDetails;
+    if(changes.rawData.firstChange === false){
+      this.setUpPanel();
+    }
+    
   }
 
   onHierarchyDropdownChange(event){
@@ -85,6 +83,16 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges {
       this.activeIndices = this.rawData.map((_, index) => index); 
     }
     this.isAllExpanded = !this.isAllExpanded;
+  }
+
+  setUpPanel(){
+    this.filterRawData = this.sharedService.getDataForSprintGoal();
+    this.filterDataArr =  this.filterRawData.filterDataArr;
+     this.selectedLevelFullDetails = this.levelDetails.find(details=>details.hierarchyLevelName === this.filterRawData.selectedLevel.nodeDisplayName)
+    this.filterLevels = this.levelDetails.filter(details=>details.level >= this.selectedLevelFullDetails.level && !this.addtionalFIlters.includes(details.hierarchyLevelId) )
+    this.filters = this.filterRawData.filters;
+    this.selectedLevel = this.selectedLevelFullDetails;
+    this.selectedFilters = this.filterRawData.selectedFilters;
   }
   
 }
