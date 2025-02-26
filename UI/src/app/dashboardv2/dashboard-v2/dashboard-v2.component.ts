@@ -55,7 +55,7 @@ export class DashboardV2Component implements AfterContentInit {
     public router: Router,
     private getAuth: GetAuthService,
     public service: SharedService,
-    private httpService: HttpService
+    public httpService: HttpService
   ) {
     this.sideNavStyle = { 'toggled': this.isApply };
     this.authorized = this.getAuth.checkAuth();
