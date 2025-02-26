@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, ElementRef, HostListener, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ElementRef, HostListener, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
@@ -6,7 +6,7 @@ import { SharedService } from 'src/app/services/shared.service';
   templateUrl: './collapsible-panel.component.html',
   styleUrls: ['./collapsible-panel.component.css']
 })
-export class CollapsiblePanelComponent implements OnInit, OnChanges {
+export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
   @Input() rawData: any;
   cols: any;
   filterLevels : any  = [];
@@ -21,6 +21,7 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges {
   levelDetails;
   selectedLevelFullDetails;
   accordionData;
+  subscriptions: any[] = [];
 
 @ViewChild('sprintGoalContainer') sprintGoalContainer!: ElementRef;
 @HostListener('document:click', ['$event'])
@@ -50,13 +51,15 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges {
     }
   ]
 
+  this.subscriptions.push(
   this.sharedService.onScrumKanbanSwitch.subscribe(type => {
     this.sharedService.updateSprintGoalFlag(false)
-  })
+  }))
 
+  this.subscriptions.push(
   this.sharedService.onTabSwitch.subscribe((tab)=>{
     this.sharedService.updateSprintGoalFlag(false) 
-  })
+  }))
   
   }
 
@@ -142,5 +145,9 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges {
         }
     }
      return retValue;
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 }
