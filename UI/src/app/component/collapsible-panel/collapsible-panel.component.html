@@ -1,6 +1,6 @@
-<div class="sprint-goals-container p-p-3" #sprintGoalContainer>
+<div class="sprint-goals-container p-pb-3 p-pr-3 p-pl-3" #sprintGoalContainer>
     <h3>Sprint Goals</h3>
-        <div class="p-d-flex p-jc-center">
+    <div class="p-d-flex p-jc-center">
             <span class="p-float-label p-mr-2">
                 <p-dropdown [options]="filterLevels" optionLabel="hierarchyLevelName" [(ngModel)]="selectedLevel"
                     filter="true" placeholder="parent filter"
@@ -17,12 +17,13 @@
                 </p-multiSelect>
                 <label class="floating-label" for="multiselectFilter">Select {{selectedLevel.hierarchyLevelName}}</label>
             </span>
+            <button *ngIf="rawData.length" pButton pRipple (click)="toggleAll()" class="p-mb-3 p-ml-3">
+                {{ isAllExpanded ? 'Collapse All' : 'Expand All' }}
+            </button>
     </div>
-
-    <hr />
-    <button *ngIf="rawData.length" pButton pRipple (click)="toggleAll()" class="p-mb-2">
-        {{ isAllExpanded ? 'Collapse All' : 'Expand All' }}
-    </button>
+   
+    <!-- <hr /> -->
+   
     
     <p-accordion *ngIf="rawData.length; else noData" [activeIndex]="activeIndices" [multiple]="true">
         <ng-container *ngFor="let data of rawData; let i = index">
