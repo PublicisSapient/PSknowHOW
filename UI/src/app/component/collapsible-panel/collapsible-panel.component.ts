@@ -20,6 +20,7 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges {
   filterRawData;
   levelDetails;
   selectedLevelFullDetails;
+  accordionData;
 
 @ViewChild('sprintGoalContainer') sprintGoalContainer!: ElementRef;
 @HostListener('document:click', ['$event'])
@@ -60,6 +61,7 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.accordionData = this.rawData
     if(changes.rawData.firstChange === false){
       this.setUpPanel();
     }
@@ -67,13 +69,22 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges {
   }
 
   onHierarchyDropdownChange(event){
-    this.filters = this.filterDataArr[event.value.hierarchyLevelName]
-    this.selectedFilters = [this.filters[0]]
-
+   this.filters = this.buildFilterDropdown().get(event.value.hierarchyLevelName);
+    this.selectedFilters = [this.filters[0]];
+    this.accordionData = this.rawData;
   }
 
   onSelectionChange(event){
-    console.log("on change",event)
+    let selectedNodeIds = event.value.map(item => item.nodeId);
+    let filteredResults = this.filterByHierarchyNodeId(this.rawData, selectedNodeIds);
+    this.accordionData = filteredResults;
+    console.log("Filtered Results:", filteredResults, this.rawData);
+  }
+
+  filterByHierarchyNodeId(data: any[], nodeIds: string[]): any[] {
+    return data.filter(item => 
+        item.hierarchy.some(h => nodeIds.includes(h.orgHierarchyNodeId))
+    );
   }
 
   toggleAll() {
@@ -90,9 +101,46 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges {
     this.filterDataArr =  this.filterRawData.filterDataArr;
      this.selectedLevelFullDetails = this.levelDetails.find(details=>details.hierarchyLevelName === this.filterRawData.selectedLevel.nodeDisplayName)
     this.filterLevels = this.levelDetails.filter(details=>details.level >= this.selectedLevelFullDetails.level && !this.addtionalFIlters.includes(details.hierarchyLevelId) )
-    this.filters = this.filterRawData.filters;
+    this.filters = this.buildFilterDropdown().get(this.filterRawData.selectedLevel.nodeName);
     this.selectedLevel = this.selectedLevelFullDetails;
     this.selectedFilters = this.filterRawData.selectedFilters;
   }
-  
+
+  buildFilterDropdown() {
+    let retValue = new Map<string, any[]>();
+
+    let currentIndex = this.filterRawData.filterLevels.findIndex(
+        (x) => x.nodeName === this.filterRawData.selectedLevel.nodeName
+    );
+
+    if (currentIndex === -1) {
+        console.error("Selected Level Not Found in filterLevels!");
+        return;
+    }
+
+    let parentIds: string[] = [this.filterRawData.selectedFilters[0].nodeId];
+    let children = [];
+
+    for (let index = currentIndex; index < this.filterRawData.filterLevels.length; index++) {
+        let levelName = this.filterRawData.filterLevels[index].nodeName;
+
+        if (index === currentIndex) {
+            let selectedData = this.filterRawData.filterDataArr[levelName]
+                .filter(x => parentIds.includes(x.nodeId));
+                retValue.set(levelName, selectedData);
+        } else {
+            children = this.filterRawData.filterDataArr[levelName]
+                .filter(x => parentIds.includes(x.parentId));
+                retValue.set(levelName, children);
+                
+            if (children.length > 0) {
+                parentIds = children.map(child => child.nodeId);
+            } else {
+                console.warn(`No children found for Level: ${levelName}`);
+                break;
+            }
+        }
+    }
+     return retValue;
+  }
 }

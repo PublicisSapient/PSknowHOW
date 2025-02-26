@@ -17,16 +17,14 @@
                 </p-multiSelect>
                 <label class="floating-label" for="multiselectFilter">Select {{selectedLevel.hierarchyLevelName}}</label>
             </span>
-            <button *ngIf="rawData.length" pButton pRipple (click)="toggleAll()" class="p-mb-3 p-ml-3">
+            <button *ngIf="accordionData.length" pButton pRipple (click)="toggleAll()" class="p-mb-3 p-ml-3">
                 {{ isAllExpanded ? 'Collapse All' : 'Expand All' }}
             </button>
     </div>
    
-    <!-- <hr /> -->
-   
     
-    <p-accordion *ngIf="rawData.length; else noData" [activeIndex]="activeIndices" [multiple]="true">
-        <ng-container *ngFor="let data of rawData; let i = index">
+    <p-accordion *ngIf="accordionData.length; else noData" [activeIndex]="activeIndices" [multiple]="true">
+        <ng-container *ngFor="let data of accordionData; let i = index">
             <p-accordionTab [header]="'Project: ' + data.name">
             <p-table [columns]="cols" [value]="data?.sprintGoals" styleClass="p-datatable-striped p-datatable-gridlines" [scrollable]="true" scrollHeight="40vh" 
             [loading]="loader" loadingIcon="loading-img">
@@ -49,6 +47,6 @@
         </ng-container>
     </p-accordion>
     <ng-template #noData>
-        <h2 class="p-text-center">Sprint Goals are not Available.</h2>
+        <h3 class="p-text-center">Sprint Goals are not Available.</h3>
     </ng-template>
 </div>
