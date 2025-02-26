@@ -81,7 +81,6 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
     let selectedNodeIds = event.value.map(item => item.nodeId);
     let filteredResults = this.filterByHierarchyNodeId(this.rawData, selectedNodeIds);
     this.accordionData = filteredResults;
-    console.log("Filtered Results:", filteredResults, this.rawData);
   }
 
   filterByHierarchyNodeId(data: any[], nodeIds: string[]): any[] {
