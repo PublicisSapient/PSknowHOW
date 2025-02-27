@@ -1573,6 +1573,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.service.updateSprintGoalFlag(this.showSprintGoalsPanel);
   }
 
+  getBgClass(){
+    return this.showSprintGoalsPanel ? 'icon-apply' : '';
+  }
 
   onRefreshDialogShow() {
     // Ensure first button (Cancel) gets focus when dialog opens

@@ -58,6 +58,7 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
 
   this.subscriptions.push(
   this.sharedService.onTabSwitch.subscribe((tab)=>{
+   // console.log(tab)
     this.sharedService.updateSprintGoalFlag(false) 
   }))
   
@@ -65,6 +66,7 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.accordionData = this.rawData
+   // console.log(this.accordionData,this.sharedService.getDataForSprintGoal())
     if(changes.rawData.firstChange === false){
       this.setUpPanel();
     }
@@ -78,15 +80,17 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   onSelectionChange(event){
-    let selectedNodeIds = event.value.map(item => item.nodeId);
+    let selectedNodeIds =(this.selectedLevel.hierarchyLevelName === 'Project')?event.value.map(item => item.basicProjectConfigId): event.value.map(item => item.nodeId);
     let filteredResults = this.filterByHierarchyNodeId(this.rawData, selectedNodeIds);
     this.accordionData = filteredResults;
   }
 
   filterByHierarchyNodeId(data: any[], nodeIds: string[]): any[] {
-    return data.filter(item => 
-        item.hierarchy.some(h => nodeIds.includes(h.orgHierarchyNodeId))
-    );
+    if((this.selectedLevel.hierarchyLevelName === 'Project')){
+      return  data.filter(item => nodeIds.includes(item.projectId));
+    }else{
+      return data.filter(item => item.hierarchy.some(h => nodeIds.includes(h.orgHierarchyNodeId)));
+    }
   }
 
   toggleAll() {
@@ -130,10 +134,12 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
             let selectedData = this.filterRawData.filterDataArr[levelName]
                 .filter(x => parentIds.includes(x.nodeId));
                 retValue.set(levelName, selectedData);
+            //    console.log(levelName,selectedData)
         } else {
             children = this.filterRawData.filterDataArr[levelName]
                 .filter(x => parentIds.includes(x.parentId));
                 retValue.set(levelName, children);
+             //   console.log(levelName,children)
                 
             if (children.length > 0) {
                 parentIds = children.map(child => child.nodeId);
