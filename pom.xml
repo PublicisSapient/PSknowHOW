@@ -71,6 +71,7 @@
         <module>processors/azure-boards</module>
         <module>processors/argocd</module>
         <module>kafka-consumers/notification-consumer</module>
+        <module>processors/rally</module>
       </modules>
       <build>
         <plugins>

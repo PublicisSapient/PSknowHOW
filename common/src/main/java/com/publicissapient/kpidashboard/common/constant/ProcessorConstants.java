@@ -64,6 +64,8 @@ public final class ProcessorConstants {
 
 	public static final String ARGOCD = "ArgoCD";
 
+	public static final String RALLY = "Rally";
+
 	private ProcessorConstants() {
 		// This class should not be instantiable
 	}
