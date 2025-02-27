@@ -46,10 +46,10 @@
         <li class="selectedfilter cursor-pointer p-mr-3" role="listitem" pTooltip="{{ getTooltipText(item.tooltip) }}" tooltipPosition="bottom" [tooltipEscape]="false" tooltipEvent="hover">
           <div class="selected-node">
             <div class="selected-node-label p-pl-0" [title]="item?.nodeDisplayName" tabindex="0" [attr.aria-label]="item?.nodeDisplayName">
-              <span class="align-list-marker" [ngStyle]="{'background':colorObj[item]?.color}"tabindex="0" [attr.aria-label]="colorObj[item]?.color"></span>
+              <span class="align-list-marker" [ngStyle]="{'background':item?.color}"tabindex="0" [attr.aria-label]="item?.color"></span>
               <span class="p-l-1">{{filterType | uppercase}} {{ item?.nodeDisplayName?.length<= 20 ?
                   item?.nodeDisplayName : item?.nodeDisplayName?.slice(0,20)+'...'}} <span class="remove-node"
-                  (click)="removeFilter(colorObj[item]?.nodeId)" tabindex="0" (keydown.enter)="removeFilter(colorObj[item]?.nodeId)">&times;</span>
+                  (click)="removeFilter(item?.nodeId)" tabindex="0" (keydown.enter)="removeFilter(item?.nodeId)">&times;</span>
               </span>
             </div>
           </div>
@@ -57,6 +57,9 @@
       </ng-container>
     </ng-container>
   </ul>
+
+
+
   <ng-container>
     <div class="p-d-flex p-col-fixed p-jc-end p-pl-0 p-pr-0 duration-container" *ngIf="additionalData" role="region" aria-label="Iteration Details">
       <div class="p-d-inline-block p-mr-2" role="group" aria-label="Days Left">
@@ -108,7 +111,16 @@
       </div>
 
     </div>
+
     <div class="p-d-flex p-jc-between p-ai-center">
+      
+      <div class="show-hide-container" *ngIf="selectedTab?.toLowerCase()  === 'my-knowhow'" pTooltip="Sprint Goals" tooltipPosition="top" tooltipEvent="hover"
+        tooltipStyleClass="tooltiptext">
+        <span [ngClass]="getBgClass()" class="icon-container p-d-inline-block p-mr-2" (click)="toggleSprintGoals()">
+          <i class="pi pi-check-square cursor-pointer" style="font-size: 1rem"></i>
+        </span>
+      </div>
+
       <div class="view-tabs p-pl-2 p-pr-2"
         *ngIf="this.selectedTab?.toLowerCase()  !== 'release' && this.selectedTab?.toLowerCase()  !== 'backlog' && this.selectedTab?.toLowerCase()  !== 'dora'&& this.selectedTab?.toLowerCase()  !== 'developer' && this.selectedTab?.toLowerCase()  !== 'iteration' && this.selectedTab?.toLowerCase()  !== 'kpi-maturity'">
         <div role="radiogroup" aria-label="View Type Selection" class="p-d-flex">
@@ -200,8 +212,11 @@
           </div>
         </div>
       </div>
+
+
     </div>
   </ng-container>
+
 </div>
 
 <p-dialog [(visible)]="displayModal" [modal]="true" role="dialog" (onShow)="onRefreshDialogShow()">

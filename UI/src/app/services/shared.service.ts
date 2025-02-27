@@ -132,6 +132,8 @@ export class SharedService {
   selectedFilterArray: any = [];
   selectedFilters: any = {};
   selectedUrlFilters: string = '{}';
+  isSprintGoal; 
+  sprintGoalData : any = {};
 
   constructor(private router: Router, private route: ActivatedRoute) {
     this.passDataToDashboard = new EventEmitter();
@@ -147,6 +149,7 @@ export class SharedService {
     this.selectedTrendsEventSubject = new Subject<any>();
     // Observable to subscribe to
     this.selectedTrendsEvent = this.selectedTrendsEventSubject.asObservable();
+    this.isSprintGoal = new EventEmitter();
   }
 
   // for DSV
@@ -753,6 +756,19 @@ export class SharedService {
   setUserDetailsAsBlankObj() {
     this.currentUserDetails = {}
   }
+
+  updateSprintGoalFlag(flag){
+    this.isSprintGoal.emit(flag);
+  }
+
+  setDataForSprintGoal(data){
+     this.sprintGoalData = {...this.sprintGoalData,...data};
+  }
+
+  getDataForSprintGoal(){
+    return this.sprintGoalData
+  }
+
 
   //#endregion
 }

@@ -15,6 +15,10 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+  <div *ngIf="showSprintGoalsPanel" class="p-col-12 p-p-3">
+    <app-collapsible-panel [rawData]="sprintGoalData" ></app-collapsible-panel>
+  </div>
 <ng-container *ngIf="(!noProjects[selectedtype]); else noProjectsTemplate">
     <ng-container *ngIf="!noFilterApplyData; else noFilterApplyDataTemplate">
         <ng-container *ngIf="!noKpis; else noKpiTemplate">

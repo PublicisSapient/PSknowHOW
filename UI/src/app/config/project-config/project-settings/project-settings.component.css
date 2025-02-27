@@ -32,7 +32,7 @@ div.main {
     margin: 8px;
 }
 
-::ng-deep .p-accordion-header {
+:host ::ng-deep .p-accordion-header {
   text-transform: uppercase;
   font-size: 1.4rem;
   color: var(--color-black);
