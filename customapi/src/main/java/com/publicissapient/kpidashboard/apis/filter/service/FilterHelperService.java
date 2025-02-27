@@ -631,7 +631,7 @@ public class FilterHelperService {
 	public boolean isFilterSelectedTillSprintLevel(int level, boolean isKanban) {
 		HierarchyLevel projectHierarchyLevel = getHierarchyLevelMap(isKanban)
 				.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, null);
-//		return null != projectHierarchyLevel && projectHierarchyLevel.getLevel() >= level;
+//		return null != projectHierarchyLevel && projectHierarchyLevel.getLevel() >= level;//NOSONAR
 		return false;
 	}
 }
