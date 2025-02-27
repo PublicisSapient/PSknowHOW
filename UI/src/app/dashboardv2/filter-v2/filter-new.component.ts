@@ -130,6 +130,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.service.onScrumKanbanSwitch
         .subscribe(data => {
+          this.showSprintGoalsPanel = false;
           setTimeout(() => {
             this.selectedType = JSON.parse(JSON.stringify(data.selectedType));
             this.setDateFilter();
@@ -142,6 +143,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.service.onTabSwitch
         .subscribe(data => {
+          this.showSprintGoalsPanel = false;
           // setTimeout(() => {
           this.selectedTab = JSON.parse(JSON.stringify(data.selectedBoard));
           if (['iteration', 'backlog', 'release', 'dora', 'developer', 'kpi-maturity'].includes(this.selectedTab.toLowerCase())) {
@@ -1574,7 +1576,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   getBgClass(){
-    return this.showSprintGoalsPanel ? 'icon-apply' : '';
+    return this.showSprintGoalsPanel ? 'icon-apply' : 'icon-not-active';
   }
 
   onRefreshDialogShow() {

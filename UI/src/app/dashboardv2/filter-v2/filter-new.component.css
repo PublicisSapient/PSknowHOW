@@ -331,6 +331,11 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   color: #fff;
 }
 
+.icon-not-active{
+  background-color: #fff;
+  color: #52595C;
+}
+
 .active-state {
   color: var(--color-green);
 }
