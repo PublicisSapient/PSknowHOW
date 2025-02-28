@@ -160,6 +160,14 @@ export class ConnectionListComponent implements OnInit {
       categoryLabel: 'Build',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Access Token','Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'accessToken', 'sharedConnection']
+    },
+    {
+      connectionType: 'Rally',
+      connectionLabel: 'Rally',
+      categoryValue: 'projectManagement',
+      categoryLabel: 'projectManagement',
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Access Token','Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'accessToken', 'sharedConnection']
     }
   ];
 
@@ -405,6 +413,14 @@ export class ConnectionListComponent implements OnInit {
         { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
         { field: 'username', header: 'User Name', class: 'long-text' },
       ]
+    },
+    {
+      label: 'Rally',
+      value: 'Rally',
+      connectionTableCols: [
+        { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
+        { field: 'baseUrl', header: 'Base URL', class: 'long-text' }
+      ]
     }
   ];
 
@@ -516,7 +532,7 @@ export class ConnectionListComponent implements OnInit {
     this.getConnectionList();
     this.connectionTypeFieldsAssignment();
     this.isRoleViewer = this.authorization.getRole() === 'roleViewer' ? true : false;
-    
+
     this.currentUser = this.sharedService.getCurrentUserDetails('user_name') ? this.sharedService.getCurrentUserDetails('user_name') : '';
     this.getZephyrUrl();
     this.initializeForms(this.jiraConnectionFields);
@@ -1304,6 +1320,21 @@ export class ConnectionListComponent implements OnInit {
       });
         break;
       case 'ArgoCD': this.testConnectionService.testArgoCD(reqData['baseUrl'], reqData['username'], reqData['accessToken']).subscribe(next => {
+        if (next.success && next.data === 200) {
+          this.testConnectionMsg = 'Valid Connection';
+          this.testConnectionValid = true;
+        } else {
+          this.testConnectionMsg = 'Connection Invalid';
+          this.testConnectionValid = false;
+        }
+        this.testingConnection = false;
+      }, error => {
+        this.testConnectionMsg = 'Connection Invalid';
+        this.testConnectionValid = false;
+        this.testingConnection = false;
+      });
+        break;
+      case 'Rally': this.testConnectionService.testRally(reqData['baseUrl'], reqData['accessToken']).subscribe(next => {
         if (next.success && next.data === 200) {
           this.testConnectionMsg = 'Valid Connection';
           this.testConnectionValid = true;

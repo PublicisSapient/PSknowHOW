@@ -230,4 +230,14 @@ public class TestConnectionController {
 	public ResponseEntity<ServiceResponse> getZephyrCloudUrl() {
 		return ResponseEntity.status(HttpStatus.OK).body(testConnectionService.getZephyrCloudUrlDetails());
 	}
+
+	@PostMapping(path = "/rally", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasPermission(#connectionDTO,'CONNECTION_ACCESS')")
+	public ResponseEntity<ServiceResponse> validateRallyConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
+		log.info("validating Rally connections credentials");
+		final ModelMapper modelMapper = new ModelMapper();
+		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(testConnectionService.validateConnection(connection, Constant.TOOL_RALLY));
+	}
 }

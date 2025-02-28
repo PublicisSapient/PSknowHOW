@@ -117,7 +117,7 @@ export class ToolMenuComponent implements OnInit {
         this.uniqueTools = Array.from(
           this.selectedTools.reduce((map, item) => map.set(item.toolName, item), new Map()).values()
         );
-        
+
         if(this.router.url.includes('tab=2')){
         this.buttonText = 'Set Up';
           this.tools = [
@@ -275,12 +275,23 @@ export class ToolMenuComponent implements OnInit {
               index: 13,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'ArgoCD')[0]?.connectionName,
               updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'ArgoCD')[0]?.updatedAt
+            },
+            {
+              toolName: 'Rally',
+              category: 'Project Management',
+              description: '-',
+              icon: 'fab fa-atlassian',
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
+              queryParams1: 'Rally',
+              index: 14,
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Rally')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Rally')[0]?.updatedAt
             }
 
           ];
         }
 
-        const jiraOrAzure = response['data']?.filter(tool => tool.toolName === 'Jira' || tool.toolName === 'Azure');
+        const jiraOrAzure = response['data']?.filter(tool => tool.toolName === 'Jira' || tool.toolName === 'Azure' || tool.toolName === 'Rally');
         if (jiraOrAzure.length) {
           const fakeEvent = {
             value: jiraOrAzure[0].toolName === 'Azure'

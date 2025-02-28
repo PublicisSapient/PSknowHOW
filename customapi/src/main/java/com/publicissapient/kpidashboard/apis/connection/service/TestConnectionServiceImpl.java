@@ -103,10 +103,10 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 						? createCloudApiUrl(connection.getBaseUrl(), toolName)
 						: createApiUrl(connection.getBaseUrl(), toolName);
 			case Constant.TOOL_JIRA, Constant.TOOL_TEAMCITY, Constant.TOOL_BAMBOO, Constant.TOOL_JENKINS,
-					Constant.TOOL_ARGOCD, Constant.TOOL_GITLAB ->
+                 Constant.TOOL_ARGOCD, Constant.TOOL_GITLAB, Constant.TOOL_RALLY ->
 				createApiUrl(connection.getBaseUrl(), toolName);
 			case Constant.REPO_TOOLS -> getApiForRepoTool(connection);
-			default -> null;
+            default -> null;
 		};
 	}
 
@@ -122,6 +122,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			apiUrl = createBitBucketUrl(connection);
 		} else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_AZUREREPO)) {
 			apiUrl = createAzureApiUrl(connection.getBaseUrl(), Constant.TOOL_AZUREREPO);
+		} else if (connection.getType().equalsIgnoreCase(Constant.TOOL_RALLY)) {
+			apiUrl = createApiUrl(connection.getBaseUrl(), Constant.TOOL_RALLY);
 		}
 		return apiUrl != null ? apiUrl.trim() : "";
 	}
@@ -168,7 +170,10 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		if (toolName.equals(Constant.TOOL_SONAR) || toolName.equals(Constant.TOOL_ZEPHYR) ||
 				toolName.equals(Constant.TOOL_GITLAB)) {
 			return checkDetailsForTool(apiUrl, password);
-		} else {
+		} else if(toolName.equals(Constant.TOOL_RALLY)){
+			return true;
+		}
+		else {
 			return apiUrl != null && isUrlValid(apiUrl) && (StringUtils.isNotEmpty(password) || connection.isJaasKrbAuth()) &&
 					StringUtils.isNotEmpty(connection.getUsername());
 		}
@@ -198,6 +203,10 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				isValid = validateSonarConnection(connection, apiUrl, password);
 				yield getStatusCode(isValid);
 			}
+			case Constant.TOOL_RALLY -> {
+				isValid = validateRallyConnection(connection, apiUrl, password);
+				yield getStatusCode(isValid);
+			}
 			default -> {
 				isValid = connection.isBearerToken()
 						? testConnectionWithBearerToken(apiUrl, password)
@@ -219,6 +228,14 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		} else {
 			return testConnection(connection, Constant.TOOL_SONAR, apiUrl, password, false);
 		}
+	}
+
+	private boolean validateRallyConnection(Connection connection, String apiUrl, String token) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("ZSESSIONID", connection.getAccessToken());
+		HttpEntity<String> entity = new HttpEntity<>(headers);
+		ResponseEntity<String> response = restTemplate.exchange(apiUrl, HttpMethod.GET, entity, String.class);
+		return response.getStatusCode().is2xxSuccessful();
 	}
 
 	private boolean testConnectionForGitHub(String apiUrl, String username, String password) {
@@ -452,6 +469,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				return customApiConfig.getZephyrTestConnection();
 			case Constant.TOOL_ARGOCD :
 				return customApiConfig.getArgoCDTestConnection();
+			case Constant.TOOL_RALLY:
+				return customApiConfig.getRallyTestConnection();
 			default :
 				return null;
 		}
