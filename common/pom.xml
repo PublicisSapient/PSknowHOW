@@ -480,6 +480,67 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>2.42.0</version>
+        <configuration>
+          <!-- Java-specific configurations -->
+          <java>
+            <!-- These are the defaults, you can override if you want -->
+            <includes>
+              <include>**/*.java</include>
+            </includes>
+            <googleJavaFormat/>
+            <eclipse>
+              <file>${project.basedir}/eclipse-formatter-config.xml</file>
+            </eclipse>
+            <indent>
+              <tabs>true</tabs>
+              <spacesPerTab>2</spacesPerTab>
+            </indent>
+            <importOrder>
+              <order>java|javax,org,com</order>
+            </importOrder>
+            <removeUnusedImports/>
+          </java>
+          <pom>
+            <!-- These are the defaults, you can override if you want -->
+            <includes>
+              <include>**/pom.xml</include>
+            </includes>
+            <sortPom>
+              <encoding>UTF-8</encoding>
+              <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
+              <keepBlankLines>false</keepBlankLines>
+              <expandEmptyElements>false</expandEmptyElements>
+            </sortPom>
+          </pom>
+          <!-- Custom formatting for other file types -->
+          <formats>
+            <format>
+              <includes>
+                <include>**/*.yml</include>
+              </includes>
+              <prettier>
+                <configFile>${project.basedir}/.prettierrc</configFile>
+              </prettier>
+            </format>
+          </formats>
+        </configuration>
+        <executions>
+          <!-- Automatically apply formatting during the build process -->
+          <execution>
+            <id>spotless-apply</id>
+            <!-- Run Spotless apply during the validate phase -->
+            <goals>
+              <goal>apply</goal>
+              <!-- Apply formatting -->
+            </goals>
+            <phase>validate</phase>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
