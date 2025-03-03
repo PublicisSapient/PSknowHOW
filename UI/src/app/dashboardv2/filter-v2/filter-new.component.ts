@@ -603,7 +603,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }else{
       const foundProject = projects.find(proj => 
         proj.hierarchy.some(hier => {
-          if (hier.hierarchyLevel.hierarchyLevelName === this.selectedLevel && hier.orgHierarchyNodeId === id) {
+          if (hier?.hierarchyLevel?.hierarchyLevelName === this.selectedLevel && hier.orgHierarchyNodeId === id) {
             selectedHierarchy = proj.hierarchy;
             return true;
           }
