@@ -138,7 +138,7 @@ public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeRe
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		processorExecutionTraceLog.setLastSuccessfulRun(
 				DateUtil.dateTimeConverter(changeDate, RallyConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
-		processorExecutionTraceLog.setProcessorName(RallyConstants.JIRA);
+		processorExecutionTraceLog.setProcessorName(RallyConstants.RALLY);
 		processorExecutionToSave.add(processorExecutionTraceLog);
 	}
 

@@ -2451,6 +2451,18 @@ export class JiraConfigComponent implements OnInit {
               disabled: 'queryEnabled',
               show: true,
             },
+            {
+              type: 'basicDropdown',
+              label: 'Rally Configuration Template',
+              label2: '',
+              id: 'originalTemplateCode',
+              onChangeEventHandler: (event) => this.jiraMethodChange(this, event),
+              validators: [],
+              containerClass: 'p-sm-6',
+              tooltip: ``,
+              disabled: 'false',
+              show: true,
+            }
           ],
         };
       }

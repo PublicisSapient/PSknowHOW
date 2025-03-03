@@ -152,7 +152,13 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 
 	private void writeSprintDetail(Set<SprintDetails> sprintDetailsSet) {
 		log.info("Writing issues to SprintDetails Collection");
-		sprintRepository.saveAll(sprintDetailsSet);
+		for (SprintDetails sprintDetails : sprintDetailsSet) {
+			if (sprintRepository.findBySprintID(sprintDetails.getSprintID())==null) {
+				sprintRepository.save(sprintDetails);
+			} else {
+				log.warn("Duplicate sprintID found: " + sprintDetails.getSprintID());
+			}
+		}
 	}
 
 	private void writeAccountHierarchy(Set<ProjectHierarchy> projectHierarchies) {

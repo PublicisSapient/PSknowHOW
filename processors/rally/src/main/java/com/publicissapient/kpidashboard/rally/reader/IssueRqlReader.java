@@ -166,7 +166,7 @@ public class IssueRqlReader implements ItemReader<ReadData> {
 				StringUtils.isBlank(projectWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
 			log.info("fetching project status from trace log for project: {}", projectConfFieldMapping.getProjectName());
 			List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
-					.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(RallyConstants.JIRA,
+					.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(RallyConstants.RALLY,
 							projectConfFieldMapping.getBasicProjectConfigId().toString());
 			if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 				String lastSuccessfulRun = deltaDate;

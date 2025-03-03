@@ -87,4 +87,6 @@ public class RallyProcessorConfig {
 	private Integer chunkSize;
 	private String uiHost;
 	private List<String> domainNames;
+	private String rallyApiBaseUrl;
+	private String rallyApiKey;
 }

@@ -111,7 +111,7 @@ public class JobController {
 	public ResponseEntity<String> startScrumJqlJob() {
 		log.info("Request come for job for Scrum project configured with JQL via controller");
 
-		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(RallyConstants.JIRA,
+		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(RallyConstants.RALLY,
 				true, false);
 
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
@@ -206,7 +206,7 @@ public class JobController {
 
 		// Mark the execution as in progress before starting the job asynchronously
 		ongoingExecutionsService.markExecutionInProgress(basicProjectConfigId);
-		ObjectId jiraProcessorId = rallyProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
+		ObjectId jiraProcessorId = rallyProcessorRepository.findByProcessorName(ProcessorConstants.RALLY).getId();
 		// Start the job asynchronously
 		CompletableFuture.runAsync(() -> {
 			JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
@@ -263,7 +263,7 @@ public class JobController {
 		if (projBasicConfOpt.isPresent()) {
 			ProjectBasicConfig projectBasicConfig = projBasicConfOpt.get();
 			List<ProjectToolConfig> projectToolConfigs = toolRepository
-					.findByToolNameAndBasicProjectConfigId(RallyConstants.JIRA, projectBasicConfig.getId());
+					.findByToolNameAndBasicProjectConfigId(RallyConstants.RALLY, projectBasicConfig.getId());
 
 			if (!projectBasicConfig.isKanban()) {
 				// Project is scrum

@@ -26,6 +26,7 @@ public enum KPICode {
 
 	/** JIRA_PROCESSOR field */
 	JIRA_PROCESSOR("kpi0", KPISource.JIRA.name()),
+	RALLY_PROCESSOR("kpi200", KPISource.RALLY.name()),
 	/** JIRA_PROCESSOR_KANBAN */
 	JIRA_PROCESSOR_KANBAN("kpi1", KPISource.JIRAKANBAN.name()),
 	/** The Dor to dod. */

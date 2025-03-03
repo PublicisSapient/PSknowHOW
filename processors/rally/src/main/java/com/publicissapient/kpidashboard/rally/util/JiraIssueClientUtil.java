@@ -77,14 +77,14 @@ public final class JiraIssueClientUtil {
 				try {
 					list.add(((JSONObject) v).get(RallyConstants.VALUE));
 				} catch (JSONException e) {
-					log.error("JIRA PROCESSOR | Error while parsing Atlassian Issue JSON Object", e);
+					log.error("RALLY PROCESSOR | Error while parsing Atlassian Issue JSON Object", e);
 				}
 			});
 		} else if (value instanceof JSONObject) {
 			try {
 				list.add(((JSONObject) value).get(RallyConstants.VALUE));
 			} catch (JSONException e) {
-				log.error("JIRA PROCESSOR | Error while parsing Atlassian Issue JSON Object", e);
+				log.error("RALLY PROCESSOR | Error while parsing Atlassian Issue JSON Object", e);
 			}
 		}
 		return list;

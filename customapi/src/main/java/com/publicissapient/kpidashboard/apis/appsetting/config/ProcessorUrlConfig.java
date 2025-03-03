@@ -57,6 +57,7 @@ public class ProcessorUrlConfig {
 	String github;
 	String githubAction;
 	String argocd;
+	String rally;
 
 	public String getProcessorUrl(String processor) {
 		switch (processor) {
@@ -92,6 +93,8 @@ public class ProcessorUrlConfig {
 				return getTeamcity();
 			case ProcessorConstants.ARGOCD :
 				return getArgocd();
+			case ProcessorConstants.RALLY:
+				return getRally();
 			default :
 				return StringUtils.EMPTY;
 		}

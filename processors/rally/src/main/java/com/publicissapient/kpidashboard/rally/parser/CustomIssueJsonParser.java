@@ -189,10 +189,10 @@ public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 		final JSONObject fieldsJson = json.getJSONObject(FIELDS);
 
 		final Object summaryObject = fieldsJson.get(attributeName);
-		if (summaryObject instanceof JSONObject) { // pre JIRA 5.0 way
+		if (summaryObject instanceof JSONObject) { // pre RALLY 5.0 way
 			return ((JSONObject) summaryObject).getString(VALUE_ATTR);
 		}
-		if (summaryObject instanceof String) { // JIRA 5.0 way
+		if (summaryObject instanceof String) { // RALLY 5.0 way
 			return (String) summaryObject;
 		}
 		throw new JSONException("Cannot parse [" + attributeName + "] from available fields");
@@ -204,7 +204,7 @@ public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 		if (fieldJson.has(VALUE_ATTR)) {
 			return fieldJson.getJSONObject(VALUE_ATTR); // pre 5.0 way
 		} else {
-			return fieldJson; // JIRA 5.0 way
+			return fieldJson; // RALLY 5.0 way
 		}
 	}
 
@@ -220,7 +220,7 @@ public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 		if (fieldJson instanceof JSONObject) {
 			return ((JSONObject) fieldJson).getString(VALUE_ATTR); // pre 5.0 way
 		}
-		return fieldJson.toString(); // JIRA 5.0 way
+		return fieldJson.toString(); // RALLY 5.0 way
 	}
 
 	@Override

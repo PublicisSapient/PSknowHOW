@@ -43,11 +43,11 @@ public class CustomUserJsonParser extends UserJsonParser {
 		final String avatarUrl = JsonParseUtil.getOptionalString(json, "avatarUrl");
 		Map<String, URI> avatarUris = Maps.newHashMap();
 		if (avatarUrl != null) {
-			// JIRA prior 5.0
+			// RALLY prior 5.0
 			final URI avatarUri = JsonParseUtil.parseURI(avatarUrl);
 			avatarUris.put(User.S48_48, avatarUri);
 		} else {
-			// JIRA 5.0+
+			// RALLY 5.0+
 			final JSONObject avatarUrlsJson = json.getJSONObject("avatarUrls");
 			@SuppressWarnings("unchecked")
 			final Iterator<String> iterator = avatarUrlsJson.keys();

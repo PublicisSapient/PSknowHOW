@@ -1396,8 +1396,10 @@ public class KpiHelperService { // NOPMD
 				if (CollectionUtils.isEmpty(projectToolConfig) && kpiSource.equalsIgnoreCase(Constant.TOOL_BITBUCKET) &&
 						projectToolMap.containsKey(Constant.REPO_TOOLS)) {
 					projectToolConfig = projectToolMap.get(Constant.REPO_TOOLS);
-				} else if (CollectionUtils.isEmpty(projectToolConfig)) {
+				} else if (CollectionUtils.isEmpty(projectToolConfig) && kpiSource.equalsIgnoreCase(Constant.TOOL_AZURE) ) {
 					projectToolConfig = projectToolMap.get("Azure");
+				} else if (CollectionUtils.isEmpty(projectToolConfig)) {
+					projectToolConfig = projectToolMap.get("Rally");
 				}
 			}
 

@@ -283,6 +283,7 @@ export class ToolMenuComponent implements OnInit {
               icon: 'fab fa-atlassian',
               routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Rally',
+              routerLink2: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/FieldMapping`,
               index: 14,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Rally')[0]?.connectionName,
               updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Rally')[0]?.updatedAt
@@ -296,9 +297,17 @@ export class ToolMenuComponent implements OnInit {
           const fakeEvent = {
             value: jiraOrAzure[0].toolName === 'Azure'
           };
+          let kpiID = '';
           this.projectTypeChange(fakeEvent, false);
-          this.selectedType = jiraOrAzure[0].toolName === 'Azure';
-          const kpiID = this.selectedProject['type'] === 'Kanban' ? 'kpi1' : 'kpi0';
+          if(jiraOrAzure[0].toolName ==="Rally"){
+            this.selectedType = jiraOrAzure[0].toolName === 'Rally';
+             kpiID = this.selectedProject['type'] === 'Kanban' ? 'kpi1' : 'KPI200';
+          } else if(jiraOrAzure[0].toolName === 'Azure'){
+            kpiID = this.selectedProject['type'] === 'Kanban' ? 'kpi1' : 'kpi0';
+          } else {
+            kpiID = this.selectedProject['type'] === 'Kanban' ? 'kpi1' : 'kpi0';
+          }
+
           let obj = {
             "releaseNodeId": null
           }

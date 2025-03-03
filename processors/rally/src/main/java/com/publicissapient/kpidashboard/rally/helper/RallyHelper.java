@@ -62,7 +62,7 @@ public class RallyHelper {
 		}
 		return ObjectUtils.compare(o1.getEndDate(), o2.getEndDate());
 	};
-	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
+	private static final String ERROR_MSG_401 = "Error 401 connecting to RALLY server, your credentials are probably wrong. Note: Ensure you are using RALLY user name not your email address.";
 	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
 	private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
 
@@ -109,7 +109,7 @@ public class RallyHelper {
 				return fieldValue.toString();
 			}
 		} catch (JSONException e) {
-			log.error("JIRA Processor | Error while parsing RCA Custom_Field", e);
+			log.error("RALLY Processor | Error while parsing RCA Custom_Field", e);
 		}
 		return fieldValue.toString();
 	}
@@ -158,14 +158,14 @@ public class RallyHelper {
 				try {
 					list.add(((JSONObject) v).get(RallyConstants.VALUE));
 				} catch (JSONException e) {
-					log.error("JIRA PROCESSOR | Error while parsing Atlassian Issue JSON Object", e);
+					log.error("RALLY PROCESSOR | Error while parsing Atlassian Issue JSON Object", e);
 				}
 			});
 		} else if (value instanceof JSONObject) {
 			try {
 				list.add(((JSONObject) value).get(RallyConstants.VALUE));
 			} catch (JSONException e) {
-				log.error("JIRA PROCESSOR | Error while parsing Atlassian Issue JSON Object", e);
+				log.error("RALLY PROCESSOR | Error while parsing Atlassian Issue JSON Object", e);
 			}
 		}
 		return list;

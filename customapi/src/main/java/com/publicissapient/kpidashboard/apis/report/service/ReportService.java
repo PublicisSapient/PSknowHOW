@@ -20,8 +20,10 @@ package com.publicissapient.kpidashboard.apis.report.service;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,6 +128,12 @@ public class ReportService {
 		});
 
 		existingReport.setName(reportRequest.getName());
+		// Convert incoming KPI list to a map for quick lookup
+		Map<String, KpiRequest> incomingKpisMap = reportRequest.getKpis().stream()
+				.collect(Collectors.toMap(KpiRequest::getId, kpi -> kpi));
+
+		// Remove KPIs that are in existingReport but missing in incoming request
+		existingReport.getKpis().removeIf(existingKpi -> !incomingKpisMap.containsKey(existingKpi.getId()));
 		// Update existing KPIs or add new ones
 		for (KpiRequest kpiRequest : reportRequest.getKpis()) {
 			Optional<KPI> existingKpiOpt = existingReport.getKpis().stream()

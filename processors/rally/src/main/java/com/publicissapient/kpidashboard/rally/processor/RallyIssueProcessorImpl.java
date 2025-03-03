@@ -108,7 +108,7 @@ public class RallyIssueProcessorImpl implements RallyIssueProcessor {
 				defectStorySet.add(parentKey);
 			} catch (JSONException e) {
 				log.error(
-						"JIRA Processor | Error while parsing parent value as JSONObject or converting JSONObject to string",
+						"RALLY Processor | Error while parsing parent value as JSONObject or converting JSONObject to string",
 						e);
 			}
 		}
@@ -519,7 +519,7 @@ public class RallyIssueProcessorImpl implements RallyIssueProcessor {
 						rootCauses.add(rcaCauseStringToSave(rcaCause));
 					}
 				} catch (JSONException ex) {
-					log.error("JIRA Processor | Error while parsing RCA Custom_Field", ex);
+					log.error("RALLY Processor | Error while parsing RCA Custom_Field", ex);
 				}
 			}
 		} else if (fields.get(fieldMapping.getRootCause())
@@ -529,7 +529,7 @@ public class RallyIssueProcessorImpl implements RallyIssueProcessor {
 				rcaCause = ((org.codehaus.jettison.json.JSONObject) fields.get(fieldMapping.getRootCause()).getValue())
 						.getString(RallyConstants.VALUE);
 			} catch (JSONException ex) {
-				log.error("JIRA Processor | Error while parsing RCA Custom_Field", ex);
+				log.error("RALLY Processor | Error while parsing RCA Custom_Field", ex);
 			}
 
 			if (rcaCause != null) {
@@ -689,7 +689,7 @@ public class RallyIssueProcessorImpl implements RallyIssueProcessor {
 			}
 
 		} catch (org.json.simple.parser.ParseException | JSONException e) {
-			log.error("JIRA Processor | Error while parsing third party field {}", e);
+			log.error("RALLY Processor | Error while parsing third party field {}", e);
 		}
 		return isRaisedByThirdParty;
 	}
@@ -725,7 +725,7 @@ public class RallyIssueProcessorImpl implements RallyIssueProcessor {
 				setSprintData(sprints, jiraIssue, sValue, projectConfig);
 
 			} catch (ParseException | JSONException e) {
-				log.error("JIRA Processor | Failed to obtain sprint data from {} {}", sValue, e);
+				log.error("RALLY Processor | Failed to obtain sprint data from {} {}", sValue, e);
 			}
 		}
 		jiraIssue.setSprintChangeDate("");
@@ -760,7 +760,7 @@ public class RallyIssueProcessorImpl implements RallyIssueProcessor {
 			jiraIssue.setSprintAssetState(sprint.getState() == null ? StringUtils.EMPTY : sprint.getState());
 
 		} else {
-			log.error("JIRA Processor | Failed to obtain sprint data for {}", sValue);
+			log.error("RALLY Processor | Failed to obtain sprint data for {}", sValue);
 		}
 	}
 
@@ -928,7 +928,7 @@ public class RallyIssueProcessorImpl implements RallyIssueProcessor {
 		// log.info("Converting issue to JiraIssue for the project : {}",
 		// projectConfig.getProjectName());
 		// if (null == hierarchicalRequirement) {
-		// log.error("Rally Processor | No list of current paged JIRA's issues found");
+		// log.error("Rally Processor | No list of current paged RALLY's issues found");
 		// return jiraIssue;
 		// }
 		// FieldMapping fieldMapping = projectConfig.getFieldMapping();
@@ -969,7 +969,7 @@ public class RallyIssueProcessorImpl implements RallyIssueProcessor {
 		// setDefectIssueType(jiraIssue, issueType, fieldMapping);
 		// jiraIssue.setLabels(getLabelsList(issue));
 		setProjectSpecificDetails(projectConfig, jiraIssue);
-		// setAdditionalFilters(jiraIssue, issue, projectConfig);
+//		 setAdditionalFilters(jiraIssue, issue, projectConfig);
 		// setStoryLinkWithDefect(issue, jiraIssue, fields);
 		// setProductionDefectIdentificationField(fieldMapping, issue, jiraIssue,
 		// fields);
@@ -985,7 +985,8 @@ public class RallyIssueProcessorImpl implements RallyIssueProcessor {
 			jiraIssue.setSprintBeginDate(hierarchicalRequirement.getIteration().getStartDate());
 			jiraIssue.setSprintEndDate(hierarchicalRequirement.getIteration().getEndDate());
 			jiraIssue.setSprintName(hierarchicalRequirement.getIteration().getName());
-			jiraIssue.setSprintID(hierarchicalRequirement.getIteration().getObjectID());
+			jiraIssue.setSprintID(hierarchicalRequirement.getIteration().getObjectID() + CommonConstant.ADDITIONAL_FILTER_VALUE_ID_SEPARATOR
+					+ projectConfig.getProjectBasicConfig().getProjectNodeId());
 			jiraIssue.setSprintAssetState(hierarchicalRequirement.getIteration().getState());
 		}
 		// IssueField sprint = fields.get(fieldMapping.getSprintName());

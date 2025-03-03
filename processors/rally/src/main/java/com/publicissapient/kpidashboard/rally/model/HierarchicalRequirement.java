@@ -21,6 +21,9 @@ package com.publicissapient.kpidashboard.rally.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 public class HierarchicalRequirement {
     @JsonProperty("_ref")
@@ -51,7 +54,8 @@ public class HierarchicalRequirement {
     private String lastUpdateDate;
     @JsonProperty("ObjectID")
     private String objectID;
-
-
-
+    private String currentIteration;
+    private List<String> pastIterations; // Track spillover
+    // Add a field to store linked defects
+    private List<Defect> linkedDefects = new ArrayList<>();
 }

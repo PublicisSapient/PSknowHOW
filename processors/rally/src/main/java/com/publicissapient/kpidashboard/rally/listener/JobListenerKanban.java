@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.rally.listener;
 import static com.publicissapient.kpidashboard.rally.helper.RallyHelper.convertDateToCustomFormat;
 import static com.publicissapient.kpidashboard.rally.util.JiraProcessorUtil.generateLogMessage;
 
-import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,7 +46,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -57,7 +55,6 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
-import io.atlassian.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -180,7 +177,7 @@ public class JobListenerKanban implements JobExecutionListener {
 
 	private void setExecutionInfoInTraceLog(boolean status, Throwable stepFailureException) {
 		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
-				.findByProcessorNameAndBasicProjectConfigIdIn(RallyConstants.JIRA, Collections.singletonList(projectId));
+				.findByProcessorNameAndBasicProjectConfigIdIn(RallyConstants.RALLY, Collections.singletonList(projectId));
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
 				checkDeltaIssues(processorExecutionTraceLog, status);

@@ -379,7 +379,7 @@ public class RallyIssueHistoryProcessorImpl implements RallyIssueHistoryProcesso
 					if (!sprints.isEmpty())
 						createFirstEntryOfChangeLog(sprintChangeLog, issue, sprints.get(0).getSprintName());
 				} catch (ParseException | JSONException e) {
-					log.error("JIRA Processor | Failed to obtain sprint data from {} {}", sValue, e);
+					log.error("RALLY Processor | Failed to obtain sprint data from {} {}", sValue, e);
 				}
 			}
 		}

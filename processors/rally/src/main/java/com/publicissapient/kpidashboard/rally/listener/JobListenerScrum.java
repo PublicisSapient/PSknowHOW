@@ -191,7 +191,7 @@ public class JobListenerScrum implements JobExecutionListener {
 	private void setExecutionInfoInTraceLog(boolean status, Throwable stepFailureException,
 			Map<String, List<String>> outlierSprintMap) {
 		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
-				.findByProcessorNameAndBasicProjectConfigIdIn(RallyConstants.JIRA, Collections.singletonList(projectId));
+				.findByProcessorNameAndBasicProjectConfigIdIn(RallyConstants.RALLY, Collections.singletonList(projectId));
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
 				checkDeltaIssues(processorExecutionTraceLog, status);

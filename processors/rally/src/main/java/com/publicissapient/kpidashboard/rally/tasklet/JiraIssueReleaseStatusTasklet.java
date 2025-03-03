@@ -73,7 +73,7 @@ public class JiraIssueReleaseStatusTasklet implements Tasklet {
 		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
 //		ProcessorJiraRestClient client = jiraClientService.getRestClientMap(projectId);
 //		log.info("Fetching release statuses for the project : {}", projConfFieldMapping.getProjectName());
-//		createRallyIssueReleaseStatus.processAndSaveProjectStatusCategory(client, projectId);
+		createRallyIssueReleaseStatus.processAndSaveProjectStatusCategory(projectId);
 		return RepeatStatus.FINISHED;
 	}
 }

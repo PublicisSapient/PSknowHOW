@@ -69,14 +69,14 @@ public class RallyProcessorCacheEvictor {
 		try {
 			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
 		} catch (RuntimeException e) {
-			log.error("[JIRA-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service", e);
+			log.error("[RALLY-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service", e);
 		}
 
 		if (null != response && response.getStatusCode().is2xxSuccessful()) {
 			cleaned = true;
-			log.info("[JIRA-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache {}", cacheName);
+			log.info("[RALLY-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache {}", cacheName);
 		} else {
-			log.error("[JIRA-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache {}", cacheName);
+			log.error("[RALLY-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache {}", cacheName);
 		}
 		return cleaned;
 	}
@@ -112,14 +112,14 @@ public class RallyProcessorCacheEvictor {
 		try {
 			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
 		} catch (RuntimeException e) {
-			log.error("[JIRA-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service", e);
+			log.error("[RALLY-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service", e);
 		}
 
 		if (null != response && response.getStatusCode().is2xxSuccessful()) {
 			cleaned = true;
-			log.info("[JIRA-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache for {} and {} ", param1, param2);
+			log.info("[RALLY-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache for {} and {} ", param1, param2);
 		} else {
-			log.error("[JIRA-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache for {} and {} ", param1, param2);
+			log.error("[RALLY-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache for {} and {} ", param1, param2);
 		}
 		return cleaned;
 	}
