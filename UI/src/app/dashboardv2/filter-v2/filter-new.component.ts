@@ -82,6 +82,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   isSuccess: boolean = false;
   dashConfigDataDeepCopyBackup: any;
   refreshCounter: number = 0;
+  showSprintGoalsPanel: boolean = false;
 
   constructor(
     private httpService: HttpService,
@@ -129,6 +130,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.service.onScrumKanbanSwitch
         .subscribe(data => {
+          this.showSprintGoalsPanel = false;
           setTimeout(() => {
             this.selectedType = JSON.parse(JSON.stringify(data.selectedType));
             this.setDateFilter();
@@ -141,6 +143,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.service.onTabSwitch
         .subscribe(data => {
+          this.showSprintGoalsPanel = false;
           // setTimeout(() => {
           this.selectedTab = JSON.parse(JSON.stringify(data.selectedBoard));
           if (['iteration', 'backlog', 'release', 'dora', 'developer', 'kpi-maturity'].includes(this.selectedTab.toLowerCase())) {
@@ -390,6 +393,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }, {});
       this.setCategories();
     }
+    this.service.setDataForSprintGoal({filterDataArr : this.filterDataArr[this.selectedType]})
   }
 
   setCategories() {
@@ -1566,6 +1570,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     return obj;
   }
 
+  toggleSprintGoals() {
+    this.showSprintGoalsPanel = !this.showSprintGoalsPanel;
+    this.service.updateSprintGoalFlag(this.showSprintGoalsPanel);
+  }
+
+  getBgClass(){
+    return this.showSprintGoalsPanel ? 'icon-apply' : 'icon-not-active';
+  }
 
   onRefreshDialogShow() {
     // Ensure first button (Cancel) gets focus when dialog opens
