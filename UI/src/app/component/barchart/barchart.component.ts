@@ -169,13 +169,13 @@ export class BarchartComponent implements OnInit {
         this.tooltip
           .style('display', 'block')
           .html(
-            `<strong>${d.category}:</strong> ${parseFloat(d.value.toFixed(2))}${unit === 'Count' ? '' : ` ${unit}`}`
+            `<strong>${d.category}:</strong> ${parseFloat(d.value.toFixed(2))}${d.unit === 'Count' ? '' : ` ${d.unit}`}`
           );
       })
       .on('mousemove', (event, d) => {
         this.tooltip
           .style('top', `${chartHeight - xScale.bandwidth()}px`)
-          .style('left', `${xScale.bandwidth()}px`);
+          .style('left', `${event.offsetX }px`);
       })
       .on('mouseout', () => {
         this.tooltip.style('display', 'none');
