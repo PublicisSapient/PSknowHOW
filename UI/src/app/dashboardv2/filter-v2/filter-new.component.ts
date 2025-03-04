@@ -270,16 +270,17 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   setSelectedType(type) {
-    this.selectedType = type?.toLowerCase();
-    if (type.toLowerCase() === 'kanban') {
-      this.kanban = true;
-    } else {
-      this.kanban = false;
-    }
-    this.filterApplyData = {};
-    this.service.setSelectedType(this.selectedType);
-    this.service.setBackupOfFilterSelectionState({ 'selected_type': this.selectedType })
-    this.service.setScrumKanban(this.selectedType);
+      this.selectedType = type?.toLowerCase();
+      if (type.toLowerCase() === 'kanban') {
+        this.kanban = true;
+      } else {
+        this.kanban = false;
+      }
+      this.filterApplyData = {};
+      this.service.setSelectedType(this.selectedType);
+      this.service.setBackupOfFilterSelectionState({ 'selected_type': this.selectedType })
+      this.service.setScrumKanban(this.selectedType);
+    
   }
 
   processBoardData(boardData) {
