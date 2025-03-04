@@ -270,7 +270,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   setSelectedType(type) {
-    if (this.selectedType !== type?.toLowerCase()) {
       this.selectedType = type?.toLowerCase();
       if (type.toLowerCase() === 'kanban') {
         this.kanban = true;
@@ -281,7 +280,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.service.setSelectedType(this.selectedType);
       this.service.setBackupOfFilterSelectionState({ 'selected_type': this.selectedType })
       this.service.setScrumKanban(this.selectedType);
-    }
+    
   }
 
   processBoardData(boardData) {
