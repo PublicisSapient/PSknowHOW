@@ -90,8 +90,10 @@ public class BitBucketServiceR {
 			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest, groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
 
-				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
-				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
+				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList,
+						referFromProjectCache);
+				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest, filteredAccountDataList,
+						referFromProjectCache);
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
@@ -142,25 +144,6 @@ public class BitBucketServiceR {
 		}
 
 		return filteredNode;
-	}
-
-	/**
-	 * @param kpiRequest
-	 * @param filteredAccountDataList
-	 * @return
-	 */
-	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
-			List<AccountHierarchyData> filteredAccountDataList) {
-		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
-			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
-		}
-		return filteredAccountDataList;
-	}
-
-	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
-
-		return authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
 	}
 
 	/**
