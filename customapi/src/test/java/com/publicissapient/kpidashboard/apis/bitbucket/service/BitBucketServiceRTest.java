@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -141,8 +142,8 @@ public class BitBucketServiceRTest {
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
-
-		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 
 		// when(filterHelperService.getHierarachyLevelId(5, "project",
 		// false)).thenReturn("project");
@@ -182,7 +183,6 @@ public class BitBucketServiceRTest {
 		}
 
 		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
 		//
 		// when(authorizedProjectsService.getProjectNodesForRequest(accountHierarchyDataList)).thenReturn(projects);
 
