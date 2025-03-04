@@ -154,6 +154,14 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
 	@Override
+	public Map<String, Object> fetchFirstTimePassRateData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+															List<String> sprintList, String kpiId) {
+		log.info("Fetching FTPR KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
+		return kpiDataProvider.fetchFirstTimePassRateDataFromDb(kpiRequest, basicProjectConfigId, sprintList);
+	}
+
+	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
+	@Override
 	public Map<String, Object> fetchDefectDensityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList, String kpiId) {
 		log.info("Fetching Defect Density KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
