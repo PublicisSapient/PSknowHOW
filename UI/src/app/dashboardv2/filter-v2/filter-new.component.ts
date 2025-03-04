@@ -577,7 +577,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     let colorsArr = ['#6079C5', '#FFB587', '#D48DEF', '#A4F6A5', '#FBCF5F', '#9FECFF']
     this.colorObj = {};
     for (let i = 0; i < data?.length; i++) {
-      let projectHirearchy = this.service.getProjectWithHierarchy().filter(x => x.projectNodeId === data[i].nodeId)[0]?.hierarchy;
+
+      
+      let projectHirearchy = this.getHirearchy(data[i]?.nodeId);
       if (data[i]?.nodeId) {
         this.colorObj[data[i].nodeId] = {
           nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName, nodeDisplayName: data[i].nodeDisplayName, immediateParentDisplayName: this.getImmediateParentDisplayName(data[i]),
@@ -589,6 +591,26 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.service.setColorObj(this.colorObj);
       });
+    }
+  }
+
+ 
+  getHirearchy(id) {
+    let selectedHierarchy = [];
+    const projects = this.service.getProjectWithHierarchy();
+    if(this.selectedLevel === 'Project'){
+     return projects.filter(x => x.projectNodeId === id)[0]?.hierarchy
+    }else{
+      const foundProject = projects.find(proj => 
+        proj.hierarchy.some(hier => {
+          if (hier?.hierarchyLevel?.hierarchyLevelName === this.selectedLevel && hier.orgHierarchyNodeId === id) {
+            selectedHierarchy = proj.hierarchy;
+            return true;
+          }
+          return false;
+        })
+      );
+      return selectedHierarchy;
     }
   }
 
