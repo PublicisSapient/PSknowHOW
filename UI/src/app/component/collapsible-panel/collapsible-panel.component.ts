@@ -124,7 +124,7 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
         return;
     }
 
-    let parentIds: string[] = [this.filterRawData.selectedFilters[0].nodeId];
+    let parentIds: string[] = this.filterRawData.selectedFilters.map(filter => filter.nodeId);
     let children = [];
 
     for (let index = currentIndex; index < this.filterRawData.filterLevels.length; index++) {
