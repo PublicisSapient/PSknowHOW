@@ -13,7 +13,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.Lists;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -41,6 +43,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
@@ -59,6 +62,10 @@ public class KpiDataProvider {
 	private static final String DEV = "DeveloperKpi";
 	private static final String STORIES = "stories";
 	private static final String SPRINTSDETAILS = "sprints";
+	private static final String FIRST_TIME_PASS_STORIES = "ftpStories";
+	private static final String SPRINT_WISE_CLOSED_STORIES = "sprintWiseClosedStories";
+	private static final String ISSUE_DATA = "Issue Data";
+	public static final String DEFECT_FOR_EXCEL = "defect for Excel";
 	private static final String JIRA_ISSUE_HISTORY_DATA = "JiraIssueHistoryData";
 	private static final String ESTIMATE_TIME = "Estimate_Time";
 	private static final Integer SP_CONSTANT = 3;
@@ -830,20 +837,20 @@ public class KpiDataProvider {
 	}
 
 	/**
-	 * Fetches Defect Rejection Rate KPI data from the database for the given project
-	 * and sprints combination.
+	 * Fetches Defect Rejection Rate KPI data from the database for the given
+	 * project and sprints combination.
 	 *
 	 * @param kpiRequest
-	 *          The KPI request object.
+	 *            The KPI request object.
 	 * @param basicProjectConfigId
-	 *          The project config ID.
+	 *            The project config ID.
 	 * @param sprintList
-	 *          The list of sprint IDs.
+	 *            The list of sprint IDs.
 	 * @return A map containing list of sub-tasks, list of sub-task history, sprint
 	 *         details.
 	 */
 	public Map<String, Object> fetchDRRData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
-														  List<String> sprintList) {
+			List<String> sprintList) {
 		log.info("Fetching Defect Rejection Rate KPI Data for Project {}", basicProjectConfigId.toString());
 
 		Map<String, Object> resultListMap = new HashMap<>();
@@ -869,21 +876,22 @@ public class KpiDataProvider {
 		Set<String> totalIssueInSprint = new HashSet<>();
 		sprintDetails.forEach(sprintDetail -> {
 			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
-				FieldMapping fieldMapping1 = configHelperService.getFieldMapping(sprintDetail.getBasicProjectConfigId());
+				FieldMapping fieldMapping1 = configHelperService
+						.getFieldMapping(sprintDetail.getBasicProjectConfigId());
 				totalSprintReportStories.addAll(sprintDetail.getTotalIssues().stream()
 						.filter(sprintIssue -> !fieldMapping1.getJiradefecttype().contains(sprintIssue.getTypeName()))
 						.map(SprintIssue::getNumber).collect(Collectors.toSet()));
-				totalIssue.addAll(
-						KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.TOTAL_ISSUES));
+				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+						CommonConstant.TOTAL_ISSUES));
 			}
-			totalIssueInSprint
-					.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.TOTAL_ISSUES));
+			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+					CommonConstant.TOTAL_ISSUES));
 			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
 					CommonConstant.COMPLETED_ISSUES_ANOTHER_SPRINT));
-			totalIssueInSprint.addAll(
-					KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.PUNTED_ISSUES));
-			totalIssueInSprint
-					.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.ADDED_ISSUES));
+			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+					CommonConstant.PUNTED_ISSUES));
+			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+					CommonConstant.ADDED_ISSUES));
 		});
 
 		// additional filter * */
@@ -898,7 +906,8 @@ public class KpiDataProvider {
 
 			List<JiraIssue> totalSubTaskDefects = jiraIssueRepository
 					.findLinkedDefects(mapOfFilters, totalSprintReportStories, uniqueProjectMap).stream()
-					.filter(jiraIssue -> !totalIssueInSprint.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+					.filter(jiraIssue -> !totalIssueInSprint.contains(jiraIssue.getNumber()))
+					.collect(Collectors.toList());
 
 			List<JiraIssueCustomHistory> subTaskBugsCustomHistory = jiraIssueCustomHistoryRepository
 					.findByStoryIDInAndBasicProjectConfigIdIn(
@@ -925,25 +934,167 @@ public class KpiDataProvider {
 	}
 
 	private void getDefectsWithDrop(Map<String, Map<String, List<String>>> droppedDefects,
-										  List<JiraIssue> defectDataList, List<JiraIssue> defectListWthDrop) {
+			List<JiraIssue> defectDataList, List<JiraIssue> defectListWthDrop) {
 		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(defectDataList)) {
 			Set<JiraIssue> defectListWthDropSet = new HashSet<>();
 			defectDataList.forEach(jiraIssue -> {
 				if (!StringUtils.isBlank(jiraIssue.getStatus())) {
 					Map<String, List<String>> defectStatus = droppedDefects.get(jiraIssue.getBasicProjectConfigId());
-					if (!defectStatus.isEmpty() && (StringUtils.isNotEmpty(jiraIssue.getResolution()) &&
-							CollectionUtils.isNotEmpty(defectStatus.get(Constant.RESOLUTION_TYPE_FOR_REJECTION)) &&
-							defectStatus.get(Constant.RESOLUTION_TYPE_FOR_REJECTION).stream().map(String::toLowerCase)
-									.toList().contains(jiraIssue.getResolution().toLowerCase()) ||
-							(StringUtils.isNotEmpty(jiraIssue.getStatus()) &&
-									CollectionUtils.isNotEmpty(defectStatus.get(Constant.DEFECT_REJECTION_STATUS)) &&
-									defectStatus.get(Constant.DEFECT_REJECTION_STATUS).stream().map(String::toLowerCase)
-											.toList().contains(jiraIssue.getStatus().toLowerCase())))) {
+					if (!defectStatus.isEmpty() && (StringUtils.isNotEmpty(jiraIssue.getResolution())
+							&& CollectionUtils.isNotEmpty(defectStatus.get(Constant.RESOLUTION_TYPE_FOR_REJECTION))
+							&& defectStatus.get(Constant.RESOLUTION_TYPE_FOR_REJECTION).stream()
+									.map(String::toLowerCase).toList().contains(jiraIssue.getResolution().toLowerCase())
+							|| (StringUtils.isNotEmpty(jiraIssue.getStatus())
+									&& CollectionUtils.isNotEmpty(defectStatus.get(Constant.DEFECT_REJECTION_STATUS))
+									&& defectStatus.get(Constant.DEFECT_REJECTION_STATUS).stream()
+											.map(String::toLowerCase).toList()
+											.contains(jiraIssue.getStatus().toLowerCase())))) {
 						defectListWthDropSet.add(jiraIssue);
 					}
 				}
 			});
 			defectListWthDrop.addAll(defectListWthDropSet);
 		}
+	}
+
+	public Map<String, Object> fetchFirstTimePassRateDataFromDb(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+			List<String> sprintList) {
+
+		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+		Map<String, Object> resultListMap = new HashMap<>();
+		List<String> basicProjectConfigIds = new ArrayList<>();
+		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		Map<String, Map<String, List<String>>> statusConfigsOfRejectedStoriesByProject = new HashMap<>();
+		Map<String, Map<String, Integer>> projectWisePriorityCount = new HashMap<>();
+		Map<String, List<String>> configPriority = customApiConfig.getPriority();
+		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
+
+		Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+		basicProjectConfigIds.add(basicProjectConfigId.toString());
+
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+
+		KpiHelperService.addPriorityCountProjectWiseForQuality(projectWisePriorityCount, configPriority,
+				basicProjectConfigId, fieldMapping.getDefectPriorityKPI82());
+		KpiHelperService.addRCAProjectWiseForQualityKPIs(projectWiseRCA, basicProjectConfigId,
+				fieldMapping.getIncludeRCAForKPI82());
+
+		if (Optional.ofNullable(fieldMapping.getJiraKPI82StoryIdentification()).isPresent()) {
+			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters,
+					fieldMapping.getJiradefecttype(), fieldMapping.getJiraKPI82StoryIdentification(),
+					JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
+		}
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI82())) {
+			mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
+					CommonUtils.convertToPatternList(fieldMapping.getJiraLabelsKPI82()));
+		}
+
+		mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
+				fieldMapping.getJiraIssueDeliverdStatusKPI82());
+		KpiHelperService.getDroppedDefectsFilters(statusConfigsOfRejectedStoriesByProject, basicProjectConfigId,
+				fieldMapping.getResolutionTypeForRejectionKPI82(), fieldMapping.getJiraDefectRejectionStatusKPI82());
+
+		uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+
+		/** additional filter * */
+		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, filterHelperService);
+
+		mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
+				sprintList.stream().distinct().collect(Collectors.toList()));
+		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+
+		// Fetch Story ID grouped by Sprint
+		List<SprintWiseStory> sprintWiseStories = jiraIssueRepository.findIssuesGroupBySprint(mapOfFilters,
+				uniqueProjectMap, kpiRequest.getFilterToShowOnTrend(), DEV);
+		List<JiraIssue> issuesBySprintAndType = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
+				uniqueProjectMap);
+		// do not change the order of remove methods
+		List<JiraIssue> defectListWoDrop = new ArrayList<>();
+		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, issuesBySprintAndType,
+				defectListWoDrop);
+
+		KpiHelperService.removeRejectedStoriesFromSprint(sprintWiseStories, defectListWoDrop);
+		Set<JiraIssue> defectForExcel = new HashSet<>();
+		removeStoriesWithDefect(defectListWoDrop, projectWisePriorityCount, projectWiseRCA,
+				statusConfigsOfRejectedStoriesByProject, defectForExcel);
+
+		List<String> storyIds = getIssueIds(defectListWoDrop);
+		List<JiraIssueCustomHistory> storiesHistory = jiraIssueCustomHistoryRepository.findByStoryIDIn(storyIds);
+		defectListWoDrop.removeIf(issue -> kpiHelperService.hasReturnTransactionOrFTPRRejectedStatus(issue,
+				storiesHistory, fieldMapping.getJiraStatusForDevelopmentKPI82(), fieldMapping.getJiraStatusForQaKPI82(),
+				fieldMapping.getJiraFtprRejectStatusKPI82()));
+
+		List<String> storyIdList = new ArrayList<>();
+		sprintWiseStories.forEach(s -> storyIdList.addAll(s.getStoryList()));
+		resultListMap.put(SPRINT_WISE_CLOSED_STORIES, sprintWiseStories);
+		resultListMap.put(FIRST_TIME_PASS_STORIES, defectListWoDrop);
+		resultListMap.put(ISSUE_DATA, jiraIssueRepository.findIssueAndDescByNumber(storyIdList));
+		resultListMap.put(DEFECT_FOR_EXCEL, defectForExcel);
+		return resultListMap;
+
+	}
+
+	/**
+	 * @param issuesBySprintAndType
+	 * @param projectWisePriority
+	 * @param projectWiseRCA
+	 * @param defectForExcel
+	 */
+	private void removeStoriesWithDefect(List<JiraIssue> issuesBySprintAndType,
+			Map<String, Map<String, Integer>> projectWisePriority, Map<String, Set<String>> projectWiseRCA,
+			Map<String, Map<String, List<String>>> statusConfigsOfRejectedStoriesByProject,
+			Set<JiraIssue> defectForExcel) {
+		List<JiraIssue> allDefects = jiraIssueRepository.findByTypeNameAndDefectStoryIDIn(
+				NormalizedJira.DEFECT_TYPE.getValue(), getIssueIds(issuesBySprintAndType));
+		Set<JiraIssue> defects = new HashSet<>();
+		List<JiraIssue> defectListWoDrop = new ArrayList<>();
+		allDefects.stream().forEach(d -> issuesBySprintAndType.stream().forEach(i -> {
+			if (i.getProjectName().equalsIgnoreCase(d.getProjectName())) {
+				defects.add(d);
+			}
+		}));
+		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, new ArrayList<>(defects),
+				defectListWoDrop);
+
+		final List<JiraIssue> remainingDefects = KpiHelperService.excludeDefectByPriorityCount(projectWisePriority,
+				defects);
+
+		List<JiraIssue> notFTPRDefects = new ArrayList<>();
+		for (JiraIssue jiraIssue : defects) {
+			// Filter priorityRemaining based on configured Root Causes (RCA) for the
+			// project, or include if no RCA is configured.
+			rcaDefects(projectWiseRCA, notFTPRDefects, jiraIssue);
+		}
+
+		Set<String> storyIdsWithDefect = new HashSet<>();
+
+		remainingDefects.stream().forEach(pi -> notFTPRDefects.stream().forEach(ri -> {
+			if (pi.getNumber().equalsIgnoreCase(ri.getNumber())) {
+				storyIdsWithDefect.addAll(ri.getDefectStoryID());
+				defectForExcel.add(ri);
+			}
+		}));
+		issuesBySprintAndType.removeIf(issue -> storyIdsWithDefect.contains(issue.getNumber()));
+	}
+
+	private static void rcaDefects(Map<String, Set<String>> projectWiseRCA, List<JiraIssue> notFTPRDefects,
+			JiraIssue jiraIssue) {
+		if (CollectionUtils.isNotEmpty(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()))) {
+			for (String toFindRca : jiraIssue.getRootCauseList()) {
+				if ((projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()).contains(toFindRca.toLowerCase()))) {
+					notFTPRDefects.add(jiraIssue);
+				}
+			}
+		} else {
+			notFTPRDefects.add(jiraIssue);
+		}
+	}
+
+	@NotNull
+	private List<String> getIssueIds(List<JiraIssue> issuesBySprintAndType) {
+		List<String> storyIds = new ArrayList<>();
+		CollectionUtils.emptyIfNull(issuesBySprintAndType).forEach(story -> storyIds.add(story.getNumber()));
+		return storyIds;
 	}
 }

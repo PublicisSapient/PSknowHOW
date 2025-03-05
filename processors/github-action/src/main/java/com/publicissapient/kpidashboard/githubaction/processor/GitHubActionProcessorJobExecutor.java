@@ -295,7 +295,6 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 				build.setProcessorId(processorId);
 				build.setBasicProjectConfigId(gitHubActions.getBasicProjectConfigId());
 				build.setProjectToolConfigId(gitHubActions.getId());
-				build.setBuildJob(gitHubActions.getJobName());
 				buildsToSave.add(build);
 				count++;
 			} else {

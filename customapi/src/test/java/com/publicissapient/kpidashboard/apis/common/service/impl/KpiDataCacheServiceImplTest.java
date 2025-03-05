@@ -119,6 +119,14 @@ public class KpiDataCacheServiceImplTest {
 	}
 
 	@Test
+	public void fetchDFTPRData_shouldReturnCorrectData_whenValidInput() {
+		when(kpiDataProvider.fetchFirstTimePassRateDataFromDb(any(), any(), any())).thenReturn(new HashMap<>());
+		Map<String, Object> result =
+				kpiDataCacheService.fetchFirstTimePassRateData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi14");
+		assertNotNull(result);
+	}
+
+	@Test
 	public void fetchDDData_shouldReturnCorrectData_whenValidInput() {
 		when(kpiDataProvider.fetchDefectDensityDataFromDb(any(), any(), any())).thenReturn(new HashMap<>());
 		Map<String, Object> result =

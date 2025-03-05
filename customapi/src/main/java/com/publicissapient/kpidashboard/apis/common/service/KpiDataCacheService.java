@@ -21,9 +21,7 @@ package com.publicissapient.kpidashboard.apis.common.service;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import org.bson.types.ObjectId;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -100,6 +98,22 @@ public interface KpiDataCacheService {
 	 * @return A map returns sprint wise jira issues list and defect list details
 	 */
 	Map<String, Object> fetchDefectInjectionRateData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+			List<String> sprintList, String kpiId);
+
+	/**
+	 * Fetches DIR data from DB and caches the result
+	 *
+	 * @param kpiRequest
+	 *            The KPI request object.
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @param sprintList
+	 *            The list of sprint IDs.
+	 * @param kpiId
+	 *            The KPI ID.
+	 * @return A map returns sprint wise jira issues list and defect list details
+	 */
+	Map<String, Object> fetchFirstTimePassRateData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList, String kpiId);
 
 	/**
@@ -266,15 +280,15 @@ public interface KpiDataCacheService {
 	 * Fetches DRR KPI data from the database and caches the result.
 	 *
 	 * @param kpiRequest
-	 *          The KPI request object.
+	 *            The KPI request object.
 	 * @param basicProjectConfigId
-	 *          The project config ID.
+	 *            The project config ID.
 	 * @param sprintList
-	 *          The list of sprint IDs.
+	 *            The list of sprint IDs.
 	 * @param kpiId
-	 *          The KPI ID.
+	 *            The KPI ID.
 	 * @return A map containing sprint details, Sub-tasks, Sub-task history.
 	 */
-	Map<String, Object> fetchDRRData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
-                                     List<String> sprintList, String kpiId);
+	Map<String, Object> fetchDRRData(KpiRequest kpiRequest, ObjectId basicProjectConfigId, List<String> sprintList,
+			String kpiId);
 }

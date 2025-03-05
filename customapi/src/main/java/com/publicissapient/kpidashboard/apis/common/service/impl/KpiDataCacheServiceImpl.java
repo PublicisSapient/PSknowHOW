@@ -22,14 +22,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -132,6 +129,14 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 			List<String> sprintList, String kpiId) {
 		log.info("Fetching DIR KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
 		return kpiDataProvider.fetchDefectInjectionRateDataFromDb(kpiRequest, basicProjectConfigId, sprintList);
+	}
+
+	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
+	@Override
+	public Map<String, Object> fetchFirstTimePassRateData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+			List<String> sprintList, String kpiId) {
+		log.info("Fetching FTPR KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
+		return kpiDataProvider.fetchFirstTimePassRateDataFromDb(kpiRequest, basicProjectConfigId, sprintList);
 	}
 
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
