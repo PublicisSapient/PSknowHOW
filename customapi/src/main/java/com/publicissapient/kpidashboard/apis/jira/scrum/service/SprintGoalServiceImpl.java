@@ -129,7 +129,8 @@ public class SprintGoalServiceImpl extends JiraKPIService<Double, List<Object>, 
 				projectSprintDetails.setSprintGoals(sortedSprints);
 			}
 		}
-		kpiElement.setTrendValueList(new ArrayList<>(projectSprintDetailsMap.values()));
+		kpiElement.setTrendValueList(projectSprintDetailsMap.values().stream()
+				.sorted((p1, p2) -> p1.getName().compareToIgnoreCase(p2.getName())).collect(Collectors.toList()));
 	}
 
 	@Override
