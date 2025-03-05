@@ -16,7 +16,6 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -77,7 +76,8 @@ public class SprintGoalServiceImpl extends JiraKPIService<Double, List<Object>, 
 	@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
-		sprintLeafNodeList.sort(Comparator.comparing(node -> node.getSprintFilter().getStartDate()));
+		sprintLeafNodeList.sort((n1, n2) -> n2.getSprintFilter().getStartDate()
+				.compareTo(n1.getSprintFilter().getStartDate()));
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
 
