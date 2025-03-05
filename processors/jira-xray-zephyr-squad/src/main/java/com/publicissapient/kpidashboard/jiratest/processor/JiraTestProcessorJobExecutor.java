@@ -19,8 +19,10 @@
 package com.publicissapient.kpidashboard.jiratest.processor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -143,6 +145,7 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 		clearSelectedBasicProjectConfigIds();
 
 		AtomicReference<Integer> testCaseCount = new AtomicReference<>(0);
+		Set<String> projectIdForCacheClean = new HashSet<>();
 
 		for (ProjectBasicConfig project : projectList) {
 			log.info("Fetching data for project : {}", project.getProjectName());
@@ -155,7 +158,8 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 					.filter(projectConfig -> null != projectConfig.getConnectionId()).collect(Collectors.toList());
 
 			if (CollectionUtils.isNotEmpty(processorToolConnectionList)) {
-				List<ProjectConfFieldMapping> onlineProjectConfigMap = createProjectConfigMap(processorToolConnectionList);
+				List<ProjectConfFieldMapping> onlineProjectConfigMap = createProjectConfigMap(
+						processorToolConnectionList);
 
 				onlineProjectConfigMap.forEach(projectConfigMap -> {
 					try {
@@ -164,7 +168,11 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 						processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 
 						if (StringUtils.isNotBlank(projectConfigMap.getProjectKey())) {
-							testCaseCount.updateAndGet(test -> test + collectTestCases(projectConfigMap));
+							int count = collectTestCases(projectConfigMap);
+							testCaseCount.updateAndGet(test -> test + count);
+							if (count > 0) {
+								projectIdForCacheClean.add(projectConfigMap.getBasicProjectConfigId().toString());
+							}
 						}
 						processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 						processorExecutionTraceLog.setExecutionSuccess(true);
@@ -188,6 +196,8 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 		if (testCaseCount.get() > 0) {
 			cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.TESTING_KPI_CACHE);
 		}
+		projectIdForCacheClean.forEach(projectId -> cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT,
+				projectId, CommonConstant.ZEPHYR));
 		long end = System.currentTimeMillis();
 		MDC.put(PROCESSOR_START_TIME, String.valueOf(start));
 		MDC.put(PROCESSOR_END_TIME, String.valueOf(end));
@@ -287,6 +297,50 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 			log.info("[ZEPHYR-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache: {} ", cacheName);
 		} else {
 			log.error("[ZEPHYR-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache: {}", cacheName);
+		}
+
+		clearToolItemCache(jiraTestProcessorConfig.getCustomApiBaseUrl());
+	}
+
+	/**
+	 * Cleans the cache in the Custom API
+	 *
+	 * @param cacheEndPoint
+	 *            the cache endpoint
+	 * @param param1
+	 *            parameter 1
+	 * @param param2
+	 *            parameter 2
+	 */
+	private void cacheRestClient(String cacheEndPoint, String param1, String param2) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+		if (StringUtils.isNoneEmpty(param1)) {
+			cacheEndPoint = cacheEndPoint.replace(CommonConstant.PARAM1, param1);
+		}
+		if (StringUtils.isNoneEmpty(param2)) {
+			cacheEndPoint = cacheEndPoint.replace(CommonConstant.PARAM2, param2);
+		}
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder
+				.fromHttpUrl(jiraTestProcessorConfig.getCustomApiBaseUrl());
+		uriBuilder.path("/");
+		uriBuilder.path(cacheEndPoint);
+
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
+		} catch (RestClientException e) {
+			log.error("[ZEPHYR-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service {}", e);
+		}
+
+		if (null != response && response.getStatusCode().is2xxSuccessful()) {
+			log.info("[ZEPHYR-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache for: {} and {} ", param1, param2);
+		} else {
+			log.error("[ZEPHYR-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache for: {} and {} ", param1, param2);
 		}
 
 		clearToolItemCache(jiraTestProcessorConfig.getCustomApiBaseUrl());

@@ -9,6 +9,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -53,6 +55,8 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 	private CustomApiConfig customApiConfig;
 	@Autowired
 	private ConfigHelperService configHelperService;
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
 
 	/**
 	 * This method process the test Execution data.
@@ -269,9 +273,15 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 			}
 			testExecutionRepository.save(testExecution);
 			clearCache(CommonConstant.TESTING_KPI_CACHE);
+			clearKpiCache(testExecutionData);
 			processed = true;
 		}
 		return processed;
+	}
+
+	private void clearKpiCache(TestExecutionData testExecutionData) {
+		List<String> kpiList = kpiDataCacheService.getKpiBasedOnSource(KPISource.ZEPHYR.name());
+		kpiList.forEach(kpiId -> kpiDataCacheService.clearCache(testExecutionData.getBasicProjectConfigId(), kpiId));
 	}
 
 	/**
@@ -319,6 +329,7 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 			}
 
 			kanbanTestExecutionRepo.save(kanbanTestExecutionData);
+			clearKpiCache(testExecutionData);
 			cacheService.clearAllCache();
 			processed = true;
 		}
