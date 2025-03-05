@@ -207,11 +207,8 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 						processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 
 						if (StringUtils.isNotBlank(projectConfigMap.getProjectKey())) {
-							int count = collectTestCases(projectConfigMap);
+							int count = collectTestCases(projectConfigMap, projectIdForCacheClean);
 							testCaseCount.updateAndGet(test -> test + count);
-							if (count > 0) {
-								projectIdForCacheClean.add(projectConfigMap.getBasicProjectConfigId().toString());
-							}
 						}
 						processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 						processorExecutionTraceLog.setExecutionSuccess(true);
@@ -256,7 +253,7 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 	 * @param projectConfigMap
 	 * @return projectTestCountMap
 	 */
-	private int collectTestCases(final ProjectConfFieldMapping projectConfigMap) {
+	private int collectTestCases(final ProjectConfFieldMapping projectConfigMap, Set<String> projectIdForCacheClean) {
 		AtomicReference<Integer> testCaseCountTotal = new AtomicReference<>(0);
 		ProcessorToolConnection processorToolConnection = projectConfigMap.getProcessorToolConnection();
 		ZephyrClient zephyrClient = zephyrClientFactory.getClient(processorToolConnection.isCloudEnv());
@@ -272,7 +269,12 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 			// get all testCases
 			getTestCaseAndProcess(projectConfigMap, testCaseCountTotal, processorToolConnection, zephyrClient, null);
 		}
-		return testCaseCountTotal.get();
+
+		int count = testCaseCountTotal.get();
+		if (count > 0) {
+			projectIdForCacheClean.add(projectConfigMap.getBasicProjectConfigId().toString());
+		}
+		return count;
 	}
 
 	private void getTestCaseAndProcess(ProjectConfFieldMapping projectConfigMap, AtomicReference<Integer> testCaseCount,

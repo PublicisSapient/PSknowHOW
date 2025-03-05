@@ -168,11 +168,8 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 						processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 
 						if (StringUtils.isNotBlank(projectConfigMap.getProjectKey())) {
-							int count = collectTestCases(projectConfigMap);
-							testCaseCount.updateAndGet(test -> test + count);
-							if (count > 0) {
-								projectIdForCacheClean.add(projectConfigMap.getBasicProjectConfigId().toString());
-							}
+							int count = collectTestCases(projectConfigMap, projectIdForCacheClean);
+							testCaseCount.updateAndGet(test -> test + count);							
 						}
 						processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 						processorExecutionTraceLog.setExecutionSuccess(true);
@@ -244,13 +241,16 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 		return projectConfigMap;
 	}
 
-	private int collectTestCases(final ProjectConfFieldMapping projectConfig) {
+	private int collectTestCases(final ProjectConfFieldMapping projectConfig, Set<String> projectIdForCacheClean) {
 		AtomicReference<Integer> testCaseCountTotal = new AtomicReference<>(0);
 		if (projectConfig.getProjectKey() != null && projectConfig.getProcessorToolConnection() != null) {
 			long storyDataStart = System.currentTimeMillis();
 			MDC.put("storyDataStartTime", String.valueOf(storyDataStart));
 			int count = jiraTestService.processesJiraIssues(projectConfig);
 			testCaseCountTotal.set(count);
+			if (count > 0) {
+				projectIdForCacheClean.add(projectConfig.getBasicProjectConfigId().toString());
+			}
 			MDC.put("JiraIssueCount", String.valueOf(count));
 			long end = System.currentTimeMillis();
 			MDC.put("storyDataEndTime", String.valueOf(end));
