@@ -579,7 +579,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     for (let i = 0; i < data?.length; i++) {
 
       
-      let projectHirearchy = this.getHirearchy(data[i]?.nodeId);
+      let projectHirearchy = this.selectedLevel==='Project'?this.getHirearchy(data[i]?.nodeId):this.getElementsAboveLevel(this.getHirearchy(data[i]?.nodeId),this.selectedLevel);
       if (data[i]?.nodeId) {
         this.colorObj[data[i].nodeId] = {
           nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName, nodeDisplayName: data[i].nodeDisplayName, immediateParentDisplayName: this.getImmediateParentDisplayName(data[i]),
@@ -594,6 +594,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
+  getElementsAboveLevel(hierarchyData: any[], targetLevelName: string) {
+    const targetIndex = hierarchyData.findIndex(item => item.hierarchyLevel.hierarchyLevelName === targetLevelName);
+    return targetIndex !== -1 ? hierarchyData.slice(0, targetIndex + 1) : [];
+  }
  
   getHirearchy(id) {
     let selectedHierarchy = [];
