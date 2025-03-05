@@ -1852,6 +1852,33 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
+	 * Create PriorityWise Count map from FieldMapping & configPriority
+	 *
+	 * @param projectWisePriorityCount
+	 *            projectWisePriorityCount
+	 * @param configPriority
+	 *            configPriority
+	 * @param leaf
+	 *            Node
+	 * @param defectPriorityCount
+	 *            From FieldMapping
+	 */
+	public static void addPriorityCountProjectWiseForQuality(Map<String, Map<String, Integer>> projectWisePriorityCount,
+															 Map<String, List<String>> configPriority, ObjectId basicProjectConfigId, List<LabelCount> defectPriorityCount) {
+		if (CollectionUtils.isNotEmpty(defectPriorityCount)) {
+			defectPriorityCount
+					.forEach(labelCount -> labelCount.setLabelValue(labelCount.getLabelValue().toUpperCase()));
+			if (CollectionUtils.isNotEmpty(defectPriorityCount)) {
+				Map<String, Integer> priorityValues = new HashMap<>();
+				defectPriorityCount.forEach(label -> configPriority.get(label.getLabelValue()).forEach(
+						priorityValue -> priorityValues.put(priorityValue.toLowerCase(), label.getCountValue())));
+				projectWisePriorityCount.put(basicProjectConfigId.toString(),
+						priorityValues);
+			}
+		}
+	}
+
+	/**
 	 * get kpi data from repo tools api, for project level hierarchy only
 	 *
 	 * @param endDate

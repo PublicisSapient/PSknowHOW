@@ -87,7 +87,10 @@
               <ng-container [ngSwitch]="checkIfArray(rowData[column]) ? 'array' : (rowData[column]?.hasOwnProperty('hyperlink') ? 'hyperlink' : (column.toLowerCase() === 'sprint rating' ? 'sprintRating' :(column.toLowerCase().includes('date'))?'date': 'other'))">
                 <ng-container *ngSwitchCase="'array'">
                   <ng-container *ngFor="let data of rowData[column]">
-                    <a *ngIf="data?.hasOwnProperty('hyperlink')" [href]="data['hyperlink']" class="text-blue column-content-spacing" rel="noopener" target="_blank">{{data['text']}}</a>
+                    <a *ngIf="data?.hasOwnProperty('hyperlink') else dataWithOutHyperlink" [href]="data['hyperlink']" class="text-blue column-content-spacing" rel="noopener" target="_blank">{{data['text']}}</a>
+                    <ng-template #dataWithOutHyperlink>
+                       {{data}}
+                    </ng-template>
                     <ng-template #displayData>
                       <p class="column-content-spacing">{{data}}</p>
                     </ng-template>

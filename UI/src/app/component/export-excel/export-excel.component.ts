@@ -99,9 +99,9 @@ export class ExportExcelComponent implements OnInit {
           obj[key] = [];
           for (let y in colData[key]) {
             //added check if valid url
-            if (Array.isArray(colData[key][y]) && colData[key][y].includes('http')) {
+            if (colData[key][y].includes('http')) {
               obj[key].push({ text: y, hyperlink: colData[key][y] });
-            } else {
+            }else{
               obj[key].push(colData[key][y]);
             }
           }
@@ -114,7 +114,7 @@ export class ExportExcelComponent implements OnInit {
       }
       tableData.push(obj);
     });
-
+    console.log(tableData)
     this.dataTransformatin(rawColumConfig, tableData, '', kpiName);
   }
 
@@ -395,10 +395,7 @@ export class ExportExcelComponent implements OnInit {
           updatedRow[colName] = updatedRow[colName].trim();
         }
         if(Array.isArray(updatedRow[colName])){
-            updatedRow[colName] =(typeof updatedRow[colName] !=='object')? (updatedRow[colName] as any[]).join(','): updatedRow[colName].join(',')
-        }
-        if( colName=== 'Linked Defect'){
-          updatedRow[colName]=updatedRow[colName]?this.extractJiraTickets(updatedRow[colName]):updatedRow[colName]
+            updatedRow[colName] =(typeof updatedRow[colName] !=='object')? (updatedRow[colName] as any[]).join(','): updatedRow[colName];
         }
         if (this.blankValues.includes(updatedRow[colName])) {
           updatedRow[colName] = '';
@@ -406,32 +403,6 @@ export class ExportExcelComponent implements OnInit {
       });
       return updatedRow;
    }
-  extractJiraTickets(urls: any): { text: string; hyperlink: string }[] | null {
-    // Check if input is a valid string
-    if (typeof urls !== "string") {
-      console.error("Invalid input: URLs must be a string");
-      return urls;
-    }
-  
-    // Split by commas to handle multiple URLs
-    const urlList = urls.split(",").map(url => url.trim());
-  
-    // Regex to extract Jira ticket ID
-    const regex = /\/browse\/([A-Z]+-\d+)/;
-  
-    // Process each URL
-    const extractedTickets = urlList
-      .map(url => {
-        if (!url.startsWith("https://")) {
-          console.error(`Invalid URL: ${url} must start with 'https://'`);
-          return null;
-        }
-        const match = url.match(regex);
-        return match ? { text: match[1], hyperlink: url } : null;
-      })
-      .filter(ticket => ticket !== null); // Remove null values
-  
-    return extractedTickets.length ? extractedTickets : null;
-  }
+
 
 }

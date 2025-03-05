@@ -2,7 +2,7 @@
 <div class="filter-container p-m-0 p-fluid" role="region" aria-label="Dashboard Filters">
   <div class="p-d-flex p-col-fixed p-pl-0 p-pr-0 scrum-kanban-switch" role="tablist">
     <div class="tabs">
-      <div class="tab" (click)="setSelectedType('Scrum')"
+      <div class="tab" (click)="selectedType !== 'scrum' ? setSelectedType('Scrum') : ''"
         [ngClass]="{ 'active': selectedType === 'scrum', 'disabled': !kanbanRequired?.enabled || !scrumProjectsAvailable }"
         role="tab" 
         tabindex="0" 
@@ -11,7 +11,7 @@
       >
         Scrum
       </div>
-      <div class="tab" (click)="setSelectedType('Kanban')"
+      <div class="tab" (click)="selectedType !== 'kanban' ? setSelectedType('Kanban') : ''"
         [ngClass]="{ 'active': selectedType === 'kanban', 'disabled': !kanbanRequired?.enabled || !kanbanProjectsAvailable }"
         role="tab" 
         tabindex="0" 

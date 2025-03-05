@@ -112,7 +112,7 @@ export class AccessMgmtComponent implements OnInit {
 				let selectedHierarchy = [];
 				this.allProjectsData.every((proj) => {
 					proj.hierarchy.forEach(hier => {
-						if (hier.hierarchyLevel.hierarchyLevelId === accessLevel && hier.value === item.itemName) {
+						if (hier.hierarchyLevel.hierarchyLevelId === accessLevel && hier.value === item.itemName && hier.orgHierarchyNodeId === item.itemId) {
 							selectedHierarchy = proj.hierarchy;
 							return false;
 						}
