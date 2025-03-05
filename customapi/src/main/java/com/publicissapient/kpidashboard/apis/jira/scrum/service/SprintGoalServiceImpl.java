@@ -18,8 +18,10 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -113,13 +115,18 @@ public class SprintGoalServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 			List<SprintDetails> sprints = projectWiseSprints.get(new ObjectId(projectId));
 			if (sprints != null) {
-				for (SprintDetails sprint : sprints) {
-					ProjectSprintDetails.SprintDTO sprintDetail = new ProjectSprintDetails.SprintDTO();
-					sprintDetail.setName(sprint.getSprintName());
-					sprintDetail.setSprintId(sprint.getSprintID());
-					sprintDetail.setGoal(sprint.getGoal());
-					projectSprintDetails.getSprintGoals().add(sprintDetail);
-				}
+				Set<ProjectSprintDetails.SprintDTO> sortedSprints = sprints.stream()
+						.sorted((s1, s2) -> s2.getStartDate().compareTo(s1.getStartDate()))
+						.map(sprint -> {
+							ProjectSprintDetails.SprintDTO sprintDetail = new ProjectSprintDetails.SprintDTO();
+							sprintDetail.setName(sprint.getSprintName());
+							sprintDetail.setSprintId(sprint.getSprintID());
+							sprintDetail.setGoal(sprint.getGoal());
+							return sprintDetail;
+						})
+						.collect(Collectors.toCollection(LinkedHashSet::new));
+
+				projectSprintDetails.setSprintGoals(sortedSprints);
 			}
 		}
 		kpiElement.setTrendValueList(new ArrayList<>(projectSprintDetailsMap.values()));
