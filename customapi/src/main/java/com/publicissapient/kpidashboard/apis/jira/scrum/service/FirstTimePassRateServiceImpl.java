@@ -19,6 +19,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -27,7 +28,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -37,11 +37,11 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -53,14 +53,11 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
-import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -79,8 +76,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 	private static final String HOVER_KEY_CLOSED_STORIES = "Closed Stories";
 	private static final String HOVER_KEY_FTP_STORIES = "FTP Stories";
 	private static final String ISSUE_DATA = "Issue Data";
-
-	private static final String DEV = "DeveloperKpi";
 	public static final String DEFECT_FOR_EXCEL = "defect for Excel";
 
 	@Autowired
@@ -103,6 +98,11 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 	@Autowired
 	private CacheService cacheService;
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
+	@Autowired
+	private KpiDataProvider kpiDataProvider;
+	private List<String> sprintIdList = Collections.synchronizedList(new ArrayList<>());
 
 	@Override
 	public String getQualifierType() {
@@ -110,12 +110,13 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
-			throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
+			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-
+		sprintIdList = treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.SPRINT_MASTER).stream()
+				.map(node -> node.getSprintFilter().getId()).collect(Collectors.toList());
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			Filters filters = Filters.getFilter(k);
 			if (Filters.SPRINT == filters) {
@@ -141,16 +142,16 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
-		sprintLeafNodeList.sort(
-				(node1, node2) -> node1.getSprintFilter().getStartDate().compareTo(node2.getSprintFilter().getStartDate()));
+		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
+				.compareTo(node2.getSprintFilter().getStartDate()));
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 		long time = System.currentTimeMillis();
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
 		log.info("FirstTimePassRate taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) resultMap.get(SPRINT_WISE_CLOSED_STORIES);
-		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(
-				Collectors.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
+		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
+				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
 		List<JiraIssue> jiraIssueList = (List<JiraIssue>) resultMap.get(ISSUE_DATA);
 		Set<JiraIssue> defectListsForExcel = (Set<JiraIssue>) resultMap.get(DEFECT_FOR_EXCEL);
 		Map<String, Set<JiraIssue>> projectWiseStories = jiraIssueList.stream()
@@ -171,7 +172,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			sprintWiseTotalStoryIdList.put(sprint, totalStoryIdList);
 
 			List<JiraIssue> ftpStoriesList = ((List<JiraIssue>) resultMap.get(FIRST_TIME_PASS_STORIES)).stream()
-					.filter(jiraIssue -> jiraIssue.getSprintID().equals(sprint.getValue())).collect(Collectors.toList());
+					.filter(jiraIssue -> jiraIssue.getSprintID().equals(sprint.getValue()))
+					.collect(Collectors.toList());
 			sprintWiseFTPListMap.put(sprint, ftpStoriesList);
 
 			double ftprForCurrentLeaf = 0.0d;
@@ -189,8 +191,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		sprintLeafNodeList.forEach(node -> {
 			String trendLineName = node.getProjectFilter().getName();
 			String currentSprintComponentId = node.getSprintFilter().getId();
-			Pair<String, String> currentNodeIdentifier = Pair.of(node.getProjectFilter().getBasicProjectConfigId().toString(),
-					currentSprintComponentId);
+			Pair<String, String> currentNodeIdentifier = Pair
+					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
 			double ftprForCurrentLeaf;
 
 			if (sprintWiseFTPRMap.containsKey(currentNodeIdentifier)) {
@@ -204,20 +206,20 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					Set<JiraIssue> linkedDefects = projectWiseDefect
 							.get(node.getProjectFilter().getBasicProjectConfigId().toString());
 					Map<String, JiraIssue> issueMapping = new HashMap<>();
-					Optional.ofNullable(jiraIssues)
-							.ifPresent(jIssue -> jIssue.forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue)));
+					Optional.ofNullable(jiraIssues).ifPresent(
+							jIssue -> jIssue.forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue)));
 					List<KPIExcelData> excelDatas = new ArrayList<>();
 					KPIExcelUtility.populateFTPRExcelData(totalStoryIdList, ftpStoriesList, excelDatas, issueMapping,
-							new ArrayList<>(linkedDefects != null ? linkedDefects : new ArrayList<>()), customApiConfig, fieldMapping,
-							node);
+							new ArrayList<>(linkedDefects != null ? linkedDefects : new ArrayList<>()), customApiConfig,
+							fieldMapping, node);
 					excelData.addAll(excelDatas);
 				}
 			} else {
 				ftprForCurrentLeaf = 0.0d;
 			}
 
-			log.debug("[FTPR-SPRINT-WISE][{}]. FTPR for sprint {}  is {}", requestTrackerId, node.getSprintFilter().getName(),
-					ftprForCurrentLeaf);
+			log.debug("[FTPR-SPRINT-WISE][{}]. FTPR for sprint {}  is {}", requestTrackerId,
+					node.getSprintFilter().getName(), ftprForCurrentLeaf);
 
 			DataCount dataCount = new DataCount();
 			dataCount.setData(String.valueOf(Math.round(ftprForCurrentLeaf)));
@@ -261,144 +263,43 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+
 		Map<String, Object> resultListMap = new HashMap<>();
-		List<String> sprintList = new ArrayList<>();
-		List<String> basicProjectConfigIds = new ArrayList<>();
-		Map<String, Pair<String, String>> sprintWithDateMap = new HashMap<>();
-		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		Map<ObjectId, List<String>> projectWiseSprints = new HashMap<>();
 
-		Map<String, Map<String, List<String>>> statusConfigsOfRejectedStoriesByProject = new HashMap<>();
-		Map<String, Map<String, Integer>> projectWisePriorityCount = new HashMap<>();
-		Map<String, List<String>> configPriority = customApiConfig.getPriority();
-		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
-			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			sprintList.add(leaf.getSprintFilter().getId());
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			basicProjectConfigIds.add(basicProjectConfigId.toString());
-			sprintWithDateMap.put(leaf.getSprintFilter().getId(),
-					Pair.of(leaf.getSprintFilter().getStartDate(), leaf.getSprintFilter().getEndDate()));
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-
-			KpiHelperService.addPriorityCountProjectWise(projectWisePriorityCount, configPriority, leaf,
-					fieldMapping.getDefectPriorityKPI82());
-			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getIncludeRCAForKPI82());
-
-			if (Optional.ofNullable(fieldMapping.getJiraKPI82StoryIdentification()).isPresent()) {
-				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(),
-						fieldMapping.getJiraKPI82StoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
-			}
-			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI82())) {
-				mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getJiraLabelsKPI82()));
-			}
-
-			mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
-					fieldMapping.getJiraIssueDeliverdStatusKPI82());
-			KpiHelperService.getDroppedDefectsFilters(statusConfigsOfRejectedStoriesByProject, basicProjectConfigId,
-					fieldMapping.getResolutionTypeForRejectionKPI82(), fieldMapping.getJiraDefectRejectionStatusKPI82());
-
-			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+			String sprint = leaf.getSprintFilter().getId();
+			projectWiseSprints.putIfAbsent(basicProjectConfigId, new ArrayList<>());
+			projectWiseSprints.get(basicProjectConfigId).add(sprint);
 		});
 
-		/** additional filter * */
-		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
-
-		mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
-				sprintList.stream().distinct().collect(Collectors.toList()));
-		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-
-		// Fetch Story ID grouped by Sprint
-		List<SprintWiseStory> sprintWiseStories = jiraIssueRepository.findIssuesGroupBySprint(mapOfFilters,
-				uniqueProjectMap, kpiRequest.getFilterToShowOnTrend(), DEV);
-		List<JiraIssue> issuesBySprintAndType = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
-				uniqueProjectMap);
-		// do not change the order of remove methods
+		List<SprintWiseStory> sprintWiseStories = new ArrayList<>();
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
-		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, issuesBySprintAndType,
-				defectListWoDrop);
+		List<JiraIssue> jiraIssueList = new ArrayList<>();
+		Set<JiraIssue> defectListsForExcel = new HashSet<>();
+		boolean fetchCachedData = flterHelperService.isFilterSelectedTillSprintLevel(kpiRequest.getLevel(), false);
+		projectWiseSprints.forEach((basicProjectConfigId, sprintList) -> {
+			Map<String, Object> result;
+			if (fetchCachedData) { // fetch data from cache only if Filter is selected till Sprint
+				// level.
+				result = kpiDataCacheService.fetchFirstTimePassRateData(kpiRequest, basicProjectConfigId, sprintIdList,
+						KPICode.FIRST_TIME_PASS_RATE.getKpiId());
+			} else { // fetch data from DB if filters below Sprint level (i.e. additional filters)
+				result = kpiDataProvider.fetchFirstTimePassRateDataFromDb(kpiRequest, basicProjectConfigId, sprintList);
+			}
 
-		KpiHelperService.removeRejectedStoriesFromSprint(sprintWiseStories, defectListWoDrop);
-		Set<JiraIssue> defectForExcel = new HashSet<>();
-		removeStoriesWithDefect(defectListWoDrop, projectWisePriorityCount, projectWiseRCA,
-				statusConfigsOfRejectedStoriesByProject, defectForExcel);
-
-		List<String> storyIds = getIssueIds(defectListWoDrop);
-		List<JiraIssueCustomHistory> storiesHistory = jiraIssueCustomHistoryRepository.findByStoryIDIn(storyIds);
-		defectListWoDrop.removeIf(issue -> {
-			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
-			FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
-			return kpiHelperService.hasReturnTransactionOrFTPRRejectedStatus(issue, storiesHistory,
-					fieldMapping.getJiraStatusForDevelopmentKPI82(), fieldMapping.getJiraStatusForQaKPI82(),
-					fieldMapping.getJiraFtprRejectStatusKPI82());
+			sprintWiseStories.addAll((List<SprintWiseStory>) result.get(SPRINT_WISE_CLOSED_STORIES));
+			defectListWoDrop.addAll((List<JiraIssue>) result.get(FIRST_TIME_PASS_STORIES));
+			jiraIssueList.addAll((List<JiraIssue>) result.get(ISSUE_DATA));
+			defectListsForExcel.addAll((Set<JiraIssue>) result.get(DEFECT_FOR_EXCEL));
 		});
 
-		List<String> storyIdList = new ArrayList<>();
-		sprintWiseStories.forEach(s -> storyIdList.addAll(s.getStoryList()));
 		resultListMap.put(SPRINT_WISE_CLOSED_STORIES, sprintWiseStories);
 		resultListMap.put(FIRST_TIME_PASS_STORIES, defectListWoDrop);
-		resultListMap.put(ISSUE_DATA, jiraIssueRepository.findIssueAndDescByNumber(storyIdList));
-		resultListMap.put(DEFECT_FOR_EXCEL, defectForExcel);
+		resultListMap.put(ISSUE_DATA, jiraIssueList);
+		resultListMap.put(DEFECT_FOR_EXCEL, defectListsForExcel);
 		return resultListMap;
-	}
-
-	@NotNull
-	private List<String> getIssueIds(List<JiraIssue> issuesBySprintAndType) {
-		List<String> storyIds = new ArrayList<>();
-		CollectionUtils.emptyIfNull(issuesBySprintAndType).forEach(story -> storyIds.add(story.getNumber()));
-		return storyIds;
-	}
-
-	/**
-	 * @param issuesBySprintAndType
-	 * @param projectWisePriority
-	 * @param projectWiseRCA
-	 * @param defectForExcel
-	 */
-	private void removeStoriesWithDefect(List<JiraIssue> issuesBySprintAndType,
-			Map<String, Map<String, Integer>> projectWisePriority, Map<String, Set<String>> projectWiseRCA,
-			Map<String, Map<String, List<String>>> statusConfigsOfRejectedStoriesByProject, Set<JiraIssue> defectForExcel) {
-		List<JiraIssue> allDefects = jiraIssueRepository
-				.findByTypeNameAndDefectStoryIDIn(NormalizedJira.DEFECT_TYPE.getValue(), getIssueIds(issuesBySprintAndType));
-		Set<JiraIssue> defects = new HashSet<>();
-		List<JiraIssue> defectListWoDrop = new ArrayList<>();
-		allDefects.stream().forEach(d -> issuesBySprintAndType.stream().forEach(i -> {
-			if (i.getProjectName().equalsIgnoreCase(d.getProjectName())) {
-				defects.add(d);
-			}
-		}));
-		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, new ArrayList<>(defects),
-				defectListWoDrop);
-
-		final List<JiraIssue> remainingDefects = KpiHelperService.excludeDefectByPriorityCount(projectWisePriority,
-				defects);
-
-		List<JiraIssue> notFTPRDefects = new ArrayList<>();
-		for (JiraIssue jiraIssue : defects) {
-			// Filter priorityRemaining based on configured Root Causes (RCA) for the
-			// project, or include if no RCA is configured.
-			if (CollectionUtils.isNotEmpty(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()))) {
-				for (String toFindRca : jiraIssue.getRootCauseList()) {
-					if ((projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()).contains(toFindRca.toLowerCase()))) {
-						notFTPRDefects.add(jiraIssue);
-					}
-				}
-			} else {
-				notFTPRDefects.add(jiraIssue);
-			}
-		}
-
-		Set<String> storyIdsWithDefect = new HashSet<>();
-
-		remainingDefects.stream().forEach(pi -> notFTPRDefects.stream().forEach(ri -> {
-			if (pi.getNumber().equalsIgnoreCase(ri.getNumber())) {
-				storyIdsWithDefect.addAll(ri.getDefectStoryID());
-				defectForExcel.add(ri);
-			}
-		}));
-		issuesBySprintAndType.removeIf(issue -> storyIdsWithDefect.contains(issue.getNumber()));
 	}
 
 	@Override

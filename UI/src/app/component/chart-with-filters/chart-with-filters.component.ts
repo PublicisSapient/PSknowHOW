@@ -39,8 +39,8 @@ export class ChartWithFiltersComponent implements OnInit, OnChanges {
       this.category[1];
     }
     this.modifiedData = this.groupData(this.data, this.selectedMainFilter.filterKey);
-    this.categorySelect({option:this.selectedMainCategory})
-    this.mainFilterSelect({option:this.selectedMainFilter},)
+    if(this.selectedMainCategory){this.categorySelect({option:this.selectedMainCategory})}
+    this.mainFilterSelect({option:this.selectedMainFilter})
   }
 
   ngOnChanges(changes: SimpleChanges) {

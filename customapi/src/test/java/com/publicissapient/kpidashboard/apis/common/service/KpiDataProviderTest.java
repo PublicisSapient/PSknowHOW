@@ -1,5 +1,10 @@
 package com.publicissapient.kpidashboard.apis.common.service;
 
+import static com.publicissapient.kpidashboard.apis.constant.Constant.P1;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.P2;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.P3;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.P4;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.P5;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
@@ -8,11 +13,19 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
+import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -58,7 +71,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.SprintRepositoryC
 
 @RunWith(MockitoJUnitRunner.class)
 public class KpiDataProviderTest {
-
 	private static final String STORY_LIST = "stories";
 	private static final String SPRINTSDETAILS = "sprints";
 	private static final String JIRA_ISSUE_HISTORY_DATA = "JiraIssueHistoryData";
@@ -74,6 +86,10 @@ public class KpiDataProviderTest {
 	KpiDataProvider kpiDataProvider;
 	@Mock
 	private HappinessKpiDataRepository happinessKpiDataRepository;
+	@Mock
+	private CacheService cacheService;
+	@Mock
+	private CustomApiConfig customApiSetting;
 
 	@Mock
 	private SprintRepositoryCustom sprintRepositoryCustom;
@@ -413,5 +429,102 @@ public class KpiDataProviderTest {
 				sprintList);
 		assertThat("createdVsResolved value :", ((List<JiraIssue>) (result.get("createdVsResolvedKey"))).size(),
 				equalTo(totalIssueList.size()));
+	}
+
+	@Test
+	public void testFetchDIR() {
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+		SprintWiseStoryDataFactory sprintWiseStoryDataFactory = SprintWiseStoryDataFactory.newInstance();
+		List<SprintWiseStory> storyData = sprintWiseStoryDataFactory.getSprintWiseStories();
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		List<JiraIssue> defectData = jiraIssueDataFactory.getBugs();
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put("storyData", storyData);
+		resultListMap.put("defectData", defectData);
+		resultListMap.put("issueData", new ArrayList<>());
+		when(kpiHelperService.fetchDIRDataFromDb(any(), any(), any())).thenReturn(resultListMap);
+		Map<String, Object> defectDataListMap = kpiDataProvider.fetchDefectInjectionRateDataFromDb(kpiRequest, basicProjectConfigId, sprintList);
+		assertThat("Total Story value :", ((List<JiraIssue>) (defectDataListMap.get("storyData"))).size(), equalTo(5));
+		assertThat("Total Defects value :", ((List<JiraIssue>) (defectDataListMap.get("defectData"))).size(), equalTo(20));
+	}
+
+	@Test
+	public void testFetchDD() {
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+		SprintWiseStoryDataFactory sprintWiseStoryDataFactory = SprintWiseStoryDataFactory.newInstance();
+		List<SprintWiseStory> storyData = sprintWiseStoryDataFactory.getSprintWiseStories();
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		List<JiraIssue> defectData = jiraIssueDataFactory.getBugs();
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put("storyData", storyData);
+		resultListMap.put("defectData", defectData);
+		resultListMap.put("storyPoints", new ArrayList<>());
+		when(kpiHelperService.fetchQADDFromDb(any(), any(), any())).thenReturn(resultListMap);
+		Map<String, Object> defectDataListMap = kpiDataProvider.fetchDefectDensityDataFromDb(kpiRequest, basicProjectConfigId, sprintList);
+		assertThat("Total Story value :", ((List<JiraIssue>) (defectDataListMap.get("storyData"))).size(), equalTo(5));
+		assertThat("Total Defects value :", ((List<JiraIssue>) (defectDataListMap.get("defectData"))).size(), equalTo(20));
+	}
+
+	@Test
+	public void testFetchDRRData() {
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+
+		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
+		List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
+
+		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
+				.thenReturn(jiraIssueCustomHistoryList);
+		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(totalIssueList);
+
+		Map<String, Object> result = kpiDataProvider.fetchDRRData(kpiRequest, basicProjectConfigId,
+				sprintList);
+		assertThat("Rejects Defects value :", ((List<JiraIssue>) result.get("rejectedBugKey")).size(),
+				equalTo(0));
+	}
+
+	@Test
+	public void testFetchFTPR() {
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+		SprintWiseStoryDataFactory sprintWiseStoryDataFactory = SprintWiseStoryDataFactory.newInstance();
+		List<SprintWiseStory> storyData = sprintWiseStoryDataFactory.getSprintWiseStories();
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		List<JiraIssue> issues = jiraIssueDataFactory.getJiraIssues().stream()
+				.filter(jiraIssue -> jiraIssue.getJiraStatus().equals("Closed") && jiraIssue.getTypeName().equals("Story"))
+				.collect(Collectors.toList());
+		Set<JiraIssue> stories = issues.stream().collect(Collectors.toSet());
+		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory()
+				.stream().filter(history -> stories.contains(history.getStoryID())).collect(Collectors.toList());
+
+		Map<String, List<String>> priorityMap = new HashMap<>();
+		priorityMap.put(P1,
+				Stream.of("p1", "P1 - Blocker", "blocker", "1", "0", "p0", "urgent").collect(Collectors.toList()));
+		priorityMap.put(P2, Stream.of("p2", "critical", "P2 - Critical", "2", "high").collect(Collectors.toList()));
+		priorityMap.put(P3, Stream.of("p3", "p3-major", "major", "3", "medium").collect(Collectors.toList()));
+		priorityMap.put(P4, Stream.of("p4", "p4 - minor", "minor", "4", "low").collect(Collectors.toList()));
+		priorityMap.put(P5, Stream.of("p5 - trivial", "5", "trivial").collect(Collectors.toList()));
+
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(customApiConfig.getPriority()).thenReturn(priorityMap);
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(jiraIssueRepository.findIssuesGroupBySprint(anyMap(), anyMap(), anyString(), anyString()))
+				.thenReturn(storyData);
+		when(jiraIssueRepository.findIssuesBySprintAndType(anyMap(), anyMap())).thenReturn(issues);
+		when(jiraIssueCustomHistoryRepository.findByStoryIDIn(anyList())).thenReturn(jiraIssueCustomHistories);
+
+		List<JiraIssue> defects = jiraIssueDataFactory.getJiraIssues().stream()
+				.filter(issue -> issue.getTypeName().equals(NormalizedJira.DEFECT_TYPE.getValue()))
+				.collect(Collectors.toList());
+
+		when(jiraIssueRepository.findByTypeNameAndDefectStoryIDIn(anyString(), anyList())).thenReturn(defects);
+		Map<String, Object> result = kpiDataProvider.fetchFirstTimePassRateDataFromDb(kpiRequest, basicProjectConfigId,
+				sprintList);
+
+
 	}
 }

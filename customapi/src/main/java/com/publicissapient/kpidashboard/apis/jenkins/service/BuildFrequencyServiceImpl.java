@@ -356,12 +356,12 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	private void buildFrequencyInfo(BuildFrequencyInfo buildFrequencyInfo, Build build, String date) {
 		if (null != buildFrequencyInfo) {
 
-			if (StringUtils.isNotEmpty(build.getJobFolder())) {
-				buildFrequencyInfo.addBuildJobNameList(build.getJobFolder());
-			} else if (StringUtils.isNotEmpty(build.getPipelineName())) {
-				buildFrequencyInfo.addBuildJobNameList(build.getPipelineName());
-			} else {
+			if (StringUtils.isNotEmpty(build.getBuildJob())) {
 				buildFrequencyInfo.addBuildJobNameList(build.getBuildJob());
+			} else if (StringUtils.isNotEmpty(build.getJobFolder())) {
+				buildFrequencyInfo.addBuildJobNameList(build.getJobFolder());
+			} else {
+				buildFrequencyInfo.addBuildJobNameList(build.getPipelineName());
 			}
 			buildFrequencyInfo.addBuildUrl(build.getBuildUrl());
 			buildFrequencyInfo.addBuildStartTime(DateUtil.dateConverter(new Date(build.getStartTime())));

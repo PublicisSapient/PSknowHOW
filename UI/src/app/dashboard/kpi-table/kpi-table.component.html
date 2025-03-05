@@ -1,20 +1,22 @@
-<p-tabView [(activeIndex)]="activeIndex" class="kpi-table-tabs">
-    <p-tabPanel *ngFor="let tab of tabs; let i = index;" [header]="tab?.['nodeDisplayName']" [headerStyle]="{'background': nodeColors?.[tab?.nodeId]}">
+<p-tabView [(activeIndex)]="activeIndex" class="kpi-table-tabs" role="tablist" aria-label="KPI Tables">
+    <p-tabPanel *ngFor="let tab of tabs; let i = index;" [header]="tab?.['nodeDisplayName']" [headerStyle]="{'background': nodeColors?.[tab?.nodeId]}"
+    role="tabpanel" [attr.aria-labelledby]="'tab-' + tab?.nodeId" [id]="'tabpanel-' + tab?.nodeId">
         <div class="card">
             <p-table [columns]="cols" [value]="kpiData?.[tab?.nodeId]" styleClass="p-datatable-striped p-datatable-gridlines" 
-            [loading]="loader" loadingIcon="loading-img">
+            [loading]="loader" loadingIcon="loading-img" role="table" aria-label="KPI Data Table for {{tab?.nodeDisplayName}}">
                 <ng-template pTemplate="header" let-columns>
-                    <tr>
-                        <th *ngFor="let col of columns" [ngStyle]="{'max-width': col.field == 'kpiName' ? '200px': ''}" scope="col">
+                    <tr role="row">
+                        <th *ngFor="let col of columns" [ngStyle]="{'max-width': col.field == 'kpiName' ? '200px': ''}" scope="col"
+                        role="columnheader" [attr.aria-label]="col.header + ' Column'">
                             {{col.header}}
                         </th>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-rowData let-columns="columns">
-                    <tr *ngIf="kpiConfigData[rowData['kpiId']]">
+                    <tr *ngIf="kpiConfigData[rowData['kpiId']]" role="row" [attr.aria-label]="'Row for ' + rowData['kpiName']">
                         <td *ngFor="let col of columns" (mouseenter)="mouseEnter($event, col.field, rowData)"
                             (mouseleave)="mouseLeave()" [ngStyle]="{'color': col.field == 'trend' ? (rowData[col.field] == '+ve' ? 'green' : rowData[col.field] == '-ve' ? 'red' : '#333333') : '#333333', 
-                        'max-width': col.field == 'kpiName' ? '200px': ''}">
+                        'max-width': col.field == 'kpiName' ? '200px': ''}" tabindex="0" role="cell" [attr.aria-label]="col.header + ': ' + rowData[col.field]">
                             {{ rowData[col.field] }}
                         </td>
                     </tr>
@@ -23,4 +25,4 @@
         </div>
     </p-tabPanel>
 </p-tabView>
-<div class="tool-tip" *ngIf="showToolTip" innerHtml="{{toolTipHtml}}" [ngStyle]="{'left': left, 'top': top}"></div>
+<div class="tool-tip" *ngIf="showToolTip" innerHtml="{{toolTipHtml}}" [ngStyle]="{'left': left, 'top': top}" [attr.aria-live]="'polite'" role="tooltip" [attr.aria-hidden]="!showToolTip"></div>

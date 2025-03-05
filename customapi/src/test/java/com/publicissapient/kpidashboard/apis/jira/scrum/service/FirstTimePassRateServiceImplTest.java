@@ -25,14 +25,18 @@ import static com.publicissapient.kpidashboard.apis.constant.Constant.P5;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +44,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -110,7 +116,17 @@ public class FirstTimePassRateServiceImplTest {
 	private CommonServiceImpl commonService;
 	@Mock
 	private FilterHelperService filterHelperService;
+	@Mock
+	KpiDataProvider kpiDataProvider;
+	@Mock
+	KpiDataCacheService kpiDataCacheService;
+	@Mock
+	private CustomApiConfig customApiConfig;
 	private KpiRequest kpiRequest;
+	private static final String FIRST_TIME_PASS_STORIES = "ftpStories";
+	private static final String SPRINT_WISE_CLOSED_STORIES = "sprintWiseClosedStories";
+	private static final String ISSUE_DATA = "Issue Data";
+	public static final String DEFECT_FOR_EXCEL = "defect for Excel";
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
 	private List<LabelCount> defectPriority = new ArrayList<>();
@@ -170,51 +186,39 @@ public class FirstTimePassRateServiceImplTest {
 
 	@Test
 	public void getKpiData() throws ApplicationException {
+
 		SprintWiseStoryDataFactory sprintWiseStoryDataFactory = SprintWiseStoryDataFactory.newInstance();
-
 		List<SprintWiseStory> storyData = sprintWiseStoryDataFactory.getSprintWiseStories();
-
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		List<JiraIssue> defectData = jiraIssueDataFactory.getBugs().stream().toList();
 
 		List<JiraIssue> issues = jiraIssueDataFactory.getJiraIssues().stream()
 				.filter(jiraIssue -> jiraIssue.getJiraStatus().equals("Closed") && jiraIssue.getTypeName().equals("Story"))
 				.collect(Collectors.toList());
-
-		Set<String> stories = issues.stream().map(JiraIssue::getNumber).collect(Collectors.toSet());
+		Set<JiraIssue> stories = issues.stream().collect(Collectors.toSet());
 		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
 		List<JiraIssueCustomHistory> jiraIssueCustomHistories = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory()
 				.stream().filter(history -> stories.contains(history.getStoryID())).collect(Collectors.toList());
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-
-		Map<String, List<String>> priorityMap = new HashMap<>();
-		priorityMap.put(P1,
-				Stream.of("p1", "P1 - Blocker", "blocker", "1", "0", "p0", "urgent").collect(Collectors.toList()));
-		priorityMap.put(P2, Stream.of("p2", "critical", "P2 - Critical", "2", "high").collect(Collectors.toList()));
-		priorityMap.put(P3, Stream.of("p3", "p3-major", "major", "3", "medium").collect(Collectors.toList()));
-		priorityMap.put(P4, Stream.of("p4", "p4 - minor", "minor", "4", "low").collect(Collectors.toList()));
-		priorityMap.put(P5, Stream.of("p5 - trivial", "5", "trivial").collect(Collectors.toList()));
-
-		List<String> resultSet = Stream
-				.of("p1", "P1 - Blocker", "blocker", "1", "0", "p0", "urgent", "p2", "critical", "P2 - Critical", "2", "high")
-				.collect(Collectors.toList());
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(customApiSetting.getPriority()).thenReturn(priorityMap);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
-		when(jiraIssueRepository.findIssuesGroupBySprint(anyMap(), anyMap(), anyString(), anyString()))
-				.thenReturn(storyData);
-		when(jiraIssueRepository.findIssuesBySprintAndType(anyMap(), anyMap())).thenReturn(issues);
-		when(jiraIssueCustomHistoryRepository.findByStoryIDIn(anyList())).thenReturn(jiraIssueCustomHistories);
-
-		List<JiraIssue> defects = jiraIssueDataFactory.getJiraIssues().stream()
-				.filter(issue -> issue.getTypeName().equals(NormalizedJira.DEFECT_TYPE.getValue()))
-				.collect(Collectors.toList());
-
-		when(jiraIssueRepository.findByTypeNameAndDefectStoryIDIn(anyString(), anyList())).thenReturn(defects);
-
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
+
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(SPRINT_WISE_CLOSED_STORIES, storyData);
+		resultListMap.put(FIRST_TIME_PASS_STORIES, new ArrayList<>());
+		resultListMap.put(ISSUE_DATA, jiraIssueDataFactory.getJiraIssues());
+		resultListMap.put(DEFECT_FOR_EXCEL, new HashSet(defectData));
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(customApiConfig.getpriorityP1()).thenReturn(Constant.P1);
+		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
+		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
+		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
+		when(kpiDataProvider.fetchFirstTimePassRateDataFromDb(eq(kpiRequest), any(), any())).thenReturn(resultListMap);
 		try {
 			KpiElement kpiElement = firstTimePassRateService.getKpiData(this.kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

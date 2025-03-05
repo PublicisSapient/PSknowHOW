@@ -4882,5 +4882,36 @@
       }
     ],
     "combinedKpiSource" : "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"
+  },
+  {
+    "kpiId": "kpi187",
+    "kpiName": "Sprint Goals",
+    "isDeleted": "False",
+    "defaultOrder": 31,
+    "kpiUnit": "",
+    "showTrend": false,
+    "calculateMaturity": false,
+    "hideOverallFilter": false,
+    "kpiSource": "Jira",
+    "kanban": false,
+    "groupId": 32,
+    "kpiInfo": {
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "KPI for tracking Goals of project."
+        },
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": ""
+          }
+        }
+      ]
+    },
+    "isTrendCalculative": false,
+    "isAdditionalFilterSupport": false,
+    "combinedKpiSource": "Jira/Azure"
   }
 ]

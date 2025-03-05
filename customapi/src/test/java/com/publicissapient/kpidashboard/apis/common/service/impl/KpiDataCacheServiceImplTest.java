@@ -48,7 +48,6 @@ import com.publicissapient.kpidashboard.common.model.application.Build;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KpiDataCacheServiceImplTest {
-
 	@Mock
 	private CacheManager cacheManager;
 
@@ -158,6 +157,30 @@ public class KpiDataCacheServiceImplTest {
 	}
 
 	@Test
+	public void fetchDIRData_shouldReturnCorrectData_whenValidInput() {
+		when(kpiDataProvider.fetchDefectInjectionRateDataFromDb(any(), any(), any())).thenReturn(new HashMap<>());
+		Map<String, Object> result =
+				kpiDataCacheService.fetchDefectInjectionRateData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi14");
+		assertNotNull(result);
+	}
+
+	@Test
+	public void fetchDFTPRData_shouldReturnCorrectData_whenValidInput() {
+		when(kpiDataProvider.fetchFirstTimePassRateDataFromDb(any(), any(), any())).thenReturn(new HashMap<>());
+		Map<String, Object> result =
+				kpiDataCacheService.fetchFirstTimePassRateData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi14");
+		assertNotNull(result);
+	}
+
+	@Test
+	public void fetchDDData_shouldReturnCorrectData_whenValidInput() {
+		when(kpiDataProvider.fetchDefectDensityDataFromDb(any(), any(), any())).thenReturn(new HashMap<>());
+		Map<String, Object> result =
+				kpiDataCacheService.fetchDefectDensityData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi111");
+		assertNotNull(result);
+	}
+
+	@Test
 	public void fetchSprintVelocityData_shouldReturnCorrectData_whenValidInput() {
 		when(kpiDataProvider.fetchSprintVelocityDataFromDb(any(), any())).thenReturn(new HashMap<>());
 		Map<String, Object> result =
@@ -215,5 +238,17 @@ public class KpiDataCacheServiceImplTest {
 						new ObjectId(),
 						new ArrayList<>(),
 						KPICode.CREATED_VS_RESOLVED_DEFECTS.getKpiId()));
+	}
+
+	@Test
+	public void testFetchDRRData() {
+		when(kpiDataProvider.fetchDRRData(any(), any(), any()))
+				.thenReturn(new HashMap<>());
+		assertNotNull(
+				kpiDataCacheService.fetchDRRData(
+						new KpiRequest(),
+						new ObjectId(),
+						new ArrayList<>(),
+						KPICode.DEFECT_REJECTION_RATE.getKpiId()));
 	}
 }

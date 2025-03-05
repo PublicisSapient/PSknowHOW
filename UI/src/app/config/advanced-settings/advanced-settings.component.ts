@@ -116,7 +116,7 @@ export class AdvancedSettingsComponent implements OnInit {
           this.messageService.add({ severity: 'error', summary: 'User needs to be assigned a project for the access to work on dashboards.' });
         }
         if (that.userProjects != null && that.userProjects.length > 0) {
-          that.userProjects.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+          that.userProjects.sort((a, b) => a.name?.localeCompare(b.name, undefined, { numeric: true }));
           that.selectedProject = this.pid ? that.userProjects.find(x => x.id === this.pid) : that.userProjects[0];
           that.getAllToolConfigs(that.selectedProject['id']);
           that.getProcessorsTraceLogsForProject(that.selectedProject['id']);

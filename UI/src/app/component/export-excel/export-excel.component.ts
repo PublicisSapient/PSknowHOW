@@ -99,9 +99,9 @@ export class ExportExcelComponent implements OnInit {
           obj[key] = [];
           for (let y in colData[key]) {
             //added check if valid url
-            if (Array.isArray(colData[key][y]) && colData[key][y].includes('http')) {
+            if (colData[key][y].includes('http')) {
               obj[key].push({ text: y, hyperlink: colData[key][y] });
-            } else {
+            }else{
               obj[key].push(colData[key][y]);
             }
           }
@@ -114,7 +114,7 @@ export class ExportExcelComponent implements OnInit {
       }
       tableData.push(obj);
     });
-
+    console.log(tableData)
     this.dataTransformatin(rawColumConfig, tableData, '', kpiName);
   }
 
@@ -395,7 +395,7 @@ export class ExportExcelComponent implements OnInit {
           updatedRow[colName] = updatedRow[colName].trim();
         }
         if(Array.isArray(updatedRow[colName])){
-            updatedRow[colName] =(typeof updatedRow[colName] !=='object')? (updatedRow[colName] as any[]).join(','): updatedRow[colName].join(',')
+            updatedRow[colName] =(typeof updatedRow[colName] !=='object')? (updatedRow[colName] as any[]).join(','): updatedRow[colName];
         }
         if (this.blankValues.includes(updatedRow[colName])) {
           updatedRow[colName] = '';
@@ -403,5 +403,6 @@ export class ExportExcelComponent implements OnInit {
       });
       return updatedRow;
    }
+
 
 }
