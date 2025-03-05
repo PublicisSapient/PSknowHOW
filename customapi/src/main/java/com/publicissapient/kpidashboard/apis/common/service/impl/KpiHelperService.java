@@ -477,12 +477,12 @@ public class KpiHelperService { // NOPMD
 		return resultListMap;
 	}
 
-	public Map<String, Object> fetchQADDFromDb(List<Node> leafNodeList, KpiRequest kpiRequest) {
+	public Map<String, Object> fetchQADDFromDb(ObjectId basicProjectConfigID, KpiRequest kpiRequest,
+			List<String> sprintList) {
 
 		Map<String, Object> resultListMap = new HashMap<>();
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, List<String>> mapOfFiltersFH = new LinkedHashMap<>();
-		List<String> sprintList = new ArrayList<>();
 		List<String> basicProjectConfigIds = new ArrayList<>();
 		Map<String, Map<String, Object>> uniqueProjectMapFH = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
@@ -490,41 +490,35 @@ public class KpiHelperService { // NOPMD
 		Map<String, List<String>> projectWisePriority = new HashMap<>();
 		Map<String, List<String>> configPriority = customApiConfig.getPriority();
 		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
-		leafNodeList.forEach(leaf -> {
-			Map<String, Object> mapOfProjectFiltersFH = new LinkedHashMap<>();
-			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+		Map<String, Object> mapOfProjectFiltersFH = new LinkedHashMap<>();
+		Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigID);
+		basicProjectConfigIds.add(basicProjectConfigID.toString());
+		mapOfProjectFiltersFH.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+				basicProjectConfigID.toString());
+		mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
+				CommonUtils.convertToPatternList(fieldMapping.getJiraQAKPI111IssueType()));
 
-			sprintList.add(leaf.getSprintFilter().getId());
-			basicProjectConfigIds.add(basicProjectConfigId.toString());
+		addPriorityProjectWiseForQualityKPIs(projectWisePriority, configPriority, basicProjectConfigID,
+				fieldMapping.getDefectPriorityQAKPI111());
+		addRCAProjectWiseForQualityKPIs(projectWiseRCA, basicProjectConfigID, fieldMapping.getIncludeRCAForQAKPI111());
 
-			mapOfProjectFiltersFH.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-					basicProjectConfigId.toString());
-			mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraQAKPI111IssueType()));
+		List<String> dodList = fieldMapping.getJiraDodQAKPI111();
+		if (CollectionUtils.isNotEmpty(dodList)) {
+			mapOfProjectFiltersFH.put("statusUpdationLog.story.changedTo", CommonUtils.convertToPatternList(dodList));
+		}
+		uniqueProjectMapFH.put(basicProjectConfigID.toString(), mapOfProjectFiltersFH);
 
-			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityQAKPI111());
-			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getIncludeRCAForQAKPI111());
-
-			List<String> dodList = fieldMapping.getJiraDodQAKPI111();
-			if (CollectionUtils.isNotEmpty(dodList)) {
-				mapOfProjectFiltersFH.put("statusUpdationLog.story.changedTo",
-						CommonUtils.convertToPatternList(dodList));
-			}
-			uniqueProjectMapFH.put(basicProjectConfigId.toString(), mapOfProjectFiltersFH);
-
-			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraQAKPI111IssueType()));
-			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsQAKPI111())) {
-				mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getJiraLabelsQAKPI111()));
-			}
-			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
-					fieldMapping.getResolutionTypeForRejectionQAKPI111(),
-					fieldMapping.getJiraDefectRejectionStatusQAKPI111());
-		});
+		mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
+				CommonUtils.convertToPatternList(fieldMapping.getJiraQAKPI111IssueType()));
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsQAKPI111())) {
+			mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
+					CommonUtils.convertToPatternList(fieldMapping.getJiraLabelsQAKPI111()));
+		}
+		uniqueProjectMap.put(basicProjectConfigID.toString(), mapOfProjectFilters);
+		getDroppedDefectsFilters(droppedDefects, basicProjectConfigID,
+				fieldMapping.getResolutionTypeForRejectionQAKPI111(),
+				fieldMapping.getJiraDefectRejectionStatusQAKPI111());
 
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
 
@@ -1852,6 +1846,33 @@ public class KpiHelperService { // NOPMD
 				defectPriorityCount.forEach(label -> configPriority.get(label.getLabelValue()).forEach(
 						priorityValue -> priorityValues.put(priorityValue.toLowerCase(), label.getCountValue())));
 				projectWisePriorityCount.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(),
+						priorityValues);
+			}
+		}
+	}
+
+	/**
+	 * Create PriorityWise Count map from FieldMapping & configPriority
+	 *
+	 * @param projectWisePriorityCount
+	 *            projectWisePriorityCount
+	 * @param configPriority
+	 *            configPriority
+	 * @param leaf
+	 *            Node
+	 * @param defectPriorityCount
+	 *            From FieldMapping
+	 */
+	public static void addPriorityCountProjectWiseForQuality(Map<String, Map<String, Integer>> projectWisePriorityCount,
+															 Map<String, List<String>> configPriority, ObjectId basicProjectConfigId, List<LabelCount> defectPriorityCount) {
+		if (CollectionUtils.isNotEmpty(defectPriorityCount)) {
+			defectPriorityCount
+					.forEach(labelCount -> labelCount.setLabelValue(labelCount.getLabelValue().toUpperCase()));
+			if (CollectionUtils.isNotEmpty(defectPriorityCount)) {
+				Map<String, Integer> priorityValues = new HashMap<>();
+				defectPriorityCount.forEach(label -> configPriority.get(label.getLabelValue()).forEach(
+						priorityValue -> priorityValues.put(priorityValue.toLowerCase(), label.getCountValue())));
+				projectWisePriorityCount.put(basicProjectConfigId.toString(),
 						priorityValues);
 			}
 		}

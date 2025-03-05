@@ -134,4 +134,7 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 
 	@Query(value = "{ 'basicProjectConfigId': { $in: ?0 } }", fields = "{ '_id': 1 , 'basicProjectConfigId':1 , 'sprintID': 1, 'originalSprintId':1}")
 	List<SprintDetails> findByBasicProjectConfigIdIn(List<ObjectId> basicProjectConfigIds);
+
+	@Query(value = "{ 'sprintID': { $in: ?0 } }", fields = "{ 'sprintID': 1, 'startDate': 1, 'endDate': 1, 'sprintName': 1, 'goal': 1 , 'basicProjectConfigId' :  1}", sort = "{ 'startDate': 1 }")
+	List<SprintDetails> findBySprintIDInWithFieldsSorted(List<String> sprintIDs);
 }

@@ -70,6 +70,8 @@ public class BitBucketServiceR {
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
+	private boolean referFromProjectCache = true;
+
 	@SuppressWarnings("unchecked")
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
@@ -88,8 +90,10 @@ public class BitBucketServiceR {
 			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest, groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
 
-				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
-				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
+				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList,
+						referFromProjectCache);
+				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest, filteredAccountDataList,
+						referFromProjectCache);
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
@@ -140,25 +144,6 @@ public class BitBucketServiceR {
 		}
 
 		return filteredNode;
-	}
-
-	/**
-	 * @param kpiRequest
-	 * @param filteredAccountDataList
-	 * @return
-	 */
-	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
-			List<AccountHierarchyData> filteredAccountDataList) {
-		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
-			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
-		}
-		return filteredAccountDataList;
-	}
-
-	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
-
-		return authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
 	}
 
 	/**
@@ -254,6 +239,26 @@ public class BitBucketServiceR {
 				return kpiElement;
 			}
 			return kpiElement;
+		}
+	}
+
+	/**
+	 * This method is called when the request for kpi is done from exposed API
+	 *
+	 * @param kpiRequest
+	 *            JIRA KPI request true if flow for precalculated, false for direct
+	 *            flow.
+	 * @return List of KPI data
+	 * @throws EntityNotFoundException
+	 *             EntityNotFoundException
+	 */
+	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {
+		boolean originalReferFromProjectCache = referFromProjectCache;
+		try {
+			referFromProjectCache = false;
+			return process(kpiRequest);
+		} finally {
+			referFromProjectCache = originalReferFromProjectCache;
 		}
 	}
 }

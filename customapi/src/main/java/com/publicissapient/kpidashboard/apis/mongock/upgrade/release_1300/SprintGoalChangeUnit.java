@@ -17,6 +17,8 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1300;
 
+import java.util.List;
+
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -25,31 +27,37 @@ import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 
 /**
- * Fix for DTS-44135: Clean and re-fetch Jira issue epicLinked field data
- * 
  * @author shunaray
  */
-@ChangeUnit(id = "jira_trace_clean", order = "13003", author = "shunaray", systemVersion = "13.0.0")
-public class TraceLogChangeUnit {
+@ChangeUnit(id = "sprint_goals", order = "13001", author = "shunaray", systemVersion = "13.0.0")
+public class SprintGoalChangeUnit {
 
 	private final MongoTemplate mongoTemplate;
 
-	public TraceLogChangeUnit(MongoTemplate mongoTemplate) {
+	public SprintGoalChangeUnit(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 
 	@Execution
 	public void execution() {
-		deleteProcessorExecutionTraceLog();
-	}
+		Document kpiDocument = new Document().append("kpiId", "kpi187").append("kpiName", "Sprint Goals")
+				.append("isDeleted", "False").append("defaultOrder", 31).append("kpiUnit", "")
+				.append("showTrend", false).append("calculateMaturity", false).append("hideOverallFilter", false)
+				.append("kpiSource", "Jira").append("kanban", false).append("groupId", 32)
+				.append("kpiInfo", new Document("details",
+						List.of(new Document("type", "paragraph").append("value", "KPI for tracking Goals of project."),
+								new Document("type", "link").append("kpiLinkDetail",
+										new Document("text", "Detailed Information at").append("link", "")))))
+				.append("isTrendCalculative", false).append("isAdditionalFilterSupport", false)
+				.append("combinedKpiSource", "Jira/Azure");
 
-	public void deleteProcessorExecutionTraceLog() {
-		mongoTemplate.getCollection("processor_execution_trace_log").deleteMany(
-				new Document("basicProjectConfigId", "6762bc10ed9a4560dc380a67").append("processorName", "Jira"));
+		mongoTemplate.getCollection("kpi_master").insertOne(kpiDocument);
+
 	}
 
 	@RollbackExecution
 	public void rollback() {
-		// doesn't require rollback
+		mongoTemplate.getCollection("kpi_master").deleteOne(new Document("kpiId", "kpi187"));
 	}
+
 }

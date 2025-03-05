@@ -30,5 +30,12 @@ export class TableComponent implements OnInit, OnChanges {
     return objArray;
   }
 
+  getColorForRow(rowName: string): string {
+    if (!this.trendBoxColorObj) return '';
+    const matchingKey = Object.keys(this.trendBoxColorObj).find(
+        key => this.trendBoxColorObj[key].nodeName === rowName
+    );
+    return matchingKey ? this.trendBoxColorObj[matchingKey].color : '';
+  }
 
 }

@@ -214,7 +214,10 @@ public class KPIExcelUtility {
 
 	private static void setFTPRSpecificData(List<KPIExcelData> kpiExcelData, List<String> collectFTPIds) {
 		kpiExcelData.forEach(story -> {
-			boolean isFirstTimePass = story.getStoryId().keySet().stream().anyMatch(collectFTPIds::contains);
+			boolean isFirstTimePass = true;
+			if(MapUtils.isNotEmpty(story.getStoryId())) {
+				isFirstTimePass = story.getStoryId().keySet().stream().anyMatch(collectFTPIds::contains);
+			}
 			story.setFirstTimePass(isFirstTimePass ? Constant.EXCEL_YES : Constant.EMPTY_STRING);
 		});
 	}
@@ -1138,6 +1141,7 @@ public class KPIExcelUtility {
 				excelData.setMeanTimetoMerge(repoToolValidationData.getMeanTimeToMerge().toString());
 				excelData.setPrRaisedTime(repoToolValidationData.getPrRaisedTime());
 				excelData.setPrMergedTime(repoToolValidationData.getPrActivityTime());
+				excelData.setMrComments(repoToolValidationData.getMergeRequestComment());
 				Map<String, String> mergeUrl = new HashMap<>();
 				mergeUrl.put(repoToolValidationData.getMergeRequestUrl(), repoToolValidationData.getMergeRequestUrl());
 				excelData.setMergeRequestUrl(mergeUrl);
