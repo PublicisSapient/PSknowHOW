@@ -543,10 +543,10 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 
 		if (StringUtils.isNoneEmpty(param1)) {
-			cacheEndPoint = cacheEndPoint.replace("param1", param1);
+			cacheEndPoint = cacheEndPoint.replace(CommonConstant.PARAM1, param1);
 		}
 		if (StringUtils.isNoneEmpty(param2)) {
-			cacheEndPoint = cacheEndPoint.replace("param2", param2);
+			cacheEndPoint = cacheEndPoint.replace(CommonConstant.PARAM2, param2);
 		}
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(bambooConfig.getCustomApiBaseUrl());
 		uriBuilder.path("/");

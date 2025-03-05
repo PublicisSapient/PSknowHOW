@@ -57,7 +57,8 @@ public abstract class ModeBasedProcessor { // NOSONAR
 	 *          projectConfiguration list
 	 * @return Map of validateAndCollectIssues
 	 */
-	public abstract Map<String, Integer> validateAndCollectIssues(List<ProjectBasicConfig> projectConfigList);
+	public abstract Map<String, Integer> validateAndCollectIssues(List<ProjectBasicConfig> projectConfigList,
+			Map<String, List<String>> projectIdMap);
 
 	/**
 	 * Adds corresponding projectConfig and Fieldmapping to single

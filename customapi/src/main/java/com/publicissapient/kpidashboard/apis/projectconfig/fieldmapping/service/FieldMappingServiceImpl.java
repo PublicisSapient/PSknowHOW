@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
@@ -166,6 +167,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 		FieldMapping mapping = fieldMappingRepository.save(fieldMapping);
 		clearCache();
+		List<String> kpiList = kpiDataCacheService.getKpiBasedOnSource(CommonConstant.ALL_KPI);
+		kpiList.forEach(
+				kpiId -> kpiDataCacheService.clearCache(fieldMapping.getBasicProjectConfigId().toString(), kpiId));
 		return mapping;
 	}
 
@@ -340,6 +344,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	public void saveFieldMapping(FieldMapping fieldMapping) {
 		fieldMappingRepository.save(fieldMapping);
 		clearCache();
+		List<String> kpiList = kpiDataCacheService.getKpiBasedOnSource(CommonConstant.ALL_KPI);
+		kpiList.forEach(
+				kpiId -> kpiDataCacheService.clearCache(fieldMapping.getBasicProjectConfigId().toString(), kpiId));
 	}
 
 	/**
@@ -374,7 +381,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		cacheService.clearCache(CommonConstant.SONAR_KPI_CACHE);
 		cacheService.clearCache(CommonConstant.TESTING_KPI_CACHE);
 		cacheService.clearCache(CommonConstant.JENKINS_KPI_CACHE);
-		cacheService.clearCache(Constant.CACHE_PROJECT_KPI_DATA);
+
 	}
 
 	/**

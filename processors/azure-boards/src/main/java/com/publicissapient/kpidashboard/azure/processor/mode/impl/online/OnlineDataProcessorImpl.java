@@ -96,12 +96,14 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 	 *          List of all configured projects
 	 */
 	@Override
-	public Map<String, Integer> validateAndCollectIssues(List<ProjectBasicConfig> projectConfigList) {
+	public Map<String, Integer> validateAndCollectIssues(List<ProjectBasicConfig> projectConfigList,
+			Map<String, List<String>> projectIdMap) {
 		List<FieldMapping> fieldMappingList = fieldMappingRepository.findAll();
 		ExecutorService executor = null;
 		Map<String, Integer> issueCountMap = new HashMap<>();
 		issueCountMap.put(AzureConstants.SCRUM_DATA, 0);
 		issueCountMap.put(AzureConstants.KANBAN_DATA, 0);
+
 		try {
 
 			Map<String, ProjectConfFieldMapping> onlineLineprojectConfigMap = createProjectConfigMap(
@@ -130,6 +132,13 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 					.mapToInt(ProjectConfFieldMapping::getIssueCount).sum();
 			issueCountMap.put(AzureConstants.SCRUM_DATA, scrumIssueCount);
 			issueCountMap.put(AzureConstants.KANBAN_DATA, kanbanIssueCount);
+
+			onlineLineprojectConfigMap.values().stream().filter(x -> !x.isKanban() && x.getIssueCount() > 0)
+					.forEach(config -> projectIdMap.get(AzureConstants.SCRUM_DATA)
+							.add(config.getBasicProjectConfigId().toString()));
+			onlineLineprojectConfigMap.values().stream().filter(x -> x.isKanban() && x.getIssueCount() > 0)
+					.forEach(config -> projectIdMap.get(AzureConstants.KANBAN_DATA)
+							.add(config.getBasicProjectConfigId().toString()));
 		} catch (InterruptedException ex) {
 			log.error("Error while executing an online azure project", ex);
 			Thread.currentThread().interrupt();

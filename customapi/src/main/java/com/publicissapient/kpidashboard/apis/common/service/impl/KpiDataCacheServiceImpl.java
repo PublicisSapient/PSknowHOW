@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -61,46 +62,10 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	@Autowired
 	KpiDataProvider kpiDataProvider;
 
-	@Override
-	public void clearCache(String kpiId) {
-		log.info("Evict KPI cache for KPI - {} ", kpiId);
-		Cache cache = cacheManager.getCache(Constant.CACHE_PROJECT_KPI_DATA);
-		if (null != cache) {
-			ConcurrentHashMap<Object, Object> map = (ConcurrentHashMap<Object, Object>) cache.getNativeCache();
-			Set<Object> keys = map.keySet();
-			keys.forEach(key -> {
-				if (key.toString().endsWith(kpiId)) {
-					cache.evict(key);
-				}
-			});
-		}
-	}
-
 	@CacheEvict(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.concat('_').concat(#kpiId)")
 	@Override
 	public void clearCache(String basicProjectConfigId, String kpiId) {
 		log.info("Evict KPI cache for project id - {} and kpi - {}", basicProjectConfigId, kpiId);
-	}
-
-	@Override
-	public void clearCacheForProject(String basicProjectConfigId) {
-		log.info("Evict KPI data cache for project - {} ", basicProjectConfigId);
-		Cache cache = cacheManager.getCache(Constant.CACHE_PROJECT_KPI_DATA);
-		if (null != cache) {
-			ConcurrentHashMap<Object, Object> map = (ConcurrentHashMap<Object, Object>) cache.getNativeCache();
-			Set<Object> keys = map.keySet();
-			keys.forEach(key -> {
-				if (key.toString().startsWith(basicProjectConfigId)) {
-					cache.evict(key);
-				}
-			});
-		}
-	}
-
-	@Override
-	public void clearCacheForSource(String source) {
-		List<String> kpiList = getKpiBasedOnSource(source);
-		kpiList.forEach(this::clearCache);
 	}
 
 	@Override
@@ -113,16 +78,33 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 						KPICode.SPRINT_VELOCITY.getKpiId(), KPICode.PROJECT_RELEASES.getKpiId(),
 						KPICode.PI_PREDICTABILITY.getKpiId(), KPICode.CREATED_VS_RESOLVED_DEFECTS.getKpiId(),
 						KPICode.HAPPINESS_INDEX_RATE.getKpiId(), KPICode.DEFECT_INJECTION_RATE.getKpiId(),
-						KPICode.DEFECT_DENSITY.getKpiId(), KPICode.DEFECT_REJECTION_RATE.getKpiId()));
-		kpiMap.put(KPISource.JIRAKANBAN.name(), new ArrayList<>());
-		kpiMap.put(KPISource.SONAR.name(), new ArrayList<>());
-		kpiMap.put(KPISource.SONARKANBAN.name(), new ArrayList<>());
+						KPICode.DEFECT_DENSITY.getKpiId(), KPICode.DEFECT_REJECTION_RATE.getKpiId(),
+						KPICode.DEFECT_REMOVAL_EFFICIENCY.getKpiId(), KPICode.DEFECT_COUNT_BY_RCA.getKpiId(),
+						KPICode.FIRST_TIME_PASS_RATE.getKpiId(), KPICode.DEFECT_SEEPAGE_RATE.getKpiId(),
+						KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId()));
+		kpiMap.put(KPISource.JIRAKANBAN.name(),
+				List.of(KPICode.TEAM_CAPACITY.getKpiId(), KPICode.TICKET_VELOCITY.getKpiId(),
+						KPICode.LEAD_TIME_KANBAN.getKpiId(), KPICode.COST_OF_DELAY_KANBAN.getKpiId(),
+						KPICode.PROJECT_RELEASES_KANBAN.getKpiId(), KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS.getKpiId(),
+						KPICode.TICKET_COUNT_BY_PRIORITY.getKpiId(), KPICode.NET_OPEN_TICKET_COUNT_BY_RCA.getKpiId(),
+						KPICode.TICKET_OPEN_VS_CLOSE_BY_PRIORITY.getKpiId(),
+						KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE.getKpiId(),
+						KPICode.OPEN_TICKET_AGING_BY_PRIORITY.getKpiId()));
+		kpiMap.put(KPISource.SONAR.name(),
+				List.of(KPICode.SONAR_CODE_QUALITY.getKpiId(), KPICode.SONAR_TECH_DEBT.getKpiId(),
+						KPICode.CODE_VIOLATIONS.getKpiId(), KPICode.UNIT_TEST_COVERAGE.getKpiId(),
+						KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId(), KPICode.CODE_VIOLATIONS_KANBAN.getKpiId(),
+						KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId()));
 		kpiMap.put(KPISource.BITBUCKET.name(), new ArrayList<>());
-		kpiMap.put(KPISource.BITBUCKETKANBAN.name(), new ArrayList<>());
-		kpiMap.put(KPISource.JENKINS.name(), List.of(KPICode.BUILD_FREQUENCY.getKpiId()));
-		kpiMap.put(KPISource.JENKINSKANBAN.name(), new ArrayList<>());
-		kpiMap.put(KPISource.ZEPHYR.name(), new ArrayList<>());
-		kpiMap.put(KPISource.ZEPHYRKANBAN.name(), new ArrayList<>());
+		kpiMap.put(KPISource.JENKINS.name(),
+				List.of(KPICode.BUILD_FREQUENCY.getKpiId(), KPICode.CODE_BUILD_TIME_KANBAN.getKpiId()));
+		kpiMap.put(KPISource.ZEPHYR.name(), List.of(KPICode.INSPRINT_AUTOMATION_COVERAGE.getKpiId(),
+				KPICode.REGRESSION_AUTOMATION_COVERAGE.getKpiId(),
+				KPICode.TEST_EXECUTION_AND_PASS_PERCENTAGE.getKpiId(),
+				KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE.getKpiId(), KPICode.TEST_EXECUTION_KANBAN.getKpiId()));
+
+		List<String> allKpis = kpiMap.values().stream().flatMap(List::stream).toList();
+		kpiMap.put(CommonConstant.ALL_KPI, allKpis);
 
 		return kpiMap.getOrDefault(source, new ArrayList<>());
 	}
