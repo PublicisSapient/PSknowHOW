@@ -423,12 +423,6 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 				OrganizationHierarchy orgHierarchy = organizationHierarchyService.findByNodeId(basicConfig.getProjectNodeId());
 
-				/*
-				 * List<ProjectHierarchy> projectWiseHierarchyList = projectHierarchyRepository
-				 * .findByBasicProjectConfigId(basicConfig.getId());
-				 * updateProjectNameInProjectHierch(savedConfig, basicConfig,
-				 * projectWiseHierarchyList);
-				 */
 				configHelperService.updateCacheProjectBasicConfig(basicConfig);
 				updateProjectNameInOrgHierarchy(basicConfig, orgHierarchy);
 				response = new ServiceResponse(true, "Updated Successfully.", updatedBasicConfig);
@@ -510,15 +504,14 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				}
 
 				List<ProjectBasicConfig> projectList = Optional.ofNullable(basicConfigMap).filter(MapUtils::isNotEmpty)
-						.map(map -> map.entrySet().stream().filter(entry -> basicProjectConfigIds.contains(entry.getKey())) // Filter
-								// by
-								// configIds
+						.map(map -> map.entrySet().stream().filter(entry -> basicProjectConfigIds.contains(entry.getKey()))
 								.map(Map.Entry::getValue) // Extract the value (ProjectBasicConfig)
 								.collect(Collectors.toList())) // Collect to a list
 						.orElseGet(ArrayList::new);
 				list.addAll(projectList);
 			}
 		}
+		list.sort(Comparator.comparing(ProjectBasicConfig::getCreatedAt));
 		log.info("Returning getProjectBasicConfig response: {}", list);
 		return list;
 	}
@@ -618,7 +611,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	}
 
 	private void deleteFilterData(ProjectBasicConfig projectBasicConfig) {
-		filterHelperService.deleteAccountHierarchiesOfProject(projectBasicConfig.getId(), projectBasicConfig.getIsKanban());
+		filterHelperService.deleteAccountHierarchiesOfProject(projectBasicConfig);
 	}
 
 	private void deleteToolsAndCleanData(ProjectBasicConfig projectBasicConfig) {

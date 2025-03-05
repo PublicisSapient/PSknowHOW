@@ -129,6 +129,8 @@ import { RecommendationsComponent } from './component/recommendations/recommenda
 import { StickyHeaderV2Component } from './dashboardv2/sticky-header-v2/sticky-header-v2.component';
 import { KpiHelperService } from './services/kpi-helper.service';
 import { SelectButtonModule } from 'primeng/selectbutton';
+import { CollapsiblePanelComponent } from './component/collapsible-panel/collapsible-panel.component';
+import { PanelModule } from 'primeng/panel';
 
 
 /******************************************************/
@@ -195,6 +197,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         PageNotFoundComponent,
         RecommendationsComponent,
         StickyHeaderV2Component,
+        CollapsiblePanelComponent,
     ],
     imports: [
         SharedModuleModule,
@@ -226,7 +229,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         FontAwesomeModule,
         DragDropModule,
         OverlayPanelModule,
-
+        PanelModule,
         CheckboxModule,
         SkeletonModule,
         BlockUIModule,

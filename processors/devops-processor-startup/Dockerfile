@@ -20,6 +20,19 @@ ENV APP_DIR="/app" \
     keystorefile="/usr/lib/jvm/java-17-amazon-corretto/lib/security/cacerts" \
     JAVA_OPTS=""
 
+# Define environment variables to control which jars to run (can be set during container run)
+ENV RUN_JENKINS=true \
+    RUN_BAMBOO=true \
+    RUN_GITLAB=true \
+    RUN_ZEPHYR=true \
+    RUN_SONAR=true \
+    RUN_BITBUCKET=true \
+    RUN_TEAMCITY=true \
+    RUN_GITHUB=true \
+    RUN_GITHUBACTION=true \
+    RUN_JIRATEST=true \
+    RUN_ARGOCD=true
+
 # Set the working directory
 WORKDIR $APP_DIR
 

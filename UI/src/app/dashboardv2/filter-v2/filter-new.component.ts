@@ -82,6 +82,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   isSuccess: boolean = false;
   dashConfigDataDeepCopyBackup: any;
   refreshCounter: number = 0;
+  showSprintGoalsPanel: boolean = false;
 
   constructor(
     private httpService: HttpService,
@@ -129,6 +130,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.service.onScrumKanbanSwitch
         .subscribe(data => {
+          this.showSprintGoalsPanel = false;
           setTimeout(() => {
             this.selectedType = JSON.parse(JSON.stringify(data.selectedType));
             this.setDateFilter();
@@ -141,6 +143,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.service.onTabSwitch
         .subscribe(data => {
+          this.showSprintGoalsPanel = false;
           // setTimeout(() => {
           this.selectedTab = JSON.parse(JSON.stringify(data.selectedBoard));
           if (['iteration', 'backlog', 'release', 'dora', 'developer', 'kpi-maturity'].includes(this.selectedTab.toLowerCase())) {
@@ -267,16 +270,17 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   setSelectedType(type) {
-    this.selectedType = type?.toLowerCase();
-    if (type.toLowerCase() === 'kanban') {
-      this.kanban = true;
-    } else {
-      this.kanban = false;
-    }
-    this.filterApplyData = {};
-    this.service.setSelectedType(this.selectedType);
-    this.service.setBackupOfFilterSelectionState({ 'selected_type': this.selectedType })
-    this.service.setScrumKanban(this.selectedType);
+      this.selectedType = type?.toLowerCase();
+      if (type.toLowerCase() === 'kanban') {
+        this.kanban = true;
+      } else {
+        this.kanban = false;
+      }
+      this.filterApplyData = {};
+      this.service.setSelectedType(this.selectedType);
+      this.service.setBackupOfFilterSelectionState({ 'selected_type': this.selectedType })
+      this.service.setScrumKanban(this.selectedType);
+    
   }
 
   processBoardData(boardData) {
@@ -390,6 +394,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }, {});
       this.setCategories();
     }
+    this.service.setDataForSprintGoal({filterDataArr : this.filterDataArr[this.selectedType]})
   }
 
   setCategories() {
@@ -573,7 +578,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     let colorsArr = ['#6079C5', '#FFB587', '#D48DEF', '#A4F6A5', '#FBCF5F', '#9FECFF']
     this.colorObj = {};
     for (let i = 0; i < data?.length; i++) {
-      let projectHirearchy = this.service.getProjectWithHierarchy().filter(x => x.projectNodeId === data[i].nodeId)[0]?.hierarchy;
+
+      
+      let projectHirearchy = this.getHirearchy(data[i]?.nodeId);
       if (data[i]?.nodeId) {
         this.colorObj[data[i].nodeId] = {
           nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName, nodeDisplayName: data[i].nodeDisplayName, immediateParentDisplayName: this.getImmediateParentDisplayName(data[i]),
@@ -585,6 +592,26 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.service.setColorObj(this.colorObj);
       });
+    }
+  }
+
+ 
+  getHirearchy(id) {
+    let selectedHierarchy = [];
+    const projects = this.service.getProjectWithHierarchy();
+    if(this.selectedLevel === 'Project'){
+     return projects.filter(x => x.projectNodeId === id)[0]?.hierarchy
+    }else{
+      const foundProject = projects.find(proj => 
+        proj.hierarchy.some(hier => {
+          if (hier?.hierarchyLevel?.hierarchyLevelName === this.selectedLevel && hier.orgHierarchyNodeId === id) {
+            selectedHierarchy = proj.hierarchy;
+            return true;
+          }
+          return false;
+        })
+      );
+      return selectedHierarchy;
     }
   }
 
@@ -1566,4 +1593,22 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     return obj;
   }
 
+  toggleSprintGoals() {
+    this.showSprintGoalsPanel = !this.showSprintGoalsPanel;
+    this.service.updateSprintGoalFlag(this.showSprintGoalsPanel);
+  }
+
+  getBgClass(){
+    return this.showSprintGoalsPanel ? 'icon-apply' : 'icon-not-active';
+  }
+
+  onRefreshDialogShow() {
+    // Ensure first button (Cancel) gets focus when dialog opens
+    setTimeout(() => {
+      const dialogButtons = document.querySelectorAll('.ui-dialog-buttonpane button');
+      if (dialogButtons.length > 0) {
+        (dialogButtons[0] as HTMLButtonElement).focus();
+      }
+    });
+  }
 }

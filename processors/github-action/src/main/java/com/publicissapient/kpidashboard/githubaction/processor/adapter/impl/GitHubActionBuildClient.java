@@ -62,6 +62,7 @@ public class GitHubActionBuildClient implements GitHubActionClient {
 
 	public static final String WORKFLOW_RUNS = "workflow_runs";
 	private static final String PAGE_PARAM = "?page=";
+	private static final String NAME = "name";
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
 	@Autowired
@@ -157,6 +158,7 @@ public class GitHubActionBuildClient implements GitHubActionClient {
 		gitHubActionBuild.setDuration(gitHubActionBuild.getEndTime() - gitHubActionBuild.getStartTime());
 		gitHubActionBuild.setTimestamp(System.currentTimeMillis());
 		gitHubActionBuild.setBuildStatus(getBuildStatus(jsonBuild));
+		gitHubActionBuild.setBuildJob(jsonBuild.get(NAME).toString());
 		builds.add(gitHubActionBuild);
 	}
 

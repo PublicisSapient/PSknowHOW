@@ -30,6 +30,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -95,6 +98,10 @@ public class FilterHelperServiceImplTest {
 	private HierarchyLevelRepository hierarchyLevelRepository;
 	@Mock
 	private AdditionalFilterCategoryRepository additionalFilterCategoryRepository;
+	@Mock
+	private OrganizationHierarchyService organizationHierarchyService;
+	@Mock
+	private ProjectHierarchyService projectHierarchyService;
 	private List<AccountHierarchy> ahdList;
 	private List<HierarchyLevel> hierarchyLevels;
 	private List<HierarchyLevel> hierarchyLevels2;
@@ -239,18 +246,24 @@ public class FilterHelperServiceImplTest {
 	@Test
 	public void deleteAccountHierarchiesOfProject_Scrum() {
 		ObjectId projectBasicConfigId = new ObjectId("60b9f2ff5ce907343c3804ba");
+		ProjectBasicConfig projectBasicConfig= new ProjectBasicConfig();
+		projectBasicConfig.setId(projectBasicConfigId);
+		projectBasicConfig.setIsKanban(false);
 		when(hierarchyLevelService.getFullHierarchyLevels(projectConfigScrum.isKanban())).thenReturn(hierarchyLevels2);
 		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(Mockito.anyString(),
 				Mockito.any(ObjectId.class))).thenReturn(
 						ahdList.stream().filter(f -> f.getLabelName().equalsIgnoreCase("project")).collect(Collectors.toList()));
 		when(cacheService.getFullHierarchyLevelMap())
 				.thenReturn(hierarchyLevels2.stream().collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x)));
-		filterHelperService.deleteAccountHierarchiesOfProject(projectBasicConfigId, false);
+		filterHelperService.deleteAccountHierarchiesOfProject(projectBasicConfig);
 	}
 
 	@Test
 	public void deleteAccountHierarchiesOfProject_Kanban() {
 		ObjectId projectBasicConfigId = new ObjectId("63330b7068b5d05cf59c4386");
+		ProjectBasicConfig projectBasicConfig= new ProjectBasicConfig();
+		projectBasicConfig.setId(projectBasicConfigId);
+		projectBasicConfig.setIsKanban(true);
 		AccountHierarchiesKanbanDataFactory ahdFactoryProjectLabel = AccountHierarchiesKanbanDataFactory.newInstance();
 		List<KanbanAccountHierarchy> accountHierarchies = ahdFactoryProjectLabel.getAccountHierarchies();
 		when(hierarchyLevelService.getFullHierarchyLevels(projectConfigKanban.isKanban())).thenReturn(hierarchyLevels2);
@@ -261,7 +274,7 @@ public class FilterHelperServiceImplTest {
 				Mockito.any(ObjectId.class)))
 				.thenReturn(accountHierarchies.stream().filter(f -> f.getLabelName().equalsIgnoreCase("project"))
 						.collect(Collectors.toList()));
-		filterHelperService.deleteAccountHierarchiesOfProject(projectConfigKanban.getId(), true);
+		filterHelperService.deleteAccountHierarchiesOfProject(projectBasicConfig);
 	}
 
 	@Test

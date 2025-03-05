@@ -278,6 +278,11 @@ public enum KPICode {
 	/** Defect Rate (Developer) */
 	DEFECT_RATE("kpi186", KPISource.BITBUCKET.name()),
 
+	/**
+	 * Sprint Goals
+	 */
+	SPRINT_GOALS("kpi187", KPISource.JIRA.name()),
+
 	// do not remove below codes as they are required for test case
 	TEST_SONAR("TEST_SONAR", KPISource.SONAR.name()), TEST_JIRA("TEST_JIRA",
 			KPISource.JIRA.name()), TEST_ZEPHYR("TEST_ZEPHYR", KPISource.ZEPHYR.name());
@@ -297,7 +302,7 @@ public enum KPICode {
 	 * Gets kpi.
 	 *
 	 * @param kpiID
-	 *          the kpi id
+	 *            the kpi id
 	 * @return the kpi
 	 */
 	public static KPICode getKPI(String kpiID) {

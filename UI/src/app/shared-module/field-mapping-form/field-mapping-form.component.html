@@ -15,30 +15,30 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<p-toast [style]="{marginTop: '80px'}"></p-toast>
-<form [formGroup]="form" autocomplete="off">
-    <p-accordion [multiple]="true" [style]="{'width':'100%'}" #accordion [activeIndex]="[0,1,2,3,4,5,6]">
-        <p-accordionTab *ngFor="let section of fieldMappingSectionList" [header]="section">
+<p-toast [style]="{marginTop: '80px'}" aria-live="polite" role="status"></p-toast>
+<form [formGroup]="form" autocomplete="off" role="form" aria-label="Field Mapping Configuration Form">
+    <p-accordion [multiple]="true" [style]="{'width':'100%'}" #accordion [activeIndex]="[0,1,2,3,4,5,6]" role="region" aria-label="Field Mapping section">
+        <p-accordionTab *ngFor="let section of fieldMappingSectionList" [header]="section" role="group" [attr.aria-label]="section + ' section'">
             <div class="p-p-0">
 
-                <div class="p-mb-3 p-d-flex p-align-center p-justify-between" *ngFor="let field of formConfig[section]">
+                <div class="p-mb-3 p-d-flex p-align-center p-justify-between" *ngFor="let field of formConfig[section]" role="group" [attr.aria-label]="field['fieldLabel'] + ' Field Group'">
 
                 <div class="p-d-flex p-align-center">
-                    <div><span *ngIf="field?.processorCommon"><i class="fas fa-sync-alt p-mr-2"></i></span>
-                        <label class="field-title" style="background-color: white;">
+                    <div><span *ngIf="field?.processorCommon"><i class="fas fa-sync-alt p-mr-2" aria-hidden="true"></i></span>
+                        <label class="field-title" style="background-color: white;" [attr.for]="field['fieldName']">
                             {{field['fieldLabel']}}
-                            <span class="p-mr-1" style="color: red;" *ngIf="field?.mandatory">*</span>
+                            <span class="p-mr-1" style="color: red;" *ngIf="field?.mandatory" aria-hidden="true">*</span>
                             <span class="fa fa-info-circle" aria-hidden="true" pTooltip="<span>
                                                                                                 Definition:
                                                                                                 {{field.tooltip.definition}} <br>
                                                                                                 {{field.tooltip.kpiImpacted ? '<hr>KPI Impacted:' : '' }}
                                                                                                  {{field.tooltip.kpiImpacted ? field.tooltip.kpiImpacted : '' }}
                                                                                                 </span>" tooltipPosition="top"
-                                tooltipEvent="hover" tooltipStyleClass="tooltiptext" [escape]="false"></span>
+                                tooltipEvent="hover" tooltipStyleClass="tooltiptext" [escape]="false" role="button" aria-label="Field Information"></span>
                             <span>
                                 <img #commentSummary class="p-p-2 h-40 cursor-pointer" style="transform: translateY(9px)"
                                     (click)="hitoryPopup.toggle($event);handleBtnClick(field.fieldName);"
-                                    src="../../../assets/img/RequiresSyncIcon.svg" alt="History" />
+                                    src="../../../assets/img/RequiresSyncIcon.svg" alt="History" role="button" [attr.aria-label]="'View history for ' + field['fieldLabel']" />
                             </span>
                         </label>
                     </div>
@@ -47,7 +47,7 @@
                         <div class="w-60vw">
                             <app-field-mapping-field [fieldMappingMetaData]="fieldMappingMetaData" [fieldConfig]="field"
                                 [formControlName]="field['fieldName']" [thresholdUnit]="thresholdUnit"
-                                (onSearch)="showDialogToAddValue($event)"></app-field-mapping-field>
+                                (onSearch)="showDialogToAddValue($event)" [attr.aria-label]="field['fieldLabel'] + ' Input'"></app-field-mapping-field>
                         </div>
                     </ng-container>
                     <ng-template #nestedFieldContainer>
@@ -55,7 +55,7 @@
                             <div class="p-d-flex p-justify-between">
                                 <app-field-mapping-field [fieldMappingMetaData]="fieldMappingMetaData"
                                     [fieldConfig]="field" [formControlName]="field['fieldName']" [thresholdUnit]="thresholdUnit"
-                                    (onSearch)="showDialogToAddValue($event)"></app-field-mapping-field>
+                                    (onSearch)="showDialogToAddValue($event)" [attr.aria-label]="field['fieldLabel'] + ' Primary Input'"></app-field-mapping-field>
                             </div>
                             <div class="p-m-2" *ngFor="let nestedField of field['nestedFields']">
                                 <ng-container
@@ -66,10 +66,11 @@
                                         {{nestedField?.tooltip?.definition}}
                                       <hr *ngIf="nestedField?.tooltip?.kpiImpacted">
                                         </span>' tooltipPosition="top" tooltipEvent="hover"
-                                            tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                                            tooltipStyleClass="tooltiptext" [escape]="false" role="button" aria-label="Nested Field Information"></span></label>
                                     <app-field-mapping-field [fieldMappingMetaData]="fieldMappingMetaData"
                                         [fieldConfig]="nestedField" [formControlName]="nestedField['fieldName']"
-                                        (onSearch)="showDialogToAddValue($event)" [thresholdUnit]="thresholdUnit"></app-field-mapping-field>
+                                        (onSearch)="showDialogToAddValue($event)" [thresholdUnit]="thresholdUnit"
+                                        [attr.aria-label]="nestedField['fieldLabel'] + ' Input'"></app-field-mapping-field>
                                 </ng-container>
                             </div>
                         </div>
@@ -82,61 +83,63 @@
 </form>
 <div class="save-container p-mt-5 p-mb-1">
     <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised p-mr-3" icon="pi pi-save"
-        iconPos="left" label="Save" (click)="save()" [disabled]=" (form.invalid && selectedToolConfig[0]?.toolName?.toLowerCase() === 'removingMandatoryValidationAsPartOfDTS-43148')|| !form.dirty"></button>
+        iconPos="left" label="Save" (click)="save()" [disabled]=" (form.invalid && selectedToolConfig[0]?.toolName?.toLowerCase() === 'removingMandatoryValidationAsPartOfDTS-43148')|| !form.dirty"
+        aria-label="Save Field Mapping Configuration"></button>
 </div>
 <!-- Search Dialog -->
 <p-dialog header="Add Value(s)" [(visible)]="displayDialog" showEffect="fade" [modal]="true"
     [style]="{'min-height': '480px'}" styleClass="mapping-selection-popup" (onShow)="recordScrollPosition()"
-    (onHide)="scrollToPosition()">
+    (onHide)="scrollToPosition()" role="dialog" aria-labelledby="add-values-dialog-title">
     <div class="dialog-panel" style="width: 450px; min-height: 450px; overflow: hidden;">
         <div *ngIf="singleSelectionDropdown">
             <p-dropdown *ngIf="populateDropdowns" inputId="singleSelectionDropdown" autoWidth="false"
                 [style]="{'width':'100%', 'max-width': '100%', 'font-size': '14px', 'textAlign': 'left'}" [options]="fieldMappingMultiSelectValues"
                 placeholder="Select Value" [(ngModel)]="selectedValue" optionLabel="key" optionValue="data"
-                filter="true" showClear="true">
+                filter="true" showClear="true" aria-label="Single Value Selection">
             </p-dropdown>
         </div>
         <div *ngIf="!singleSelectionDropdown" class="multiselect-container p-field p-col-12">
             <p-multiSelect *ngIf="populateDropdowns" inputId="multiSelectionDropdown"
                 [style]="{'width':'436px', 'max-width': '100%', 'font-size': '14px'}" [options]="fieldMappingMultiSelectValues"
-                defaultLabel="Select Values" [(ngModel)]="selectedMultiValue" optionLabel="key" display="chip" optionDisabled="disabled">
+                defaultLabel="Select Values" [(ngModel)]="selectedMultiValue" optionLabel="key" display="chip" optionDisabled="disabled"
+                aria-label="Multiple Values Selection">
             </p-multiSelect>
         </div>
     </div>
     <p-footer>
         <div class="ui-dialog-buttonpane ui-helper-clearfix">
             <button type="button" pButton pRipple icon="pi pi-times" (click)="cancelDialog()" label="Cancel"
-                class="p-button p-button-danger p-button-raised"></button>
+                class="p-button p-button-danger p-button-raised" aria-label="Cancel Value Selection" (keydown.enter)="cancelDialog()"></button>
             <button type="button" pButton pRipple icon="fa fa-check" (click)="saveDialog()" label="Add"
-                class="p-button p-button-success p-button-raised"></button>
+                class="p-button p-button-success p-button-raised" aria-label="Add Value Selection" (keydown.enter)="saveDialog()"></button>
         </div>
     </p-footer>
 </p-dialog>
 
 <!-- Confirmation Dialog while saving field mapping -->
-<p-confirmDialog #templateInfoDialog key="templateInfoDialog" styleClass="config-confirmation">
+<p-confirmDialog #templateInfoDialog key="templateInfoDialog" styleClass="config-confirmation" role="alertdialog" aria-labelledby="confirm-dialog-title">
     <p-footer>
         <button type="button" (click)="templateInfoDialog.reject()" pButton label="Cancel"
-            class="enable-dialog-btn"></button>
-        <button type="button" (click)="templateInfoDialog.accept()" pButton label="Proceed"></button>
+            class="enable-dialog-btn" (keydown.enter)="templateInfoDialog.reject()"></button>
+        <button type="button" (click)="templateInfoDialog.accept()" (keydown.enter)="templateInfoDialog.accept()" pButton label="Proceed" aria-label="Confirm Proceed"></button>
     </p-footer>
 </p-confirmDialog>
 
-<p-overlayPanel #hitoryPopup styleClass="hiatoryOverlayWrapper" [showCloseIcon]="true">
+<p-overlayPanel #hitoryPopup styleClass="hiatoryOverlayWrapper" [showCloseIcon]="true" role="dialog" aria-label="Field Change History">
     <div class="comment-inner-section">
-    <i *ngIf="showSpinner" class="fas fa-circle-notch icon-spinner"></i>
+    <i *ngIf="showSpinner" class="fas fa-circle-notch icon-spinner" aria-hidden="true"></i>
     <ng-container *ngIf="individualFieldHistory?.length > 0 && !showSpinner; else noComments">
-        <h5 class="p-m-0 dateAndName">Change Log</h5>
+        <h5 class="p-m-0 dateAndName" tabindex="0">Change Log</h5>
         <div *ngFor="let history of individualFieldHistory">
             <div class="p-p-2">
-                <div class="dateAndName">{{history['Changed At'] | date:'MM.dd.yyyy - hh:mmaaa'}} {{history['Changed By']}}</div>
-                <div class="dateAndName">{{history?.['Changed From'] | json}} <i class="pi pi-arrow-right" style="color: #fff"></i>
+                <div class="dateAndName" tabindex="0">{{history['Changed At'] | date:'MM.dd.yyyy - hh:mmaaa'}} {{history['Changed By']}}</div>
+                <div class="dateAndName" tabindex="0">{{history?.['Changed From'] | json}} <i class="pi pi-arrow-right" style="color: #fff" aria-hidden="true"></i>
                     <label> {{history?.['Changed To'] | json}}</label> </div>
             </div>
         </div>
     </ng-container>
 </div>
 <ng-template #noComments>
-    <h5 class="p-m-0 dateAndName" *ngIf="!showSpinner">No History</h5>
+    <h5 class="p-m-0 dateAndName" *ngIf="!showSpinner" tabindex="0">No History</h5>
 </ng-template>
 </p-overlayPanel>
