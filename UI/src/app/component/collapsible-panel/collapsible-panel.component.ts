@@ -75,7 +75,7 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
 
   onHierarchyDropdownChange(event){
    this.filters = this.buildFilterDropdown().get(event.value.hierarchyLevelName);
-    this.selectedFilters = [this.filters[0]];
+    this.selectedFilters = [...this.filters];
     this.accordionData = this.rawData;
   }
 
