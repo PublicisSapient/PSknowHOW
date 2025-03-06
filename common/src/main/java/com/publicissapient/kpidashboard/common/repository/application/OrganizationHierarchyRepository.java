@@ -17,6 +17,9 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.common.repository.application;
 
+import java.util.List;
+import java.util.Set;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -27,6 +30,50 @@ import com.publicissapient.kpidashboard.common.model.application.OrganizationHie
 @Repository
 public interface OrganizationHierarchyRepository extends MongoRepository<OrganizationHierarchy, ObjectId> {
 
-	@Query(value = "{ 'nodeId': ?0 }", delete = true)
-	void deleteByNodeId(String nodeId);
+    @Query(value = "{ 'nodeId': ?0 }", delete = true)
+    void deleteByNodeId(String nodeId);
+
+    /**
+     * Find organization hierarchies by matching name against both nodeName and nodeDisplayName
+     * Uses MongoDB's $in operator with case-insensitive collation for accurate matching.
+     *
+     * Only returns essential fields to minimize memory usage:
+     * - nodeId: for unique identification
+     * - nodeName and nodeDisplayName: for matching and display
+     * - hierarchyLevelId: for level-based processing
+     * - parentId: for hierarchy relationships
+     * - externalId: for synchronization
+     * - _id: required for MongoDB operations
+     *
+     * @param nodeNames Set of node names to search for (case-insensitive)
+     * @param hierarchyLevel Hierarchy level to filter by
+     * @return List of matching organization hierarchies with only required fields
+     */
+    @Query(value = "{ $and: [ " +
+                    "  { $or: [ " +
+                    "    { 'nodeName': { $in: ?0 } }, " +
+                    "    { 'nodeDisplayName': { $in: ?0 } } " +
+                    "  ]}, " +
+                    "  { 'hierarchyLevelId': ?1 } " +
+                    "] }", 
+           collation = "{ locale: 'en', strength: 1 }",
+           fields = "{ " +
+                    "'nodeId': 1, " +
+                    "'nodeName': 1, " +
+                    "'nodeDisplayName': 1, " +
+                    "'hierarchyLevelId': 1, " +
+                    "'parentId': 1, " +
+                    "'externalId': 1, " +
+                    "'_id': 1" +
+                    "}")
+    List<OrganizationHierarchy> findByNodeNamesAndLevel(Set<String> nodeNames, String hierarchyLevel);
+
+    /**
+     * Batch save organization hierarchies with minimal memory usage
+     *
+     * @param hierarchies List of hierarchies to save
+     * @return List of saved hierarchies
+     */
+    @Override
+    <S extends OrganizationHierarchy> List<S> saveAll(Iterable<S> hierarchies);
 }

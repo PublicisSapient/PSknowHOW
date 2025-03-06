@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.apis.hierarchy.integeration.dto;
+package com.publicissapient.kpidashboard.apis.hierarchy.integration.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -126,4 +126,9 @@ public class HierarchyNode {
 	@JsonProperty("Id")
 	private String id;
 
+	@JsonProperty("startDate")
+	private String startDate;
+
+	@JsonProperty("endDate")
+	private String endDate;
 }

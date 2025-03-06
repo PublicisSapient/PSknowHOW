@@ -16,22 +16,13 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.hierarchy.integeration.dto;
+package com.publicissapient.kpidashboard.apis.hierarchy.integration.adapter;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import java.util.Set;
 
-@Data
-public class HierarchyLevel {
-	@JsonProperty("id")
-	private int id;
+import com.publicissapient.kpidashboard.apis.hierarchy.integration.dto.HierarchyDetails;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 
-	@JsonProperty("name")
-	private String name;
-
-	@JsonProperty("displayName")
-	private String displayName;
-
-	@JsonProperty("level")
-	private int level;
+public interface OrganizationHierarchyAdapter {
+	Set<OrganizationHierarchy> convertToOrganizationHierarchy(HierarchyDetails hierarchyDetails);
 }

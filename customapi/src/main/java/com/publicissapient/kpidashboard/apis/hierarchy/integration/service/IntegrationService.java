@@ -16,14 +16,14 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.hierarchy.integeration.service;
+package com.publicissapient.kpidashboard.apis.hierarchy.integration.service;
 
-import com.publicissapient.kpidashboard.apis.hierarchy.integeration.dto.HierarchyDetails;
+import com.publicissapient.kpidashboard.apis.hierarchy.integration.dto.HierarchyDetails;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 
 import java.util.Set;
 
-public interface IntegerationService {
+public interface IntegrationService {
 
     Set<OrganizationHierarchy> convertHieracyResponseToOrganizationHierachy(HierarchyDetails hierarchyDetails);
 }

@@ -16,6 +16,7 @@
  */
 package com.publicissapient.kpidashboard.apis.mongock;
 
+import com.publicissapient.kpidashboard.apis.hierarchy.integration.controller.IntegrateHierarchyScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -43,9 +44,12 @@ public class ApplicationStartupListener implements ApplicationListener<Applicati
 	CacheService cacheService;
 	@Autowired
 	DataMigrationService dataMigrationService;
+	@Autowired
+	IntegrateHierarchyScheduler integrateHierarchyScheduler;
 
 	@Override
 	public void onApplicationEvent(ApplicationReadyEvent event) {
+		integrateHierarchyScheduler.callApi();
 		dataMigrationService.populateOrganizationHierarchy();
 		configHelperService.loadKpiMaster();
 		configHelperService.calculateMaturity();

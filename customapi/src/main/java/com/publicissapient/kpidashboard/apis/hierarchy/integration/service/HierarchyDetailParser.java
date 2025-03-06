@@ -16,13 +16,11 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.hierarchy.integeration.adapter;
+package com.publicissapient.kpidashboard.apis.hierarchy.integration.service;
 
-import java.util.Set;
+import com.publicissapient.kpidashboard.apis.hierarchy.integration.dto.HierarchyDetails;
 
-import com.publicissapient.kpidashboard.apis.hierarchy.integeration.dto.HierarchyDetails;
-import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
+public interface HierarchyDetailParser {
 
-public interface OrganizationHierarchyAdapter {
-	Set<OrganizationHierarchy> convertToOrganizationHierarchy(HierarchyDetails hierarchyDetails);
+	HierarchyDetails convertToHierachyDetail(String jsonResponse);
 }

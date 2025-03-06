@@ -21,6 +21,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -38,9 +40,10 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "organization_hierarchy")
+@CompoundIndexes({ @CompoundIndex(name = "nodeName_idx", def = "{'nodeName': 1}") })
 public class OrganizationHierarchy extends BasicModel implements Serializable {
 
 	private static final long serialVersionUID = 67050747445127809L;
@@ -106,7 +109,7 @@ public class OrganizationHierarchy extends BasicModel implements Serializable {
 		result = 31 * result + nodeName.hashCode();
 		result = 31 * result + hierarchyLevelId.hashCode();
 		result = 31 * result + (Objects.nonNull(parentId) ? parentId.hashCode() : 0);
-		result = 31 * result + externalId.hashCode();
+		result = 31 * result + (Objects.nonNull(externalId) ? externalId.hashCode() : 0);
 		return result;
 	}
 }

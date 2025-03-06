@@ -16,27 +16,33 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.hierarchy.integeration.service;
+package com.publicissapient.kpidashboard.apis.hierarchy.integration.service;
 
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.apis.hierarchy.integeration.adapter.OrganizationHierarchyAdapter;
-import com.publicissapient.kpidashboard.apis.hierarchy.integeration.dto.HierarchyDetails;
+import com.publicissapient.kpidashboard.apis.hierarchy.integration.adapter.OrganizationHierarchyAdapter;
+import com.publicissapient.kpidashboard.apis.hierarchy.integration.dto.HierarchyDetails;
+import com.publicissapient.kpidashboard.apis.hierarchy.integration.service.HierarchyComparisonService;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 
 @Service
-public class IntergerationServiceImpl implements IntegerationService {
+public class IntegrationServiceImpl implements IntegrationService {
 
 	@Autowired
-	OrganizationHierarchyAdapter organizationHierarchyAdapter;
+	private OrganizationHierarchyAdapter organizationHierarchyAdapter;
+	
+	@Autowired
+	private HierarchyComparisonService hierarchyComparisonService;
 
 	@Override
 	public Set<OrganizationHierarchy> convertHieracyResponseToOrganizationHierachy(HierarchyDetails hierarchyDetails) {
-		return organizationHierarchyAdapter.convertToOrganizationHierarchy(hierarchyDetails);
-
+		// First convert API response to comparable objects
+		Set<OrganizationHierarchy> apiHierarchy = organizationHierarchyAdapter.convertToOrganizationHierarchy(hierarchyDetails);
+		
+		// Then compare with database and update externalIds
+		return hierarchyComparisonService.compareAndUpdateHierarchy(apiHierarchy);
 	}
-
 }
