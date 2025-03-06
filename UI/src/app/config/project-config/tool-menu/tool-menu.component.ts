@@ -107,6 +107,7 @@ export class ToolMenuComponent implements OnInit {
   }
 
   getToolsConfigured() {
+    this.disableSwitch = false
     this.httpService.getAllToolConfigs(this.selectedProject?.id).subscribe(response => {
       this.dataLoading = false;
       if (response?.success) {
@@ -294,7 +295,7 @@ export class ToolMenuComponent implements OnInit {
           this.httpService.getFieldMappingsWithHistory(jiraOrAzure[0].id, kpiID, obj).subscribe(mappings => {
             if (mappings?.success) {
               this.sharedService.setSelectedFieldMapping(mappings['data']);
-              this.disableSwitch = true;
+              this.disableSwitch =  true;
             } else {
               this.sharedService.setSelectedFieldMapping(null);
             }
