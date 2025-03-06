@@ -1615,4 +1615,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  isSprintGoalsHidden():boolean{
+    if(!this.kanban && ['my-knowhow','speed','quality'].includes(this.selectedTab?.toLocaleLowerCase())){
+      return true;
+    }else{
+      return false;
+    }
+  }
 }
