@@ -17,9 +17,8 @@
                 </p-multiSelect>
                 <label class="floating-label" for="multiselectFilter">Select {{selectedLevel.hierarchyLevelName}}</label>
             </span>
-            <button *ngIf="accordionData.length" pButton pRipple (click)="toggleAll()" class="p-mb-3 p-ml-3">
-                {{ isAllExpanded ? 'Collapse All' : 'Expand All' }}
-            </button>
+            <button *ngIf="accordionData.length" pButton pRipple [label]="isAllExpanded ? 'Collapse All' : 'Expand All'" class="p-button-success p-mb-3 p-ml-3"
+            (click)="toggleAll()"></button>
     </div>
    
     
