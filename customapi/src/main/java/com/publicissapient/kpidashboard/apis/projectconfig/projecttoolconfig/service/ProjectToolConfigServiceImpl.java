@@ -27,6 +27,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -85,6 +87,8 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
 	@Autowired
 	private AuthenticationService authenticationService;
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
 
 	/**
 	 * make a copy of the list so the original list is not changed, and remove() is
@@ -285,6 +289,9 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		if (projectTool.getToolName().equalsIgnoreCase(ProcessorConstants.ZEPHYR) ||
 				projectTool.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA_TEST)) {
 			cacheService.clearCache(CommonConstant.TESTING_KPI_CACHE);
+			List<String> kpiList = kpiDataCacheService.getKpiBasedOnSource(KPISource.ZEPHYR.name());
+			kpiList.forEach(kpiId -> kpiDataCacheService.clearCache(projectTool.getBasicProjectConfigId().toHexString(),
+					kpiId));
 		}
 		return new ServiceResponse(true, "updated the project_tools Successfully", projectTool);
 	}

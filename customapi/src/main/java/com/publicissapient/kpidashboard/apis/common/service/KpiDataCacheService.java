@@ -38,14 +38,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 public interface KpiDataCacheService {
 
 	/**
-	 * Evicts KPI Cache for given kpi - irrespective of projects.
-	 *
-	 * @param kpiId
-	 *            kpi id
-	 */
-	void clearCache(String kpiId);
-
-	/**
 	 * Evicts KPI Cache for given project and kpi
 	 *
 	 * @param basicProjectConfigId
@@ -54,10 +46,6 @@ public interface KpiDataCacheService {
 	 *            kpi id
 	 */
 	void clearCache(String basicProjectConfigId, String kpiId);
-
-	void clearCacheForProject(String basicProjectConfigId);
-
-	void clearCacheForSource(String source);
 
 	List<String> getKpiBasedOnSource(String source);
 

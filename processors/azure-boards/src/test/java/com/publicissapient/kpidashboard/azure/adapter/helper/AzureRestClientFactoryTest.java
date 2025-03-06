@@ -89,4 +89,17 @@ public class AzureRestClientFactoryTest {
 				HttpMethod.GET, entity, String.class)).thenReturn(null);
 		azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.AZURE_KPI_CACHE);
 	}
+
+	@Test
+	public void cacheRestClient2() throws Exception { // NOSONAR
+		Mockito.when(azureProcessorConfig.getCustomApiBaseUrl()).thenReturn("http://localhost:8080/");
+		PowerMockito.whenNew(RestTemplate.class).withNoArguments().thenReturn(restTemplate);
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+		ResponseEntity<String> response = new ResponseEntity<>("Success", HttpStatus.OK);
+		Mockito.when(restTemplate.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.GET),
+				ArgumentMatchers.eq(entity), ArgumentMatchers.eq(String.class))).thenReturn(response);
+		azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, "projectId", CommonConstant.ZEPHYR);
+	}
 }

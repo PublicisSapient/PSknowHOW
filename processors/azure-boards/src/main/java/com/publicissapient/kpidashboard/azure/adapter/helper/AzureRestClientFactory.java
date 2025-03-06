@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.azure.adapter.helper;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -89,10 +90,10 @@ public class AzureRestClientFactory {
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 
 		if (StringUtils.isNoneEmpty(param1)) {
-			cacheEndPoint = cacheEndPoint.replace("param1", param1);
+			cacheEndPoint = cacheEndPoint.replace(CommonConstant.PARAM1, param1);
 		}
 		if (StringUtils.isNoneEmpty(param2)) {
-			cacheEndPoint = cacheEndPoint.replace("param2", param2);
+			cacheEndPoint = cacheEndPoint.replace(CommonConstant.PARAM2, param2);
 		}
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(azureProcessorConfig.getCustomApiBaseUrl());
 		uriBuilder.path("/");
