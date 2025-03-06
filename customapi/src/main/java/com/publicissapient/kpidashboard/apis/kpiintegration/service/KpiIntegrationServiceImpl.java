@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.bitbucket.service.BitBucketServiceR;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -195,13 +196,15 @@ public class KpiIntegrationServiceImpl {
 				hierarchyIdList = new String[]{
 						kpiRequest.getHierarchyName().concat(Constant.UNDERSCORE).concat(hierarchyLevel.getHierarchyLevelId())};
 			}
-			Map<String, List<String>> selectedMap = new HashMap<>();
-			selectedMap.put(hierarchyLevel.getHierarchyLevelId(),
-					Arrays.stream(hierarchyIdList).collect(Collectors.toList()));
+			if(MapUtils.isEmpty(kpiRequest.getSelectedMap())) {
+				Map<String, List<String>> selectedMap = new HashMap<>();
+				selectedMap.put(hierarchyLevel.getHierarchyLevelId(), Arrays.stream(hierarchyIdList).toList());
+				kpiRequest.setSelectedMap(selectedMap);
+			}
+
 			kpiRequest.setIds(hierarchyIdList);
 			kpiRequest.setLabel(hierarchyLevel.getHierarchyLevelId());
-			kpiRequest.setSelectedMap(selectedMap);
-			kpiRequest.setSprintIncluded(Arrays.asList(SPRINT_CLOSED));
+			kpiRequest.setSprintIncluded(List.of(SPRINT_CLOSED));
 		}
 	}
 
