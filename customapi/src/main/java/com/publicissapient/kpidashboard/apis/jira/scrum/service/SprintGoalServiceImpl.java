@@ -16,11 +16,12 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -77,7 +78,8 @@ public class SprintGoalServiceImpl extends JiraKPIService<Double, List<Object>, 
 	@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
-		sprintLeafNodeList.sort(Comparator.comparing(node -> node.getSprintFilter().getStartDate()));
+		sprintLeafNodeList.sort((n1, n2) -> n2.getSprintFilter().getStartDate()
+				.compareTo(n1.getSprintFilter().getStartDate()));
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
 
@@ -113,16 +115,22 @@ public class SprintGoalServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 			List<SprintDetails> sprints = projectWiseSprints.get(new ObjectId(projectId));
 			if (sprints != null) {
-				for (SprintDetails sprint : sprints) {
-					ProjectSprintDetails.SprintDTO sprintDetail = new ProjectSprintDetails.SprintDTO();
-					sprintDetail.setName(sprint.getSprintName());
-					sprintDetail.setSprintId(sprint.getSprintID());
-					sprintDetail.setGoal(sprint.getGoal());
-					projectSprintDetails.getSprintGoals().add(sprintDetail);
-				}
+				Set<ProjectSprintDetails.SprintDTO> sortedSprints = sprints.stream()
+						.sorted((s1, s2) -> s2.getStartDate().compareTo(s1.getStartDate()))
+						.map(sprint -> {
+							ProjectSprintDetails.SprintDTO sprintDetail = new ProjectSprintDetails.SprintDTO();
+							sprintDetail.setName(sprint.getSprintName());
+							sprintDetail.setSprintId(sprint.getSprintID());
+							sprintDetail.setGoal(sprint.getGoal());
+							return sprintDetail;
+						})
+						.collect(Collectors.toCollection(LinkedHashSet::new));
+
+				projectSprintDetails.setSprintGoals(sortedSprints);
 			}
 		}
-		kpiElement.setTrendValueList(new ArrayList<>(projectSprintDetailsMap.values()));
+		kpiElement.setTrendValueList(projectSprintDetailsMap.values().stream()
+				.sorted((p1, p2) -> p1.getName().compareToIgnoreCase(p2.getName())).collect(Collectors.toList()));
 	}
 
 	@Override

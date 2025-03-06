@@ -504,15 +504,14 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				}
 
 				List<ProjectBasicConfig> projectList = Optional.ofNullable(basicConfigMap).filter(MapUtils::isNotEmpty)
-						.map(map -> map.entrySet().stream().filter(entry -> basicProjectConfigIds.contains(entry.getKey())) // Filter
-								// by
-								// configIds
+						.map(map -> map.entrySet().stream().filter(entry -> basicProjectConfigIds.contains(entry.getKey()))
 								.map(Map.Entry::getValue) // Extract the value (ProjectBasicConfig)
 								.collect(Collectors.toList())) // Collect to a list
 						.orElseGet(ArrayList::new);
 				list.addAll(projectList);
 			}
 		}
+		list.sort(Comparator.comparing(ProjectBasicConfig::getCreatedAt));
 		log.info("Returning getProjectBasicConfig response: {}", list);
 		return list;
 	}

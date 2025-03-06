@@ -63,6 +63,7 @@ import { BarchartComponent } from 'src/app/component/barchart/barchart.component
 import { KpiHelperService } from '../services/kpi-helper.service';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { MenuModule } from 'primeng/menu';
+import { TableModule } from 'primeng/table';
 import { ChartWithFiltersComponent } from '../component/chart-with-filters/chart-with-filters.component';
 import { KpiAdditionalFilterComponent } from '../component/kpi-additional-filter/kpi-additional-filter.component';
 import { MultilineComponent } from '../component/multiline/multiline.component';
@@ -104,7 +105,8 @@ import { CumulativeLineChartComponent } from '../component/cumulative-line-chart
     OverlayPanelModule,
     SelectButtonModule,
     MenuModule,
-    TabMenuModule
+    TabMenuModule,
+    TableModule
   ],
   exports: [
     NgSelectModule,
