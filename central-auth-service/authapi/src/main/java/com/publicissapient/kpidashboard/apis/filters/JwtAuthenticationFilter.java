@@ -100,7 +100,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				}
 			}
 		} catch (Exception exception) {
-			log.error(JWT_FILTER_GENERIC_EXCEPTION, request.getRequestURI(), exception.getMessage());
+			log.error(JWT_FILTER_GENERIC_EXCEPTION, request.getRequestURI(), exception.getStackTrace());
 			response.setStatus(HttpStatus.FORBIDDEN.value());
 		}
 	}
