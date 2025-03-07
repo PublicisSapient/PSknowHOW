@@ -20,13 +20,16 @@ package com.publicissapient.kpidashboard.sonar.processor;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -181,9 +184,12 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 		clearSelectedBasicProjectConfigIds();
 		AtomicReference<Integer> count = new AtomicReference<>(0);
 
-		List<SonarProcessorItem> existingProcessorItems = sonarProcessorItemRepository.findByProcessorId(processor.getId());
+		List<SonarProcessorItem> existingProcessorItems = sonarProcessorItemRepository
+				.findByProcessorId(processor.getId());
 
 		cleanUnusedProcessorItem(existingProcessorItems);
+
+		Set<String> projectIdForCacheClean = new HashSet<>();
 
 		for (ProjectBasicConfig proBasicConfig : projectConfigList) {
 
@@ -191,7 +197,8 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 					.findByToolAndBasicProjectConfigId(ProcessorConstants.SONAR, proBasicConfig.getId());
 
 			for (ProcessorToolConnection sonar : sonarServerList) {
-				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(proBasicConfig.getId().toHexString());
+				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
+						proBasicConfig.getId().toHexString());
 				try {
 					processorToolConnectionService.validateConnectionFlag(sonar);
 					MDC.put(SONAR_URL, sonar.getUrl());
@@ -211,8 +218,12 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 					addNewProjects(toBeEnabledJob, existingProcessorItems, processor);
 					List<SonarProcessorItem> enableProjectList = sonarProcessorItemRepository
 							.findEnabledProjectsForTool(processor.getId(), sonar.getId(), sonar.getUrl());
-					int updatedCount = saveSonarDetails(enableProjectList, sonar, sonarClient, sonarConfig.getMetrics().get(0));
+					int updatedCount = saveSonarDetails(enableProjectList, sonar, sonarClient,
+							sonarConfig.getMetrics().get(0));
 					count.updateAndGet(v -> v + updatedCount);
+					if (updatedCount > 0) {
+						projectIdForCacheClean.add(proBasicConfig.getId().toString());
+					}
 
 					saveSonarHistory(enableProjectList, sonar, sonarClient, sonarConfig.getMetrics().get(0));
 
@@ -222,8 +233,9 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 				} catch (Exception ex) {
 					isClientException(sonar, ex);
-					String errorMessage = "Exception in sonar project: url - " + sonar.getUrl() + ", user - " +
-							sonar.getUsername() + ", toolId - " + sonar.getId() + ", Exception is - " + ex.getMessage();
+					String errorMessage = "Exception in sonar project: url - " + sonar.getUrl() + ", user - "
+							+ sonar.getUsername() + ", toolId - " + sonar.getId() + ", Exception is - "
+							+ ex.getMessage();
 					executionStatus = false;
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(executionStatus);
@@ -236,6 +248,9 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 		if (count.get() > 0) {
 			cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.SONAR_KPI_CACHE);
 		}
+
+		projectIdForCacheClean.forEach(projectId -> cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT,
+				projectId, CommonConstant.SONAR));
 
 		long endTime = System.currentTimeMillis();
 
@@ -508,6 +523,49 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 			log.info("[SONAR-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache: {} ", cacheName);
 		} else {
 			log.error("[SONAR-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache: {}", cacheName);
+		}
+
+		clearToolItemCache(sonarConfig.getCustomApiBaseUrl());
+	}
+
+	/**
+	 * Cleans the cache in the Custom API
+	 *
+	 * @param cacheEndPoint
+	 *          the cache endpoint
+	 * @param param1
+	 * 	           parameter 1
+	 * 	  @param param2
+	 * 	           parameter 2
+	 */
+	private void cacheRestClient(String cacheEndPoint, String param1, String param2) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+		if (StringUtils.isNoneEmpty(param1)) {
+			cacheEndPoint = cacheEndPoint.replace(CommonConstant.PARAM1, param1);
+		}
+		if (StringUtils.isNoneEmpty(param2)) {
+			cacheEndPoint = cacheEndPoint.replace(CommonConstant.PARAM2, param2);
+		}
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(sonarConfig.getCustomApiBaseUrl());
+		uriBuilder.path("/");
+		uriBuilder.path(cacheEndPoint);
+
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
+		} catch (RestClientException e) {
+			log.error("[SONAR-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service {}", e);
+		}
+
+		if (null != response && response.getStatusCode().is2xxSuccessful()) {
+			log.info("[SONAR-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache for: {} and {} ", param1, param2);
+		} else {
+			log.error("[SONAR-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache for: {} and {} ", param1, param2);
 		}
 
 		clearToolItemCache(sonarConfig.getCustomApiBaseUrl());

@@ -21,6 +21,8 @@ package com.publicissapient.kpidashboard.apis.cleanup;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +61,9 @@ public class SonarDataCleanUpService implements ToolDataCleanUpService {
 	private CacheService cacheService;
 
 	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
+
+	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
 	private List<ObjectId> getProcessorItemsIds(ProjectToolConfig tool) {
@@ -89,6 +94,9 @@ public class SonarDataCleanUpService implements ToolDataCleanUpService {
 
 			cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
 			cacheService.clearCache(CommonConstant.SONAR_KPI_CACHE);
+			List<String> kpiList = kpiDataCacheService.getKpiBasedOnSource(KPISource.SONAR.name());
+			kpiList.forEach(
+					kpiId -> kpiDataCacheService.clearCache(tool.getBasicProjectConfigId().toHexString(), kpiId));
 		}
 	}
 }
