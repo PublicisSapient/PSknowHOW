@@ -308,6 +308,10 @@ export class MaturityComponent implements OnInit, OnDestroy {
       this.isKanban = this.service.getSelectedType()?.toLowerCase() === 'kanban' ? true : false;
     }));
 
+    this.subscription.push(this.service.onScrumKanbanSwitch.subscribe(type => {
+      this.selectedtype = type.selectedType
+    }))
+
     if (!this.service.getFilterObject()) {
       this.showNoDataMsg = true;
     }

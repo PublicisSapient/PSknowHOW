@@ -3118,5 +3118,72 @@ describe('FilterNewComponent', () => {
 
   });
 
+  describe('isSprintGoalsHidden', () => {
+  
+    it('should return true when kanban is falsy and selectedTab is "my-knowhow"', () => {
+      component.kanban = null; // Falsy value
+      component.selectedTab = 'my-knowhow';
+      expect(component.isSprintGoalsHidden()).toBeTrue();
+    });
+  
+    it('should return true when kanban is falsy and selectedTab is "speed"', () => {
+      component.kanban = undefined; // Another falsy value
+      component.selectedTab = 'speed';
+      expect(component.isSprintGoalsHidden()).toBeTrue();
+    });
+  
+    it('should return true when kanban is falsy and selectedTab is "quality"', () => {
+      component.kanban = false;
+      component.selectedTab = 'quality';
+      expect(component.isSprintGoalsHidden()).toBeTrue();
+    });
+  
+    it('should return false when kanban is truthy, even if selectedTab is in the list', () => {
+      component.kanban = true;
+      component.selectedTab = 'my-knowhow';
+      expect(component.isSprintGoalsHidden()).toBeFalse();
+    });
+  
+    it('should return false when selectedTab is not in the list', () => {
+      component.kanban = false;
+      component.selectedTab = 'random';
+      expect(component.isSprintGoalsHidden()).toBeFalse();
+    });
+  
+    it('should return false when selectedTab is undefined', () => {
+      component.kanban = false;
+      component.selectedTab = undefined;
+      expect(component.isSprintGoalsHidden()).toBeFalse();
+    });
+  
+    it('should be case-insensitive (handle uppercase "SPEED")', () => {
+      component.kanban = null;
+      component.selectedTab = 'SPEED'; // Uppercase
+      expect(component.isSprintGoalsHidden()).toBeTrue();
+    });
+  });
+
+  describe('getBgClass', () => {
+  
+    it('should return "icon-apply" when showSprintGoalsPanel is true', () => {
+      component.showSprintGoalsPanel = true;
+      expect(component.getBgClass()).toBe('icon-apply');
+    });
+  
+    it('should return "icon-not-active" when showSprintGoalsPanel is false', () => {
+      component.showSprintGoalsPanel = false;
+      expect(component.getBgClass()).toBe('icon-not-active');
+    });
+  
+    it('should return "icon-not-active" when showSprintGoalsPanel is undefined', () => {
+      component.showSprintGoalsPanel = undefined;
+      expect(component.getBgClass()).toBe('icon-not-active');
+    });
+  
+    it('should return "icon-not-active" when showSprintGoalsPanel is null', () => {
+      component.showSprintGoalsPanel = null;
+      expect(component.getBgClass()).toBe('icon-not-active');
+    });
+  });
 
 });

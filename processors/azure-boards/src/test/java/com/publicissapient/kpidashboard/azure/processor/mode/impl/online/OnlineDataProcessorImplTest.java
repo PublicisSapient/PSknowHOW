@@ -250,7 +250,11 @@ public class OnlineDataProcessorImplTest {
 		when(client.getIterationsResponse(Mockito.any())).thenReturn(createIterationsResponse());
 		when(client.getWorkItemInfo(Mockito.any(), Mockito.any())).thenReturn(createWorkItemInfoResponse());
 		when(client.getUpdatesResponse(Mockito.any(), Mockito.anyString())).thenReturn(createUpdatesResponse());
-		onlineDataProcessor.validateAndCollectIssues(scrumProjectList);
+
+		Map<String, List<String>> projectIdMap = new HashMap<>();
+		projectIdMap.put(AzureConstants.SCRUM_DATA, new ArrayList<>());
+		projectIdMap.put(AzureConstants.KANBAN_DATA, new ArrayList<>());
+		onlineDataProcessor.validateAndCollectIssues(scrumProjectList, projectIdMap);
 	}
 
 	private AzureWiqlModel createWiqlResponse() throws JsonParseException, JsonMappingException, IOException {
@@ -392,7 +396,10 @@ public class OnlineDataProcessorImplTest {
 		when(client.getUpdatesResponse(Mockito.any(), Mockito.anyString()))
 				.thenReturn(createUpdatesResponse());
 
-		onlineDataProcessor.validateAndCollectIssues(kanbanProjectlist);
+		Map<String, List<String>> projectIdMap = new HashMap<>();
+		projectIdMap.put(AzureConstants.SCRUM_DATA, new ArrayList<>());
+		projectIdMap.put(AzureConstants.KANBAN_DATA, new ArrayList<>());
+		onlineDataProcessor.validateAndCollectIssues(kanbanProjectlist, projectIdMap);
 	}
 
 	private List<ProjectToolConfig> prepareProjectToolConfig() {
