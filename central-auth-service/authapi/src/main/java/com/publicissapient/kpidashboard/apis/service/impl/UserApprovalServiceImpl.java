@@ -63,6 +63,7 @@ public class UserApprovalServiceImpl implements UserApprovalService {
 			this.userService.save(user);
 
 			log.info("User: {} has been approved. Sending email confirmation.", user.getUsername());
+			log.info("Email {}%%%%", user.getEmail());
 			this.notificationService.sendUserApprovalEmail(user.getUsername(), user.getEmail());
 
 			return true;
