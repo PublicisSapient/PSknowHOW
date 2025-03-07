@@ -130,6 +130,8 @@ public class NotificationServiceImpl implements NotificationService {
 	public void sendEmailNotification(List<String> emailAddresses, Map<String, String> customData, String subjectKey,
 			String notKey) {
 		if (authConfig.isNotificationSwitch()) {
+			log.error("**********************"+ emailAddresses.toString());
+			log.error("__________________"+ authConfig.getNotificationSubject().toString());
 			Map<String, String> notificationSubjects = authConfig.getNotificationSubject();
 			if (CollectionUtils.isNotEmpty(emailAddresses) && MapUtils.isNotEmpty(notificationSubjects)) {
 				String subject = notificationSubjects.get(subjectKey);
@@ -279,6 +281,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Override
 	public void sendUserApprovalEmail(String username, String email) {
+		log.error("**********************"+ email);
 		String serverPath = getServerPath();
 		List<String> superAdminEmailList = getEmailAddressBasedOnRoles(Arrays.asList(CommonConstant.ROLE_SUPERADMIN));
 
