@@ -107,7 +107,7 @@ export class AppInitializerService {
 
   async checkFeatureFlag() {
     let loc = window.location.hash ? JSON.parse(JSON.stringify(window.location.hash?.split('#')[1])) : '';
-    loc = decodeURIComponent(loc);
+    // loc = decodeURIComponent(loc);
     if (loc && loc.indexOf('authentication') === -1 && loc.indexOf('Error') === -1 && loc.indexOf('Config') === -1) {
       localStorage.setItem('shared_link', (loc))
     }
