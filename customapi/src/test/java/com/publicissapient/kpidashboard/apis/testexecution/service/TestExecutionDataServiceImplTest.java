@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
@@ -86,6 +87,8 @@ public class TestExecutionDataServiceImplTest {
 	private CustomApiConfig customApiConfig;
 	@Mock
 	private ConfigHelperService configHelperService;
+	@Mock
+	private KpiDataCacheService kpiDataCacheService;
 
 	/** initialize values to be used in testing */
 	@Before
