@@ -153,11 +153,60 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 	private void writeSprintDetail(Set<SprintDetails> sprintDetailsSet) {
 		log.info("Writing issues to SprintDetails Collection");
 		for (SprintDetails sprintDetails : sprintDetailsSet) {
-			if (sprintRepository.findBySprintID(sprintDetails.getSprintID())==null) {
+			// Check if the sprint already exists in the repository
+			SprintDetails existingSprint = sprintRepository.findBySprintID(sprintDetails.getSprintID());
+
+			if (existingSprint == null) {
+				// If the sprint does not exist, save it as a new entry
 				sprintRepository.save(sprintDetails);
+				log.info("New sprint saved with ID: " + sprintDetails.getSprintID());
 			} else {
-				log.warn("Duplicate sprintID found: " + sprintDetails.getSprintID());
+				// If the sprint exists, update the existing entry
+				updateExistingSprint(existingSprint, sprintDetails);
+				sprintRepository.save(existingSprint); // Save the updated sprint
+				log.info("Updated existing sprint with ID: " + sprintDetails.getSprintID());
 			}
+		}
+	}
+
+	/**
+	 * Updates the existing sprint details with new data.
+	 *
+	 * @param existingSprint The existing sprint details from the repository.
+	 * @param newSprint      The new sprint details to update the existing one.
+	 */
+	private void updateExistingSprint(SprintDetails existingSprint, SprintDetails newSprint) {
+		// Update fields from newSprint to existingSprint
+		existingSprint.setSprintName(newSprint.getSprintName());
+		existingSprint.setStartDate(newSprint.getStartDate());
+		existingSprint.setEndDate(newSprint.getEndDate());
+		existingSprint.setCompleteDate(newSprint.getCompleteDate());
+		existingSprint.setBasicProjectConfigId(newSprint.getBasicProjectConfigId());
+		existingSprint.setProcessorId(newSprint.getProcessorId());
+		existingSprint.setState(newSprint.getState());
+
+		// Merge total issues instead of overriding
+		if (newSprint.getTotalIssues() != null) {
+			if (existingSprint.getTotalIssues() == null) {
+				existingSprint.setTotalIssues(new HashSet<>()); // Initialize if null
+			}
+			existingSprint.getTotalIssues().addAll(newSprint.getTotalIssues());
+		}
+
+		// Merge completed issues instead of overriding
+		if (newSprint.getCompletedIssues() != null) {
+			if (existingSprint.getCompletedIssues() == null) {
+				existingSprint.setCompletedIssues(new HashSet<>()); // Initialize if null
+			}
+			existingSprint.getCompletedIssues().addAll(newSprint.getCompletedIssues());
+		}
+
+		// Merge not completed issues instead of overriding
+		if (newSprint.getNotCompletedIssues() != null) {
+			if (existingSprint.getNotCompletedIssues() == null) {
+				existingSprint.setNotCompletedIssues(new HashSet<>()); // Initialize if null
+			}
+			existingSprint.getNotCompletedIssues().addAll(newSprint.getNotCompletedIssues());
 		}
 	}
 

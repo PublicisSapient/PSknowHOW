@@ -2641,7 +2641,7 @@ export class JiraConfigComponent implements OnInit {
 
     }
 
-    if (this.urlParam !== 'Jira') {
+   if (this.urlParam !== 'Jira' && this.urlParam !== 'Rally') {
       delete submitData['originalTemplateCode'];
     }
     else{
@@ -2916,7 +2916,10 @@ export class JiraConfigComponent implements OnInit {
       isKanban = this.selectedProject?.Type?.toLowerCase() === 'kanban' ? true : false;
     }
     this.http.getJiraTemplate(this.selectedProject?.id).subscribe(resp => {
-      this.jiraTemplate = resp.filter(temp => temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban);
+      this.jiraTemplate = resp.filter(temp =>
+        temp.tool?.toLowerCase() === (this.urlParam === "Rally" ? "rally" : "jira") &&
+        temp.kanban === isKanban
+      );
       if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
         const selectedTemplate = this.jiraTemplate.find(tem => tem.templateCode === this.selectedToolConfig[0]['originalTemplateCode'])
         this.toolForm.get('originalTemplateCode')?.setValue(selectedTemplate?.templateCode);

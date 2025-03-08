@@ -317,6 +317,7 @@ public class RallyIssueProcessorImpl implements RallyIssueProcessor {
 		// jiraIssue.setResolution(JiraProcessorUtil.deodeUTF8String(issue.getResolution().getName()));
 		// }
 		jiraIssue.setEstimate(String.valueOf(hierarchicalRequirement.getPlanEstimate()));
+		jiraIssue.setStoryPoints(hierarchicalRequirement.getPlanEstimate());
 		// setEstimate(jiraIssue, fields, fieldMapping);
 		// setAggregateTimeEstimates(jiraIssue, fields);
 		jiraIssue.setChangeDate(JiraProcessorUtil.getFormattedDate(hierarchicalRequirement.getLastUpdateDate()));
@@ -443,10 +444,10 @@ public class RallyIssueProcessorImpl implements RallyIssueProcessor {
 		}
 	}
 
-	private void setDefectIssueType(JiraIssue jiraIssue, IssueType issueType, FieldMapping fieldMapping) {
+	private void setDefectIssueType(JiraIssue jiraIssue, HierarchicalRequirement hierarchicalRequirement, FieldMapping fieldMapping) {
 		// set defecttype to BUG
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype())
-				&& fieldMapping.getJiradefecttype().stream().anyMatch(issueType.getName()::equalsIgnoreCase)) {
+				&& fieldMapping.getJiradefecttype().stream().anyMatch(hierarchicalRequirement.getType()::equalsIgnoreCase)) {
 			jiraIssue.setTypeName(NormalizedJira.DEFECT_TYPE.getValue());
 		}
 	}
@@ -966,7 +967,7 @@ public class RallyIssueProcessorImpl implements RallyIssueProcessor {
 		// setRCA(fieldMapping, issue, jiraIssue, fields);
 		// setThirdPartyDefectIdentificationField(fieldMapping, issue, jiraIssue,
 		// fields);
-		// setDefectIssueType(jiraIssue, issueType, fieldMapping);
+		 setDefectIssueType(jiraIssue, hierarchicalRequirement, projectConfig.getFieldMapping());
 		// jiraIssue.setLabels(getLabelsList(issue));
 		setProjectSpecificDetails(projectConfig, jiraIssue);
 //		 setAdditionalFilters(jiraIssue, issue, projectConfig);

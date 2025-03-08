@@ -385,7 +385,7 @@ public class RallyCommonService {
 		return rallyResponse;
 	}
 
-	private List<HierarchicalRequirement> getHierarchicalRequirements(int pageStart) {
+	public List<HierarchicalRequirement> getHierarchicalRequirements(int pageStart) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("ZSESSIONID", API_KEY);
 		HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -434,6 +434,22 @@ public class RallyCommonService {
 			}
 		}
 		return allArtifacts;
+	}
+
+
+
+	public List<HierarchicalRequirement> getHierarchicalRequirementsByIteration(Iteration iteration,HierarchicalRequirement hierarchicalRequirement) {
+		List<HierarchicalRequirement> results = new ArrayList<>();
+		if(iteration != null){
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("ZSESSIONID", API_KEY);
+			HttpEntity<String> entity = new HttpEntity<>(headers);
+			String RALLY_API_URL = "https://rally1.rallydev.com/slm/webservice/v2.0/+\""+hierarchicalRequirement.getType()+"\"?" +
+					"query=(Iteration.Name = \"" + iteration.getName() + "\")&fetch=FormattedID,Name,Owner,PlanEstimate,ScheduleState,Iteration";
+			results = restTemplate.exchange(RALLY_API_URL, HttpMethod.GET, entity,
+					RallyResponse.class).getBody().getQueryResult().getResults();
+		}
+		return results;
 	}
 
 	/**

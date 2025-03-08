@@ -25,37 +25,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class HierarchicalRequirement {
-    @JsonProperty("_ref")
-    private String ref;
-    @JsonProperty("_refObjectName")
-    private String refObjectName;
-    @JsonProperty("FormattedID")
-    private String formattedID;
-    @JsonProperty("Name")
-    private String name;
-    @JsonProperty("Owner")
-    private Owner owner;
-    @JsonProperty("ScheduleState")
-    private String scheduleState;
-    @JsonProperty("Blocked")
-    private boolean blocked;
-    @JsonProperty("PlanEstimate")
-    private Double planEstimate;
-    @JsonProperty("_type")
-    private String type;
-    @JsonProperty("Iteration")
-    private Iteration iteration;
-    @JsonProperty("Project")
-    private Project project;
-    @JsonProperty("CreationDate")
-    private String creationDate;
-    @JsonProperty("LastUpdateDate")
-    private String lastUpdateDate;
-    @JsonProperty("ObjectID")
-    private String objectID;
-    private String currentIteration;
-    private List<String> pastIterations; // Track spillover
-    // Add a field to store linked defects
-    private List<Defect> linkedDefects = new ArrayList<>();
-}
+    public class HierarchicalRequirement {
+        @JsonProperty("_ref")
+        private String ref;
+        @JsonProperty("_refObjectName")
+        private String refObjectName;
+        @JsonProperty("FormattedID")
+        private String formattedID;
+        @JsonProperty("Name")
+        private String name;
+        @JsonProperty("Owner")
+        private Owner owner;
+        @JsonProperty("ScheduleState")
+        private String scheduleState;
+        @JsonProperty("Blocked")
+        private boolean blocked;
+        @JsonProperty("PlanEstimate")
+        private Double planEstimate;
+        @JsonProperty("_type")
+        private String type;
+        @JsonProperty("Iteration")
+        private Iteration iteration;
+        @JsonProperty("Project")
+        private Project project;
+        @JsonProperty("CreationDate")
+        private String creationDate;
+        @JsonProperty("LastUpdateDate")
+        private String lastUpdateDate;
+        @JsonProperty("ObjectID")
+        private String objectID;
+        private String currentIteration;
+        private List<String> pastIterations; // Track spillover
+        // Add a field to store linked defects
+    }

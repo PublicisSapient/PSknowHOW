@@ -22,6 +22,7 @@ import java.util.Set;
 
 import com.publicissapient.kpidashboard.rally.model.CompositeResult;
 import com.publicissapient.kpidashboard.rally.model.ReadData;
+import com.publicissapient.kpidashboard.rally.service.RallyCommonService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;

@@ -615,7 +615,7 @@ public class KpiHelperService { // NOPMD
 						fieldMapping.getJiraIterationIssuetypeKPI39(),
 						fieldMapping.getJiraIterationCompletionStatusKpi39(),
 						finalProjectWiseDuplicateIssuesWithMinCloseDate);
-				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
+				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) { // TODO check here Girish
 					List<String> sprintWiseIssueIds = KpiDataHelper
 							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
 					totalIssueIds.addAll(sprintWiseIssueIds);
@@ -1432,7 +1432,11 @@ public class KpiHelperService { // NOPMD
 					.get(new ObjectId(projectBasicConfigId));
 			List<ProjectToolConfig> projectToolConfig = null;
 			if (MapUtils.isNotEmpty(projectToolMap)) {
-				projectToolConfig = projectToolMap.get("Jira");
+				if(projectToolMap.get("Jira")==null){
+					projectToolConfig = projectToolMap.get("Rally");
+				} else if (projectToolMap.get("Jira")!=null) {
+					projectToolConfig = projectToolMap.get("Jira");
+				}
 				if (CollectionUtils.isEmpty(projectToolConfig) && kpiSource.equalsIgnoreCase(Constant.TOOL_BITBUCKET)
 						&& projectToolMap.containsKey(Constant.REPO_TOOLS)) {
 					projectToolConfig = projectToolMap.get(Constant.REPO_TOOLS);
@@ -2128,7 +2132,7 @@ public class KpiHelperService { // NOPMD
 
 		// setting tool not configured as by default message and overriding it later
 		kpiElement.setResponseCode(CommonConstant.TOOL_NOT_CONFIGURED);
-		if (configuredTools.contains("JIRA") || configuredTools.contains("AZURE")) {
+		if (configuredTools.contains("JIRA") || configuredTools.contains("AZURE") || configuredTools.contains("RALLY")) {
 			if (kpisTestToolRequired.contains(kpi)) {
 				return checkUpload(kpi, basicProjectConfigId) || testToolCheck(configuredTools);
 			} else {

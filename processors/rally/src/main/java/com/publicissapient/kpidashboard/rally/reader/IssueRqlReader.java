@@ -104,7 +104,7 @@ public class IssueRqlReader implements ItemReader<ReadData> {
 			initializeReader(projectId);
 		}
 		ReadData readData = null;
-		//if (null != projectConfFieldMapping && !fetchLastIssue) {
+		if (null != projectConfFieldMapping && !fetchLastIssue) {
 			if (hierarchicalRequirementIterator == null || !hierarchicalRequirementIterator.hasNext()) {
 				fetchIssues();
 				if (CollectionUtils.isNotEmpty(hierarchicalRequirements)) {
@@ -126,8 +126,7 @@ public class IssueRqlReader implements ItemReader<ReadData> {
 				fetchLastIssue = true;
 				return readData;
 			}
-		//}
-
+		}
 		return readData;
 	}
 
