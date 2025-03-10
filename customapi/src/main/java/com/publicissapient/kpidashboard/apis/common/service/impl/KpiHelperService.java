@@ -239,7 +239,8 @@ public class KpiHelperService { // NOPMD
 		return remainingDefects;
 	}
 
-	public static void addRCAProjectWise(Map<String, Set<String>> projectWiseRCA, Node leaf, List<String> excludeRCA) {
+	public static void addRCAProjectWise(Map<String, Set<String>> projectWiseRCA, String basicProjectConfigId,
+			List<String> excludeRCA) {
 		if (CollectionUtils.isNotEmpty(excludeRCA)) {
 			Set<String> uniqueRCA = new HashSet<>();
 			for (String rca : excludeRCA) {
@@ -248,7 +249,7 @@ public class KpiHelperService { // NOPMD
 				}
 				uniqueRCA.add(rca.toLowerCase());
 			}
-			projectWiseRCA.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(), uniqueRCA);
+			projectWiseRCA.put(basicProjectConfigId, uniqueRCA);
 		}
 	}
 
@@ -269,18 +270,18 @@ public class KpiHelperService { // NOPMD
 	/**
 	 * @param projectWisePriority
 	 * @param configPriority
-	 * @param leaf
+	 * @param basicProjectConfigId
 	 * @param defectPriority
 	 */
 	public static void addPriorityProjectWise(Map<String, List<String>> projectWisePriority,
-			Map<String, List<String>> configPriority, Node leaf, List<String> defectPriority) {
+			Map<String, List<String>> configPriority, String basicProjectConfigId, List<String> defectPriority) {
 		if (CollectionUtils.isNotEmpty(defectPriority)) {
 			List<String> priorValue = defectPriority.stream().map(String::toUpperCase).collect(Collectors.toList());
 			if (CollectionUtils.isNotEmpty(priorValue)) {
 				List<String> priorityValues = new ArrayList<>();
 				priorValue.forEach(priority -> priorityValues.addAll(
 						configPriority.get(priority).stream().map(String::toLowerCase).collect(Collectors.toList())));
-				projectWisePriority.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(), priorityValues);
+				projectWisePriority.put(basicProjectConfigId, priorityValues);
 			}
 		}
 	}
@@ -1858,13 +1859,14 @@ public class KpiHelperService { // NOPMD
 	 *            projectWisePriorityCount
 	 * @param configPriority
 	 *            configPriority
-	 * @param leaf
+	 * @param basicProjectConfigId
 	 *            Node
 	 * @param defectPriorityCount
 	 *            From FieldMapping
 	 */
 	public static void addPriorityCountProjectWiseForQuality(Map<String, Map<String, Integer>> projectWisePriorityCount,
-															 Map<String, List<String>> configPriority, ObjectId basicProjectConfigId, List<LabelCount> defectPriorityCount) {
+			Map<String, List<String>> configPriority, ObjectId basicProjectConfigId,
+			List<LabelCount> defectPriorityCount) {
 		if (CollectionUtils.isNotEmpty(defectPriorityCount)) {
 			defectPriorityCount
 					.forEach(labelCount -> labelCount.setLabelValue(labelCount.getLabelValue().toUpperCase()));
@@ -1872,8 +1874,7 @@ public class KpiHelperService { // NOPMD
 				Map<String, Integer> priorityValues = new HashMap<>();
 				defectPriorityCount.forEach(label -> configPriority.get(label.getLabelValue()).forEach(
 						priorityValue -> priorityValues.put(priorityValue.toLowerCase(), label.getCountValue())));
-				projectWisePriorityCount.put(basicProjectConfigId.toString(),
-						priorityValues);
+				projectWisePriorityCount.put(basicProjectConfigId.toString(), priorityValues);
 			}
 		}
 	}

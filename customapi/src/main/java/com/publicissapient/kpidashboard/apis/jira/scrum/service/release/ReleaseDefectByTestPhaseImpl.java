@@ -145,11 +145,14 @@ public class ReleaseDefectByTestPhaseImpl extends JiraReleaseKPIService {
 	private List<JiraIssue> excludeRCAMatchingIssues(Node leafNode, FieldMapping fieldMapping,
 			List<JiraIssue> releaseIssues) {
 		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
-		KpiHelperService.addRCAProjectWise(projectWiseRCA, leafNode, fieldMapping.getExcludeRCAFromKPI163());
+		KpiHelperService.addRCAProjectWise(projectWiseRCA,
+				leafNode.getProjectFilter().getBasicProjectConfigId().toString(),
+				fieldMapping.getExcludeRCAFromKPI163());
 		List<JiraIssue> rcaFreeIssues = new ArrayList<>();
 		releaseIssues.stream().filter(jiraIssue -> {
 			Set<String> rcas = projectWiseRCA.getOrDefault(jiraIssue.getBasicProjectConfigId(), Collections.emptySet());
-			return rcas.isEmpty() || jiraIssue.getRootCauseList().stream().noneMatch(rc -> rcas.contains(rc.toLowerCase()));
+			return rcas.isEmpty()
+					|| jiraIssue.getRootCauseList().stream().noneMatch(rc -> rcas.contains(rc.toLowerCase()));
 		}).forEach(rcaFreeIssues::add);
 		return rcaFreeIssues;
 	}

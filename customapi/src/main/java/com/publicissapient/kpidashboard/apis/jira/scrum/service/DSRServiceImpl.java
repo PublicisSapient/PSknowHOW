@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -97,6 +99,12 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	private CacheService cacheService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
+	@Autowired
+	private KpiDataProvider kpiDataProvider;
+
+	private List<String> sprintIdList = Collections.synchronizedList(new ArrayList<>());
 
 	@Override
 	public String getQualifierType() {
@@ -110,6 +118,8 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
+		sprintIdList = treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.SPRINT_MASTER).stream()
+				.map(node -> node.getSprintFilter().getId()).collect(Collectors.toList());
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			if (Filters.getFilter(k) == Filters.SPRINT) {
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
@@ -150,66 +160,36 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			KpiRequest kpiRequest) {
 
 		Map<String, Object> resultListMap = new HashMap<>();
-		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
-		List<String> sprintList = new ArrayList<>();
-		List<String> basicProjectConfigIds = new ArrayList<>();
-		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-		Map<String, FieldMapping> projFieldMapping = new HashMap<>();
-		Map<String, Map<String, List<String>>> droppedDefects = new HashMap<>();
-		Map<String, List<String>> projectWisePriority = new HashMap<>();
-		Map<String, List<String>> configPriority = customApiConfig.getPriority();
-		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
+		Map<ObjectId, List<String>> projectWiseSprints = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			projFieldMapping.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(), fieldMapping);
-			sprintList.add(leaf.getSprintFilter().getId());
-			basicProjectConfigIds.add(basicProjectConfigId.toString());
-
-			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, leaf,
-					fieldMapping.getDefectPriorityKPI35());
-			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getIncludeRCAForKPI35());
-
-			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueTypeKPI35()));
-			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
-					fieldMapping.getResolutionTypeForRejectionKPI35(), fieldMapping.getJiraDefectRejectionStatusKPI35());
+			String sprint = leaf.getSprintFilter().getId();
+			projectWiseSprints.putIfAbsent(basicProjectConfigId, new ArrayList<>());
+			projectWiseSprints.get(basicProjectConfigId).add(sprint);
 		});
-		/** additional filter * */
-		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, QA, flterHelperService);
-
-		mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
-				sprintList.stream().distinct().collect(Collectors.toList()));
-		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-
-		List<SprintWiseStory> sprintWiseStoryList = jiraIssueRepository.findIssuesGroupBySprint(mapOfFilters,
-				uniqueProjectMap, kpiRequest.getFilterToShowOnTrend(), QA);
-
-		List<JiraIssue> issuesBySprintAndType = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
-				uniqueProjectMap);
-		List<JiraIssue> storyListWoDrop = new ArrayList<>();
-		KpiHelperService.getDefectsWithoutDrop(droppedDefects, issuesBySprintAndType, storyListWoDrop);
-		KpiHelperService.removeRejectedStoriesFromSprint(sprintWiseStoryList, storyListWoDrop);
-		List<String> storyNumberList = new ArrayList<>();
-		sprintWiseStoryList.forEach(s -> storyNumberList.addAll(s.getStoryList()));
-
-		Map<String, List<String>> mapOfFiltersWithStoryIds = new LinkedHashMap<>();
-		mapOfFiltersWithStoryIds.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-		mapOfFiltersWithStoryIds.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-				Arrays.asList(NormalizedJira.DEFECT_TYPE.getValue()));
-
-		List<JiraIssue> totalDefectList = jiraIssueRepository.findIssuesByType(mapOfFiltersWithStoryIds);
-
-		List<JiraIssue> defectListWoDrop = new ArrayList<>();
+		
+		List<SprintWiseStory> sprintWiseStoryList = new ArrayList<>();
 		List<JiraIssue> remainingDefect = new ArrayList<>();
+		Map<String, FieldMapping> projFieldMapping = new HashMap<>();
+		List<JiraIssue> storyListWoDrop = new ArrayList<>();
+		boolean fetchCachedData = flterHelperService.isFilterSelectedTillSprintLevel(kpiRequest.getLevel(), false);
+		projectWiseSprints.forEach((basicProjectConfigId, sprintList) -> {
+			Map<String, Object> result;
+			if (fetchCachedData) { // fetch data from cache only if Filter is selected till Sprint
+				// level.
+				result = kpiDataCacheService.fetchDSRData(kpiRequest, basicProjectConfigId, sprintIdList,
+						KPICode.ISSUE_COUNT.getKpiId());
+			} else { // fetch data from DB if filters below Sprint level (i.e. additional filters)
+				result = kpiDataProvider.fetchDSRData(kpiRequest, basicProjectConfigId, sprintList);
+			}
 
-		KpiHelperService.getDefectsWithoutDrop(droppedDefects, totalDefectList, defectListWoDrop);
-		exludePriorityDefect(projectWisePriority, projectWiseRCA, new HashSet<>(defectListWoDrop), remainingDefect);
-
+			sprintWiseStoryList.addAll((List<SprintWiseStory>) result.getOrDefault(SPRINTSTORIES, new ArrayList<>()));
+			remainingDefect.addAll((List<JiraIssue>) result.getOrDefault(TOTALBUGKEY, new ArrayList<>()));
+			projFieldMapping.put(basicProjectConfigId.toString(),
+					((Map<String, FieldMapping>) result.get(PROJFMAPPING)).get(basicProjectConfigId.toString()));
+			storyListWoDrop.addAll((List<JiraIssue>) result.getOrDefault(STORY_LIST_WO_DROP, new ArrayList<>()));
+		});
+		
 		resultListMap.put(SPRINTSTORIES, sprintWiseStoryList);
 		resultListMap.put(TOTALBUGKEY, remainingDefect);
 		resultListMap.put(PROJFMAPPING, projFieldMapping);
