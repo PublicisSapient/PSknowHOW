@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
@@ -87,6 +88,8 @@ public class FilterHelperService {
 
 	@Autowired
 	private ProjectHierarchyService projectHierarchyService;
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	public List<AccountHierarchyData> getFilteredBuilds(KpiRequest kpiRequest, String groupName) {
 
@@ -629,9 +632,10 @@ public class FilterHelperService {
 	 * @return true or false
 	 */
 	public boolean isFilterSelectedTillSprintLevel(int level, boolean isKanban) {
+		if (CollectionUtils.isEmpty(customApiConfig.getGroupIdsToExcludeFromCache()))
+			return false;
 		HierarchyLevel projectHierarchyLevel = getHierarchyLevelMap(isKanban)
 				.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, null);
-//		return null != projectHierarchyLevel && projectHierarchyLevel.getLevel() >= level;//NOSONAR
-		return false;
+		return null != projectHierarchyLevel && projectHierarchyLevel.getLevel() >= level;// NOSONAR
 	}
 }
