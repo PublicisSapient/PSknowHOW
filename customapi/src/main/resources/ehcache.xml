@@ -1,9 +1,6 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="http://www.ehcache.org/v3"
-        xmlns:jsr107="http://www.ehcache.org/v3/jsr107"
-        xsi:schemaLocation="
-            http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd
-            http://www.ehcache.org/v3/jsr107 http://www.ehcache.org/schema/ehcache-107-ext-3.0.xsd">
+        xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd">
 
     <cache alias="cache_kpi_master">
         <heap unit="MB">50</heap>
@@ -117,7 +114,7 @@
         </listeners>-->
 
         <!--<heap unit="entries">200</heap>-->
-        <heap unit="MB">50</heap>
+        <heap unit="entries">10</heap>
     </cache>
 
     <cache alias="jiraKpiCache">
@@ -125,7 +122,7 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <heap unit="MB">50</heap>
+        <heap unit="entries">10</heap>
     </cache>
 
     <cache alias="jenkinsKpiCache">
@@ -133,7 +130,7 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <heap unit="MB">50</heap>
+        <heap unit="entries">10</heap>
     </cache>
 
     <cache alias="sonarKpiCache">
@@ -141,7 +138,7 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <heap unit="MB">50</heap>
+        <heap unit="entries">10</heap>
     </cache>
 
     <cache alias="azureKpiCache">
@@ -149,7 +146,7 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <heap unit="MB">50</heap>
+        <heap unit="entries">10</heap>
     </cache>
 
     <cache alias="bitbucketKpiCache">
@@ -157,7 +154,7 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <heap unit="MB">50</heap>
+        <heap unit="entries">10</heap>
     </cache>
 
     <cache alias="gitLabKpiCache">
@@ -165,7 +162,7 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <heap unit="MB">50</heap>
+        <heap unit="entries">10</heap>
     </cache>
 
     <cache alias="jiraKanbanKpiCache">
@@ -173,7 +170,7 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <heap unit="MB">50</heap>
+        <heap unit="entries">10</heap>
     </cache>
 
     <cache alias="organizationHierarchies">
@@ -181,7 +178,7 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <heap unit="MB">50</heap>
+        <heap unit="entries">10</heap>
     </cache>
 
     <cache alias="projectHierarchies">
@@ -189,7 +186,7 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <heap unit="MB">50</heap>
+        <heap unit="entries">10</heap>
     </cache>
 
     <cache alias="allProjectConfigMap">
@@ -197,7 +194,7 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <heap unit="MB">50</heap>
+        <heap unit="entries">10</heap>
     </cache>
 
     <cache alias="testingKpiCache">
@@ -205,7 +202,7 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <heap unit="MB">50</heap>
+        <heap unit="entries">10</heap>
     </cache>
 
     <cache alias="project_kpi_data_cache">
@@ -213,7 +210,7 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <heap unit="MB">50</heap>
+        <heap unit="entries">10</heap>
     </cache>
 
     <cache alias="createdBy">
@@ -221,7 +218,7 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <heap unit="MB">50</heap>
+        <heap unit="entries">10</heap>
     </cache>
 
     <cache alias="reportsById">
@@ -229,7 +226,7 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <heap unit="MB">50</heap>
+        <heap unit="entries">10</heap>
     </cache>
 
 </config>
