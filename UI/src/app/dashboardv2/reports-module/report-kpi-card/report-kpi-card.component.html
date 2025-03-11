@@ -1,24 +1,47 @@
+<div class="subtext p-text-right p-mb-2">
+    Captured at: {{ capturedAt || kpiData?.capturedAt }}
+</div>
 <div class="kpi-card-container-v2">
     <div class="kpi-card-header">
         <div class="p-d-flex p-jc-between p-ai-center">
             <div class="p-d-flex p-ai-center">
                 <div>
-                    <h3 class="p-my-0">{{ kpiData?.kpiName }}</h3>
+                    <h4 class="p-my-0">{{ kpiData?.kpiName }}</h4>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="kpi-card-body">
+        <div class="kpi-filter-container" *ngIf="selectedTab !== 'iteration' && chartType !== 'chartWithFilter'">
+            <ul>
+                <li *ngFor="let filter of kpiFilters; let i = index;">
+                    <!-- <span *ngIf="i !== 0">: </span> -->
+                    <span>{{ filter }}</span>
+                </li>
+            </ul>
+        </div>
 
-        <!-- <div *ngIf="kpiData?.chartType === 'stacked-bar-chart' ||  kpiData?.chartType ===  'stacked-bar'"
+        <div class="kpi-filter-container" *ngIf="selectedTab === 'iteration' && iterationKPIFilterValues?.length && chartType !== 'chartWithFilter'">
+            <div style="padding-left: 40px;">{{ selectedButtonValue }}</div>
+            <ul class="p-m-0">
+                <ng-container *ngFor="let filter of iterationKPIFilterValues">
+                    <li *ngIf="!!filter?.value">
+                        <span *ngIf="filter?.filterName !== ''">{{ filter.filterName }}: {{ filter?.value }}</span>
+                        <span *ngIf="filter?.filterName === ''"> {{ filter?.value }}</span>
+                    </li>
+                </ng-container>
+            </ul>
+        </div>
+
+        <div *ngIf="chartType === 'stacked-bar-chart' || chartType ===  'stacked-bar'"
             class="p-pr-5 p-pl-5 p-pt-5 p-col-6">
             <div class="w-100">{{ cardData.dataGroup.summary.name }}</div>
-            <h3 class="p-my-0">{{showCummalative()}}</h3>
-        </div> -->
-        <div class="p-d-flex" style="height:300px;">
-            <div class="{{ kpiData?.chartType === 'bar-chart' ? 'p-col-8' : 'p-col-12' }}">
-                <div class="p-px-3 p-py-0"  style="height:300px;" [ngSwitch]="kpiData?.chartType">
+            <h3 class="p-my-0">{{ cardData.summary }}</h3>
+        </div>
+        <div class="p-d-flex">
+            <div class="{{ chartType === 'bar-chart' ? 'p-col-8' : 'p-col-12' }}">
+                <div class="p-px-3 p-py-0" style="height:auto;" [ngSwitch]="chartType">
                     <app-stacked-bar-chart *ngSwitchCase="'stacked-bar-chart'" [data]="currentChartData"
                         [width]="chartWidth" [height]="chartHeight"></app-stacked-bar-chart>
                     <app-barchart [data]="currentChartData" [height]="chartHeight" [width]="chartWidth"
@@ -27,12 +50,15 @@
                         [height]="chartHeight"></app-stacked-bar>
                     <app-semi-circle-donut-chart *ngSwitchCase="'semi-circle-donut-chart'" [value]="currentChartData"
                         [max]="100" [width]="chartWidth" [height]="chartHeight"></app-semi-circle-donut-chart>
-                    <app-chart-with-filters [data]="currentChartData" *ngSwitchCase="'chartWithFilter'"
-                        [category]="chartData?.category" [kpiName]="kpiData?.kpiName">
+                    <app-chart-with-filters [data]="currentChartData?.chartData || currentChartData[0]?.data" *ngSwitchCase="'chartWithFilter'"
+                        [category]="currentChartData?.category || currentChartData[0]?.category" [kpiName]="kpiData?.kpiName"
+                        [filters]="currentChartData?.filterGroup || currentChartData[0]?.filters" [modalHeads]="currentChartData?.modalHeads || currentChartData[0]?.modalHeads"
+                        [selectedMainFilterForReport]="kpiData?.selectedMainFilter" [selectedMainCategoryForReport]="kpiData?.selectedMainCategory"
+                        [selectedFilter2ForReport]="kpiData?.selectedFilter2">
                     </app-chart-with-filters>
-                    <app-cumulative-line-chart *ngSwitchCase="'CumulativeMultilineChart'" [data]="currentChartData"
+                    <app-cumulative-line-chart *ngSwitchCase="'CumulativeMultilineChartv2'" [data]="currentChartData"
                         [filters]="[]" [kpiId]="kpiData?.kpiId" [xCaption]="kpiData?.xaxisLabel"
-                        [yCaption]="kpiDetails?.yaxisLabel">
+                        [yCaption]="kpiDetails?.yaxisLabel" [onPopup]="true">
                     </app-cumulative-line-chart>
                     <app-tabular-kpi-v2 *ngSwitchCase="'table-v2'" [data]="currentChartData" [kpiId]="kpiData?.kpiId"
                         [filters]="chartData?.filterGroup ? chartData?.filterGroup : []"></app-tabular-kpi-v2>
@@ -40,15 +66,16 @@
                         [filters]="chartData?.filterGroup ? chartData?.filterGroup : []"></app-tabular-kpi-v2>
                     <app-tabular-kpi-with-donut-chart *ngSwitchCase="'tabular-with-donut-chart'"
                         [data]="currentChartData"></app-tabular-kpi-with-donut-chart>
-                    <app-grouped-bar-chart *ngSwitchCase="'grouped-bar-chart'"
-                        [filters]="chartData.categoryData.categoryGroup"
+                    <app-grouped-bar-chart *ngSwitchCase="'grouped-bar-chart'" [filters]="currentChartData.categoryData"
                         [data]="currentChartData"></app-grouped-bar-chart>
 
                     <ng-container *ngSwitchCase="'stackedColumn'">
                         <ng-container>
-                            <app-groupstackchartv2 [legendType]="'normal'" [xCaption]="kpiData?.xaxisLabel"
-                                [yCaption]="checkYAxis(kpi)" [unit]="kpiData?.kpiUnit"
-                                [data]="kpiChartData[kpi?.kpiId]" [kpiId]="kpi?.kpiId"
+                            <app-groupstackchartv2 [legendType]="'normal'"
+                                [xCaption]="filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpiData?.xaxisLabel"
+                                [yCaption]="yAxis" [unit]="kpiData?.kpiUnit" [filter]="kpiSelectedFilterObj"
+                                [thresholdValue]="kpiThresholdObj" [data]="currentChartData" [color]="chartColorList"
+                                [kpiId]="kpi?.kpiId" [selectedtype]="selectedtype"
                                 [isAggregationStacks]="(kpiData?.isAggregationStacks === false) ? false : true"></app-groupstackchartv2>
                         </ng-container>
                         <ng-container *ngIf="!checkIfZeroData(currentChartData)">
@@ -63,8 +90,7 @@
                                 [xCaption]="kpiData?.xaxisLabel" [yCaption]="kpiData?.yaxisLabel"
                                 [selectedtype]="selectedtype" [viewType]="showChart"
                                 [lowerThresholdBG]="kpiData?.lowerThresholdBG"
-                                [upperThresholdBG]="kpiData?.upperThresholdBG"
-                                [color]="colors">
+                                [upperThresholdBG]="kpiData?.upperThresholdBG" [color]="colors">
                             </app-multiline-v2>
                         </ng-container>
                         <ng-container *ngIf="!checkIfZeroData(currentChartData)">
@@ -76,8 +102,7 @@
                     <ng-container *ngSwitchCase="'multipleline'">
                         <ng-container *ngIf="checkIfZeroData(currentChartData)">
                             <app-multiline-style-v2 [unit]="kpiData?.kpiUnit" [data]="currentChartData"
-                                [xCaption]="kpiData?.xaxisLabel" [yCaption]="kpiData?.yaxisLabel"
-                                [kpiId]="kpi?.kpiId">
+                                [xCaption]="kpiData?.xaxisLabel" [yCaption]="kpiData?.yaxisLabel" [kpiId]="kpi?.kpiId">
                             </app-multiline-style-v2>
                         </ng-container>
                         <ng-container *ngIf="!checkIfZeroData(currentChartData)">
@@ -93,9 +118,8 @@
                                 [lineChart]="kpiData?.lineChart" [isXaxisGroup]="kpiData?.isXaxisGroup"
                                 [unit]="kpiData?.kpiUnit" [xCaption]="kpiData?.xaxisLabel"
                                 [yCaption]="kpiData?.yaxisLabel" [barLegend]="kpiData?.barLegend"
-                                [lineLegend]="kpiData?.lineLegend"
-                                [lowerThresholdBG]="kpiData?.lowerThresholdBG"
-                                [upperThresholdBG]="kpiData?.upperThresholdBG">
+                                [lineLegend]="kpiData?.lineLegend" [lowerThresholdBG]="kpiData?.lowerThresholdBG"
+                                [upperThresholdBG]="kpiData?.upperThresholdBG" [color]="colors">
                             </app-grouped-column-plus-line-chart-v2>
                         </ng-container>
                         <ng-container *ngIf="!checkIfZeroData(currentChartData)">
@@ -108,12 +132,10 @@
                         <ng-container>
                             <app-bar-with-y-axis-group [data]="currentChartData" [lineChart]="true"
                                 [unit]="kpiData?.kpiUnit" [thresholdValue]="kpiData?.thresholdValue"
-                                [xCaption]="kpiData?.xaxisLabel" [yCaption]="kpiData?.yaxisLabel"
-                                [color]="chartColorList[kpi?.kpiId]" [barLegend]="kpiData?.barLegend"
-                                [lineLegend]="kpiData?.lineLegend" [selectedtype]="selectedtype"
-                                [viewType]="showChart" [lowerThresholdBG]="kpiData?.lowerThresholdBG"
-                                [upperThresholdBG]="kpiData?.upperThresholdBG"
-                                [yAxisOrder]="kpiData?.yaxisOrder">
+                                [xCaption]="kpiData?.xaxisLabel" [yCaption]="kpiData?.yaxisLabel" [color]="colors"
+                                [barLegend]="kpiData?.barLegend" [lineLegend]="kpiData?.lineLegend"
+                                [selectedtype]="selectedtype" [lowerThresholdBG]="kpiData?.lowerThresholdBG"
+                                [upperThresholdBG]="kpiData?.upperThresholdBG" [yAxisOrder]="kpiData?.yaxisOrder">
                             </app-bar-with-y-axis-group>
                         </ng-container>
                         <ng-container *ngIf="!checkIfZeroData(currentChartData)">
@@ -124,9 +146,13 @@
 
                     <ng-container *ngSwitchCase="'CumulativeMultilineChart'">
                         <ng-container>
-                            <app-group-bar-chart [xCaption]="kpiData?.xaxisLabel" [yCaption]="checkYAxis(kpi)"
-                                [unit]="kpiData?.kpiUnit" [data]="currentChartData"
-                                [releaseEndDate]="releaseEndDate">
+                            <app-group-bar-chart
+                                [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] :kpiData?.xAxis"
+                                [yCaption]="yAxis" 
+                                [unit]="kpiData?.kpiUnit" 
+                                [thresholdValue]="kpiData?.kpiThresholdObj"
+                                [data]="currentChartData" [color]="chartColorList" [releaseEndDate]="releaseEndDate"
+                                [selectedtype]="kpiData?.selectedType" [kpiId]="kpiData?.kpiId" [legendType]="'normal'">
                             </app-group-bar-chart>
                         </ng-container>
                         <ng-container *ngIf="!checkIfZeroData(currentChartData)">
@@ -137,8 +163,8 @@
 
                     <ng-container *ngSwitchCase="'horizontalPercentBarChart'">
                         <ng-container>
-                            <app-horizontal-percent-bar-chartv2 [kpiId]="kpi?.kpiId"
-                                [kpiWidth]="kpiData?.kpiWidth" [data]="currentChartData">
+                            <app-horizontal-percent-bar-chartv2 [kpiId]="kpi?.kpiId" [kpiWidth]="kpiData?.kpiWidth"
+                                [data]="currentChartData">
                             </app-horizontal-percent-bar-chartv2>
                         </ng-container>
                         <ng-container *ngIf="!checkIfZeroData(currentChartData)">
@@ -148,13 +174,13 @@
                     </ng-container>
 
                     <ng-container *ngSwitchCase="'pieChart'">
-                        <ng-container>
-                            <app-piechart [data]="currentChartData"></app-piechart>
-                        </ng-container>
+                        <!-- <ng-container> -->
+                        <app-piechart [data]="currentChartData"></app-piechart>
+                        <!-- </ng-container>
                         <ng-container *ngIf="!checkIfZeroData(currentChartData)">
                             <ng-container *ngTemplateOutlet="partialData; context:  { $implicit: kpi }">
                             </ng-container>
-                        </ng-container>
+                        </ng-container> -->
                     </ng-container>
 
                     <!-- <ng-container *ngSwitchCase="'chartWithFilter'">
@@ -175,24 +201,79 @@
                     <ng-container *ngSwitchCase="'stacked-area'">
                         <ng-container *ngIf="checkIfZeroData(currentChartData)">
                             <app-stacked-area-chart [kpiId]="kpi?.kpiId"
-                                [data]="kpiChartData[kpi?.kpiId]"></app-stacked-area-chart>
+                                [data]="currentChartData"></app-stacked-area-chart>
                         </ng-container>
                         <ng-container *ngIf="!checkIfZeroData(currentChartData)">
                             <ng-container *ngTemplateOutlet="partialData; context:  { $implicit: kpi }">
                             </ng-container>
                         </ng-container>
                     </ng-container>
+                    <ng-container *ngSwitchCase="'old-table'">
+                        <div class="p-d-flex p-justify-around p-align-center w-100 p-h-100">
+                            <ng-container *ngFor="let item of currentChartData; let index=index">
+                                <ng-container *ngFor="let x of item?.data; let i = index">
+                                    <div class="p-3 p-text-center"
+                                        [ngClass]="{'wrapper-w-50' : true ,'kpi-content-container': item?.data?.length ==2 && i!==1 }">
+                                        <h3 class="text-label">{{x?.label}}
+                                        </h3>
+                                        <p *ngIf="x?.labelInfo" class="p-m-0">
+                                            {{x?.labelInfo}}</p>
+                                        <p class="text-data">
+                                            <span
+                                                *ngIf="x?.label?.toLowerCase() === 'backlog strength'; else otherFields">
+                                                {{checkSprint(x?.value, x?.unit,
+                                                kpi?.kpiId)}}
+                                            </span>
+                                            <ng-template #otherFields>
+                                                <span
+                                                    [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value
+                                                    != -99 ?
+                                                    convertToHoursIfTime(x?.value,x?.unit)
+                                                    : '-'}}</span>
+                                                <span
+                                                    *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours'">
+                                                    {{ x?.value != -99 ? x?.unit :
+                                                    ''}}</span>
+                                                <span *ngIf="x?.value1 && x?.value1 != -99 && x?.value1 != undefined"
+                                                    [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/'
+                                                    +
+                                                    x?.value1}}</span>
+                                                <span
+                                                    *ngIf="x?.value1 && x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours'">
+                                                    {{ x?.value1 != -99 ? x?.unit1 :
+                                                    ''}}
+                                                </span>
 
-
-                    <app-multiline-v2 *ngSwitchDefault [unit]="kpiData?.kpiUnit" [data]="currentChartData"
-                        [xCaption]="kpiData?.xaxisLabel" [yCaption]="kpiData?.yaxisLabel"
-                        [name]="kpiData?.kpiName" [kpiId]="kpi?.kpiId"
-                        [lowerThresholdBG]="kpiData?.lowerThresholdBG"
-                        [upperThresholdBG]="kpiData?.upperThresholdBG">
-                    </app-multiline-v2>
+                                            </ng-template>
+                                        </p>
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+            <div class="p-pr-5 p-pl-5 p-text-center" *ngIf="kpiData?.chartType ===  'bar-chart'">
+                <div class="p-d-block p-col-12" *ngFor="let dataGroup of cardData.dataGroup.dataGroup2">
+                    <p>{{dataGroup.name}}</p>
+                    <h3>{{convertToHoursIfTime(calculateValue(cardData.issueData,dataGroup.key),dataGroup.unit)}}</h3>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div *ngIf="kpiData?.chartType === 'stacked-bar-chart' ||  kpiData?.chartType ===  'stacked-bar'"
+        class="kpi-card-footer justify-content-center p-pr-5 p-pl-5">
+        <ul class="legend">
+            <li class="p-px-3 p-py-0" *ngFor="let footer of currentChartData">
+                <span [ngStyle]="{ 'background-color': footer.color }"></span>{{ footer.category }}
+            </li>
+        </ul>
+    </div>
+    <div *ngIf="kpiData?.chartType === 'line' ||  kpiData?.chartType ===  'multipleline' || kpiData?.chartType=== 'grouped_column_plus_line'"
+        class="p-p-3">
+        <app-trend-indicator-v2 [trendData]="kpiTrendsObj" [colorObj]="trendColors">
+        </app-trend-indicator-v2>
     </div>
     <div *ngIf="kpiData?.chartType === 'stacked-bar-chart' ||  kpiData?.chartType ===  'stacked-bar'"
         class="kpi-card-footer justify-content-center p-pr-5 p-pl-5">

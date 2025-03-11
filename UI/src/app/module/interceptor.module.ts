@@ -76,13 +76,14 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             environment.baseUrl + '/api/jenkinskanban/kpi',
             environment.baseUrl + '/api/zypherkanban/kpi',
             environment.baseUrl + '/api/bitbucketkanban/kpi',
-            environment.baseUrl + '/api/auth-types'
+            environment.baseUrl + '/api/auth-types',
         ];
 
         const partialRedirectExceptions = [
             environment.baseUrl + '/api/sonar/project',
             environment.baseUrl + '/api/userinfo',
             environment.baseUrl + '/api/jenkins/jobName',
+            environment.baseUrl + '/api/reports?createdBy='
         ];
 
         // handling error response

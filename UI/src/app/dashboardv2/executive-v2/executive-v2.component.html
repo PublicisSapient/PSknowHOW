@@ -54,8 +54,11 @@
                                             [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                                             (getCommentCountByKpi)="getKpiCommentsCount($event)"
                                             (reloadKPITab)="reloadKPI($event)" [kpiSize]="kpi.kpiDetail?.kpiSize"
-                                            [kpiChartData]="kpiChartData" [immediateLoader]='immediateLoader'
-                                            [partialData]="checkIfPartialDataPresent(kpi)">
+                                            [kpiChartData]="kpiChartData[kpi?.kpiId]" [immediateLoader]='immediateLoader'
+                                            [partialData]="checkIfPartialDataPresent(kpi)" [filterApplyData]="filterApplyData"
+                                            [chartColorList]="chartColorList[kpi?.kpiId]" [kpiSelectedFilterObj]="kpiSelectedFilterObj[kpi?.kpiId]"
+                                            [yAxis]="checkYAxis(kpi)" [kpiThresholdObj]="kpiThresholdObj[kpi?.kpiId]"
+                                            [releaseEndDate]="releaseEndDate">
                                             <ng-container *ngIf="!noTabAccess else noDataAccess">
                                                 <ng-container *ngIf="kpi?.kpiDetail?.chartType; else showTable">
 

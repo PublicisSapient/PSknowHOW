@@ -133,6 +133,10 @@ export class SharedService {
   selectedFilters: any = {};
   selectedUrlFilters: string = '{}';
 
+  // for reports
+  onChartChange = new Subject<any>();
+  onChartChangeObs = this.onChartChange.asObservable();
+
   constructor(private router: Router, private route: ActivatedRoute) {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();

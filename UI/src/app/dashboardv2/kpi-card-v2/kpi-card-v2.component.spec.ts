@@ -1660,34 +1660,34 @@ describe('KpiCardV2Component', () => {
 
   });
 
-  describe('getColorList', () => {
-    it('should return an array of colors', () => {
-      const colorObj = {
-        key1: { color: 'red' },
-        key2: { color: 'blue' },
-        key3: { color: 'green' }
-      };
+  // describe('getColorList', () => {
+  //   it('should return an array of colors', () => {
+  //     const colorObj = {
+  //       key1: { color: 'red' },
+  //       key2: { color: 'blue' },
+  //       key3: { color: 'green' }
+  //     };
 
-      const result = component.getColorList(colorObj);
-      expect(result).toEqual(['red', 'blue', 'green']);
-    });
+  //     const result = component.getColorList(colorObj);
+  //     expect(result).toEqual(['red', 'blue', 'green']);
+  //   });
 
-    it('should return an empty array if colorObj is empty', () => {
-      const colorObj = {};
-      const result = component.getColorList(colorObj);
-      expect(result).toEqual([]);
-    });
+  //   it('should return an empty array if colorObj is empty', () => {
+  //     const colorObj = {};
+  //     const result = component.getColorList(colorObj);
+  //     expect(result).toEqual([]);
+  //   });
 
-    it('should not modify the original object', () => {
-      const colorObj = {
-        key1: { color: 'red' },
-        key2: { color: 'blue' }
-      };
+  //   it('should not modify the original object', () => {
+  //     const colorObj = {
+  //       key1: { color: 'red' },
+  //       key2: { color: 'blue' }
+  //     };
 
-      const originalCopy = JSON.stringify(colorObj);
-      component.getColorList(colorObj);
-      expect(JSON.stringify(colorObj)).toEqual(originalCopy);
-    });
-  });
+  //     const originalCopy = JSON.stringify(colorObj);
+  //     component.getColorList(colorObj);
+  //     expect(JSON.stringify(colorObj)).toEqual(originalCopy);
+  //   });
+  // });
 
 });

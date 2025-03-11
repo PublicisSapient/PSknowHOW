@@ -1,0 +1,36 @@
+.selected-filter-container {
+    background-color: #F5F9FF;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.selected-filter-container ul {
+    list-style: none;
+    background-color: #F5F9FF;
+}
+
+ul li.selectedfilter {
+    font-size: 0.8rem;
+    display: flex;
+    line-height: 2;
+    margin: 10px;
+}
+
+.selectedfilter {
+    padding: 0 8px;
+    background-color: #fff;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.align-marker {
+    margin: 0 1rem 0 0;
+}
+
+.align-list-marker {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 5px;
+}

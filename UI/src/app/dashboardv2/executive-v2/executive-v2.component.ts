@@ -3065,7 +3065,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   checkYAxis(kpi) {
     const kpiDataResponce = this.allKpiArray?.find(de => de.kpiId === kpi.kpiId);
     const selectedFilterVal = this.kpiSelectedFilterObj[kpi?.kpiId];
-    if (kpiDataResponce && kpiDataResponce?.trendValueList) {
+    if (kpiDataResponce && kpiDataResponce?.trendValueList && Array.isArray(kpiDataResponce?.trendValueList) && selectedFilterVal) {
       const trendData = kpiDataResponce.trendValueList?.find(data => {
         const kpiFIlter = (data.filter || data.filter1);
         const selectedFilter = selectedFilterVal.filter1 ? selectedFilterVal.filter1[0] : selectedFilterVal[0];

@@ -1,0 +1,24 @@
+<div class="selected-filter-container p-d-flex p-jc-between p-p-3"
+    *ngFor="let superKey of objectValues(reportObj.metadata.trendColors)">
+    <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
+        <div *ngFor="let key of objectKeys(superKey['tooltip']); let i = index;" class="p-col-4">
+            <strong>{{ key }}&nbsp;:&nbsp;</strong> <span>{{ superKey['tooltip'][key] }}</span>
+        </div>
+        <div class="p-col-4">
+            <strong>{{superKey['labelName'] | titlecase }}:&nbsp;</strong>
+            <span class="align-list-marker" [ngStyle]="{'background':superKey?.color}"></span>
+            <span>{{ superKey['nodeDisplayName'] }}</span>
+        </div>
+    </div>
+</div>
+
+<app-report-kpi-card [currentChartData]="reportObj.chartData" [kpiDataStatusCode]="reportObj.metadata.kpiDataStatusCode"
+    [kpiData]="reportObj.metadata" [chartType]="reportObj.metadata.chartType" [kpiTrendsObj]="reportObj.metadata.trend"
+    [trendColors]="reportObj.metadata.trendColors" [kpiFilters]="reportObj.metadata.selectedKPIFilters"
+    [selectedButtonValue]="reportObj.metadata.selectedButtonValue" [cardData]="reportObj.metadata.cardData"
+    [kpiFilterData]="reportObj.metadata?.kpiFilterData" [selectedTab]="reportObj.metadata.selectedTab"
+    [iterationKPIFilterValues]="reportObj.metadata.iterationKPIFilterValues" [filterApplyData]="reportObj.metadata.filterApplyData"
+    [kpiSelectedFilterObj]="reportObj.metadata.kpiSelectedFilterObj" [chartColorList]="reportObj.metadata.chartColorList"
+    [yAxis]="reportObj.metadata.yAxis" [capturedAt]="reportObj.metadata.capturedAt"
+    [kpiHeight]="reportObj.metadata.kpiHeight" [releaseEndDate]="reportObj.metadata.releaseEndDate">
+</app-report-kpi-card>

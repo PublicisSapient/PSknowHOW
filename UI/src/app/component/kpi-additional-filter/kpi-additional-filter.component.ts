@@ -36,6 +36,7 @@ export class KpiAdditionalFilterComponent implements OnInit {
     let resultObj = {};
     resultObj['dataCopy'] = this.dataCopy;
     resultObj['modifiedData'] = this.modifiedData;
+    resultObj['selectedFilter2'] = this.selectedFilter2;
     this.modifiedDataResult.emit(resultObj);
 
   }
@@ -80,6 +81,7 @@ export class KpiAdditionalFilterComponent implements OnInit {
     let resultObj = {};
     resultObj['dataCopy'] = this.dataCopy;
     resultObj['modifiedData'] = this.modifiedData;
+    resultObj['selectedFilter2'] = this.selectedFilter2;
     this.modifiedDataResult.emit(resultObj);
   }
 
