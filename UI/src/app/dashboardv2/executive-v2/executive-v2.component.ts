@@ -2489,7 +2489,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       for (const key in this.colorObj) {
         if (arr[i].value?.length) {
           let selectedNode = this.filterData.filter(x => x.nodeDisplayName === arr[i].value[0].sprojectName);
-          let selectedId = selectedNode[0]?.nodeId;
+          let selectedId = selectedNode.filter(x=>x.nodeId === key)[0]?.nodeId;
 
           if (kpiId == 'kpi17' && this.colorObj[key]?.nodeId == selectedId) {
             this.chartColorList[kpiId].push(this.colorObj[key]?.color);
