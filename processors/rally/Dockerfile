@@ -36,7 +36,7 @@ ADD ${JAR_FILE} $APP_DIR/rally.jar
 ADD src/main/resources/application.properties $PROPERTIES_DIR/rally.properties
 
 # Expose port
-EXPOSE 50008
+EXPOSE 50024
 
 # Set permissions for the JAR file
 RUN chown -R $USER:$USER /app \

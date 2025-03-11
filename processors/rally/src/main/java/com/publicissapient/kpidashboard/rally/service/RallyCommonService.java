@@ -24,8 +24,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -37,32 +35,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.publicissapient.kpidashboard.rally.config.RallyProcessorConfig;
-import com.publicissapient.kpidashboard.rally.constant.RallyConstants;
-import com.publicissapient.kpidashboard.rally.helper.RallyHelper;
-import com.publicissapient.kpidashboard.rally.model.Defect;
-import com.publicissapient.kpidashboard.rally.model.HierarchicalRequirement;
-import com.publicissapient.kpidashboard.rally.model.Iteration;
-import com.publicissapient.kpidashboard.rally.model.IterationResponse;
-import com.publicissapient.kpidashboard.rally.model.RallyArtifact;
-import com.publicissapient.kpidashboard.rally.model.RallyToolConfig;
-import com.publicissapient.kpidashboard.rally.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.rally.model.QueryResult;
-import com.publicissapient.kpidashboard.rally.model.RallyResponse;
-import com.publicissapient.kpidashboard.rally.model.Release;
-import com.publicissapient.kpidashboard.rally.util.RqlParser;
-import com.rallydev.rest.RallyRestApi;
-import com.rallydev.rest.request.GetRequest;
-import com.rallydev.rest.request.QueryRequest;
-import com.rallydev.rest.response.GetResponse;
-import com.rallydev.rest.response.QueryResponse;
-import com.rallydev.rest.util.Fetch;
-import com.rallydev.rest.util.QueryFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
@@ -81,6 +54,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
@@ -95,9 +69,18 @@ import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExec
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.rally.config.RallyProcessorConfig;
+import com.publicissapient.kpidashboard.rally.constant.RallyConstants;
+import com.publicissapient.kpidashboard.rally.helper.RallyHelper;
+import com.publicissapient.kpidashboard.rally.model.HierarchicalRequirement;
+import com.publicissapient.kpidashboard.rally.model.Iteration;
+import com.publicissapient.kpidashboard.rally.model.IterationResponse;
+import com.publicissapient.kpidashboard.rally.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.rally.model.QueryResult;
+import com.publicissapient.kpidashboard.rally.model.RallyResponse;
+import com.publicissapient.kpidashboard.rally.model.RallyToolConfig;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Component
@@ -107,12 +90,6 @@ public class RallyCommonService {
 	private static final String API_KEY = "_8BogJQcTuGwVjEemJiAjV0z5SgR2UCSsSnBUu55Y5U";
 	private static final String PROJECT_NAME = "Core Team";
 	private static final int PAGE_SIZE = 200; // Number of artifacts per page
-	private RallyRestApi rallyApi;
-
-	public RallyCommonService() throws URISyntaxException {
-		//this.rallyApi = new RallyRestApi(new URI("https://rally1.rallydev.com"), API_KEY);
-	}
-
 
 	@Autowired
 	private RallyProcessorConfig rallyProcessorConfig;
@@ -339,7 +316,6 @@ public class RallyCommonService {
 		List<HierarchicalRequirement> hierarchicalRequirements = RallyHelper.getIssuesFromResult(rallyResponse);
 		return hierarchicalRequirements;
 	}
-
 	/**
 	 * @param projectConfig
 	 *            projectConfig
@@ -607,203 +583,6 @@ public class RallyCommonService {
 		}
 		// Return an empty Iteration object instead of null
 		return new Iteration();
-	}
-	public List<RallyArtifact> getRallyIssues(ProjectConfFieldMapping projectConfig, String deltaDate, int pageStart)
-			throws InterruptedException {
-		List<RallyArtifact> rallyArtifacts = null;
-		String[] rallyIssueTypeNames = new String[]{"hierarchicalrequirement", "defect", "task"};//projectConfig.getFieldMapping().getJiraIssueTypeNames();
-		if (StringUtils.isEmpty(projectConfig.getProjectToolConfig().getProjectKey())
-				|| StringUtils.isEmpty(projectConfig.getProjectToolConfig().getBoardQuery())
-				|| null == rallyIssueTypeNames) {
-			log.error(
-					"Either Project key is empty or Jql Query not provided or rallyIssueTypeNames not configured in fieldmapping. key {} jql query {} ",
-					projectConfig.getProjectToolConfig().getProjectKey(),
-					projectConfig.getProjectToolConfig().getBoardQuery());
-		} else {
-			String issueTypes = Arrays.stream(rallyIssueTypeNames).map(type -> "(Type = " + type + ")")
-					.collect(Collectors.joining(" OR "));
-			String userQuery = projectConfig.getJira().getBoardQuery().split(RallyConstants.ORDERBY)[0];
-			StringBuilder query = new StringBuilder(userQuery);
-			query.append(" AND (").append(issueTypes).append(") AND updatedDate >= '").append(deltaDate).append("'");
-
-			log.info("rally query :{}", query);
-			try {
-				//	QueryRequest queryRequest = QueryRequestBuilder.buildQueryRequest(query.toString(), FIELDS_TO_FETCH);
-				rallyArtifacts = fetchRallyArtifacts (query.toString());
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return rallyArtifacts;
-	}
-	public List<RallyArtifact> fetchRallyArtifacts(String rqlQuery) throws Exception {
-		List<RallyArtifact> rallyArtifacts = new ArrayList<>();
-
-		// Fetch artifacts based on RQL query
-		QueryRequest request = new QueryRequest("Artifact");
-		request.setQueryFilter(RqlParser.parseRql("Project.Name = \"Core Team\""));
-		request.setFetch(new Fetch("FormattedID", "Name", "Owner", "PlanEstimate",
-				"ScheduleState", "Iteration", "CreationDate", "LastUpdateDate"));
-
-		QueryResponse response = rallyApi.query(request);
-		if (response.wasSuccessful()) {
-			JsonArray results = response.getResults();
-			for (int i = 0; i < results.size(); i++) {
-				JsonObject artifact = results.get(i).getAsJsonObject();
-				RallyArtifact rallyArtifact = new RallyArtifact();
-
-				// Set basic fields
-				rallyArtifact.setRallyAPIMajor(artifact.get("_rallyAPIMajor").getAsString());
-				rallyArtifact.setRallyAPIMinor(artifact.get("_rallyAPIMinor").getAsString());
-				rallyArtifact.setRef(artifact.get("_ref").getAsString());
-				rallyArtifact.setRefObjectUUID(artifact.get("_refObjectUUID").getAsString());
-				rallyArtifact.setRefObjectName(artifact.get("_refObjectName").getAsString());
-				rallyArtifact.setType(artifact.get("_type").getAsString());
-
-				// Fetch Iteration and Release
-				if (artifact.has("Iteration") && !artifact.get("Iteration").isJsonNull()) {
-					rallyArtifact.setIteration(fetchIteration(artifact.getAsJsonObject("Iteration").get("_ref").getAsString()));
-				}
-
-				if (artifact.has("Release") && !artifact.get("Release").isJsonNull()) {
-					rallyArtifact.setRelease(fetchRelease(artifact.getAsJsonObject("Release").get("_ref").getAsString()));
-				}
-
-				// Fetch Defect (if linked)
-				if (artifact.get("_type").getAsString().equals("Defect")) {
-					Defect defect = fetchDefect(artifact.get("FormattedID").getAsString());
-					rallyArtifact.setDefect(defect);
-				}
-
-				// Fetch HierarchicalRequirement (if linked)
-				if (artifact.get("_type").getAsString().equals("HierarchicalRequirement")) {
-					HierarchicalRequirement hr = fetchHierarchicalRequirement(artifact.get("FormattedID").getAsString());
-					rallyArtifact.setHierarchicalRequirement(hr);
-				}
-				rallyArtifacts.add(rallyArtifact);
-			}
-		}
-
-		return rallyArtifacts;
-	}
-
-	private HierarchicalRequirement fetchHierarchicalRequirement(String formattedID) throws Exception {
-		QueryRequest request = new QueryRequest("HierarchicalRequirement");
-		request.setQueryFilter(new QueryFilter("FormattedID", "=", formattedID));
-		request.setFetch(new Fetch("FormattedID", "Name", "Iteration", "RevisionHistory"));
-
-		QueryResponse response = rallyApi.query(request);
-		if (response.wasSuccessful()) {
-			JsonArray results = response.getResults();
-			if (results.size() > 0) {
-				JsonObject userStory = results.get(0).getAsJsonObject();
-				HierarchicalRequirement hr = new HierarchicalRequirement();
-				hr.setFormattedID(userStory.get("FormattedID").getAsString());
-				hr.setName(userStory.get("Name").getAsString());
-
-				if (userStory.has("Iteration") && !userStory.get("Iteration").isJsonNull()) {
-					JsonObject iteration = userStory.getAsJsonObject("Iteration");
-					hr.setCurrentIteration(iteration.get("_refObjectName").getAsString());
-				}
-
-				if (userStory.has("RevisionHistory") && !userStory.get("RevisionHistory").isJsonNull()) {
-					JsonObject revisionHistory = userStory.getAsJsonObject("RevisionHistory");
-					List<String> pastIterations = fetchPastIterations(revisionHistory.get("_ref").getAsString());
-					hr.setPastIterations(pastIterations);
-				}
-
-				return hr;
-			}
-		}
-		return null;
-	}
-
-	private List<String> fetchPastIterations(String revisionHistoryRef) throws Exception {
-		List<String> pastIterations = new ArrayList<>();
-		GetRequest request = new GetRequest(revisionHistoryRef);
-		GetResponse response = rallyApi.get(request);
-
-		if (response.wasSuccessful()) {
-			JsonObject revisionHistory = response.getObject();
-			JsonArray revisions = null;
-			JsonElement revisionsElement = revisionHistory.get("Revisions");
-			if (revisionsElement != null && revisionsElement.isJsonObject()) {
-				JsonObject revisionsObject = revisionsElement.getAsJsonObject();
-				if (revisionsObject.has("Count") && revisionsObject.get("Count").getAsInt() > 0) {
-					revisions = revisionsObject.getAsJsonArray("Revisions");
-				}
-			}
-			if (revisions != null) {
-				for (int i = 0; i < revisions.size(); i++) {
-					JsonObject revision = revisions.get(i).getAsJsonObject();
-					String description = revision.get("Description").getAsString();
-					if (description.contains("Iteration")) {
-						pastIterations.add(description);
-					}
-				}
-			}
-		}
-		return pastIterations;
-	}
-
-	private Defect fetchDefect(String formattedID) throws Exception {
-		QueryRequest request = new QueryRequest("Defect");
-		request.setQueryFilter(new QueryFilter("FormattedID", "=", formattedID));
-		request.setFetch(new Fetch("FormattedID", "Name", "Requirement"));
-
-		QueryResponse response = rallyApi.query(request);
-		if (response.wasSuccessful()) {
-			JsonArray results = response.getResults();
-			if (results.size() > 0) {
-				JsonObject defect = results.get(0).getAsJsonObject();
-				Defect d = new Defect();
-				d.setFormattedID(defect.get("FormattedID").getAsString());
-				d.setName(defect.get("Name").getAsString());
-
-				if (defect.has("Requirement") && !defect.get("Requirement").isJsonNull()) {
-					d.setRequirementRef(defect.getAsJsonObject("Requirement").get("_ref").getAsString());
-				}
-
-				return d;
-			}
-		}
-		return null;
-	}
-
-	private Iteration fetchIteration(String iterationRef) throws Exception {
-		GetRequest request = new GetRequest(iterationRef);
-		GetResponse response = rallyApi.get(request);
-
-		if (response.wasSuccessful()) {
-			JsonObject iteration = response.getObject();
-			Iteration i = new Iteration();
-			i.setRef(iteration.get("_ref").getAsString());
-			i.setRefObjectName(iteration.get("_refObjectName").getAsString());
-			i.setStartDate(iteration.get("StartDate").getAsString());
-			i.setEndDate(iteration.get("EndDate").getAsString());
-			return i;
-		}
-		return null;
-	}
-
-	private Release fetchRelease(String releaseRef) throws Exception {
-		GetRequest request = new GetRequest(releaseRef);
-		GetResponse response = rallyApi.get(request);
-
-		if (response.wasSuccessful()) {
-			JsonObject release = response.getObject();
-			Release r = new Release();
-			r.setRallyAPIMajor(release.get("_rallyAPIMajor").getAsString());
-			r.setRallyAPIMinor(release.get("_rallyAPIMinor").getAsString());
-			r.setRef(release.get("_ref").getAsString());
-			r.setRefObjectUUID(release.get("_refObjectUUID").getAsString());
-			r.setRefObjectName(release.get("_refObjectName").getAsString());
-			r.setReleaseStartDate(release.get("ReleaseStartDate").getAsString());
-			r.setReleaseEndDate(release.get("ReleaseDate").getAsString());
-			return r;
-		}
-		return null;
 	}
 
 }

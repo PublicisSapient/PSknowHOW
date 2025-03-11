@@ -20,21 +20,14 @@ package com.publicissapient.kpidashboard.rally.jobs;
 import com.publicissapient.kpidashboard.rally.aspect.TrackExecutionTime;
 import com.publicissapient.kpidashboard.rally.config.RallyProcessorConfig;
 import com.publicissapient.kpidashboard.rally.helper.BuilderFactory;
-import com.publicissapient.kpidashboard.rally.listener.JiraIssueJqlWriterListener;
-import com.publicissapient.kpidashboard.rally.listener.JiraIssueSprintJobListener;
-import com.publicissapient.kpidashboard.rally.listener.JobListenerScrum;
-import com.publicissapient.kpidashboard.rally.listener.JobStepProgressListener;
+import com.publicissapient.kpidashboard.rally.listener.*;
 import com.publicissapient.kpidashboard.rally.model.CompositeResult;
 import com.publicissapient.kpidashboard.rally.model.ReadData;
 import com.publicissapient.kpidashboard.rally.processor.IssueScrumProcessor;
-import com.publicissapient.kpidashboard.rally.reader.IssueRqlReader;
-import com.publicissapient.kpidashboard.rally.reader.IssueSprintReader;
-import com.publicissapient.kpidashboard.rally.tasklet.JiraIssueReleaseStatusTasklet;
-import com.publicissapient.kpidashboard.rally.tasklet.MetaDataTasklet;
-import com.publicissapient.kpidashboard.rally.tasklet.ScrumReleaseDataTasklet;
-import com.publicissapient.kpidashboard.rally.tasklet.SprintReportTasklet;
-import com.publicissapient.kpidashboard.rally.tasklet.SprintScrumBoardTasklet;
+import com.publicissapient.kpidashboard.rally.reader.*;
+import com.publicissapient.kpidashboard.rally.tasklet.*;
 import com.publicissapient.kpidashboard.rally.writer.IssueScrumWriter;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -44,7 +37,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
-
 
 @Configuration
 public class RallyProcessorJob {
@@ -100,11 +92,6 @@ public class RallyProcessorJob {
 	@Autowired
 	JobStepProgressListener jobStepProgressListener;
 
-	private Step sprintReportStep() {
-		return builderFactory.getStepBuilder("Fetch Sprint Report Scrum Board", jobRepository)
-				.tasklet(sprintScrumBoardTasklet, transactionManager).listener(jobStepProgressListener).build();
-	}
-
 	private Step processProjectStatusStep() {
 		return builderFactory.getStepBuilder("Fetch Release Status Scrum", jobRepository)
 				.tasklet(jiraIssueReleaseStatusTasklet, transactionManager).listener(jobStepProgressListener).build();
@@ -124,7 +111,7 @@ public class RallyProcessorJob {
 	@Bean
 	public Job fetchIssueScrumRqlJob(@Qualifier("fetchIssueSprintJob") Job fetchIssueScrumRqlJob) {
 		return builderFactory.getJobBuilder("FetchIssueScrum RQL Job", jobRepository).incrementer(new RunIdIncrementer())
-				.start(fetchIssueScrumRqlChunkStep()).listener(jobListenerScrum).build();
+				.start(metaDataStep()).next(processProjectStatusStep()).next(fetchIssueScrumRqlChunkStep()).listener(jobListenerScrum).build();
 	}
 
 	@TrackExecutionTime
@@ -174,5 +161,10 @@ public class RallyProcessorJob {
 
 	private Integer getChunkSize() {
 		return rallyProcessorConfig.getChunkSize();
+	}
+
+	private Step metaDataStep() {
+		return builderFactory.getStepBuilder("Fetch Metadata", jobRepository).tasklet(metaDataTasklet, transactionManager)
+				.listener(jobStepProgressListener).build();
 	}
 }

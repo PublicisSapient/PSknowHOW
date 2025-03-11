@@ -17,10 +17,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.rally.listener;
 
-
-import static com.publicissapient.kpidashboard.rally.helper.RallyHelper.convertDateToCustomFormat;
-import static com.publicissapient.kpidashboard.rally.util.JiraProcessorUtil.generateLogMessage;
-
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -61,6 +57,9 @@ import com.publicissapient.kpidashboard.rally.service.ProjectHierarchySyncServic
 import com.publicissapient.kpidashboard.rally.service.RallyCommonService;
 
 import lombok.extern.slf4j.Slf4j;
+
+import static com.publicissapient.kpidashboard.rally.helper.RallyHelper.convertDateToCustomFormat;
+import static com.publicissapient.kpidashboard.rally.util.JiraProcessorUtil.generateLogMessage;
 
 /**
  * @author pankumar8
@@ -223,12 +222,23 @@ public class JobListenerScrum implements JobExecutionListener {
 		try {
 			if (StringUtils.isNotEmpty(processorExecutionTraceLog.getFirstRunDate()) && status) {
 				if (StringUtils.isNotEmpty(processorExecutionTraceLog.getBoardId())) {
-					String query = "updatedDate>='" + processorExecutionTraceLog.getFirstRunDate() + "' ";
-//					Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId).getCustomIssueClient()
-//							.searchBoardIssue(processorExecutionTraceLog.getBoardId(), query, 0, 0, RallyConstants.ISSUE_FIELD_SET);
+					String issueTypes = Arrays.stream(
+							fetchProjectConfiguration.fetchConfiguration(projectId).getFieldMapping().getJiraIssueTypeNames())
+							.map(array -> "\"" + String.join("\", \"", array) + "\"").collect(Collectors.joining(", "));
+					StringBuilder query = new StringBuilder("project in (")
+							.append(fetchProjectConfiguration.fetchConfiguration(projectId).getProjectToolConfig().getProjectKey())
+							.append(") and ");
+					String userQuery = fetchProjectConfiguration.fetchConfiguration(projectId).getJira().getBoardQuery()
+							.toLowerCase().split(RallyConstants.ORDERBY)[0];
+					query.append(userQuery);
+					query.append(" and issuetype in (").append(issueTypes).append(" ) and updatedDate>='")
+							.append(processorExecutionTraceLog.getFirstRunDate()).append("' ");
+					log.info("jql query :{}", query);
+//					Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId).getProcessorSearchClient()
+//							.searchJql(query.toString(), 0, 0, RallyConstants.ISSUE_FIELD_SET);
 //					SearchResult searchResult = promisedRs.claim();
 //					if (searchResult != null && (searchResult.getTotal() != jiraIssueRepository
-//							.countByBasicProjectConfigIdAndExcludeTypeName(projectId, RallyConstants.EPIC))) {
+//							.countByBasicProjectConfigIdAndExcludeTypeName(projectId, CommonConstant.BLANK))) {
 //						processorExecutionTraceLog.setDataMismatch(true);
 //					}
 				} else {

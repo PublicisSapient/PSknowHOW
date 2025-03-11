@@ -99,7 +99,7 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 		sprintDetails.setCompleteDate(iteration.getEndDate()); // Assuming completion date is the same as end date
 		sprintDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 		sprintDetails.setProcessorId(processorId);
-		sprintDetails.setState("cslosed"); // Assuming the sprint is closed
+		sprintDetails.setState("closed"); // Assuming the sprint is closed
 
 		// Create a Set<SprintIssue> for the given iteration
 		Set<SprintIssue> totalIssues = new HashSet<>();

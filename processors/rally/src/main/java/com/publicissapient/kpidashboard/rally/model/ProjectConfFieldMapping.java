@@ -24,32 +24,32 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProjectConfFieldMapping {
-	// jira and fields mapping of jira
-	private RallyToolConfig jira;
-	private FieldMapping fieldMapping;
+    // jira and fields mapping of jira
+    private RallyToolConfig jira;
+    private FieldMapping fieldMapping;
 
-	private ObjectId basicProjectConfigId;
-	// if project is kanban or Scrum
-	private boolean isKanban;
-	private int issueCount;
-	private int sprintCount;
+    private ObjectId basicProjectConfigId;
+    // if project is kanban or Scrum
+    private boolean isKanban;
+    private int issueCount;
+    private int sprintCount;
 
-	// For filters basic conf
-	private String projectName;
-	private ProjectToolConfig projectToolConfig;
-	private ObjectId jiraToolConfigId;
+    // For filters basic conf
+    private String projectName;
+    private ProjectToolConfig projectToolConfig;
+    private ObjectId jiraToolConfigId;
 
-	private ProjectBasicConfig projectBasicConfig;
+    private ProjectBasicConfig projectBasicConfig;
 
-	private JiraIssueMetadata jiraIssueMetadata;
+    private JiraIssueMetadata jiraIssueMetadata;
 }

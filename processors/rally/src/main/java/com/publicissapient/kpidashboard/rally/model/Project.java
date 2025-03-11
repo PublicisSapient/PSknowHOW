@@ -22,12 +22,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-class Project {
+public class Project {
     @JsonProperty("_ref")
     private String ref;
     @JsonProperty("_refObjectName")
     private String projectName;
     @JsonProperty("CreationDate")
     private String creationDate;
-
+    @JsonProperty("ObjectID")
+    private String objectID;
 }
