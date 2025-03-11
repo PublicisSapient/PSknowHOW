@@ -12,7 +12,7 @@ describe('Pipe: Default', () => {
       {
         level: 1,
         hierarchyLevelId: 'hierarchyLevelOne',
-        hierarchyLevelIdName: 'Level One',
+        hierarchyLevelName: 'Level One',
         suggestions: [
           { name: 'Sample One', code: 'Sample One' },
           { name: 'Sample Two', code: 'Sample Two' },
@@ -24,7 +24,7 @@ describe('Pipe: Default', () => {
       {
         level: 2,
         hierarchyLevelId: 'hierarchyLevelTwo',
-        hierarchyLevelIdName: 'Level Two',
+        hierarchyLevelName: 'Level Two',
         suggestions: [
           { name: 'Sample Four', code: 'Sample Four' },
           { name: 'Sample Three', code: 'Sample Three' },
@@ -36,7 +36,7 @@ describe('Pipe: Default', () => {
       {
         level: 3,
         hierarchyLevelId: 'hierarchyLevelThree',
-        hierarchyLevelIdName: 'Level Three',
+        hierarchyLevelName: 'Level Three',
         suggestions: [
           { name: 'Sample Five', code: 'Sample Five' },
           { name: 'Sample Six', code: 'Sample Six' },
