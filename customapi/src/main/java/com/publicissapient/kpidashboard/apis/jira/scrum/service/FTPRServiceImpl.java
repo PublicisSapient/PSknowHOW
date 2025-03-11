@@ -229,7 +229,8 @@ public class FTPRServiceImpl extends JiraIterationKPIService {
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 
 		if (CollectionUtils.isNotEmpty(allIssues)) {
-			log.info("First Time Pass rate -> request id : {} total jira Issues : {}", requestTrackerId, allIssues.size());
+			log.info("First Time Pass rate -> request id : {} total jira Issues : {}", requestTrackerId,
+					allIssues.size());
 			List<JiraIssue> totalJiraIssues = new ArrayList<>();
 			Map<String, Map<String, Integer>> projectWisePriority = new HashMap<>();
 			Map<String, List<String>> configPriority = customApiConfig.getPriority();
@@ -241,16 +242,18 @@ public class FTPRServiceImpl extends JiraIterationKPIService {
 
 			KpiHelperService.addPriorityCountProjectWise(projectWisePriority, configPriority, latestSprint,
 					fieldMapping.getDefectPriorityKPI135());
-			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping.getIncludeRCAForKPI135());
+			KpiHelperService.addRCAProjectWise(projectWiseRCA, basicProjectConfigId.toString(),
+					fieldMapping.getIncludeRCAForKPI135());
 			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
-					fieldMapping.getResolutionTypeForRejectionKPI135(), fieldMapping.getJiraDefectRejectionStatusKPI135());
+					fieldMapping.getResolutionTypeForRejectionKPI135(),
+					fieldMapping.getJiraDefectRejectionStatusKPI135());
 			KpiHelperService.getDefectsWithoutDrop(droppedDefects, allIssues, totalJiraIssues);
 
 			List<String> defectTypes = new ArrayList<>(
 					Optional.ofNullable(fieldMapping.getJiradefecttype()).orElse(Collections.emptyList()));
 			defectTypes.add(NormalizedJira.DEFECT_TYPE.getValue());
-			List<JiraIssue> allDefects = totalJiraIssues.stream().filter(issue -> defectTypes.contains(issue.getTypeName()))
-					.collect(Collectors.toList());
+			List<JiraIssue> allDefects = totalJiraIssues.stream()
+					.filter(issue -> defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
 			List<JiraIssue> ftprStory = new ArrayList<>(totalStoryList);
 
 			Set<String> listOfStory = getDefectIds(allDefects);
@@ -261,9 +264,9 @@ public class FTPRServiceImpl extends JiraIterationKPIService {
 			List<JiraIssueCustomHistory> storiesHistory = jiraIssueCustomHistoryRepository.findByStoryIDIn(storyIds);
 			if (CollectionUtils.isNotEmpty(ftprStory) && CollectionUtils.isNotEmpty(storiesHistory)) {
 
-				ftprStory.removeIf(issue -> kpiHelperService.hasReturnTransactionOrFTPRRejectedStatus(issue, storiesHistory,
-						fieldMapping.getJiraStatusForDevelopmentKPI135(), fieldMapping.getJiraStatusForQaKPI135(),
-						fieldMapping.getJiraFtprRejectStatusKPI135()));
+				ftprStory.removeIf(issue -> kpiHelperService.hasReturnTransactionOrFTPRRejectedStatus(issue,
+						storiesHistory, fieldMapping.getJiraStatusForDevelopmentKPI135(),
+						fieldMapping.getJiraStatusForQaKPI135(), fieldMapping.getJiraFtprRejectStatusKPI135()));
 			}
 
 			// Creating map of modal Objects
