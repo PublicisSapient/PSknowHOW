@@ -59,8 +59,6 @@ public class RallyIssueHistoryProcessorImplTest {
         hierarchicalRequirement.setObjectID("12345");
         hierarchicalRequirement.setFormattedID("US1234");
         hierarchicalRequirement.setName("Test User Story");
-        hierarchicalRequirement.setDescription("Test Description");
-        hierarchicalRequirement.setState("In-Progress");
         hierarchicalRequirement.setScheduleState("Defined");
         hierarchicalRequirement.setCreationDate(DateTime.now().toString());
 
@@ -124,8 +122,8 @@ public class RallyIssueHistoryProcessorImplTest {
 
     @Test
     public void testConvertToJiraIssueHistoryWithEstimates() {
-        jiraIssue.setEstimate(8.0);
-        jiraIssue.setBufferedEstimateTime(10.0);
+        jiraIssue.setEstimate(String.valueOf(8.0));
+        jiraIssue.setBufferedEstimateTime((int) 10.0);
 
         when(jiraIssueCustomHistoryRepository.findByStoryIDAndBasicProjectConfigId(anyString(), anyString()))
             .thenReturn(null);

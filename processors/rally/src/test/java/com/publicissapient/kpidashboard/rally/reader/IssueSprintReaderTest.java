@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -52,11 +53,6 @@ public class IssueSprintReaderTest {
         projectConfFieldMapping = new ProjectConfFieldMapping();
         projectConfFieldMapping.setBasicProjectConfigId(new ObjectId());
         projectConfFieldMapping.setProjectName("Test Project");
-
-        requirement1 = new HierarchicalRequirement();
-        requirement1.setId("REQ-1");
-        requirement2 = new HierarchicalRequirement();
-        requirement2.setId("REQ-2");
 
         when(rallyProcessorConfig.getPageSize()).thenReturn(50);
     }
@@ -150,7 +146,6 @@ public class IssueSprintReaderTest {
     @Test
     public void testReadWithProcessorId() throws Exception {
         String processorId = new ObjectId().toString();
-        issueSprintReader.processorId = processorId;
 
         when(fetchProjectConfiguration.fetchConfigurationBasedOnSprintId(anyString())).thenReturn(projectConfFieldMapping);
         when(fetchIssueSprint.fetchIssuesSprintBasedOnJql(any(), anyInt(), anyString()))

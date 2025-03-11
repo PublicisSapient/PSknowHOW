@@ -89,19 +89,19 @@
               </td>
               <td class='custom-table-cell'>
                 <span
-                  *ngIf="(!findTraceLogForTool(processor.toolName)?.executionOngoing && processor.toolName === 'Jira') || processor.toolName !== 'Jira'">{{
+                  *ngIf="(!findTraceLogForTool(processor.toolName)?.executionOngoing && processor.toolName === 'Jira' || processor.toolName === 'Rally') || (processor.toolName !== 'Jira' || processor.toolName !== 'Rally')">{{
                   showExecutionDate(processor.toolName) }}</span>
               </td>
 
 
               <td class="custom-table-cell">
                 <p-progressBar mode="indeterminate"
-                  *ngIf="processor.toolName === 'Jira' && findTraceLogForTool(processor.toolName)?.executionOngoing === true "
+                  *ngIf="(processor.toolName === 'Jira' || processor.toolName === 'Rally') && findTraceLogForTool(processor.toolName)?.executionOngoing === true "
                   [style]="{ height: '6px' }"></p-progressBar>
               </td>
               <td class='custom-table-cell'>
                 <div class="p-d-flex p-align-center">
-                  <div class="p-d-flex p-align-center" *ngIf="(!findTraceLogForTool(processor.toolName)?.executionOngoing && processor.toolName === 'Jira') || processor.toolName !== 'Jira'">
+                  <div class="p-d-flex p-align-center" *ngIf="(!findTraceLogForTool(processor.toolName)?.executionOngoing && (processor.toolName === 'Jira' || processor.toolName === 'Rally')) || (processor.toolName !== 'Jira' || processor.toolName === 'Rally')">
                     <div *ngIf="showProcessorLastState(processor.toolName) !== 'NA'" class="status-container"
                     [ngClass]="{
                       'active': showProcessorLastState(processor.toolName) === 'Success',
@@ -111,11 +111,11 @@
                       {{ showProcessorLastState(processor.toolName)}}
                     </div>
                   </div>
-                  <div class="p-ml-2" *ngIf="processor.toolName === 'Jira'">
-                    <i class="pi pi-info-circle"
-                      [ngClass]="{'disabled': !(findTraceLogForTool('Jira')?.progressStatusList?.length || findTraceLogForTool('Jira')?.errorMessage)}"
-                      (click)="(findTraceLogForTool('Jira')?.errorMessage || findTraceLogForTool('Jira')?.progressStatusList?.length) ? op.toggle($event) : ''"
-                      style="font-size: 1.2rem"></i>
+                  <div class="p-ml-2" *ngIf="(processor.toolName === 'Jira' || processor.toolName === 'Rally')">
+                  <i class="pi pi-info-circle"
+                  [ngClass]="{'disabled': !(findTraceLogForTool(processor.toolName)?.progressStatusList?.length || findTraceLogForTool(processor.toolName)?.errorMessage)}"
+                  (click)="(findTraceLogForTool(processor.toolName)?.errorMessage || findTraceLogForTool(processor.toolName)?.progressStatusList?.length) ? op.toggle($event) : ''"
+                  style="font-size: 1.2rem"></i>
                   </div>
                   <div class="p-ml-2" *ngIf="isSCMToolProcessor(processor.toolName) && showProcessorLastState(processor.toolName) === 'Warning'">
                     <i class="pi pi-info-circle"
@@ -124,7 +124,7 @@
                       Reached the API rate limit. Repo scanning will automatically resume after {{getSCMToolTimeDetails(processor.toolName)}}
                     </p-overlayPanel>
                   </div>
-                  
+
                 </div>
               </td>
               <td class='custom-table-cell p-d-flex p-align-center column-width'>
@@ -143,8 +143,8 @@
                   </div>
                   <div style="display: flex;">
                     <button pButton pRipple label="Run Now"
-                      icon="{{findTraceLogForTool(processor.toolName)?.executionOngoing === true ? 'pi pi-spin pi-spinner' : 'pi pi-forward'}}"
-                      [disabled]="(shouldDisableRunProcessor() || findTraceLogForTool(processor.toolName)?.executionOngoing === true) && processor.toolName !== 'Jira' || 
+                    icon="{{findTraceLogForTool(processor.toolName)?.executionOngoing === true ? 'pi pi-spin pi-spinner' : 'pi pi-forward'}}"
+                    [disabled]="(shouldDisableRunProcessor() || findTraceLogForTool(processor.toolName)?.executionOngoing === true) && processor.toolName !== 'Jira' && processor.toolName !== 'Rally' ||
                                   (isSCMToolProcessor(processor.toolName) && showProcessorLastState(processor.toolName) === 'Warning') "
                       class="p-button-sm p-button-success p-button-raised" (click)="runProcessor(processor.toolName)"></button>
                     <div class="p-ml-3 p-d-flex p-jc-center p-align-center color-blue cursor-pointer "
@@ -181,9 +181,9 @@
 
 <p-overlayPanel #op [showCloseIcon]="false">
   <div class="progress-dialog-body p-mb-4">
-    <section *ngIf="findTraceLogForTool('Jira')?.progressStatusList?.length && !(findTraceLogForTool('Jira')?.errorMessage); else logError">
+    <section *ngIf="(findTraceLogForTool('Jira')?.progressStatusList?.length && !(findTraceLogForTool('Jira')?.errorMessage)) || (findTraceLogForTool('Rally')?.progressStatusList?.length && !(findTraceLogForTool('Rally')?.errorMessage)); else logError">
       <h3>Progress Stats:</h3>
-      <p-table [value]="findTraceLogForTool('Jira')?.progressStatusList" [tableStyle]="{ 'min-width': '40rem' }"
+      <p-table [value]="findTraceLogForTool('Jira')?.progressStatusList || findTraceLogForTool('Rally')?.progressStatusList" [tableStyle]="{ 'min-width': '40rem' }"
         [scrollable]="true" scrollHeight="200px">
         <ng-template pTemplate="header">
           <tr>
@@ -206,10 +206,10 @@
       <h3 class="p-text-center" class="error-text"><img src="../../../assets/img/icon-failure.svg" alt="Failure" class="p-mr-1" />{{ findTraceLogForTool('Jira')?.errorMessage}}</h3>
     </ng-template>
 
-    <section *ngIf="findTraceLogForTool('Jira')?.errorDetailList?.length > 0">
-      <h3>Errors:</h3>
-      <p-table [value]="findTraceLogForTool('Jira')?.errorDetailList" [tableStyle]="{ 'min-width': '40rem' }"
-        [scrollable]="true" scrollHeight="200px">
+    <section *ngIf="(findTraceLogForTool('Jira')?.errorDetailList?.length > 0) || (findTraceLogForTool('Rally')?.errorDetailList?.length > 0)">
+        <h3>Errors:</h3>
+        <p-table [value]="findTraceLogForTool('Jira')?.errorDetailList || findTraceLogForTool('Rally')?.errorDetailList" [tableStyle]="{ 'min-width': '40rem' }"
+          [scrollable]="true" scrollHeight="200px">
         <ng-template pTemplate="header">
           <tr>
             <th>URL</th>
@@ -228,11 +228,11 @@
         </ng-template>
       </p-table>
     </section>
-    <section *ngIf="findTraceLogForTool('Jira')?.additionalInfo?.length > 0">
-      <h3>  <img height="25px" style="display: block; margin-top: -3px; margin-left: 2px;" alt="warning"
-        src="../../../assets/img/Warning.svg" /> Incorrect Sprint Tagging (Please correct the sprint tagging for the issues listed below.)</h3>
-      <p-table [value]="findTraceLogForTool('Jira')?.additionalInfo" [tableStyle]="{ 'min-width': '40rem' }"
-        [scrollable]="true" scrollHeight="200px">
+    <section *ngIf="(findTraceLogForTool('Jira')?.additionalInfo?.length > 0) || (findTraceLogForTool('Rally')?.additionalInfo?.length > 0)">
+    <h3>  <img height="25px" style="display: block; margin-top: -3px; margin-left: 2px;" alt="warning"
+      src="../../../assets/img/Warning.svg" /> Incorrect Sprint Tagging (Please correct the sprint tagging for the issues listed below.)</h3>
+    <p-table [value]="findTraceLogForTool('Jira')?.additionalInfo || findTraceLogForTool('Rally')?.additionalInfo" [tableStyle]="{ 'min-width': '40rem' }"
+      [scrollable]="true" scrollHeight="200px">
         <ng-template pTemplate="header">
           <tr>
             <th>Sprint Name </th>
@@ -247,9 +247,9 @@
         </ng-template>
       </p-table>
     </section>
-    <ul class="p-pr-1 p-pl-0 list-style-none" *ngIf="dataMismatchObj['Jira']">
-      <li class="tooltip-item p-d-flex p-pt-2">
-        <div class="icon-container">
+   <ul class="p-pr-1 p-pl-0 list-style-none" *ngIf="dataMismatchObj['Jira'] || dataMismatchObj['Rally']">
+   <li class="tooltip-item p-d-flex p-pt-2">
+     <div class="icon-container">
           <i class="fas fa-exclamation-triangle text-yellow icon-list"></i>
         </div>
         <div>

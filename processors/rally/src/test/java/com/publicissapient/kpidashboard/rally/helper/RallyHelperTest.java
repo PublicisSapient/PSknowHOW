@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -52,7 +53,7 @@ public class RallyHelperTest {
     @Test
     public void testGetLabelsList() {
         Issue issue = mock(Issue.class);
-        when(issue.getLabels()).thenReturn(Arrays.asList("label1", "label2"));
+        when(issue.getLabels()).thenReturn((Set<String>) Arrays.asList("label1", "label2"));
 
         List<String> labels = RallyHelper.getLabelsList(issue);
 

@@ -20,7 +20,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -102,7 +106,7 @@ public class JobControllerTest {
     }
 
     @Test
-    public void testStartProjectWiseIssueJobWhenExecutionInProgress() {
+    public void testStartProjectWiseIssueJobWhenExecutionInProgress() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         ProcessorExecutionBasicConfig config = new ProcessorExecutionBasicConfig();
         config.setProjectBasicConfigIds(Arrays.asList("proj1"));
 
@@ -140,7 +144,7 @@ public class JobControllerTest {
         when(jobLauncher.run(any(Job.class), any(JobParameters.class)))
             .thenReturn(new JobExecution(1L));
 
-        ResponseEntity<String> response = jobController.startMetaDataJob();
+        ResponseEntity<String> response = jobController.startScrumJqlJob();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("job started for metadata", response.getBody());

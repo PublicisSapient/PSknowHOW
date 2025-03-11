@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -57,10 +58,6 @@ public class IssueRqlReaderTest {
         projectConfFieldMapping.setBasicProjectConfigId(new ObjectId());
         projectConfFieldMapping.setProjectName("Test Project");
 
-        requirement1 = new HierarchicalRequirement();
-        requirement1.setId("REQ-1");
-        requirement2 = new HierarchicalRequirement();
-        requirement2.setId("REQ-2");
 
         when(rallyProcessorConfig.getPageSize()).thenReturn(50);
         when(rallyProcessorConfig.getPrevMonthCountToFetchData()).thenReturn(3);

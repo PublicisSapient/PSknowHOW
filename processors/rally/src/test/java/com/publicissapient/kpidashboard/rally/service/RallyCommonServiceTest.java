@@ -77,8 +77,6 @@ public class RallyCommonServiceTest {
         connection.setPassword("encryptedPassword");
 
         rallyToolConfig = new RallyToolConfig();
-        rallyToolConfig.setConnection(connection);
-        projectConfig.setRallyToolConfig(rallyToolConfig);
     }
 
     @Test
@@ -170,9 +168,6 @@ public class RallyCommonServiceTest {
     public void testProcessClientError() throws Exception {
         URL testUrl = new URL("https://rally1.rallydev.com/test");
         connection.setOffline(false);
-        
-        when(processorToolConnectionService.getConnectionByToolAndBasicProjectConfigId(any(), any()))
-            .thenReturn(Optional.of(connection));
 
         assertThrows(IOException.class, () -> {
             rallyCommonService.getDataFromServer(testUrl, Optional.of(connection), new ObjectId());
