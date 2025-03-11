@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,13 +38,10 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -58,9 +54,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -68,7 +62,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -86,15 +79,11 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	private static final String SPRINTSTORIES = "storyData";
 	private static final String UAT = "Escaped Defects";
 	private static final String TOTAL = "Total Defects";
-	private static final String QA = "QaKpi";
 	private static final String PROJFMAPPING = "projectFieldMapping";
 	public static final String STORY_LIST_WO_DROP = "storyList";
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-	@Autowired
-	private ConfigHelperService configHelperService;
-	@Autowired
-	private FilterHelperService flterHelperService;
+
+    @Autowired
+	private FilterHelperService filterHelperService;
 	@Autowired
 	private CacheService cacheService;
 	@Autowired
@@ -145,7 +134,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		issueTypeProjectWiseDc.forEach((issueType, projectWiseDc) -> {
 			DataCountGroup dataCountGroup = new DataCountGroup();
 			List<DataCount> dataList = new ArrayList<>();
-			projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
+			projectWiseDc.entrySet().forEach(trend -> dataList.addAll(trend.getValue()));
 			dataCountGroup.setFilter(issueType);
 			dataCountGroup.setValue(dataList);
 			dataCountGroups.add(dataCountGroup);
@@ -172,7 +161,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		List<JiraIssue> remainingDefect = new ArrayList<>();
 		Map<String, FieldMapping> projFieldMapping = new HashMap<>();
 		List<JiraIssue> storyListWoDrop = new ArrayList<>();
-		boolean fetchCachedData = flterHelperService.isFilterSelectedTillSprintLevel(kpiRequest.getLevel(), false);
+		boolean fetchCachedData = filterHelperService.isFilterSelectedTillSprintLevel(kpiRequest.getLevel(), false);
 		projectWiseSprints.forEach((basicProjectConfigId, sprintList) -> {
 			Map<String, Object> result;
 			if (fetchCachedData) { // fetch data from cache only if Filter is selected till Sprint
@@ -195,51 +184,6 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		resultListMap.put(PROJFMAPPING, projFieldMapping);
 		resultListMap.put(STORY_LIST_WO_DROP, storyListWoDrop);
 		return resultListMap;
-	}
-
-	private static void exludePriorityDefect(Map<String, List<String>> projectWisePriority,
-			Map<String, Set<String>> projectWiseRCA, Set<JiraIssue> defects, List<JiraIssue> remainingDefect) {
-		List<JiraIssue> remainingDefects = new ArrayList<>();
-		List<JiraIssue> rcaDefects = new ArrayList<>();
-
-		for (JiraIssue jiraIssue : defects) {
-			excludeSelectedPriorities(projectWisePriority, remainingDefects, jiraIssue);
-
-			// Filter priorityRemaining based on configured Root Causes (RCA) for the
-			// project, or include if no RCA is configured.
-			excludeSelectRCAJiraIssue(projectWiseRCA, rcaDefects, jiraIssue);
-		}
-
-		remainingDefects.stream().forEach(pi -> rcaDefects.stream().forEach(ri -> {
-			if (pi.getNumber().equalsIgnoreCase(ri.getNumber())) {
-				remainingDefect.add(pi);
-			}
-		}));
-	}
-
-	private static void excludeSelectedPriorities(Map<String, List<String>> projectWisePriority,
-			List<JiraIssue> remainingDefects, JiraIssue jiraIssue) {
-		if (CollectionUtils.isNotEmpty(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()))) {
-			if (!(projectWisePriority.get(jiraIssue.getBasicProjectConfigId())
-					.contains(jiraIssue.getPriority().toLowerCase()))) {
-				remainingDefects.add(jiraIssue);
-			}
-		} else {
-			remainingDefects.add(jiraIssue);
-		}
-	}
-
-	private static void excludeSelectRCAJiraIssue(Map<String, Set<String>> projectWiseRCA, List<JiraIssue> rcaDefects,
-			JiraIssue jiraIssue) {
-		if (CollectionUtils.isNotEmpty(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()))) {
-			for (String toFindRca : jiraIssue.getRootCauseList()) {
-				if ((projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()).contains(toFindRca.toLowerCase()))) {
-					rcaDefects.add(jiraIssue);
-				}
-			}
-		} else {
-			rcaDefects.add(jiraIssue);
-		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -310,7 +254,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			List<SprintWiseStory> sprintWiseStories = sprintWiseMap.getOrDefault(currentNodeIdentifier, new ArrayList<>());
 			List<String> totalStoryIdList = new ArrayList<>(); // totalstories
-			sprintWiseStories.stream().map(SprintWiseStory::getStoryList).collect(Collectors.toList())
+			sprintWiseStories.stream().map(SprintWiseStory::getStoryList).toList()
 					.forEach(totalStoryIdList::addAll);
 			List<JiraIssue> subCategoryWiseTotalBugList = totalDefects.stream()
 					.filter(f -> CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
@@ -363,7 +307,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(
-				KPIExcelColumn.DEFECT_SEEPAGE_RATE.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+				KPIExcelColumn.DEFECT_SEEPAGE_RATE.getColumns(sprintLeafNodeList, cacheService, filterHelperService));
 	}
 
 	private void createDSRValidation(List<JiraIssue> issueList, String label,
@@ -377,8 +321,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			Map<String, JiraIssue> totalBugList = new HashMap<>();
-			sprintWiseSubCategoryWiseTotalBugListMap.stream()
-					.forEach(bugs -> totalBugList.putIfAbsent(bugs.getNumber(), bugs));
+			sprintWiseSubCategoryWiseTotalBugListMap.forEach(bugs -> totalBugList.putIfAbsent(bugs.getNumber(), bugs));
 
 			KPIExcelUtility.populateDefectSeepageRateExcelData(node.getSprintFilter().getName(), totalBugList,
 					subCategoryWiseUatBugList, excelData, customApiConfig, totalStoryWoDrop);
@@ -437,11 +380,11 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			} else {
 				testCaseList.stream()
-						.filter(f -> NormalizedJira.THIRD_PARTY_DEFECT_VALUE.getValue().equalsIgnoreCase(f.getDefectRaisedBy()))
-						.collect(Collectors.toList()).stream()
-						.filter(issue -> CollectionUtils.isNotEmpty(issue.getUatDefectGroup()))
-						.forEach(issue -> issue.getUatDefectGroup()
-								.forEach(label -> uatMap.computeIfAbsent(label.toLowerCase(), k -> new ArrayList<>()).add(issue)));
+						.filter(f -> NormalizedJira.THIRD_PARTY_DEFECT_VALUE.getValue()
+								.equalsIgnoreCase(f.getDefectRaisedBy()))
+						.toList().stream().filter(issue -> CollectionUtils.isNotEmpty(issue.getUatDefectGroup()))
+						.forEach(issue -> issue.getUatDefectGroup().forEach(label -> uatMap
+								.computeIfAbsent(label.toLowerCase(), k -> new ArrayList<>()).add(issue)));
 			}
 		}
 		// removing for overall filter
