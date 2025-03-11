@@ -89,7 +89,8 @@ public class BuildDataCleanUpService implements ToolDataCleanUpService {
 			cacheService.clearCache(CACHE_TOOL_CONFIG_MAP);
 			cacheService.clearCache(CommonConstant.JENKINS_KPI_CACHE);
 			List<String> kpiList = kpiDataCacheService.getKpiBasedOnSource(KPISource.JENKINS.name());
-			kpiList.forEach(kpiId -> kpiDataCacheService.clearCache(tool.getBasicProjectConfigId().toHexString(), kpiId));
+			kpiList.forEach(
+					kpiId -> kpiDataCacheService.clearCache(tool.getBasicProjectConfigId().toHexString(), kpiId));
 		}
 	}
 }

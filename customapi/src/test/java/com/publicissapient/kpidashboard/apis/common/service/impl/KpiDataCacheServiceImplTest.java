@@ -18,31 +18,27 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 
@@ -58,56 +54,14 @@ public class KpiDataCacheServiceImplTest {
 	private KpiDataCacheServiceImpl kpiDataCacheService;
 
 	@Test
-	public void testClearCache() {
-		String cacheKey = "12345_kpi1";
-		Cache cache = mock(Cache.class);
-		ConcurrentHashMap<Object, Object> map = new ConcurrentHashMap();
-		map.put(cacheKey, new Object());
-
-		when(cache.getNativeCache()).thenReturn(map);
-		when(cacheManager.getCache(Constant.CACHE_PROJECT_KPI_DATA)).thenReturn(cache);
-
-		kpiDataCacheService.clearCache("kpi1");
-		verify(cache, times(1)).evict(cacheKey);
-
-		kpiDataCacheService.clearCache("kpi2");
-		verify(cache, times(0)).evict("12345_kpi2");
-	}
-
-	@Test
 	public void testClearCacheForProjectAndKpi() {
 		kpiDataCacheService.clearCache("12345", "kpi1");
 	}
 
 	@Test
-	public void testClearCacheForProject() {
-		String cacheKey = "12345_kpi1";
-		Cache cache = mock(Cache.class);
-		ConcurrentHashMap<Object, Object> map = new ConcurrentHashMap();
-		map.put(cacheKey, new Object());
-
-		when(cache.getNativeCache()).thenReturn(map);
-		when(cacheManager.getCache(Constant.CACHE_PROJECT_KPI_DATA)).thenReturn(cache);
-
-		kpiDataCacheService.clearCacheForProject("12345");
-		verify(cache, times(1)).evict(cacheKey);
-
-		kpiDataCacheService.clearCacheForProject("12312");
-		verify(cache, times(0)).evict("12312_kpi1");
-	}
-
-	@Test
-	public void testClearCacheForSource() {
-		String cacheKey = "12345_" + KPICode.BUILD_FREQUENCY.getKpiId();
-		Cache cache = mock(Cache.class);
-		ConcurrentHashMap<Object, Object> map = new ConcurrentHashMap();
-		map.put(cacheKey, new Object());
-
-		when(cache.getNativeCache()).thenReturn(map);
-		when(cacheManager.getCache(Constant.CACHE_PROJECT_KPI_DATA)).thenReturn(cache);
-
-		kpiDataCacheService.clearCacheForSource(KPISource.JENKINS.name());
-		verify(cache, times(1)).evict(cacheKey);
+	public void testGetKpiBasedOnSource() {
+		List<String> list = kpiDataCacheService.getKpiBasedOnSource(KPISource.JIRA.name());
+		assertNotEquals(0, list.size());
 	}
 
 	@Test

@@ -1864,8 +1864,6 @@ public class KpiHelperService { // NOPMD
 	 *            projectWisePriorityCount
 	 * @param configPriority
 	 *            configPriority
-	 * @param leaf
-	 *            Node
 	 * @param defectPriorityCount
 	 *            From FieldMapping
 	 */

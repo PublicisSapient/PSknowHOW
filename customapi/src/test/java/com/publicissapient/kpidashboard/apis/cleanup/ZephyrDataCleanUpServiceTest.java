@@ -25,6 +25,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +43,8 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectToolConf
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
+
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ZephyrDataCleanUpServiceTest {
@@ -59,6 +64,9 @@ public class ZephyrDataCleanUpServiceTest {
 	@Mock
 	private CacheService cacheService;
 
+	@Mock
+	private KpiDataCacheService kpiDataCacheService;
+
 	@Test
 	public void getToolCategory() {
 		String actualResult = zephyrDataCleanUpService.getToolCategory();
@@ -75,6 +83,8 @@ public class ZephyrDataCleanUpServiceTest {
 		doNothing().when(testCaseDetailsRepository).deleteByBasicProjectConfigId(anyString());
 		doNothing().when(processorExecutionTraceLogRepository).deleteByBasicProjectConfigIdAndProcessorName(Mockito.any(),
 				Mockito.anyString());
+		when(kpiDataCacheService.getKpiBasedOnSource(KPISource.ZEPHYR.name()))
+				.thenReturn(List.of(KPICode.INSPRINT_AUTOMATION_COVERAGE.getKpiId()));
 		zephyrDataCleanUpService.clean("5e9db8f1e4b0caefbfa8e0c7");
 		verify(testCaseDetailsRepository, times(1)).deleteByBasicProjectConfigId("5e9db8f1e4b0caefbfa8e0c7");
 		verify(processorExecutionTraceLogRepository, times(1))

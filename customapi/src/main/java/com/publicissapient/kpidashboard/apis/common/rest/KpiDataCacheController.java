@@ -23,6 +23,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,17 +48,6 @@ public class KpiDataCacheController {
 	 * @param kpiId
 	 *          the cache name
 	 */
-	@RequestMapping(value = "/cache/kpi/{kpiId}/clear", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
-	public void clearCache(@PathVariable String kpiId) {
-		service.clearCache(kpiId);
-	}
-
-	/**
-	 * Clear Specified cache.
-	 *
-	 * @param kpiId
-	 *          the cache name
-	 */
 	@RequestMapping(value = "/cache/project/{projectId}/kpi/{kpiId}/clear", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public void clearCache(@PathVariable("projectId") String basicProjectConfigId, @PathVariable("kpiId") String kpiId) {
 		service.clearCache(basicProjectConfigId, kpiId);
@@ -71,18 +61,8 @@ public class KpiDataCacheController {
 	 */
 	@RequestMapping(value = "/cache/project/{projectId}/clear", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public void clearCacheForProject(@PathVariable("projectId") String basicProjectConfigId) {
-		service.clearCacheForProject(basicProjectConfigId);
-	}
-
-	/**
-	 * Clear Specified cache.
-	 *
-	 * @param source
-	 *          kpi source
-	 */
-	@RequestMapping(value = "/cache/source/{source}/clear", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
-	public void clearCacheForSource(@PathVariable("source") String source) {
-		service.clearCacheForSource(source);
+		List<String> kpiList = service.getKpiBasedOnSource(CommonConstant.ALL_KPI);
+		kpiList.forEach(kpiId -> service.clearCache(basicProjectConfigId, kpiId));
 	}
 
 	/**

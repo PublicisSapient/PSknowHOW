@@ -97,4 +97,18 @@ public class JiraProcessorCacheEvictorTest {
 		// Assert
 		assertFalse(result);
 	}
+
+	@Test
+	public void testEvictCache_SuccessfulEviction2() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		ResponseEntity<String> responseEntity = new ResponseEntity<>("Success", HttpStatus.OK);
+
+		when(jiraProcessorConfig.getCustomApiBaseUrl()).thenReturn("http://example.com");
+
+		boolean cleaned = jiraProcessorCacheEvictor.evictCache("cacheEndPoint", "projectId", "cacheName");
+		assertTrue(!cleaned);
+	}
 }

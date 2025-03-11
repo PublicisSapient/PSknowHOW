@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -104,12 +105,14 @@ public class ProjectToolConfigServiceImplTest {
 	private AuthenticationService authenticationService;
 	@Mock
 	private CustomApiConfig customApiConfig;
+	@Mock
+	private KpiDataCacheService kpiDataCacheService;
 
 	/** method includes preprocesses for test cases */
 	@Before
 	public void setUp() {
 
-		toolName = "Test1";
+		toolName = ProcessorConstants.JIRA_TEST;
 		listProjectTool.setId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
 		listProjectTool.setToolName(toolName);
 		listProjectTool.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
@@ -423,11 +426,11 @@ public class ProjectToolConfigServiceImplTest {
 
 		when(subProjectRepository.findBytoolConfigIdIn(toolConfiragrationIds)).thenReturn(subProjectList);
 		List<ProjectToolConfigDTO> response = projectToolServiceImpl.getProjectToolConfigs(basicProjectConfigId);
-		assertEquals(response.get(0).getToolName(), "Test1");
+		assertEquals(response.get(0).getToolName(), ProcessorConstants.JIRA_TEST);
 		assertEquals(response.size(), 1);
 		assertNotNull(response.get(0).getSubprojects());
 		List<ProjectToolConfigDTO> responseByType = projectToolServiceImpl.getProjectToolConfigs(basicProjectConfigId);
-		assertEquals(responseByType.get(0).getToolName(), "Test1");
+		assertEquals(responseByType.get(0).getToolName(), ProcessorConstants.JIRA_TEST);
 		assertEquals(responseByType.size(), 1);
 		assertNotNull(responseByType.get(0).getSubprojects());
 	}

@@ -48,7 +48,6 @@ public final class CommonConstant {
 
 	public static final String CACHE_CLEAR_ENDPOINT = "api/cache/clearCache";
 	public static final String CLEAR_ALL_CACHE_ENDPOINT = "api/cache/clearAllCache";
-	public static final String CACHE_CLEAR_SOURCE_ENDPOINT = "api/cache/source/" + PARAM1 + "/clear";
 	public static final String CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT = "api/cache/project/" + PARAM1 + "/source/" + PARAM2 +
 			"/clear";
 	public static final String REPROCESS = "Reprocess";
@@ -376,6 +375,7 @@ public final class CommonConstant {
 	public static final String SONARKANBAN = "SONARKANBAN";
 	public static final String BITBUCKETKANBAN = "BITBUCKETKANBAN";
 	public static final String JENKINSKANBAN = "JENKINSKANBAN";
+	public static final String ALL_KPI = "ALL_KPI";
 
 	private CommonConstant() {
 	}
