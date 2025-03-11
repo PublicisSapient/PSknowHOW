@@ -28,12 +28,12 @@ public class OngoingExecutionsService {
 
 	public void markExecutionInProgress(String basicProjectConfigId) {
 		ongoingExecutions.put(basicProjectConfigId, true);
-		setExecutionOngoingForProcessor(ProcessorConstants.JIRA, basicProjectConfigId, true);
+		setExecutionOngoingForProcessor(ProcessorConstants.RALLY, basicProjectConfigId, true);
 	}
 
 	public void markExecutionAsCompleted(String basicProjectConfigId) {
 		ongoingExecutions.remove(basicProjectConfigId);
-		setExecutionOngoingForProcessor(ProcessorConstants.JIRA, basicProjectConfigId, false);
+		setExecutionOngoingForProcessor(ProcessorConstants.RALLY, basicProjectConfigId, false);
 	}
 
 	/**
