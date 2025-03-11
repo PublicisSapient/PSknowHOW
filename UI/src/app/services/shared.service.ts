@@ -136,6 +136,7 @@ export class SharedService {
   // for reports
   onChartChange = new Subject<any>();
   onChartChangeObs = this.onChartChange.asObservable();
+  noReports: boolean = true;
 
   constructor(private router: Router, private route: ActivatedRoute) {
     this.passDataToDashboard = new EventEmitter();
@@ -151,6 +152,15 @@ export class SharedService {
     this.selectedTrendsEventSubject = new Subject<any>();
     // Observable to subscribe to
     this.selectedTrendsEvent = this.selectedTrendsEventSubject.asObservable();
+  }
+
+  // for reports
+  setNoReports(val) {
+    this.noReports = val;
+  }
+
+  getNoReports() {
+    return this.noReports;
   }
 
   // for DSV

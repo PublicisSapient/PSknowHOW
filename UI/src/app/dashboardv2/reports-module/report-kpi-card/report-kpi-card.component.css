@@ -443,6 +443,9 @@
     font-size: 1.5rem; 
 }
 
-/* :host ::ng-deep .chart-container {
-    height: 400px;
-} */
+@media print {
+    :host ::ng-deep body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}

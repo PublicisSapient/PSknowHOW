@@ -1,7 +1,7 @@
 <ng-container *ngIf="selectedTab === 'iteration'; else cardWithOutRawJsonTemplate">
   <div class="kpi-card-container-v2">
     <app-ps-kpi-card-header [cardHeaderData]="kpiHeaderData"
-      (actionTriggered)="handleAction($event)"></app-ps-kpi-card-header>
+      (actionTriggered)="handleAction($event)" [currentChartData]="currentChartData"></app-ps-kpi-card-header>
 
     <div class="kpi-card-body">
       <ng-container
@@ -359,44 +359,10 @@
       </div>
     </div>
 
-    <!-- Existing Reports Slider-->
-    <div class="slider-wrapper" *ngIf="!createNewReportTemplate">
-      <!-- Left Navigation Button -->
-      <button class="nav-button left" (click)="scrollLeft()">
-        <i class="pi pi-chevron-left"></i>
-      </button>
-
-      <!-- Scrollable container for report buttons -->
-      <div class="slider-container" #sliderContainer>
-        <p-button *ngFor="let report of existingReportData" class="slider-item"
-          [ngClass]="{active: reportName === report.name}" (onClick)="reportName = report.name">
-          {{ report.name }}
-        </p-button>
-      </div>
-
-      <!-- Right Navigation Button -->
-      <button class="nav-button right" (click)="scrollRight()">
-        <i class="pi pi-chevron-right"></i>
-      </button>
-    </div>
-    <!-- Existing Reports Slider End-->
-
     <div style="border: 1px solid #cecece; padding:10px; border-radius: 10px;">
-      <div class="p-d-flex p-jc-between p-align-center p-col-12 p-p-0" #existingReports>
-        <div class="p-col-12 p-mb-3 p-p-0" *ngFor="let report of existingReportsList">
-          <div class="p-d-flex p-jc-between p-align-center p-col-12 p-p-0">
-            <div class="p-col-8 p-mb-3 p-p-0">
-              <input pInputText placeholder="Enter Report Name" [(ngModel)]="report.reportName"
-                [style]="{'width': '100%'}" (keydown.enter)="createNewReport()" />
-            </div>
-            <div class="p-col-4 p-ml-2 p-mb-3 p-p-0">
-              <p-button label="Add KPI" styleClass="add-to-reports-btn" aria-label="Add KPI"
-                (onClick)="addToReportPost(report)"></p-button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <app-add-to-report-pop-up [reportObj]="reportObj"></app-add-to-report-pop-up>
+      <app-add-to-report-pop-up [reportObj]="reportObj" 
+      [createNewReportTemplate]="createNewReportTemplate" 
+      [existingReportData]="existingReportData" [reportName]="reportName"></app-add-to-report-pop-up>
     </div>
   </ng-template>
   <ng-template pTemplate="footer">
@@ -404,7 +370,7 @@
       <p-button label="{{ createNewReportTemplate ? 'Cancel' :  'Close' }}" styleClass="add-to-reports-btn" aria-label="Cancel"
         (onClick)="closeAddToReportsModal()"></p-button>
       <p-button label="Add to Report" styleClass="add-to-reports-btn" aria-label="Add to Report"
-        (onClick)="addToReportPut()" [disabled]="createNewReportTemplate"></p-button>
+        (onClick)="addToReportPut()" [disabled]="createNewReportTemplate || success"></p-button>
     </div>
   </ng-template>
 </p-dialog>

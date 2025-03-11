@@ -14,6 +14,7 @@ import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 })
 export class PsKpiCardHeaderComponent implements OnInit {
   @Input() cardHeaderData: any;
+  @Input() currentChartData: any;
   isTooltip = false;
   @Output() actionTriggered = new EventEmitter<any>();
   @ViewChild('kpimenu') kpimenu: Menu;
@@ -86,13 +87,26 @@ export class PsKpiCardHeaderComponent implements OnInit {
     this.reportModuleEnabled = await this.featureFlagService.isFeatureEnabled('REPORTS');
     let alreadyAdded = this.menuItems.find(x => x.label === 'Add to Report');
     if (this.reportModuleEnabled && !alreadyAdded) {
-      this.menuItems.push({
-        label: 'Add to Report',
-        icon: 'pi pi-briefcase',
-        command: ($event) => {
-          this.addToReport();
-        },
-      });
+      if ((this.currentChartData?.chartData?.length || this.currentChartData?.chartData?.data?.length || this.currentChartData?.chartData?.chartData?.length)) {
+        this.menuItems.push({
+          label: 'Add to Report',
+          icon: 'pi pi-briefcase',
+          command: ($event) => {
+            this.addToReport();
+          },
+          disabled: false
+        });
+      } else {
+        this.menuItems = this.menuItems.filter(item => item.label !== 'Add to Report');
+        this.menuItems.push({
+          label: 'Add to Report',
+          icon: 'pi pi-briefcase',
+          command: ($event) => {
+            this.addToReport();
+          },
+          disabled: true
+        });
+      }
     }
   }
 

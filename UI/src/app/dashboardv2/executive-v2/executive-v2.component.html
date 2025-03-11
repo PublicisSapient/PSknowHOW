@@ -58,7 +58,7 @@
                                             [partialData]="checkIfPartialDataPresent(kpi)" [filterApplyData]="filterApplyData"
                                             [chartColorList]="chartColorList[kpi?.kpiId]" [kpiSelectedFilterObj]="kpiSelectedFilterObj[kpi?.kpiId]"
                                             [yAxis]="checkYAxis(kpi)" [kpiThresholdObj]="kpiThresholdObj[kpi?.kpiId]"
-                                            [releaseEndDate]="releaseEndDate">
+                                            [releaseEndDate]="releaseEndDate" [hieararchy]="selectedTab === 'iteration' || selectedTab === 'release' ? hieararchy : null">
                                             <ng-container *ngIf="!noTabAccess else noDataAccess">
                                                 <ng-container *ngIf="kpi?.kpiDetail?.chartType; else showTable">
 

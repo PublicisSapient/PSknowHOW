@@ -27,6 +27,7 @@ export class ReportKpiCardComponent {
   @Input() capturedAt: string = '';
   @Input() kpiHeight: number;
   @Input() releaseEndDate: string;
+  @Input() hieararchy: any = null;
   constructor(private kpiHelperService: KpiHelperService) { }
 
   ngOnChanges(changes: SimpleChanges) {

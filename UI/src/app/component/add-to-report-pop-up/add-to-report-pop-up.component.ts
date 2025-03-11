@@ -1,21 +1,25 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-add-to-report-pop-up',
   templateUrl: './add-to-report-pop-up.component.html',
   styleUrls: ['./add-to-report-pop-up.component.css']
 })
-export class AddToReportPopUpComponent implements OnInit {
+export class AddToReportPopUpComponent implements AfterViewInit {
   @Input() reportObj: any;
+  @Input() createNewReportTemplate: boolean = false;
+  @Input() existingReportData: any[] = [];
+  @Input() reportName: string = '';
+  // Reference to the scrollable container element
+  @ViewChild('sliderContainer', { static: false }) sliderContainer!: ElementRef<HTMLDivElement>;
 
   constructor() { }
 
   ngOnChanges() {
-    // this.reportObj.metadata = JSON.parse(this.reportObj.metadata);
     this.reportObj.metadata.trendColors = this.removeDuplicateKeys(this.reportObj.metadata.trendColors);
   }
 
-  ngOnInit(): void {
+  ngAfterViewInit() {
   }
 
   objectValues(obj): any[] {
@@ -30,7 +34,7 @@ export class AddToReportPopUpComponent implements OnInit {
   }
 
   objectKeys(obj) {
-    return Object.keys(obj);
+    return obj && Object.keys(obj)?.length ? Object.keys(obj) : [];
   }
 
   canonicalize(obj) {
@@ -71,6 +75,14 @@ export class AddToReportPopUpComponent implements OnInit {
     });
 
     return result;
+  }
+
+  scrollLeft(): void {
+    this.sliderContainer.nativeElement.scrollBy({ left: -200, behavior: 'smooth' });
+  }
+
+  scrollRight(): void {
+    this.sliderContainer.nativeElement.scrollBy({ left: 200, behavior: 'smooth' });
   }
 
 }

@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { HttpService } from 'src/app/services/http.service';
@@ -12,7 +12,6 @@ import { CommentsV2Component } from 'src/app/component/comments-v2/comments-v2.c
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 import { MessageService } from 'primeng/api';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
-import { ChartWithFiltersComponent } from 'src/app/component/chart-with-filters/chart-with-filters.component';
 
 
 @Component({
@@ -104,17 +103,14 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() yAxis: string = '';
   @Input() kpiThresholdObj: any;
   @Input() releaseEndDate: string = '';
+  @Input() hieararchy: any;
 
 
   // reports: chartWithFiltersComponent
   selectedMainCategory: any;
   selectedMainFilter: any;
   selectedFilter2: any;
-
-
-  // Reference to the scrollable container element
-  @ViewChild('sliderContainer', { static: true }) sliderContainer!: ElementRef<HTMLDivElement>;
-
+  success: boolean = false;
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
     private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService, private kpiHelperService: KpiHelperService,
@@ -211,18 +207,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         },
       },
     ];
-
-    this.reportModuleEnabled = await this.featureFlagService.isFeatureEnabled('REPORTS');
-
-    if (this.reportModuleEnabled) {
-      this.menuItems.push({
-        label: 'Add to Report',
-        icon: 'pi pi-briefcase',
-        command: ($event) => {
-          this.addToReportAction();
-        },
-      });
-    }
   }
 
   /**
@@ -251,7 +235,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  async ngOnChanges(changes: SimpleChanges) {
     this.userRole = this.authService.getRole();
     this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
     this.disableSettings = (this.colors && (Object.keys(this.colors)?.length > 1 || (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' && this.selectedTab !== 'iteration' && this.selectedTab !== 'release')))
@@ -271,6 +255,34 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         }
       }
     }
+
+    if (changes['trendValueList'] && changes['trendValueList'].currentValue) {
+      this.reportModuleEnabled = await this.featureFlagService.isFeatureEnabled('REPORTS');
+
+      if (this.reportModuleEnabled && this.selectedTab !== 'iteration') {
+        if ((!this.checkIfDataPresent(this.kpiDataStatusCode) && !this.partialData) || (!this.kpiData?.kpiDetail?.isAdditionalFilterSupport && this.iSAdditionalFilterSelected)) {
+          this.menuItems.push({
+            label: 'Add to Report',
+            icon: 'pi pi-briefcase',
+            command: ($event) => {
+              this.addToReportAction();
+            },
+            disabled: true
+          });
+        } else {
+          this.menuItems.push({
+            label: 'Add to Report',
+            icon: 'pi pi-briefcase',
+            command: ($event) => {
+              this.addToReportAction();
+            },
+            disabled: false
+          });
+        }
+      }
+    }
+
+
 
     //#region new card kpi
     if (this.selectedTab === 'iteration' && !this.loader) {
@@ -819,7 +831,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   //#region reports
   addToReportAction() {
-
+    this.success = false;
     const today = new Date();
     const formattedDate = today.toLocaleDateString('en-US', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -848,7 +860,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       chartColorList: this.chartColorList || {},
       kpiThresholdObj: this.kpiThresholdObj || {},
       capturedAt: formattedDate,
-      kpiHeight: 400
+      kpiHeight: 400,
+      hieararchy: this.hieararchy
     }
 
     if (metaDataObj.chartType === 'bar-with-y-axis-group') {
@@ -892,7 +905,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     let result = '';
     let options = this.getSelectButtonOptions();
 
-    this.selectedButtonValue = this.selectedButtonValue || { Category: this.getSelectButtonOptions()[0]?.key };
+    this.selectedButtonValue = this.selectedButtonValue || { Category: (this.getSelectButtonOptions()[0]?.key || this.getSelectButtonOptions()[0]?.categoryName) };
     if (options?.length) {
       result = options.filter(x => {
         if (x.hasOwnProperty('key')) {
@@ -929,24 +942,28 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         }
       },
       error: (error) => {
-
+        this.existingReportData = [];
+        this.generateReportSlider([]);
       }
     });
   }
 
   generateReportSlider(response, newReport = false) {
     let storedReportData = response;
-    if (storedReportData) {
+    if (storedReportData?.length) {
       this.existingReportData = storedReportData;
       if (!newReport) {
         this.reportName = this.existingReportData[0].name;
       }
-
-      if (!this.existingReportData?.length) {
-        this.createNewReportTemplate = true;
-      } else {
-        this.createNewReportTemplate = false;
-      }
+    } else {
+      this.existingReportData = [];
+    }
+    if (!this.existingReportData?.length) {
+      this.createNewReportTemplate = true;
+      this.service.setNoReports(true);
+    } else {
+      this.createNewReportTemplate = false;
+      this.service.setNoReports(false);
     }
   }
 
@@ -970,8 +987,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         this.createNewReportTemplate = false;
         this.reportName = data['data'].name;
         this.generateReportSlider(this.existingReportData, true);
+        this.success = true;
       } else {
         this.messageService.add({ severity: 'error', summary: 'Error while creating report' });
+        this.success = false;
       }
     });
   }
@@ -984,25 +1003,27 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     let data = { ...this.reportObj };
     data.chartData = JSON.stringify(data.chartData);
 
-    if(!existingKPIs.find(x => x.id === data.id)) {
+    if (!existingKPIs.find(x => x.id === data.id)) {
       existingKPIs.push(data)
     } else {
       existingKPIs = this.replaceObjectById(existingKPIs, data);
     }
 
-    
+
     let submitData = {
       name: this.reportName,
       kpis: [...existingKPIs]
     };
 
-    
+
     this.http.updateReport(reportId, submitData).subscribe(data => {
       if (data['success']) {
         this.messageService.add({ severity: 'success', summary: 'Report updated successfully' });
         this.existingReportData = this.replaceObjectByName(this.existingReportData, data['data']);
+        this.success = true;
       } else {
         this.messageService.add({ severity: 'error', summary: 'Error while updating report' });
+        this.success = false;
       }
     });
   }
@@ -1013,14 +1034,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   replaceObjectById(arr: any[], replacement: any): any[] {
     return arr.map(obj => (obj.id === replacement.id ? replacement : obj));
-  } 
-
-  scrollLeft(): void {
-    this.sliderContainer.nativeElement.scrollBy({ left: -200, behavior: 'smooth' });
-  }
-
-  scrollRight(): void {
-    this.sliderContainer.nativeElement.scrollBy({ left: 200, behavior: 'smooth' });
   }
 
   closeAddToReportsModal() {

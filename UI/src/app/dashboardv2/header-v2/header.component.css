@@ -147,3 +147,13 @@ header {
 .tab-button button:hover {
   color: #0056b3;
 }
+
+@media print {
+  :host ::ng-deep header nav .tab-container {
+    display: none;
+  }
+
+  :host ::ng-deep header div[role="button"] {
+    display: none;
+  }
+}

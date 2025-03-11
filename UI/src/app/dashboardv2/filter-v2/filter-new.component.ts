@@ -857,6 +857,22 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
     }
     this.setSelectedMapLevels();
+    if (this.filterType === 'Sprint:' || this.filterType === 'Release:') {
+      console.log(this.filterDataArr[this.selectedType]);
+      let filterType = '';
+      if (typeof this.selectedLevel === 'object' && this.selectedLevel !== null) {
+        filterType = `${this.selectedLevel.emittedLevel}`;
+      } else if (typeof this.selectedLevel === 'string') {
+        filterType = `${this.selectedLevel}`;
+      } else {
+        filterType = '';
+      }
+      console.log(filterType);
+      let eventCopy = [...event];
+      eventCopy[0].labelName = filterType;
+      this.filterApplyData['hieararchy'] = this.findParentLevels(eventCopy[0], this.filterDataArr[this.selectedType]);
+    }
+
     if (!this.kanban) {
       if (this.selectedTab.toLocaleLowerCase() !== 'developer') {
         this.filterApplyData['ids'] = [...new Set(event.map((proj) => proj.nodeId))];
@@ -912,6 +928,43 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+  findParentLevels(targetNode, hierarchy) {
+    const parentMap = {};
+
+    function findParent(nodeId, level) {
+      for (const category in hierarchy) {
+        for (const node of hierarchy[category]) {
+          if (node.nodeId === nodeId) {
+            parentMap[level] = node;
+            if (node.parentId) {
+              findParent(node.parentId, node.level - 1);
+            }
+            return;
+          }
+        }
+      }
+    }
+
+    if (targetNode.parentId) {
+      findParent(targetNode.parentId, targetNode.level - 1);
+    }
+
+    const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType];
+    let result = {};
+    Object.keys(parentMap).forEach((key) => {
+      result[levelDetails.filter(level => level.hierarchyLevelId === parentMap[key].labelName)[0].hierarchyLevelName] = parentMap[key];
+    })
+    
+    const sortedData = Object.entries(result)
+    .sort(([, a], [, b]) => a['level'] - b['level']) // Sort by level
+    .reduce((acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+    }, {} as Record<string, any>); 
+    return sortedData;
+  }
+
 
   arrayDeepCompare(a1, a2) {
     return a1.length === a2.length && a1.every((o, idx) => typeof o !== 'string' ? this.helperService.deepEqual(o, a2[idx]) : o === a2[idx]);

@@ -20,8 +20,7 @@ export class ReportContainerComponent implements OnInit {
 
   ngOnInit(): void {
     this.http.fetchReports().subscribe((data) => {
-      localStorage.setItem('reportData', JSON.stringify(data['data']['content']));
-      this.reportsData = JSON.parse(localStorage.getItem('reportData'));
+      this.reportsData = data['data']['content'];
       
       this.selectedReport = this.reportsData[0];
       this.selectedReport.kpis.forEach((kpi) => {
@@ -82,7 +81,7 @@ export class ReportContainerComponent implements OnInit {
   }
 
   objectKeys(obj) {
-    return Object.keys(obj);
+    return obj && Object.keys(obj)?.length ? Object.keys(obj) : [];
   }
 
   deleteKPIFromReport(selectedReport, kpi) {

@@ -61,7 +61,15 @@
 .selected-filter-container {
     background-color: #F5F9FF;
     border-radius: 10px;
-    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;    
+}
+
+.selected-filter-sprint-container {
+    background-color: #F5F9FF;
+    border-radius: 10px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .align-list-marker {
@@ -90,22 +98,75 @@
     width: 100%;
 }
 
+.kpi-div {
+    border: 1px solid #cecece;
+    border-radius: 10px;
+    background-color: #fff;
+}
+
+.print-header {
+    display: none;
+}
+
 
 @media print {
+
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .kpi-div {
+        height: 85vh;
+        /* Full viewport height */
+    }
+
+    .kpi-div:not(:first-child) {
+        page-break-before: always;
+        height: 90vh;
+        /* Ensures it starts on a new page */
+    }
+
+    .print-header {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+
+    @page {
+        size: A4 portrait;
+        /* Ensures the page is A4 size */
+        margin: 0;
+        /* Removes any default margins */
+    }
+
     :host ::ng-deep body {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
 
-    :host ::ng-deep div {
-        display: block;
-    }
-
-    :host ::ng-deep div.kpi-card-container-v2 {
+    :host ::ng-deep div.report-kpi-card-container {
         width: 100%;
+        background-color: yellow !important;
     }
 
     :host ::ng-deep .delete-kpi-btn {
         display: none !important;
     }
+
+    :host ::ng-deep svg {
+        width: 95% !important;
+    }
+
+    :host ::ng-deep .selected-filter-container {
+        background-color: blue;
+    }
+
+    .slider-div {
+        display: none;
+    }
+
+
 }

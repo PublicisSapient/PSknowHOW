@@ -128,6 +128,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   iterationKPIData = {};
   dailyStandupKPIDetails = {};
   refreshCounter: number = 0;
+  hieararchy: any;
   queryParamsSubscription!: Subscription;
 
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
@@ -483,6 +484,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         const today = new Date().toISOString().split('T')[0];
         this.timeRemaining = this.calcBusinessDays(today, endDate);
         this.service.iterationConfigData.next({ daysLeft: this.timeRemaining });
+        this.hieararchy = this.filterApplyData['hieararchy'];
       } else if (this.selectedTab === 'iteration') {
         const selectedSprint = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['sprint'][0])[0];
         if (selectedSprint) {
@@ -491,6 +493,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.timeRemaining = this.calcBusinessDays(today, endDate);
           this.service.iterationConfigData.next({ daysLeft: this.timeRemaining });
           this.iterationKPIData = {};
+          this.hieararchy = this.filterApplyData['hieararchy'];
         }
       }
       if (!this.configGlobalData?.length && $event.dashConfigData) {

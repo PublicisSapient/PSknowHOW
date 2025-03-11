@@ -1,6 +1,6 @@
 <!-- <p-toast [style]="{marginTop: '80px'}"></p-toast> -->
 <!-- Existing Reports Slider-->
-<div class="slider-div">
+<div class="slider-div" *ngIf="reportsData?.length">
     <div class="p-px-5 p-pt-4 p-pb-1">Select a report: </div>
     <div class="slider-wrapper">
         <!-- Left Navigation Button -->
@@ -24,15 +24,43 @@
 </div>
 <!-- Existing Reports Slider End-->
 
-<div class="p-grid justify-content-start p-pl-2 p-pr-2 p-m-0 p-w-100">
+<div class="print-header">
+    <h1>{{selectedReport.name}}</h1>
+</div>
 
 
+<div class="kpi-container p-grid justify-content-start p-pl-2 p-pr-2 p-m-0 p-w-100">
     <ng-container *ngFor="let kpi of selectedReport?.kpis; let i = index;">
-        <div style="border: 1px solid #cecece; border-radius: 10px;background-color: #fff;" class="p-p-3 p-m-2 p-w-100">
+        <div class="kpi-div p-p-3 p-m-2 p-w-100">
             <div class="p-d-flex p-jc-end">
                 <p-button label="Delete KPI" styleClass="delete-kpi-btn" aria-label="Delete KPI"
-                    (onClick)="deleteKPIFromReport(selectedReport, kpi)"></p-button>
+                    (onClick)="deleteKPIFromReport(selectedReport, kpi)"
+                    [disabled]="selectedReport?.kpis?.length === 1"></p-button>
             </div>
+
+            <div class="selected-filter-sprint-container p-d-flex p-jc-between p-p-3"
+                *ngIf="objectKeys(kpi.metadata.hieararchy)?.length">
+                <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
+                    <div class="p-col-4" *ngFor="let superKey of objectKeys(kpi.metadata.hieararchy)">
+                        <strong>{{ superKey }}&nbsp;:&nbsp;</strong> <span>{{
+                            kpi.metadata.hieararchy[superKey].nodeDisplayName }}</span>
+                    </div>
+                    <div class="p-d-flex p-jc-between"
+                        *ngFor="let superKey of objectValues(kpi.metadata.trendColors)">
+                        <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
+                            <div *ngFor="let key of objectKeys(superKey['tooltip']); let i = index;" class="p-col-4">
+                                <strong>{{ key }}&nbsp;:&nbsp;</strong> <span>{{ superKey['tooltip'][key] }}</span>
+                            </div>
+                            <div class="p-col-12">
+                                <strong>{{superKey['labelName'] | titlecase }}:&nbsp;</strong>
+                                <span class="align-list-marker" [ngStyle]="{'background':superKey?.color}"></span>
+                                <span>{{ superKey['nodeDisplayName'] }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="selected-filter-container p-d-flex p-jc-between p-p-3"
                 *ngFor="let superKey of objectValues(kpi.metadata.trendColors)">
                 <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
@@ -48,7 +76,7 @@
                 </div>
             </div>
 
-            <div class="{{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}"
+            <div class="report-kpi-card-container {{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}"
                 [ngStyle]="{'height': kpi.kpiDetail?.kpiHeight === 100 ? '500px' : (kpi.kpiDetail?.kpiHeight === 50 ? '257px' : '500px') }">
 
                 <app-report-kpi-card [currentChartData]="kpi.chartData"
@@ -62,7 +90,7 @@
                     [kpiSelectedFilterObj]="kpi.metadata.kpiSelectedFilterObj"
                     [chartColorList]="kpi.metadata.chartColorList" [yAxis]="kpi.metadata.yAxis"
                     [capturedAt]="kpi.metadata.capturedAt" [kpiHeight]="kpi.metadata.kpiHeight"
-                    [releaseEndDate]="kpi.metadata.releaseEndDate">
+                    [releaseEndDate]="kpi.metadata.releaseEndDate" [hieararchy]="kpi.metadata.hieararchy">
                 </app-report-kpi-card>
             </div>
         </div>

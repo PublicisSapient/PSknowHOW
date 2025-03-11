@@ -134,6 +134,7 @@ export class HeaderComponent implements OnInit {
     })
 
     this.reportModuleEnabled = await this.featureFlagService.isFeatureEnabled('REPORTS');
+    this.getExistingReports();
   }
 
   // when user would want to give access on project from notification list
@@ -191,5 +192,22 @@ export class HeaderComponent implements OnInit {
     if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
       this.router.navigate([`/dashboard/my-knowhow`]);
     }
+  }
+
+  getExistingReports() {
+    this.httpService.fetchReports().subscribe({
+      next: (response) => {
+        if (response['success']) {
+          if (response['data']['content'] && response['data']['content'].length) {
+            this.sharedService.setNoReports(false);
+          } else {
+            this.sharedService.setNoReports(true);
+          }
+        }
+      },
+      error: (error) => {
+        this.sharedService.setNoReports(true);
+      }
+    });
   }
 }
