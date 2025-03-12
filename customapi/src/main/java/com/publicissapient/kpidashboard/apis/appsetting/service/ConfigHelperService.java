@@ -19,8 +19,10 @@
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -397,5 +399,12 @@ public class ConfigHelperService {
 		return cacheService.getAllProjectHierarchy().stream()
 				.filter(projectHierarchy -> uniqueId.contains(projectHierarchy.getNodeId()))
 				.map(ProjectHierarchy::getBasicProjectConfigId).toList();
+	}
+
+	public Set<String> getParentIdByNodeIdAndLabelName(List<String> uniqueId, String labelName) {
+		return new HashSet<>(cacheService.getAllProjectHierarchy().stream()
+				.filter(projectHierarchy -> uniqueId.contains(projectHierarchy.getNodeId())
+						&& projectHierarchy.getHierarchyLevelId().equalsIgnoreCase(labelName))
+				.map(ProjectHierarchy::getParentId).toList());
 	}
 }
