@@ -30,7 +30,7 @@ public class OrganizationHierarchyController {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(true, "Fetched organization Hierarchies Successfully.", organizationHierarchies));
 		} else {
-			return ResponseEntity.status(HttpStatus.NO_CONTENT)
+			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(false, "Not Found Any Organization Hierarchies.", null));
 		}
 	}
