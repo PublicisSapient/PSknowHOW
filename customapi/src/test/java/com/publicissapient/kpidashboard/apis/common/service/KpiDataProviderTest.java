@@ -527,4 +527,34 @@ public class KpiDataProviderTest {
 
 
 	}
+
+	@Test
+	public void testFetchDSRData() {
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+
+		SprintWiseStoryDataFactory sprintWiseStoryDataFactory = SprintWiseStoryDataFactory.newInstance();
+		List<SprintWiseStory> sprintWiseStoryList = sprintWiseStoryDataFactory.getSprintWiseStories();
+
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		List<JiraIssue> totalBugList = jiraIssueDataFactory.getBugs();
+
+		Map<String, List<String>> priority = new HashMap<>();
+		priority.put("P3", Arrays.asList("P3 - Major"));
+
+		when(jiraIssueRepository.findIssuesGroupBySprint(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(sprintWiseStoryList);
+
+		when(jiraIssueRepository.findIssuesByType(anyMap())).thenReturn(totalBugList);
+		fieldMappingMap.forEach((k, v) -> {
+			FieldMapping v1 = v;
+			v1.setIncludeRCAForKPI35(Arrays.asList("code issue"));
+			v1.setDefectPriorityKPI35(Arrays.asList("P3"));
+		});
+		when(customApiConfig.getPriority()).thenReturn(priority);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+
+		Map<String, Object> result = kpiDataProvider.fetchDSRData(kpiRequest, basicProjectConfigId, sprintList);
+		assertThat("Total Defects value :", ((List<JiraIssue>) (result.get("totalBugData"))).size(), equalTo(9));
+	}
 }

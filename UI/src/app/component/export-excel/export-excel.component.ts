@@ -99,10 +99,16 @@ export class ExportExcelComponent implements OnInit {
           obj[key] = [];
           for (let y in colData[key]) {
             //added check if valid url
-            if (colData[key][y].includes('http')) {
-              obj[key].push({ text: y, hyperlink: colData[key][y] });
+            if(typeof colData[key] === 'object'){
+              Object.entries(colData[key]).forEach(([objkey,value])=>{
+                obj[key].push(value)
+              })
             }else{
-              obj[key].push(colData[key][y]);
+              if (colData[key][y].includes('http')) {
+                obj[key].push({ text: y, hyperlink: colData[key][y] });
+              }else{
+                obj[key].push(colData[key][y]);
+              }
             }
           }
         } else if (key == 'Issue Id') {
@@ -114,7 +120,7 @@ export class ExportExcelComponent implements OnInit {
       }
       tableData.push(obj);
     });
-    console.log(tableData)
+
     this.dataTransformatin(rawColumConfig, tableData, '', kpiName);
   }
 
