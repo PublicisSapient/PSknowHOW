@@ -51,7 +51,7 @@ export class ReportContainerComponent implements OnInit {
      */
   getkpiwidth(kpiwidth) {
     let retValue = this.widthObj[kpiwidth] ? this.widthObj[kpiwidth] : 'p-col-6';
-    return 'p-col-8';
+    return retValue;
   }
 
   scrollLeft(): void {
@@ -85,8 +85,6 @@ export class ReportContainerComponent implements OnInit {
   }
 
   deleteKPIFromReport(selectedReport, kpi) {
-    console.log(selectedReport);
-
     selectedReport.kpis = selectedReport.kpis.filter(x => x.id !== kpi.id);
     // this.messageService.add({ severity: 'success', summary: 'Report updated successfully' });
     let data = { ...selectedReport };

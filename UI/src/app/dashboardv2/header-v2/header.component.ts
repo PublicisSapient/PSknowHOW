@@ -148,6 +148,8 @@ export class HeaderComponent implements OnInit {
           this.router.navigate(['/dashboard/Config/Profile/GrantNewUserAuthRequests']);
           break;
         default:
+          this.router.navigate(['/dashboard/Config/Profile/RequestStatus']);
+          break;
       }
     } else {
       this.router.navigate(['/dashboard/Config/Profile/RequestStatus']);

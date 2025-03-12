@@ -59,6 +59,192 @@ describe('HeaderComponent', () => {
     helperService = TestBed.inject(HelperService);
     mockGetAuthorizationService = jasmine.createSpyObj(GetAuthorizationService, ['checkIfSuperUser', 'checkIfProjectAdmin']);
     mockRouter = component.router;
+    httpService.setCurrentUserDetails({
+      "user_email": "rishabh@mailinator.com",
+      "user_id": "67a9dc720edaa90655f684b6",
+      "projectsAccess": [
+        {
+          "role": "ROLE_PROJECT_ADMIN",
+          "projects": [
+            {
+              "projectName": "Abu Dhabi Housing Authority",
+              "projectId": "66601953bc80f461490c653d",
+              "hierarchy": [
+                {
+                  "hierarchyLevel": {
+                    "level": 1,
+                    "hierarchyLevelId": "bu",
+                    "hierarchyLevelName": "BU"
+                  },
+                  "orgHierarchyNodeId": "1acc3651-0313-4331-9093-087aa930c4c5",
+                  "value": "International"
+                },
+                {
+                  "hierarchyLevel": {
+                    "level": 2,
+                    "hierarchyLevelId": "ver",
+                    "hierarchyLevelName": "Vertical"
+                  },
+                  "orgHierarchyNodeId": "b849d1b3-69bd-45fc-8d4f-b117ef0660b0",
+                  "value": "Travel"
+                },
+                {
+                  "hierarchyLevel": {
+                    "level": 3,
+                    "hierarchyLevelId": "acc",
+                    "hierarchyLevelName": "Account"
+                  },
+                  "orgHierarchyNodeId": "0498fcab-69ce-40ca-9e1e-a02e3bb526a5",
+                  "value": "ADEO"
+                },
+                {
+                  "hierarchyLevel": {
+                    "level": 4,
+                    "hierarchyLevelId": "port",
+                    "hierarchyLevelName": "Engagement"
+                  },
+                  "orgHierarchyNodeId": "38a58b11-c94a-486c-9f24-48d815d3ec0c",
+                  "value": "App Development"
+                }
+              ]
+            },
+            {
+              "projectName": "ATS",
+              "projectId": "6641e8cd1ec9a84d82ce380d",
+              "hierarchy": [
+                {
+                  "hierarchyLevel": {
+                    "level": 1,
+                    "hierarchyLevelId": "bu",
+                    "hierarchyLevelName": "BU"
+                  },
+                  "orgHierarchyNodeId": "ad7cae57-9f07-44df-8e50-b807e81a156c",
+                  "value": "North America"
+                },
+                {
+                  "hierarchyLevel": {
+                    "level": 2,
+                    "hierarchyLevelId": "ver",
+                    "hierarchyLevelName": "Vertical"
+                  },
+                  "orgHierarchyNodeId": "5267cdbd-5db5-4377-aa1c-7941a94a4f87",
+                  "value": "Financial Services"
+                },
+                {
+                  "hierarchyLevel": {
+                    "level": 3,
+                    "hierarchyLevelId": "acc",
+                    "hierarchyLevelName": "Account"
+                  },
+                  "orgHierarchyNodeId": "75752111-6d80-49f2-9c73-36dff4711b75",
+                  "value": "DTCC (TRM-PS)"
+                },
+                {
+                  "hierarchyLevel": {
+                    "level": 4,
+                    "hierarchyLevelId": "port",
+                    "hierarchyLevelName": "Engagement"
+                  },
+                  "orgHierarchyNodeId": "92b9e249-44c4-4cff-be25-7a09eeed1ad9",
+                  "value": "CMRS"
+                }
+              ]
+            },
+            {
+              "projectName": "PSknowHOW",
+              "projectId": "65118da7965fbb0d14bce23c",
+              "hierarchy": [
+                {
+                  "hierarchyLevel": {
+                    "level": 1,
+                    "hierarchyLevelId": "bu",
+                    "hierarchyLevelName": "BU"
+                  },
+                  "orgHierarchyNodeId": "8f3ea064-46ca-45eb-a80d-20574993cb47",
+                  "value": "Internal"
+                },
+                {
+                  "hierarchyLevel": {
+                    "level": 2,
+                    "hierarchyLevelId": "ver",
+                    "hierarchyLevelName": "Vertical"
+                  },
+                  "orgHierarchyNodeId": "eae72283-edb8-4ea9-98c6-6189351b0942",
+                  "value": "PS Internal"
+                },
+                {
+                  "hierarchyLevel": {
+                    "level": 3,
+                    "hierarchyLevelId": "acc",
+                    "hierarchyLevelName": "Account"
+                  },
+                  "orgHierarchyNodeId": "9edb8a54-3a7a-4fb5-b1c6-0b648f7f77dc",
+                  "value": "Methods and Tools"
+                },
+                {
+                  "hierarchyLevel": {
+                    "level": 4,
+                    "hierarchyLevelId": "port",
+                    "hierarchyLevelName": "Engagement"
+                  },
+                  "orgHierarchyNodeId": "f27001d2-c935-4b14-ab5a-4d038c586978",
+                  "value": "DTS"
+                }
+              ]
+            },
+            {
+              "projectName": " Bang  Olufsen Omnichannel implementation",
+              "projectId": "66d7da7258ffc53913fb840c",
+              "hierarchy": [
+                {
+                  "hierarchyLevel": {
+                    "level": 1,
+                    "hierarchyLevelId": "bu",
+                    "hierarchyLevelName": "BU"
+                  },
+                  "orgHierarchyNodeId": "bea9afff-a419-4b90-a000-21e9f6a280bc",
+                  "value": "EU"
+                },
+                {
+                  "hierarchyLevel": {
+                    "level": 2,
+                    "hierarchyLevelId": "ver",
+                    "hierarchyLevelName": "Vertical"
+                  },
+                  "orgHierarchyNodeId": "12b46925-a494-40e6-8225-b8bc04192072",
+                  "value": "Consumer Products"
+                },
+                {
+                  "hierarchyLevel": {
+                    "level": 3,
+                    "hierarchyLevelId": "acc",
+                    "hierarchyLevelName": "Account"
+                  },
+                  "orgHierarchyNodeId": "835d444e-39e1-4ace-bab5-08de9b618158",
+                  "value": "Bang & Olufsen A/S"
+                },
+                {
+                  "hierarchyLevel": {
+                    "level": 4,
+                    "hierarchyLevelId": "port",
+                    "hierarchyLevelName": "Engagement"
+                  },
+                  "orgHierarchyNodeId": "9b9f47ea-10ab-4426-95bd-fc6e0703c537",
+                  "value": "Bang & Olufsen"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "user_name": "RishabhQA",
+      "X-Authentication-Token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJSaXNoYWJoUUEiLCJkZXRhaWxzIjoiU1RBTkRBUkQiLCJyb2xlcyI6WyJST0xFX1BST0pFQ1RfQURNSU4iXSwiZXhwIjoxNzQxODQyNzM3fQ.XIr0Yyb1ETNS14uUPg923AJgiXW0Th8Njv4vnwJPmysxKk-jey1syMDUqnOzJFRwDnDFl8Mfbc0L48GcxbU6Ow",
+      "authType": "STANDARD",
+      "notificationEmail": null,
+      "authorities": [
+        "ROLE_PROJECT_ADMIN"
+      ]
+    });
     fixture.detectChanges();
   });
 
@@ -155,9 +341,9 @@ describe('HeaderComponent', () => {
   });
 
   it('should call getNotification when passEventToNav emits an event', () => {
-		const getNotificationSpy = spyOn(component, 'getNotification');
-		component.ngOnInit();
-		sharedService.passEventToNav.subscribe();
-		expect(getNotificationSpy).toHaveBeenCalled();
-	});
+    const getNotificationSpy = spyOn(component, 'getNotification');
+    component.ngOnInit();
+    sharedService.passEventToNav.subscribe();
+    expect(getNotificationSpy).toHaveBeenCalled();
+  });
 });
