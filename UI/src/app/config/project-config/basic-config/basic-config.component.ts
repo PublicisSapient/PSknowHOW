@@ -407,6 +407,9 @@ export class BasicConfigComponent implements OnInit {
       hierarchyMap['project'] = 'Project';
     }
     this.http.getOrganizationHierarchy()?.subscribe(formFieldData => {
+    if(formFieldData.success === false){
+      this.messenger.add({ severity: 'error', summary: formFieldData.message });
+    }else{
       const flatData = formFieldData?.data;
 
       const transformedData = typeof hierarchyMap === 'object' ? Object.entries(hierarchyMap)?.map(([hierarchyLevelId, hierarchyLevelIdName], index) => {
@@ -433,6 +436,7 @@ export class BasicConfigComponent implements OnInit {
 
       localStorage.setItem('hierarchyData', JSON.stringify(transformedData, null, 2));
       this.getFields();
+    }
     });
   }
 
