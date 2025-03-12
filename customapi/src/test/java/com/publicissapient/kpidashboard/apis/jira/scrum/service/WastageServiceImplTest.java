@@ -149,7 +149,6 @@ public class WastageServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -175,7 +174,6 @@ public class WastageServiceImplTest {
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -186,6 +184,5 @@ public class WastageServiceImplTest {
 	@After
 	public void cleanup() {
 		jiraIssueRepository.deleteAll();
-
 	}
 }

@@ -50,7 +50,7 @@ export class ReportContainerComponent implements OnInit {
      * @throws No exceptions are thrown.
      */
   getkpiwidth(kpiwidth) {
-    let retValue = this.widthObj[kpiwidth] ? this.widthObj[kpiwidth] : 'p-col-6';
+    let retValue = this.widthObj[kpiwidth] ? this.widthObj[kpiwidth] : 'p-col-8';
     return retValue;
   }
 

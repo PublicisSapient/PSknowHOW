@@ -22,6 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -95,6 +98,10 @@ public class QADDServiceImplTest {
 	CustomApiConfig customApiSetting;
 	@Mock
 	private CustomApiConfig customApiConfig;
+	@Mock
+	KpiDataProvider kpiDataProvider;
+	@Mock
+	KpiDataCacheService kpiDataCacheService;
 	private KpiRequest kpiRequest;
 	private List<KpiElement> kpiElementList;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
@@ -179,6 +186,7 @@ public class QADDServiceImplTest {
 		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
+		when(kpiDataProvider.fetchDefectDensityDataFromDb(eq(kpiRequest), any(), any())).thenReturn(resultListMap);
 		try {
 			assertNotNull(helper(resultListMap));
 		} catch (ApplicationException e) {
@@ -198,6 +206,7 @@ public class QADDServiceImplTest {
 		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
+		when(kpiDataProvider.fetchDefectDensityDataFromDb(eq(kpiRequest), any(), any())).thenReturn(resultListMap);
 		try {
 			assertNotNull(helper(resultListMap));
 		} catch (ApplicationException e) {
@@ -217,6 +226,7 @@ public class QADDServiceImplTest {
 		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
+		when(kpiDataProvider.fetchDefectDensityDataFromDb(eq(kpiRequest), any(), any())).thenReturn(resultListMap);
 		try {
 			assertNotNull(helper(resultListMap));
 		} catch (ApplicationException e) {
@@ -236,7 +246,7 @@ public class QADDServiceImplTest {
 		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
-
+		when(kpiDataProvider.fetchDefectDensityDataFromDb(eq(kpiRequest), any(), any())).thenReturn(resultListMap);
 		try {
 			assertNotNull(helper(resultListMap));
 		} catch (ApplicationException e) {
@@ -250,13 +260,11 @@ public class QADDServiceImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(kpiHelperService.fetchQADDFromDb(any(), any())).thenReturn(resultListMap);
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		KpiElement kpiElement = qaddServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		return kpiElement.getTrendValueList();
-
 	}
 }

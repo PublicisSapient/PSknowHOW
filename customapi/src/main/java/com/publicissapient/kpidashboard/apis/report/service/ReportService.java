@@ -17,6 +17,21 @@
 
 package com.publicissapient.kpidashboard.apis.report.service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.errors.DuplicateKpiException;
 import com.publicissapient.kpidashboard.apis.errors.DuplicateReportException;
@@ -29,6 +44,7 @@ import com.publicissapient.kpidashboard.apis.report.dto.KpiRequest;
 import com.publicissapient.kpidashboard.apis.report.dto.ReportRequest;
 import com.publicissapient.kpidashboard.apis.report.repository.ReportRepository;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,22 +61,23 @@ import java.util.stream.Collectors;
 
 /**
  * Service class for managing reports.
+ *
  * @author : girpatha
  */
 @Service
 @Slf4j
 public class ReportService {
 
-    private final ReportRepository reportRepository;
-    public static final String REPORTS_BY_ID = "reportsById";
-    public static final String REPORTS_CREATED_BY = "createdBy";
-    private final AuthenticationService authenticationService;
+	private final ReportRepository reportRepository;
+	public static final String REPORTS_BY_ID = "reportsById";
+	public static final String REPORTS_CREATED_BY = "createdBy";
+	private final AuthenticationService authenticationService;
 
-    @Autowired
-    public ReportService(ReportRepository reportRepository, AuthenticationService authenticationService) {
-        this.reportRepository = reportRepository;
-        this.authenticationService = authenticationService;
-    }
+	@Autowired
+	public ReportService(ReportRepository reportRepository, AuthenticationService authenticationService) {
+		this.reportRepository = reportRepository;
+		this.authenticationService = authenticationService;
+	}
 
     /**
      * Creates a new report.
@@ -136,11 +153,11 @@ public class ReportService {
             }
         }
 
-        existingReport = reportRepository.save(existingReport);
-        log.debug("Report updated successfully with ID: {}", CommonUtils.sanitize(String.valueOf(existingReport.getId())));
-        ReportRequest reportReq = modelMapper.map(existingReport, ReportRequest.class);
-        return new ServiceResponse(true, "Report updated successfully", reportReq);
-    }
+		existingReport = reportRepository.save(existingReport);
+		log.debug("Report updated successfully with ID: {}", CommonUtils.sanitize(String.valueOf(existingReport.getId())));
+		ReportRequest reportReq = modelMapper.map(existingReport, ReportRequest.class);
+		return new ServiceResponse(true, "Report updated successfully", reportReq);
+	}
 
     /**
      * Deletes a report by ID.
@@ -155,40 +172,41 @@ public class ReportService {
     }
 
 
-    /**
-     * Validates the KPI IDs to ensure there are no duplicates.
-     *
-     * @param kpis the list of KPI data transfer objects
-     * @throws DuplicateKpiException if a duplicate KPI ID is found
-     */
-    private void validateKpiIds(List<KpiRequest> kpis) {
-        Set<String> kpiIds = new HashSet<>();
-        for (KpiRequest kpi : kpis) {
-            if (!kpiIds.add(kpi.getId())) {
-                log.error("Duplicate KPI ID found: {}", CommonUtils.sanitize(kpi.getId()));
-                throw new DuplicateKpiException("Duplicate KPI ID: " + CommonUtils.sanitize(kpi.getId()));
-            }
-        }
-    }
+	/**
+	 * Validates the KPI IDs to ensure there are no duplicates.
+	 *
+	 * @param kpis
+	 *          the list of KPI data transfer objects
+	 * @throws DuplicateKpiException
+	 *           if a duplicate KPI ID is found
+	 */
+	private void validateKpiIds(List<KpiRequest> kpis) {
+		Set<String> kpiIds = new HashSet<>();
+		for (KpiRequest kpi : kpis) {
+			if (!kpiIds.add(kpi.getId())) {
+				log.error("Duplicate KPI ID found: {}", CommonUtils.sanitize(kpi.getId()));
+				throw new DuplicateKpiException("Duplicate KPI ID: " + CommonUtils.sanitize(kpi.getId()));
+			}
+		}
+	}
 
-    /**
-     * Finds an existing report with the same attributes.
-     *
-     * @param reportRequest the report data transfer object
-     * @return an optional containing the existing report if found, otherwise empty
-     */
-    private Optional<Report> findExistingReport(ReportRequest reportRequest) {
-        // Convert KPIDTO to KPI
-        final ModelMapper modelMapper = new ModelMapper();
-        List<KPI> kpis = reportRequest.getKpis()
-                .stream()
-                .map(kpiDTO -> modelMapper.map(kpiDTO, KPI.class))
-                .toList();
-        // Convert kpis to a Set for order-independent comparison
-        Set<KPI> kpisSet = new HashSet<>(kpis);
-        // Use the custom repository method to find a matching report
-        return reportRepository.findByNameAndCreatedByAndKpis(reportRequest.getName(), new ArrayList<>(kpisSet),authenticationService.getLoggedInUser());
-    }
+	/**
+	 * Finds an existing report with the same attributes.
+	 *
+	 * @param reportRequest
+	 *          the report data transfer object
+	 * @return an optional containing the existing report if found, otherwise empty
+	 */
+	private Optional<Report> findExistingReport(ReportRequest reportRequest) {
+		// Convert KPIDTO to KPI
+		final ModelMapper modelMapper = new ModelMapper();
+		List<KPI> kpis = reportRequest.getKpis().stream().map(kpiDTO -> modelMapper.map(kpiDTO, KPI.class)).toList();
+		// Convert kpis to a Set for order-independent comparison
+		Set<KPI> kpisSet = new HashSet<>(kpis);
+		// Use the custom repository method to find a matching report
+		return reportRepository.findByNameAndCreatedByAndKpis(reportRequest.getName(), new ArrayList<>(kpisSet),
+				authenticationService.getLoggedInUser());
+	}
 
     /**
      * Fetches a report by ID.

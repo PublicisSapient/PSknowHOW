@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -231,7 +230,6 @@ public class KpiHelperServiceTest {
 
 	@After
 	public void cleanup() {
-
 	}
 
 	@Test
@@ -246,11 +244,13 @@ public class KpiHelperServiceTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
 				new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList , false);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 
 		when(customApiConfig.getPriority()).thenReturn(priority);
-
-		Map<String, Object> resultMap = kpiHelperService.fetchDIRDataFromDb(leafNodeList, kpiRequest);
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+		Map<String, Object> resultMap = kpiHelperService.fetchDIRDataFromDb(basicProjectConfigId, kpiRequest,
+				sprintList);
 		assertEquals(3, resultMap.size());
 	}
 
@@ -265,11 +265,10 @@ public class KpiHelperServiceTest {
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
 				new ArrayList<>(), "hierarchyLevelOne", 5);
-		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList , false);
 		when(customApiConfig.getPriority()).thenReturn(priority);
-
-		Map<String, Object> resultMap = kpiHelperService.fetchQADDFromDb(leafNodeList, kpiRequest);
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+		Map<String, Object> resultMap = kpiHelperService.fetchQADDFromDb(basicProjectConfigId, kpiRequest, sprintList);
 		assertEquals(3, resultMap.size());
 	}
 
@@ -280,10 +279,10 @@ public class KpiHelperServiceTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
 				new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList , false);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 
-		Map<String, Object> resultMap = kpiHelperService.fetchSprintVelocityDataFromDb(kpiRequest,
-				new ArrayList<>(), sprintDetailsList);
+		Map<String, Object> resultMap = kpiHelperService.fetchSprintVelocityDataFromDb(kpiRequest, new ArrayList<>(),
+				sprintDetailsList);
 		assertEquals(2, resultMap.size());
 	}
 
@@ -296,10 +295,10 @@ public class KpiHelperServiceTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
 				new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList , false);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 
 		kpiHelperService.fetchSprintCapacityDataFromDb(kpiRequest, leafNodeList);
-		assertEquals(5,leafNodeList.size());
+		assertEquals(5, leafNodeList.size());
 	}
 
 	@Test
@@ -312,7 +311,7 @@ public class KpiHelperServiceTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
 				new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList , false);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 
 		List<CapacityKpiData> resultList = kpiHelperService.fetchCapacityDataFromDB(kpiRequest, leafNodeList);
 		assertEquals(4, resultList.size());
@@ -331,7 +330,7 @@ public class KpiHelperServiceTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), ahdKanbanList, "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList , false);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 
 		Map<String, Object> resultMap = kpiHelperService.fetchTicketVelocityDataFromDb(leafNodeList, "", "");
 		assertEquals(2, resultMap.size());
@@ -347,7 +346,7 @@ public class KpiHelperServiceTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), ahdKanbanList, "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList , false);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 
 		Map<String, Object> resultMap = kpiHelperService.fetchTeamCapacityDataFromDb(leafNodeList, "", "", kpiRequest,
 				"");
@@ -424,61 +423,60 @@ public class KpiHelperServiceTest {
 	@Test
 	public void fetchFieldMappingStructureByKpiFieldMappingData() {
 		when(configHelperService.loadFieldMappingStructure()).thenReturn(fieldMappingStructureList);
-		assertNotNull(kpiHelperService.fetchFieldMappingStructureByKpiId("6335363749794a18e8a4479c", "kpi0"));
+		assertNotNull(
+				kpiHelperService.fetchFieldMappingStructureByKpiId("6335363749794a18e8a4479c", "kpi0"));
 	}
-
 
 	@Test
 	public void updateKPISource() {
-		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap= new HashMap<>();
-		Map<String, List<ProjectToolConfig>> projectTool= new HashMap<>();
-		ProjectToolConfig jira= new ProjectToolConfig();
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap = new HashMap<>();
+		Map<String, List<ProjectToolConfig>> projectTool = new HashMap<>();
+		ProjectToolConfig jira = new ProjectToolConfig();
 		jira.setId(new ObjectId("6335363749794a18e8a4479c"));
 		jira.setTestCaseStatus(Arrays.asList("test1"));
-		List<ProjectToolConfig>  projectToolConfigs= new ArrayList<>();
+		List<ProjectToolConfig> projectToolConfigs = new ArrayList<>();
 		projectToolConfigs.add(jira);
-		projectTool.put("Jira",projectToolConfigs);
+		projectTool.put("Jira", projectToolConfigs);
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), projectTool);
 
-		when(cacheService
-				.cacheProjectToolConfigMapData()).thenReturn(toolMap);
-		kpiHelperService.updateKPISource(new ObjectId("6335363749794a18e8a4479b"), new ObjectId("6335363749794a18e8a4479c"));
+		when(cacheService.cacheProjectToolConfigMapData()).thenReturn(toolMap);
+		kpiHelperService.updateKPISource(new ObjectId("6335363749794a18e8a4479b"),
+				new ObjectId("6335363749794a18e8a4479c"));
 	}
 
 	@Test
 	public void updateKpiSourceNull() {
-		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap= new HashMap<>();
-		Map<String, List<ProjectToolConfig>> projectTool= new HashMap<>();
-		ProjectToolConfig jira= new ProjectToolConfig();
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap = new HashMap<>();
+		Map<String, List<ProjectToolConfig>> projectTool = new HashMap<>();
+		ProjectToolConfig jira = new ProjectToolConfig();
 		jira.setId(new ObjectId("6335363749794a18e8a4479c"));
 		jira.setTestCaseStatus(Arrays.asList("test1"));
-		List<ProjectToolConfig>  projectToolConfigs= new ArrayList<>();
+		List<ProjectToolConfig> projectToolConfigs = new ArrayList<>();
 		projectToolConfigs.add(jira);
-		projectTool.put("Jira",projectToolConfigs);
+		projectTool.put("Jira", projectToolConfigs);
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), projectTool);
 
-		when(cacheService
-				.cacheProjectToolConfigMapData()).thenReturn(null);
-		kpiHelperService.updateKPISource(new ObjectId("6335363749794a18e8a4479b"), new ObjectId("6335363749794a18e8a4479c"));
+		when(cacheService.cacheProjectToolConfigMapData()).thenReturn(null);
+		kpiHelperService.updateKPISource(new ObjectId("6335363749794a18e8a4479b"),
+				new ObjectId("6335363749794a18e8a4479c"));
 	}
 
 	@Test
 	public void updateKpiSourceNoProject() {
-		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap= new HashMap<>();
-		Map<String, List<ProjectToolConfig>> projectTool= new HashMap<>();
-		ProjectToolConfig jira= new ProjectToolConfig();
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap = new HashMap<>();
+		Map<String, List<ProjectToolConfig>> projectTool = new HashMap<>();
+		ProjectToolConfig jira = new ProjectToolConfig();
 		jira.setId(new ObjectId("6335363749794a18e8a4479c"));
 		jira.setTestCaseStatus(Arrays.asList("test1"));
-		List<ProjectToolConfig>  projectToolConfigs= new ArrayList<>();
+		List<ProjectToolConfig> projectToolConfigs = new ArrayList<>();
 		projectToolConfigs.add(jira);
-		projectTool.put("Jira",projectToolConfigs);
+		projectTool.put("Jira", projectToolConfigs);
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), projectTool);
 
-		when(cacheService
-				.cacheProjectToolConfigMapData()).thenReturn(null);
-		kpiHelperService.updateKPISource(new ObjectId("6335363749794a18e8a4479c"), new ObjectId("6335363749794a18e8a4479c"));
+		when(cacheService.cacheProjectToolConfigMapData()).thenReturn(null);
+		kpiHelperService.updateKPISource(new ObjectId("6335363749794a18e8a4479c"),
+				new ObjectId("6335363749794a18e8a4479c"));
 	}
-
 
 	@Test
 	public void testFetchJiraCustomHistoryDataFromDbForKanban() throws ApplicationException {
@@ -488,7 +486,7 @@ public class KpiHelperServiceTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), ahdKanbanList, "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList , true);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, true);
 		Map<ObjectId, Map<String, Object>> projectMap = new HashMap<>();
 		Map<String, Object> fieldMappingMap = new HashMap<>();
 		fieldMappingMap.put("ClosedStatus", Arrays.asList("Closed", "Dropped"));
@@ -518,7 +516,6 @@ public class KpiHelperServiceTest {
 				.computeProjectWiseJiraHistoryByStatusAndDate(projectWiseNonClosedTickets, "2022-07-01",
 						historyDataResultMap);
 		assertNotNull(result);
-
 	}
 
 	@Test
@@ -542,7 +539,6 @@ public class KpiHelperServiceTest {
 				.computeProjectWiseJiraHistoryByFieldAndDate(projectWiseNonClosedTickets, "2022-07-01",
 						historyDataResultMap, "rca");
 		assertNotNull(result);
-
 	}
 
 	@Test
@@ -641,7 +637,6 @@ public class KpiHelperServiceTest {
 		assertTrue(result.isEmpty());
 	}
 
-
 	@Test
 	public void testIsRequiredTestToolConfigured_JiraConfigured() {
 		ObjectId projectId = new ObjectId("6335363749794a18e8a4479c");
@@ -654,9 +649,9 @@ public class KpiHelperServiceTest {
 		when(fieldMapping.isUploadDataKPI16()).thenReturn(true);
 
 		KpiElement kpiElement = new KpiElement();
-		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.INSPRINT_AUTOMATION_COVERAGE, kpiElement, projectId));
+		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.INSPRINT_AUTOMATION_COVERAGE, kpiElement,
+				projectId));
 	}
-
 
 	@Test
 	public void testIsRequiredTestToolConfigured_JiraConfiguredKanbanRegression() {
@@ -670,20 +665,25 @@ public class KpiHelperServiceTest {
 		when(fieldMapping.isUploadDataKPI42()).thenReturn(true);
 
 		KpiElement kpiElement = new KpiElement();
-		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.REGRESSION_AUTOMATION_COVERAGE, kpiElement, projectId));
+		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.REGRESSION_AUTOMATION_COVERAGE, kpiElement,
+				projectId));
 	}
 
 	@Test
-	public  void testIsRequiredTestToolConfigured_JiraNotConfigured() {
+	public void testIsRequiredTestToolConfigured_JiraNotConfigured() {
 		// Mock data
 		when(configHelperService.getProjectToolConfigMap()).thenReturn(new HashMap<>());
 
 		KpiElement kpiElement = new KpiElement();
-		assertFalse(kpiHelperService.isRequiredTestToolConfigured(KPICode.REGRESSION_AUTOMATION_COVERAGE, kpiElement,  new ObjectId("6335363749794a18e8a4479c")));
+		assertFalse(
+				kpiHelperService.isRequiredTestToolConfigured(
+						KPICode.REGRESSION_AUTOMATION_COVERAGE,
+						kpiElement,
+						new ObjectId("6335363749794a18e8a4479c")));
 	}
 
 	@Test
-	public  void testIsZephyrRequiredToolConfigured_JiraConfigured() {
+	public void testIsZephyrRequiredToolConfigured_JiraConfigured() {
 		ObjectId projectId = new ObjectId("6335363749794a18e8a4479c");
 		Map<String, List<ProjectToolConfig>> stringListMap = new HashMap<>();
 		stringListMap.put("ZEPHYR", Arrays.asList());
@@ -693,11 +693,12 @@ public class KpiHelperServiceTest {
 		FieldMapping fieldMapping = mock(FieldMapping.class);
 		when(configHelperService.getFieldMappingMap()).thenReturn(Map.of(projectId, fieldMapping));
 		KpiElement kpiElement = new KpiElement();
-		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE, kpiElement, projectId));
+		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE, kpiElement,
+				projectId));
 	}
 
 	@Test
-	public  void testIsRequiredTestToolConfigured_JiraTestExecutionConfigured() {
+	public void testIsRequiredTestToolConfigured_JiraTestExecutionConfigured() {
 		ObjectId projectId = new ObjectId("6335363749794a18e8a4479c");
 		Map<String, List<ProjectToolConfig>> stringListMap = new HashMap<>();
 		stringListMap.put("ZEPHYR", Arrays.asList());
@@ -705,11 +706,12 @@ public class KpiHelperServiceTest {
 		projectConfigMap.put(projectId, stringListMap);
 		when(configHelperService.getProjectToolConfigMap()).thenReturn(projectConfigMap);
 		KpiElement kpiElement = new KpiElement();
-		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.TEST_EXECUTION_AND_PASS_PERCENTAGE, kpiElement, projectId));
+		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.TEST_EXECUTION_AND_PASS_PERCENTAGE, kpiElement,
+				projectId));
 	}
 
 	@Test
-	public  void testIsZephyrRequiredToolConfigured_AzureConfigured() {
+	public void testIsZephyrRequiredToolConfigured_AzureConfigured() {
 		ObjectId projectId = new ObjectId("6335363749794a18e8a4479c");
 		Map<String, List<ProjectToolConfig>> stringListMap = new HashMap<>();
 		stringListMap.put("ZEPHYR", Arrays.asList());
@@ -719,7 +721,8 @@ public class KpiHelperServiceTest {
 		FieldMapping fieldMapping = mock(FieldMapping.class);
 		when(configHelperService.getFieldMappingMap()).thenReturn(Map.of(projectId, fieldMapping));
 		KpiElement kpiElement = new KpiElement();
-		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.INSPRINT_AUTOMATION_COVERAGE, kpiElement, projectId));
+		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.INSPRINT_AUTOMATION_COVERAGE, kpiElement,
+				projectId));
 	}
 
 	private void setToolMap() {
@@ -746,7 +749,6 @@ public class KpiHelperServiceTest {
 		toolGroup.put(Constant.TOOL_AZUREREPO, toolList1);
 		toolGroup.put(Constant.REPO_TOOLS, toolList2);
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
-
 	}
 
 	private Tool createTool(String url, String toolType, List<ProcessorItem> collectorItemList) {
@@ -759,5 +761,4 @@ public class KpiHelperServiceTest {
 		tool.setProcessorItemList(collectorItemList);
 		return tool;
 	}
-
 }

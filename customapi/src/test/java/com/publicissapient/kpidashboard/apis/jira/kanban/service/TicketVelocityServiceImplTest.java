@@ -120,7 +120,6 @@ public class TicketVelocityServiceImplTest {
 		KanbanIssueCustomHistoryDataFactory issueHistoryFactory = KanbanIssueCustomHistoryDataFactory.newInstance();
 		jiraHistoryList = issueHistoryFactory
 				.getKanbanIssueCustomHistoryDataListByTypeName(Arrays.asList("Story", "Defect", "Issue"));
-
 	}
 
 	@Test
@@ -140,8 +139,8 @@ public class TicketVelocityServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
 		Map<String, Object> velocityListMap = ticketVelocityServiceImpl.fetchKPIDataFromDb(
-				treeAggregatorDetail.getMapOfListOfProjectNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT), null,
-				null, kpiRequest);
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT), null, null,
+				kpiRequest);
 		assertThat("Velocity value :", ((List<KanbanJiraIssue>) (velocityListMap.get(TICKETVELOCITYKEY))).size(),
 				equalTo(0));
 	}
@@ -166,17 +165,14 @@ public class TicketVelocityServiceImplTest {
 			KpiElement kpiElement = ticketVelocityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			assertThat("Velocity Value :",
-					((List<DataCount>) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(),
-					equalTo(7));
+					((List<DataCount>) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(), equalTo(7));
 		} catch (ApplicationException enfe) {
 
 		}
-
 	}
 
 	@Test
 	public void testGetQualifierType() {
 		assertThat("Kpi Name :", ticketVelocityServiceImpl.getQualifierType(), equalTo("TICKET_VELOCITY"));
 	}
-
 }

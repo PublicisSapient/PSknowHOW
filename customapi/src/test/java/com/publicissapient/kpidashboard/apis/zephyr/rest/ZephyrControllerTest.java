@@ -49,11 +49,9 @@ import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrServiceKanban;
  * mocked. Please don't format this class to keep the readability. Follow [
  * https://stackoverflow.com/questions/5115088/turn-off-eclipse-formatter-for-selected-code-area
  * ] to switch off formatter for section of code.
- * 
+ *
  * @author tauakram
- * 
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class ZephyrControllerTest {
 
@@ -85,37 +83,38 @@ public class ZephyrControllerTest {
 	public void getZephyrKPIMetricReturnsValue() throws Exception {
 
 		// @formatter:off
-		String request = "{\n" + 
-				"  \"level\": 3,\n" + 
-				"  \"ids\": [\n" + 
-				"    \"OPRO Sprint 71_12138_10304_PR\",\n" + 
-				"    \"OPRO Sprint 72_12139_10304_PR\"\n" + 
-				"  ],\n" + 
-				"  \"kpiList\": [\n" + 
-				"    {\n" + 
-				"      \"id\": \"5b6be4bf39e7aef89a0fc456\",\n" + 
-				"      \"kpiId\": \"kpi16\",\n" + 
-				"      \"kpiName\": \"Test Automation Percentage\",\n" + 
-				"      \"isDeleted\": \"False\",\n" + 
-				"      \"kpiCategory\": \"Quality\",\n" + 
-				"      \"kpiUnit\": \"Percentage\",\n" + 
-				"      \"kpiSource\": \"Zypher\",\n" + 
-				"      \"maxValue\": \"100\",\n" + 
-				"      \"chartType\": \"gaugeChart\"\n" + 
-				"    },\n" + 
-				"    {\n" + 
-				"      \"id\": \"5b6be4bf39e7aef89a0fc456\",\n" + 
-				"      \"kpiId\": \"kpi42\",\n" + 
-				"      \"kpiName\": \"Regression Percentage\",\n" + 
-				"      \"isDeleted\": \"False\",\n" + 
-				"      \"kpiCategory\": \"Quality\",\n" + 
-				"      \"kpiUnit\": \"Percentage\",\n" + 
-				"      \"kpiSource\": \"Zypher\",\n" + 
-				"      \"maxValue\": \"100\",\n" + 
-				"      \"chartType\": \"gaugeChart\"\n" + 
-				"    }\n" +
-				"  ]\n" + 
-				"}";
+		String request =
+				"{\n"
+						+ "  \"level\": 3,\n"
+						+ "  \"ids\": [\n"
+						+ "    \"OPRO Sprint 71_12138_10304_PR\",\n"
+						+ "    \"OPRO Sprint 72_12139_10304_PR\"\n"
+						+ "  ],\n"
+						+ "  \"kpiList\": [\n"
+						+ "    {\n"
+						+ "      \"id\": \"5b6be4bf39e7aef89a0fc456\",\n"
+						+ "      \"kpiId\": \"kpi16\",\n"
+						+ "      \"kpiName\": \"Test Automation Percentage\",\n"
+						+ "      \"isDeleted\": \"False\",\n"
+						+ "      \"kpiCategory\": \"Quality\",\n"
+						+ "      \"kpiUnit\": \"Percentage\",\n"
+						+ "      \"kpiSource\": \"Zypher\",\n"
+						+ "      \"maxValue\": \"100\",\n"
+						+ "      \"chartType\": \"gaugeChart\"\n"
+						+ "    },\n"
+						+ "    {\n"
+						+ "      \"id\": \"5b6be4bf39e7aef89a0fc456\",\n"
+						+ "      \"kpiId\": \"kpi42\",\n"
+						+ "      \"kpiName\": \"Regression Percentage\",\n"
+						+ "      \"isDeleted\": \"False\",\n"
+						+ "      \"kpiCategory\": \"Quality\",\n"
+						+ "      \"kpiUnit\": \"Percentage\",\n"
+						+ "      \"kpiSource\": \"Zypher\",\n"
+						+ "      \"maxValue\": \"100\",\n"
+						+ "      \"chartType\": \"gaugeChart\"\n"
+						+ "    }\n"
+						+ "  ]\n"
+						+ "}";
 		// @formatter:on
 
 		List<KpiElement> kpiElementList = new ArrayList<>();
@@ -135,52 +134,52 @@ public class ZephyrControllerTest {
 				.andExpect(status().is2xxSuccessful())
 				// .andDo(print())
 				.andExpect(jsonPath("$[0].value").value(100)).andExpect(jsonPath("$[1].value").value(80));
-
 	}
 
 	@Test
 	public void getZephyrKPIMetricReturns400() throws Exception {
 
 		// @formatter:off
-		String request = "{\n" + 
-				"  \"level\": 3,\n" + 
-				"  \"ids\": [\n" + 
-				"    \"OPRO Sprint 71_12138_10304_PR\",\n" + 
-				"    \"OPRO Sprint 72_12139_10304_PR\"\n" + 
-				"  ],\n" + 
-				"  \"kpiList\": []\n" + 
-				"}";
+		String request =
+				"{\n"
+						+ "  \"level\": 3,\n"
+						+ "  \"ids\": [\n"
+						+ "    \"OPRO Sprint 71_12138_10304_PR\",\n"
+						+ "    \"OPRO Sprint 72_12139_10304_PR\"\n"
+						+ "  ],\n"
+						+ "  \"kpiList\": []\n"
+						+ "}";
 		// @formatter:on
 
 		mockMvc.perform(post("/zypher/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().isBadRequest());
-
 	}
 
 	@Test
 	public void getZephyrKanbanKPIMetricReturnsValue() throws Exception {
 
 		// @formatter:off
-		String request = "{\n" + 
-				"  \"level\": 2,\n" + 
-				"  \"ids\": [\n" + 
-				"    \"PR\",\n" + 
-				"    \"10304_PR\"\n" + 
-				"  ],\n" + 
-				"  \"kpiList\": [\n" + 
-				"    {\n" + 
-				"      \"id\": \"5b6be4bf39e7aef89a0fc456\",\n" + 
-				"      \"kpiId\": \"kpi63\",\n" + 
-				"      \"kpiName\": \"Kanban Regression Percentage\",\n" + 
-				"      \"isDeleted\": \"False\",\n" + 
-				"      \"kpiCategory\": \"Quality\",\n" + 
-				"      \"kpiUnit\": \"Percentage\",\n" + 
-				"      \"kpiSource\": \"ZEPHYRKANBAN\",\n" + 
-				"      \"maxValue\": \"100\",\n" + 
-				"      \"chartType\": \"gaugeChart\"\n" + 
-				"    }\n" +
-				"  ]\n" + 
-				"}";
+		String request =
+				"{\n"
+						+ "  \"level\": 2,\n"
+						+ "  \"ids\": [\n"
+						+ "    \"PR\",\n"
+						+ "    \"10304_PR\"\n"
+						+ "  ],\n"
+						+ "  \"kpiList\": [\n"
+						+ "    {\n"
+						+ "      \"id\": \"5b6be4bf39e7aef89a0fc456\",\n"
+						+ "      \"kpiId\": \"kpi63\",\n"
+						+ "      \"kpiName\": \"Kanban Regression Percentage\",\n"
+						+ "      \"isDeleted\": \"False\",\n"
+						+ "      \"kpiCategory\": \"Quality\",\n"
+						+ "      \"kpiUnit\": \"Percentage\",\n"
+						+ "      \"kpiSource\": \"ZEPHYRKANBAN\",\n"
+						+ "      \"maxValue\": \"100\",\n"
+						+ "      \"chartType\": \"gaugeChart\"\n"
+						+ "    }\n"
+						+ "  ]\n"
+						+ "}";
 		// @formatter:on
 
 		List<KpiElement> kpiElementList = new ArrayList<>();
@@ -193,25 +192,23 @@ public class ZephyrControllerTest {
 
 		mockMvc.perform(post("/zypherkanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
-
 	}
 
 	@Test
 	public void getZephyrKanbanKPIMetricReturns400() throws Exception {
 		// @formatter:off
-		String request = "{\n" + 
-				"  \"level\": 3,\n" + 
-				"  \"ids\": [\n" + 
-				"    \"OPRO Sprint 71_12138_10304_PR\",\n" + 
-				"    \"OPRO Sprint 72_12139_10304_PR\"\n" + 
-				"  ],\n" + 
-				"  \"kpiList\": []\n" + 
-				"}";
+		String request =
+				"{\n"
+						+ "  \"level\": 3,\n"
+						+ "  \"ids\": [\n"
+						+ "    \"OPRO Sprint 71_12138_10304_PR\",\n"
+						+ "    \"OPRO Sprint 72_12139_10304_PR\"\n"
+						+ "  ],\n"
+						+ "  \"kpiList\": []\n"
+						+ "}";
 		// @formatter:on
 
 		mockMvc.perform(post("/zypherkanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().isBadRequest());
-
 	}
-
 }

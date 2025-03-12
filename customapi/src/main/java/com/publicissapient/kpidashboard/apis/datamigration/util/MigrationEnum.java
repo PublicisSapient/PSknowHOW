@@ -17,13 +17,12 @@
 package com.publicissapient.kpidashboard.apis.datamigration.util;
 
 public enum MigrationEnum {
-    MIGRATION_STEP("migration step");
-    // @formatter:on
+	MIGRATION_STEP("migration step");
+	// @formatter:on
 
-    private final String step;
+	private final String step;
 
-    MigrationEnum(String step) {
-        this.step = step;
-    }
-
-    }
+	MigrationEnum(String step) {
+		this.step = step;
+	}
+}

@@ -18,28 +18,22 @@
 
 package com.publicissapient.kpidashboard.common.constant;
 
-/**
- * Enum Commit type.
- */
+/** Enum Commit type. */
 public enum CommitType {
-	/**
-	 * Not built commit type. maven release commits that are not built
-	 */
+	/** Not built commit type. maven release commits that are not built */
 	NOT_BUILT,
 	/**
 	 * Merge commit type. github merge commits that dont show up in build change set
 	 */
 	MERGE,
-	/**
-	 * New commit type.
-	 */
+	/** New commit type. */
 	NEW;
 
 	/**
 	 * From string commit type.
 	 *
 	 * @param value
-	 *            the value
+	 *          the value
 	 * @return the commit type
 	 */
 	public static CommitType fromString(String value) {

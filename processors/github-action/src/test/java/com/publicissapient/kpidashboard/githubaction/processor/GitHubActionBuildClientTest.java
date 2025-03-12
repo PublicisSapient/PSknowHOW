@@ -63,8 +63,8 @@ public class GitHubActionBuildClientTest {
 		doReturn("abcd").when(gitHubActionConfig).getAesEncryptionKey();
 		doReturn("test").when(aesEncryptionService).decrypt(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 		doReturn(new ResponseEntity<>(serverResponse, HttpStatus.OK)).when(restTemplate).exchange(
-				ArgumentMatchers.eq(restURI), ArgumentMatchers.eq(HttpMethod.GET),
-				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(restURI), ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
+				ArgumentMatchers.eq(String.class));
 		Set<Build> buildsByJob = gitHubActionBuildClient.getBuildJobsFromServer(getToolConnection(),
 				new ProjectBasicConfig());
 

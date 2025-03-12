@@ -32,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
+
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CustomAnalyticsService;
 
@@ -72,5 +73,4 @@ public class AuthenticationResultHandlerTest {
 		handler.onAuthenticationSuccess(null, response, authentication);
 		verify(authenticationResponseService).handle(response, authentication);
 	}
-
 }

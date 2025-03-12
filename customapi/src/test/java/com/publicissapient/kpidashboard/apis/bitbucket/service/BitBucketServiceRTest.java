@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -34,8 +35,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -60,11 +59,13 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -90,9 +91,11 @@ public class BitBucketServiceRTest {
 	private CodeCommitServiceImpl codeCommitServiceImpl;
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
+
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<BitBucketKPIService> services;
+
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
 	private String[] projectKey;
@@ -111,7 +114,7 @@ public class BitBucketServiceRTest {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.CODE_COMMIT.getKpiId());
 		kpiRequest.setLabel("PROJECT");
-		String[] ids = { "5" };
+		String[] ids = {"5"};
 		kpiRequest.setIds(ids);
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
@@ -139,30 +142,28 @@ public class BitBucketServiceRTest {
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
 
-		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
+		// when(filterHelperService.getHierarachyLevelId(5, "project",
+		// false)).thenReturn("project");
 
-//		when(filterHelperService.getHierarachyLevelId(5, "project", false)).thenReturn("project");
-
-//		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
+		// when(filterHelperService.getFilteredBuilds(kpiRequest,
+		// GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
 
 		commitKpiElement = kpiRequest.getKpiList().get(0);
-
 	}
 
 	@After
 	public void cleanup() {
-
 	}
 
 	@Test
 	public void TestProcess_emptyFilteredACH() throws EntityNotFoundException {
 
-//		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT))
-//				.thenThrow(HttpMessageNotWritableException.class);
+		// when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT))
+		// .thenThrow(HttpMessageNotWritableException.class);
 
 		bitbucketServiceR.process(kpiRequest);
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -173,17 +174,19 @@ public class BitBucketServiceRTest {
 		BitBucketKPIService mcokAbstract = codeCommitServiceImpl;
 		bitbucketServiceCache.put(KPICode.CODE_COMMIT.name(), mcokAbstract);
 
-		try (MockedStatic<BitBucketKPIServiceFactory> utilities = Mockito
-				.mockStatic(BitBucketKPIServiceFactory.class)) {
-			utilities.when((MockedStatic.Verification) BitBucketKPIServiceFactory
-					.getBitBucketKPIService(KPICode.CODE_COMMIT.name())).thenReturn(mcokAbstract);
+		try (MockedStatic<BitBucketKPIServiceFactory> utilities = Mockito.mockStatic(BitBucketKPIServiceFactory.class)) {
+			utilities
+					.when(
+							(MockedStatic.Verification) BitBucketKPIServiceFactory.getBitBucketKPIService(KPICode.CODE_COMMIT.name()))
+					.thenReturn(mcokAbstract);
 		}
 
 		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-//		when(authorizedProjectsService.getProjectNodesForRequest(accountHierarchyDataList)).thenReturn(projects);
+		//
+		// when(authorizedProjectsService.getProjectNodesForRequest(accountHierarchyDataList)).thenReturn(projects);
 
-//		when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(commitKpiElement);
+		// when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(),
+		// Mockito.any())).thenReturn(commitKpiElement);
 
 		List<KpiElement> resultList = null;
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
@@ -191,26 +194,21 @@ public class BitBucketServiceRTest {
 			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())))
 					.thenReturn(mockService);
 			resultList = bitbucketServiceR.process(kpiRequest);
-			mockedStatic
-					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())));
+			mockedStatic.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())));
 		}
 
 		resultList.forEach(k -> {
-
 			KPICode kpi = KPICode.getKPI(k.getKpiId());
 
 			switch (kpi) {
+				case CODE_COMMIT :
+					assertThat("Kpi Name :", k.getKpiName(), equalTo("Check-Ins & Merge Requests"));
+					break;
 
-			case CODE_COMMIT:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("Check-Ins & Merge Requests"));
-				break;
-
-			default:
-				break;
+				default :
+					break;
 			}
-
 		});
-
 	}
 
 	@Test
@@ -225,13 +223,10 @@ public class BitBucketServiceRTest {
 					.thenReturn(mockService);
 			when(mockService.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
 			resultList = bitbucketServiceR.process(kpiRequest);
-			mockedStatic
-					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())));
+			mockedStatic.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())));
 		}
 		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
-
 	}
-
 
 	@Test
 	public void TestProcessNullPointer() throws Exception {
@@ -245,11 +240,9 @@ public class BitBucketServiceRTest {
 					.thenReturn(mockService);
 			when(mockService.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
 			resultList = bitbucketServiceR.process(kpiRequest);
-			mockedStatic
-					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())));
+			mockedStatic.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())));
 		}
 		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
-
 	}
 
 	@Test
@@ -265,13 +258,10 @@ public class BitBucketServiceRTest {
 					.thenReturn(mockService);
 			when(mockService.getKpiData(any(), any(), any())).thenReturn(kpiRequest.getKpiList().get(0));
 			resultList = bitbucketServiceR.process(kpiRequest);
-			mockedStatic
-					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())));
+			mockedStatic.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())));
 		}
 		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
-
 	}
-
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -282,8 +272,10 @@ public class BitBucketServiceRTest {
 
 		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
 
-//		when(cacheService.getFromApplicationCache(Mockito.any(String[].class), anyString(), anyInt(),
-//				ArgumentMatchers.anyList())).thenReturn(new ArrayList<KpiElement>());
+		// when(cacheService.getFromApplicationCache(Mockito.any(String[].class),
+		// anyString(),
+		// anyInt(),
+		// ArgumentMatchers.anyList())).thenReturn(new ArrayList<KpiElement>());
 
 		List<KpiElement> resultList = null;
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
@@ -291,25 +283,20 @@ public class BitBucketServiceRTest {
 			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())))
 					.thenReturn(mockService);
 			resultList = bitbucketServiceR.process(kpiRequest);
-			mockedStatic
-					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())));
+			mockedStatic.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())));
 		}
 
 		resultList.forEach(k -> {
-
 			KPICode kpi = KPICode.getKPI(k.getKpiId());
 
 			switch (kpi) {
+				case CODE_COMMIT :
+					assertThat("Kpi Name :", k.getKpiName(), equalTo("Check-Ins & Merge Requests"));
+					break;
 
-			case CODE_COMMIT:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("Check-Ins & Merge Requests"));
-				break;
-
-			default:
-				break;
+				default :
+					break;
 			}
-
 		});
-
 	}
 }

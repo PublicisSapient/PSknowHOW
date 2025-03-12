@@ -19,9 +19,7 @@ package com.publicissapient.kpidashboard.jira.dataFactories;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -29,7 +27,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -79,13 +77,10 @@ public class ProjectHierarchiesDataFactory {
 			mapper.registerModule(new JavaTimeModule());
 			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
 		}
 	}
 
-
-    public List<ProjectHierarchy> getAccountHierarchies() {
-        return accountHierarchies;
-    }
-
+	public List<ProjectHierarchy> getAccountHierarchies() {
+		return accountHierarchies;
+	}
 }

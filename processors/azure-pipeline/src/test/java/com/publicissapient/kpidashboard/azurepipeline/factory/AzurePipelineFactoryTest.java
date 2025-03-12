@@ -54,7 +54,6 @@ class AzurePipelineFactoryTest {
 		} catch (NullPointerException ex) {
 			Assert.assertEquals(null, ex.getMessage());
 		}
-
 	}
 
 	@Test

@@ -21,7 +21,7 @@ import lombok.Data;
 
 @Data
 public class KPI {
-    private String id;
-    private String chartData;
-    private Object metadata;
+	private String id;
+	private String chartData;
+	private Object metadata;
 }

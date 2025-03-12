@@ -26,9 +26,7 @@ import org.springframework.stereotype.Service;
 import com.publicissapient.kpidashboard.common.util.PropertyUtils;
 import com.publicissapient.kpidashboard.zephyr.config.ZephyrConfig;
 
-/**
- * Service for trimming property file
- */
+/** Service for trimming property file */
 @Service
 public class ZephyrConfigService {
 
@@ -37,9 +35,7 @@ public class ZephyrConfigService {
 	@Autowired
 	private PropertyUtils propertyUtils;
 
-	/**
-	 * Update setting object
-	 */
+	/** Update setting object */
 	@PostConstruct
 	public void updateSettingsObject() {
 		propertyUtils.trimProps(zephyrConfig.getClass().getDeclaredFields(), zephyrConfig);

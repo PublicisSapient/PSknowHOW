@@ -49,5 +49,4 @@ public class UsersSession {
 	private LocalDateTime expiresOn;
 	private AuthenticationEvent event;
 	private Status status;
-
 }

@@ -23,7 +23,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.jira.dataFactories.ProjectHierarchiesDataFactory;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +40,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.jira.dataFactories.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.KanbanJiraIssueDataFactory;
+import com.publicissapient.kpidashboard.jira.dataFactories.ProjectHierarchiesDataFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectHierarchySyncServiceImplTest {
@@ -72,12 +72,11 @@ public class ProjectHierarchySyncServiceImplTest {
 		KanbanJiraIssueDataFactory kanbanJiraIssueDataFactory = KanbanJiraIssueDataFactory
 				.newInstance("/json/default/kanban_jira_issue.json");
 		kanbanJiraIssueList = kanbanJiraIssueDataFactory.getKanbanJiraIssues();
-		ProjectHierarchy projectHierarchy=new ProjectHierarchy();
+		ProjectHierarchy projectHierarchy = new ProjectHierarchy();
 		projectHierarchy.setNodeId("Release1");
-		ProjectHierarchy projectHierarchy2=new ProjectHierarchy();
+		ProjectHierarchy projectHierarchy2 = new ProjectHierarchy();
 		projectHierarchy2.setNodeId("Release2");
 		fetchedReleasedHierarchy = List.of(projectHierarchy, projectHierarchy2);
-
 	}
 
 	@Test
@@ -103,8 +102,8 @@ public class ProjectHierarchySyncServiceImplTest {
 		List<String> distinctReleaseNodeIds = List.of("Release1", "Release2");
 		List<String> entriesToDelete = List.of("Release3");
 
-		when(accountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
-				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)).thenReturn(accountHierarchyList);
+		when(accountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId, distinctReleaseNodeIds,
+				CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)).thenReturn(accountHierarchyList);
 
 		projectHierarchySyncServiceImpl.syncReleaseHierarchy(projectId, fetchedReleasedHierarchy);
 
@@ -118,15 +117,14 @@ public class ProjectHierarchySyncServiceImplTest {
 		List<String> distinctReleaseNodeIds = List.of("Release1", "Release2");
 		List<ProjectHierarchy> entriesToDelete = List.of();
 
-		when(accountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
-				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)).thenReturn(entriesToDelete);
+		when(accountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId, distinctReleaseNodeIds,
+				CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)).thenReturn(entriesToDelete);
 
 		projectHierarchySyncServiceImpl.syncReleaseHierarchy(projectId, fetchedReleasedHierarchy);
 
 		verify(accountHierarchyRepository).findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
 				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
 	}
-
 
 	@Test
 	public void syncScrumReleaseHierarchyDeletesNonMatchingReleases() {
@@ -143,7 +141,6 @@ public class ProjectHierarchySyncServiceImplTest {
 	public void syncKanbanReleaseHierarchyDeletesNonMatchingReleases() {
 		ObjectId projectId = new ObjectId();
 
-
 		List<String> distinctReleaseNodeIds = List.of("Release1", "Release2");
 		projectHierarchySyncServiceImpl.syncReleaseHierarchy(projectId, fetchedReleasedHierarchy);
 
@@ -159,8 +156,8 @@ public class ProjectHierarchySyncServiceImplTest {
 		projectHierarchySyncServiceImpl.deleteNonMatchingEntries(projectId, distinctReleaseNodeIds,
 				CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
 
-		verify(accountHierarchyRepository).deleteByBasicProjectConfigIdAndNodeIdIn(projectId,
-				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
+		verify(accountHierarchyRepository).deleteByBasicProjectConfigIdAndNodeIdIn(projectId, distinctReleaseNodeIds,
+				CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
 	}
 
 	@Test
@@ -178,5 +175,4 @@ public class ProjectHierarchySyncServiceImplTest {
 
 		verify(sprintRepository, never()).deleteBySprintIDInAndBasicProjectConfigId(nonMatchingNodeIds, projectId);
 	}
-
 }

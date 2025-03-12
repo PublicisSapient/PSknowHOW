@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -57,7 +55,6 @@ import com.publicissapient.kpidashboard.apis.data.KanbanIssueCustomHistoryDataFa
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SonarHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -75,7 +72,6 @@ import com.publicissapient.kpidashboard.common.repository.sonar.SonarHistoryRepo
 
 /**
  * @author shichand0
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class UnitCoverageServiceKanbanImplTest {
@@ -140,8 +136,6 @@ public class UnitCoverageServiceKanbanImplTest {
 		setToolMap();
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		when(cacheService.getFullKanbanHierarchyLevel()).thenReturn(hierachyLevelFactory.getHierarchyLevels());
-
-
 	}
 
 	private void setToolMap() {
@@ -200,20 +194,18 @@ public class UnitCoverageServiceKanbanImplTest {
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(data -> {
 				String projectName = data.getFilter();
 				switch (projectName) {
-				case "Overall":
-					assertThat("Coverage:", data.getValue().size(), equalTo(1));
-					break;
+					case "Overall" :
+						assertThat("Coverage:", data.getValue().size(), equalTo(1));
+						break;
 
-				case "ENGINEERING.KPIDASHBOARD.PROCESSORS->origin/develop->DA_10304":
-					assertThat("Coverage:", data.getValue().size(), equalTo(1));
-					break;
-
+					case "ENGINEERING.KPIDASHBOARD.PROCESSORS->origin/develop->DA_10304" :
+						assertThat("Coverage:", data.getValue().size(), equalTo(1));
+						break;
 				}
 			});
 		} catch (Exception enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -222,12 +214,15 @@ public class UnitCoverageServiceKanbanImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
-//		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
+		// when(customApiConfig.getSonarWeekCount()).thenReturn(5);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-//		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
-//				.thenReturn(kpiRequestTrackerId);
-//		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
-//				.thenReturn(sonarHistoryData);
+		// when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY
+		// +
+		// KPISource.SONARKANBAN.name()))
+		// .thenReturn(kpiRequestTrackerId);
+		// when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(),
+		// anyLong()))
+		// .thenReturn(sonarHistoryData);
 
 		try {
 			KpiElement kpiElement = stdServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -237,7 +232,6 @@ public class UnitCoverageServiceKanbanImplTest {
 		} catch (Exception enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -246,12 +240,15 @@ public class UnitCoverageServiceKanbanImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
-//		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
+		// when(customApiConfig.getSonarWeekCount()).thenReturn(5);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-//		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
-//				.thenReturn(kpiRequestTrackerId);
-//		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
-//				.thenReturn(sonarHistoryData);
+		// when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY
+		// +
+		// KPISource.SONARKANBAN.name()))
+		// .thenReturn(kpiRequestTrackerId);
+		// when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(),
+		// anyLong()))
+		// .thenReturn(sonarHistoryData);
 
 		try {
 			KpiElement kpiElement = stdServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -261,7 +258,6 @@ public class UnitCoverageServiceKanbanImplTest {
 		} catch (Exception enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -279,7 +275,5 @@ public class UnitCoverageServiceKanbanImplTest {
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 		when(configHelperService.getToolItemMap()).thenReturn(null);
 		stdServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0), treeAggregatorDetail);
-
 	}
-
 }

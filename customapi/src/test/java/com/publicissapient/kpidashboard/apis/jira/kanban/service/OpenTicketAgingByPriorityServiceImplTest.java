@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.jira.kanban.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -149,7 +148,6 @@ public class OpenTicketAgingByPriorityServiceImplTest {
 		setTreadValuesDataCount();
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		when(cacheService.getFullKanbanHierarchyLevel()).thenReturn(hierachyLevelFactory.getHierarchyLevels());
-
 	}
 
 	@After
@@ -199,33 +197,31 @@ public class OpenTicketAgingByPriorityServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
 		try {
-			KpiElement kpiElement = openTicketAgingByPriorityService.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0), treeAggregatorDetail);
+			KpiElement kpiElement = openTicketAgingByPriorityService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
 
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(dc -> {
-
 				String priority = dc.getFilter();
 				switch (priority) {
-				case "P1":
-					assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "P2":
-					assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "P3":
-					assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "P4":
-					assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "MISC":
-					assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
+					case "P1" :
+						assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "P2" :
+						assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "P3" :
+						assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "P4" :
+						assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "MISC" :
+						assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
 
-				default:
-					break;
+					default :
+						break;
 				}
-
 			});
 
 		} catch (ApplicationException enfe) {
@@ -245,10 +241,10 @@ public class OpenTicketAgingByPriorityServiceImplTest {
 		when(kanbanJiraIssueRepository.findIssuesByDateAndTypeAndStatus(any(), any(), any(), any(), any(), any()))
 				.thenReturn(kanbanJiraIssueList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> defectDataListMap = openTicketAgingByPriorityService.fetchKPIDataFromDb(leafNodeList,
-				startDate, endDate, kpiRequest);
-		assertThat("Total Defects issue list :",
-				((List<KanbanJiraIssue>) defectDataListMap.get(RANGE_TICKET_LIST)).size(), equalTo(172));
+		Map<String, Object> defectDataListMap = openTicketAgingByPriorityService.fetchKPIDataFromDb(leafNodeList, startDate,
+				endDate, kpiRequest);
+		assertThat("Total Defects issue list :", ((List<KanbanJiraIssue>) defectDataListMap.get(RANGE_TICKET_LIST)).size(),
+				equalTo(172));
 	}
 
 	@Test
@@ -261,5 +257,4 @@ public class OpenTicketAgingByPriorityServiceImplTest {
 		assertThat("Kpi Name :", openTicketAgingByPriorityService.getQualifierType(),
 				equalTo("OPEN_TICKET_AGING_BY_PRIORITY"));
 	}
-
 }

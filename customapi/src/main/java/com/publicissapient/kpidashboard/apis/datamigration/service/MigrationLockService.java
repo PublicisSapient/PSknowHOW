@@ -16,14 +16,15 @@
  */
 package com.publicissapient.kpidashboard.apis.datamigration.service;
 
-import com.publicissapient.kpidashboard.apis.datamigration.model.MigrationLockLog;
-import com.publicissapient.kpidashboard.apis.datamigration.repository.MigrationLogRepository;
-import com.publicissapient.kpidashboard.apis.datamigration.util.MigrationEnum;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
+import com.publicissapient.kpidashboard.apis.datamigration.model.MigrationLockLog;
+import com.publicissapient.kpidashboard.apis.datamigration.repository.MigrationLogRepository;
+import com.publicissapient.kpidashboard.apis.datamigration.util.MigrationEnum;
 
 @Component
 public class MigrationLockService {
@@ -40,7 +41,5 @@ public class MigrationLockService {
 
 	public void saveToDB(MigrationLockLog log) {
 		migrationLogRepository.save(log);
-
 	}
-
 }

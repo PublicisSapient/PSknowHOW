@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.scope.context.StepContext;
@@ -41,6 +40,7 @@ import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
@@ -49,7 +49,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author purgupta2
- *
  */
 @Component
 @Slf4j
@@ -58,9 +57,10 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
 	@Autowired
 	private JiraProcessorConfig jiraProcessorConfig;
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.springframework.batch.core.ItemWriteListener#beforeWrite(java.util.List)
 	 */
@@ -71,7 +71,7 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.springframework.batch.core.ItemWriteListener#afterWrite(java.util.List)
 	 */
@@ -102,14 +102,10 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 				.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
 						Collections.singletonList(basicProjectConfigId));
 		ProcessorExecutionTraceLog progressStatsTraceLog = procTraceLogList.stream()
-				.filter(ProcessorExecutionTraceLog::isProgressStats).findFirst()
-				.orElse(new ProcessorExecutionTraceLog());
-		KanbanJiraIssue firstIssue = entry
-				.getValue().stream().sorted(
-						Comparator
-								.comparing((KanbanJiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
-										DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
-								.reversed())
+				.filter(ProcessorExecutionTraceLog::isProgressStats).findFirst().orElse(new ProcessorExecutionTraceLog());
+		KanbanJiraIssue firstIssue = entry.getValue().stream()
+				.sorted(Comparator.comparing((KanbanJiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
+						DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT))).reversed())
 				.findFirst().orElse(null);
 		if (firstIssue != null) {
 			processTraceLogs(stepContext, processorExecutionToSave, procTraceLogList, basicProjectConfigId, firstIssue,
@@ -120,8 +116,8 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 	private void processTraceLogs(StepContext stepContext, List<ProcessorExecutionTraceLog> processorExecutionToSave,
 			List<ProcessorExecutionTraceLog> procTraceLogList, String basicProjectConfigId, KanbanJiraIssue firstIssue,
 			ProcessorExecutionTraceLog progressStatsTraceLog) {
-		boolean isAnyLastSuccessfulRunPresent = procTraceLogList.stream().anyMatch(
-				traceLog -> traceLog.getLastSuccessfulRun() != null && !traceLog.getLastSuccessfulRun().isEmpty());
+		boolean isAnyLastSuccessfulRunPresent = procTraceLogList.stream()
+				.anyMatch(traceLog -> traceLog.getLastSuccessfulRun() != null && !traceLog.getLastSuccessfulRun().isEmpty());
 		if (CollectionUtils.isNotEmpty(procTraceLogList) && isAnyLastSuccessfulRunPresent) {
 			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procTraceLogList) {
 				if (processorExecutionTraceLog.isProgressStats()) {
@@ -132,9 +128,9 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 			}
 		} else {
 			ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-			processorExecutionTraceLog.setFirstRunDate(DateUtil.dateTimeFormatter(
-					LocalDateTime.now().minusMonths(jiraProcessorConfig.getPrevMonthCountToFetchData()).minusDays(jiraProcessorConfig.getDaysToReduce()),
-					JiraConstants.QUERYDATEFORMAT));
+			processorExecutionTraceLog.setFirstRunDate(
+					DateUtil.dateTimeFormatter(LocalDateTime.now().minusMonths(jiraProcessorConfig.getPrevMonthCountToFetchData())
+							.minusDays(jiraProcessorConfig.getDaysToReduce()), JiraConstants.QUERYDATEFORMAT));
 			setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
 					processorExecutionToSave);
 			progressStatsTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(firstIssue.getChangeDate(),
@@ -147,8 +143,8 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 	private void setTraceLog(ProcessorExecutionTraceLog processorExecutionTraceLog, String basicProjectConfigId,
 			String changeDate, List<ProcessorExecutionTraceLog> processorExecutionToSave) {
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
-		processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(changeDate,
-				JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
+		processorExecutionTraceLog.setLastSuccessfulRun(
+				DateUtil.dateTimeConverter(changeDate, JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
 		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
 		processorExecutionToSave.add(processorExecutionTraceLog);
 	}

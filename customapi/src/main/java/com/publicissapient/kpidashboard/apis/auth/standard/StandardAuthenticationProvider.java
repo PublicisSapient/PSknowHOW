@@ -46,13 +46,13 @@ public class StandardAuthenticationProvider implements AuthenticationProvider {
 
 	/**
 	 * Performs Authentication
-	 * 
+	 *
 	 * @param authentication
 	 * @return Authentication
 	 */
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException { // NOSONAR
-																									   // //NOPMD
+		// //NOPMD
 		try {
 			Authentication auth = authService.authenticate(authentication.getName(),
 					(String) authentication.getCredentials());
@@ -69,11 +69,9 @@ public class StandardAuthenticationProvider implements AuthenticationProvider {
 		} catch (PendingApprovalException e) {
 			throw new PendingApprovalException(e.getMessage());
 		}
-
 	}
 
 	/**
-	 * 
 	 * @return true if this AuthenticationProvider supports theindicated
 	 *         Authentication object.
 	 */
@@ -81,5 +79,4 @@ public class StandardAuthenticationProvider implements AuthenticationProvider {
 	public boolean supports(Class<?> authentication) {
 		return StandardAuthenticationToken.class.isAssignableFrom(authentication);
 	}
-
 }

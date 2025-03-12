@@ -140,15 +140,12 @@ public class TicketOpenVsClosedByTypeServiceImplTest {
 
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		when(cacheService.getFullKanbanHierarchyLevel()).thenReturn(hierachyLevelFactory.getHierarchyLevels());
-
-
 	}
 
 	@After
 	public void cleanup() {
 
 		kanbanJiraIssueRepository.deleteAll();
-
 	}
 
 	private void setMockProjectConfig() {
@@ -168,7 +165,6 @@ public class TicketOpenVsClosedByTypeServiceImplTest {
 		projectConfigList.add(projectOne);
 		projectConfigList.add(projectTwo);
 		projectConfigList.add(projectThree);
-
 	}
 
 	private void setMockFieldMapping() {
@@ -217,8 +213,8 @@ public class TicketOpenVsClosedByTypeServiceImplTest {
 		when(commonService.sortTrendValueMap(any())).thenReturn(trendMap);
 
 		try {
-			KpiElement kpiElement = storyOpenRateByIssueServiceImpl.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0), treeAggregatorDetail);
+			KpiElement kpiElement = storyOpenRateByIssueServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
 			List<DataCount> response = (List<DataCount>) kpiElement.getTrendValueList();
 			assertEquals(1, response.size());
 		} catch (ApplicationException e) {

@@ -35,24 +35,22 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.common.model.jira.IssueGroupFields;
 import com.publicissapient.kpidashboard.common.model.jira.IssueHistoryMappedData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /*
- author @shi6
- */
+author @shi6
+*/
 @ExtendWith(SpringExtension.class)
 public class KanbanJiraIssueHistoryRepositoryImplTest {
 	@Mock
@@ -185,9 +183,8 @@ public class KanbanJiraIssueHistoryRepositoryImplTest {
 		issueHistoryMappedData.setId(groupFields);
 		issueHistoryMappedData.setHistoryDetails(Arrays.asList(KanbanIssueHistory.builder().buildNumber("123")
 				.status("SUCESS").type("DEPLOY").activityDate(LocalDateTime.now().toString()).build()));
-		issueHistoryMappedData.setStatusUpdationLog(Arrays.asList(JiraHistoryChangeLog.builder().changedTo("end")
-				.changedFrom("start").updatedOn(LocalDateTime.now()).build()));
+		issueHistoryMappedData.setStatusUpdationLog(Arrays.asList(
+				JiraHistoryChangeLog.builder().changedTo("end").changedFrom("start").updatedOn(LocalDateTime.now()).build()));
 		return Arrays.asList(issueHistoryMappedData);
 	}
-
 }

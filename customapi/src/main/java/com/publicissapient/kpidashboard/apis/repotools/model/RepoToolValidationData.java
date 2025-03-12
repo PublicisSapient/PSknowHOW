@@ -26,9 +26,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * RepoTool kpi validation data
- */
+import java.util.List;
+
+/** RepoTool kpi validation data */
 @Data
 @Builder
 @Getter
@@ -60,5 +60,6 @@ public class RepoToolValidationData {
 	private String prRaisedTime;
 	private String prActivityTime;
 	private String prStatus;
+	private List<String> mergeRequestComment;
 
 }

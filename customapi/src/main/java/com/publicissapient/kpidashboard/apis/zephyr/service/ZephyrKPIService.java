@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.bson.types.ObjectId;
@@ -53,6 +52,7 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
+import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 
 /**
@@ -60,18 +60,17 @@ import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetails
  * for group of KPI's based on a source has to be implemented here.
  *
  * @param <R>
- *            type of kpi value
+ *          type of kpi value
  * @param <S>
- *            type of kpi trend object
+ *          type of kpi trend object
  * @param <T>
- *            type of db object
- *
+ *          type of db object
  * @author tauakram
  */
-
 @Service
 public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
-		implements ApplicationKPIService<R, S, T> {
+		implements
+			ApplicationKPIService<R, S, T> {
 
 	private static final String TOOL_ZEPHYR = ProcessorConstants.ZEPHYR;
 	private static final String TOOL_JIRA_TEST = ProcessorConstants.JIRA_TEST;
@@ -113,8 +112,7 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
 	 * @return request tracker id for kanban
 	 */
 	protected String getKanbanRequestTrackerId() {
-		return cacheService
-				.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYRKANBAN.name());
+		return cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYRKANBAN.name());
 	}
 
 	/**
@@ -160,12 +158,11 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
 	 * @param basicProjectConfId
 	 * @return List of ProjectToolConfig
 	 */
-
 	public List<ProjectToolConfig> getToolConfigBasedOnProcessors(
 			Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap, ObjectId basicProjectConfId, String toolName) {
 		List<ProjectToolConfig> tools = new ArrayList<>();
-		if (MapUtils.isNotEmpty(toolMap) && toolMap.get(basicProjectConfId) != null
-				&& toolMap.get(basicProjectConfId).containsKey(toolName)) {
+		if (MapUtils.isNotEmpty(toolMap) && toolMap.get(basicProjectConfId) != null &&
+				toolMap.get(basicProjectConfId).containsKey(toolName)) {
 			List<ProjectToolConfig> tool = toolMap.get(basicProjectConfId).get(toolName);
 			tools.addAll(tool);
 		}
@@ -218,7 +215,6 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
 				}
 
 				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-
 			});
 
 			mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
@@ -228,8 +224,8 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
 			mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					Arrays.asList(NormalizedJira.TEST_TYPE.getValue()));
 
-			List<TestCaseDetails> testCasesList = testCaseDetailsRepository.findTestDetails(mapOfFilters,
-					uniqueProjectMap, NIN);
+			List<TestCaseDetails> testCasesList = testCaseDetailsRepository.findTestDetails(mapOfFilters, uniqueProjectMap,
+					NIN);
 
 			Map<String, List<TestCaseDetails>> towerWiseTotalMap = testCasesList.stream()
 					.collect(Collectors.groupingBy(TestCaseDetails::getBasicProjectConfigId, Collectors.toList()));
@@ -283,7 +279,7 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
 
 	/**
 	 * fetch test execution uploaded data
-	 * 
+	 *
 	 * @param leafNodeList
 	 * @param kpiRequest
 	 * @return
@@ -301,7 +297,7 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
 				sprintList.add(leaf.getSprintFilter().getId());
 				basicProjectConfigIds.add(basicProjectConfigId.toString());
 			});
-			/** additional filter **/
+			/** additional filter * */
 			createAdditionalFilterMap(kpiRequest, mapOfFilters, DEV, flterHelperService);
 
 			mapOfFilters.put(SPRINT_ID, sprintList.stream().distinct().collect(Collectors.toList()));
@@ -313,5 +309,4 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
 		}
 		return resultListMap;
 	}
-
 }

@@ -15,16 +15,16 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class OrganizationHierarchyDataFactory {
-	
+
 	private static final String FILE_PATH_ORGANIZATION_HIERARCHY = "/json/default/organization_hierarchy.json";
-	
+
 	private List<OrganizationHierarchy> organizationHierarchies;
 
 	private ObjectMapper mapper;
-	
+
 	private OrganizationHierarchyDataFactory() {
 	}
-	
+
 	public static OrganizationHierarchyDataFactory newInstance(String filePath) {
 		OrganizationHierarchyDataFactory factory = new OrganizationHierarchyDataFactory();
 		factory.createObjectMapper();
@@ -36,7 +36,7 @@ public class OrganizationHierarchyDataFactory {
 
 		return newInstance(null);
 	}
-	
+
 	private void init(String filePath) {
 		try {
 			String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_ORGANIZATION_HIERARCHY : filePath;

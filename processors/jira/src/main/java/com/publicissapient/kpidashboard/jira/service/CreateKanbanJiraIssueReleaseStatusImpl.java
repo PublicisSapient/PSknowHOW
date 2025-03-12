@@ -18,20 +18,22 @@
 
 package com.publicissapient.kpidashboard.jira.service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.helper.JiraHelper;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author kunkambl
@@ -40,41 +42,40 @@ import java.util.Map;
 @Service
 public class CreateKanbanJiraIssueReleaseStatusImpl implements CreateJiraIssueReleaseStatus {
 
-    @Autowired
-    private KanbanJiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
+	@Autowired
+	private KanbanJiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 
-    @Override
-    public void processAndSaveProjectStatusCategory(ProcessorJiraRestClient client, String basicProjectConfigId) {
+	@Override
+	public void processAndSaveProjectStatusCategory(ProcessorJiraRestClient client, String basicProjectConfigId) {
 
-        KanbanJiraIssueReleaseStatus jiraIssueReleaseStatus = jiraIssueReleaseStatusRepository
-                .findByBasicProjectConfigId(basicProjectConfigId);
-        if (null == jiraIssueReleaseStatus) {
-            List<Status> listOfProjectStatus = JiraHelper.getStatus(client);
-            if (CollectionUtils.isNotEmpty(listOfProjectStatus)) {
-                jiraIssueReleaseStatus = new KanbanJiraIssueReleaseStatus();
-                jiraIssueReleaseStatus.setBasicProjectConfigId(basicProjectConfigId);
-                Map<Long, String> toDosList = new HashMap<>();
-                Map<Long, String> inProgressList = new HashMap<>();
-                Map<Long, String> closedList = new HashMap<>();
+		KanbanJiraIssueReleaseStatus jiraIssueReleaseStatus = jiraIssueReleaseStatusRepository
+				.findByBasicProjectConfigId(basicProjectConfigId);
+		if (null == jiraIssueReleaseStatus) {
+			List<Status> listOfProjectStatus = JiraHelper.getStatus(client);
+			if (CollectionUtils.isNotEmpty(listOfProjectStatus)) {
+				jiraIssueReleaseStatus = new KanbanJiraIssueReleaseStatus();
+				jiraIssueReleaseStatus.setBasicProjectConfigId(basicProjectConfigId);
+				Map<Long, String> toDosList = new HashMap<>();
+				Map<Long, String> inProgressList = new HashMap<>();
+				Map<Long, String> closedList = new HashMap<>();
 
-                listOfProjectStatus.forEach(status -> {
-                    if (JiraConstants.TO_DO.equals(status.getStatusCategory().getName())) {
-                        toDosList.put(status.getId(), status.getName());
-                    } else if (JiraConstants.DONE.equals(status.getStatusCategory().getName())) {
-                        closedList.put(status.getId(), status.getName());
-                    } else {
-                        inProgressList.put(status.getId(), status.getName());
-                    }
-                });
-                jiraIssueReleaseStatus.setToDoList(toDosList);
-                jiraIssueReleaseStatus.setInProgressList(inProgressList);
-                jiraIssueReleaseStatus.setClosedList(closedList);
-                jiraIssueReleaseStatusRepository.save(jiraIssueReleaseStatus);
-                log.info("saved project status category for the project : {}", basicProjectConfigId);
-            }
-        } else {
-            log.info("project status category is already in db for the project : {} ", basicProjectConfigId);
-        }
-    }
-
+				listOfProjectStatus.forEach(status -> {
+					if (JiraConstants.TO_DO.equals(status.getStatusCategory().getName())) {
+						toDosList.put(status.getId(), status.getName());
+					} else if (JiraConstants.DONE.equals(status.getStatusCategory().getName())) {
+						closedList.put(status.getId(), status.getName());
+					} else {
+						inProgressList.put(status.getId(), status.getName());
+					}
+				});
+				jiraIssueReleaseStatus.setToDoList(toDosList);
+				jiraIssueReleaseStatus.setInProgressList(inProgressList);
+				jiraIssueReleaseStatus.setClosedList(closedList);
+				jiraIssueReleaseStatusRepository.save(jiraIssueReleaseStatus);
+				log.info("saved project status category for the project : {}", basicProjectConfigId);
+			}
+		} else {
+			log.info("project status category is already in db for the project : {} ", basicProjectConfigId);
+		}
+	}
 }

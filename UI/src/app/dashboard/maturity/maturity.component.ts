@@ -234,7 +234,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
         this.service.setBackupOfFilterSelectionState(stateFiltersObjLocal);
       } else {
         this.service.setBackupOfFilterSelectionState(null);
-        this.queryParamsSubscription.unsubscribe();
+        this.queryParamsSubscription?.unsubscribe();
         this.router.navigate(['/dashboard/Error']);
         setTimeout(() => {
           this.service.raiseError({
@@ -307,6 +307,10 @@ export class MaturityComponent implements OnInit, OnDestroy {
       this.noProjects = res;
       this.isKanban = this.service.getSelectedType()?.toLowerCase() === 'kanban' ? true : false;
     }));
+
+    this.subscription.push(this.service.onScrumKanbanSwitch.subscribe(type => {
+      this.selectedtype = type.selectedType
+    }))
 
     if (!this.service.getFilterObject()) {
       this.showNoDataMsg = true;

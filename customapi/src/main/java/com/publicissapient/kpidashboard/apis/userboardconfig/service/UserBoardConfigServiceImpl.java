@@ -98,9 +98,9 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * it prepares a default configuration.
 	 *
 	 * @param configLevel
-	 *            the configuration level (see {@link ConfigLevel})
+	 *          the configuration level (see {@link ConfigLevel})
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return the user board configuration DTO
 	 */
 	public UserBoardConfigDTO getOrPrepareBoardConfig(ConfigLevel configLevel, String basicProjectConfigId) {
@@ -116,23 +116,21 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				.collect(Collectors.toMap(KpiMaster::getKpiId, Function.identity()));
 		List<KpiCategory> kpiCategoryList = kpiCategoryRepository.findAll();
 		UserBoardConfigDTO defaultUserBoardConfigDTO = new UserBoardConfigDTO();
-		defaultUserBoardConfigDTO
-				.setBasicProjectConfigId(configLevel == ConfigLevel.PROJECT ? basicProjectConfigId : null);
+		defaultUserBoardConfigDTO.setBasicProjectConfigId(configLevel == ConfigLevel.PROJECT ? basicProjectConfigId : null);
 		defaultUserBoardConfigDTO.setUsername(configLevel == ConfigLevel.USER ? loggedInUser : null);
 
-		handleDeveloperKpi = configHelperService.getProjectConfig(basicProjectConfigId) != null
-				&& configHelperService.getProjectConfig(basicProjectConfigId).isDeveloperKpiEnabled();
+		handleDeveloperKpi = configHelperService.getProjectConfig(basicProjectConfigId) != null &&
+				configHelperService.getProjectConfig(basicProjectConfigId).isDeveloperKpiEnabled();
 
 		if (null == existingUserBoardConfigDTO) {
 			setUserBoardConfigBasedOnCategoryForFreshUser(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
 			return defaultUserBoardConfigDTO;
 		} else {
-			String boardName = existingUserBoardConfigDTO.getScrum().stream()
-					.filter(boardDTO -> boardDTO.getBoardId() == 1).findFirst().map(BoardDTO::getBoardName)
-					.orElse(null);
-			if ((checkKPIAddOrRemoveForExistingUser(existingUserBoardConfigDTO, kpiMasterMap)
-					&& checkCategories(existingUserBoardConfigDTO, kpiCategoryList))
-					|| checkKPISubCategory(existingUserBoardConfigDTO, kpiMasterMap)) {
+			String boardName = existingUserBoardConfigDTO.getScrum().stream().filter(boardDTO -> boardDTO.getBoardId() == 1)
+					.findFirst().map(BoardDTO::getBoardName).orElse(null);
+			if ((checkKPIAddOrRemoveForExistingUser(existingUserBoardConfigDTO, kpiMasterMap) &&
+					checkCategories(existingUserBoardConfigDTO, kpiCategoryList)) ||
+					checkKPISubCategory(existingUserBoardConfigDTO, kpiMasterMap)) {
 				setUserBoardConfigBasedOnCategory(boardName, defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
 				filtersBoardsAndSetKpisForExistingUser(existingUserBoardConfigDTO.getScrum(),
 						defaultUserBoardConfigDTO.getScrum());
@@ -153,18 +151,18 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		UserBoardConfigDTO boardConfigDTO;
 
 		switch (configLevel) {
-		case PROJECT:
-			boardConfigDTO = getOrPrepareBoardConfig(ConfigLevel.PROJECT, basicProjectConfigId);
-			break;
-		case USER:
-			boardConfigDTO = getOrPrepareBoardConfig(ConfigLevel.USER, basicProjectConfigId);
-			List<UserBoardConfig> projectBoardConfigs = listOfRequestedProj.getBasicProjectConfigIds().stream()
-					.map(projectId -> fetchUserBoardConfig(projectId, null)).filter(Objects::nonNull)
-					.collect(Collectors.toList());
-			applyProjectConfigToUserBoard(boardConfigDTO, listOfRequestedProj, projectBoardConfigs);
-			break;
-		default:
-			throw new IllegalArgumentException("Invalid board config level: " + configLevel);
+			case PROJECT :
+				boardConfigDTO = getOrPrepareBoardConfig(ConfigLevel.PROJECT, basicProjectConfigId);
+				break;
+			case USER :
+				boardConfigDTO = getOrPrepareBoardConfig(ConfigLevel.USER, basicProjectConfigId);
+				List<UserBoardConfig> projectBoardConfigs = listOfRequestedProj.getBasicProjectConfigIds().stream()
+						.map(projectId -> fetchUserBoardConfig(projectId, null)).filter(Objects::nonNull)
+						.collect(Collectors.toList());
+				applyProjectConfigToUserBoard(boardConfigDTO, listOfRequestedProj, projectBoardConfigs);
+				break;
+			default :
+				throw new IllegalArgumentException("Invalid board config level: " + configLevel);
 		}
 
 		return boardConfigDTO;
@@ -180,19 +178,19 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * new added or remove kpi
 	 *
 	 * @param existingBoardListDTO
-	 *            existingBoardListDTO
+	 *          existingBoardListDTO
 	 * @param defaultBoardListDTO
-	 *            existingBoardListDTO
+	 *          existingBoardListDTO
 	 */
 	private void filtersBoardsAndSetKpisForExistingUser(List<BoardDTO> existingBoardListDTO,
 			List<BoardDTO> defaultBoardListDTO) {
 		defaultBoardListDTO.forEach(defaultBoardDTO -> existingBoardListDTO.forEach(existingBoardDTO -> {
-			if (defaultBoardDTO.getBoardId() == existingBoardDTO.getBoardId()
-					&& !CollectionUtils.containsAll(defaultBoardDTO.getKpis(), existingBoardDTO.getKpis())) {
+			if (defaultBoardDTO.getBoardId() == existingBoardDTO.getBoardId() &&
+					!CollectionUtils.containsAll(defaultBoardDTO.getKpis(), existingBoardDTO.getKpis())) {
 				filtersKPIAndSetKPIsForExistingUser(defaultBoardDTO, existingBoardDTO);
 			}
-			if (defaultBoardDTO.getBoardId() == existingBoardDTO.getBoardId()
-					&& !CollectionUtils.containsAll(existingBoardDTO.getKpis(), defaultBoardDTO.getKpis())) {
+			if (defaultBoardDTO.getBoardId() == existingBoardDTO.getBoardId() &&
+					!CollectionUtils.containsAll(existingBoardDTO.getKpis(), defaultBoardDTO.getKpis())) {
 				filtersKPIAndSetKPIsForExistingUser(defaultBoardDTO, existingBoardDTO);
 			}
 		}));
@@ -205,17 +203,16 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * kpi_category_mapping collections)
 	 *
 	 * @param defaultBoardDTO
-	 *            defaultBoardDTO
+	 *          defaultBoardDTO
 	 * @param existingBoardDTO
-	 *            existingBoardDTO
+	 *          existingBoardDTO
 	 */
 	private void filtersKPIAndSetKPIsForExistingUser(BoardDTO defaultBoardDTO, BoardDTO existingBoardDTO) {
 
 		List<BoardKpisDTO> boardKpisList = new ArrayList<>();
 
 		Map<String, BoardKpisDTO> kpiWiseUserBoardConfig = new HashMap<>();
-		existingBoardDTO.getKpis()
-				.forEach(existingKPI -> kpiWiseUserBoardConfig.put(existingKPI.getKpiId(), existingKPI));
+		existingBoardDTO.getKpis().forEach(existingKPI -> kpiWiseUserBoardConfig.put(existingKPI.getKpiId(), existingKPI));
 		AtomicInteger iterationOrderSize = new AtomicInteger(2);
 		defaultBoardDTO.getKpis().forEach(defaultKPIList -> {
 			BoardKpisDTO boardKpis = new BoardKpisDTO();
@@ -245,8 +242,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		});
 		boardKpisList.stream().filter(boardKpisDTO -> boardKpisDTO.getOrder() == 0)
 				.forEach(boardKpisDTO -> boardKpisDTO.setOrder(iterationOrderSize.getAndIncrement()));
-		defaultBoardDTO.setKpis(boardKpisList.stream().sorted(Comparator.comparing(BoardKpisDTO::getOrder))
-				.collect(Collectors.toList()));
+		defaultBoardDTO.setKpis(
+				boardKpisList.stream().sorted(Comparator.comparing(BoardKpisDTO::getOrder)).collect(Collectors.toList()));
 	}
 
 	/**
@@ -254,13 +251,13 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * category , category mapping.
 	 *
 	 * @param boardName
-	 *            boardName
+	 *          boardName
 	 * @param newUserBoardConfig
-	 *            newUserBoardConfig
+	 *          newUserBoardConfig
 	 * @param kpiCategoryList
-	 *            kpiCategoryList
+	 *          kpiCategoryList
 	 * @param kpiMasterMap
-	 *            kpiMasterMap
+	 *          kpiMasterMap
 	 */
 	private void setUserBoardConfigBasedOnCategory(String boardName, UserBoardConfigDTO newUserBoardConfig,
 			List<KpiCategory> kpiCategoryList, Map<String, KpiMaster> kpiMasterMap) {
@@ -303,18 +300,18 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * assigned to each board based on its boardId.
 	 *
 	 * @param scrumBoards
-	 *            the list of scrum boards to set filters for
+	 *          the list of scrum boards to set filters for
 	 * @param kanbanBoards
-	 *            the list of kanban boards to set filters for
+	 *          the list of kanban boards to set filters for
 	 * @param otherBoards
-	 *            the list of other boards to set filters for
+	 *          the list of other boards to set filters for
 	 */
 	private void setFiltersInfoInBoard(List<BoardDTO> scrumBoards, List<BoardDTO> kanbanBoards,
 			List<BoardDTO> otherBoards) {
 		// Fetch all filters and filter categories once
 		List<Filters> filtersList = configHelperService.loadAllFilters();
-		List<AdditionalFilterCategory> filterCategory = cacheService.getAdditionalFilterHierarchyLevel().values()
-				.stream().toList();
+		List<AdditionalFilterCategory> filterCategory = cacheService.getAdditionalFilterHierarchyLevel().values().stream()
+				.toList();
 		String sqdFilterCategoryId;
 		if (!filterCategory.isEmpty()) {
 			sqdFilterCategoryId = filterCategory.get(0).getFilterCategoryId();
@@ -325,8 +322,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		// Update the labelName for additional filters
 		filtersList.forEach(filter -> {
 			if (filter.getAdditionalFilters() != null) {
-				filter.getAdditionalFilters().stream()
-						.filter(f -> f.getDefaultLevel().getLabelName().equalsIgnoreCase("sqd"))
+				filter.getAdditionalFilters().stream().filter(f -> f.getDefaultLevel().getLabelName().equalsIgnoreCase("sqd"))
 						.forEach(f -> f.getDefaultLevel().setLabelName(sqdFilterCategoryId));
 			}
 		});
@@ -336,9 +332,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				.collect(Collectors.toMap(Filters::getBoardId, Function.identity()));
 
 		// Helper method to set filters for a list of boards
-		ObjIntConsumer<List<BoardDTO>> setFiltersForBoards = (boards, offset) -> boards
-				.forEach(boardDTO -> boardDTO.setFilters(copyFiltersWithoutId(
-						filtersMap.getOrDefault(boardDTO.getBoardId() - offset, filtersMap.get(1)))));
+		ObjIntConsumer<List<BoardDTO>> setFiltersForBoards = (boards, offset) -> boards.forEach(boardDTO -> boardDTO
+				.setFilters(copyFiltersWithoutId(filtersMap.getOrDefault(boardDTO.getBoardId() - offset, filtersMap.get(1)))));
 
 		// Set filters for each type of board
 		setFiltersForBoards.accept(scrumBoards, 0);
@@ -351,7 +346,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * boardId fields.
 	 *
 	 * @param original
-	 *            the original Filters object to copy
+	 *          the original Filters object to copy
 	 * @return a new Filters object with the same values as the original, except for
 	 *         the id and boardId fields
 	 */
@@ -368,35 +363,34 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * This method is used to set user board information
 	 *
 	 * @param kpiCategoryBoardId
-	 *            kpiCategoryBoardId is used to set the board order
+	 *          kpiCategoryBoardId is used to set the board order
 	 * @param otherBoardNameList
-	 *            this contains board name list
+	 *          this contains board name list
 	 * @param otherBoards
-	 *            otherBoards
+	 *          otherBoards
 	 * @param value
-	 *            value
+	 *          value
 	 */
 	private void setUserBoardInfo(AtomicReference<Integer> kpiCategoryBoardId, List<String> otherBoardNameList,
 			List<BoardDTO> otherBoards, boolean value) {
 
 		otherBoardNameList.forEach(board -> setBoardInfoAsPerDefaultKpiCategory(
 				kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), board, otherBoards, value));
-
 	}
 
 	/**
 	 * prepare boards for as per category and kpi category mappings
 	 *
 	 * @param kpiCategoryBoardId
-	 *            kpiCategoryBoardId
+	 *          kpiCategoryBoardId
 	 * @param kpiCategoryList
-	 *            kpiCategoryList
+	 *          kpiCategoryList
 	 * @param kpiMasterMap
-	 *            kpiMasterMap
+	 *          kpiMasterMap
 	 * @param boardDTOList
-	 *            boardDTOList
+	 *          boardDTOList
 	 * @param kanban
-	 *            kanban
+	 *          kanban
 	 */
 	private void setAsPerCategoryMappingBoardInfo(AtomicReference<Integer> kpiCategoryBoardId,
 			List<KpiCategory> kpiCategoryList, Map<String, KpiMaster> kpiMasterMap, List<BoardDTO> boardDTOList,
@@ -405,9 +399,9 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		if (CollectionUtils.isNotEmpty(kpiCategoryMappingList)) {
 			Map<String, List<KpiCategoryMapping>> kpiIdWiseCategory = kpiCategoryMappingList.stream()
 					.collect(Collectors.groupingBy(KpiCategoryMapping::getCategoryId, Collectors.toList()));
-			kpiCategoryList.forEach(kpiCategory -> setBoardInfoAsPerKpiCategory(
-					kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), kpiCategory,
-					kpiIdWiseCategory.get(kpiCategory.getCategoryId()), kpiMasterMap, boardDTOList, kanban));
+			kpiCategoryList.forEach(
+					kpiCategory -> setBoardInfoAsPerKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1),
+							kpiCategory, kpiIdWiseCategory.get(kpiCategory.getCategoryId()), kpiMasterMap, boardDTOList, kanban));
 		}
 	}
 
@@ -415,17 +409,17 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * set board details and kpi list as per KPI category.
 	 *
 	 * @param kpiCategoryBoardId
-	 *            kpiCategoryBoardId
+	 *          kpiCategoryBoardId
 	 * @param kpiCategory
-	 *            kpiCategory
+	 *          kpiCategory
 	 * @param kpiCategoryMappingList
-	 *            kpiCategoryMappingList
+	 *          kpiCategoryMappingList
 	 * @param kpiMasterMap
-	 *            kpiMasterMap
+	 *          kpiMasterMap
 	 * @param asPerCategoryBoardList
-	 *            asPerCategoryBoardList
+	 *          asPerCategoryBoardList
 	 * @param kanban
-	 *            kanban
+	 *          kanban
 	 */
 	private void setBoardInfoAsPerKpiCategory(Integer kpiCategoryBoardId, KpiCategory kpiCategory,
 			List<KpiCategoryMapping> kpiCategoryMappingList, Map<String, KpiMaster> kpiMasterMap,
@@ -448,16 +442,16 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * BACKLOG
 	 *
 	 * @param boardId
-	 *            boardId
+	 *          boardId
 	 * @param boardName
-	 *            boardName
+	 *          boardName
 	 * @param asPerCategoryBoardList
-	 *            asPerCategoryBoardList
+	 *          asPerCategoryBoardList
 	 * @param kanban
-	 *            kanban
+	 *          kanban
 	 */
-	private void setBoardInfoAsPerDefaultKpiCategory(int boardId, String boardName,
-			List<BoardDTO> asPerCategoryBoardList, boolean kanban) {
+	private void setBoardInfoAsPerDefaultKpiCategory(int boardId, String boardName, List<BoardDTO> asPerCategoryBoardList,
+			boolean kanban) {
 		BoardDTO asPerCategoryBoard = new BoardDTO();
 		asPerCategoryBoard.setBoardId(boardId);
 		asPerCategoryBoard.setBoardName(boardName);
@@ -478,15 +472,15 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * DEFAULT_BOARD_NAME.
 	 *
 	 * @param boardId
-	 *            boardId
+	 *          boardId
 	 * @param kanban
-	 *            kanban
+	 *          kanban
 	 * @param kpiCategory
-	 *            kpiCategory
+	 *          kpiCategory
 	 * @param defaultBoardList
-	 *            defaultBoardList
+	 *          defaultBoardList
 	 * @param boardName
-	 *            boardName
+	 *          boardName
 	 */
 	private void setDefaultBoardInfoFromKpiMaster(int boardId, boolean kanban, List<String> kpiCategory,
 			List<BoardDTO> defaultBoardList, String boardName) {
@@ -506,9 +500,9 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * set Kpi details in board for user board config from kpi master.
 	 *
 	 * @param boardKpisList
-	 *            boardKpisList
+	 *          boardKpisList
 	 * @param kpiMaster
-	 *            kpiMaster
+	 *          kpiMaster
 	 */
 	private void setKpiUserBoardDefaultFromKpiMaster(List<BoardKpisDTO> boardKpisList, KpiMaster kpiMaster) {
 		Boolean isRepoToolFlag = handleDeveloperKpi;
@@ -529,11 +523,11 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * set Kpi details in board for user board config from kpi category mapping
 	 *
 	 * @param boardKpisList
-	 *            boardKpisList
+	 *          boardKpisList
 	 * @param kpiCategoryMapping
-	 *            kpiCategoryMapping
+	 *          kpiCategoryMapping
 	 * @param kpiMaster
-	 *            kpiMaster
+	 *          kpiMaster
 	 */
 	private void setKpiUserBoardCategoryWise(List<BoardKpisDTO> boardKpisList, KpiCategoryMapping kpiCategoryMapping,
 			KpiMaster kpiMaster) {
@@ -548,7 +542,6 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 			boardKpisList.add(boardKpis);
 		} else {
 			log.error("[UserBoardConfig]. No kpi Data found for {}", kpiCategoryMapping.getKpiId());
-
 		}
 	}
 
@@ -556,9 +549,9 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * added kpi master details in user board config
 	 *
 	 * @param userBoardConfigDTO
-	 *            userBoardConfigDTO
+	 *          userBoardConfigDTO
 	 * @param kpiDetailMap
-	 *            kpiDetailMap
+	 *          kpiDetailMap
 	 */
 	private void filterKpis(UserBoardConfigDTO userBoardConfigDTO, Map<String, KpiMaster> kpiDetailMap) {
 		if (userBoardConfigDTO != null) {
@@ -624,7 +617,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * delete user from user_board_config
 	 *
 	 * @param userName
-	 *            userName
+	 *          userName
 	 */
 	@Override
 	public void deleteUser(String userName) {
@@ -638,7 +631,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * Deletes the project board config.
 	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 */
 	@Override
 	public void deleteProjectBoardConfig(String basicProjectConfigId) {
@@ -652,16 +645,15 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * basicProjectConfigId` is not, it represents project level config. If
 	 * username` is not null and `basicProjectConfigId` is null, it represents user
 	 * level config.
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @param username
-	 *            username
+	 *          username
 	 * @return the board config
 	 */
 	private UserBoardConfig fetchUserBoardConfig(String basicProjectConfigId, String username) {
 		Map<Pair<String, String>, UserBoardConfig> userBoardConfigMap = configHelperService.loadUserBoardConfig();
 		return userBoardConfigMap.get(Pair.of(username, basicProjectConfigId));
 	}
-
 }

@@ -283,9 +283,12 @@
 }
 
 :host ::ng-deep .p-selectbutton .p-button.p-highlight,
-.p-selectbutton .p-button:focus.p-highlight,
 .p-selectbutton .p-button:hover.p-highlight {
   border: 2px solid #EAEDF0;
+}
+
+:host ::ng-deep .p-selectbutton .p-button:focus {
+  border: 2px solid #202429;
 }
 
 :host ::ng-deep .p-selectbutton .p-button:not(.p-disabled):not(.p-highlight):hover {

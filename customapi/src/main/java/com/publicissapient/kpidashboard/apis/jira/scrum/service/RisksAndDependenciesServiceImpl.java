@@ -17,6 +17,15 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static com.publicissapient.kpidashboard.common.constant.CommonConstant.NOT_COMPLETED_ISSUES;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -31,15 +40,8 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.publicissapient.kpidashboard.common.constant.CommonConstant.NOT_COMPLETED_ISSUES;
 
 /**
  * This class process the KPI request for Risks And Dependencies
@@ -75,11 +77,11 @@ public class RisksAndDependenciesServiceImpl extends JiraIterationKPIService {
 	 * sprint level.
 	 *
 	 * @param latestSprint
-	 *            latestSprint
+	 *          latestSprint
 	 * @param kpiElement
-	 *            kpiElement
+	 *          kpiElement
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(Node latestSprint, KpiElement kpiElement, KpiRequest kpiRequest) {
@@ -89,8 +91,7 @@ public class RisksAndDependenciesServiceImpl extends JiraIterationKPIService {
 		List<String> notCompletedIssues = (List<String>) resultMap.get(NOT_COMPLETED_ISSUES);
 
 		if (CollectionUtils.isNotEmpty(allIssues)) {
-			log.info("Risks And Dependencies -> request id : {} total jira Issues : {}", requestTrackerId,
-					allIssues.size());
+			log.info("Risks And Dependencies -> request id : {} total jira Issues : {}", requestTrackerId, allIssues.size());
 
 			FieldMapping fieldMapping = getFieldMapping(latestSprint);
 			Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper.createMapOfIssueModal(allIssues);
@@ -132,10 +133,10 @@ public class RisksAndDependenciesServiceImpl extends JiraIterationKPIService {
 	 * Retrieves the field mapping for the given latest sprint.
 	 *
 	 * @param latestSprint
-	 *            The latest sprint node.
+	 *          The latest sprint node.
 	 * @return The field mapping corresponding to the latest sprint.
 	 * @throws NullPointerException
-	 *             If the latest sprint is null.
+	 *           If the latest sprint is null.
 	 */
 	private FieldMapping getFieldMapping(Node latestSprint) {
 		return configHelperService.getFieldMappingMap()
@@ -147,13 +148,13 @@ public class RisksAndDependenciesServiceImpl extends JiraIterationKPIService {
 	 * risks and dependencies.
 	 *
 	 * @param allIssues
-	 *            The list of all Jira issues.
+	 *          The list of all Jira issues.
 	 * @param notCompletedIssues
-	 *            The list of all notCompletedIssues number.
+	 *          The list of all notCompletedIssues number.
 	 * @param fieldMapping
-	 *            The field mapping for the current sprint.
+	 *          The field mapping for the current sprint.
 	 * @param issueKpiModalObject
-	 *            The map containing modal objects.
+	 *          The map containing modal objects.
 	 * @return An array containing counts of different types of issues.
 	 */
 	private int[] processIssues(List<JiraIssue> allIssues, List<String> notCompletedIssues, FieldMapping fieldMapping,
@@ -182,21 +183,21 @@ public class RisksAndDependenciesServiceImpl extends JiraIterationKPIService {
 			}
 		}
 
-		return new int[] { riskIssue, openRiskIssue, dependencyIssue, openDependencyIssue };
+		return new int[]{riskIssue, openRiskIssue, dependencyIssue, openDependencyIssue};
 	}
 
 	/**
 	 * Checks whether the given Jira issue is a risk or a dependency.
 	 *
 	 * @param fieldMapping
-	 *            The field mapping for risk or dependency.
+	 *          The field mapping for risk or dependency.
 	 * @param jiraIssue
-	 *            The Jira issue to check.
+	 *          The Jira issue to check.
 	 * @return True if the issue is a risk or dependency, false otherwise.
 	 */
 	private boolean isRiskOrDependency(List<String> fieldMapping, JiraIssue jiraIssue) {
-		return fieldMapping != null && fieldMapping.stream().map(String::toLowerCase).toList()
-				.contains(jiraIssue.getTypeName().toLowerCase());
+		return fieldMapping != null &&
+				fieldMapping.stream().map(String::toLowerCase).toList().contains(jiraIssue.getTypeName().toLowerCase());
 	}
 
 	@Override
@@ -213,23 +214,20 @@ public class RisksAndDependenciesServiceImpl extends JiraIterationKPIService {
 				// to modify sprint details on the basis of configuration for the project
 				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
-				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
-						.collect(Collectors.toSet());
+				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toSet());
 
-				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
-						dbSprintDetail, null, fieldMapping.getJiraIterationCompletionStatusKPI176(),
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail, null,
+						fieldMapping.getJiraIterationCompletionStatusKPI176(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
-				List<String> notCompletedIssues = KpiDataHelper
-						.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails, NOT_COMPLETED_ISSUES);
+				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+						NOT_COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> jiraIssueList = IterationKpiHelper.getFilteredJiraIssue(totalIssues,
-							totalJiraIssueList);
-					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getTotalIssues(), jiraIssueList);
+					List<JiraIssue> jiraIssueList = IterationKpiHelper.getFilteredJiraIssue(totalIssues, totalJiraIssueList);
+					Set<JiraIssue> filtersIssuesList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
+							sprintDetails, sprintDetails.getTotalIssues(), jiraIssueList);
 					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
 					resultListMap.put(NOT_COMPLETED_ISSUES, notCompletedIssues);
 				}

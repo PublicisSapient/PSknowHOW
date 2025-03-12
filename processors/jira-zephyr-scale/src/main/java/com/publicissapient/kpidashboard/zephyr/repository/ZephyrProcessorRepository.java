@@ -21,9 +21,6 @@ package com.publicissapient.kpidashboard.zephyr.repository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 import com.publicissapient.kpidashboard.zephyr.model.ZephyrProcessor;
 
-/**
- * Repository for {@link ZephyrProcessor}.
- */
+/** Repository for {@link ZephyrProcessor}. */
 public interface ZephyrProcessorRepository extends ProcessorRepository<ZephyrProcessor> {
-
 }

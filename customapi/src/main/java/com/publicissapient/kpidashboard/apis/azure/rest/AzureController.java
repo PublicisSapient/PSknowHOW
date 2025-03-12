@@ -26,9 +26,8 @@ public class AzureController {
 	private AzureToolConfigServiceImpl azureToolConfigService;
 
 	/**
-	 *
 	 * @param connectionId
-	 *            the Azure server connection details
+	 *          the Azure server connection details
 	 * @return @{@code ServiceResponse}
 	 */
 	@GetMapping(value = "/azure/pipeline/{connectionId}/{version}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -46,13 +45,10 @@ public class AzureController {
 	}
 
 	/**
-	 *
 	 * @param connectionId
-	 *            the Azure connection details
-	 *
+	 *          the Azure connection details
 	 * @return @{@code ServiceResponse}
 	 */
-
 	@GetMapping(value = "/azure/release/{connectionId}/6.0", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getAzureReleaseNameAndDefinitionIdList(@PathVariable String connectionId) {
 		ServiceResponse response;

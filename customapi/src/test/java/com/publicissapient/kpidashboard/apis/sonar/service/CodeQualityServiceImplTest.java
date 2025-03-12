@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- *
- */
+/** */
 package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
@@ -75,7 +73,6 @@ import com.publicissapient.kpidashboard.common.repository.sonar.SonarHistoryRepo
 
 /**
  * @author shi6
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class CodeQualityServiceImplTest {
@@ -133,7 +130,6 @@ public class CodeQualityServiceImplTest {
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		});
-
 	}
 
 	private void setToolMap() {
@@ -371,5 +367,4 @@ public class CodeQualityServiceImplTest {
 		dataCount.setDate("Date");
 		return dataCount;
 	}
-
 }

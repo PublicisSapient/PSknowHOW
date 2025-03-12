@@ -34,7 +34,7 @@ import com.publicissapient.kpidashboard.common.repository.azure.AzureSprintRepor
 
 /**
  * Service class for Azure Sprint Report Log
- * 
+ *
  * @author shunaray
  */
 @Service
@@ -45,15 +45,15 @@ public class AzureSprintReportLogServiceImpl implements AzureSprintReportLogServ
 
 	/**
 	 * Save Sprint Refresh Log
-	 * 
+	 *
 	 * @param sprintDetails
-	 *            sprintDetails
+	 *          sprintDetails
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @param refreshOn
-	 *            time of refresh
+	 *          time of refresh
 	 * @param refreshBy
-	 *            user who refreshed
+	 *          user who refreshed
 	 */
 	@Override
 	public void saveSprintRefreshLog(SprintDetails sprintDetails, ObjectId basicProjectConfigId, long refreshOn,
@@ -86,17 +86,16 @@ public class AzureSprintReportLogServiceImpl implements AzureSprintReportLogServ
 
 	/**
 	 * Get Sprint Refresh Logs
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return List of SprintRefreshLogDTO
 	 */
 	@Override
 	public List<SprintRefreshLogDTO> getSprintRefreshLogs(ObjectId basicProjectConfigId) {
 		return Optional.ofNullable(azureSprintReportLogRepository.findByBasicProjectConfigId(basicProjectConfigId))
-				.orElse(Collections.emptyList()).stream()
-				.flatMap(log -> Optional.ofNullable(log.getRefreshAuditDetails()).orElse(Collections.emptyList())
-						.stream().map(detail -> {
+				.orElse(Collections.emptyList()).stream().flatMap(log -> Optional.ofNullable(log.getRefreshAuditDetails())
+						.orElse(Collections.emptyList()).stream().map(detail -> {
 							SprintRefreshLogDTO dto = new SprintRefreshLogDTO();
 							dto.setSprintName(log.getSprintName());
 							dto.setSprintStartDate(log.getSprintStartDate());

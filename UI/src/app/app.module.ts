@@ -131,6 +131,7 @@ import { StickyHeaderV2Component } from './dashboardv2/sticky-header-v2/sticky-h
 import { KpiHelperService } from './services/kpi-helper.service';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { AddToReportPopUpComponent } from './component/add-to-report-pop-up/add-to-report-pop-up.component';
+import { PanelModule } from 'primeng/panel';
 
 
 /******************************************************/
@@ -224,7 +225,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         FontAwesomeModule,
         DragDropModule,
         OverlayPanelModule,
-
+        PanelModule,
         CheckboxModule,
         SkeletonModule,
         BlockUIModule,

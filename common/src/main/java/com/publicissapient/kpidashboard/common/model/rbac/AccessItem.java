@@ -17,9 +17,10 @@
 
 package com.publicissapient.kpidashboard.common.model.rbac;
 
+import org.springframework.data.mongodb.core.index.Indexed;
+
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.mongodb.core.index.Indexed;
 
 @Getter
 @Setter
@@ -27,6 +28,7 @@ public class AccessItem {
 
 	@Indexed(unique = true)
 	private String itemId;
+
 	private String itemName;
 
 	@Override
@@ -47,5 +49,4 @@ public class AccessItem {
 	public int hashCode() {
 		return itemId != null ? itemId.hashCode() : 0;
 	}
-
 }

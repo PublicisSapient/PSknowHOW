@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.jira.kanban.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,7 +31,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +43,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
@@ -134,7 +133,6 @@ public class LeadTimeKanbanServiceImplTest {
 		p1.setProjectNodeId("Kanban Project_6335368249794a18e8a4479f");
 		mapOfProjectDetails.put(p1.getId().toString(), p1);
 		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
-
 	}
 
 	private void setTreadValuesDataCount() {
@@ -183,20 +181,20 @@ public class LeadTimeKanbanServiceImplTest {
 			dataCountGroups.stream().forEach(cycle -> {
 				String cycleFilter = cycle.getFilter();
 				switch (cycleFilter) {
-				case LEAD_TIME:
-					assertThat("Lead Time :", cycle.getValue().size(), equalTo(1));
-					break;
-				case OPEN_TO_TRIAGE:
-					assertThat("Open to Triage Value :", cycle.getValue().size(), equalTo(1));
-					break;
-				case TRIAGE_TO_COMPLETE:
-					assertThat("Triage to Complete Value :", cycle.getValue().size(), equalTo(1));
-					break;
-				case COMPLETE_TO_LIVE:
-					assertThat("Complete to Live Value :", cycle.getValue().size(), equalTo(1));
-					break;
-				default:
-					break;
+					case LEAD_TIME :
+						assertThat("Lead Time :", cycle.getValue().size(), equalTo(1));
+						break;
+					case OPEN_TO_TRIAGE :
+						assertThat("Open to Triage Value :", cycle.getValue().size(), equalTo(1));
+						break;
+					case TRIAGE_TO_COMPLETE :
+						assertThat("Triage to Complete Value :", cycle.getValue().size(), equalTo(1));
+						break;
+					case COMPLETE_TO_LIVE :
+						assertThat("Complete to Live Value :", cycle.getValue().size(), equalTo(1));
+						break;
+					default :
+						break;
 				}
 			});
 		} catch (ApplicationException enfe) {
@@ -213,5 +211,4 @@ public class LeadTimeKanbanServiceImplTest {
 	public void testCalculateKPIMetrics() {
 		assertThat(leadTimeKanbanService.calculateKPIMetrics(null), equalTo(0L));
 	}
-
 }

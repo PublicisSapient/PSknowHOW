@@ -23,10 +23,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Search in project response data.
- *
- */
+/** Search in project response data. */
 @Getter
 @Setter
 public class SearchProjectsResponse {

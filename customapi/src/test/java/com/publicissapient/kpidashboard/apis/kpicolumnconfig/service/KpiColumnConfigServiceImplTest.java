@@ -35,11 +35,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 
-import com.publicissapient.kpidashboard.apis.mongock.data.KpiColumnConfigDataFactory;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.mongock.data.KpiColumnConfigDataFactory;
 import com.publicissapient.kpidashboard.common.model.application.KpiColumnConfig;
 import com.publicissapient.kpidashboard.common.model.application.KpiColumnConfigDTO;
-import com.publicissapient.kpidashboard.common.model.application.KpiColumnDetails;
 import com.publicissapient.kpidashboard.common.repository.application.KpiColumnConfigRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -70,8 +69,8 @@ public class KpiColumnConfigServiceImplTest {
 		KpiColumnConfig kpiColumnConfig1 = kpiColumnConfigs.get(0);
 		kpiColumnConfig1.setBasicProjectConfigId(new ObjectId("6417fe6a74821060a7133de7"));
 		when(kpiColumnConfigRepository.findByBasicProjectConfigIdAndKpiId(any(), any())).thenReturn(kpiColumnConfig1);
-		KpiColumnConfigDTO kpiColumnConfigDTO = kpiColumnConfigService.getByKpiColumnConfig(
-				kpiColumnConfig1.getBasicProjectConfigId().toString(), kpiColumnConfig1.getKpiId());
+		KpiColumnConfigDTO kpiColumnConfigDTO = kpiColumnConfigService
+				.getByKpiColumnConfig(kpiColumnConfig1.getBasicProjectConfigId().toString(), kpiColumnConfig1.getKpiId());
 		KpiColumnConfigDTO kpiColumnConfig1DTO = convertToKpiColumnConfigDTO(kpiColumnConfig1);
 		assertEquals(kpiColumnConfigDTO, kpiColumnConfig1DTO);
 	}
@@ -81,8 +80,8 @@ public class KpiColumnConfigServiceImplTest {
 		KpiColumnConfig kpiColumnConfig1 = kpiColumnConfigs.get(0);
 		kpiColumnConfig1.setBasicProjectConfigId(null);
 		when(kpiColumnConfigRepository.findByBasicProjectConfigIdAndKpiId(any(), any())).thenReturn(kpiColumnConfig1);
-		KpiColumnConfigDTO kpiColumnConfigDTO = kpiColumnConfigService.getByKpiColumnConfig(
-				null, kpiColumnConfig1.getKpiId());
+		KpiColumnConfigDTO kpiColumnConfigDTO = kpiColumnConfigService.getByKpiColumnConfig(null,
+				kpiColumnConfig1.getKpiId());
 		KpiColumnConfigDTO kpiColumnConfig1DTO = convertToKpiColumnConfigDTO(kpiColumnConfig1);
 		assertEquals(kpiColumnConfigDTO, kpiColumnConfig1DTO);
 	}

@@ -132,6 +132,8 @@ export class SharedService {
   selectedFilterArray: any = [];
   selectedFilters: any = {};
   selectedUrlFilters: string = '{}';
+  isSprintGoal; 
+  sprintGoalData : any = {};
 
   // for reports
   onChartChange = new Subject<any>();
@@ -152,6 +154,7 @@ export class SharedService {
     this.selectedTrendsEventSubject = new Subject<any>();
     // Observable to subscribe to
     this.selectedTrendsEvent = this.selectedTrendsEventSubject.asObservable();
+    this.isSprintGoal = new EventEmitter();
   }
 
   // for reports
@@ -767,6 +770,19 @@ export class SharedService {
   setUserDetailsAsBlankObj() {
     this.currentUserDetails = {}
   }
+
+  updateSprintGoalFlag(flag){
+    this.isSprintGoal.emit(flag);
+  }
+
+  setDataForSprintGoal(data){
+     this.sprintGoalData = {...this.sprintGoalData,...data};
+  }
+
+  getDataForSprintGoal(){
+    return this.sprintGoalData
+  }
+
 
   //#endregion
 }

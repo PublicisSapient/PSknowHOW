@@ -24,6 +24,7 @@ import {
 import { GetAuthService } from '../../services/getauth.service';
 import { Router } from '@angular/router';
 import { SharedService } from 'src/app/services/shared.service';
+import { HttpService } from 'src/app/services/http.service';
 
 @Component({
   selector: 'app-dashboard-v2',
@@ -53,7 +54,8 @@ export class DashboardV2Component implements AfterContentInit {
     public cdRef: ChangeDetectorRef,
     public router: Router,
     private getAuth: GetAuthService,
-    public service: SharedService
+    public service: SharedService,
+    public httpService: HttpService
   ) {
     this.sideNavStyle = { 'toggled': this.isApply };
     this.authorized = this.getAuth.checkAuth();
@@ -65,6 +67,11 @@ export class DashboardV2Component implements AfterContentInit {
     });
 
     // this.service.setSelectedBoard('iteration');
+    this.httpService.getAllProjects().subscribe(projectsData => {
+      if (projectsData[0] !== 'error' && !projectsData.error && projectsData?.data) {
+        localStorage.setItem('projectWithHierarchy', JSON.stringify(projectsData?.data));
+      }
+    });
   }
 
   ngAfterContentInit() {

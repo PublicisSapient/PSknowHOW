@@ -24,7 +24,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public enum Role {
-
 	BACKEND_DEVELOPER("Backend Developer"), FRONTEND_DEVELOPER("Frontend Developer"), TESTER("Tester");
 
 	private String roleValue;
@@ -34,7 +33,8 @@ public enum Role {
 	}
 
 	public static Role getRoleByValue(String value) {
-		Optional<Role> roleOptional = Arrays.stream(Role.values()).filter(t -> t.getRoleValue().equalsIgnoreCase(value)).findAny();
+		Optional<Role> roleOptional = Arrays.stream(Role.values()).filter(t -> t.getRoleValue().equalsIgnoreCase(value))
+				.findAny();
 		return roleOptional.orElse(null);
 	}
 

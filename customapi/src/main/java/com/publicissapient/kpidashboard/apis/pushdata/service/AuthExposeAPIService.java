@@ -29,5 +29,4 @@ public interface AuthExposeAPIService {
 	ServiceResponse generateAndSaveToken(ExposeAPITokenRequestDTO exposeAPITokenRequestDTO);
 
 	ExposeApiToken validateToken(HttpServletRequest request);
-
 }

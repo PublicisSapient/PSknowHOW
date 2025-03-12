@@ -506,6 +506,7 @@ describe('BasicConfigComponent', () => {
         { id: '2', nodeId: 'node_2', nodeName: 'Node 2', nodeDisplayName: 'Node Display 2', hierarchyLevelId: 'ver' }
       ]
     };
+    localStorage.setItem('completeHierarchyData', JSON.stringify(hierarchyData));
 
     httpService.getOrganizationHierarchy.and.returnValue(of(mockFormFieldData));
 
@@ -559,24 +560,23 @@ describe('BasicConfigComponent', () => {
       }
     ];
 
-    expect(localStorage.setItem).toHaveBeenCalledWith('hierarchyData', JSON.stringify(expectedTransformedData, null, 2));
     expect(component.getFields).toHaveBeenCalled();
   });
 
   it('should handle empty localStorage data gracefully', () => {
     (localStorage.getItem as jasmine.Spy).and.returnValue(null);
+    component.completeHierarchyData = null;
     httpService.getOrganizationHierarchy.and.returnValue(of({ data: [] }));
 
     component.getHierarchy();
 
-    expect(localStorage.getItem).toHaveBeenCalledWith('completeHierarchyData');
     expect(httpService.getOrganizationHierarchy).toHaveBeenCalled();
-    expect(localStorage.setItem).toHaveBeenCalledWith('hierarchyData', JSON.stringify([], null, 2));
     expect(component.getFields).toHaveBeenCalled();
   });
 
   it('should add "Project" to the hierarchy map when data exists', () => {
     httpService.getOrganizationHierarchy.and.returnValue(of({ data: [] }));
+    component.completeHierarchyData = {'scrum': [{'id': '1', 'hierarchyLevelId': 'bu', 'hierarchyLevelName': 'Business Unit'}]};
     component.getHierarchy();
 
     // Retrieve arguments of the most recent call to setItem

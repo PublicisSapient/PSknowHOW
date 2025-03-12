@@ -66,11 +66,8 @@ import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 /**
- *
  * @author pkum34
- *
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class ZephyrServiceKanbanTest {
 	private static final String TESTZEPHYR = "TEST_ZEPHYR";
@@ -94,9 +91,11 @@ public class ZephyrServiceKanbanTest {
 	private UserAuthorizedProjectsService authorizedProjectsService;
 	@Mock
 	private RegressionPercentageKanbanServiceImpl regressionPercentageKanbanServiceImpl;
+
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<ZephyrKPIService> services;
+
 	private List<AccountHierarchyDataKanban> accountHierarchyDataKanbanList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
@@ -112,7 +111,6 @@ public class ZephyrServiceKanbanTest {
 	private List<HierarchyLevel> hierarchyLevels = new ArrayList<>();
 	String[] exampleStringList;
 
-
 	@Before
 	public void setup() throws ApplicationException {
 		MockitoAnnotations.openMocks(this);
@@ -127,11 +125,9 @@ public class ZephyrServiceKanbanTest {
 		createKpiRequest("SONAR", 3, kpiRequest);
 		kpiRequest.setLabel("PROJECT");
 
-
 		AccountHierarchyKanbanFilterDataFactory accountHierarchyKanbanFilterDataFactory = AccountHierarchyKanbanFilterDataFactory
 				.newInstance();
 		accountHierarchyKanbanDataList = accountHierarchyKanbanFilterDataFactory.getAccountHierarchyKanbanDataList();
-
 
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
@@ -141,18 +137,16 @@ public class ZephyrServiceKanbanTest {
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(true)).thenReturn(map);
 		exampleStringList = new String[]{"exampleElement", "exampleElement"};
-
-
-
-
 	}
 
 	@Test
 	public void sonarViolationsTestProcess_cache() throws Exception {
 
-		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
+		when(filterHelperService.getHierarachyLevelId(
+						Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
-		when(cacheService.getFromApplicationCache(eq(exampleStringList), eq(KPISource.ZEPHYRKANBAN.name()), eq(1), isNull()))
+		when(cacheService.getFromApplicationCache(
+						eq(exampleStringList), eq(KPISource.ZEPHYRKANBAN.name()), eq(1), isNull()))
 				.thenReturn(new ArrayList<KpiElement>());
 		when(filterHelperService.getFilteredBuildsKanban(ArgumentMatchers.any(), Mockito.anyString()))
 				.thenReturn(accountHierarchyKanbanDataList);
@@ -166,13 +160,13 @@ public class ZephyrServiceKanbanTest {
 		} catch (Exception e) {
 
 		}
-
 	}
 
 	@Test
 	public void sonarViolationsTestProcess() throws Exception {
 		when(kpiHelperService.isRequiredTestToolConfigured(any(), any(), any())).thenReturn(true);
-		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
+		when(filterHelperService.getHierarachyLevelId(
+						Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
 		when(filterHelperService.getFilteredBuildsKanban(ArgumentMatchers.any(), Mockito.anyString()))
 				.thenReturn(accountHierarchyKanbanDataList);
@@ -180,21 +174,23 @@ public class ZephyrServiceKanbanTest {
 				.thenReturn(exampleStringList);
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		Map<String, Integer> map = new HashMap<>();
-		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
-				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		Map<String, HierarchyLevel> hierarchyMap =
+				hierarchyLevels.stream()
+						.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(authorizedProjectsService.filterKanbanProjects(accountHierarchyKanbanDataList))
 				.thenReturn(accountHierarchyKanbanDataList);
-		when(service.getKpiData(any(), any(),any())).thenReturn( kpiRequest.getKpiList().get(0));
-			List<KpiElement> resultList = zephyrService.process(kpiRequest);
+		when(service.getKpiData(any(), any(), any())).thenReturn(kpiRequest.getKpiList().get(0));
+		List<KpiElement> resultList = zephyrService.process(kpiRequest);
 		assertEquals(CommonConstant.KPI_PASSED, resultList.get(0).getResponseCode());
 	}
 
 	@Test
 	public void sonarViolationsTestProcessThrowApplication() throws Exception {
 		when(kpiHelperService.isRequiredTestToolConfigured(any(), any(), any())).thenReturn(true);
-		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
+		when(filterHelperService.getHierarachyLevelId(
+						Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
 		when(filterHelperService.getFilteredBuildsKanban(ArgumentMatchers.any(), Mockito.anyString()))
 				.thenReturn(accountHierarchyKanbanDataList);
@@ -202,13 +198,14 @@ public class ZephyrServiceKanbanTest {
 				.thenReturn(exampleStringList);
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		Map<String, Integer> map = new HashMap<>();
-		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
-				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		Map<String, HierarchyLevel> hierarchyMap =
+				hierarchyLevels.stream()
+						.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(authorizedProjectsService.filterKanbanProjects(accountHierarchyKanbanDataList))
 				.thenReturn(accountHierarchyKanbanDataList);
-		when(service.getKpiData(any(), any(),any())).thenThrow(ApplicationException.class);
+		when(service.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
 		List<KpiElement> resultList = zephyrService.process(kpiRequest);
 		assertEquals(CommonConstant.KPI_FAILED, resultList.get(0).getResponseCode());
 	}
@@ -216,7 +213,8 @@ public class ZephyrServiceKanbanTest {
 	@Test
 	public void sonarViolationsTestProcessThrowNullPointer() throws Exception {
 		when(kpiHelperService.isRequiredTestToolConfigured(any(), any(), any())).thenReturn(true);
-		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
+		when(filterHelperService.getHierarachyLevelId(
+						Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
 		when(filterHelperService.getFilteredBuildsKanban(ArgumentMatchers.any(), Mockito.anyString()))
 				.thenReturn(accountHierarchyKanbanDataList);
@@ -224,13 +222,14 @@ public class ZephyrServiceKanbanTest {
 				.thenReturn(exampleStringList);
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		Map<String, Integer> map = new HashMap<>();
-		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
-				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		Map<String, HierarchyLevel> hierarchyMap =
+				hierarchyLevels.stream()
+						.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(authorizedProjectsService.filterKanbanProjects(accountHierarchyKanbanDataList))
 				.thenReturn(accountHierarchyKanbanDataList);
-		when(service.getKpiData(any(), any(),any())).thenThrow(NullPointerException.class);
+		when(service.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
 		List<KpiElement> resultList = zephyrService.process(kpiRequest);
 		assertEquals(CommonConstant.KPI_FAILED, resultList.get(0).getResponseCode());
 	}
@@ -239,14 +238,13 @@ public class ZephyrServiceKanbanTest {
 		List<KpiElement> kpiList = new ArrayList<>();
 		addKpiElement(kpiList, TESTZEPHYR, TESTZEPHYR, "TechDebt", "", source);
 		kpiRequest.setLevel(level);
-		kpiRequest.setIds(new String[] { "Scrum Project_6335363749794a18e8a4479b" });
+		kpiRequest.setIds(new String[]{"Scrum Project_6335363749794a18e8a4479b"});
 		kpiRequest.setKpiList(kpiList);
 		kpiRequest.setRequestTrackerId();
 		Map<String, List<String>> selectedMap = new HashMap<>();
 		selectedMap.put("Project", Arrays.asList("Kanban Project_6335368249794a18e8a4479f"));
 		selectedMap.put(CommonConstant.date, Arrays.asList("10"));
 		kpiRequest.setSelectedMap(selectedMap);
-
 	}
 
 	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category, String kpiUnit,

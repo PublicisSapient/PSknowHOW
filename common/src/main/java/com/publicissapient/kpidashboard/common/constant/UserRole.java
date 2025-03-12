@@ -18,10 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.constant;
 
-/**
- * The Enum UserRole.
- */
+/** The Enum UserRole. */
 public enum UserRole {
-
 	ROLE_USER, ROLE_ADMIN, ROLE_API;
 }

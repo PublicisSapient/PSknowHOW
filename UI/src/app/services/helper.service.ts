@@ -473,9 +473,9 @@ export class HelperService {
 
   /** logic to apply multiselect filter */
   applyAggregationLogic(obj, aggregationType, percentile) {
-    const arr = JSON.parse(JSON.stringify(obj[Object.keys(obj)[0]]));
-    for (let i = 0; i < Object.keys(obj).length; i++) {
-      for (let j = 0; j < obj[Object.keys(obj)[i]].length; j++) {
+    const arr = JSON.parse(JSON.stringify(obj[Object.keys(obj)[0]] ? obj[Object.keys(obj)[0]] : []));
+    for (let i = 0; i < Object.keys(obj)?.length; i++) {
+      for (let j = 0; j < obj[Object.keys(obj)[i]]?.length; j++) {
         if (arr.findIndex(x => x.data == obj[Object.keys(obj)[i]][j]['data']) == -1) {
           arr.push(obj[Object.keys(obj)[i]][j]);
         }

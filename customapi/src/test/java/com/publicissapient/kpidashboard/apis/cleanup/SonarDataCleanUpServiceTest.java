@@ -25,7 +25,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,6 +77,9 @@ public class SonarDataCleanUpServiceTest {
 	@Mock
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
+	@Mock
+	private KpiDataCacheService kpiDataCacheService;
+
 	@Test
 	public void getToolCategory() {
 		String actualResult = sonarDataCleanUpService.getToolCategory();
@@ -97,6 +104,8 @@ public class SonarDataCleanUpServiceTest {
 		doNothing().when(cacheService).clearCache(CommonConstant.SONAR_KPI_CACHE);
 		doNothing().when(processorExecutionTraceLogRepository)
 				.deleteByBasicProjectConfigIdAndProcessorName(Mockito.any(), Mockito.anyString());
+		when(kpiDataCacheService.getKpiBasedOnSource(KPISource.SONAR.name()))
+				.thenReturn(List.of(KPICode.SONAR_CODE_QUALITY.getKpiId()));
 		sonarDataCleanUpService.clean("5e9e4593e4b0c8ece56710c3");
 
 		verify(sonarDetailsRepository, times(1))

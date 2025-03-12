@@ -49,5 +49,4 @@ public class JiraToolConfig {
 	private boolean queryEnabled;
 	private String boardQuery;
 	private List<BoardDetails> boards;
-
 }

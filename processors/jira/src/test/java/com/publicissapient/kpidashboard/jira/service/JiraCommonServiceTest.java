@@ -159,7 +159,6 @@ public class JiraCommonServiceTest {
 	@Mock
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
-
 	private ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 	@Mock
 	private ProjectConfFieldMapping projectConfFieldMapping1;
@@ -214,8 +213,8 @@ public class JiraCommonServiceTest {
 				Mockito.anyInt(), Mockito.anySet())).thenReturn(promisedRs);
 		when(promisedRs.claim()).thenReturn(searchResult);
 		String deltaDate = "2023-10-20 08:22";
-		List<Issue> issues = jiraCommonService.fetchIssueBasedOnBoard(projectConfFieldMapping, jiraRestClient, 50,
-				"1111", deltaDate);
+		List<Issue> issues = jiraCommonService.fetchIssueBasedOnBoard(projectConfFieldMapping, jiraRestClient, 50, "1111",
+				deltaDate);
 		Assert.assertEquals(2, issues.size());
 	}
 
@@ -233,11 +232,12 @@ public class JiraCommonServiceTest {
 		HttpURLConnection mockedConnection = mock(HttpURLConnection.class);
 		String responseData = "Sample response data";
 		InputStream inputStream = new ByteArrayInputStream(responseData.getBytes(StandardCharsets.UTF_8));
-		assertThrows(IOException.class, () -> {
+		assertThrows(ParseException.class, () -> {
 			jiraCommonService.getVersion(projectConfFieldMapping1, krb5Client);
 		});
-//		Assert.assertEquals(0, versions.size());
+		// Assert.assertEquals(0, versions.size());
 	}
+
 	// @Test(expected = RestClientException.class)
 	// public void getVersionTest1() throws IOException, ParseException {
 	// projectToolConfigsBoard =
@@ -259,7 +259,6 @@ public class JiraCommonServiceTest {
 		} catch (UnknownHostException e) {
 
 		}
-
 	}
 
 	private void createIssue() throws URISyntaxException, JSONException {
@@ -290,25 +289,23 @@ public class JiraCommonServiceTest {
 		Worklog worklog = new Worklog(new URI("self"), new URI("self"), basicUser, basicUser, null, DateTime.now(),
 				DateTime.now(), DateTime.now(), 60, null);
 		List<Worklog> workLogs = Arrays.asList(worklog);
-		ChangelogItem changelogItem = new ChangelogItem(FieldType.JIRA, "field1", "from", "fromString", "to",
-				"toString");
+		ChangelogItem changelogItem = new ChangelogItem(FieldType.JIRA, "field1", "from", "fromString", "to", "toString");
 		ChangelogGroup changelogGroup = new ChangelogGroup(basicUser, DateTime.now(), Arrays.asList(changelogItem));
 
 		Issue issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType1, status1, "story",
-				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
-				DateTime.now(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFields, comments,
-				null, createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
+				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(), DateTime.now(),
+				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFields, comments, null,
+				createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
 				Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label1")));
 		Issue issue1 = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType2, status1, "Defect",
-				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
-				DateTime.now(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFields, comments,
-				null, createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
+				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(), DateTime.now(),
+				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFields, comments, null,
+				createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
 				Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label1")));
 		issues.add(issue);
 		issues.add(issue1);
 
 		searchResult = new SearchResult(0, 10, 2, issues);
-
 	}
 
 	private List<IssueLink> createIssueLinkData() throws URISyntaxException {
@@ -337,7 +334,6 @@ public class JiraCommonServiceTest {
 			projectConfFieldMapping.setProjectToolConfig(projectToolConfigsBoard.get(0));
 		}
 		projectConfFieldMapping.setFieldMapping(fieldMapping);
-
 	}
 
 	private JiraToolConfig getJiraToolConfig(boolean jql) {
@@ -352,8 +348,7 @@ public class JiraCommonServiceTest {
 	}
 
 	private Optional<Connection> getMockConnection() {
-		ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory
-				.newInstance("/json/default/connections.json");
+		ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory.newInstance("/json/default/connections.json");
 		return connectionDataFactory.findConnectionById("5fd99f7bc8b51a7b55aec836");
 	}
 
@@ -366,8 +361,7 @@ public class JiraCommonServiceTest {
 	private List<ProjectToolConfig> getMockProjectToolConfig(String basicConfigId) {
 		ToolConfigDataFactory projectToolConfigDataFactory = ToolConfigDataFactory
 				.newInstance("/json/default/project_tool_configs.json");
-		return projectToolConfigDataFactory.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA,
-				basicConfigId);
+		return projectToolConfigDataFactory.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA, basicConfigId);
 	}
 
 	private FieldMapping getMockFieldMapping() {
@@ -395,9 +389,12 @@ public class JiraCommonServiceTest {
 		when(jiraProcessorConfig.getUiHost()).thenReturn(null);
 
 		// Act and Assert
-		UnknownHostException exception = assertThrows(UnknownHostException.class, () -> {
-			jiraCommonService.getApiHost();
-		});
+		UnknownHostException exception =
+				assertThrows(
+						UnknownHostException.class,
+						() -> {
+							jiraCommonService.getApiHost();
+						});
 
 		assertEquals("Api host not found in properties.", exception.getMessage());
 	}
@@ -412,8 +409,7 @@ public class JiraCommonServiceTest {
 		List<ProjectVersion> projectVersionDetailList = new ArrayList<>();
 
 		// Get the private method using reflection
-		Method parseVersionData = JiraCommonService.class.getDeclaredMethod("parseVersionData", String.class,
-				List.class);
+		Method parseVersionData = JiraCommonService.class.getDeclaredMethod("parseVersionData", String.class, List.class);
 		parseVersionData.setAccessible(true);
 
 		// Invoke the private method
@@ -438,8 +434,7 @@ public class JiraCommonServiceTest {
 		List<ProjectVersion> projectVersionDetailList = new ArrayList<>();
 
 		// Get the private method using reflection
-		Method parseVersionData = JiraCommonService.class.getDeclaredMethod("parseVersionData", String.class,
-				List.class);
+		Method parseVersionData = JiraCommonService.class.getDeclaredMethod("parseVersionData", String.class, List.class);
 		parseVersionData.setAccessible(true);
 
 		// Invoke the private method
@@ -463,13 +458,11 @@ public class JiraCommonServiceTest {
 		List<ProjectVersion> projectVersionDetailList = new ArrayList<>();
 
 		// Get the private method using reflection
-		Method parseVersionData = JiraCommonService.class.getDeclaredMethod("parseVersionData", String.class,
-				List.class);
+		Method parseVersionData = JiraCommonService.class.getDeclaredMethod("parseVersionData", String.class, List.class);
 		parseVersionData.setAccessible(true);
 
 		assertThrows(Exception.class,
 				() -> parseVersionData.invoke(jiraCommonService, dataFromServer, projectVersionDetailList));
-
 	}
 
 	@Test
@@ -482,10 +475,8 @@ public class JiraCommonServiceTest {
 		List<ProjectVersion> projectVersionDetailList = new ArrayList<>();
 
 		// Get the private method using reflection
-		Method parseVersionData = JiraCommonService.class.getDeclaredMethod("parseVersionData", String.class,
-				List.class);
+		Method parseVersionData = JiraCommonService.class.getDeclaredMethod("parseVersionData", String.class, List.class);
 		parseVersionData.setAccessible(true);
-
 	}
 
 	@Test
@@ -500,7 +491,7 @@ public class JiraCommonServiceTest {
 		when(mockJobExecution.getExecutionContext()).thenReturn(mockExecutionContext);
 		when(mockSearchResult.getTotal()).thenReturn(totalIssues);
 		// Act
-		jiraCommonService.saveSearchDetailsInContext(mockSearchResult, pageStart,boardId, mockStepContext);
+		jiraCommonService.saveSearchDetailsInContext(mockSearchResult, pageStart, boardId, mockStepContext);
 
 		// Assert
 		verify(mockExecutionContext).putInt(JiraConstants.TOTAL_ISSUES, totalIssues);
@@ -517,7 +508,8 @@ public class JiraCommonServiceTest {
 		HttpURLConnection mockConnection = mock(HttpURLConnection.class);
 		URL mockUrl = mock(URL.class);
 		when(mockConnection.getResponseCode()).thenReturn(responseCode);
-		when(mockConnection.getErrorStream()).thenReturn(new ByteArrayInputStream(errorMessage.getBytes(StandardCharsets.UTF_8)));
+		when(mockConnection.getErrorStream())
+				.thenReturn(new ByteArrayInputStream(errorMessage.getBytes(StandardCharsets.UTF_8)));
 		when(mockUrl.openConnection()).thenReturn(mockConnection);
 
 		Connection mockConnectionObject = mock(Connection.class);
@@ -546,7 +538,8 @@ public class JiraCommonServiceTest {
 		when(mockUrl.toString()).thenReturn("http://example.com");
 		when(mockConnection.getURL()).thenReturn(mockUrl);
 		when(mockConnection.getResponseCode()).thenReturn(responseCode);
-		when(mockConnection.getErrorStream()).thenReturn(new ByteArrayInputStream(errorMessage.getBytes(StandardCharsets.UTF_8)));
+		when(mockConnection.getErrorStream())
+				.thenReturn(new ByteArrayInputStream(errorMessage.getBytes(StandardCharsets.UTF_8)));
 		when(mockConnection.getContent()).thenReturn(new ByteArrayInputStream(contentMsg.getBytes(StandardCharsets.UTF_8)));
 		when(mockUrl.openConnection()).thenReturn(mockConnection);
 		ProcessorExecutionTraceLog mockTraceLog = mock(ProcessorExecutionTraceLog.class);
@@ -556,12 +549,15 @@ public class JiraCommonServiceTest {
 		Connection mockConnectionObject = mock(Connection.class);
 		when(mockConnectionObject.getId()).thenReturn(new ObjectId("668517f812811950be19353f"));
 		when(processorExecutionTraceLogRepository
-				.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsTrue(anyString(),any())).thenReturn(existingTraceLog);
+				.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsTrue(anyString(), any()))
+				.thenReturn(existingTraceLog);
 		Optional<Connection> connectionOptional = Optional.of(mockConnectionObject);
 
 		// Act
-		String result = jiraCommonService.getDataFromServer(mockUrl, connectionOptional, new ObjectId("668517f812811950be19353f"));
+		String result = jiraCommonService.getDataFromServer(mockUrl, connectionOptional,
+				new ObjectId("668517f812811950be19353f"));
 		// Assert
 		assertEquals(contentMsg, result);
 		verify(processorExecutionTraceLogRepository).save(mockTraceLog);
-	}}
+	}
+}

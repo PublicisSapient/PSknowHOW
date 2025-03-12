@@ -26,24 +26,22 @@ public class FetchingCommitException extends Exception {
 	private static final long serialVersionUID = -7003770711199668845L;
 
 	/**
-	 * 
 	 * The constructor.
-	 * 
+	 *
 	 * @param message
-	 *            message
+	 *          message
 	 */
 	public FetchingCommitException(String message) {
 		super(message);
 	}
 
 	/**
-	 * 
 	 * The constructor.
-	 * 
+	 *
 	 * @param message
-	 *            message
+	 *          message
 	 * @param cause
-	 *            cause
+	 *          cause
 	 */
 	public FetchingCommitException(String message, Throwable cause) {
 		super(message, cause);

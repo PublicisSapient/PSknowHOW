@@ -35,11 +35,11 @@ public class AlphanumComparator implements Comparator<File> {
 	 * location of marker.
 	 *
 	 * @param str
-	 *            String input
+	 *          String input
 	 * @param slength
-	 *            string length
+	 *          string length
 	 * @param marker
-	 *            Marker
+	 *          Marker
 	 * @return String which is chunk of str
 	 */
 	private String getChunk(String str, int slength, int marker) {
@@ -75,14 +75,14 @@ public class AlphanumComparator implements Comparator<File> {
 	 * chunk contains digits then the method compares it char by char
 	 *
 	 * @param file1
-	 *            this File to compare
+	 *          this File to compare
 	 * @param file2
-	 *            that File to compare
+	 *          that File to compare
 	 * @return 0 if thisChunk and thatChunk are equal,-1 if thisChunk is smaller,1
 	 *         if thisChunk is bigger
 	 */
 	@Override
-	public int compare(File file1, File file2) {// NOSONAR
+	public int compare(File file1, File file2) { // NOSONAR
 		String s1 = FilenameUtils.getBaseName(file1.getName());
 		String s2 = FilenameUtils.getBaseName(file2.getName());
 		if ((s1 == null) || (s2 == null)) {

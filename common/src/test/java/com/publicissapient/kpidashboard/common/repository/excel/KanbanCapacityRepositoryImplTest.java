@@ -94,5 +94,4 @@ public class KanbanCapacityRepositoryImplTest {
 		// Verify that the find method is called with the correct parameters
 		verify(mongoOperations, times(1)).find(any(Query.class), eq(KanbanCapacity.class));
 	}
-
 }

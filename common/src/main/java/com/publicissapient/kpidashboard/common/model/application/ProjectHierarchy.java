@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import lombok.Builder;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -53,10 +52,10 @@ public class ProjectHierarchy extends OrganizationHierarchy implements Serializa
 		if (o == null || getClass() != o.getClass())
 			return false;
 		ProjectHierarchy that = (ProjectHierarchy) o;
-		return Objects.equals(basicProjectConfigId, that.basicProjectConfigId)
-				&& Objects.equals(sprintState, that.sprintState) && Objects.equals(releaseState, that.releaseState)
-				&& Objects.equals(beginDate, that.beginDate) && Objects.equals(endDate, that.endDate)
-				&& Objects.equals(this.getParentId(), that.getParentId());
+		return Objects.equals(basicProjectConfigId, that.basicProjectConfigId) &&
+				Objects.equals(sprintState, that.sprintState) && Objects.equals(releaseState, that.releaseState) &&
+				Objects.equals(beginDate, that.beginDate) && Objects.equals(endDate, that.endDate) &&
+				Objects.equals(this.getParentId(), that.getParentId());
 	}
 
 	@Override
@@ -65,7 +64,7 @@ public class ProjectHierarchy extends OrganizationHierarchy implements Serializa
 	}
 
 	public ProjectHierarchy(String nodeId, String nodeName, String nodeDisplayName, String hierarchyLevelId,
-			String parentId, LocalDateTime createdDate, LocalDateTime modifiedDate , ObjectId basicProjectConfigId) {
+			String parentId, LocalDateTime createdDate, LocalDateTime modifiedDate, ObjectId basicProjectConfigId) {
 		super(nodeId, nodeName, nodeDisplayName, hierarchyLevelId, parentId, createdDate, modifiedDate);
 		this.basicProjectConfigId = basicProjectConfigId;
 	}

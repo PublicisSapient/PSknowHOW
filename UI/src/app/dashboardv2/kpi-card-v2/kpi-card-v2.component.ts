@@ -1042,5 +1042,41 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.createNewReportTemplate = false;
     this.displayAddToReportsModal = false;
   }
-  //#endregion reports
+
+  handleKeyboardSelect(event: KeyboardEvent) {
+    // Implement keyboard navigation logic
+    // For example, allow arrow key navigation between options
+    const currentIndex = this.dropdownArr[0].options.findIndex(
+      option => option.value === this.radioOption
+    );
+    
+    switch(event.key) {
+      case 'ArrowRight':
+        // Select next option
+        if (currentIndex < this.dropdownArr[0].options.length - 1) {
+          this.radioOption = this.dropdownArr[0].options[currentIndex + 1].value;
+          this.handleChange('radio', { value: this.radioOption });
+        }
+        break;
+      case 'ArrowLeft':
+        // Select previous option
+        if (currentIndex > 0) {
+          this.radioOption = this.dropdownArr[0].options[currentIndex - 1].value;
+          this.handleChange('radio', { value: this.radioOption });
+        }
+        break;
+    }
+  }
+
+  resetDialogFocus() {
+    // Optional: Reset focus to a specific element or return focus to the triggering element
+    const triggeringElement = document.getElementById('sprint-details-trigger');
+    triggeringElement?.focus();
+  }
+  
+  onTabChange(event: any) {
+    // Optional: Improve tab change accessibility
+    const newTabElement = document.getElementById(`project-tab-${event.index}`);
+    newTabElement?.focus();
+  }
 }

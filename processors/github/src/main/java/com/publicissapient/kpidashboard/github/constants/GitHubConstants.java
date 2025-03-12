@@ -61,6 +61,7 @@ public final class GitHubConstants {
 
 	/** MergeRequests Constants */
 	public static final String RESP_TITLE = "title";
+
 	public static final String RESP_STATE = "state";
 	public static final String RESP_OPEN = "open";
 	public static final String RESP_CLOSED = "closed";
@@ -80,9 +81,7 @@ public final class GitHubConstants {
 	public static final String RESP_ID = "id";
 	public static final String HTTP_URL = "html_url";
 
-	/**
-	 * Instantiates a new bit bucket constants.
-	 */
+	/** Instantiates a new bit bucket constants. */
 	private GitHubConstants() {
 	}
 }

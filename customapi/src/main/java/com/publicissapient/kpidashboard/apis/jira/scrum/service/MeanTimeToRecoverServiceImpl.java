@@ -1,13 +1,13 @@
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
-
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
-
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
-
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -92,12 +92,10 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 	private static final String STORY_ID = "storyID";
 	private static final String PRODUCTION_INCIDENT = "productionIncident";
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 
@@ -116,9 +114,7 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 		return kpiElement;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
@@ -141,22 +137,20 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 			} // project for which prod incident is configured via custom or label
 			String jiraProductionIncidentIdentification = ObjectUtils
 					.defaultIfNull(fieldMapping.getJiraProductionIncidentIdentification(), "");
-			if (jiraProductionIncidentIdentification.equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
-					|| jiraProductionIncidentIdentification.equalsIgnoreCase(CommonConstant.LABELS)) {
+			if (jiraProductionIncidentIdentification.equalsIgnoreCase(CommonConstant.CUSTOM_FIELD) ||
+					jiraProductionIncidentIdentification.equalsIgnoreCase(CommonConstant.LABELS)) {
 				projectProdIncidentIdentifier.add(basicProjectConfigId.toString());
 			}
 			uniqueProjectMapFH.put(basicProjectConfigId.toString(), mapOfProjectFiltersFH);
 			projectBasicConfigIdList.add(basicProjectConfigId.toString());
 		});
 
-		List<String> distinctProjBasicConfig = projectBasicConfigIdList.stream().distinct()
-				.collect(Collectors.toList());
+		List<String> distinctProjBasicConfig = projectBasicConfigIdList.stream().distinct().collect(Collectors.toList());
 		List<String> distinctProjConfigIncidentList = projectProdIncidentIdentifier.stream().distinct()
 				.collect(Collectors.toList());
 		// creating map of only prod incident configured proj for query
 		if (CollectionUtils.isNotEmpty(distinctProjConfigIncidentList)) {
-			mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-					distinctProjConfigIncidentList);
+			mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(), distinctProjConfigIncidentList);
 		}
 
 		mapOfFiltersFH.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(), distinctProjBasicConfig);
@@ -184,18 +178,17 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 		}
 		resultListMap.put(JIRA_HISTORY_DATA, historyDataList);
 		return resultListMap;
-
 	}
 
 	/**
 	 * calculate and set project wise leaf node value
 	 *
 	 * @param mapTmp
-	 *            map tmp data
+	 *          map tmp data
 	 * @param projectLeafNodeList
-	 *            projectLeafNodeList
+	 *          projectLeafNodeList
 	 * @param kpiElement
-	 *            kpiElement
+	 *          kpiElement
 	 */
 	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> projectLeafNodeList,
@@ -211,8 +204,7 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 		if (MapUtils.isNotEmpty(resultMap)) {
 			String requestTrackerId = getRequestTrackerId();
 
-			List<JiraIssueCustomHistory> historyDataList = (List<JiraIssueCustomHistory>) resultMap
-					.get(JIRA_HISTORY_DATA);
+			List<JiraIssueCustomHistory> historyDataList = (List<JiraIssueCustomHistory>) resultMap.get(JIRA_HISTORY_DATA);
 
 			Map<String, List<JiraIssueCustomHistory>> projectWiseJiraIssueHistoryDataList = historyDataList.stream()
 					.collect(Collectors.groupingBy(JiraIssueCustomHistory::getBasicProjectConfigId));
@@ -234,16 +226,13 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 				if (CollectionUtils.isNotEmpty(jiraIssueHistoryDataList)) {
 					List<DataCount> dataCountList = new ArrayList<>();
 
-					findMeanTimeToRecover(jiraIssueHistoryDataList, weekOrMonth, meanTimeRecoverMapTimeWise,
-							fieldMapping);
+					findMeanTimeToRecover(jiraIssueHistoryDataList, weekOrMonth, meanTimeRecoverMapTimeWise, fieldMapping);
 
 					meanTimeRecoverMapTimeWise.forEach((weekOrMonthName, meanTimeRecoverListCurrentTime) -> {
-						DataCount dataCount = createDataCount(trendLineName, weekOrMonthName,
-								meanTimeRecoverListCurrentTime);
+						DataCount dataCount = createDataCount(trendLineName, weekOrMonthName, meanTimeRecoverListCurrentTime);
 						dataCountList.add(dataCount);
 					});
-					populateMeanTimeRecoverExcelData(excelData, requestTrackerId, trendLineName,
-							meanTimeRecoverMapTimeWise);
+					populateMeanTimeRecoverExcelData(excelData, requestTrackerId, trendLineName, meanTimeRecoverMapTimeWise);
 
 					mapTmp.get(node.getId()).setValue(dataCountList);
 				}
@@ -257,13 +246,13 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 	 * populate excel data
 	 *
 	 * @param excelData
-	 *            excel data
+	 *          excel data
 	 * @param requestTrackerId
-	 *            tracker id for cache
+	 *          tracker id for cache
 	 * @param trendLineName
-	 *            project name
+	 *          project name
 	 * @param meanTimeRecoverMapTimeWise
-	 *            lead time in hours
+	 *          lead time in hours
 	 */
 	private void populateMeanTimeRecoverExcelData(List<KPIExcelData> excelData, String requestTrackerId,
 			String trendLineName, Map<String, List<MeanTimeRecoverData>> meanTimeRecoverMapTimeWise) {
@@ -276,11 +265,11 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 	 * set data count
 	 *
 	 * @param trendLineName
-	 *            project name
+	 *          project name
 	 * @param weekOrMonthName
-	 *            date
+	 *          date
 	 * @param meanTimeRecoverListCurrentTime
-	 *            meantime list
+	 *          meantime list
 	 * @return data count
 	 */
 	private DataCount createDataCount(String trendLineName, String weekOrMonthName,
@@ -311,11 +300,11 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 	 * date
 	 *
 	 * @param jiraIssueHistoryDataList
-	 *            history data list
+	 *          history data list
 	 * @param weekOrMonth
-	 *            date of x axis
+	 *          date of x axis
 	 * @param meanTimeRecoverMapTimeWise
-	 *            meantime in days
+	 *          meantime in days
 	 */
 	private void findMeanTimeToRecover(List<JiraIssueCustomHistory> jiraIssueHistoryDataList, String weekOrMonth,
 			Map<String, List<MeanTimeRecoverData>> meanTimeRecoverMapTimeWise, FieldMapping fieldMapping) {
@@ -329,14 +318,13 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 
 			jiraIssueHistoryData.getStatusUpdationLog().forEach(statusChangeLog -> {
 				// reopened scenario
-				if (CollectionUtils.isNotEmpty(dodStatus)
-						&& dodStatus.contains(statusChangeLog.getChangedFrom().toLowerCase())
-						&& statusChangeLog.getChangedTo().equalsIgnoreCase(storyFirstStatus)) {
+				if (CollectionUtils.isNotEmpty(dodStatus) &&
+						dodStatus.contains(statusChangeLog.getChangedFrom().toLowerCase()) &&
+						statusChangeLog.getChangedTo().equalsIgnoreCase(storyFirstStatus)) {
 					closedStatusDateMap.clear();
 				}
 				// fist close date of last close cycle
-				if (CollectionUtils.isNotEmpty(dodStatus)
-						&& dodStatus.contains(statusChangeLog.getChangedTo().toLowerCase())) {
+				if (CollectionUtils.isNotEmpty(dodStatus) && dodStatus.contains(statusChangeLog.getChangedTo().toLowerCase())) {
 					if (closedStatusDateMap.containsKey(statusChangeLog.getChangedTo())) {
 						closedStatusDateMap.clear();
 					}
@@ -352,13 +340,12 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 			if (ticketClosedDate != null && ticketCreatedDate != null) {
 
 				meanTimeToRecoverInHrs = Hours.hoursBetween(ticketCreatedDate, ticketClosedDate).getHours();
-
 			}
 
 			String weekOrMonthName = getDateFormatted(weekOrMonth, ticketCreatedDate);
 
-			setMeanTimeForRecoverData(meanTimeRecoverMapTimeWise, jiraIssueHistoryData, ticketClosedDate,
-					ticketCreatedDate, meanTimeToRecoverInHrs, weekOrMonthName);
+			setMeanTimeForRecoverData(meanTimeRecoverMapTimeWise, jiraIssueHistoryData, ticketClosedDate, ticketCreatedDate,
+					meanTimeToRecoverInHrs, weekOrMonthName);
 		});
 	}
 
@@ -366,9 +353,9 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 	 * To get the formatted date for x-axis representation
 	 *
 	 * @param weekOrMonth
-	 *            date of x axis
+	 *          date of x axis
 	 * @param currentDate
-	 *            current date
+	 *          current date
 	 * @return formatted date
 	 */
 	private String getDateFormatted(String weekOrMonth, DateTime currentDate) {
@@ -383,17 +370,17 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 	 * Setting the mean time to recover data
 	 *
 	 * @param meanTimeRecoverMapTimeWise
-	 *            meantime list
+	 *          meantime list
 	 * @param jiraIssueHistoryData
-	 *            history data
+	 *          history data
 	 * @param ticketClosedDate
-	 *            ticket closed date
+	 *          ticket closed date
 	 * @param ticketCreatedDate
-	 *            ticket created date
+	 *          ticket created date
 	 * @param meanTimeToRecoverInHrs
-	 *            meantime to recover
+	 *          meantime to recover
 	 * @param weekOrMonthName
-	 *            date
+	 *          date
 	 */
 	private void setMeanTimeForRecoverData(Map<String, List<MeanTimeRecoverData>> meanTimeRecoverMapTimeWise,
 			JiraIssueCustomHistory jiraIssueHistoryData, DateTime ticketClosedDate, DateTime ticketCreatedDate,
@@ -422,7 +409,7 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 	 * get last N weeks
 	 *
 	 * @param count
-	 *            count
+	 *          count
 	 * @return map of list of MeanTimeRecoverData
 	 */
 	private Map<String, List<MeanTimeRecoverData>> getLastNWeek(int count) {
@@ -443,7 +430,7 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 	 * get last N months
 	 *
 	 * @param count
-	 *            count
+	 *          count
 	 * @return map of list of MeanTimeRecoverData
 	 */
 	private Map<String, List<MeanTimeRecoverData>> getLastNMonthCount(int count) {
@@ -456,30 +443,23 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 			lastMonth = lastMonth.minusMonths(1);
 			String lastMonthStr = lastMonth.getYear() + Constant.DASH + lastMonth.getMonthValue();
 			lastNMonth.put(lastMonthStr, new ArrayList<>());
-
 		}
 		return lastNMonth;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> stringObjectMap) {
 		return null;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiId) {
 		return calculateKpiValueForDouble(valueList, kpiId);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public String getQualifierType() {
 		return KPICode.MEAN_TIME_TO_RECOVER.name();
@@ -489,5 +469,4 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI166(), KPICode.MEAN_TIME_TO_RECOVER.getKpiId());
 	}
-
 }

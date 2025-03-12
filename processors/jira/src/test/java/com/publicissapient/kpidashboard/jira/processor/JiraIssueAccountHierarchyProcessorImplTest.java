@@ -95,8 +95,8 @@ public class JiraIssueAccountHierarchyProcessorImplTest {
 		AccountHierarchiesDataFactory accountHierarchiesDataFactory = AccountHierarchiesDataFactory
 				.newInstance("/json/default/account_hierarchy.json");
 		accountHierarchyList = accountHierarchiesDataFactory.getAccountHierarchies();
-		accountHierarchies = accountHierarchiesDataFactory.findByLabelNameAndBasicProjectConfigId(
-				CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, "63c04dc7b7617e260763ca4e");
+		accountHierarchies = accountHierarchiesDataFactory
+				.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, "63c04dc7b7617e260763ca4e");
 		projectToolConfigs = getMockProjectToolConfig();
 		fieldMappingList = getMockFieldMapping();
 		connection = getMockConnection();
@@ -109,8 +109,11 @@ public class JiraIssueAccountHierarchyProcessorImplTest {
 	@Test
 	public void createAccountHierarchy() {
 		when(hierarchyLevelService.getFullHierarchyLevels(false)).thenReturn(hierarchyLevelList);
-		Assert.assertEquals(2, createAccountHierarchy
-				.createAccountHierarchy(jiraIssues.get(0), createProjectConfig(), getSprintDetails()).size());
+		Assert.assertEquals(
+				2,
+				createAccountHierarchy
+						.createAccountHierarchy(jiraIssues.get(0), createProjectConfig(), getSprintDetails())
+						.size());
 	}
 
 	@Test
@@ -121,8 +124,9 @@ public class JiraIssueAccountHierarchyProcessorImplTest {
 		projectHierarchies.add(new ProjectHierarchy());
 		map.put("41409_NewJira_63c04dc7b7617e260763ca4e", projectHierarchies);
 		when(projectHierarchyService.getProjectHierarchyMapByConfig(anyString())).thenReturn(map);
-		Set<ProjectHierarchy> result = createAccountHierarchy.createAccountHierarchy(jiraIssues.get(0),
-				createProjectConfig(), getSprintDetails());
+		Set<ProjectHierarchy> result =
+				createAccountHierarchy.createAccountHierarchy(
+						jiraIssues.get(0), createProjectConfig(), getSprintDetails());
 		assertNotNull(result);
 		assertFalse(result.isEmpty());
 		assertEquals(2, result.size());
@@ -139,8 +143,9 @@ public class JiraIssueAccountHierarchyProcessorImplTest {
 		projectHierarchies.add(projectHierarchy);
 		map.put("41409_NewJira_63c04dc7b7617e260763ca4e", projectHierarchies);
 		when(projectHierarchyService.getProjectHierarchyMapByConfig(anyString())).thenReturn(map);
-		Set<ProjectHierarchy> result = createAccountHierarchy.createAccountHierarchy(jiraIssues.get(0),
-				createProjectConfig(), getSprintDetails());
+		Set<ProjectHierarchy> result =
+				createAccountHierarchy.createAccountHierarchy(
+						jiraIssues.get(0), createProjectConfig(), getSprintDetails());
 		assertNotNull(result);
 		assertFalse(result.isEmpty());
 		assertEquals(2, result.size());
@@ -206,8 +211,7 @@ public class JiraIssueAccountHierarchyProcessorImplTest {
 	}
 
 	private Optional<Connection> getMockConnection() {
-		ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory
-				.newInstance("/json/default/connections.json");
+		ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory.newInstance("/json/default/connections.json");
 		return connectionDataFactory.findConnectionById("5fd99f7bc8b51a7b55aec836");
 	}
 
@@ -216,5 +220,4 @@ public class JiraIssueAccountHierarchyProcessorImplTest {
 				.newInstance("/json/default/field_mapping.json");
 		return fieldMappingDataFactory.getFieldMappings();
 	}
-
 }

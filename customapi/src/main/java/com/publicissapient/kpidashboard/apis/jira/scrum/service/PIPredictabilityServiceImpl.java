@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -19,12 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -73,8 +73,8 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
@@ -83,7 +83,6 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 			if (Filters.getFilter(k) == Filters.PROJECT) {
 				projectWiseLeafNodeValue(kpiElement, mapTmp, v);
 			}
-
 		});
 
 		log.debug("[PROJECT-WISE][{}]. Values of leaf node after KPI calculation {}", kpiRequest.getRequestTrackerId(),
@@ -91,8 +90,7 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedMultipleValueGroup(root, nodeWiseKPIValue, KPICode.PI_PREDICTABILITY);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
-				KPICode.PI_PREDICTABILITY);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.PI_PREDICTABILITY);
 		kpiElement.setTrendValueList(trendValues);
 		return kpiElement;
 	}
@@ -116,15 +114,13 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 
 			if (CollectionUtils.isNotEmpty(epicList)) {
 				Map<DateTime, PiWiseLatestEpicData> piNameWiseEpicData = epicList.stream()
-						.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getReleaseVersions())
-								&& jiraIssue.getReleaseVersions().get(0).getReleaseDate() != null)
-						.collect(Collectors.toMap(jiraIssue -> jiraIssue.getReleaseVersions().get(0).getReleaseDate(),
-								jiraIssue -> {
+						.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getReleaseVersions()) &&
+								jiraIssue.getReleaseVersions().get(0).getReleaseDate() != null)
+						.collect(
+								Collectors.toMap(jiraIssue -> jiraIssue.getReleaseVersions().get(0).getReleaseDate(), jiraIssue -> {
 									PiWiseLatestEpicData releaseWiseLatestEpicData = new PiWiseLatestEpicData();
-									releaseWiseLatestEpicData
-											.setPiName(jiraIssue.getReleaseVersions().get(0).getReleaseName());
-									releaseWiseLatestEpicData
-											.setPiEndDate(jiraIssue.getReleaseVersions().get(0).getReleaseDate());
+									releaseWiseLatestEpicData.setPiName(jiraIssue.getReleaseVersions().get(0).getReleaseName());
+									releaseWiseLatestEpicData.setPiEndDate(jiraIssue.getReleaseVersions().get(0).getReleaseDate());
 									List<JiraIssue> piWiseEpicList = new ArrayList<>();
 									piWiseEpicList.add(jiraIssue);
 									releaseWiseLatestEpicData.setEpicList(piWiseEpicList);
@@ -137,8 +133,8 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 				Map<DateTime, PiWiseLatestEpicData> sortedPINameWiseEpicData = piNameWiseEpicData.entrySet().stream()
 						.filter(epicDataEntry -> epicDataEntry.getValue().getPiEndDate().isBefore(DateTime.now()))
 						.sorted(Map.Entry.comparingByKey()).limit(customApiConfig.getJiraXaxisMonthCount())
-						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-								(existing, replacement) -> existing, LinkedHashMap::new));
+						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (existing, replacement) -> existing,
+								LinkedHashMap::new));
 
 				String trendLineName = node.getProjectFilter().getName();
 				String requestTrackerId = getRequestTrackerId();
@@ -177,7 +173,6 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 					dataValueList.add(dataValue2);
 					dataCount.setDataValue(dataValueList);
 					dataCountList.add(dataCount);
-
 				});
 				mapTmp.get(node.getId()).setValue(dataCountList);
 				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
@@ -185,14 +180,11 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 							.get(node.getProjectFilter().getBasicProjectConfigId());
 					List<JiraIssue> sortedEpicList = sortedPINameWiseEpicData.values().stream()
 							.flatMap(piWiseLatestEpicData -> piWiseLatestEpicData.getEpicList().stream()
-									.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getReleaseVersions())
-											&& jiraIssue.getReleaseVersions().get(0).getReleaseDate() != null)
-									.filter(jiraIssue -> jiraIssue.getReleaseVersions().get(0).getReleaseDate()
-											.isBefore(DateTime.now()))
-									.filter(jiraIssue -> fieldMapping.getJiraIssueEpicTypeKPI153()
-											.contains(jiraIssue.getTypeName()))
-									.sorted(Comparator
-											.comparing(epic -> epic.getReleaseVersions().get(0).getReleaseName())))
+									.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getReleaseVersions()) &&
+											jiraIssue.getReleaseVersions().get(0).getReleaseDate() != null)
+									.filter(jiraIssue -> jiraIssue.getReleaseVersions().get(0).getReleaseDate().isBefore(DateTime.now()))
+									.filter(jiraIssue -> fieldMapping.getJiraIssueEpicTypeKPI153().contains(jiraIssue.getTypeName()))
+									.sorted(Comparator.comparing(epic -> epic.getReleaseVersions().get(0).getReleaseName())))
 							.collect(Collectors.toList());
 					KPIExcelUtility.populatePIPredictabilityExcelData(trendLineName, sortedEpicList, excelData);
 				}
@@ -202,7 +194,6 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(
 				KPIExcelColumn.PI_PREDICTABILITY.getColumns(projectLeafNodeList, cacheService, filterHelperService));
-
 	}
 
 	@Override
@@ -214,13 +205,13 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 	 * Fetches KPI data from the database
 	 *
 	 * @param leafNodeList
-	 *            The list of leaf nodes
+	 *          The list of leaf nodes
 	 * @param startDate
-	 *            The start date
+	 *          The start date
 	 * @param endDate
-	 *            The end date
+	 *          The end date
 	 * @param kpiRequest
-	 *            The KPI request
+	 *          The KPI request
 	 * @return The fetched KPI data
 	 */
 	@Override
@@ -235,8 +226,8 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 
 		List<JiraIssue> piWiseEpicList = new ArrayList<>();
 		Map<String, Object> resultListMap = new HashMap<>();
-		basicProjectConfigIds.forEach(basicProjectConfigId -> piWiseEpicList.addAll(kpiDataCacheService
-				.fetchPiPredictabilityData(basicProjectConfigId, KPICode.PI_PREDICTABILITY.getKpiId())));
+		basicProjectConfigIds.forEach(basicProjectConfigId -> piWiseEpicList.addAll(
+				kpiDataCacheService.fetchPiPredictabilityData(basicProjectConfigId, KPICode.PI_PREDICTABILITY.getKpiId())));
 		resultListMap.put(EPIC_DATA, piWiseEpicList);
 		return resultListMap;
 	}
@@ -258,5 +249,4 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI153(), KPICode.PI_PREDICTABILITY.getKpiId());
 	}
-
 }

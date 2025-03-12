@@ -35,11 +35,8 @@ import com.publicissapient.kpidashboard.apis.common.service.ConfigDetailService;
 import com.publicissapient.kpidashboard.apis.util.TestUtil;
 
 /**
- * 
  * @author prigupta8
- *
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigDetailsControllerTest {
 	private MockMvc mockMvc;
@@ -65,5 +62,4 @@ public class ConfigDetailsControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("/configDetails").contentType(TestUtil.APPLICATION_JSON_UTF8))
 				.andExpect(status().isOk());
 	}
-
 }

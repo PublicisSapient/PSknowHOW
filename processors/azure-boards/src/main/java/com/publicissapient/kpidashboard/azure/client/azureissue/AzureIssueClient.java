@@ -59,7 +59,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRe
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class AzureIssueClient {// NOPMD //NOSONAR
+public abstract class AzureIssueClient { // NOPMD //NOSONAR
 
 	AssigneeDetails tempAssigneeDetails;
 
@@ -83,11 +83,11 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	 * MongoDB from those calls.
 	 *
 	 * @param projectConfig
-	 *            Project Configuration Mapping
+	 *          Project Configuration Mapping
 	 * @param projectKey
-	 *            Project Key
+	 *          Project Key
 	 * @param azureAdapter
-	 *            the azure adapter
+	 *          the azure adapter
 	 * @return int Count of Azure stories processed
 	 */
 	public abstract int processesAzureIssues(ProjectConfFieldMapping projectConfig, String projectKey,
@@ -97,9 +97,9 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	 * Purges the issues provided
 	 *
 	 * @param purgeIssuesList
-	 *            List of issues to be purged
+	 *          List of issues to be purged
 	 * @param projectConfig
-	 *            Project Configuration Mapping
+	 *          Project Configuration Mapping
 	 */
 	public abstract void purgeAzureIssues(List<Value> purgeIssuesList, ProjectConfFieldMapping projectConfig);
 
@@ -107,13 +107,13 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	 * Saves Jira Issue details.
 	 *
 	 * @param currentPagedJiraRs
-	 *            List of Azure issue in current page call
+	 *          List of Azure issue in current page call
 	 * @param projectConfig
-	 *            Project Configuration Mapping
+	 *          Project Configuration Mapping
 	 * @param sprintDetailsSet
-	 *            sprint details set
+	 *          sprint details set
 	 * @throws JSONException
-	 *             Error while JSON parsing
+	 *           Error while JSON parsing
 	 */
 	public abstract int saveAzureIssueDetails(List<Value> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
 			Set<SprintDetails> sprintDetailsSet) throws JSONException;
@@ -122,35 +122,34 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	 * Sets RCA.
 	 *
 	 * @param fieldMapping
-	 *            fieldMapping provided by the User
+	 *          fieldMapping provided by the User
 	 * @param issue
-	 *            Azure Issue
+	 *          Azure Issue
 	 * @param azureIssue
-	 *            JiraIssue instance
+	 *          JiraIssue instance
 	 * @param fieldsMap
-	 *            the fields map
+	 *          the fields map
 	 */
 	public void setRCA(FieldMapping fieldMapping, Value issue, JiraIssue azureIssue, Map<String, Object> fieldsMap,
 			List<String> rcaValuesForCodeIssue) {
 		Fields fields = issue.getFields();
 		List<String> rcaList = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && fieldMapping.getJiradefecttype().stream()
-				.anyMatch(fields.getSystemWorkItemType()::equalsIgnoreCase)) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) &&
+				fieldMapping.getJiradefecttype().stream().anyMatch(fields.getSystemWorkItemType()::equalsIgnoreCase)) {
 			try {
 				String rootCauseFieldFromFieldMapping = fieldMapping.getRootCause();
-				if (StringUtils.isNotEmpty(
-						fieldMapping.getRootCauseIdentifier()) && fieldMapping.getRootCauseIdentifier().trim()
-						.equalsIgnoreCase(AzureConstants.CUSTOM_FIELD) && fieldsMap.containsKey(
-						rootCauseFieldFromFieldMapping) && fieldsMap.get(rootCauseFieldFromFieldMapping) != null) {
+				if (StringUtils.isNotEmpty(fieldMapping.getRootCauseIdentifier()) &&
+						fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(AzureConstants.CUSTOM_FIELD) &&
+						fieldsMap.containsKey(rootCauseFieldFromFieldMapping) &&
+						fieldsMap.get(rootCauseFieldFromFieldMapping) != null) {
 					// Introduce enum to standarize the values of RCA
 					String rcaCause = fieldsMap.get(rootCauseFieldFromFieldMapping).toString().toLowerCase();
 					if (rcaValuesForCodeIssue.stream().anyMatch(rcaCause::equalsIgnoreCase)) {
 						rcaCause = AzureConstants.CODE_ISSUE;
 					}
 					rcaList.add(rcaCause);
-				} else if (StringUtils.isNotEmpty(
-						fieldMapping.getRootCauseIdentifier()) && fieldMapping.getRootCauseIdentifier().trim()
-						.equalsIgnoreCase(AzureConstants.LABELS)) {
+				} else if (StringUtils.isNotEmpty(fieldMapping.getRootCauseIdentifier()) &&
+						fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(AzureConstants.LABELS)) {
 					String[] labelArray = fields.getSystemTags().split(";");
 					List<String> commonLabel = Arrays.asList(labelArray).stream()
 							.filter(x -> fieldMapping.getRootCauseValues().contains(x)).collect(Collectors.toList());
@@ -174,15 +173,14 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	 * Story' 3. A separate 'custom field' is maintained
 	 *
 	 * @param fieldMapping
-	 *            fieldMapping provided by the User
+	 *          fieldMapping provided by the User
 	 * @param issue
-	 *            Azure Issue
+	 *          Azure Issue
 	 * @param azureIssue
-	 *            JiraIssue instance
+	 *          JiraIssue instance
 	 * @param fieldsMap
-	 *            the fields map
+	 *          the fields map
 	 */
-
 	public void setIssueTechStoryType(FieldMapping fieldMapping, Value issue, JiraIssue azureIssue,
 			Map<String, Object> fieldsMap) {
 		Fields fields = issue.getFields();
@@ -199,34 +197,33 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 						azureIssue.setSpeedyIssueType(NormalizedJira.TECHSTORY.getValue());
 					}
 				}
-			} else if (fieldMapping.getJiraTechDebtIdentification().trim().equalsIgnoreCase(AzureConstants.ISSUE_TYPE)
-					&& fieldMapping.getJiraTechDebtValue().contains(azureIssue.getTypeName())) {
+			} else if (fieldMapping.getJiraTechDebtIdentification().trim().equalsIgnoreCase(AzureConstants.ISSUE_TYPE) &&
+					fieldMapping.getJiraTechDebtValue().contains(azureIssue.getTypeName())) {
 				azureIssue.setSpeedyIssueType(NormalizedJira.TECHSTORY.getValue());
-			} else if (fieldMapping.getJiraTechDebtIdentification().trim().equalsIgnoreCase(AzureConstants.CUSTOM_FIELD)
-					&& fieldsMap.containsKey(jiraTechDebtCustomField.trim())
-					&& fieldsMap.get(jiraTechDebtCustomField.trim()) != null && CollectionUtils
-							.containsAny(fieldMapping.getJiraTechDebtValue(), finalJiraTechDebtCustomFieldSet)) {
+			} else if (fieldMapping.getJiraTechDebtIdentification().trim().equalsIgnoreCase(AzureConstants.CUSTOM_FIELD) &&
+					fieldsMap.containsKey(jiraTechDebtCustomField.trim()) &&
+					fieldsMap.get(jiraTechDebtCustomField.trim()) != null &&
+					CollectionUtils.containsAny(fieldMapping.getJiraTechDebtValue(), finalJiraTechDebtCustomFieldSet)) {
 				azureIssue.setSpeedyIssueType(NormalizedJira.TECHSTORY.getValue());
 			}
 		}
-
 	}
 
 	/**
 	 * Process Feature Data.
 	 *
 	 * @param azureIssue
-	 *            JiraIssue instance
+	 *          JiraIssue instance
 	 * @param issue
-	 *            Azure Issue
+	 *          Azure Issue
 	 * @param fieldsMap
-	 *            the fields map
+	 *          the fields map
 	 * @param fieldMapping
-	 *            fieldMapping provided by the User
+	 *          fieldMapping provided by the User
 	 * @param jiraProcessorConfig
-	 *            Jira processor Configuration
+	 *          Jira processor Configuration
 	 * @throws JSONException
-	 *             Error while parsing JSON
+	 *           Error while parsing JSON
 	 */
 	public void processJiraIssueData(JiraIssue azureIssue, Value issue, Map<String, Object> fieldsMap,
 			FieldMapping fieldMapping, AzureProcessorConfig jiraProcessorConfig) throws JSONException {
@@ -241,8 +238,7 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 		azureIssue.setState(AzureProcessorUtil.deodeUTF8String(status));
 
 		String jiraStatusMappingCustomField = fieldMapping.getJiraStatusMappingCustomField();
-		if (StringUtils.isNotEmpty(jiraStatusMappingCustomField)
-				&& fieldsMap.containsKey(jiraStatusMappingCustomField)) {
+		if (StringUtils.isNotEmpty(jiraStatusMappingCustomField) && fieldsMap.containsKey(jiraStatusMappingCustomField)) {
 			String jiraStatusFromCustomField = fieldsMap.get(jiraStatusMappingCustomField).toString();
 			if (StringUtils.isNotEmpty(jiraStatusFromCustomField)) {
 				azureIssue.setJiraStatus(jiraStatusFromCustomField);
@@ -279,22 +275,21 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 
 		// Created Date
 		azureIssue.setCreatedDate(AzureProcessorUtil.getFormattedDate(AzureProcessorUtil.deodeUTF8String(createdDate)));
-
 	}
 
 	/**
 	 * Sets Estimate.
 	 *
 	 * @param azureIssue
-	 *            JiraIssue instance
+	 *          JiraIssue instance
 	 * @param fieldsMap
-	 *            the fields map
+	 *          the fields map
 	 * @param fieldMapping
-	 *            fieldMapping provided by the User
+	 *          fieldMapping provided by the User
 	 * @param jiraProcessorConfig
-	 *            Jira Processor Configuration
+	 *          Jira Processor Configuration
 	 * @param fields
-	 *            Map of Issue Fields
+	 *          Map of Issue Fields
 	 */
 	public void setEstimate(JiraIssue azureIssue, Map<String, Object> fieldsMap, FieldMapping fieldMapping, // NOSONAR
 			AzureProcessorConfig jiraProcessorConfig, Fields fields) {
@@ -306,9 +301,9 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 		String estimationCriteria = jiraProcessorConfig.getEstimationCriteria();
 		if (StringUtils.isNotBlank(estimationCriteria)) {
 			String estimationField = fieldMapping.getJiraStoryPointsCustomField();
-			if (StringUtils.isNotBlank(estimationField) && fieldsMap.containsKey(estimationField)
-					&& fieldsMap.get(estimationField) != null
-					&& !AzureProcessorUtil.deodeUTF8String(fieldsMap.get(estimationField)).isEmpty()) {
+			if (StringUtils.isNotBlank(estimationField) && fieldsMap.containsKey(estimationField) &&
+					fieldsMap.get(estimationField) != null &&
+					!AzureProcessorUtil.deodeUTF8String(fieldsMap.get(estimationField)).isEmpty()) {
 				// Set Estimation for Custom Estimation/Story Points Field
 				if (AzureConstants.STORY_POINTS.equalsIgnoreCase(estimationCriteria)) {
 					value = Double.parseDouble(AzureProcessorUtil.deodeUTF8String(fieldsMap.get(estimationField)));
@@ -317,15 +312,14 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 				azureIssue.setEstimate(valueString);
 				azureIssue.setStoryPoints(value);
 			} else {
-				setEstimateForDefaultFields(azureIssue, fields, estimationFromDefaultField,
-						storyPointsFromDefaultField);
+				setEstimateForDefaultFields(azureIssue, fields, estimationFromDefaultField, storyPointsFromDefaultField);
 			}
 		} else {
 			// Default estimation criteria is storypoints
 			String estimationField = fieldMapping.getJiraStoryPointsCustomField();
-			if (StringUtils.isNotEmpty(estimationField) && fieldsMap.containsKey(estimationField)
-					&& fieldsMap.get(estimationField) != null
-					&& !AzureProcessorUtil.deodeUTF8String(fieldsMap.get(estimationField)).isEmpty()) {
+			if (StringUtils.isNotEmpty(estimationField) && fieldsMap.containsKey(estimationField) &&
+					fieldsMap.get(estimationField) != null &&
+					!AzureProcessorUtil.deodeUTF8String(fieldsMap.get(estimationField)).isEmpty()) {
 				// Set Estimate and Story points for Custom Azure Story Point
 				// fields
 				value = Double.parseDouble(AzureProcessorUtil.deodeUTF8String(fieldsMap.get(estimationField)));
@@ -333,8 +327,7 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 				azureIssue.setEstimate(valueString);
 				azureIssue.setStoryPoints(value);
 			} else {
-				setEstimateForDefaultFields(azureIssue, fields, estimationFromDefaultField,
-						storyPointsFromDefaultField);
+				setEstimateForDefaultFields(azureIssue, fields, estimationFromDefaultField, storyPointsFromDefaultField);
 			}
 		}
 		if (Objects.nonNull(fields.getMicrosoftVSTSSchedulingOriginalEstimate())) {
@@ -377,9 +370,9 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	 * This method process owner and user details
 	 *
 	 * @param azureIssue
-	 *            JiraIssue Object to set Owner details
+	 *          JiraIssue Object to set Owner details
 	 * @param fields
-	 *            Jira issue User Object
+	 *          Jira issue User Object
 	 */
 	public void setJiraAssigneeDetails(JiraIssue azureIssue,
 			com.publicissapient.kpidashboard.common.model.azureboards.Fields fields, Set<Assignee> assigneeSetToSave,
@@ -429,8 +422,8 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 
 	private String setAssigneeName(String assigneeId, String basicProjectConfigId, Set<Assignee> assigneeSetToSave) {
 		String assigneeName = AzureConstants.USER + AzureConstants.SPACE + 1;
-		if (null == tempAssigneeDetails
-				|| !tempAssigneeDetails.getBasicProjectConfigId().equalsIgnoreCase(basicProjectConfigId)) {
+		if (null == tempAssigneeDetails ||
+				!tempAssigneeDetails.getBasicProjectConfigId().equalsIgnoreCase(basicProjectConfigId)) {
 			tempAssigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(basicProjectConfigId,
 					ProcessorConstants.AZURE);
 		}
@@ -477,5 +470,4 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	public boolean isAttemptSuccess(int total, int savedCount) {
 		return savedCount > 0 && total == savedCount;
 	}
-
 }

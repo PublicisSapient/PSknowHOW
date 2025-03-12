@@ -31,9 +31,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The Account hierarchy.
- */
+/** The Account hierarchy. */
 @Data
 @Builder
 @Getter
@@ -57,7 +55,6 @@ public class HierarchyLevel extends BasicModel {
 		HierarchyLevel other = (HierarchyLevel) obj;
 		if (obj instanceof HierarchyLevel && this.hierarchyLevelId.equals(other.hierarchyLevelId)) {
 			isEqual = true;
-
 		}
 		return isEqual;
 	}
@@ -66,5 +63,4 @@ public class HierarchyLevel extends BasicModel {
 	public int hashCode() {
 		return Objects.hash(this.hierarchyLevelId);
 	}
-
 }

@@ -29,11 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * 
- * AzureRepoConfig represents a class which holds AzureRepoConfig details .
- * 
- */
+/** AzureRepoConfig represents a class which holds AzureRepoConfig details . */
 @Component
 @ConfigurationProperties(prefix = "azurerepo")
 @Data
@@ -44,8 +40,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AzureRepoConfig {
 	private String cron;
+
 	@Value("${aesEncryptionKey}")
 	private String aesEncryptionKey;
+
 	private int initialRunOccurrenceInDays;
 	private String api;
 	private String customApiBaseUrl;

@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -32,8 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,21 +51,20 @@ import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFact
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.zephyr.factory.ZephyrKPIServiceFactory;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 /**
- *
- * @author tauakram
- *-
+ * @author tauakram -
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class ZephyrServiceTest {
 	private static final String TESTZEPHYR = "TEST_ZEPHYR";
@@ -106,7 +102,7 @@ public class ZephyrServiceTest {
 		doReturn(new KpiElement()).when(service).getKpiData(any(), any(), any());
 		zephyrKPIServiceFactory.initMyServiceCache();
 
-		projectKey = new String[] { "Regression", "Automation" };
+		projectKey = new String[]{"Regression", "Automation"};
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi16");
 		createKpiRequest("", 2, kpiRequest);
@@ -117,24 +113,27 @@ public class ZephyrServiceTest {
 
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
-
 	}
 
 	@Test
 	public void sonarViolationsTestProcess() throws Exception {
 
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
+		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest))
+				.thenReturn(projectKey);
+		when(filterHelperService.getHierarachyLevelId(
+						Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		Map<String, Integer> map = new HashMap<>();
-		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
-				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		Map<String, HierarchyLevel> hierarchyMap =
+				hierarchyLevels.stream()
+						.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(filterHelperService.getFilteredBuilds(ArgumentMatchers.any(), Mockito.anyString()))
 				.thenReturn(accountHierarchyDataList);
-		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
+		when(authorizedProjectsService.filterProjects(accountHierarchyDataList))
+				.thenReturn(accountHierarchyDataList);
 		// Create a mock SonarKPIService
 
 		try {
@@ -144,25 +143,28 @@ public class ZephyrServiceTest {
 		} catch (Exception e) {
 
 		}
-
 	}
 
 	@Test
 	public void sonarViolationsTestProcessPass() throws Exception {
 
 		when(kpiHelperService.isRequiredTestToolConfigured(any(), any(), any())).thenReturn(true);
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
+		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest))
+				.thenReturn(projectKey);
+		when(filterHelperService.getHierarachyLevelId(
+						Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		Map<String, Integer> map = new HashMap<>();
-		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
-				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		Map<String, HierarchyLevel> hierarchyMap =
+				hierarchyLevels.stream()
+						.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(filterHelperService.getFilteredBuilds(ArgumentMatchers.any(), Mockito.anyString()))
 				.thenReturn(accountHierarchyDataList);
-		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
+		when(authorizedProjectsService.filterProjects(accountHierarchyDataList))
+				.thenReturn(accountHierarchyDataList);
 		// Create a mock SonarKPIService
 
 		try {
@@ -172,26 +174,28 @@ public class ZephyrServiceTest {
 		} catch (Exception e) {
 
 		}
-
 	}
-
 
 	@Test
 	public void sonarViolationsTestProcessThrowApplication() throws Exception {
 		when(kpiHelperService.isRequiredTestToolConfigured(any(), any(), any())).thenReturn(true);
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
+		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest))
+				.thenReturn(projectKey);
+		when(filterHelperService.getHierarachyLevelId(
+						Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		Map<String, Integer> map = new HashMap<>();
-		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
-				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		Map<String, HierarchyLevel> hierarchyMap =
+				hierarchyLevels.stream()
+						.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(filterHelperService.getFilteredBuilds(ArgumentMatchers.any(), Mockito.anyString()))
 				.thenReturn(accountHierarchyDataList);
-		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
-		when(service.getKpiData(any(), any(),any())).thenThrow(ApplicationException.class);
+		when(authorizedProjectsService.filterProjects(accountHierarchyDataList))
+				.thenReturn(accountHierarchyDataList);
+		when(service.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
 		List<KpiElement> resultList = zephyrService.process(kpiRequest);
 		assertEquals(CommonConstant.KPI_FAILED, resultList.get(0).getResponseCode());
 	}
@@ -199,19 +203,23 @@ public class ZephyrServiceTest {
 	@Test
 	public void sonarViolationsTestProcessThrowNullPointer() throws Exception {
 		when(kpiHelperService.isRequiredTestToolConfigured(any(), any(), any())).thenReturn(true);
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
+		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest))
+				.thenReturn(projectKey);
+		when(filterHelperService.getHierarachyLevelId(
+						Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		Map<String, Integer> map = new HashMap<>();
-		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
-				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		Map<String, HierarchyLevel> hierarchyMap =
+				hierarchyLevels.stream()
+						.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(filterHelperService.getFilteredBuilds(ArgumentMatchers.any(), Mockito.anyString()))
 				.thenReturn(accountHierarchyDataList);
-		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
-		when(service.getKpiData(any(), any(),any())).thenThrow(NullPointerException.class);
+		when(authorizedProjectsService.filterProjects(accountHierarchyDataList))
+				.thenReturn(accountHierarchyDataList);
+		when(service.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
 		List<KpiElement> resultList = zephyrService.process(kpiRequest);
 		assertEquals(CommonConstant.KPI_FAILED, resultList.get(0).getResponseCode());
 	}
@@ -219,7 +227,7 @@ public class ZephyrServiceTest {
 	@Test
 	public void processWithExposedApiToken() throws EntityNotFoundException {
 		KpiRequest kpiRequest = new KpiRequest();
-		createKpiRequest("zephyr",5, kpiRequest);
+		createKpiRequest("zephyr", 5, kpiRequest);
 		List<KpiElement> resultList = zephyrService.processWithExposedApiToken(kpiRequest);
 		assertEquals(1, resultList.size());
 	}
@@ -228,7 +236,7 @@ public class ZephyrServiceTest {
 		List<KpiElement> kpiList = new ArrayList<>();
 		addKpiElement(kpiList, TESTZEPHYR, TESTZEPHYR, "TechDebt", "", source);
 		kpiRequest.setLevel(level);
-		kpiRequest.setIds(new String[] { "Scrum Project_6335363749794a18e8a4479b" });
+		kpiRequest.setIds(new String[]{"Scrum Project_6335363749794a18e8a4479b"});
 		kpiRequest.setKpiList(kpiList);
 		kpiRequest.setRequestTrackerId();
 	}
@@ -245,5 +253,4 @@ public class ZephyrServiceTest {
 		kpiElement.setChartType("gaugeChart");
 		kpiList.add(kpiElement);
 	}
-
 }

@@ -8,7 +8,7 @@
         <ng-template pTemplate="body" let-row>
             <tr>
                 <ng-container *ngFor="let col of cols;let i=index">
-                    <td [ngStyle]="{'color': trendBoxColorObj[row.name]?.color}"><span>
+                    <td [ngStyle]="{'color': getColorForRow(row.name)}"><span>
                             <i class='fas fa-square show-marker'
                                 *ngIf="showMarker && showMarkerColumnNumber===i"></i>{{row[col.field].length > 40 ?
                             (row[col.field].slice(0,40)+'...' ): row[col.field]}}</span>

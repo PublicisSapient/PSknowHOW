@@ -91,10 +91,10 @@ public class FixathonKpiMaster {
 
 		// Step 2: Set new details
 		kpiMaster.updateMany(new Document(KPIID, "kpi150"),
-				new Document("$set", new Document(KPIINFO_DETAILS, List.of(new Document("type", "link")
-						.append("kpiLinkDetail", new Document("text", "Detailed Information at").append("link",
-								"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70484023/Release+Release+Burnup"))))));
-
+				new Document("$set",
+						new Document(KPIINFO_DETAILS, List.of(new Document("type", "link").append("kpiLinkDetail",
+								new Document("text", "Detailed Information at").append("link",
+										"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70484023/Release+Release+Burnup"))))));
 	}
 
 	public void updateYAxisLabel(MongoCollection<Document> kpiMaster, List<String> kpiIds, String yAxisLabel) {
@@ -108,9 +108,8 @@ public class FixathonKpiMaster {
 	}
 
 	public void changeProductionDefectAgeingGraph(MongoCollection<Document> kpiMaster) {
-		kpiMaster.updateMany(new Document(KPIID, new Document("$in", Arrays.asList(KPI_127))),
-				new Document("$set", new Document("chartType", "grouped_column_plus_line").append("isXaxisGroup", true)
-						.append("lineChart", false)));
+		kpiMaster.updateMany(new Document(KPIID, new Document("$in", Arrays.asList(KPI_127))), new Document("$set",
+				new Document("chartType", "grouped_column_plus_line").append("isXaxisGroup", true).append("lineChart", false)));
 	}
 
 	public void changeKpiOrder(String kpiId, Integer defaultOrder, MongoCollection<Document> kpiMaster) {
@@ -135,12 +134,11 @@ public class FixathonKpiMaster {
 	}
 
 	public void unsetProductionDefectAgeingChart(MongoCollection<Document> kpiMaster) {
-		kpiMaster.updateMany(new Document(KPIID, new Document("$in", Arrays.asList(KPI_127))), new Document(UNSET,
-				new Document("chartType", "line").append("isXaxisGroup", null).append("lineChart", null)));
+		kpiMaster.updateMany(new Document(KPIID, new Document("$in", Arrays.asList(KPI_127))),
+				new Document(UNSET, new Document("chartType", "line").append("isXaxisGroup", null).append("lineChart", null)));
 	}
 
-	private void updateAggregationCriteria(MongoCollection<Document> kpiMaster, List<String> kpiIds,
-			String aggCriteria) {
+	private void updateAggregationCriteria(MongoCollection<Document> kpiMaster, List<String> kpiIds, String aggCriteria) {
 		kpiMaster.updateMany(new Document(KPIID, new Document("$in", kpiIds)),
 				new Document("$set", new Document(AGGREGATION_CRITERIA, aggCriteria)));
 	}
@@ -167,5 +165,4 @@ public class FixathonKpiMaster {
 		changeKpiOrder("kpi139", 6, kpiMaster);
 		unsetProductionDefectAgeingChart(kpiMaster);
 	}
-
 }

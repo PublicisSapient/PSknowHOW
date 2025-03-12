@@ -33,9 +33,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Provides utility methods for AzurePipeline processor.
- */
+/** Provides utility methods for AzurePipeline processor. */
 @Component
 @Slf4j
 public final class AzurePipelineUtils {
@@ -49,9 +47,9 @@ public final class AzurePipelineUtils {
 
 	/**
 	 * Creates HTTP Headers.
-	 * 
+	 *
 	 * @param userInfo
-	 *            the user info
+	 *          the user info
 	 * @return the HttpHeaders
 	 */
 	public static HttpHeaders createHeaders(final String userInfo) {
@@ -66,11 +64,11 @@ public final class AzurePipelineUtils {
 
 	/**
 	 * Join URL.
-	 * 
+	 *
 	 * @param base
-	 *            the base
+	 *          the base
 	 * @param paths
-	 *            the path
+	 *          the path
 	 * @return the join URL
 	 */
 	public static String joinURL(String base, String... paths) {
@@ -89,9 +87,9 @@ public final class AzurePipelineUtils {
 
 	/**
 	 * Convert time in milliseconds to date time format in UTC timezone
-	 * 
+	 *
 	 * @param time
-	 *            the time in milliseconds we want to convert to date time format
+	 *          the time in milliseconds we want to convert to date time format
 	 * @return date time in string
 	 */
 	public static String getDateFromTimeInMili(long time) {
@@ -108,13 +106,13 @@ public final class AzurePipelineUtils {
 
 	/**
 	 * Adds parameter to the given url
-	 * 
+	 *
 	 * @param url
-	 *            the url
+	 *          the url
 	 * @param key
-	 *            the parameter name
+	 *          the parameter name
 	 * @param value
-	 *            the parameter value
+	 *          the parameter value
 	 * @return the updated url as StringBuilder
 	 */
 	public static StringBuilder addParam(StringBuilder url, String key, String value) {
@@ -129,11 +127,11 @@ public final class AzurePipelineUtils {
 
 	/**
 	 * Converts JSONObject to String.
-	 * 
+	 *
 	 * @param json
-	 *            the json object
+	 *          the json object
 	 * @param key
-	 *            the key
+	 *          the key
 	 * @return the string data
 	 */
 	public static String getString(JSONObject json, String key) {
@@ -142,11 +140,11 @@ public final class AzurePipelineUtils {
 
 	/**
 	 * Provides JsonArray.
-	 * 
+	 *
 	 * @param json
-	 *            the json
+	 *          the json
 	 * @param key
-	 *            the key
+	 *          the key
 	 * @return the JSONArray
 	 */
 	public static JSONArray getJsonArray(JSONObject json, String key) {
@@ -156,11 +154,11 @@ public final class AzurePipelineUtils {
 
 	/**
 	 * Provides JsonObject
-	 * 
+	 *
 	 * @param json
-	 *            the json object
+	 *          the json object
 	 * @param key
-	 *            the key
+	 *          the key
 	 * @return the JSONObject
 	 */
 	public static JSONObject getJsonObject(JSONObject json, String key) {
@@ -170,12 +168,12 @@ public final class AzurePipelineUtils {
 
 	/**
 	 * Provides Domain name.
-	 * 
+	 *
 	 * @param url
-	 *            the URL
+	 *          the URL
 	 * @return the domain name
 	 * @throws URISyntaxException
-	 *             if there is any illegal character in URI
+	 *           if there is any illegal character in URI
 	 */
 	public static String extractDomain(String url) throws URISyntaxException {
 		URI uri = new URI(url);
@@ -184,12 +182,12 @@ public final class AzurePipelineUtils {
 
 	/**
 	 * Provides Port number.
-	 * 
+	 *
 	 * @param url
-	 *            the URL
+	 *          the URL
 	 * @return port the port number
 	 * @throws URISyntaxException
-	 *             if there is any illegal character in URI
+	 *           if there is any illegal character in URI
 	 */
 	public static int extractPort(String url) throws URISyntaxException {
 		URI uri = new URI(url);
@@ -198,11 +196,11 @@ public final class AzurePipelineUtils {
 
 	/**
 	 * Check whether two urls have the same server info
-	 * 
+	 *
 	 * @param url1
-	 *            url1
+	 *          url1
 	 * @param url2
-	 *            url2
+	 *          url2
 	 * @return true if they have same server info else false
 	 */
 	public static boolean isSameServerInfo(String url1, String url2) {
@@ -225,6 +223,7 @@ public final class AzurePipelineUtils {
 
 		return false;
 	}
+
 	public static String encodeSpaceInUrl(String url) {
 		String resultUrl = null;
 		if (StringUtils.isNotEmpty(url)) {

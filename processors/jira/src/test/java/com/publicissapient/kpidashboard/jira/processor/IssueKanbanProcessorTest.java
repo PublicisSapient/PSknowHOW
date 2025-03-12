@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.processor;
 
 import static org.junit.Assert.assertEquals;
@@ -26,7 +25,6 @@ import static org.mockito.Mockito.when;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +32,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
@@ -59,7 +57,6 @@ public class IssueKanbanProcessorTest {
 	@InjectMocks
 	private IssueKanbanProcessor issueKanbanProcessor;
 
-
 	@Test
 	public void testProcessWhenSprintFetchIsFalse() throws Exception {
 		// Arrange
@@ -71,11 +68,10 @@ public class IssueKanbanProcessorTest {
 		KanbanJiraIssue jiraIssue = new KanbanJiraIssue();
 		when(jiraIssueProcessor.convertToKanbanJiraIssue(any(), any(), any(), any())).thenReturn(jiraIssue);
 		ProjectHierarchy projectHierarchy = new ProjectHierarchy();
-				projectHierarchy.setBasicProjectConfigId(new ObjectId("63bfa0f80b28191677615735"));
+		projectHierarchy.setBasicProjectConfigId(new ObjectId("63bfa0f80b28191677615735"));
 		Set<ProjectHierarchy> accountHierarchies = new HashSet<>();
 		accountHierarchies.add(projectHierarchy);
-		when(jiraIssueAccountHierarchyProcessor.createKanbanAccountHierarchy(any(), any()))
-				.thenReturn(accountHierarchies);
+		when(jiraIssueAccountHierarchyProcessor.createKanbanAccountHierarchy(any(), any())).thenReturn(accountHierarchies);
 		AssigneeDetails assigneeDetails = new AssigneeDetails();
 		when(jiraIssueAssigneeProcessor.createKanbanAssigneeDetails(any(), any())).thenReturn(assigneeDetails);
 

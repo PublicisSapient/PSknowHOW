@@ -20,18 +20,19 @@ package com.publicissapient.kpidashboard.apis.errors;
 
 /**
  * Exception thrown when a report is not found.
+ *
  * <p>
- * This exception is used to indicate that an attempt to retrieve a report
- * has failed because the report does not exist.
- * </p>
+ * This exception is used to indicate that an attempt to retrieve a report has
+ * failed because the report does not exist.
  */
-public class ReportNotFoundException extends  RuntimeException {
-    /**
-     * Constructs a new ReportNotFoundException with the specified detail message.
-     *
-     * @param message the detail message
-     */
-    public ReportNotFoundException(String message) {
-        super(message);
-    }
+public class ReportNotFoundException extends RuntimeException {
+	/**
+	 * Constructs a new ReportNotFoundException with the specified detail message.
+	 *
+	 * @param message
+	 *          the detail message
+	 */
+	public ReportNotFoundException(String message) {
+		super(message);
+	}
 }

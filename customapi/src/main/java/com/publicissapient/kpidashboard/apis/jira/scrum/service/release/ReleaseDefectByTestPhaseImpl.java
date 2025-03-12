@@ -30,7 +30,6 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -68,16 +67,15 @@ public class ReleaseDefectByTestPhaseImpl extends JiraReleaseKPIService {
 	ConfigHelperService configHelperService;
 
 	/**
-	 *
 	 * @param kpiRequest
-	 *            kpiRequest with request details
+	 *          kpiRequest with request details
 	 * @param kpiElement
-	 *            basic details of KPI
+	 *          basic details of KPI
 	 * @param releaseNode
-	 *            details of project nodes
+	 *          details of project nodes
 	 * @return KpiElement with data
 	 * @throws ApplicationException
-	 *             exception while processing request
+	 *           exception while processing request
 	 */
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node releaseNode)
@@ -108,15 +106,14 @@ public class ReleaseDefectByTestPhaseImpl extends JiraReleaseKPIService {
 	}
 
 	/**
-	 *
 	 * @param leafNode
-	 *            project node details
+	 *          project node details
 	 * @param startDate
-	 *            startDate
+	 *          startDate
 	 * @param endDate
-	 *            endDate
+	 *          endDate
 	 * @param kpiRequest
-	 *            kpiRequest with request details
+	 *          kpiRequest with request details
 	 * @return JiraIssues with test phases
 	 */
 	@Override
@@ -136,19 +133,21 @@ public class ReleaseDefectByTestPhaseImpl extends JiraReleaseKPIService {
 
 	/**
 	 * to remove jiraissue containing specified rcas
-	 * 
+	 *
 	 * @param leafNode
-	 *            leafNode
+	 *          leafNode
 	 * @param fieldMapping
-	 *            fieldMapping
+	 *          fieldMapping
 	 * @param releaseIssues
-	 *            releaseIssues
+	 *          releaseIssues
 	 * @return excluded jiraissue
 	 */
 	private List<JiraIssue> excludeRCAMatchingIssues(Node leafNode, FieldMapping fieldMapping,
 			List<JiraIssue> releaseIssues) {
 		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
-		KpiHelperService.addRCAProjectWise(projectWiseRCA, leafNode, fieldMapping.getExcludeRCAFromKPI163());
+		KpiHelperService.addRCAProjectWise(projectWiseRCA,
+				leafNode.getProjectFilter().getBasicProjectConfigId().toString(),
+				fieldMapping.getExcludeRCAFromKPI163());
 		List<JiraIssue> rcaFreeIssues = new ArrayList<>();
 		releaseIssues.stream().filter(jiraIssue -> {
 			Set<String> rcas = projectWiseRCA.getOrDefault(jiraIssue.getBasicProjectConfigId(), Collections.emptySet());
@@ -160,23 +159,22 @@ public class ReleaseDefectByTestPhaseImpl extends JiraReleaseKPIService {
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
 			List<JiraIssue> jiraIssueList) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				CollectionUtils.isNotEmpty(jiraIssueList)) {
 			KPIExcelUtility.populateReleaseDefectWithTestPhasesRelatedExcelData(jiraIssueList, excelData);
 		}
 	}
 
 	private void createExcelDataAndTrendValueList(KpiElement kpiElement, List<IterationKpiValue> iterationKpiValueList,
-			List<JiraIssue> releaseIssues, FieldMapping fieldMapping, List<KPIExcelData> excelData,
-			Node latestRelease) {
+			List<JiraIssue> releaseIssues, FieldMapping fieldMapping, List<KPIExcelData> excelData, Node latestRelease) {
 		if (CollectionUtils.isNotEmpty(releaseIssues)) {
 			List<DataCount> openDefectsDataCountList = new ArrayList<>();
 			List<DataCount> totalDefectsDataCountList = new ArrayList<>();
 			List<JiraIssue> openDefectsList;
 			openDefectsList = releaseIssues.stream()
-					.filter(jiraIssue -> StringUtils.isNotEmpty(jiraIssue.getStatus())
-							&& CollectionUtils.isNotEmpty(fieldMapping.getJiraDodKPI163())
-							&& !fieldMapping.getJiraDodKPI163().contains(jiraIssue.getStatus()))
+					.filter(jiraIssue -> StringUtils.isNotEmpty(jiraIssue.getStatus()) &&
+							CollectionUtils.isNotEmpty(fieldMapping.getJiraDodKPI163()) &&
+							!fieldMapping.getJiraDodKPI163().contains(jiraIssue.getStatus()))
 					.collect(Collectors.toList());
 			setDefectList(OPEN_DEFECTS, openDefectsDataCountList, openDefectsList, iterationKpiValueList);
 			setDefectList(TOTAL_DEFECTS, totalDefectsDataCountList, releaseIssues, iterationKpiValueList);
@@ -203,13 +201,12 @@ public class ReleaseDefectByTestPhaseImpl extends JiraReleaseKPIService {
 		dataCount.setData(String.valueOf(jiraIssueList.size()));
 		dataCount.setKpiGroup(DEFECTS_COUNT);
 		dataCount.setDrillDown(null);
-		Map<String, Long> countByTestPhase = jiraIssueList.stream().collect(
-				Collectors.groupingBy(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getEscapedDefectGroup())
+		Map<String, Long> countByTestPhase = jiraIssueList.stream()
+				.collect(Collectors.groupingBy(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getEscapedDefectGroup())
 						? jiraIssue.getEscapedDefectGroup().stream().findFirst().orElse(UNDEFINED)
 						: UNDEFINED, Collectors.counting()));
 		Set<DataCount> dataCountList = countByTestPhase.entrySet().stream()
-				.map(entry -> new DataCount(entry.getKey(), entry.getValue().doubleValue(), null))
-				.collect(Collectors.toSet());
+				.map(entry -> new DataCount(entry.getKey(), entry.getValue().doubleValue(), null)).collect(Collectors.toSet());
 		dataCount.setValue(dataCountList);
 		return dataCount;
 	}

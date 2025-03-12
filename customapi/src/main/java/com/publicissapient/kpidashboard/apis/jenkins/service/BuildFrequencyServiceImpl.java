@@ -32,8 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +40,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -54,6 +53,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
@@ -67,7 +67,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Build Frequency KPI Implementation
- * 
+ *
  * @author aksshriv1
  */
 @Component
@@ -88,8 +88,8 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		Map<String, List<DataCount>> trendValueMap = new HashMap<>();
 		Node root = treeAggregatorDetail.getRoot();
@@ -147,9 +147,8 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 		statusList.add(BuildStatus.SUCCESS.name());
 		mapOfFilters.put("buildStatus", statusList);
 		List<Build> buildList = new ArrayList<>();
-		projectBasicConfigIds
-				.forEach(projectBasicConfigId -> buildList.addAll(kpiDataCacheService.fetchBuildFrequencyData(
-						projectBasicConfigId, startDate, endDate, KPICode.BUILD_FREQUENCY.getKpiId())));
+		projectBasicConfigIds.forEach(projectBasicConfigId -> buildList.addAll(kpiDataCacheService
+				.fetchBuildFrequencyData(projectBasicConfigId, startDate, endDate, KPICode.BUILD_FREQUENCY.getKpiId())));
 
 		if (CollectionUtils.isEmpty(buildList)) {
 			return new HashMap<>();
@@ -158,22 +157,20 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	}
 
 	/**
-	 * 
 	 * @param kpiElement
-	 *            kpiElement
+	 *          kpiElement
 	 * @param mapTmp
-	 *            mapTmp
+	 *          mapTmp
 	 * @param projectLeafNodeList
-	 *            projectLeafNodeList
+	 *          projectLeafNodeList
 	 * @param trendValueMap
-	 *            trendValueMap
+	 *          trendValueMap
 	 */
-	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp,
-			List<Node> projectLeafNodeList, Map<String, List<DataCount>> trendValueMap) {
+	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp, List<Node> projectLeafNodeList,
+			Map<String, List<DataCount>> trendValueMap) {
 
 		String requestTrackerId = getRequestTrackerId();
-		LocalDateTime localStartDate = LocalDateTime.now()
-				.minusDays(customApiConfig.getJenkinsWeekCount() * DAYS_IN_WEEKS);
+		LocalDateTime localStartDate = LocalDateTime.now().minusDays(customApiConfig.getJenkinsWeekCount() * DAYS_IN_WEEKS);
 		LocalDateTime localEndDate = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
 		String startDate = localStartDate.format(formatter);
@@ -187,7 +184,6 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 
 		List<KPIExcelData> excelData = new ArrayList<>();
 		projectLeafNodeList.forEach(node -> {
-
 			String trendLineName = node.getProjectFilter().getName();
 			BuildFrequencyInfo buildFrequencyInfo = new BuildFrequencyInfo();
 			LocalDateTime end = localEndDate;
@@ -222,7 +218,6 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 
 			populateValidationDataObject(requestTrackerId, excelData, trendLineName, buildFrequencyInfo);
-
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.BUILD_FREQUENCY.getColumns());
@@ -232,15 +227,14 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	 * to get the job name
 	 *
 	 * @param trendLineName
-	 *            trendLineName
+	 *          trendLineName
 	 * @param entry
-	 *            entry
+	 *          entry
 	 * @param buildList
-	 *            list of builds
+	 *          list of builds
 	 * @return returns the job name
 	 */
-	private static String getJobName(String trendLineName, Map.Entry<String, List<Build>> entry,
-			List<Build> buildList) {
+	private static String getJobName(String trendLineName, Map.Entry<String, List<Build>> entry, List<Build> buildList) {
 		String jobName;
 		if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
 			if (StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
@@ -260,44 +254,41 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	}
 
 	/**
-	 * 
 	 * @param requestTrackerId
-	 *            requestTrackerId
+	 *          requestTrackerId
 	 * @param excelData
-	 *            excelData
+	 *          excelData
 	 * @param projectName
-	 *            projectName
+	 *          projectName
 	 * @param buildFrequencyInfo
-	 *            buildFrequencyInfo
+	 *          buildFrequencyInfo
 	 */
 	private void populateValidationDataObject(String requestTrackerId, List<KPIExcelData> excelData, String projectName,
 			BuildFrequencyInfo buildFrequencyInfo) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			KPIExcelUtility.populateBuildFrequency(excelData, projectName, buildFrequencyInfo);
-
 		}
 	}
 
 	/**
-	 * 
 	 * @param buildFrequencyInfo
-	 *            buildFrequencyInfo
+	 *          buildFrequencyInfo
 	 * @param endTime
-	 *            endTime
+	 *          endTime
 	 * @param buildList
-	 *            buildList
+	 *          buildList
 	 * @param trendLineName
-	 *            trendLineName
+	 *          trendLineName
 	 * @param trendValueMap
-	 *            trendValueMap
+	 *          trendValueMap
 	 * @param jobName
-	 *            jobName
+	 *          jobName
 	 * @param aggDataMap
-	 *            aggDataMap
+	 *          aggDataMap
 	 */
-	private void prepareInfoForBuild(BuildFrequencyInfo buildFrequencyInfo, LocalDateTime endTime,
-			List<Build> buildList, String trendLineName, Map<String, List<DataCount>> trendValueMap, String jobName,
+	private void prepareInfoForBuild(BuildFrequencyInfo buildFrequencyInfo, LocalDateTime endTime, List<Build> buildList,
+			String trendLineName, Map<String, List<DataCount>> trendValueMap, String jobName,
 			Map<String, List<DataCount>> aggDataMap) {
 		LocalDate endDateTime = endTime.toLocalDate();
 		Map<String, Integer> weekRange = new LinkedHashMap<>();
@@ -325,7 +316,6 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 			}
 			weekRange.putIfAbsent(date, null);
 			endDateTime = endDateTime.minusWeeks(1);
-
 		}
 		trendValueMap.putIfAbsent(jobName, new ArrayList<>());
 		aggDataMap.putIfAbsent(jobName, new ArrayList<>());
@@ -334,17 +324,15 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 			aggDataMap.get(jobName).add(dataCount);
 			trendValueMap.get(jobName).add(dataCount);
 		});
-
 	}
 
 	/**
-	 * 
 	 * @param trendLineName
-	 *            trendLineName
+	 *          trendLineName
 	 * @param valueForCurrentLeaf
-	 *            valueForCurrentLeaf
+	 *          valueForCurrentLeaf
 	 * @param date
-	 *            date
+	 *          date
 	 * @return returning data count
 	 */
 	private DataCount createDataCount(String trendLineName, Integer valueForCurrentLeaf, String date) {
@@ -358,23 +346,22 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	}
 
 	/**
-	 * 
 	 * @param buildFrequencyInfo
-	 *            buildFrequencyInfo
+	 *          buildFrequencyInfo
 	 * @param build
-	 *            build
+	 *          build
 	 * @param date
-	 *            date
+	 *          date
 	 */
 	private void buildFrequencyInfo(BuildFrequencyInfo buildFrequencyInfo, Build build, String date) {
 		if (null != buildFrequencyInfo) {
 
-			if (StringUtils.isNotEmpty(build.getJobFolder())) {
-				buildFrequencyInfo.addBuildJobNameList(build.getJobFolder());
-			} else if (StringUtils.isNotEmpty(build.getPipelineName())) {
-				buildFrequencyInfo.addBuildJobNameList(build.getPipelineName());
-			} else {
+			if (StringUtils.isNotEmpty(build.getBuildJob())) {
 				buildFrequencyInfo.addBuildJobNameList(build.getBuildJob());
+			} else if (StringUtils.isNotEmpty(build.getJobFolder())) {
+				buildFrequencyInfo.addBuildJobNameList(build.getJobFolder());
+			} else {
+				buildFrequencyInfo.addBuildJobNameList(build.getPipelineName());
 			}
 			buildFrequencyInfo.addBuildUrl(build.getBuildUrl());
 			buildFrequencyInfo.addBuildStartTime(DateUtil.dateConverter(new Date(build.getStartTime())));
@@ -383,19 +370,18 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	}
 
 	/**
-	 * 
 	 * @param monday
-	 *            monday
+	 *          monday
 	 * @param sunday
-	 *            sunday
+	 *          sunday
 	 * @param build
-	 *            build
+	 *          build
 	 * @return returning boolean value
 	 */
 	private boolean checkDateIsInWeeks(LocalDate monday, LocalDate sunday, Build build) {
 		LocalDate buildTime = Instant.ofEpochMilli(build.getStartTime()).atZone(ZoneId.systemDefault()).toLocalDate();
-		return (buildTime.isAfter(monday) || buildTime.isEqual(monday))
-				&& (buildTime.isBefore(sunday) || buildTime.isEqual(sunday));
+		return (buildTime.isAfter(monday) || buildTime.isEqual(monday)) &&
+				(buildTime.isBefore(sunday) || buildTime.isEqual(sunday));
 	}
 
 	@Override

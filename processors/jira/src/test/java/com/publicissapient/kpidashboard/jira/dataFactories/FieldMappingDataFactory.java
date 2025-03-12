@@ -48,7 +48,7 @@ public class FieldMappingDataFactory {
 
 		FieldMappingDataFactory factory = new FieldMappingDataFactory();
 		factory.createObjectMapper();
-        factory.init(filePath);
+		factory.init(filePath);
 		return factory;
 	}
 
@@ -87,9 +87,8 @@ public class FieldMappingDataFactory {
 
 	public FieldMapping findByBasicProjectConfigId(String basicProjectConfigId) {
 
-		return fieldMappings.stream().filter(
-				fieldMapping -> fieldMapping.getBasicProjectConfigId().toHexString().equals(basicProjectConfigId))
+		return fieldMappings.stream()
+				.filter(fieldMapping -> fieldMapping.getBasicProjectConfigId().toHexString().equals(basicProjectConfigId))
 				.findFirst().orElse(null);
 	}
-
 }

@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.sonar.processor.adapter.impl;
 
 import java.util.List;
 
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -48,9 +47,7 @@ import com.publicissapient.kpidashboard.sonar.util.SonarProcessorUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Provides default Sonar version 6 client implementation.
- */
+/** Provides default Sonar version 6 client implementation. */
 @Component
 @Slf4j
 public class Sonar6And7Client implements SonarClient {
@@ -65,9 +62,9 @@ public class Sonar6And7Client implements SonarClient {
 	 * Instantiates a new Default Sonar 6 or 7 client.
 	 *
 	 * @param restOperationsFactory
-	 *            the rest operations supplier
+	 *          the rest operations supplier
 	 * @param sonarConfig
-	 *            the sonar settings
+	 *          the sonar settings
 	 */
 	@Autowired
 	public Sonar6And7Client(RestOperationsFactory<RestOperations> restOperationsFactory, SonarConfig sonarConfig,
@@ -79,9 +76,9 @@ public class Sonar6And7Client implements SonarClient {
 
 	/**
 	 * Provides the list of Sonar Projects.
-	 * 
+	 *
 	 * @param sonarServer
-	 *            the Sonar server connection details
+	 *          the Sonar server connection details
 	 * @return the list of Sonar project
 	 */
 	@Override
@@ -92,13 +89,13 @@ public class Sonar6And7Client implements SonarClient {
 
 	/**
 	 * Provides Current Sonar snapshot.
-	 * 
+	 *
 	 * @param project
-	 *            the Sonar project setup properties
+	 *          the Sonar project setup properties
 	 * @param httpHeaders
-	 *            the list of http header
+	 *          the list of http header
 	 * @param metrics
-	 *            the metrics
+	 *          the metrics
 	 * @return the current sonar data
 	 */
 	@Override
@@ -106,8 +103,7 @@ public class Sonar6And7Client implements SonarClient {
 			String metrics) {
 		String url;
 		if (!project.getToolDetailsMap().containsKey(SonarClientCommonUtils.BRANCH)) {
-			url = String.format(
-					new StringBuilder(project.getInstanceUrl()).append(RESOURCE_DETAILS_ENDPOINT).toString(),
+			url = String.format(new StringBuilder(project.getInstanceUrl()).append(RESOURCE_DETAILS_ENDPOINT).toString(),
 					project.getProjectId(), metrics);
 		} else {
 			url = String.format(
@@ -126,31 +122,27 @@ public class Sonar6And7Client implements SonarClient {
 
 				SonarDetails sonarDetail = new SonarDetails();
 				sonarDetail.setType(SonarAnalysisType.STATIC_ANALYSIS);
-				sonarDetail
-						.setName(SonarProcessorUtils.convertToString(resources, SonarClientCommonUtils.PROJECT_NAME));
+				sonarDetail.setName(SonarProcessorUtils.convertToString(resources, SonarClientCommonUtils.PROJECT_NAME));
 				sonarDetail.setUrl(new SonarDashboardUrl(project.getInstanceUrl(),
 						SonarProcessorUtils.convertToString(resources, SonarClientCommonUtils.PROJECT_KEY)).toString());
 				sonarDetail.setBranch(project.getBranch());
 
 				if (!project.getToolDetailsMap().containsKey(SonarClientCommonUtils.BRANCH)) {
-					url = String.format(
-							new StringBuilder(project.getInstanceUrl())
-									.append(SonarClientCommonUtils.PROJECT_ANALYSES_ENDPOINT).toString(),
+					url = String.format(new StringBuilder(project.getInstanceUrl())
+							.append(SonarClientCommonUtils.PROJECT_ANALYSES_ENDPOINT).toString(),
 							SonarProcessorUtils.convertToString(resources, SonarClientCommonUtils.PROJECT_KEY));
 				} else {
 					url = String.format(
-							new StringBuilder(project.getInstanceUrl())
-									.append(SonarClientCommonUtils.PROJECT_ANALYSES_ENDPOINT)
+							new StringBuilder(project.getInstanceUrl()).append(SonarClientCommonUtils.PROJECT_ANALYSES_ENDPOINT)
 									.append(SonarClientCommonUtils.BRANCH_ENDPOINT).toString(),
-							SonarProcessorUtils.convertToString(resources, SonarClientCommonUtils.PROJECT_KEY),
-							project.getBranch());
+							SonarProcessorUtils.convertToString(resources, SonarClientCommonUtils.PROJECT_KEY), project.getBranch());
 				}
 				key = "analyses";
 				JSONArray jsonResources = SonarProcessorUtils.parseData(url, restOperations, key, httpHeaders);
 				if (!jsonResources.isEmpty()) {
 					JSONObject resourcesLatestData = (JSONObject) jsonResources.get(0);
-					sonarDetail.setTimestamp(
-							SonarProcessorUtils.getTimestamp(resourcesLatestData, SonarClientCommonUtils.PROJECT_DATE));
+					sonarDetail
+							.setTimestamp(SonarProcessorUtils.getTimestamp(resourcesLatestData, SonarClientCommonUtils.PROJECT_DATE));
 					for (Object eventObj : (JSONArray) resourcesLatestData.get(SonarClientCommonUtils.PROJECT_EVENTS)) {
 						JSONObject eventJson = (JSONObject) eventObj;
 
@@ -178,13 +170,13 @@ public class Sonar6And7Client implements SonarClient {
 
 	/**
 	 * Provides Past sonar data.
-	 * 
+	 *
 	 * @param project
-	 *            the Sonar server connection details
+	 *          the Sonar server connection details
 	 * @param httpHeaders
-	 *            the list of http header
+	 *          the list of http header
 	 * @param metrics
-	 *            the metrics
+	 *          the metrics
 	 * @return the list of code quality history
 	 */
 	@Override
@@ -192,5 +184,4 @@ public class Sonar6And7Client implements SonarClient {
 			String metrics) {
 		return SonarClientCommonUtils.getSonarHistories(project, httpHeaders, metrics, restOperations);
 	}
-
 }

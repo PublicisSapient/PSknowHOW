@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.apis.jira.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -12,21 +13,26 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
@@ -45,7 +51,6 @@ import lombok.extern.slf4j.Slf4j;
  * filter Impl UnitCoverageServiceImpl for week wise data in line chart
  * SonarViolationServiceImpl for week wise data group column chart with filter
  * Impl.
- *
  */
 @Component
 @Slf4j
@@ -58,41 +63,43 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 	private static final String AGGREGATED = "Overall";
 	private static final String STORY_HISTORY_DATA = "storyHistoryData";
 	private static final String PROJECT_FIELDMAPPING = "projectFieldMapping";
+	@Autowired
+	private FilterHelperService flterHelperService;
 
 	@Autowired
 	private KpiHelperService kpiHelperService;
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
+	@Autowired
+	private KpiDataProvider kpiDataProvider;
+	private List<String> sprintIdList = Collections.synchronizedList(new ArrayList<>());
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public String getQualifierType() {
 		// KPI Name from KPICODE
 		return "ScrumTemplateKPI";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-
+		sprintIdList = treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.SPRINT_MASTER).stream()
+				.map(node -> node.getSprintFilter().getId()).collect(Collectors.toList());
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-
 			if (Filters.getFilter(k) == Filters.SPRINT) {
 				sprintWiseLeafNodeValueForSimpleLineChart(mapTmp, v, kpiElement, kpiRequest);
 
 				sprintWiseLeafNodeValueForLineChartWithFilterOrGroupStackChartWithFilter(mapTmp, v, kpiElement,
 						kpiRequest);
 			}
-
 		});
 
 		log.debug("[DIR-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
@@ -133,32 +140,43 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 		return kpiElement;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 
-		long startTime = System.currentTimeMillis();
+		Map<String, Object> resultListMap = new HashMap<>();
+		Map<ObjectId, List<String>> projectWiseSprints = new HashMap<>();
 
-		Map<String, Object> resultListMap = kpiHelperService.fetchDIRDataFromDb(leafNodeList, kpiRequest);
+		leafNodeList.forEach(leaf -> {
+			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
+			String sprint = leaf.getSprintFilter().getId();
+			projectWiseSprints.putIfAbsent(basicProjectConfigId, new ArrayList<>());
+			projectWiseSprints.get(basicProjectConfigId).add(sprint);
+		});
+		List<SprintWiseStory> storyDataList = new ArrayList<>();
+		List<JiraIssue> defectDataList = new ArrayList<>();
+		boolean fetchCachedData = flterHelperService.isFilterSelectedTillSprintLevel(kpiRequest.getLevel(), false);
+		projectWiseSprints.forEach((basicProjectConfigId, sprintList) -> {
+			Map<String, Object> result;
+			if (fetchCachedData) { // fetch data from cache only if Filter is selected till Sprint
+				// level.
+				result = kpiDataCacheService.fetchDefectInjectionRateData(kpiRequest, basicProjectConfigId,
+						sprintIdList, KPICode.DEFECT_INJECTION_RATE.getKpiId());
+			} else { // fetch data from DB if filters below Sprint level (i.e. additional filters)
+				result = kpiDataProvider.fetchDefectInjectionRateDataFromDb(kpiRequest, basicProjectConfigId,
+						sprintList);
+			}
 
-		if (log.isDebugEnabled()) {
-			List<SprintWiseStory> storyDataList = (List<SprintWiseStory>) resultListMap.get(STORY_DATA);
-			List<JiraIssue> defectDataList = (List<JiraIssue>) resultListMap.get(DEFECT_DATA);
-			long processTime = System.currentTimeMillis() - startTime;
-			log.info("[DIR-DB-QUERY][]. storyData count: {} defectData count: {}  time: {}", storyDataList.size(),
-					defectDataList.size(), processTime);
-		}
+			storyDataList.addAll((List<SprintWiseStory>) result.get(STORY_DATA));
+			defectDataList.addAll((List<JiraIssue>) result.get(DEFECT_DATA));
+		});
 
 		return resultListMap;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> filterComponentIdWiseFCHMap) {
 		return null;
@@ -167,7 +185,7 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 	/**
 	 * This method populates KPI value to sprint leaf nodes. It also gives the trend
 	 * analysis at sprint wise.
-	 * 
+	 *
 	 * @param mapTmp
 	 *            node is map
 	 * @param sprintLeafNodeList
@@ -195,7 +213,7 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 		// grouping data to ease up operations ahead
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap.get(STORY_DATA);
 
-		/** Additional Filter **/
+		/** Additional Filter * */
 		Map<Pair<String, String>, Map<String, List<String>>> sprintWiseMap = KpiDataHelper
 				.createSubCategoryWiseMap(subGroupCategory, sprintWiseStoryList, kpiRequest.getFilterToShowOnTrend());
 		Map<String, String> sprintIdSprintNameMap = sprintWiseStoryList.stream().collect(
@@ -237,7 +255,6 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 		});
 
 		sprintLeafNodeList.forEach(node -> {
-
 			String trendLineName = node.getProjectFilter().getName();
 			String currentSprintComponentId = node.getSprintFilter().getId();
 			Pair<String, String> currentNodeIdentifier = Pair.of(node.getParentId(), currentSprintComponentId);
@@ -265,7 +282,6 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 			dataCount.setValue(defectInjectionRateForCurrentLeaf);
 			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 			mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
-
 		});
 	}
 
@@ -336,7 +352,6 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 					issueTypes.add(NormalizedJira.DEFECT_TYPE.getValue());
 				}
 				issueTypes.add(AGGREGATED);
-
 			}
 			Set<String> absentIssueTypesRoot = new HashSet<>();
 			String currentSprintComponentId = node.getSprintFilter().getId();
@@ -373,7 +388,7 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 	/**
 	 * This method sets the defect and story count for each leaf node to show data
 	 * on trend line on mouse hover.
-	 * 
+	 *
 	 * @param sprintWiseHowerMap
 	 *            map of sprint key and hover value
 	 * @param sprint
@@ -402,7 +417,7 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 	/**
 	 * This method populates KPI Element with Validation data. It will be triggered
 	 * only for request originated to get Excel data.
-	 * 
+	 *
 	 * @param kpiElement
 	 *            KpiElement
 	 * @param requestTrackerId

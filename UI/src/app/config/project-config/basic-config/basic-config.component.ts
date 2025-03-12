@@ -61,6 +61,7 @@ export class BasicConfigComponent implements OnInit {
   selectedItems: { [key: string]: any } = {};
   isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
   clone: string = '';
+  completeHierarchyData: any;
 
   constructor(private formBuilder: UntypedFormBuilder,
     private sharedService: SharedService,
@@ -90,7 +91,7 @@ export class BasicConfigComponent implements OnInit {
         label: 'Data ready on Dashboard',
       }
     ];
-    this.getHierarchy();
+    this.lookForCompletHierarchyData();
     this.ifSuperUser = this.getAuthorizationService.checkIfSuperUser();
     this.selectedProject = this.sharedService.getSelectedProject();
     this.sharedService.setSelectedFieldMapping(null);
@@ -118,7 +119,8 @@ export class BasicConfigComponent implements OnInit {
         hierarchyLevelName: 'Project Methodology',
         inputType: 'switch',
         value: false,
-        required: true
+        required: true,
+        disabled : this.clone
       });
 
       if (this.clone !== 'true') {
@@ -380,9 +382,23 @@ export class BasicConfigComponent implements OnInit {
     return null;
   }
 
+  lookForCompletHierarchyData() {
+    this.completeHierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
+    if (!this.completeHierarchyData) {
+      this.http.getAllHierarchyLevels().subscribe(res => {
+        if (res.data) {
+          this.completeHierarchyData = res.data;
+          localStorage.setItem('completeHierarchyData', JSON.stringify(res.data));
+          this.getHierarchy();
+        }
+      });
+    } else {
+      this.getHierarchy();
+    }
+  }
+
   getHierarchy() {
-    const completeHierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
-    const filteredHierarchyData = completeHierarchyData?.scrum.filter(item => item.id);
+    const filteredHierarchyData = this.completeHierarchyData?.scrum.filter(item => item.id);
     const hierarchyMap = filteredHierarchyData?.reduce((acc, item) => {
       acc[item.hierarchyLevelId] = item.hierarchyLevelName;
       return acc;

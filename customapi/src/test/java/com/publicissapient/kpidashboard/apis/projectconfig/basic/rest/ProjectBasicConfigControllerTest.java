@@ -21,9 +21,6 @@ package com.publicissapient.kpidashboard.apis.projectconfig.basic.rest;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.TreeSet;
-
-import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,17 +44,13 @@ import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.data.ProjectBasicConfigDataFactory;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.apis.util.TestUtil;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevelSuggestion;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsForAccessRequest;
-import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelSuggestionRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.service.HierarchyLevelSuggestionsServiceImpl;
 
 /**
  * @author narsingh9
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectBasicConfigControllerTest {
@@ -91,9 +84,7 @@ public class ProjectBasicConfigControllerTest {
 
 	private ModelMapper modelMapper = new ModelMapper();
 
-	/**
-	 * method includes pre processes for test cases
-	 */
+	/** method includes pre processes for test cases */
 	@Before
 	public void before() {
 		mockMvc = MockMvcBuilders.standaloneSetup(projectConfigController).build();
@@ -107,9 +98,7 @@ public class ProjectBasicConfigControllerTest {
 		par.setProjectName("dummy project");
 	}
 
-	/**
-	 * method includes post processes for test cases
-	 */
+	/** method includes post processes for test cases */
 	@After
 	public void after() {
 		mockMvc = null;
@@ -118,19 +107,18 @@ public class ProjectBasicConfigControllerTest {
 	/**
 	 * method to test add functionality
 	 *
+	 * <p>
 	 * add basic config
 	 *
 	 * @throws Exception
-	 *             exception
+	 *           exception
 	 */
 	@Test
 	public void testAddBasicConfig() throws Exception {
 		SecurityContextHolder.setContext(securityContext);
 		when(authenticationService.getLoggedInUser()).thenReturn("standarduser");
-		this.mockMvc.perform(
-				MockMvcRequestBuilders.post("/basicconfigs").content(TestUtil.convertObjectToJsonBytes(basicConfigDTO))
-						.contentType(MediaType.APPLICATION_JSON_VALUE))
+		this.mockMvc.perform(MockMvcRequestBuilders.post("/basicconfigs")
+				.content(TestUtil.convertObjectToJsonBytes(basicConfigDTO)).contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
-
 }

@@ -10,9 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * Lead time data to show in excel.
- */
+/** Lead time data to show in excel. */
 @Data
 @Builder
 @Getter
@@ -35,5 +33,4 @@ public class LeadTimeData {
 	private List<String> triageToComplete;
 	private List<String> completeToLive;
 	private List<String> leadTime;
-
 }

@@ -34,9 +34,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents the commit details in a repository.
- */
+/** Represents the commit details in a repository. */
 @Data
 @Getter
 @Setter
@@ -62,5 +60,4 @@ public class CommitDetails extends BasicModel {
 	private CommitType type;
 	private String status;
 	private JSONArray reviewers;
-
 }

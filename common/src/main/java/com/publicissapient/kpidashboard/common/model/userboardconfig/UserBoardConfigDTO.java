@@ -25,9 +25,8 @@ import lombok.Data;
 
 /**
  * DTO of userboardconfig
- * 
- * @author yasbano
  *
+ * @author yasbano
  */
 @Data
 public class UserBoardConfigDTO {

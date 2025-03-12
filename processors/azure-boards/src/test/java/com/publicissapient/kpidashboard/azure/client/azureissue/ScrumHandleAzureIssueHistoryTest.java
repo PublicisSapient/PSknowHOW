@@ -81,7 +81,6 @@ public class ScrumHandleAzureIssueHistoryTest {
 
 		jiraIssue.setAssigneeId("1");
 		jiraIssue.setAssigneeName("test");
-
 	}
 
 	@Test
@@ -95,7 +94,6 @@ public class ScrumHandleAzureIssueHistoryTest {
 		Assert.assertEquals(1, jiraIssueCustomHistory.getPriorityUpdationLog().size());
 		Assert.assertEquals(1, jiraIssueCustomHistory.getSprintUpdationLog().size());
 		Assert.assertEquals(1, jiraIssueCustomHistory.getDueDateUpdationLog().size());
-
 	}
 
 	@Test
@@ -113,5 +111,4 @@ public class ScrumHandleAzureIssueHistoryTest {
 		Assert.assertEquals(0, jiraIssueCustomHistory.getDueDateUpdationLog().size());
 		Assert.assertEquals(0, jiraIssueCustomHistory.getSprintUpdationLog().size());
 	}
-
 }

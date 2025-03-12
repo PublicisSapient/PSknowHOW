@@ -107,6 +107,7 @@ export class ToolMenuComponent implements OnInit {
   }
 
   getToolsConfigured() {
+    this.disableSwitch = false
     this.httpService.getAllToolConfigs(this.selectedProject?.id).subscribe(response => {
       this.dataLoading = false;
       if (response?.success) {
@@ -294,7 +295,7 @@ export class ToolMenuComponent implements OnInit {
           this.httpService.getFieldMappingsWithHistory(jiraOrAzure[0].id, kpiID, obj).subscribe(mappings => {
             if (mappings?.success) {
               this.sharedService.setSelectedFieldMapping(mappings['data']);
-              this.disableSwitch = true;
+              this.disableSwitch =  true;
             } else {
               this.sharedService.setSelectedFieldMapping(null);
             }
@@ -382,7 +383,7 @@ export class ToolMenuComponent implements OnInit {
   getProjects() {
     this.userProjects = this.sharedService.getProjectList();
     if (this.userProjects != null && this.userProjects.length > 0) {
-      this.userProjects.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+      this.userProjects.sort((a, b) => a?.name?.localeCompare(b.name, undefined, { numeric: true }));
     }
     if(this.selectedProject && this.router.url.includes(this.selectedProject['id'])) {
       this.selectedProject = this.userProjects.filter((x) => x.id == this.selectedProject?.id)[0]

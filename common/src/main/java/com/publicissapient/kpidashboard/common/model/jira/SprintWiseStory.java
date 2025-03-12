@@ -52,5 +52,4 @@ public class SprintWiseStory {
 	private String subProjectName;
 	private String projectID;
 	private String basicProjectConfigId;
-
 }

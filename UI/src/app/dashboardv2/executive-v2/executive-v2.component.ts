@@ -130,6 +130,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   refreshCounter: number = 0;
   hieararchy: any;
   queryParamsSubscription!: Subscription;
+  showSprintGoalsPanel : boolean = false;
+  sprintGoalData : any = [];
 
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
     private route: ActivatedRoute, private excelService: ExcelService,
@@ -218,6 +220,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.selectedTab = data.selectedBoard;
       this.noProjects = this.service.noProjectsObj;
     }));
+    this.subscriptions.push(this.service.isSprintGoal.subscribe(flag=>this.showSprintGoalsPanel = flag))
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       this.globalConfig = JSON.parse(JSON.stringify(globalConfig));
@@ -246,6 +249,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.colorObj = x;
       this.trendBoxColorObj = { ...x };
       this.kpiTableDataObj = {};
+      this.sprintGoalData = []
       for (const key in this.trendBoxColorObj) {
         const idx = key.lastIndexOf('_');
         const nodeName = key.slice(0, idx);
@@ -518,6 +522,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiLoader = new Set();
       this.kpiStatusCodeArr = {};
       this.immediateLoader = true;
+      this.sprintGoalData = []
       for (const key in this.colorObj) {
         const idx = key.lastIndexOf('_');
         const nodeName = key.slice(0, idx);
@@ -943,6 +948,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.jiraKpiRequest = this.httpService.postKpi(postData, source)
         .subscribe(getData => {
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
+
+            //Extracting sprint goal data
+            const kpi187Data = getData.find(data=>data.kpiId === 'kpi187');
+            if(kpi187Data && kpi187Data.hasOwnProperty('trendValueList') && kpi187Data['trendValueList'].length){
+               this.sprintGoalData = JSON.parse(JSON.stringify(kpi187Data['trendValueList']));
+            }
 
             const releaseFrequencyInd = getData.findIndex(de => de.kpiId === 'kpi73')
             if (releaseFrequencyInd !== -1) {
@@ -2481,7 +2492,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       for (const key in this.colorObj) {
         if (arr[i].value?.length) {
           let selectedNode = this.filterData.filter(x => x.nodeDisplayName === arr[i].value[0].sprojectName);
-          let selectedId = selectedNode[0]?.nodeId;
+          let selectedId = selectedNode.filter(x=>x.nodeId === key)[0]?.nodeId;
 
           if (kpiId == 'kpi17' && this.colorObj[key]?.nodeId == selectedId) {
             this.chartColorList[kpiId].push(this.colorObj[key]?.color);
@@ -2873,7 +2884,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (averageCoverageIdx > -1) {
           let trendObj = {};
           const [latest, trend, unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][averageCoverageIdx]);
-          let selectedNode = this.filterData.filter(x => x.nodeName === this.kpiChartData[kpiId][averageCoverageIdx]?.data);
+          let selectedNode = this.filterData.filter(x => x.nodeDisplayName === this.kpiChartData[kpiId][averageCoverageIdx]?.data);
           let selectedId = selectedNode[0].nodeId;
           trendObj = {
             "hierarchyName": this.kpiChartData[kpiId][averageCoverageIdx]?.data,

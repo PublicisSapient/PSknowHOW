@@ -31,20 +31,23 @@ import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 /**
  * Interface to provides method for performing operations on kanban_feature
  * collection.
- * 
+ *
  * @author prijain3
  */
 @Repository
-public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssue, ObjectId>,
-		QuerydslPredicateExecutor<KanbanJiraIssue>, KanbanJiraIssueRepoCustom {
+public interface KanbanJiraIssueRepository
+		extends
+			CrudRepository<KanbanJiraIssue, ObjectId>,
+			QuerydslPredicateExecutor<KanbanJiraIssue>,
+			KanbanJiraIssueRepoCustom {
 
 	/**
 	 * Gets feature id by id.
 	 *
 	 * @param issueId
-	 *            the s id
+	 *          the s id
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return the feature id by id
 	 */
 	@Query(fields = "{'issueId' : 1}")
@@ -54,13 +57,13 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 	 * Finds object with max date for given project. This essentially returns the
 	 * max change date from the collection, based on the projectkey and last change
 	 * date (or default delta change date property) available
-	 * 
+	 *
 	 * @param processorId
-	 *            Processor ID of source system collector
+	 *          Processor ID of source system collector
 	 * @param projectKey
-	 *            projectKey of the project
+	 *          projectKey of the project
 	 * @param changeDate
-	 *            Last available change date or delta begin date property
+	 *          Last available change date or delta begin date property
 	 * @return A single Change Date value that is the maximum value of the existing
 	 *         collection
 	 */
@@ -73,13 +76,13 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 	 * Finds object with max date for given project. This essentially returns the
 	 * max change date from the collection, based on the projectConfigId and last
 	 * change date (or default delta change date property) available
-	 * 
+	 *
 	 * @param processorId
-	 *            Processor ID of source system collector
+	 *          Processor ID of source system collector
 	 * @param projectConfigId
-	 *            project config id of projectConfig
+	 *          project config id of projectConfig
 	 * @param startDate
-	 *            Last available change date or delta begin date property
+	 *          Last available change date or delta begin date property
 	 * @return A single Change Date value that is the maximum value of the existing
 	 *         collection
 	 */
@@ -88,9 +91,9 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 
 	/**
 	 * Finds KanbanFeature object based on story number.
-	 * 
+	 *
 	 * @param number
-	 *            story number
+	 *          story number
 	 * @return list of KanbanFeature
 	 */
 	@Query(" {'number' : ?0 }")
@@ -102,7 +105,7 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 	 * Gets feature id by id.
 	 *
 	 * @param issueId
-	 *            the s id
+	 *          the s id
 	 * @return the feature id by id
 	 */
 	@Query(value = "{'issueId' : ?0}", fields = "{'issueId' : 1}")
@@ -113,9 +116,9 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 	 * the last change date (or default delta change date property) available
 	 *
 	 * @param processorId
-	 *            Processor ID of source system processor
+	 *          Processor ID of source system processor
 	 * @param changeDate
-	 *            Last available change date or delta begin date property
+	 *          Last available change date or delta begin date property
 	 * @return A single Change Date value that is the maximum value of the existing
 	 *         collection
 	 */
@@ -124,18 +127,18 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 
 	/**
 	 * Find one document for given basicProjectConfigId.
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return JiraIssue
 	 */
 	KanbanJiraIssue findTopByBasicProjectConfigId(String basicProjectConfigId);
 
 	/**
 	 * Deletes all documents that matches with given basicProjectConfigId.
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 */
 	void deleteByBasicProjectConfigId(String basicProjectConfigId);
 
@@ -145,13 +148,13 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 	 * date
 	 *
 	 * @param processorId
-	 *            processorId
+	 *          processorId
 	 * @param basicProjectConfigId
-	 *            projectCOnfigId of project config
+	 *          projectCOnfigId of project config
 	 * @param typeName
-	 *            issue type
+	 *          issue type
 	 * @param changeDate
-	 *            change date
+	 *          change date
 	 * @return KanbanJiraIssue object
 	 */
 	KanbanJiraIssue findTopByProcessorIdAndBasicProjectConfigIdAndTypeNameAndChangeDateGreaterThanOrderByChangeDateDesc(
@@ -159,8 +162,7 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 
 	List<KanbanJiraIssue> findAll();
 
-    List<KanbanJiraIssue> findByBasicProjectConfigId(String basicProjectConfigId);
-
+	List<KanbanJiraIssue> findByBasicProjectConfigId(String basicProjectConfigId);
 
 	@Query(value = "{ 'basicProjectConfigId' : ?0, 'typeName' : { $ne : ?1 } }", count = true)
 	long countByBasicProjectConfigIdAndExcludeTypeName(String basicProjectConfigId, String typeName);

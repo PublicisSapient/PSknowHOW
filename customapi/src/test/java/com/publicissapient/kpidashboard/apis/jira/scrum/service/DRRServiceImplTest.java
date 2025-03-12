@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -71,8 +74,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
-import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
@@ -80,15 +81,19 @@ import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 @RunWith(MockitoJUnitRunner.class)
 public class DRRServiceImplTest {
 
-	private static final String REJECTED_DEFECT_PRTA = "rejectedBugKey";
+	private static final String REJECTED_DEFECT_DATA = "rejectedBugKey";
 	private static final String CLOSED_DEFECT_DATA = "closedDefects";
+	private static final String TOTAL_SPRINT_SUBTASK_DEFECTS = "totalSprintSubtaskDefects";
+	private static final String SUB_TASK_BUGS_HISTORY = "SubTaskBugsHistory";
+	public static final String SPRINT_WISE_SPRINT_DETAILS = "sprintWiseSprintDetails";
+	public static final String TOTAL_DEFECT_LIST = "totalDefectList";
+	public static final String STORY_LIST = "storyList";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	List<JiraIssue> canceledBugList = new ArrayList<>();
 	List<JiraIssue> totalBugList = new ArrayList<>();
 	List<JiraIssue> totalIssueList = new ArrayList<>();
-	@Mock
-	JiraIssueRepository jiraIssueRepository;
+
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -96,26 +101,19 @@ public class DRRServiceImplTest {
 	@InjectMocks
 	DRRServiceImpl dRRServiceImpl;
 	@Mock
-	ProjectBasicConfigRepository projectConfigRepository;
-	@Mock
-	FieldMappingRepository fieldMappingRepository;
-	@Mock
 	CustomApiConfig customApiSetting;
 	@Mock
-	SprintRepository sprintRepository;
+	private KpiDataCacheService kpiDataCacheService;
 	@Mock
-	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	private KpiDataProvider kpiDataProvider;
 
 	private Map<String, Object> filterLevelMap;
 	private List<SprintWiseStory> sprintWiseStoryList = new ArrayList<>();
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private KpiRequest kpiRequest;
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
-	private List<DataCount> dataCountList = new ArrayList<>();
 	private List<SprintDetails> sprintDetailsList = new ArrayList<>();
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
-	@Mock
-	private KpiHelperService kpiHelperService;
 	@Mock
 	private CommonService commonService;
 
@@ -130,6 +128,7 @@ public class DRRServiceImplTest {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_REMOVAL_EFFICIENCY.getKpiId());
 		kpiRequest.setLabel("PROJECT");
+		kpiRequest.setLevel(5);
 
 		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
@@ -173,19 +172,17 @@ public class DRRServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		when(configHelperService.getFieldMapping(projectBasicConfig.getId())).thenReturn(fieldMapping);
 		kpiWiseAggregation.put("defectRejectionRate", "percentile");
-
 	}
 
 	@After
 	public void cleanup() {
-		jiraIssueRepository.deleteAll();
 
 	}
 
 	@Test
 	public void testCalculateKPIMetrics() {
 		Map<String, Object> filterComponentIdWiseDefectMap = new HashMap<>();
-		filterComponentIdWiseDefectMap.put(REJECTED_DEFECT_PRTA, canceledBugList);
+		filterComponentIdWiseDefectMap.put(REJECTED_DEFECT_DATA, canceledBugList);
 		filterComponentIdWiseDefectMap.put(CLOSED_DEFECT_DATA, totalBugList);
 		Double drrValue = dRRServiceImpl.calculateKPIMetrics(filterComponentIdWiseDefectMap);
 		assertThat("DRR value :", drrValue, equalTo(85.0));
@@ -202,17 +199,20 @@ public class DRRServiceImplTest {
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
-		when(customApiSetting.getApplicationDetailedLogger()).thenReturn("on");
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
-				.thenReturn(jiraIssueCustomHistoryList);
-		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(totalIssueList);
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(TOTAL_SPRINT_SUBTASK_DEFECTS, new ArrayList<>());
+		resultListMap.put(SUB_TASK_BUGS_HISTORY, jiraIssueCustomHistoryList);
+		resultListMap.put(SPRINT_WISE_SPRINT_DETAILS, sprintDetailsList);
+		resultListMap.put(STORY_LIST, totalIssueList);
+		resultListMap.put(REJECTED_DEFECT_DATA, new ArrayList<>());
+		resultListMap.put(TOTAL_DEFECT_LIST, totalIssueList);
+		when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(true);
+		when(kpiDataCacheService.fetchDRRData(any(), any(), any(), any())).thenReturn(resultListMap);
+		when(customApiSetting.getApplicationDetailedLogger()).thenReturn("Off");
 
 		Map<String, Object> defectDataListMap = dRRServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
-		assertThat("Rejects Defects value :", ((List<JiraIssue>) defectDataListMap.get(REJECTED_DEFECT_PRTA)).size(),
+		assertThat("Rejects Defects value :", ((List<JiraIssue>) defectDataListMap.get(REJECTED_DEFECT_DATA)).size(),
 				equalTo(0));
 	}
 
@@ -227,15 +227,27 @@ public class DRRServiceImplTest {
 
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
 
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
 		when(customApiSetting.getApplicationDetailedLogger()).thenReturn("on");
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
-				.thenReturn(jiraIssueCustomHistoryList);
+		when(customApiSetting.getpriorityP1()).thenReturn(Constant.P1);
+		when(customApiSetting.getpriorityP2()).thenReturn(Constant.P2);
+		when(customApiSetting.getpriorityP3()).thenReturn(Constant.P3);
+		when(customApiSetting.getpriorityP4()).thenReturn("p4-minor");
+
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(dRRServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(TOTAL_SPRINT_SUBTASK_DEFECTS, new ArrayList<>());
+		resultListMap.put(SUB_TASK_BUGS_HISTORY, jiraIssueCustomHistoryList);
+		resultListMap.put(SPRINT_WISE_SPRINT_DETAILS, sprintDetailsList);
+		resultListMap.put(STORY_LIST, totalIssueList);
+		resultListMap.put(REJECTED_DEFECT_DATA, new ArrayList<>());
+		resultListMap.put(TOTAL_DEFECT_LIST, totalIssueList);
+		when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(false);
+		when(kpiDataProvider.fetchDRRData(any(), any(), any())).thenReturn(resultListMap);
+
 		try {
 			KpiElement kpiElement = dRRServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

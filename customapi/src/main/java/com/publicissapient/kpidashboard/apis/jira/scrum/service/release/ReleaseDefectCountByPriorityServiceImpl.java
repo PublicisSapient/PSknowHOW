@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -100,12 +99,11 @@ public class ReleaseDefectCountByPriorityServiceImpl extends JiraReleaseKPIServi
 
 				Set<String> finalJiraDodKPI144LowerCase = jiraDodKPI144LowerCase;
 				List<JiraIssue> openDefects = totalDefects.stream()
-						.filter(jiraIssue -> StringUtils.isNotEmpty(jiraIssue.getStatus())
-								&& !finalJiraDodKPI144LowerCase.isEmpty()
-								&& !finalJiraDodKPI144LowerCase.contains(jiraIssue.getStatus().toLowerCase()))
+						.filter(
+								jiraIssue -> StringUtils.isNotEmpty(jiraIssue.getStatus()) && !finalJiraDodKPI144LowerCase.isEmpty() &&
+										!finalJiraDodKPI144LowerCase.contains(jiraIssue.getStatus().toLowerCase()))
 						.collect(Collectors.toList());
-				Map<String, Map<String, List<JiraIssue>>> priorityWiseList = getPriorityWiseList(totalDefects,
-						openDefects);
+				Map<String, Map<String, List<JiraIssue>>> priorityWiseList = getPriorityWiseList(totalDefects, openDefects);
 				log.info("ReleaseDefectCountByPriorityServiceImpl -> priorityWiseList ->  : {}", priorityWiseList);
 				List<IterationKpiValue> sortedFilterDataList = new ArrayList<>();
 				List<DataCount> dataCountListForAllPriorities = new ArrayList<>();
@@ -129,10 +127,8 @@ public class ReleaseDefectCountByPriorityServiceImpl extends JiraReleaseKPIServi
 					middleOverallData.setValue(dataCountList);
 					middleTrendValueListForPriorities.add(middleOverallData);
 
-					IterationKpiValue filterData = new IterationKpiValue(entry.getKey(),
-							middleTrendValueListForPriorities);
+					IterationKpiValue filterData = new IterationKpiValue(entry.getKey(), middleTrendValueListForPriorities);
 					filterDataList.add(filterData);
-
 				}
 				Map<String, Integer> overallPriorityCountMapAggregate = new HashMap<>();
 				overallPriorityCountMap(dataCountListForAllPriorities, overallPriorityCountMapAggregate);
@@ -146,10 +142,9 @@ public class ReleaseDefectCountByPriorityServiceImpl extends JiraReleaseKPIServi
 					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY_RELEASE.getColumns());
 					kpiElement.setExcelData(excelData);
 					sortedFilterDataList.add(filterDataList.stream()
-							.filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OPEN_DEFECT))
-							.findFirst().orElse(new IterationKpiValue()));
-					filterDataList.removeIf(
-							iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OPEN_DEFECT));
+							.filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OPEN_DEFECT)).findFirst()
+							.orElse(new IterationKpiValue()));
+					filterDataList.removeIf(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OPEN_DEFECT));
 					sortListByKey(filterDataList);
 					sortedFilterDataList.addAll(filterDataList);
 					kpiElement.setTrendValueList(sortedFilterDataList);
@@ -237,7 +232,7 @@ public class ReleaseDefectCountByPriorityServiceImpl extends JiraReleaseKPIServi
 
 	/**
 	 * populate excel data
-	 * 
+	 *
 	 * @param requestTrackerId
 	 * @param excelData
 	 * @param jiraIssueList
@@ -245,8 +240,8 @@ public class ReleaseDefectCountByPriorityServiceImpl extends JiraReleaseKPIServi
 	 */
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
 			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				CollectionUtils.isNotEmpty(jiraIssueList)) {
 			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
 		}
 	}

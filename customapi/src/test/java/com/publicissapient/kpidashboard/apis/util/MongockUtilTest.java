@@ -44,8 +44,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import com.mongodb.client.MongoCollection;
 
 /*
- author @shi6
- */
+author @shi6
+*/
 @RunWith(MockitoJUnitRunner.class)
 public class MongockUtilTest {
 
@@ -100,7 +100,8 @@ public class MongockUtilTest {
 		verify(collection, times(1)).countDocuments();
 		verify(mongoTemplate, times(1)).insert(anyList(), eq(collectionName));
 	}
-	//for JPMS InaccessibleObjectException Error Fix
+
+	// for JPMS InaccessibleObjectException Error Fix
 	class TestObject {
 		private String value;
 
@@ -135,5 +136,4 @@ public class MongockUtilTest {
 		assertNotNull(tooltip);
 		assertEquals(tooltipDefinition, tooltip.getString("definition"));
 	}
-
 }

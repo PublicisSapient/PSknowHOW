@@ -26,15 +26,14 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 public interface FetchScrumReleaseData {
 	/**
-	 *
 	 * @param projectConfig
-	 *            projectConfig
+	 *          projectConfig
 	 * @param krb5Client
-	 *            krb5Client
+	 *          krb5Client
 	 * @throws IOException
-	 *             ioexception
+	 *           ioexception
 	 * @throws ParseException
-	 *             parse excecption
+	 *           parse excecption
 	 */
 	void processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
 			throws IOException, ParseException;

@@ -42,8 +42,8 @@ public class BuildKpiOrder {
 		MongoCollection<Document> kpiCategoryMapping = mongoTemplate.getCollection("kpi_category_mapping");
 
 		// Update documents
-		updateDocument(kpiCategoryMapping, "kpi164", 9);//scope churn kpi
-		updateDocument(kpiCategoryMapping, "kpi8", 8);//code build time kpi
+		updateDocument(kpiCategoryMapping, "kpi164", 9); // scope churn kpi
+		updateDocument(kpiCategoryMapping, "kpi8", 8); // code build time kpi
 		return true;
 	}
 
@@ -63,7 +63,7 @@ public class BuildKpiOrder {
 		MongoCollection<Document> kpiCategoryMapping = mongoTemplate.getCollection("kpi_category_mapping");
 
 		// Update documents
-		updateDocument(kpiCategoryMapping, "kpi164", 8);//scope churn kpi
-		updateDocument(kpiCategoryMapping, "kpi8", 9);//code build time kpi
+		updateDocument(kpiCategoryMapping, "kpi164", 8); // scope churn kpi
+		updateDocument(kpiCategoryMapping, "kpi8", 9); // code build time kpi
 	}
 }

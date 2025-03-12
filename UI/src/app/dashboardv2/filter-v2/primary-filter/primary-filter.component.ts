@@ -33,6 +33,7 @@ export class PrimaryFilterComponent implements OnChanges {
     this.service.selectedTrendsEvent.subscribe(filters => {
       if (filters?.length && this.primaryFilterConfig['type'] !== 'singleSelect') {
         this.selectedFilters = filters;
+        this.service.setDataForSprintGoal({selectedFilters : this.selectedFilters})
       }
     });
   }
@@ -119,6 +120,7 @@ export class PrimaryFilterComponent implements OnChanges {
           return;
         }
         // PROBLEM AREA END
+        this.service.setDataForSprintGoal({selectedFilters : this.selectedFilters})
         this.applyPrimaryFilters({});
       } else {
         // this.selectedFilters = [this.filters[0]];
@@ -176,6 +178,7 @@ export class PrimaryFilterComponent implements OnChanges {
         this.filters = [];
       }
     }
+    this.service.setDataForSprintGoal({filters : this.filters,})
   }
 
   applyPrimaryFilters(event) {

@@ -39,78 +39,85 @@ import com.publicissapient.kpidashboard.apis.stringshortener.repository.StringSh
 @RunWith(MockitoJUnitRunner.class)
 public class StringShortenerServiceTest {
 
-    @Mock
-    private StringShortenerRepository stringShortenerRepository;
+	@Mock
+	private StringShortenerRepository stringShortenerRepository;
 
-    @InjectMocks
-    private StringShortenerService stringShortenerService;
+	@InjectMocks
+	private StringShortenerService stringShortenerService;
 
-    private StringShortenerDTO stringShortenerDTO;
-    private StringShortener stringShortener;
+	private StringShortenerDTO stringShortenerDTO;
+	private StringShortener stringShortener;
 
-    @Before
-    public void setUp() {
-        stringShortenerDTO = new StringShortenerDTO();
-        stringShortenerDTO.setLongKPIFiltersString("longKPI");
-        stringShortenerDTO.setLongStateFiltersString("longState");
+	@Before
+	public void setUp() {
+		stringShortenerDTO = new StringShortenerDTO();
+		stringShortenerDTO.setLongKPIFiltersString("longKPI");
+		stringShortenerDTO.setLongStateFiltersString("longState");
 
-        stringShortener = new StringShortener();
-        stringShortener.setLongKPIFiltersString("longKPI");
-        stringShortener.setShortKPIFilterString("shortKPI");
-        stringShortener.setLongStateFiltersString("longState");
-        stringShortener.setShortStateFiltersString("shortState");
-    }
+		stringShortener = new StringShortener();
+		stringShortener.setLongKPIFiltersString("longKPI");
+		stringShortener.setShortKPIFilterString("shortKPI");
+		stringShortener.setLongStateFiltersString("longState");
+		stringShortener.setShortStateFiltersString("shortState");
+	}
 
-    @Test
-    public void testCreateShortString_NullInput() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            stringShortenerService.createShortString(null);
-        });
-        assertEquals("Please provide a valid stringShortenerDTO", exception.getMessage());
-    }
+	@Test
+	public void testCreateShortString_NullInput() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			stringShortenerService.createShortString(null);
+		});
+		assertEquals("Please provide a valid stringShortenerDTO", exception.getMessage());
+	}
 
-    @Test
-    public void testCreateShortString_ExistingMapping() {
-        when(stringShortenerRepository.findByLongKPIFiltersStringAndLongStateFiltersString("longKPI", "longState"))
-            .thenReturn(Optional.of(stringShortener));
+	@Test
+	public void testCreateShortString_ExistingMapping() {
+		when(stringShortenerRepository.findByLongKPIFiltersStringAndLongStateFiltersString(
+						"longKPI", "longState"))
+				.thenReturn(Optional.of(stringShortener));
 
-        StringShortener result = stringShortenerService.createShortString(stringShortenerDTO);
-        assertEquals(stringShortener, result);
-    }
+		StringShortener result = stringShortenerService.createShortString(stringShortenerDTO);
+		assertEquals(stringShortener, result);
+	}
 
-    @Test
-    public void testGetLongString_Found() {
-        when(stringShortenerRepository.findByShortKPIFilterStringAndShortStateFiltersString("shortKPI", "shortState"))
-            .thenReturn(Optional.of(stringShortener));
+	@Test
+	public void testGetLongString_Found() {
+		when(stringShortenerRepository.findByShortKPIFilterStringAndShortStateFiltersString(
+						"shortKPI", "shortState"))
+				.thenReturn(Optional.of(stringShortener));
 
-        Optional<StringShortener> result = stringShortenerService.getLongString("shortKPI", "shortState");
-        assertEquals(stringShortener, result.get());
-    }
+		Optional<StringShortener> result =
+				stringShortenerService.getLongString("shortKPI", "shortState");
+		assertEquals(stringShortener, result.get());
+	}
 
-    @Test
-    public void testGetLongString_NotFound() {
-        when(stringShortenerRepository.findByShortKPIFilterStringAndShortStateFiltersString("shortKPI", "shortState"))
-            .thenReturn(Optional.empty());
+	@Test
+	public void testGetLongString_NotFound() {
+		when(stringShortenerRepository.findByShortKPIFilterStringAndShortStateFiltersString(
+						"shortKPI", "shortState"))
+				.thenReturn(Optional.empty());
 
-        Optional<StringShortener> result = stringShortenerService.getLongString("shortKPI", "shortState");
-        assertEquals(Optional.empty(), result);
-    }
+		Optional<StringShortener> result =
+				stringShortenerService.getLongString("shortKPI", "shortState");
+		assertEquals(Optional.empty(), result);
+	}
 
-    @Test
-    public void testCreateShortString_NewMapping() {
-        // Arrange
-        when(stringShortenerRepository.findByLongKPIFiltersStringAndLongStateFiltersString("longKPI", "longState"))
-                .thenReturn(Optional.empty());
+	@Test
+	public void testCreateShortString_NewMapping() {
+		// Arrange
+		when(stringShortenerRepository.findByLongKPIFiltersStringAndLongStateFiltersString(
+						"longKPI", "longState"))
+				.thenReturn(Optional.empty());
 
-        when(stringShortenerRepository.save(any(StringShortener.class))).thenAnswer(invocation -> invocation.getArgument(0));
+		when(stringShortenerRepository.save(any(StringShortener.class)))
+				.thenAnswer(invocation -> invocation.getArgument(0));
 
-        // Act
-        StringShortener result = stringShortenerService.createShortString(stringShortenerDTO);
+		// Act
+		StringShortener result = stringShortenerService.createShortString(stringShortenerDTO);
 
-        // Assert
-        assertEquals("longKPI", result.getLongKPIFiltersString());
-        assertEquals("longState", result.getLongStateFiltersString());
-        assertEquals(8, result.getShortKPIFilterString().length());
-        assertEquals(8, result.getShortStateFiltersString().length());
-    }
+		// Assert
+		assertEquals("longKPI", result.getLongKPIFiltersString());
+		assertEquals("longState", result.getLongStateFiltersString());
+		assertEquals(8, result.getShortKPIFilterString().length());
+		assertEquals(8, result.getShortStateFiltersString().length());
+	}
 }

@@ -25,10 +25,10 @@ import java.io.IOException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.atlassian.jira.rest.client.api.*;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import com.atlassian.jira.rest.client.api.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProcessorJiraRestClientTest {
@@ -100,7 +100,6 @@ public class ProcessorJiraRestClientTest {
 
 			@Override
 			public void close() throws IOException {
-
 			}
 
 			@Override

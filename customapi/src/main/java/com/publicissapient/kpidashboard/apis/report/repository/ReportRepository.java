@@ -17,28 +17,32 @@
 
 package com.publicissapient.kpidashboard.apis.report.repository;
 
-import com.publicissapient.kpidashboard.apis.report.domain.KPI;
-import com.publicissapient.kpidashboard.apis.report.domain.Report;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
-import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.List;
-import java.util.Optional;
+import com.publicissapient.kpidashboard.apis.report.domain.KPI;
+import com.publicissapient.kpidashboard.apis.report.domain.Report;
+
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 @Repository
 @Validated
 public interface ReportRepository extends MongoRepository<Report, String> {
 
-    Page<Report> findByCreatedBy(String createdBy, Pageable pageable);
+	Page<Report> findByCreatedBy(String createdBy, Pageable pageable);
 
-    @Query("{ 'name': ?0, 'kpis': { $all: ?1 }, 'createdBy': ?2 }")
-    Optional<Report> findByNameAndCreatedByAndKpis(String name, List<KPI> kpis, String createdBy);
+	@Query("{ 'name': ?0, 'kpis': { $all: ?1 }, 'createdBy': ?2 }")
+	Optional<Report> findByNameAndCreatedByAndKpis(String name, List<KPI> kpis, String createdBy);
 
-    Optional<Report> findByNameAndCreatedBy(@NotNull(message = "Report name cannot be null") @NotEmpty(message = "Report name cannot be empty") String name, String createdBy);
+	Optional<Report> findByNameAndCreatedBy(
+			@NotNull(message = "Report name cannot be null") @NotEmpty(message = "Report name cannot be empty") String name,
+			String createdBy);
 }

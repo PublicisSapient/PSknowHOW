@@ -213,7 +213,7 @@ export class ProjectSettingsComponent implements OnInit {
     for (let i = 0; i < this.projectList?.length; i++) {
       const obj = {
         id: this.projectList[i]?.id,
-        name: this.projectList[i]?.projectName,
+        name: this.projectList[i]?.projectDisplayName,
         type: this.projectList[i]?.kanban ? 'Kanban' : 'Scrum',
         saveAssigneeDetails: this.projectList[i]?.saveAssigneeDetails,
         developerKpiEnabled: this.projectList[i]?.developerKpiEnabled,
@@ -367,32 +367,11 @@ export class ProjectSettingsComponent implements OnInit {
 
   updateProjectDetails(successMsg) {
 
-    let hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedProject?.type?.toLowerCase()];
-
-    const updatedDetails = {};
-    updatedDetails['projectName'] = this.selectedProject?.name || this.selectedProject?.Project;
-    updatedDetails['kanban'] = this.selectedProject?.type === 'Kanban' ? true : false;
-    updatedDetails['hierarchy'] = [];
+    const updatedDetails = {...this.projectList.filter(x => x.projectDisplayName === this.selectedProject.name)[0]};
     updatedDetails['saveAssigneeDetails'] = this.isAssigneeSwitchChecked;
-    updatedDetails['id'] = this.selectedProject?.id;
     updatedDetails["createdAt"] = new Date().toISOString();
     updatedDetails["developerKpiEnabled"] = this.developerKpiEnabled;
     updatedDetails["projectOnHold"] = this.projectOnHold;
-
-    for (let element of hierarchyData) {
-      if (element.hierarchyLevelId == 'project') {
-        break;
-      }
-
-      updatedDetails['hierarchy'].push({
-        hierarchyLevel: {
-          level: element.level,
-          hierarchyLevelId: element.hierarchyLevelId,
-          hierarchyLevelName: element.hierarchyLevelName
-        },
-        value: this.selectedProject[element.hierarchyLevelName]
-      });
-    }
 
     this.httpService.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
 

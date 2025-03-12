@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -22,7 +21,6 @@ package com.publicissapient.kpidashboard.common.repository.excel;
 import java.util.List;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -35,14 +33,17 @@ import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
  *
  * @author anisingh4
  */
-public interface CapacityKpiDataRepository extends CrudRepository<CapacityKpiData, ObjectId>,
-		QuerydslPredicateExecutor<CapacityKpiData>, CapacityKpiDataCustomRepository {
+public interface CapacityKpiDataRepository
+		extends
+			CrudRepository<CapacityKpiData, ObjectId>,
+			QuerydslPredicateExecutor<CapacityKpiData>,
+			CapacityKpiDataCustomRepository {
 
 	/**
 	 * Gets capacity by sprint id project name.
 	 *
 	 * @param sprintIdProjectName
-	 *            the sprint id project name
+	 *          the sprint id project name
 	 * @return the capacity by sprint id project name
 	 */
 	@Query(" {'sprintID' : ?0 }")
@@ -50,29 +51,29 @@ public interface CapacityKpiDataRepository extends CrudRepository<CapacityKpiDat
 
 	/**
 	 * Find all by sprint ids
-	 * 
+	 *
 	 * @param sprintIds
-	 *            list of sprint ids
+	 *          list of sprint ids
 	 * @return list of sprints
 	 */
 	List<CapacityKpiData> findBySprintIDIn(List<String> sprintIds);
 
 	/**
 	 * Find by sprint id and basicprojectId
-	 * 
+	 *
 	 * @param sprintId
-	 *            sprintId
+	 *          sprintId
 	 * @param basicProjectConfigId
-	 *            basic project config id
+	 *          basic project config id
 	 * @return list of sprints
 	 */
 	CapacityKpiData findBySprintIDAndBasicProjectConfigId(String sprintId, ObjectId basicProjectConfigId);
 
 	/**
 	 * delete capacity projectwise
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 */
 	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
 

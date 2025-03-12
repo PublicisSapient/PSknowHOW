@@ -20,35 +20,35 @@ package com.publicissapient.kpidashboard.apis.stringshortener.utils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-
-import com.publicissapient.kpidashboard.apis.stringshortener.util.UniqueShortKeyGenerator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.publicissapient.kpidashboard.apis.stringshortener.util.UniqueShortKeyGenerator;
+
 @RunWith(MockitoJUnitRunner.class)
 public class UniqueShortKeyGeneratorTest {
 
-    @Test
-    public void testGenerateShortKey() {
-        String input = "exampleString";
-        String expectedShortKey = "Wat88jds";
-        String actualShortKey = UniqueShortKeyGenerator.generateShortKey(input);
-        assertEquals(expectedShortKey, actualShortKey);
-    }
+	@Test
+	public void testGenerateShortKey() {
+		String input = "exampleString";
+		String expectedShortKey = "Wat88jds";
+		String actualShortKey = UniqueShortKeyGenerator.generateShortKey(input);
+		assertEquals(expectedShortKey, actualShortKey);
+	}
 
-    @Test
-    public void testGenerateShortKeyWithEmptyInput() {
-        String input = "";
-        String expectedShortKey = "47DEQpj8";
-        String actualShortKey = UniqueShortKeyGenerator.generateShortKey(input);
-        assertEquals(expectedShortKey, actualShortKey);
-    }
+	@Test
+	public void testGenerateShortKeyWithEmptyInput() {
+		String input = "";
+		String expectedShortKey = "47DEQpj8";
+		String actualShortKey = UniqueShortKeyGenerator.generateShortKey(input);
+		assertEquals(expectedShortKey, actualShortKey);
+	}
 
-    @Test
-    public void testGenerateShortKeyWithNullInput() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            UniqueShortKeyGenerator.generateShortKey(null);
-        });
-    }
+	@Test
+	public void testGenerateShortKeyWithNullInput() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			UniqueShortKeyGenerator.generateShortKey(null);
+		});
+	}
 }

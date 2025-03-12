@@ -99,10 +99,16 @@ export class ExportExcelComponent implements OnInit {
           obj[key] = [];
           for (let y in colData[key]) {
             //added check if valid url
-            if (Array.isArray(colData[key][y]) && colData[key][y].includes('http')) {
-              obj[key].push({ text: y, hyperlink: colData[key][y] });
-            } else {
-              obj[key].push(colData[key][y]);
+            if(typeof colData[key] === 'object'){
+              Object.entries(colData[key]).forEach(([objkey,value])=>{
+                obj[key].push(value)
+              })
+            }else{
+              if (colData[key][y].includes('http')) {
+                obj[key].push({ text: y, hyperlink: colData[key][y] });
+              }else{
+                obj[key].push(colData[key][y]);
+              }
             }
           }
         } else if (key == 'Issue Id') {
@@ -395,7 +401,7 @@ export class ExportExcelComponent implements OnInit {
           updatedRow[colName] = updatedRow[colName].trim();
         }
         if(Array.isArray(updatedRow[colName])){
-            updatedRow[colName] =(typeof updatedRow[colName] !=='object')? (updatedRow[colName] as any[]).join(','): updatedRow[colName].join(',')
+            updatedRow[colName] =(typeof updatedRow[colName] !=='object')? (updatedRow[colName] as any[]).join(','): updatedRow[colName];
         }
         if (this.blankValues.includes(updatedRow[colName])) {
           updatedRow[colName] = '';
@@ -403,5 +409,6 @@ export class ExportExcelComponent implements OnInit {
       });
       return updatedRow;
    }
+
 
 }

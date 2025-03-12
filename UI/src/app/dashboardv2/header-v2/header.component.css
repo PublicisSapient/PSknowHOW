@@ -12,6 +12,11 @@ header {
   width: 40px;
 }
 
+.icon-dice-container {
+  border: none;
+  background: transparent;
+}
+
 .count {
   position: absolute;
   font-size: 0.75rem;

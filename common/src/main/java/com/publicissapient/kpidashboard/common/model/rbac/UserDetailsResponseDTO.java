@@ -12,9 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * classes for userDetails for profile screen
- */
+/** classes for userDetails for profile screen */
 @Data
 @Builder
 @Getter

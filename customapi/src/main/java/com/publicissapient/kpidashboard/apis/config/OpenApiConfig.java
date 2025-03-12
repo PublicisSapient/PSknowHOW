@@ -40,13 +40,14 @@ public class OpenApiConfig {
 				"PSKnowHOW is a measurement framework that delivers an intuitive, visual dashboard to track key performance indicators (KPIs) across entire organizations transformation programs. It empowers teams with the knowledge of HOW work is progressing, areas of health, as well as achievement gaps and areas for improvement.")
 				.license(new License().name("Apache 2.0").url("https://www.apache.org/licenses/LICENSE-2.0"))
 				.summary("PSKnowHOW API Documentation Summary"))
-				.components(new Components()
-						.addSecuritySchemes("cookieAuth",
-								new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.COOKIE)
-										.name("authCookie"))
-						.addSecuritySchemes("apiKeyAuth",
-								new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
-										.name("x-api-key")))
+				.components(
+						new Components()
+								.addSecuritySchemes("cookieAuth",
+										new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.COOKIE)
+												.name("authCookie"))
+								.addSecuritySchemes("apiKeyAuth",
+										new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
+												.name("x-api-key")))
 				.addSecurityItem(new SecurityRequirement().addList("cookieAuth"))
 				.addSecurityItem(new SecurityRequirement().addList("apiKeyAuth"))
 				.externalDocs(new ExternalDocumentation().description("Find out more about PSKnowHOW")

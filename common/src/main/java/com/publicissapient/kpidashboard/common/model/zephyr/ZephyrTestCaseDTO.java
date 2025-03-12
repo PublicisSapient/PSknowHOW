@@ -29,9 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents test case.
- */
+/** Represents test case. */
 @SuppressWarnings("PMD.TooManyFields")
 @Data
 @Builder
@@ -61,5 +59,4 @@ public class ZephyrTestCaseDTO {
 	private ZephyrTestCaseScript testScript; // unused
 	private Set<String> issueLinks;
 	private List<String> labels;
-
 }
