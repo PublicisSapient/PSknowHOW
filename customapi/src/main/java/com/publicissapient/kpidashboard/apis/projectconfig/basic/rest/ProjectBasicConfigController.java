@@ -157,7 +157,7 @@ public class ProjectBasicConfigController {
 		if (StringUtils.isNotBlank(projectBasicConfigDTO.getProjectName())) {
 			policy.checkPermission(projectBasicConfigDTO, "ADD_PROJECT");
 
-			log.info(ADDING_PROJECT_CONFIGURATIONS, projectBasicConfigDTO.toString());
+			log.info(ADDING_PROJECT_CONFIGURATIONS, CommonUtils.sanitize(projectBasicConfigDTO.toString()));
 
 			serviceResp = projectBasicConfigService.addBasicConfig(projectBasicConfigDTO);
 
