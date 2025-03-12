@@ -30,6 +30,14 @@ export class ReportKpiCardComponent {
   @Input() hieararchy: any = null;
   constructor(private kpiHelperService: KpiHelperService) { }
 
+/**
+   * Responds to changes in input properties. 
+   * Sorts colors, sets KPI filters, and updates chart type based on changes.
+   * 
+   * @param changes - An object containing the changed input properties.
+   * @returns void
+   * @throws None
+   */
   ngOnChanges(changes: SimpleChanges) {
     this.sortColors();
     this.setKpiFilters();
@@ -40,10 +48,12 @@ export class ReportKpiCardComponent {
     }
   }
 
-  checkIfZeroData(data) {
-    return true;
-  }
-
+/**
+     * Sorts the trend colors based on the hierarchy IDs from the kpiTrendsObj.
+     * Updates the trendColors and colors properties of the class instance.
+     * 
+     * @throws {TypeError} If kpiTrendsObj is not an array or contains invalid entries.
+     */
   sortColors() {
     let result = {};
 

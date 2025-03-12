@@ -832,6 +832,14 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   //#region reports
+  /**
+       * Prepares and adds KPI report metadata to the report object, 
+       * including various configurations based on the current state 
+       * and selected options, then displays the report modal.
+       * 
+       * @param {void} 
+       * @returns {void} 
+       */
   addToReportAction() {
     this.success = false;
     const today = new Date();
@@ -879,7 +887,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     if (this.selectedTab === 'iteration') {
       metaDataObj['selectedButtonValue'] = this.getSelectButtonValue();
       metaDataObj['cardData'] = this.cardData;
-      metaDataObj['cardData']['summary'] = this.showCummalative();
+      if (metaDataObj['cardData']) {
+        metaDataObj['cardData']['summary'] = this.showCummalative();
+      }
       metaDataObj['iterationKPIFilterValues'] = this.iterationKPIFilterValues;
     }
 
@@ -916,7 +926,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           return x.categoryName === this.selectedButtonValue.Category
         }
       })[0][this.getOptionLabel()];
-      console.log(result);
     }
     return result;
   }
@@ -1049,8 +1058,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     const currentIndex = this.dropdownArr[0].options.findIndex(
       option => option.value === this.radioOption
     );
-    
-    switch(event.key) {
+
+    switch (event.key) {
       case 'ArrowRight':
         // Select next option
         if (currentIndex < this.dropdownArr[0].options.length - 1) {
@@ -1073,7 +1082,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     const triggeringElement = document.getElementById('sprint-details-trigger');
     triggeringElement?.focus();
   }
-  
+
   onTabChange(event: any) {
     // Optional: Improve tab change accessibility
     const newTabElement = document.getElementById(`project-tab-${event.index}`);

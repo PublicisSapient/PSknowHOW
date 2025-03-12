@@ -31,7 +31,7 @@ import { HttpService } from '../../services/http.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { DialogService } from 'primeng/dynamicdialog';
 import { KpiHelperService } from '../../services/kpi-helper.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { MessageService } from 'primeng/api';
 
@@ -45,6 +45,7 @@ describe('KpiCardV2Component', () => {
   let helperService: HelperService;
   let dialogService: DialogService;
   let mockService: jasmine.SpyObj<SharedService>;
+  let messageService: MessageService;
   let kpiHelperService;
   const fakeKpiFieldMappingList = require('../../../test/resource/fakeMappingFieldConfig.json');
   const dropDownMetaData = require('../../../test/resource/KPIConfig.json');
@@ -95,7 +96,7 @@ describe('KpiCardV2Component', () => {
     dialogService = TestBed.inject(DialogService);
     mockService = jasmine.createSpyObj(SharedService, ['selectedFilterOptionObs', 'getSelectedTab']);
     kpiHelperService = TestBed.inject(KpiHelperService); //jasmine.createSpyObj(KpiHelperService, ['getChartDataSet']);
-
+    messageService = TestBed.inject(MessageService);
     component.kpiData = {
       kpiId: 'kpi72',
       kpiDetail: { kpiFilter: 'radioButton' }
@@ -2193,4 +2194,322 @@ describe('KpiCardV2Component', () => {
   //   });
   // });
 
+
+  describe('KpiCardV2Component.addToReportAction() addToReportAction method', () => {
+    describe('Happy Path Tests', () => {
+      it('should initialize reportObj with correct metadata and chartData', () => {
+        component.kpiData = {
+          kpiName: 'Test KPI',
+          kpiId: '123',
+          kpiDetail: {
+            kpiSource: 'source',
+            kpiUnit: 'unit',
+            kpiCategory: 'category',
+            kpiFilter: 'filter',
+            chartType: 'bar',
+            xaxisLabel: 'x-axis',
+          },
+        };
+        component.currentChartData = { chartData: 'someData' };
+        component.kpiChartData = 'chartData';
+        component.filterOptions = {};
+        component.radioOption = 'option';
+        component.trendData = [];
+        component.trendBoxColorObj = {};
+        component.selectedTab = 'iteration';
+        component.filterApplyData = {};
+        component.kpiSelectedFilterObj = { '123': 'filterObj' };
+        component.yAxis = 'y-axis';
+        component.chartColorList = [];
+        component.kpiThresholdObj = {};
+        component.releaseEndDate = '2023-10-10';
+        component.hieararchy = {};
+  
+        component.addToReportAction();
+  
+        expect(component.reportObj).toEqual({
+          id: '123',
+          chartData: 'someData',
+          metadata: {
+            kpiName: 'Test KPI',
+            kpiId: '123',
+            kpiSource: 'source',
+            kpiUnit: 'unit',
+            kpiCategory: 'category',
+            kpiFilter: 'filter',
+            chartType: 'bar',
+            filterOptions: {},
+            radioOption: 'option',
+            trend: [],
+            trendColors: {},
+            selectedKPIFilters: {},
+            selectedTab: 'iteration',
+            selectedType: undefined,
+            filterApplyData: {},
+            kpiSelectedFilterObj: 'filterObj',
+            yAxis: 'y-axis',
+            xAxis: 'x-axis',
+            chartColorList: [],
+            kpiThresholdObj: {},
+            capturedAt: jasmine.any(String),
+            kpiHeight: 400,
+            hieararchy: {},
+            releaseEndDate: '2023-10-10',
+            selectedButtonValue: '',
+            cardData: undefined,
+            iterationKPIFilterValues: [  ]
+          },
+        });
+      });
+  
+      it('should set displayAddToReportsModal to true', () => {
+        component.addToReportAction();
+        expect(component.displayAddToReportsModal).toBe(true);
+      });
+    });
+  
+    describe('Edge Case Tests', () => {
+      it('should handle missing currentChartData gracefully', () => {
+        component.kpiData = {
+          kpiName: 'Test KPI',
+          kpiId: '123',
+          kpiDetail: {
+            kpiSource: 'source',
+            kpiUnit: 'unit',
+            kpiCategory: 'category',
+            kpiFilter: 'filter',
+            chartType: 'bar',
+            xaxisLabel: 'x-axis',
+          },
+        };
+        component.currentChartData = null;
+        component.kpiChartData = 'chartData';
+  
+        component.addToReportAction();
+  
+        expect(component.reportObj.chartData).toBe('chartData');
+      });
+    });
+  });
+
+  describe('KpiCardV2Component.getSelectButtonValue() getSelectButtonValue method', () => {
+    
+    describe('Happy Paths', () => {
+      it('should return the correct button value when options are available and selectedButtonValue is set', () => {
+        component.kpiData = { kpiDetail: { chartType: 'stacked-bar-chart' } };
+        component.kpiFilterData = {
+          dataGroup: {
+            dataGroup1: [{ key: 'key1', name: 'Option 1' }, { key: 'key2', name: 'Option 2' }]
+          }
+        };
+        component.selectedButtonValue = { Category: 'key1' };
+  
+        const result = component.getSelectButtonValue();
+        expect(result).toBe('Option 1');
+      });
+  
+      it('should return the first option when selectedButtonValue is not set', () => {
+        component.kpiData = { kpiDetail: { chartType: 'stacked-bar-chart' } };
+        component.kpiFilterData = {
+          dataGroup: {
+            dataGroup1: [{ key: 'key1', name: 'Option 1' }, { key: 'key2', name: 'Option 2' }]
+          }
+        };
+        component.selectedButtonValue = null;
+  
+        const result = component.getSelectButtonValue();
+        expect(result).toBe('Option 1');
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should return an empty string when no options are available', () => {
+        component.kpiData = { kpiDetail: { chartType: 'stacked-bar-chart' } };
+        component.kpiFilterData = {
+          dataGroup: {
+            dataGroup1: []
+          }
+        };
+        component.selectedButtonValue = { Category: 'key1' };
+  
+        const result = component.getSelectButtonValue();
+        expect(result).toBe('');
+      });
+    });
+  });
+
+  describe('KpiCardV2Component.getExistingReports() getExistingReports method', () => {  
+    describe('Happy Paths', () => {
+      it('should set existingReportData and reportName when response is successful and contains data', () => {
+        const mockResponse = {
+          success: true,
+          data: {
+            content: [{ name: 'Report 1' }, { name: 'Report 2' }]
+          }
+        };
+        spyOn(httpService, 'fetchReports').and.returnValue(of(mockResponse) as any);
+        spyOn(sharedService, 'setNoReports');
+        component.getExistingReports();
+  
+        expect(component.existingReportData).toEqual(mockResponse.data.content);
+        expect(component.reportName).toBe('Report 1');
+        expect(component.createNewReportTemplate).toBe(false);
+        expect(sharedService.setNoReports).toHaveBeenCalledWith(false);
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should handle error response gracefully', () => {
+        spyOn(httpService, 'fetchReports').and.returnValue(throwError(() => new Error('Error')) as any);
+        spyOn(sharedService, 'setNoReports');
+        component.getExistingReports();
+  
+        expect(component.existingReportData).toEqual([]);
+        expect(component.createNewReportTemplate).toBe(true);
+        expect(sharedService.setNoReports).toHaveBeenCalledWith(true);
+      });
+    });
+  });
+
+  describe('KpiCardV2Component.toggleCreateNewReportTemplate() toggleCreateNewReportTemplate method', () => {
+    
+    describe('Happy Paths', () => {
+      it('should toggle createNewReportTemplate from false to true', () => {
+        component.createNewReportTemplate = false;
+        component.toggleCreateNewReportTemplate({} as any);
+        expect(component.createNewReportTemplate).toBe(true);
+      });
+  
+      it('should toggle createNewReportTemplate from true to false', () => {
+        component.createNewReportTemplate = true;
+        component.toggleCreateNewReportTemplate({} as any);
+        expect(component.createNewReportTemplate).toBe(false);
+      });
+  
+      it('should reset reportName to an empty string', () => {
+        component.reportName = 'Some Report';
+        component.toggleCreateNewReportTemplate({} as any);
+        expect(component.reportName).toBe('');
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should handle undefined event gracefully', () => {
+        component.createNewReportTemplate = false;
+        component.toggleCreateNewReportTemplate(undefined as any);
+        expect(component.createNewReportTemplate).toBe(true);
+      });
+  
+      it('should handle null event gracefully', () => {
+        component.createNewReportTemplate = true;
+        component.toggleCreateNewReportTemplate(null as any);
+        expect(component.createNewReportTemplate).toBe(false);
+      });
+    });
+  });
+
+  describe('KpiCardV2Component.addToReportPost() addToReportPost method', () => {
+    describe('Happy Paths', () => {
+      it('should successfully create a report and update the UI', () => {
+        // Arrange
+        component.reportObj = { chartData: { some: 'data' } };
+        component.reportName = 'Test Report';
+        const mockResponse = { success: true, data: { name: 'Test Report' } };
+        spyOn(httpService, 'createReport').and.returnValue(of(mockResponse) as any);
+        spyOn(messageService, 'add');
+        // Act
+        component.addToReportPost();
+  
+        // Assert
+        expect(httpService.createReport).toHaveBeenCalledWith({
+          name: 'Test Report',
+          kpis: [{ chartData: JSON.stringify({ some: 'data' }) }]
+        });
+        expect(component.existingReportData).toContain(mockResponse.data);
+        expect(component.createNewReportTemplate).toBe(false);
+        expect(component.reportName).toBe('Test Report');
+        expect(component.success).toBe(true);
+        expect(messageService.add).toHaveBeenCalledWith({
+          severity: 'success',
+          summary: 'Report created successfully'
+        });
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should handle error when creating a report', () => {
+        // Arrange
+        component.reportObj = { chartData: { some: 'data' } };
+        component.reportName = 'Test Report';
+        const mockErrorResponse = { success: false };
+        spyOn(httpService, 'createReport').and.returnValue(of(mockErrorResponse) as any);
+        spyOn(messageService, 'add');
+        // Act
+        component.addToReportPost();
+  
+        // Assert
+        expect(httpService.createReport).toHaveBeenCalledWith({
+          name: 'Test Report',
+          kpis: [{ chartData: JSON.stringify({ some: 'data' }) }]
+        });
+        expect(component.success).toBe(false);
+        expect(messageService.add).toHaveBeenCalledWith({
+          severity: 'error',
+          summary: 'Error while creating report'
+        });
+      });
+    });
+  });
+
+  describe('KpiCardV2Component.addToReportPut() addToReportPut method', () => {
+  
+    beforeEach(() => {  
+      component.existingReportData = [
+        { name: 'Report1', id: '1', kpis: [] },
+        { name: 'Report2', id: '2', kpis: [] }
+      ];
+      component.reportName = 'Report1';
+      component.reportObj = { id: 'kpi1', chartData: {} };
+    });
+  
+    describe('Happy paths', () => {
+      it('should add a new KPI to the report if it does not exist', () => {
+        spyOn(httpService, 'updateReport').and.returnValue(of({ success: true, data: { name: 'Report1', kpis: [{ id: 'kpi1' }] } } as any));
+        spyOn(messageService, 'add');
+        component.addToReportPut();
+  
+        expect(httpService.updateReport).toHaveBeenCalledWith('1', {
+          name: 'Report1',
+          kpis: [{ id: 'kpi1', chartData: '{}' }]
+        });
+        expect(messageService.add).toHaveBeenCalledWith({ severity: 'success', summary: 'Report updated successfully' });
+        expect(component.success).toBe(true);
+      });
+  
+      it('should update an existing KPI in the report', () => {
+        component.existingReportData[0].kpis.push({ id: 'kpi1' });
+        spyOn(httpService, 'updateReport').and.returnValue(of({ success: true, data: { name: 'Report1', kpis: [{ id: 'kpi1' }] } } as any));
+        spyOn(messageService, 'add');
+        component.addToReportPut();
+  
+        expect(httpService.updateReport).toHaveBeenCalledWith('1', {
+          name: 'Report1',
+          kpis: [{ id: 'kpi1', chartData: '{}' }]
+        });
+        expect(messageService.add).toHaveBeenCalledWith({ severity: 'success', summary: 'Report updated successfully' });
+        expect(component.success).toBe(true);
+      });
+    });
+  
+    describe('Edge cases', () => {
+      it('should handle error when updating report fails', () => {
+        spyOn(httpService, 'updateReport').and.returnValue(of({ success: false } as any));
+        spyOn(messageService, 'add');
+        component.addToReportPut();
+  
+        expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', summary: 'Error while updating report' });
+        expect(component.success).toBe(false);
+      });
+    });
+  });
 });
