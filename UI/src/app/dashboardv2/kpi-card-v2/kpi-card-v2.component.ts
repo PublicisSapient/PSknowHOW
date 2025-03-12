@@ -260,7 +260,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.reportModuleEnabled = await this.featureFlagService.isFeatureEnabled('REPORTS');
 
       if (this.reportModuleEnabled && this.selectedTab !== 'iteration') {
-        if ((!this.checkIfDataPresent(this.kpiDataStatusCode) && !this.partialData) || (!this.kpiData?.kpiDetail?.isAdditionalFilterSupport && this.iSAdditionalFilterSelected)) {
+        if ((!this.checkIfDataPresent(this.kpiDataStatusCode)) || (!this.kpiData?.kpiDetail?.isAdditionalFilterSupport && this.iSAdditionalFilterSelected)) {
+          this.menuItems = this.menuItems.filter(item => item.label !== 'Add to Report');
           this.menuItems.push({
             label: 'Add to Report',
             icon: 'pi pi-briefcase',
@@ -270,6 +271,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             disabled: true
           });
         } else {
+          this.menuItems = this.menuItems.filter(item => item.label !== 'Add to Report');
           this.menuItems.push({
             label: 'Add to Report',
             icon: 'pi pi-briefcase',
@@ -905,8 +907,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     let result = '';
     let options = this.getSelectButtonOptions();
 
-    this.selectedButtonValue = this.selectedButtonValue || { Category: (this.getSelectButtonOptions()[0]?.key || this.getSelectButtonOptions()[0]?.categoryName) };
     if (options?.length) {
+      this.selectedButtonValue = this.selectedButtonValue || { Category: (options[0].hasOwnProperty('key') ? options[0]?.key : options[0]?.categoryName) };
       result = options.filter(x => {
         if (x.hasOwnProperty('key')) {
           return x.key === this.selectedButtonValue.Category

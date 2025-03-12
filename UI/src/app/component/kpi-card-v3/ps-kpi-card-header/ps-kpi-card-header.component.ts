@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { Menu } from 'primeng/menu';
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
@@ -36,6 +36,35 @@ export class PsKpiCardHeaderComponent implements OnInit {
     this.initializeMenu();
   }
 
+  async ngOnChanges(changes: SimpleChanges) {
+    if (!this.reportModuleEnabled) {
+      this.reportModuleEnabled = await this.featureFlagService.isFeatureEnabled('REPORTS');
+    }
+    if (this.reportModuleEnabled) {
+      if (changes['currentChartData'] && (this.currentChartData?.chartData?.length || this.currentChartData?.chartData?.data?.length || this.currentChartData?.chartData?.chartData?.length)) {
+        this.menuItems = this.menuItems.filter(item => item.label !== 'Add to Report');
+        this.menuItems.push({
+          label: 'Add to Report',
+          icon: 'pi pi-briefcase',
+          command: ($event) => {
+            this.addToReport();
+          },
+          disabled: false
+        });
+      } else {
+        this.menuItems = this.menuItems.filter(item => item.label !== 'Add to Report');
+        this.menuItems.push({
+          label: 'Add to Report',
+          icon: 'pi pi-briefcase',
+          command: ($event) => {
+            this.addToReport();
+          },
+          disabled: true
+        });
+      }
+    }
+  }
+
   showTooltip(val) {
     this.isTooltip = val;
   }
@@ -44,7 +73,7 @@ export class PsKpiCardHeaderComponent implements OnInit {
     this.kpimenu.toggle(event);
   }
 
-  async initializeMenu() {
+  initializeMenu() {
     this.menuItems = [
       {
         label: 'Settings',
@@ -83,31 +112,6 @@ export class PsKpiCardHeaderComponent implements OnInit {
         },
       }
     ];
-
-    this.reportModuleEnabled = await this.featureFlagService.isFeatureEnabled('REPORTS');
-    let alreadyAdded = this.menuItems.find(x => x.label === 'Add to Report');
-    if (this.reportModuleEnabled && !alreadyAdded) {
-      if ((this.currentChartData?.chartData?.length || this.currentChartData?.chartData?.data?.length || this.currentChartData?.chartData?.chartData?.length)) {
-        this.menuItems.push({
-          label: 'Add to Report',
-          icon: 'pi pi-briefcase',
-          command: ($event) => {
-            this.addToReport();
-          },
-          disabled: false
-        });
-      } else {
-        this.menuItems = this.menuItems.filter(item => item.label !== 'Add to Report');
-        this.menuItems.push({
-          label: 'Add to Report',
-          icon: 'pi pi-briefcase',
-          command: ($event) => {
-            this.addToReport();
-          },
-          disabled: true
-        });
-      }
-    }
   }
 
   showWarning(val) {
