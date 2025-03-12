@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.projectconfig.basic.rest;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -93,10 +94,10 @@ public class ProjectBasicConfigController {
 	 * Returns the list of project's basic configuration.
 	 *
 	 * @param basicProjectConfigId
-	 *          basic project config id
+	 *            basic project config id
 	 * @return ResponseEntity
 	 */
-	@GetMapping(value = {"/{id}"})
+	@GetMapping(value = { "/{id}" })
 	public ResponseEntity<ServiceResponse> getProjectBasicConfig(@PathVariable("id") String basicProjectConfigId) {
 		basicProjectConfigId = CommonUtils.handleCrossScriptingTaintedValue(basicProjectConfigId);
 		log.info("List project configuration request recieved for : {}", basicProjectConfigId);
@@ -137,7 +138,8 @@ public class ProjectBasicConfigController {
 		} catch (Exception ex) {
 			// Handle unexpected exceptions
 			String message = "An error occurred while fetching project configurations.";
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ServiceResponse(false, message, null));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ServiceResponse(false, message, null));
 		}
 	}
 
@@ -147,20 +149,31 @@ public class ProjectBasicConfigController {
 	 * @return ResponseEntity
 	 */
 	@PostMapping
-	public ResponseEntity<ProjectConfigResponse> addBasicConfig(@RequestBody ProjectBasicConfigDTO projectBasicConfigDTO,
-			HttpServletResponse response) {
+	public ResponseEntity<ProjectConfigResponse> addBasicConfig(
+			@RequestBody ProjectBasicConfigDTO projectBasicConfigDTO, HttpServletResponse response) {
 
-		policy.checkPermission(projectBasicConfigDTO, "ADD_PROJECT");
+		ServiceResponse serviceResp ;
+		List<RoleWiseProjects> projectAccess;
+		if (StringUtils.isNotBlank(projectBasicConfigDTO.getProjectName())) {
+			policy.checkPermission(projectBasicConfigDTO, "ADD_PROJECT");
 
-		log.info(ADDING_PROJECT_CONFIGURATIONS, projectBasicConfigDTO.toString());
+			log.info(ADDING_PROJECT_CONFIGURATIONS, projectBasicConfigDTO.toString());
 
-		ServiceResponse serviceResp = projectBasicConfigService.addBasicConfig(projectBasicConfigDTO);
+			serviceResp = projectBasicConfigService.addBasicConfig(projectBasicConfigDTO);
 
-		List<RoleWiseProjects> projectAccess = projectAccessManager
-				.getProjectAccessesWithRole(authenticationService.getLoggedInUser());
-		ProjectConfigResponse projectConfigResponse = new ProjectConfigResponse(response.getHeader(AUTH_RESPONSE_HEADER),
-				serviceResp, projectAccess);
-		return ResponseEntity.status(HttpStatus.OK).body(projectConfigResponse);
+			projectAccess = projectAccessManager.getProjectAccessesWithRole(authenticationService.getLoggedInUser());
+			ProjectConfigResponse projectConfigResponse = new ProjectConfigResponse(
+					response.getHeader(AUTH_RESPONSE_HEADER), serviceResp, projectAccess);
+			return ResponseEntity.status(HttpStatus.OK).body(projectConfigResponse);
+		} else {
+			ProjectConfigResponse projectConfigResponse = new ProjectConfigResponse(
+					response.getHeader(AUTH_RESPONSE_HEADER),
+					new ServiceResponse(false,
+							"New Project can not be created as project name is either empty or contains only spaces.",
+							null),
+					null);
+			return ResponseEntity.status(HttpStatus.OK).body(projectConfigResponse);
+		}
 	}
 
 	/**
@@ -180,8 +193,8 @@ public class ProjectBasicConfigController {
 
 		ServiceResponse serviceResp = projectBasicConfigService.updateBasicConfig(basicConfigId, projectBasicConfigDTO);
 
-		ProjectConfigResponse projectConfigResponse = new ProjectConfigResponse(response.getHeader(AUTH_RESPONSE_HEADER),
-				serviceResp, Lists.newArrayList());
+		ProjectConfigResponse projectConfigResponse = new ProjectConfigResponse(
+				response.getHeader(AUTH_RESPONSE_HEADER), serviceResp, Lists.newArrayList());
 		return ResponseEntity.status(HttpStatus.OK).body(projectConfigResponse);
 	}
 
@@ -207,7 +220,7 @@ public class ProjectBasicConfigController {
 	 * Delete project
 	 *
 	 * @param basicProjectConfigId
-	 *          id
+	 *            id
 	 * @return ServiceResponse
 	 */
 	@PreAuthorize("hasPermission(#basicProjectConfigId, 'DELETE_PROJECT')")
@@ -228,8 +241,8 @@ public class ProjectBasicConfigController {
 	@GetMapping(value = "/hierarchyResponses")
 	public ResponseEntity<List<HierarchyResponseDTO>> getAllHierarchyResponse(HttpServletRequest request) {
 		String apiKey = customApiConfig.getxApiKey();
-		boolean isApiAuth = StringUtils.isNotEmpty(apiKey) &&
-				apiKey.equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
+		boolean isApiAuth = StringUtils.isNotEmpty(apiKey)
+				&& apiKey.equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		if (isApiAuth) {
 			List<HierarchyResponseDTO> hierarchyData = projectBasicConfigService.getHierarchyData();
 			List<HierarchyResponseDTO> filteredHierarchyData = projectBasicConfigService
