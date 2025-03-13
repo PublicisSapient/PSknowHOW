@@ -63,6 +63,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { PasswordModule } from 'primeng/password';
 import {StepsModule} from 'primeng/steps';
 import { SplitButtonModule } from 'primeng/splitbutton';
+import { MenuModule } from 'primeng/menu';
 @NgModule({
   declarations: [ProjectConfigComponent,
     BasicConfigComponent,
@@ -112,6 +113,7 @@ import { SplitButtonModule } from 'primeng/splitbutton';
     PasswordModule,
     SplitButtonModule,
     TabViewModule,
+    MenuModule
   ],
   providers: [MessageService, ConfirmationService]
 })
