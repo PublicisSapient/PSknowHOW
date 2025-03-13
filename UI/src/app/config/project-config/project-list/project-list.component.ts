@@ -26,6 +26,7 @@ import { Table } from 'primeng/table';
 import { HelperService } from 'src/app/services/helper.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, FormGroup, FormControl } from '@angular/forms';
+import { Menu } from 'primeng/menu';
 
 declare const require: any;
 @Component({
@@ -68,6 +69,7 @@ export class ProjectListComponent implements OnInit {
   newProjectName: string = "";
   projectGroup;
   selectedProject: any;
+    @ViewChild('kpimenu') kpimenu: Menu;
 
   constructor(private http: HttpService, private sharedService: SharedService, private messenger: MessageService, private router: Router, private confirmationService: ConfirmationService,
     private getAuthorizationService: GetAuthorizationService, private helper: HelperService) { }
@@ -340,6 +342,11 @@ export class ProjectListComponent implements OnInit {
       this.isRenameProject = false;
       console.log('Form submitted:', this.newProjectName);
     }
+  }
+
+  toggleMenu(event,project) {
+    this.kpimenu.toggle(event);
+    this.handleActionsClick(project)
   }
 
 }

@@ -45,8 +45,8 @@ describe('KpiCardV2Component', () => {
   let helperService: HelperService;
   let dialogService: DialogService;
   let mockService: jasmine.SpyObj<SharedService>;
-  let messageService: MessageService;
   let kpiHelperService;
+  let messageService: MessageService;
   const fakeKpiFieldMappingList = require('../../../test/resource/fakeMappingFieldConfig.json');
   const dropDownMetaData = require('../../../test/resource/KPIConfig.json');
   const fakeSelectedFieldMapping = {
@@ -2509,6 +2509,81 @@ describe('KpiCardV2Component', () => {
         expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', summary: 'Error while updating report' });
         expect(component.success).toBe(false);
       });
+    });
+  });
+  describe('resetDialogFocus', () => {
+    it('should focus on the triggering element', () => {
+      const focusSpy = spyOn(HTMLElement.prototype, 'focus');
+      const mockElement = document.createElement('div');
+      mockElement.id='sprint-details-trigger';
+
+      document.body.appendChild(mockElement);
+      component.resetDialogFocus();
+      expect(focusSpy).toHaveBeenCalled();
+      document.body.removeChild(mockElement);
+    });
+  });
+  
+  xdescribe('onTabChange', () => {
+    it('should focus on the new tab element', () => {
+    //  const focusSpy = spyOn(HTMLElement.prototype, 'focus');
+      const mockElement = document.createElement('div');
+      mockElement.id='project_tab_1';
+
+      document.body.appendChild(mockElement);
+      const focusSpy = spyOn(mockElement, 'focus').and.callThrough();
+
+      // document.body.appendChild(mockElement);
+      component.onTabChange({ index: 1 });
+      fixture.detectChanges();
+      expect(focusSpy).toHaveBeenCalled();
+      document.body.removeChild(mockElement);
+    });
+  });
+
+  describe('handleKeyboardSelect', () => {
+    it('should select next option when ArrowRight key is pressed', () => {
+      component.dropdownArr = [{ options: [{ value: 'option1' }, { value: 'option2' }] }];
+      component.radioOption = 'option1';
+      const event = new KeyboardEvent('keydown', { key: 'ArrowRight' });
+      component.handleKeyboardSelect(event);
+      expect(component.radioOption).toBe('option2');
+    });
+
+    it('should select previous option when ArrowLeft key is pressed', () => {
+      component.dropdownArr = [{ options: [{ value: 'option1' }, { value: 'option2' }] }];
+      component.radioOption = 'option2';
+      const event = new KeyboardEvent('keydown', { key: 'ArrowLeft' });
+      component.handleKeyboardSelect(event);
+      expect(component.radioOption).toBe('option1');
+    });
+
+    it('should not select next option when ArrowRight key is pressed and currentIndex is at the end', () => {
+      component.dropdownArr = [{ options: [{ value: 'option1' }, { value: 'option2' }] }];
+      component.radioOption = 'option2';
+      const event = new KeyboardEvent('keydown', { key: 'ArrowRight' });
+      component.handleKeyboardSelect(event);
+      expect(component.radioOption).toBe('option2');
+    });
+
+    it('should not select previous option when ArrowLeft key is pressed and currentIndex is at the beginning', () => {
+      component.dropdownArr = [{ options: [{ value: 'option1' }, { value: 'option2' }] }];
+      component.radioOption = 'option1';
+      const event = new KeyboardEvent('keydown', { key: 'ArrowLeft' });
+      component.handleKeyboardSelect(event);
+      expect(component.radioOption).toBe('option1');
+    });
+  });
+
+  describe('showTooltip', () => {
+    it('should set isTooltip to true when showTooltip is called with true', () => {
+      component.showTooltip(true);
+      expect(component.isTooltip).toBe(true);
+    });
+  
+    it('should set isTooltip to false when showTooltip is called with false', () => {
+      component.showTooltip(false);
+      expect(component.isTooltip).toBe(false);
     });
   });
 });
