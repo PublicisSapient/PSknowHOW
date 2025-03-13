@@ -835,12 +835,9 @@ public abstract class ToolsKPIService<R, S> {
 	 *          selectedIds
 	 */
 	private void populateSelectedIdInSprintSelection(KpiRequest kpiRequest, Set<String> selectedIds) {
-		for (String selectedId : kpiRequest.getSelectedMap().get(Constant.SPRINT.toLowerCase())) {
-			String[] sprintNameWithProject = selectedId.split("_", 2);
-			if (sprintNameWithProject.length > 1) {
-				selectedIds.add(sprintNameWithProject[1]);
-			}
-		}
+		selectedIds.addAll(configHelperService.getParentIdByNodeIdAndLabelName(
+				kpiRequest.getSelectedMap().get(Constant.SPRINT.toLowerCase()).stream().toList(),
+				Constant.SPRINT.toLowerCase()));
 	}
 
 	/**
@@ -1210,15 +1207,16 @@ public abstract class ToolsKPIService<R, S> {
 	 *          labelName
 	 */
 	public void calculateThresholdValue(Set<String> selectIds, KpiElement kpiElement, String labelName) {
-		if (selectIds.size() == 1 && (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT) ||
-				labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
+		if (selectIds.size() == 1 && (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
+				|| labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+				|| labelName.equalsIgnoreCase("SQD"))) {
 
-			Optional<String> projectId = extractProjectId(selectIds.iterator().next(), labelName);
+			Optional<String> projectId = selectIds.stream().findFirst();
 			Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
 					.cacheProjectConfigMapData();
 
-			basicConfigMap.values().stream()
-					.filter(projectBasicConfig -> projectBasicConfig.getProjectNodeId().equalsIgnoreCase(projectId.orElse("")))
+			basicConfigMap.values().stream().filter(
+					projectBasicConfig -> projectBasicConfig.getProjectNodeId().equalsIgnoreCase(projectId.orElse("")))
 					.findFirst().ifPresent(basicConfig -> {
 						FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicConfig.getId());
 						if (fieldMapping != null) {
@@ -1226,16 +1224,6 @@ public abstract class ToolsKPIService<R, S> {
 						}
 					});
 		}
-	}
-
-	private Optional<String> extractProjectId(String input, String labelName) {
-		if (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) {
-			int lastUnderscoreIndex = input.lastIndexOf("_");
-			return lastUnderscoreIndex != -1 ? Optional.of(input.substring(lastUnderscoreIndex + 1)) : Optional.empty();
-		} else if (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
-			return StringUtils.isNotEmpty(input) ? Optional.ofNullable(input) : Optional.empty();
-		}
-		return Optional.empty();
 	}
 
 	/**
