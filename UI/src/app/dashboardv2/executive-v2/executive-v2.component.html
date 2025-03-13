@@ -58,6 +58,7 @@
                                             [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                                             (getCommentCountByKpi)="getKpiCommentsCount($event)"
                                             (reloadKPITab)="reloadKPI($event)" [kpiSize]="kpi.kpiDetail?.kpiSize"
+                                            [kpiHeight]="kpi.kpiDetail?.kpiHeight"
                                             [kpiChartData]="kpiChartData[kpi?.kpiId]" [immediateLoader]='immediateLoader'
                                             [partialData]="checkIfPartialDataPresent(kpi)" [filterApplyData]="filterApplyData"
                                             [chartColorList]="chartColorList[kpi?.kpiId]" [kpiSelectedFilterObj]="kpiSelectedFilterObj[kpi?.kpiId]"

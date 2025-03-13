@@ -443,6 +443,14 @@
     font-size: 1.5rem; 
 }
 
+:host ::ng-deep app-horizontal-percent-bar-chartv2 .chart-container {
+    height: 400px;
+}
+
+:host ::ng-deep .donut-container {
+    margin-top: 0;
+}
+
 @media print {
     :host ::ng-deep body {
         -webkit-print-color-adjust: exact;

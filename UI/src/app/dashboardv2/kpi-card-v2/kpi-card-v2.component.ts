@@ -104,6 +104,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() kpiThresholdObj: any;
   @Input() releaseEndDate: string = '';
   @Input() hieararchy: any;
+  @Input() kpiHeight: number = 0;
 
 
   // reports: chartWithFiltersComponent
@@ -870,7 +871,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       chartColorList: this.chartColorList || {},
       kpiThresholdObj: this.kpiThresholdObj || {},
       capturedAt: formattedDate,
-      kpiHeight: 400,
+      kpiHeight: this.kpiHeight,
       hieararchy: this.hieararchy
     }
 
@@ -894,7 +895,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
 
     if (metaDataObj.chartType === 'horizontalPercentBarChart') {
-      metaDataObj['kpiHeight'] = 500;
+      metaDataObj['kpiHeight'] = 200;
     }
 
     if (this.selectedTab === 'iteration' && metaDataObj.chartType === 'CumulativeMultilineChart') {
