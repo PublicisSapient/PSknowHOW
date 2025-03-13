@@ -2286,7 +2286,6 @@ describe('KpiCardV2Component', () => {
         component.kpiChartData = 'chartData';
   
         component.addToReportAction();
-  
         expect(component.reportObj.chartData).toBe('chartData');
       });
     });

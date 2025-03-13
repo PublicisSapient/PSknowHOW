@@ -13,7 +13,7 @@
     </div>
 
     <div class="kpi-card-body">
-        <div class="kpi-filter-container" *ngIf="selectedTab !== 'iteration' && chartType !== 'chartWithFilter'">
+        <div class="kpi-filter-container" *ngIf="selectedTab !== 'iteration' && selectedTab !== 'developer' && chartType !== 'chartWithFilter'">
             <ul>
                 <li *ngFor="let filter of kpiFilters; let i = index;">
                     <span>{{ filter }}</span>
@@ -32,6 +32,11 @@
                 </ng-container>
             </ul>
         </div>
+
+        <div class="kpi-filter-container" *ngIf="selectedTab === 'developer'">
+            {{ kpiSelectedFilterObj | json }}
+        </div>
+
 
         <div *ngIf="chartType === 'stacked-bar-chart' || chartType ===  'stacked-bar'"
             class="p-pr-5 p-pl-5 p-pt-5 p-col-6">
