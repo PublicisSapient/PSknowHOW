@@ -34,7 +34,11 @@
         </div>
 
         <div class="kpi-filter-container" *ngIf="selectedTab === 'developer'">
-            {{ kpiSelectedFilterObj | json }}
+            <ul>
+                <li *ngFor="let key of objectKeys(kpiSelectedFilterObj); let i = index;">
+                    <span>{{ kpiSelectedFilterObj[key].join('') }}</span>
+                </li>
+            </ul>
         </div>
 
 

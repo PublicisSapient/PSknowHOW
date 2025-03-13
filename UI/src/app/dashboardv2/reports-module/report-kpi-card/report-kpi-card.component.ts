@@ -80,6 +80,10 @@ export class ReportKpiCardComponent {
     }
   }
 
+  objectKeys(obj) {
+    return obj && Object.keys(obj)?.length ? Object.keys(obj) : [];
+  }
+
   /**
    * Calculates the total sum of numeric values associated with a specified key in an array of issue data.
    * @param issueData - An array of objects representing issues, each containing various key-value pairs.
