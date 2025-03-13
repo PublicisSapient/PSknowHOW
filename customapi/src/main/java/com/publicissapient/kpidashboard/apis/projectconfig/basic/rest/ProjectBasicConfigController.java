@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.projectconfig.basic.rest;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +51,7 @@ import com.publicissapient.kpidashboard.apis.projectconfig.basic.model.Hierarchy
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyValueDTO;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 
@@ -154,7 +154,11 @@ public class ProjectBasicConfigController {
 
 		ServiceResponse serviceResp ;
 		List<RoleWiseProjects> projectAccess;
-		if (StringUtils.isNotBlank(projectBasicConfigDTO.getProjectName())) {
+		List<HierarchyValueDTO> hierarchyDTO = projectBasicConfigDTO.getHierarchy();
+		boolean match = hierarchyDTO.stream().allMatch(hierarchy ->
+				StringUtils.isNotBlank(hierarchy.getValue())
+		);
+		if (match && StringUtils.isNotBlank(projectBasicConfigDTO.getProjectName())) {
 			policy.checkPermission(projectBasicConfigDTO, "ADD_PROJECT");
 
 			log.info(ADDING_PROJECT_CONFIGURATIONS, CommonUtils.sanitize(projectBasicConfigDTO.toString()));
@@ -169,7 +173,8 @@ public class ProjectBasicConfigController {
 			ProjectConfigResponse projectConfigResponse = new ProjectConfigResponse(
 					response.getHeader(AUTH_RESPONSE_HEADER),
 					new ServiceResponse(false,
-							"New Project can not be created as project name is either empty or contains only spaces.",
+							"New Project can not be created as project name, and its hierarchy levels "
+									+ "are either empty or contains only spaces.",
 							null),
 					null);
 			return ResponseEntity.status(HttpStatus.OK).body(projectConfigResponse);
