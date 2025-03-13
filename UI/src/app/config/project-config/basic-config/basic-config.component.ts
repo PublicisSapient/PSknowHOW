@@ -61,6 +61,7 @@ export class BasicConfigComponent implements OnInit {
   selectedItems: { [key: string]: any } = {};
   isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
   clone: string = '';
+  completeHierarchyData: any;
 
   constructor(private formBuilder: UntypedFormBuilder,
     private sharedService: SharedService,
@@ -90,7 +91,7 @@ export class BasicConfigComponent implements OnInit {
         label: 'Data ready on Dashboard',
       }
     ];
-    this.getHierarchy();
+    this.lookForCompletHierarchyData();
     this.ifSuperUser = this.getAuthorizationService.checkIfSuperUser();
     this.selectedProject = this.sharedService.getSelectedProject();
     this.sharedService.setSelectedFieldMapping(null);
@@ -381,9 +382,23 @@ export class BasicConfigComponent implements OnInit {
     return null;
   }
 
+  lookForCompletHierarchyData() {
+    this.completeHierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
+    if (!this.completeHierarchyData) {
+      this.http.getAllHierarchyLevels().subscribe(res => {
+        if (res.data) {
+          this.completeHierarchyData = res.data;
+          localStorage.setItem('completeHierarchyData', JSON.stringify(res.data));
+          this.getHierarchy();
+        }
+      });
+    } else {
+      this.getHierarchy();
+    }
+  }
+
   getHierarchy() {
-    const completeHierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
-    const filteredHierarchyData = completeHierarchyData?.scrum.filter(item => item.id);
+    const filteredHierarchyData = this.completeHierarchyData?.scrum.filter(item => item.id);
     const hierarchyMap = filteredHierarchyData?.reduce((acc, item) => {
       acc[item.hierarchyLevelId] = item.hierarchyLevelName;
       return acc;
@@ -392,6 +407,10 @@ export class BasicConfigComponent implements OnInit {
       hierarchyMap['project'] = 'Project';
     }
     this.http.getOrganizationHierarchy()?.subscribe(formFieldData => {
+    if(formFieldData?.success === false){
+      this.messenger.add({ severity: 'error', summary: formFieldData.message });
+      this.blocked = false;
+    }else{
       const flatData = formFieldData?.data;
 
       const transformedData = typeof hierarchyMap === 'object' ? Object.entries(hierarchyMap)?.map(([hierarchyLevelId, hierarchyLevelIdName], index) => {
@@ -418,6 +437,7 @@ export class BasicConfigComponent implements OnInit {
 
       localStorage.setItem('hierarchyData', JSON.stringify(transformedData, null, 2));
       this.getFields();
+    }
     });
   }
 

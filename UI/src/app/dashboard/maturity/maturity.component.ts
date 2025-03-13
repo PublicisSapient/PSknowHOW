@@ -234,7 +234,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
         this.service.setBackupOfFilterSelectionState(stateFiltersObjLocal);
       } else {
         this.service.setBackupOfFilterSelectionState(null);
-        this.queryParamsSubscription.unsubscribe();
+        this.queryParamsSubscription?.unsubscribe();
         this.router.navigate(['/dashboard/Error']);
         setTimeout(() => {
           this.service.raiseError({
