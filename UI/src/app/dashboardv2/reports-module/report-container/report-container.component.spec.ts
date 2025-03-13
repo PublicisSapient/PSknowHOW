@@ -10629,7 +10629,7 @@ describe('ReportContainerComponent', () => {
                 const kpiToDelete = { id: 1, chartData: {} };
                 const updatedReportData = {
                     success: true,
-                    kpis: [{ id: 2, chartData: '{}' }]
+                    data: { kpis: [{ id: 2, chartData: '{}' }] }
                 };
 
                 spyOn(httpService, 'updateReport').and.returnValue(of(updatedReportData));

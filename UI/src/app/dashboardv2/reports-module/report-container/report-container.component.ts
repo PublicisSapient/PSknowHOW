@@ -121,10 +121,10 @@ export class ReportContainerComponent implements OnInit {
     let reportId = selectedReport.id;
     this.http.updateReport(reportId, data).subscribe(data => {
       if (data['success']) {
-        data['kpis'].forEach(element => {
+        data['data']['kpis'].forEach(element => {
           element.chartData = JSON.parse(element.chartData);
         });
-        selectedReport.kpis = data['kpis'];
+        selectedReport.kpis = data['data']['kpis'];
         this.messageService.add({ severity: 'success', summary: 'Report updated successfully' });
       } else {
         this.messageService.add({ severity: 'error', summary: 'Error while updating report' });

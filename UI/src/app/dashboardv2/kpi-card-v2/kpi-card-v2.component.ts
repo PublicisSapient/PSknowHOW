@@ -256,33 +256,33 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
     }
 
-    if (changes['trendValueList'] && changes['trendValueList'].currentValue) {
-      this.reportModuleEnabled = await this.featureFlagService.isFeatureEnabled('REPORTS');
+    // if (changes['trendValueList'] && changes['trendValueList'].currentValue) {
+    this.reportModuleEnabled = await this.featureFlagService.isFeatureEnabled('REPORTS');
 
-      if (this.reportModuleEnabled && this.selectedTab !== 'iteration') {
-        if ((!this.checkIfDataPresent(this.kpiDataStatusCode)) || (!this.kpiData?.kpiDetail?.isAdditionalFilterSupport && this.iSAdditionalFilterSelected)) {
-          this.menuItems = this.menuItems.filter(item => item.label !== 'Add to Report');
-          this.menuItems.push({
-            label: 'Add to Report',
-            icon: 'pi pi-briefcase',
-            command: ($event) => {
-              this.addToReportAction();
-            },
-            disabled: true
-          });
-        } else {
-          this.menuItems = this.menuItems.filter(item => item.label !== 'Add to Report');
-          this.menuItems.push({
-            label: 'Add to Report',
-            icon: 'pi pi-briefcase',
-            command: ($event) => {
-              this.addToReportAction();
-            },
-            disabled: false
-          });
-        }
+    if (this.reportModuleEnabled && this.selectedTab !== 'iteration') {
+      if (!this.loader && (!this.checkIfDataPresent(this.kpiDataStatusCode)) || (!this.kpiData?.kpiDetail?.isAdditionalFilterSupport && this.iSAdditionalFilterSelected)) {
+        this.menuItems = this.menuItems.filter(item => item.label !== 'Add to Report');
+        this.menuItems.push({
+          label: 'Add to Report',
+          icon: 'pi pi-briefcase',
+          command: ($event) => {
+            this.addToReportAction();
+          },
+          disabled: true
+        });
+      } else if (!this.loader) {
+        this.menuItems = this.menuItems.filter(item => item.label !== 'Add to Report');
+        this.menuItems.push({
+          label: 'Add to Report',
+          icon: 'pi pi-briefcase',
+          command: ($event) => {
+            this.addToReportAction();
+          },
+          disabled: false
+        });
       }
     }
+    // }
 
 
 
