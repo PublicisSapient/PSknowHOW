@@ -2252,7 +2252,7 @@ describe('KpiCardV2Component', () => {
             chartColorList: [],
             kpiThresholdObj: {},
             capturedAt: jasmine.any(String),
-            kpiHeight: 400,
+            kpiHeight: 0,
             hieararchy: {},
             releaseEndDate: '2023-10-10',
             selectedButtonValue: '',
