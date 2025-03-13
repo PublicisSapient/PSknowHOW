@@ -158,7 +158,7 @@ public class ProjectBasicConfigController {
 		boolean match = hierarchyDTO.stream().allMatch(hierarchy ->
 				StringUtils.isNotBlank(hierarchy.getValue())
 		);
-		if (match && StringUtils.isNotBlank(projectBasicConfigDTO.getProjectName()) ) {
+		if (match && StringUtils.isNotBlank(projectBasicConfigDTO.getProjectName())) {
 			policy.checkPermission(projectBasicConfigDTO, "ADD_PROJECT");
 
 			log.info(ADDING_PROJECT_CONFIGURATIONS, CommonUtils.sanitize(projectBasicConfigDTO.toString()));
@@ -173,7 +173,8 @@ public class ProjectBasicConfigController {
 			ProjectConfigResponse projectConfigResponse = new ProjectConfigResponse(
 					response.getHeader(AUTH_RESPONSE_HEADER),
 					new ServiceResponse(false,
-							"New Project can not be created as project name is either empty or contains only spaces.",
+							"New Project can not be created as project name, and its hierarchy levels "
+									+ "are either empty or contains only spaces.",
 							null),
 					null);
 			return ResponseEntity.status(HttpStatus.OK).body(projectConfigResponse);
