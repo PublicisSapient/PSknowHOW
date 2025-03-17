@@ -2257,7 +2257,8 @@ describe('KpiCardV2Component', () => {
             releaseEndDate: '2023-10-10',
             selectedButtonValue: '',
             cardData: undefined,
-            iterationKPIFilterValues: [  ]
+            iterationKPIFilterValues: [  ],
+            additional_filters: {}
           },
         });
       });
