@@ -45,7 +45,7 @@
 </div>
 
 <ng-container *ngIf="!objectKeys(reportObj.metadata.hieararchy)?.length">
-    <div class="selected-filter-container p-d-flex p-jc-between p-p-3"
+    <div class="selected-filter-container p-d-flex p-p-3"
         *ngFor="let superKey of objectValues(reportObj.metadata.trendColors)">
         <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
             <div *ngFor="let key of objectKeys(superKey['tooltip']); let i = index;" class="p-col-4">
@@ -55,6 +55,11 @@
                 <strong>{{superKey['labelName'] | titlecase }}:&nbsp;</strong>
                 <span class="align-list-marker" [ngStyle]="{'background':superKey?.color}"></span>
                 <span>{{ superKey['nodeDisplayName'] }}</span>
+            </div>
+        </div>
+        <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
+            <div *ngFor="let key of objectKeys(reportObj.metadata.additional_filters); let i = index;" class="p-col-4">
+                <strong>{{ key }}&nbsp;:&nbsp;</strong> <span>{{ segregateSprints(reportObj.metadata.additional_filters, key, superKey ) }}</span>
             </div>
         </div>
     </div>
@@ -70,5 +75,6 @@
     [kpiSelectedFilterObj]="reportObj.metadata.kpiSelectedFilterObj"
     [chartColorList]="reportObj.metadata.chartColorList" [yAxis]="reportObj.metadata.yAxis"
     [capturedAt]="reportObj.metadata.capturedAt" [kpiHeight]="reportObj.metadata.kpiHeight"
-    [releaseEndDate]="reportObj.metadata.releaseEndDate" [hieararchy]="reportObj.metadata.hieararchy">
+    [releaseEndDate]="reportObj.metadata.releaseEndDate" [hieararchy]="reportObj.metadata.hieararchy"
+    [additional_filters]="reportObj.metadata.additional_filters">
 </app-report-kpi-card>

@@ -109,7 +109,8 @@ import { ReportKpiCardComponent } from '../dashboardv2/reports-module/report-kpi
     SelectButtonModule,
     MenuModule,
     TabMenuModule,
-    TableModule
+    TableModule,
+    ToastModule
   ],
   exports: [
     NgSelectModule,
@@ -138,6 +139,7 @@ import { ReportKpiCardComponent } from '../dashboardv2/reports-module/report-kpi
     MultilineV2Component,
     GroupstackchartComponentv2,
     GroupBarChartComponent,
+    ToastModule,
     StackedAreaChartComponent,
     PiechartComponent,
     TrendIndicatorV2Component,

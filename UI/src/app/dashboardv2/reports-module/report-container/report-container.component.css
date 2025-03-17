@@ -60,7 +60,8 @@
 
 .selected-filter-container {
     background-color: #F5F9FF;
-    border-radius: 10px;   
+    border-radius: 10px;
+    flex-direction: column;   
 }
 
 .align-list-marker {

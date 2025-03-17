@@ -848,6 +848,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
 
+    let additional_filters = this.service.getBackupOfFilterSelectionState('additional_level') || {};
+    additional_filters = this.setAdditionalFilterLevels(additional_filters);
+    console.log(additional_filters);
+
     this.getExistingReports();
     let metaDataObj = {
       kpiName: this.kpiData.kpiName,
@@ -872,7 +876,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       kpiThresholdObj: this.kpiThresholdObj || {},
       capturedAt: formattedDate,
       kpiHeight: this.kpiHeight,
-      hieararchy: this.hieararchy
+      hieararchy: this.hieararchy,
+      additional_filters: additional_filters
     }
 
     if (metaDataObj.chartType === 'bar-with-y-axis-group') {
@@ -912,6 +917,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     };
 
     this.displayAddToReportsModal = true;
+  }
+
+  setAdditionalFilterLevels(obj) {
+    let completeHierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
+    completeHierarchyData = completeHierarchyData[this.service.getSelectedType()?.toLowerCase()];
+    let result = {};
+    Object.keys(obj).forEach((key) => {
+      let newKey = completeHierarchyData.filter((level) => level.hierarchyLevelId === key)[0].hierarchyLevelName;
+      result[newKey] = obj[key];
+    });
+
+    return result;
   }
 
   getSelectButtonValue() {

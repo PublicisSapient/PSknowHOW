@@ -130,8 +130,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   refreshCounter: number = 0;
   hieararchy: any;
   queryParamsSubscription!: Subscription;
-  showSprintGoalsPanel : boolean = false;
-  sprintGoalData : any = [];
+  showSprintGoalsPanel: boolean = false;
+  sprintGoalData: any = [];
 
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
     private route: ActivatedRoute, private excelService: ExcelService,
@@ -220,7 +220,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.selectedTab = data.selectedBoard;
       this.noProjects = this.service.noProjectsObj;
     }));
-    this.subscriptions.push(this.service.isSprintGoal.subscribe(flag=>this.showSprintGoalsPanel = flag))
+    this.subscriptions.push(this.service.isSprintGoal.subscribe(flag => this.showSprintGoalsPanel = flag))
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       this.globalConfig = JSON.parse(JSON.stringify(globalConfig));
@@ -499,6 +499,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.iterationKPIData = {};
           this.hieararchy = this.filterApplyData['hieararchy'];
         }
+      } else if (this.selectedTab === 'backlog' || this.selectedTab === 'developer') {
+        this.hieararchy = this.filterApplyData['hieararchy'];
       }
       if (!this.configGlobalData?.length && $event.dashConfigData) {
         this.configGlobalData = $event.dashConfigData[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
@@ -950,9 +952,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
 
             //Extracting sprint goal data
-            const kpi187Data = getData.find(data=>data.kpiId === 'kpi187');
-            if(kpi187Data && kpi187Data.hasOwnProperty('trendValueList') && kpi187Data['trendValueList'].length){
-               this.sprintGoalData = JSON.parse(JSON.stringify(kpi187Data['trendValueList']));
+            const kpi187Data = getData.find(data => data.kpiId === 'kpi187');
+            if (kpi187Data && kpi187Data.hasOwnProperty('trendValueList') && kpi187Data['trendValueList'].length) {
+              this.sprintGoalData = JSON.parse(JSON.stringify(kpi187Data['trendValueList']));
             }
 
             const releaseFrequencyInd = getData.findIndex(de => de.kpiId === 'kpi73')
@@ -2492,7 +2494,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       for (const key in this.colorObj) {
         if (arr[i].value?.length) {
           let selectedNode = this.filterData.filter(x => x.nodeDisplayName === arr[i].value[0].sprojectName);
-          let selectedId = selectedNode.filter(x=>x.nodeId === key)[0]?.nodeId;
+          let selectedId = selectedNode.filter(x => x.nodeId === key)[0]?.nodeId;
 
           if (kpiId == 'kpi17' && this.colorObj[key]?.nodeId == selectedId) {
             this.chartColorList[kpiId].push(this.colorObj[key]?.color);

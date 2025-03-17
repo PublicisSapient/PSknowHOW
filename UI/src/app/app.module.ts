@@ -30,7 +30,6 @@ import { MultiSelectModule } from 'primeng/multiselect';
 
 import { DropdownModule } from 'primeng/dropdown';
 import { RippleModule } from 'primeng/ripple';
-import { ToastModule } from 'primeng/toast';
 
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputTextareaModule } from 'primeng/inputtextarea';
@@ -216,7 +215,6 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         ButtonModule,
         TabMenuModule,
         MenuModule,
-        ToastModule,
         DialogModule,
         RadioButtonModule,
         InputTextareaModule,

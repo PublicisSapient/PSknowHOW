@@ -447,8 +447,8 @@
     height: 400px;
 }
 
-:host ::ng-deep .donut-container {
-    margin-top: 0;
+:host ::ng-deep app-tabular-kpi-with-donut-chart .donut-container {
+    margin-top: -5%;
 }
 
 @media print {
