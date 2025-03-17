@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-add-to-report-pop-up',
@@ -13,7 +14,7 @@ export class AddToReportPopUpComponent implements AfterViewInit {
   // Reference to the scrollable container element
   @ViewChild('sliderContainer', { static: false }) sliderContainer!: ElementRef<HTMLDivElement>;
 
-  constructor() { }
+  constructor(private service: SharedService) { }
 
   ngOnChanges() {
     this.reportObj.metadata.trendColors = this.removeDuplicateKeys(this.reportObj.metadata.trendColors);
@@ -91,6 +92,10 @@ export class AddToReportPopUpComponent implements AfterViewInit {
     } else {
       return additional_filters[key].map(elem => elem.nodeDisplayName).join(',')
     }
+  }
+
+  emitReportName(report) {
+    this.service.onSelectedReportChange.next(report);
   }
 
 }

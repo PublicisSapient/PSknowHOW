@@ -139,6 +139,9 @@ export class SharedService {
   onChartChange = new Subject<any>();
   onChartChangeObs = this.onChartChange.asObservable();
   noReports: boolean = true;
+  selectedReport: any = {};
+  onSelectedReportChange = new Subject<any>();
+  onSelectedReportChangeObs = this.onSelectedReportChange.asObservable();
 
   constructor(private router: Router, private route: ActivatedRoute) {
     this.passDataToDashboard = new EventEmitter();

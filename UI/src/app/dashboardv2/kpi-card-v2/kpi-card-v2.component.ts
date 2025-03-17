@@ -170,6 +170,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         this.selectedMainFilter = stringifiedData['selectedMainFilter'];
         this.selectedFilter2 = stringifiedData['selectedFilter2'];
       }
+    }));
+
+    this.subscriptions.push(this.service.onSelectedReportChangeObs.subscribe((reportData) => {
+      if (reportData) {
+        this.reportName = reportData.name;
+        this.success = false;
+      }
     }))
   }
 
@@ -905,6 +912,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
     if (this.selectedTab === 'iteration' && metaDataObj.chartType === 'CumulativeMultilineChart') {
       metaDataObj.chartType = 'CumulativeMultilineChartv2';
+    }
+
+    if(metaDataObj.chartType === 'line' || metaDataObj.chartType === 'grouped_column_plus_line') {
+      metaDataObj['upperThresholdBG'] = this.kpiData.kpiDetail.upperThresholdBG;
+      metaDataObj['lowerThresholdBG'] = this.kpiData.kpiDetail.lowerThresholdBG;
     }
 
 

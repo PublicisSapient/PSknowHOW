@@ -93,6 +93,7 @@
                             <app-multiline-v2 [unit]="kpiData?.kpiUnit" [data]="currentChartData"
                                 [xCaption]="kpiData?.xaxisLabel" [yCaption]="kpiData?.yaxisLabel"
                                 [selectedtype]="selectedtype" [viewType]="showChart"
+                                [thresholdValue]="kpiData?.kpiThresholdObj"
                                 [lowerThresholdBG]="kpiData?.lowerThresholdBG"
                                 [upperThresholdBG]="kpiData?.upperThresholdBG" [color]="colors">
                             </app-multiline-v2>
@@ -102,7 +103,8 @@
                     <ng-container *ngSwitchCase="'multipleline'">
                         <ng-container>
                             <app-multiline-style-v2 [unit]="kpiData?.kpiUnit" [data]="currentChartData"
-                                [xCaption]="kpiData?.xaxisLabel" [yCaption]="kpiData?.yaxisLabel" [kpiId]="kpi?.kpiId">
+                                [xCaption]="kpiData?.xaxisLabel" [yCaption]="kpiData?.yaxisLabel" [kpiId]="kpi?.kpiId"
+                                [thresholdValue]="kpiData?.kpiThresholdObj">
                             </app-multiline-style-v2>
                         </ng-container>
                     </ng-container>
@@ -115,7 +117,8 @@
                                 [unit]="kpiData?.kpiUnit" [xCaption]="kpiData?.xaxisLabel"
                                 [yCaption]="kpiData?.yaxisLabel" [barLegend]="kpiData?.barLegend"
                                 [lineLegend]="kpiData?.lineLegend" [lowerThresholdBG]="kpiData?.lowerThresholdBG"
-                                [upperThresholdBG]="kpiData?.upperThresholdBG" [color]="colors">
+                                [upperThresholdBG]="kpiData?.upperThresholdBG" [color]="colors"
+                                [thresholdValue]="kpiData?.kpiThresholdObj">
                             </app-grouped-column-plus-line-chart-v2>
                         </ng-container>
                     </ng-container>

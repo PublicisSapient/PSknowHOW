@@ -50,7 +50,6 @@ export class ReportContainerComponent implements OnInit {
       });
     }
     this.selectedReport = report;
-
   }
 
 
@@ -76,8 +75,7 @@ export class ReportContainerComponent implements OnInit {
   }
 
   setSelectedReport(report) {
-
-    setTimeout(() => {
+    Promise.resolve(null).then(() => {
       this.generateChartData(report);
     });
   }

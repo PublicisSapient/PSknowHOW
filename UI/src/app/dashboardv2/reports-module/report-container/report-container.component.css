@@ -111,13 +111,13 @@
     }
 
     .kpi-div {
-        height: 85vh;
+        height: 90vh;
         /* Full viewport height */
     }
 
     .kpi-div:not(:first-child) {
-        page-break-before: always;
-        height: 90vh;
+        /* page-break-before: always; */
+        height: auto;
         /* Ensures it starts on a new page */
     }
 

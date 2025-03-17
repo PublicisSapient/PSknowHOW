@@ -8,7 +8,7 @@
     <!-- Scrollable container for report buttons -->
     <div class="slider-container" #sliderContainer>
         <p-button *ngFor="let report of existingReportData" class="slider-item"
-            [ngClass]="{active: reportName === report.name}" (onClick)="reportName = report.name">
+            [ngClass]="{active: reportName === report.name}" (onClick)="reportName = report.name; emitReportName(report);">
             {{ report.name }}
         </p-button>
     </div>
