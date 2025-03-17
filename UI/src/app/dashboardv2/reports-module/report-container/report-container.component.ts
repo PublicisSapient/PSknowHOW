@@ -14,7 +14,7 @@ export class ReportContainerComponent implements OnInit {
   selectedReport: any;
 
   // Reference to the scrollable container element
-  @ViewChild('sliderContainer', { static: true }) sliderContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('sliderContainer', { static: false }) sliderContainer!: ElementRef<HTMLDivElement>;
 
   constructor(private http: HttpService, private messageService: MessageService) { }
 
