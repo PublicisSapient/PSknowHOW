@@ -68,7 +68,8 @@ public class ChangeKpiMasterDocumentationLink {
 					}
 
 					// Construct and update to the new link
-					String newLink = "https://knowhow.tools.publicis.sapient.com/wiki/" + kpiId + "-" + kpiName;
+					String newLink = "https://knowhow.tools.publicis.sapient.com/wiki/" + kpiId + "-"
+							+ kpiName.replace(" ", "+");
 					updateDetails(kpiInfo, newLink);
 				}
 
