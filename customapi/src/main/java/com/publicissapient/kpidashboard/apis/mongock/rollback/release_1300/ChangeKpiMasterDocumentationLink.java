@@ -34,6 +34,8 @@ import io.mongock.api.annotations.RollbackExecution;
 public class ChangeKpiMasterDocumentationLink {
 	private final MongoTemplate mongoTemplate;
 	private final Map<ObjectId, String> oldLinkMap = new HashMap<>(); // In-memory storage for old links
+	private static final String KPI_DETAILS = "details";
+	private static final String KPI_LINK_DETAIL = "kpiLinkDetail";
 
 	public ChangeKpiMasterDocumentationLink(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
@@ -78,11 +80,11 @@ public class ChangeKpiMasterDocumentationLink {
 	}
 
 	private String getOldLink(Document kpiInfo) {
-		if (kpiInfo.containsKey("details")) {
-			var detailsList = kpiInfo.getList("details", Document.class);
+		if (kpiInfo.containsKey(KPI_DETAILS)) {
+			var detailsList = kpiInfo.getList(KPI_DETAILS, Document.class);
 			for (Document detail : detailsList) {
 				if ("link".equals(detail.getString("type"))) {
-					Document kpiLinkDetail = detail.get("kpiLinkDetail", Document.class);
+					Document kpiLinkDetail = detail.get(KPI_LINK_DETAIL, Document.class);
 					if (kpiLinkDetail != null) {
 						return kpiLinkDetail.getString("link");
 					}
@@ -93,8 +95,8 @@ public class ChangeKpiMasterDocumentationLink {
 	}
 
 	private void updateDetails(Document kpiInfo, String newLink) {
-		if (kpiInfo.containsKey("details")) {
-			var detailsList = kpiInfo.getList("details", Document.class);
+		if (kpiInfo.containsKey(KPI_DETAILS)) {
+			var detailsList = kpiInfo.getList(KPI_DETAILS, Document.class);
 			for (Document detail : detailsList) {
 				updateLinkDetail(detail, newLink);
 			}
@@ -103,7 +105,7 @@ public class ChangeKpiMasterDocumentationLink {
 
 	private void updateLinkDetail(Document detail, String newLink) {
 		if ("link".equals(detail.getString("type"))) {
-			Document kpiLinkDetail = detail.get("kpiLinkDetail", Document.class);
+			Document kpiLinkDetail = detail.get(KPI_LINK_DETAIL, Document.class);
 			if (kpiLinkDetail != null) {
 				kpiLinkDetail.put("link", newLink);
 			}
@@ -130,8 +132,8 @@ public class ChangeKpiMasterDocumentationLink {
 	}
 
 	private void revertDetails(Document kpiInfo, String oldLink) {
-		if (kpiInfo.containsKey("details")) {
-			var detailsList = kpiInfo.getList("details", Document.class);
+		if (kpiInfo.containsKey(KPI_DETAILS)) {
+			var detailsList = kpiInfo.getList(KPI_DETAILS, Document.class);
 			for (Document detail : detailsList) {
 				revertLinkDetail(detail, oldLink);
 			}
@@ -140,7 +142,7 @@ public class ChangeKpiMasterDocumentationLink {
 
 	private void revertLinkDetail(Document detail, String oldLink) {
 		if ("link".equals(detail.getString("type"))) {
-			Document kpiLinkDetail = detail.get("kpiLinkDetail", Document.class);
+			Document kpiLinkDetail = detail.get(KPI_LINK_DETAIL, Document.class);
 			if (kpiLinkDetail != null) {
 				kpiLinkDetail.put("link", oldLink);
 			}
