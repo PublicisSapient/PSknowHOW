@@ -137,5 +137,10 @@ export class ReportContainerComponent implements OnInit {
       return additional_filters[key].map(elem => elem.nodeDisplayName).join(',')
     }
   }
-
+  
+  printReport() {
+    setTimeout(() => {
+      window.print();
+    }, 100);
+  }
 }

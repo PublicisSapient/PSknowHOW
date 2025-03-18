@@ -1,25 +1,31 @@
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
 <!-- Existing Reports Slider-->
 <div class="slider-div" *ngIf="reportsData?.length">
-    <div class="p-px-5 p-pt-4 p-pb-1">Select a report: </div>
-    <div class="slider-wrapper">
-        <!-- Left Navigation Button -->
-        <button class="nav-button left" (click)="scrollLeft()">
-            <i class="pi pi-chevron-left"></i>
-        </button>
+    <div>
+        <div class="p-px-5 p-pt-4 p-pb-1">Select a report: </div>
+        <div class="slider-wrapper">
+            <!-- Left Navigation Button -->
+            <button class="nav-button left" (click)="scrollLeft()">
+                <i class="pi pi-chevron-left"></i>
+            </button>
 
-        <!-- Scrollable container for report buttons -->
-        <div class="slider-container" #sliderContainer>
-            <p-button *ngFor="let report of reportsData" class="slider-item"
-                [ngClass]="{active: selectedReport.name === report.name}" (onClick)="setSelectedReport(report);">
-                {{ report.name }}
-            </p-button>
+            <!-- Scrollable container for report buttons -->
+            <div class="slider-container" #sliderContainer>
+                <p-button *ngFor="let report of reportsData" class="slider-item"
+                    [ngClass]="{active: selectedReport.name === report.name}" (onClick)="setSelectedReport(report);">
+                    {{ report.name }}
+                </p-button>
+            </div>
+
+            <!-- Right Navigation Button -->
+            <button class="nav-button right" (click)="scrollRight()">
+                <i class="pi pi-chevron-right"></i>
+            </button>
         </div>
-
-        <!-- Right Navigation Button -->
-        <button class="nav-button right" (click)="scrollRight()">
-            <i class="pi pi-chevron-right"></i>
-        </button>
+    </div>
+    <div class="p-d-flex p-jc-end p-px-5 p-pt-6 p-pb-1">
+        <p-button label="Print Report" styleClass="" aria-label="Print Report"
+            (onClick)="printReport()"></p-button>
     </div>
 </div>
 <!-- Existing Reports Slider End-->
@@ -52,7 +58,7 @@
                             </div>
                             <div class="p-col-12">
                                 <strong>{{superKey['labelName'] | titlecase }}:&nbsp;</strong>
-                                <span class="align-list-marker" [ngStyle]="{'background':superKey?.color}"></span>
+                                <div class="align-list-marker" [ngStyle]="{'background-color':superKey?.color}"></div>
                                 <span>{{ superKey['nodeDisplayName'] }}</span>
                             </div>
                         </div>
@@ -75,7 +81,7 @@
                         </div>
                         <div class="p-col-4">
                             <strong>{{superKey['labelName'] | titlecase }}:&nbsp;</strong>
-                            <span class="align-list-marker" [ngStyle]="{'background':superKey?.color}"></span>
+                            <div class="align-list-marker" [ngStyle]="{'background-color':superKey?.color}"></div>
                             <span>{{
                                 superKey['nodeDisplayName'] }}</span>
                         </div>

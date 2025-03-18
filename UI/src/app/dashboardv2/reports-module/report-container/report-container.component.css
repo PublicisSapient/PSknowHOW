@@ -1,8 +1,6 @@
 .slider-wrapper {
     display: flex;
-    width: 60%;
-    margin-left: 20%;
-    margin-right: 20%;
+    width: 80%;
 }
 
 .nav-button {
@@ -83,7 +81,7 @@
 
 .slider-div {
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column; */
     align-items: center;
     justify-content: center;
     text-align: center;
@@ -108,6 +106,9 @@
         height: 100%;
         margin: 0;
         padding: 0;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+        background-color: #fff;
     }
 
     .kpi-div {
@@ -141,7 +142,6 @@
 
     :host ::ng-deep div.report-kpi-card-container {
         width: 100%;
-        background-color: yellow !important;
     }
 
     :host ::ng-deep .delete-kpi-btn {
@@ -152,8 +152,11 @@
         width: 95% !important;
     }
 
-    :host ::ng-deep .selected-filter-container {
-        background-color: blue;
+    :host ::ng-deep .align-list-marker {
+        display: inline-block !important;
+        width: 10px;
+        height: 10px;
+        margin-right: 5px;
     }
 
     .slider-div {
