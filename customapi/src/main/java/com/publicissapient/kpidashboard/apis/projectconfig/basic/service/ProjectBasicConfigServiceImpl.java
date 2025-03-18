@@ -845,7 +845,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		List<HierarchyResponseDTO> hierarchyResponseDTOS = new ArrayList<>();
 		for (ProjectBasicConfigDTO projectBasicConfig : scrumProjectBasicConfigList) {
 			HierarchyResponseDTO dto = new HierarchyResponseDTO();
-			dto.setProjectId(projectBasicConfig.getId().toString());
+			dto.setProjectId(projectBasicConfig.getProjectNodeId());
+			dto.setProjectBasicId(projectBasicConfig.getId().toString());
 			dto.setProjectName(projectBasicConfig.getProjectName());
 			projectBasicConfig.getHierarchy().forEach(hirarchy -> {
 				int level = hirarchy.getHierarchyLevel().getLevel();
@@ -953,7 +954,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		Map<ObjectId, Map<String, List<ProjectToolConfig>>> projectToolConfigMapData = getProjectToolConfigMapData();
 		return hierarchyResponseDTOS.stream()
 				.filter(hierarchyResponsedto -> MapUtils
-						.isNotEmpty(projectToolConfigMapData.get(new ObjectId(hierarchyResponsedto.getProjectId()))))
+						.isNotEmpty(projectToolConfigMapData.get(new ObjectId(hierarchyResponsedto.getProjectBasicId()))))
 				.collect(Collectors.toList());
 	}
 
