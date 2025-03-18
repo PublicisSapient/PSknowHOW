@@ -791,9 +791,9 @@ public class ProjectBasicConfigServiceImplTest {
 
 		// Create sample HierarchyResponseDTOs
 		HierarchyResponseDTO dto1 = new HierarchyResponseDTO();
-		dto1.setProjectId(projectId1.toString());
+		dto1.setProjectBasicId(projectId1.toString());
 		HierarchyResponseDTO dto2 = new HierarchyResponseDTO();
-		dto2.setProjectId(projectId2.toString());
+		dto2.setProjectBasicId(projectId2.toString());
 
 		List<HierarchyResponseDTO> hierarchyResponseDTOS = Arrays.asList(dto1, dto2);
 
