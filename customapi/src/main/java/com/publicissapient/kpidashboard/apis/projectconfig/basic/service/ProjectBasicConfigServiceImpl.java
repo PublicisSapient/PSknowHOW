@@ -839,13 +839,13 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	public List<HierarchyResponseDTO> getHierarchyData() {
 		List<ProjectBasicConfigDTO> basicConfigDTOS = getAllProjectsBasicConfigsDTOWithoutPermission();
 		List<ProjectBasicConfigDTO> scrumProjectBasicConfigList = basicConfigDTOS.stream()
-				.filter(projectBasicConfigDTO -> !projectBasicConfigDTO.getIsKanban()).collect(Collectors.toList());
+				.filter(projectBasicConfigDTO -> !projectBasicConfigDTO.getIsKanban()).toList();
 		Map<ObjectId, List<SprintDetails>> groupedByProject = getTop5SprintDetailsGroupedByProject(
 				scrumProjectBasicConfigList.stream().map(ProjectBasicConfigDTO::getId).toList());
 		List<HierarchyResponseDTO> hierarchyResponseDTOS = new ArrayList<>();
 		for (ProjectBasicConfigDTO projectBasicConfig : scrumProjectBasicConfigList) {
 			HierarchyResponseDTO dto = new HierarchyResponseDTO();
-			dto.setProjectId(projectBasicConfig.getProjectNodeId());
+			dto.setProjectNodeId(projectBasicConfig.getProjectNodeId());
 			dto.setProjectBasicId(projectBasicConfig.getId().toString());
 			dto.setProjectName(projectBasicConfig.getProjectName());
 			projectBasicConfig.getHierarchy().forEach(hirarchy -> {
