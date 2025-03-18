@@ -880,7 +880,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       yAxis: this.yAxis,
       xAxis: this.kpiData.kpiDetail.xaxisLabel,
       chartColorList: this.chartColorList || {},
-      kpiThresholdObj: this.kpiThresholdObj || {},
+      kpiThresholdObj: this.kpiThresholdObj,
       capturedAt: formattedDate,
       kpiHeight: this.kpiHeight,
       hieararchy: this.hieararchy,
