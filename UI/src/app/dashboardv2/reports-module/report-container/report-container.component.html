@@ -56,6 +56,13 @@
                                 <span>{{ superKey['nodeDisplayName'] }}</span>
                             </div>
                         </div>
+                        <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
+                            <div *ngFor="let key of objectKeys(kpi.metadata.additional_filters); let i = index;"
+                                class="p-col-4">
+                                <strong>{{ key }}&nbsp;:&nbsp;</strong> <span>{{
+                                    segregateSprints(kpi.metadata.additional_filters, key, superKey) }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
