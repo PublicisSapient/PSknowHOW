@@ -803,6 +803,6 @@ public class ProjectBasicConfigServiceImplTest {
 
 		// Assert the result
 		assertEquals(2, result.size());
-		assertEquals(dto1.getProjectId(), result.get(0).getProjectId());
+		assertEquals(dto1.getProjectNodeId(), result.get(0).getProjectNodeId());
 	}
 }
