@@ -1030,6 +1030,8 @@ export class HelperService {
           decodedStateFilters = atob(stateFilters);
           this.urlRedirection(decodedStateFilters, currentUserProjectAccess, shared_link);
         }
+      }else{
+        this.router.navigate(['./dashboard/iteration']);
       }
     } else if (window.location.hash.indexOf('selectedTab') !== -1) {
       this.router.navigate(['./dashboard/'], { queryParamsHandling: 'merge' });
