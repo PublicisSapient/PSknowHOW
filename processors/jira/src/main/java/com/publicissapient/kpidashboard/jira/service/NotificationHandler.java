@@ -151,8 +151,8 @@ public class NotificationHandler {
 					.sorted(
 							Comparator.comparing((HierarchyValue hierarchyValue) -> hierarchyValue.getHierarchyLevel().getLevel()))
 					.forEach(hierarchyValue -> map.put(hierarchyValue.getHierarchyLevel().getHierarchyLevelId(),
-							hierarchyValue.getValue()));
-			map.put(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, projectBasicConfig.getId().toHexString());
+							hierarchyValue.getOrgHierarchyNodeId()));
+			map.put(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, projectBasicConfig.getProjectNodeId());
 		}
 
 		return map;

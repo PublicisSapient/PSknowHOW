@@ -101,10 +101,12 @@ public class NotificationHandlerTest {
 		HierarchyValue hierarchyValue = new HierarchyValue();
 		hierarchyValue.setHierarchyLevel(hierarchyLevel);
 		hierarchyValue.setValue("SomeValue");
+		hierarchyValue.setOrgHierarchyNodeId("5fd99f7bc8b51a7b55aec836");
 
 		// Mock ProjectBasicConfig
 		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 		projectBasicConfig.setId(new ObjectId(projectBasicConfigId));
+		projectBasicConfig.setProjectNodeId(projectBasicConfigId);
 		projectBasicConfig.setProjectName("TestProject");
 		projectBasicConfig.setHierarchy(Collections.singletonList(hierarchyValue));
 
