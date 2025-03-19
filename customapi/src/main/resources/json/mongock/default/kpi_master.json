@@ -1356,7 +1356,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi113-Value+Delivery+(Cost+of+Delay)"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi113-Value+Delivery+Cost+of+Delay"
           }
         }
       ]
@@ -2200,7 +2200,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi114-Value+delivered+(Cost+of+Delay)"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi114-Value+delivered+Cost+of+Delay"
           }
         }
       ]
@@ -2689,7 +2689,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi135-First+Time+Pass+Rate+(%)"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi135-First+Time+Pass+Rate"
           }
         }
       ]
