@@ -36,6 +36,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
@@ -167,7 +169,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			if (fetchCachedData) { // fetch data from cache only if Filter is selected till Sprint
 				// level.
 				result = kpiDataCacheService.fetchDSRData(kpiRequest, basicProjectConfigId, sprintIdList,
-						KPICode.ISSUE_COUNT.getKpiId());
+						KPICode.DEFECT_SEEPAGE_RATE.getKpiId());
 			} else { // fetch data from DB if filters below Sprint level (i.e. additional filters)
 				result = kpiDataProvider.fetchDSRData(kpiRequest, basicProjectConfigId, sprintList);
 			}
