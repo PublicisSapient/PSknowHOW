@@ -3821,7 +3821,562 @@
     "fieldType": "chips",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Specify labels to detect and track scope changes effectively"
+      "definition": "workflow statuses to identify ageing production defects in the backlog."
+    },
+    "mandatory": true
+  },
+  {
+    "fieldName" : "issueTypesToConsiderKpi113",
+    "fieldLabel" : "Issue types to consider",
+    "fieldType" : "chips",
+    "fieldCategory" : "Issue_Type",
+    "section" : "Issue Types Mapping",
+    "processorCommon" : false,
+    "tooltip" : {
+      "definition" : "All issue types used for epics or features"
+    },
+    "fieldDisplayOrder" : 1,
+    "sectionOrder" : 1,
+    "mandatory" : true,
+    "nodeSpecific" : false
+  },
+  {
+    "fieldName": "closedIssueStatusToConsiderKpi113",
+    "fieldLabel": "Status to identify completed issues",
+    "fieldType": "chips",
+    "section": "WorkFlow Status Mapping",
+    "fieldCategory": "workflow",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "All workflow statuses to identify completed issues. If multiple statuses are specified, the first status an issue transitions to will be considered"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 1,
+    "mandatory": true,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "jiraTicketVelocityIssueTypeKPI49",
+    "fieldLabel": "Issue types to consider",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "All issue types used to track tickets"
+    },
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "thresholdValueKPI51",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "thresholdValueKPI55",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "thresholdValueKPI54",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "thresholdValueKPI50",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "thresholdValueKPI48",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "thresholdValueKPI997",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "thresholdValueKPI63",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "thresholdValueKPI71",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "thresholdValueKPI49",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "thresholdValueKPI58",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "thresholdValueKPI66",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "thresholdValueKPI53",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "thresholdValueKPI74",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "thresholdValueKPI114",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "thresholdValueKPI183",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "thresholdValueKPI184",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "thresholdValueKPI65",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "ticketDeliveredStatusKPI49",
+    "fieldLabel": "Status to identify Delivered tickets",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Workflow status used to identify delivered tickets"
+    },
+    "mandatory": true,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "kanbanCycleTimeIssueTypeKPI53",
+    "fieldLabel": "Issue types to consider",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "All issue types used to track tickets"
+    },
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "jiraTicketTriagedStatusKPI53",
+    "fieldLabel": "Status to identify Triaged tickets",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Workflow status used to identify triaged tickets"
+    },
+    "mandatory": true,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "jiraTicketRejectedStatusKPI50",
+    "fieldLabel": "Status to identify Rejected/Dropped tickets",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Workflow status used to identify rejected/dropped tickets"
+    },
+    "mandatory": true,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "jiraTicketRejectedStatusKPI151",
+    "fieldLabel": "Status to identify Rejected/Dropped tickets",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Workflow status used to identify rejected/dropped tickets"
+    },
+    "mandatory": true,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "jiraTicketRejectedStatusKPI48",
+    "fieldLabel": "Status to identify Rejected/Dropped tickets",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Workflow status used to identify rejected/dropped tickets"
+    },
+    "mandatory": true,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "jiraTicketRejectedStatusKPI997",
+    "fieldLabel": "Status to identify Rejected/Dropped tickets",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Workflow status used to identify rejected/dropped tickets"
+    },
+    "mandatory": true,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "kanbanRCACountIssueTypeKPI51",
+    "fieldLabel": "Issue types to consider",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "All issue types to be considered for root cause analysis"
+    },
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "jiraTicketClosedStatusKPI48",
+    "fieldLabel": "Status to identify Closed tickets",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Workflow status used to identify resolved tickets"
+    },
+    "mandatory": true,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "jiraTicketClosedStatusKPI50",
+    "fieldLabel": "Status to identify Closed tickets",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Workflow status used to identify resolved tickets"
+    },
+    "mandatory": true,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "jiraTicketClosedStatusKPI51",
+    "fieldLabel": "Status to identify Closed tickets",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Workflow status used to identify resolved tickets"
+    },
+    "mandatory": true,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "jiraTicketClosedStatusKPI53",
+    "fieldLabel": "Status to identify Closed tickets",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Workflow status used to identify resolved tickets"
+    },
+    "mandatory": true,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "jiraTicketClosedStatusKPI54",
+    "fieldLabel": "Status to identify Closed tickets",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Workflow status used to identify resolved tickets"
+    },
+    "mandatory": true,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "jiraTicketClosedStatusKPI55",
+    "fieldLabel": "Status to identify Closed tickets",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Workflow status used to identify resolved tickets"
+    },
+    "mandatory": true,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "jiraTicketClosedStatusKPI997",
+    "fieldLabel": "Status to identify Closed tickets",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Workflow status used to identify resolved tickets"
+    },
+    "mandatory": true,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "ticketCountIssueTypeKPI48",
+    "fieldLabel": "Issue types to consider",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "All issue types used to track tickets"
+    },
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "ticketCountIssueTypeKPI50",
+    "fieldLabel": "Issue types to consider",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "All issue types used to track tickets"
+    },
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "ticketCountIssueTypeKPI54",
+    "fieldLabel": "Issue types to consider",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "All issue types used to track tickets"
+    },
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "ticketCountIssueTypeKPI55",
+    "fieldLabel": "Issue types to consider",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "All issue types used to track tickets"
+    },
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "ticketCountIssueTypeKPI997",
+    "fieldLabel": "Issue types to consider",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "All issue types used to track tickets"
+    },
+    "mandatory": false,
+    "nodeSpecific": false
+  },
+  {
+    "fieldName": "includeActiveSprintInBacklogKPI",
+    "fieldLabel": "Backlog KPIs include active sprint data",
+    "fieldType": "toggle",
+    "toggleLabelLeft": "Exclude active sprint data",
+    "toggleLabelRight": "Include active sprint data",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Enabled State Backlog KPIs will populate including the active sprint data."
     }
   }
+
 ]

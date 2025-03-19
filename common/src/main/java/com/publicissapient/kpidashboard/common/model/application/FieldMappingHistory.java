@@ -29,9 +29,9 @@ import lombok.Setter;
 
 /**
  * The History of each FieldMapping
- * 
+ *
  * @author shi6
- * 
+ *
  */
 @SuppressWarnings("PMD.TooManyFields")
 @Getter
@@ -487,4 +487,5 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyjiraIssueTypeExcludeKPI75;
 
 	private List<ConfigurationHistoryChangeLog> historyjiraLabelsKPI120;
+    private List<ConfigurationHistoryChangeLog> historyincludeActiveSprintInBacklogKPI;
 }
