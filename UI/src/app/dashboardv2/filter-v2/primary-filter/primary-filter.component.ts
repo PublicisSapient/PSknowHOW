@@ -17,7 +17,7 @@ export class PrimaryFilterComponent implements OnChanges {
   @Input() selectedTab: string = '';
   filters: any[];
   previousSelectedFilters: any = [];
-  selectedFilters: any;
+  selectedFilters: any = [];
   selectedAdditionalFilters: any;
   subscriptions: any[] = [];
   stateFilters: any = {};
