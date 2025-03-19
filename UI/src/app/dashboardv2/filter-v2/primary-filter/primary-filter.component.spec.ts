@@ -801,7 +801,7 @@ describe('PrimaryFilterComponent', () => {
       component.applyDefaultFilters();
 
       tick(200);
-      expect(component.selectedFilters).toBe(undefined);
+      expect(component.selectedFilters).toEqual([]);
       expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([]);
     }));
 
@@ -1026,7 +1026,7 @@ describe('PrimaryFilterComponent', () => {
 
         // Assert
         tick(100);
-        expect(component.selectedFilters).toBe(undefined);
+        expect(component.selectedFilters).toEqual([]);
         expect(sharedService.setNoSprints).toHaveBeenCalledWith(true);
 
 

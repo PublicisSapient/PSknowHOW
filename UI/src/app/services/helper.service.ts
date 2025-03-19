@@ -995,7 +995,8 @@ export class HelperService {
   // url shortening redirection logic
   urlShorteningRedirection() {
     const shared_link = localStorage.getItem('shared_link');
-    const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess?.length ? JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects : [];
+    let currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess?.length ? JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess : [];
+    currentUserProjectAccess = currentUserProjectAccess.flatMap(row => row.projects);
     if (shared_link) {
       // Extract query parameters
       const queryParams = new URLSearchParams(shared_link.split('?')[1]);
