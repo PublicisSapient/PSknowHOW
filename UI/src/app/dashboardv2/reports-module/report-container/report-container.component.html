@@ -38,7 +38,7 @@
 </div>
 
 
-<div class="kpi-container p-grid justify-content-start p-pl-2 p-pr-2 p-m-0 p-w-100">
+<div *ngIf="selectedReport" class="kpi-container p-grid justify-content-start p-pl-2 p-pr-2 p-m-0 p-w-100">
     <ng-container *ngFor="let kpi of selectedReport?.kpis; let i = index;">
         <div class="kpi-div p-p-3 p-m-2 p-w-100">
             <div class="p-d-flex p-jc-end">
@@ -67,7 +67,7 @@
                         </div>
                         <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
                             <div *ngFor="let key of objectKeys(kpi.metadata.additional_filters); let i = index;"
-                                class="p-col-4">
+                                class="p-col-12">
                                 <strong>{{ key }}&nbsp;:&nbsp;</strong> <span>{{
                                     segregateSprints(kpi.metadata.additional_filters, key, superKey) }}</span>
                             </div>
@@ -91,7 +91,7 @@
                     </div>
                     <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
                         <div *ngFor="let key of objectKeys(kpi.metadata.additional_filters); let i = index;"
-                            class="p-col-4">
+                            class="p-col-12">
                             <strong>{{ key }}&nbsp;:&nbsp;</strong> <span>{{
                                 segregateSprints(kpi.metadata.additional_filters, key, superKey) }}</span>
                         </div>

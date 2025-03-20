@@ -144,8 +144,8 @@
     }
 
     .kpi-div:not(:first-child) {
-        /* page-break-before: always; */
-        height: auto;
+        page-break-after: always;
+        height: 90vh;
         /* Ensures it starts on a new page */
     }
 
