@@ -3,7 +3,7 @@ import { HttpService } from '../../services/http.service';
 import { MenuItem } from 'primeng/api';
 import { SharedService } from 'src/app/services/shared.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
-import { Router,NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { HelperService } from 'src/app/services/helper.service';
 import { environment } from 'src/environments/environment';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
@@ -36,7 +36,7 @@ export class HeaderComponent implements OnInit {
   userRole: string = '';
   noToolsConfigured: boolean;
   reportModuleEnabled: boolean = false;
-  isNotConfigPage : boolean = false;
+  isNotConfigPage: boolean = false;
 
   constructor(
     private httpService: HttpService,
@@ -53,7 +53,7 @@ export class HeaderComponent implements OnInit {
         this.isNotConfigPage = !this.router.url.split('?')[0].includes('Config');
       }
     });
-  
+
     this.getNotification();
     this.items = [
       { label: 'Dashboard', icon: '' },
@@ -214,6 +214,7 @@ export class HeaderComponent implements OnInit {
   }
 
   goToReports() {
+    this.lastVisitedFromUrl = window.location.hash.substring(1);
     this.router.navigate(['/dashboard/Report/default-report']);
   }
 }

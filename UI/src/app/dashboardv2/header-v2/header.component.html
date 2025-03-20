@@ -21,7 +21,7 @@
             (click)="navigateToDashboard()" tabindex="0" aria-label="Return to Dashboard"></button>
         </div>
         <div class="tab-button">
-          <button [ngClass]="{active: router.url.indexOf('Report') === -1 }" routerLink="['/dashboard/{{sharedService.getSelectedTab()}}']" label="DASHBOARD" tabindex="0" role="tab"
+          <button [ngClass]="{active: router.url.indexOf('Report') === -1 }" (click)="navigateToDashboard()" label="DASHBOARD" tabindex="0" role="tab"
           aria-selected="{{ router.url.indexOf('Report') === -1 }}">Dashboard</button>
         </div>
         <div class="tab-button">
