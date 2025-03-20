@@ -212,4 +212,8 @@ export class HeaderComponent implements OnInit {
       }
     });
   }
+
+  goToReports() {
+    this.router.navigate(['/dashboard/Report/default-report']);
+  }
 }
