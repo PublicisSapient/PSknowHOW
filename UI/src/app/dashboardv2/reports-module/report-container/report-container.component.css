@@ -1,5 +1,7 @@
 .slider-wrapper {
     display: flex;
+    align-items: center;
+    justify-content: center; /* Centers the slider */
     width: 80%;
 }
 
@@ -17,9 +19,9 @@
     scroll-behavior: smooth;
     gap: 0.5rem;
     padding: 0.5rem;
-    width: 100%;
-    /* Hide scrollbar for a cleaner look */
-    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    max-width: 80%; /* Adjust as needed */
+   
 }
 
 .slider-container::-webkit-scrollbar {
@@ -59,7 +61,8 @@
 .selected-filter-container {
     background-color: #F5F9FF;
     border-radius: 10px;
-    flex-direction: column;   
+    flex-direction: column;  
+    border-bottom: 5px solid #fff;
 }
 
 .align-list-marker {
@@ -96,6 +99,30 @@
 
 .print-header {
     display: none;
+}
+
+.report-kpi-card-container{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Center-align the report selection */
+.center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the content horizontally */
+    justify-content: center; /* Centers vertically (if needed) */
+    text-align: center;
+    width: 90%;
+}
+
+/* Right-align the Print Report button */
+.print-button-container {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 20px; /* Adjust as needed */
+    margin-top: 10px;
 }
 
 

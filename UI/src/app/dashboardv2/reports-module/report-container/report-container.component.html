@@ -1,7 +1,8 @@
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
 <!-- Existing Reports Slider-->
 <div class="slider-div" *ngIf="reportsData?.length">
-    <div>
+    <!-- Center-aligned container for report selection -->
+    <div class="center-container">
         <div class="p-px-5 p-pt-4 p-pb-1">Select a report: </div>
         <div class="slider-wrapper">
             <!-- Left Navigation Button -->
@@ -23,7 +24,9 @@
             </button>
         </div>
     </div>
-    <div class="p-d-flex p-jc-end p-px-5 p-pt-6 p-pb-1">
+
+    <!-- Right-aligned Print Report button -->
+    <div class="print-button-container">
         <p-button label="Print Report" styleClass="" aria-label="Print Report"
             (onClick)="printReport()"></p-button>
     </div>
