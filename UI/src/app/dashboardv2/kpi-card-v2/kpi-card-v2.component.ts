@@ -132,7 +132,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
             }
             else {
-              if(this.dropdownArr && this.dropdownArr[0].options.some(option => Array.isArray(x[this.kpiData?.kpiId]) && x[this.kpiData?.kpiId].includes(option))){
+              if(this.dropdownArr && this.dropdownArr[0]?.options.some(option => Array.isArray(x[this.kpiData?.kpiId]) && x[this.kpiData?.kpiId].includes(option))){
                 this.filterOptions = Array.isArray(x[this.kpiData?.kpiId]) ? { 'filter1': x[this.kpiData?.kpiId] } : { ...x[this.kpiData?.kpiId] };
               }else{
                 this.handleClearAll(key);
