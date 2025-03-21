@@ -1540,7 +1540,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35651585/Kanban+QUALITY+KPIs#Net-Open-Ticket-Count-By-RCA-(Ticket-Count-By-RCA)"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi51-Net+Open+Ticket+Count+By+RCA"
           }
         }
       ]
@@ -1923,7 +1923,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Refer the capacity management guide at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/32473095/Capacity+Management"
+            "link" : "https://speed.suite.publicissapient.com/wiki/spaces/PS/pages/43057154/Step+6A+-+Capacity+Data+Reporting"
           }
         }
       ]
