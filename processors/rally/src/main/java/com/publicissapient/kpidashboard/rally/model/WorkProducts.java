@@ -19,12 +19,24 @@
 package com.publicissapient.kpidashboard.rally.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 @Data
-class WorkProducts {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class WorkProducts {
+    @JsonProperty("_rallyAPIMajor")
+    private String rallyAPIMajor;
+
+    @JsonProperty("_rallyAPIMinor")
+    private String rallyAPIMinor;
+
     @JsonProperty("_ref")
     private String ref;
+
+    @JsonProperty("_type")
+    private String type;
+
     @JsonProperty("Count")
     private int count;
 }
