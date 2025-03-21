@@ -19,7 +19,7 @@
   </parent>
   <groupId>com.publicissapient.kpidashboard</groupId>
   <artifactId>customapi</artifactId>
-  <version>12.2.0-SNAPSHOT</version>
+  <version>12.2.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>Rest API Layer</description>
   <scm>
