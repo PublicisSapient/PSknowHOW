@@ -54,6 +54,7 @@ import com.atlassian.jira.rest.client.api.domain.IssueLink;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.User;
 import com.atlassian.jira.rest.client.api.domain.Version;
+import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -278,22 +279,30 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 		return assigneeName;
 	}
 
-	private void setEpicLinked(FieldMapping fieldMapping, KanbanJiraIssue jiraIssue, Map<String, IssueField> fields) {
-		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink()) && fields.get(fieldMapping.getEpicLink()) != null &&
-				fields.get(fieldMapping.getEpicLink()).getValue() != null) {
-			jiraIssue.setEpicLinked(fields.get((fieldMapping.getEpicLink()).trim()).getValue().toString());
+	private void setEpicLinked(FieldMapping fieldMapping, KanbanJiraIssue kanbanJiraIssue, Map<String, IssueField> fields) {
+		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink()) && fields.get(fieldMapping.getEpicLink()) != null
+				&& fields.get(fieldMapping.getEpicLink()).getValue() != null) {
+			final Object epicLink = fields.get((fieldMapping.getEpicLink()).trim()).getValue();
+			if (epicLink instanceof String) {
+				kanbanJiraIssue.setEpicLinked(epicLink.toString());
+			} else if (epicLink instanceof JSONObject epicLinkJson) {
+				String epicKey = JsonParseUtil.getOptionalString(epicLinkJson, "key");
+				if (epicKey != null) {
+					kanbanJiraIssue.setEpicLinked(epicKey);
+				}
+			}
 		}
 	}
 
 	private void setDueDates(KanbanJiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
 			FieldMapping fieldMapping) {
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
-			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE) &&
-					ObjectUtils.isNotEmpty(issue.getDueDate())) {
-				jiraIssue.setDueDate(
-						JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0].concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
-			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField()) &&
-					ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
+			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
+					&& ObjectUtils.isNotEmpty(issue.getDueDate())) {
+				jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
+						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
+					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
 				IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
 				if (issueField != null && ObjectUtils.isNotEmpty(issueField.getValue())) {
 					jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
