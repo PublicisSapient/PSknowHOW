@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +54,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
 
@@ -74,6 +76,9 @@ public class TeamCapacityServiceImplTest {
 
 	private List<AccountHierarchyDataKanban> accountHierarchyDataKanbanList = new ArrayList<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
+
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private KpiRequest kpiRequest;
 
 	@InjectMocks
@@ -100,6 +105,17 @@ public class TeamCapacityServiceImplTest {
 		// set aggregation criteria kpi wise
 		kpiWiseAggregation.put("kanbanCapacity", "sum");
 
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 	}
 
 	@After
@@ -127,8 +143,7 @@ public class TeamCapacityServiceImplTest {
 		try {
 			KpiElement kpiElement = teamCapacityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("Trend Value List Size is :", ((List<DataCount>) kpiElement.getTrendValueList()).size(),
-					equalTo(1));
+			assertThat("Trend Value List Size is :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 		}

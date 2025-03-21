@@ -28,10 +28,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents the account filtered data.
- */
-
+/** Represents the account filtered data. */
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,6 +38,7 @@ public class AccountFilteredData {
 
 	private String nodeId;
 	private String nodeName;
+	private String nodeDisplayName;
 	private String sprintStartDate;
 	private String sprintEndDate;
 	private String releaseDate;
@@ -63,10 +61,9 @@ public class AccountFilteredData {
 			return false;
 		}
 		AccountFilteredData other = (AccountFilteredData) obj;
-		if (obj instanceof AccountFilteredData && this.nodeId.equals(other.nodeId)
-				&& (null == this.parentId || this.parentId.equals(other.parentId))) {
+		if (obj instanceof AccountFilteredData && this.nodeId.equals(other.nodeId) &&
+				(null == this.parentId || this.parentId.equals(other.parentId))) {
 			isEqual = true;
-
 		}
 		return isEqual;
 	}
@@ -75,5 +72,4 @@ public class AccountFilteredData {
 	public int hashCode() {
 		return Objects.hash(this.nodeId, this.parentId);
 	}
-
 }

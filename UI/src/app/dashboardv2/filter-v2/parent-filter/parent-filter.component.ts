@@ -31,10 +31,12 @@ export class ParentFilterComponent implements OnChanges {
         this.filterLevels = Object.keys(this.filterData).map((item) => {
           return {
             nodeId: item,
-            nodeName: item
+            nodeName: item,
+            nodeDisplayName: item
           }
         });
         this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level.nodeName));
+        this.service.setDataForSprintGoal({filterLevels : this.filterLevels})
         this.stateFilters = (this.service.getBackupOfUrlFilters() && JSON.parse(this.service.getBackupOfUrlFilters())['parent_level']) || this.service.getBackupOfFilterSelectionState('parent_level');
         Promise.resolve().then(() => {
           if (this.stateFilters && typeof this.stateFilters === 'string') {
@@ -46,15 +48,18 @@ export class ParentFilterComponent implements OnChanges {
           } else {
             this.selectedLevel = this.filterLevels[this.filterLevels.length - 1];
           }
+          this.service.setDataForSprintGoal({selectedLevel : this.selectedLevel})
           this.handleSelectedLevelChange();
         });
       } else {
         this.filterLevels = this.filterData[this.parentFilterConfig['labelName']]?.map((item) => {
           return {
             nodeId: item.nodeId,
-            nodeName: item.nodeName
+            nodeName: item.nodeName,
+            nodeDisplayName: item.nodeDisplayName
           }
         });
+        console.log(this.filterLevels)
         this.filterLevels = this.helperService.sortAlphabetically(this.filterLevels);
 
         this.stateFilters = JSON.parse(this.service.getBackupOfUrlFilters())['primary_level'] || this.service.getBackupOfFilterSelectionState('primary_level');
@@ -77,6 +82,7 @@ export class ParentFilterComponent implements OnChanges {
             this.handleSelectedLevelChange(true);
             return;
           }
+          this.service.setDataForSprintGoal({selectedLevel : this.selectedLevel})
           this.handleSelectedLevelChange();
         });
       }
@@ -122,6 +128,7 @@ export class ParentFilterComponent implements OnChanges {
         }
       }
     }
+    this.service.setDataForSprintGoal({selectedLevel : this.selectedLevel})
   }
 
 /**
@@ -131,11 +138,9 @@ export class ParentFilterComponent implements OnChanges {
  * @param {any} $event - The event object from the dropdown change.
  * @returns {void}
  */
-  onDropdownChange($event:any){
-    if($event){
-      localStorage.setItem('selectedTrend', JSON.stringify($event.value));
-    }
+  onDropdownChange($event: any) {
     if(this.helperService.isDropdownElementSelected($event)){
+      localStorage.setItem('selectedTrend', JSON.stringify($event.value));
       this.handleSelectedLevelChange(true)
     }
   }

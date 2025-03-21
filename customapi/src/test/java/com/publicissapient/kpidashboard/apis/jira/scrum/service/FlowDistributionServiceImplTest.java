@@ -132,6 +132,5 @@ public class FlowDistributionServiceImplTest {
 	@After
 	public void cleanup() {
 		jiraIssueCustomHistoryRepository.deleteAll();
-
 	}
 }

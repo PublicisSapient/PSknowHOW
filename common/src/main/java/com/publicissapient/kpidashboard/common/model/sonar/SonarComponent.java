@@ -21,10 +21,7 @@ package com.publicissapient.kpidashboard.common.model.sonar;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Provides Sonar component properties details.
- *
- */
+/** Provides Sonar component properties details. */
 @Getter
 @Setter
 public class SonarComponent {

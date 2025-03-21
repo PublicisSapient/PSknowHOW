@@ -6,5 +6,6 @@ import lombok.Data;
 public class HierarchyValueDTO {
 
 	private HierarchyLevelDTO hierarchyLevel;
+	private String orgHierarchyNodeId;
 	private String value;
 }

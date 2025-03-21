@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.common.repository.application;
 
 import java.util.List;
@@ -32,24 +30,25 @@ import com.publicissapient.kpidashboard.common.repository.excel.TestExecutionRep
 
 /**
  * @author sansharm13
- *
  */
-public interface TestExecutionRepository extends CrudRepository<TestExecution, ObjectId>,
-		QuerydslPredicateExecutor<TestExecution>, TestExecutionRepositoryCustom {
+public interface TestExecutionRepository
+		extends
+			CrudRepository<TestExecution, ObjectId>,
+			QuerydslPredicateExecutor<TestExecution>,
+			TestExecutionRepositoryCustom {
 
 	/**
 	 * Gets Test Execution by sprint id project name.
 	 *
 	 * @param sprintIdProjectName
-	 *            the sprint id project name
+	 *          the sprint id project name
 	 * @return the TestExecution by sprint id project name
 	 */
-
 	TestExecution findBySprintId(String sprintIdProjectName);
 
 	/**
 	 * Find Test execution of sprints
-	 * 
+	 *
 	 * @param sprintIds
 	 * @return list of test execution data
 	 */
@@ -57,9 +56,9 @@ public interface TestExecutionRepository extends CrudRepository<TestExecution, O
 
 	/**
 	 * delete Testexecution project wise
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 */
 	void deleteByBasicProjectConfigId(String basicProjectConfigId);
 }

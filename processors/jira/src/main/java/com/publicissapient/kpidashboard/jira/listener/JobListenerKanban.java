@@ -70,6 +70,7 @@ public class JobListenerKanban implements JobExecutionListener {
 
 	@Autowired
 	private NotificationHandler handler;
+
 	@Value("#{jobParameters['projectId']}")
 	private String projectId;
 
@@ -121,13 +122,16 @@ public class JobListenerKanban implements JobExecutionListener {
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
-				CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
+				CommonConstant.CACHE_ORGANIZATION_HIERARCHY);
+		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
+		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.CACHE_PROJECT_HIERARCHY);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRAKANBAN_KPI_CACHE);
+		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, projectId,
+				CommonConstant.JIRAKANBAN);
 		try {
 			// sending notification in case of job failure
 			if (jobExecution.getStatus() == BatchStatus.FAILED) {
-				log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(),
-						projectId);
+				log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(), projectId);
 				Throwable stepFaliureException = null;
 				for (StepExecution stepExecution : jobExecution.getStepExecutions()) {
 					if (stepExecution.getStatus() == BatchStatus.FAILED) {
@@ -150,7 +154,7 @@ public class JobListenerKanban implements JobExecutionListener {
 				try {
 					jiraClientService.getRestClientMap(projectId).close();
 				} catch (IOException e) {
-					throw new RuntimeException("Failed to close rest client", e);// NOSONAR
+					throw new RuntimeException("Failed to close rest client", e); // NOSONAR
 				}
 				jiraClientService.removeRestClientMapClientForKey(projectId);
 				jiraClientService.removeKerberosClientMapClientForKey(projectId);
@@ -163,10 +167,10 @@ public class JobListenerKanban implements JobExecutionListener {
 		ProjectBasicConfig projectBasicConfig = projectBasicConfigRepo.findByStringId(projectId).orElse(null);
 		if (fieldMapping == null || (fieldMapping.getNotificationEnabler() && projectBasicConfig != null)) {
 			handler.sendEmailToProjectAdminAndSuperAdmin(
-					convertDateToCustomFormat(System.currentTimeMillis()) + " on " + jiraCommonService.getApiHost()
-							+ " for \"" + getProjectName(projectBasicConfig) + "\"",
-					generateLogMessage(stepFaliureException), projectId,
-					JiraConstants.ERROR_NOTIFICATION_SUBJECT_KEY, JiraConstants.ERROR_MAIL_TEMPLATE_KEY);
+					convertDateToCustomFormat(System.currentTimeMillis()) + " on " + jiraCommonService.getApiHost() + " for \"" +
+							getProjectName(projectBasicConfig) + "\"",
+					generateLogMessage(stepFaliureException), projectId, JiraConstants.ERROR_NOTIFICATION_SUBJECT_KEY,
+					JiraConstants.ERROR_MAIL_TEMPLATE_KEY);
 		} else {
 			log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin", projectId);
 		}
@@ -198,14 +202,12 @@ public class JobListenerKanban implements JobExecutionListener {
 			if (StringUtils.isNotEmpty(processorExecutionTraceLog.getFirstRunDate()) && status) {
 				if (StringUtils.isNotEmpty(processorExecutionTraceLog.getBoardId())) {
 					String query = "updatedDate>='" + processorExecutionTraceLog.getFirstRunDate() + "' ";
-					Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId)
-							.getCustomIssueClient().searchBoardIssue(processorExecutionTraceLog.getBoardId(), query, 0,
-									0, JiraConstants.ISSUE_FIELD_SET);
+					Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId).getCustomIssueClient()
+							.searchBoardIssue(processorExecutionTraceLog.getBoardId(), query, 0, 0, JiraConstants.ISSUE_FIELD_SET);
 					SearchResult searchResult = promisedRs.claim();
 					if (searchResult != null && (searchResult.getTotal() != kanbanJiraIssueRepository
 							.countByBasicProjectConfigIdAndExcludeTypeName(projectId, JiraConstants.EPIC))) {
 						processorExecutionTraceLog.setDataMismatch(true);
-
 					}
 				} else {
 					ProjectConfFieldMapping projectConfig = fetchProjectConfiguration.fetchConfiguration(projectId);
@@ -214,27 +216,22 @@ public class JobListenerKanban implements JobExecutionListener {
 					StringBuilder query = new StringBuilder("project in (")
 							.append(projectConfig.getProjectToolConfig().getProjectKey()).append(") and ");
 
-					String userQuery = projectConfig.getJira().getBoardQuery().toLowerCase()
-							.split(JiraConstants.ORDERBY)[0];
+					String userQuery = projectConfig.getJira().getBoardQuery().toLowerCase().split(JiraConstants.ORDERBY)[0];
 					query.append(userQuery);
 					query.append(" and issuetype in (").append(issueTypes).append(" ) and updatedDate>='")
 							.append(processorExecutionTraceLog.getFirstRunDate()).append("' ");
 					log.info("jql query :{}", query);
-					Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId)
-							.getProcessorSearchClient()
+					Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId).getProcessorSearchClient()
 							.searchJql(query.toString(), 0, 0, JiraConstants.ISSUE_FIELD_SET);
 					SearchResult searchResult = promisedRs.claim();
 					if (searchResult != null && (searchResult.getTotal() != kanbanJiraIssueRepository
 							.countByBasicProjectConfigIdAndExcludeTypeName(projectId, CommonConstant.BLANK))) {
 						processorExecutionTraceLog.setDataMismatch(true);
-
 					}
 				}
-
 			}
 		} catch (Exception e) {
 			log.error("Some error occured while calculating dataMistch", e);
 		}
 	}
-
 }

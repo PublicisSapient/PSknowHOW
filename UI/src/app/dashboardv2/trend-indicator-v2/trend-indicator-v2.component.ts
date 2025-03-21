@@ -24,13 +24,11 @@ export class TrendIndicatorV2Component implements OnChanges {
       this.trendData.forEach((trend) => {
         if (trend['hierarchyName']) {
           const trendObj = {
-            'Project': (this.trendData.length > 1) ? this.colorObj.filter((obj) => obj.nodeName === trend['hierarchyName'])[0].color : this.colorObj[0].color,
+            'Project': this.colorObj.filter((obj) => obj.nodeId === trend['hierarchyId'])[0]?.color,
             'Latest Trend': trend['value'] + ' (' + trend['trend'] + ')',
             'KPI Maturity': this.getMaturityValue(trend),
           };
-          if (this.trendData.length > 1) {
-            trendObj['Project'] = this.colorObj.filter((obj) => obj.nodeName === trend['hierarchyName'])[0].color;
-          }
+
           this.dataObj.push(trendObj);
         } else {
           this.dataObj.push({});

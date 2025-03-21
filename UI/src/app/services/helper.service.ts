@@ -27,6 +27,8 @@ import { SharedService } from './shared.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { environment } from 'src/environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 @Injectable()
 export class HelperService {
   isKanban = false;
@@ -57,7 +59,7 @@ export class HelperService {
         downloadJson.selectedMap[filterData[0].label].push(filterData[0].filterData[i].nodeId);
       }
     }
-    if(isKanban === true){
+    if (isKanban === true) {
       downloadJson['selectedMap']['sprint'] = [];
     }
     return this.httpService.downloadExcel(downloadJson, kpiId);
@@ -407,8 +409,8 @@ export class HelperService {
   sortAlphabetically(objArray) {
     if (objArray && objArray.length > 1) {
       objArray.sort((a, b) => {
-        const aName = a.nodeName || a.data || a.date || a;
-        const bName = b.nodeName || b.data || b.date || b;
+        const aName = a.nodeDisplayName || a.nodeName || a.data || a.date || a;
+        const bName = b.nodeDisplayName || b.nodeName || b.data || b.date || b;
         if (typeof aName === 'string' && typeof bName === 'string') {
           return aName.localeCompare(bName);
         }
@@ -471,9 +473,9 @@ export class HelperService {
 
   /** logic to apply multiselect filter */
   applyAggregationLogic(obj, aggregationType, percentile) {
-    const arr = JSON.parse(JSON.stringify(obj[Object.keys(obj)[0]]));
-    for (let i = 0; i < Object.keys(obj).length; i++) {
-      for (let j = 0; j < obj[Object.keys(obj)[i]].length; j++) {
+    const arr = JSON.parse(JSON.stringify(obj[Object.keys(obj)[0]] ? obj[Object.keys(obj)[0]] : []));
+    for (let i = 0; i < Object.keys(obj)?.length; i++) {
+      for (let j = 0; j < obj[Object.keys(obj)[i]]?.length; j++) {
         if (arr.findIndex(x => x.data == obj[Object.keys(obj)[i]][j]['data']) == -1) {
           arr.push(obj[Object.keys(obj)[i]][j]);
         }
@@ -486,7 +488,7 @@ export class HelperService {
       value: item.value.map(x => ({
         ...x,
         value: (typeof x.value === 'object') ? {} : [],
-        allHoverValue : [],
+        allHoverValue: [],
         lineValue: x?.hasOwnProperty('lineValue') ? (typeof x.lineValue === 'object') ? {} : [] : null
       }))
     }));
@@ -601,12 +603,12 @@ export class HelperService {
 
   aggregateHoverValues(objects: any[]): any {
     return objects.reduce((acc, obj) => {
-        Object.keys(obj).forEach((key) => {
-            acc[key] = (acc[key] || 0) + obj[key];
-        });
-        return acc;
+      Object.keys(obj).forEach((key) => {
+        acc[key] = (acc[key] || 0) + obj[key];
+      });
+      return acc;
     }, {});
-}
+  }
 
 
   getKpiCommentsHttp(data) {
@@ -741,7 +743,7 @@ export class HelperService {
   //   this.sharedService.setAddtionalFilterBackup(savedDetails);
   // }
 
-    // old UI Method, removing
+  // old UI Method, removing
   // setFilterValueIfAlreadyHaveBackup(kpiId, kpiSelectedFilterObj, tab, refreshValue, initialValue, subFilter, filters?) {
   //   let haveBackup = {}
 
@@ -791,21 +793,25 @@ export class HelperService {
 
   logoutHttp() {
     this.httpService.logout().subscribe((responseData) => {
-      // if (responseData?.success) {
       if (!environment['AUTHENTICATION_SERVICE']) {
         this.isKanban = false;
         // Set blank selectedProject after logged out state
         this.sharedService.setSelectedProject(null);
         this.httpService.setCurrentUserDetails({});
         this.sharedService.setUserDetailsAsBlankObj();
-        this.sharedService.setVisibleSideBar(false);
         this.sharedService.setAddtionalFilterBackup({});
+
+        this.sharedService.setSelectedBoard(null);
+        this.sharedService.selectedTab = null;
         this.sharedService.setKpiSubFilterObj({});
         this.sharedService.setBackupOfFilterSelectionState(null); // -> SENDING NULL SO THAT SELECTED FILTERS ARE RESET ON LOGOUT
         localStorage.clear();
-        this.router.navigate(['./authentication/login']).then(() => {
-          window.location.reload();
-        });
+        this.router.navigate(['/authentication/login'])
+          .then(() => {
+            setTimeout(() => {
+              window.location.reload();
+            }, 500);
+          });
       } else {
         let redirect_uri = window.location.href;
         window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
@@ -835,7 +841,6 @@ export class HelperService {
         if (Array.isArray(item.data) && item.data?.length) {
           ++dataCount;
         } else if (item.data && !isNaN(parseInt(item.data))) {
-          // dataCount += item?.data;
           ++dataCount;
         } else if (item.value && (this.checkIfArrayHasData(item) || Object.keys(item.value)?.length)) {
           if (item.value[0]?.hasOwnProperty('data') && this.checkAllValues(item.value, 'data', chartType)) {
@@ -914,7 +919,7 @@ export class HelperService {
 
   isDropdownElementSelected($event: any): boolean {
     try {
-      if ($event.originalEvent.type === 'click') {
+      if ($event.originalEvent.type === 'click' || $event.originalEvent.type === 'keydown') {
         return true;
       } else {
         return false;
@@ -984,5 +989,89 @@ export class HelperService {
     };
 
     return aggregatedResponse;
+  }
+
+
+  // url shortening redirection logic
+  urlShorteningRedirection() {
+    const shared_link = localStorage.getItem('shared_link');
+    let currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess?.length ? JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess : [];
+    currentUserProjectAccess = currentUserProjectAccess.flatMap(row => row.projects);
+    if (shared_link) {
+      // Extract query parameters
+      const queryParams = new URLSearchParams(shared_link.split('?')[1]);
+      const stateFilters = queryParams.get('stateFilters');
+      const kpiFilters = queryParams.get('kpiFilters');
+      const selectedTab = queryParams.get('selectedTab');
+      if (stateFilters) {
+        let decodedStateFilters: string = '';
+
+        if (stateFilters?.length <= 8) {
+          this.httpService.handleRestoreUrl(stateFilters, kpiFilters)
+            .pipe(
+              catchError((error) => {
+                this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+                setTimeout(() => {
+                  this.sharedService.raiseError({
+                    status: 900,
+                    message: error.message || 'Invalid URL.'
+                  });
+                });
+                return throwError(error);  // Re-throw the error so it can be caught by a global error handler if needed
+              })
+            )
+            .subscribe((response: any) => {
+              if (response.success) {
+                const longStateFiltersString = response.data['longStateFiltersString'];
+                decodedStateFilters = atob(longStateFiltersString);
+                this.urlRedirection(decodedStateFilters, currentUserProjectAccess, shared_link);
+              }
+            });
+        } else {
+          decodedStateFilters = atob(stateFilters);
+          this.urlRedirection(decodedStateFilters, currentUserProjectAccess, shared_link);
+        }
+      }else{
+        this.router.navigate(['./dashboard/iteration']);
+      }
+    } else if (window.location.hash.indexOf('selectedTab') !== -1) {
+      this.router.navigate(['./dashboard/'], { queryParamsHandling: 'merge' });
+    } else {
+      this.router.navigate(['./dashboard/iteration']);
+    }
+  }
+
+  urlRedirection(decodedStateFilters, currentUserProjectAccess, url) {
+    url = decodeURIComponent(url);
+    const stateFiltersObjLocal = JSON.parse(decodedStateFilters);
+
+    let stateFilterObj = [];
+
+    if (typeof stateFiltersObjLocal['parent_level'] === 'object' && stateFiltersObjLocal['parent_level'] && Object.keys(stateFiltersObjLocal['parent_level']).length > 0) {
+      stateFilterObj = [stateFiltersObjLocal['parent_level']];
+    } else {
+      stateFilterObj = stateFiltersObjLocal['primary_level'];
+    }
+
+    // Check if user has access to all project in stateFiltersObjLocal['primary_level']
+    const hasAllProjectAccess = stateFilterObj?.every(filter =>
+      currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
+    );
+
+    // Superadmin have all project access hence no need to check project for superadmin
+    const getAuthorities = this.sharedService.getCurrentUserDetails('authorities');
+    const hasAccessToAll = Array.isArray(getAuthorities) && getAuthorities?.includes('ROLE_SUPERADMIN') || hasAllProjectAccess;
+
+    if (hasAccessToAll) {
+      this.router.navigate([url]);
+    } else {
+      this.router.navigate(['/dashboard/Error']);
+      setTimeout(() => {
+        this.sharedService.raiseError({
+          status: 901,
+          message: 'No project access.',
+        });
+      }, 100);
+    }
   }
 }

@@ -37,10 +37,8 @@ import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.google.common.collect.Lists;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 
@@ -65,10 +63,10 @@ public final class JiraIssueClientUtil {
 	 * Gets list from json object or array
 	 *
 	 * @param issueField
-	 *            Atlassian IssueField
+	 *          Atlassian IssueField
 	 * @return list return from JsonObject or Array
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public static Collection getListFromJson(IssueField issueField) {
 
 		Object value = issueField.getValue();
@@ -96,7 +94,7 @@ public final class JiraIssueClientUtil {
 	 * Builds Filed Map
 	 *
 	 * @param fields
-	 *            IssueField Iterable
+	 *          IssueField Iterable
 	 * @return Map of FieldIssue ID and FieldIssue Object
 	 */
 	public static Map<String, IssueField> buildFieldMap(Iterable<IssueField> fields) {
@@ -115,7 +113,7 @@ public final class JiraIssueClientUtil {
 	 * Sorts Change Log group
 	 *
 	 * @param issue
-	 *            Atlassian Issue object
+	 *          Atlassian Issue object
 	 * @return List of ChangelogGroup
 	 */
 	public static List<ChangelogGroup> sortChangeLogGroup(Issue issue) {
@@ -133,31 +131,13 @@ public final class JiraIssueClientUtil {
 	}
 
 	/**
-	 * Gets Account Hierarchy
-	 * 
-	 * @param accountHierarchyRepository
-	 *            accountHierarchyRepository
-	 * @return Pair of NodeId and path and Account Hierarchy Map
-	 */
-	public static Map<Pair<String, String>, AccountHierarchy> getAccountHierarchy(
-			AccountHierarchyRepository accountHierarchyRepository) {
-		List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository.findAll();
-		return accountHierarchyList.stream().collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p,
-				(existingValue, newValue) -> existingValue));
-
-	}
-
-	/**
-	 *
 	 * @param kanbanAccountHierarchyRepo
-	 *            list if hierarchy
+	 *          list if hierarchy
 	 * @return map of node,path and its hierarchy
 	 */
 	public static Map<Pair<String, String>, KanbanAccountHierarchy> getKanbanAccountHierarchy(
 			KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo) {
 		List<KanbanAccountHierarchy> accountHierarchyList = kanbanAccountHierarchyRepo.findAll();
-		return accountHierarchyList.stream()
-				.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
+		return accountHierarchyList.stream().collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
 	}
-
 }

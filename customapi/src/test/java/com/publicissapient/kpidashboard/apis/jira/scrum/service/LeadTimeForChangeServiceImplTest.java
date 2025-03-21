@@ -114,12 +114,28 @@ public class LeadTimeForChangeServiceImplTest {
 
 	private List<MergeRequests> mergeRequestsList = new ArrayList<>();
 
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+
 	@Before
 	public void setup() {
 
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.LEAD_TIME_FOR_CHANGE.getKpiId());
 		kpiRequest.setLabel("PROJECT");
+
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
@@ -137,25 +153,19 @@ public class LeadTimeForChangeServiceImplTest {
 		MergeRequestDataFactory mergeRequestDataFactory = MergeRequestDataFactory.newInstance();
 		mergeRequestsList = mergeRequestDataFactory.getMergeRequestList();
 
-		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
-		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
-		projectConfig.setProjectName("Scrum Project");
-
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-//		when(configHelperService.getFieldMapping(projectConfig.getId())).thenReturn(fieldMapping);
+		// when(configHelperService.getFieldMapping(projectConfig.getId())).thenReturn(fieldMapping);
 		// set aggregation criteria kpi wise
 		kpiWiseAggregation.put("LEAD_TIME_FOR_CHANGE", "sum");
-
 	}
 
 	@After
 	public void cleanup() {
 		jiraIssueRepository.deleteAll();
-
 	}
 
 	@Test
@@ -163,7 +173,7 @@ public class LeadTimeForChangeServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		when(jiraIssueRepository.findByRelease(Mockito.any(), Mockito.any())).thenReturn(jiraIssueList);
 		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any(), any()))
 				.thenReturn(issueCustomHistoryList);
@@ -193,7 +203,7 @@ public class LeadTimeForChangeServiceImplTest {
 		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any(), any()))
 				.thenReturn(issueCustomHistoryList);
 		when(leadTimeForChangeService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-//		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(8);
+		// when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(8);
 		try {
 			KpiElement kpiElement = leadTimeForChangeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -213,21 +223,26 @@ public class LeadTimeForChangeServiceImplTest {
 		fieldMapping.setLeadTimeConfigRepoTool(CommonConstant.REPO);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-//		when(configHelperService.getFieldMapping(new ObjectId("6335363749794a18e8a4479b"))).thenReturn(fieldMapping);
+		// when(configHelperService.getFieldMapping(new
+		// ObjectId("6335363749794a18e8a4479b"))).thenReturn(fieldMapping);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-//		when(jiraIssueRepository.findByRelease(Mockito.any(), Mockito.any())).thenReturn(jiraIssueList);
-//		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any(), any()))
-//				.thenReturn(issueCustomHistoryList);
+		// when(jiraIssueRepository.findByRelease(Mockito.any(),
+		// Mockito.any())).thenReturn(jiraIssueList);
+		// when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(),
+		// any(),
+		// any()))
+		// .thenReturn(issueCustomHistoryList);
 		List<String> issueIdList = jiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
 
-//		when(mergeRequestRepository.findMergeRequestListBasedOnBasicProjectConfigId(
-//				new ObjectId("6335363749794a18e8a4479b"), CommonUtils.convertTestFolderToPatternList(issueIdList),
-//				"master")).thenReturn(mergeRequestsList);
+		// when(mergeRequestRepository.findMergeRequestListBasedOnBasicProjectConfigId(
+		// new ObjectId("6335363749794a18e8a4479b"),
+		// CommonUtils.convertTestFolderToPatternList(issueIdList),
+		// "master")).thenReturn(mergeRequestsList);
 		when(leadTimeForChangeService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-//		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(8);
+		// when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(8);
 		try {
 			KpiElement kpiElement = leadTimeForChangeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

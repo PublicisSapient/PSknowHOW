@@ -22,8 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +36,9 @@ import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
 import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StandardLoginRequestFilterTest {
@@ -120,5 +121,4 @@ public class StandardLoginRequestFilterTest {
 		assertEquals("", authentication.getCredentials());
 		assertEquals(AuthType.STANDARD, authentication.getDetails());
 	}
-
 }

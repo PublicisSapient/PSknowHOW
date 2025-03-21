@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl, FormControl } from '@angular/forms';
 import { MessageService, MenuItem } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
@@ -58,8 +58,10 @@ export class BasicConfigComponent implements OnInit {
   isProjectSetupPopup: boolean = false;
   isProjectCOmpletionPopup: boolean = false;
   allProjectList: any[];
+  selectedItems: { [key: string]: any } = {};
   isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
   clone: string = '';
+  completeHierarchyData: any;
 
   constructor(private formBuilder: UntypedFormBuilder,
     private sharedService: SharedService,
@@ -89,7 +91,7 @@ export class BasicConfigComponent implements OnInit {
         label: 'Data ready on Dashboard',
       }
     ];
-    this.getHierarchy();
+    this.lookForCompletHierarchyData();
     this.ifSuperUser = this.getAuthorizationService.checkIfSuperUser();
     this.selectedProject = this.sharedService.getSelectedProject();
     this.sharedService.setSelectedFieldMapping(null);
@@ -107,68 +109,72 @@ export class BasicConfigComponent implements OnInit {
 
     this.formData = JSON.parse(JSON.stringify(formFieldData));
     this.getFieldsResponse = JSON.parse(JSON.stringify(formFieldData));
-    this.formData.unshift(
-      {
+    this.route.queryParams.subscribe(params => {
+      this.clone = params['clone'];
+    })
+    if (Array.isArray(this.formData)) {
+      this.formData?.unshift({
         level: 0,
         hierarchyLevelId: 'kanban',
         hierarchyLevelName: 'Project Methodology',
         inputType: 'switch',
         value: false,
-        required: true
+        required: true,
+        disabled : this.clone
       });
 
-    this.formData.push(
-      {
-        level: this.formData.length,
-        hierarchyLevelId: 'projectName',
-        hierarchyLevelName: 'Project Name',
-        hierarchyLevelTooltip: 'Project Name',
-        inputType: 'text',
-        value: '',
-        required: true
+      if (this.clone !== 'true') {
+        this.formData = this.formData.filter(item => item.hierarchyLevelId !== 'project')
       }
-    );
-    this.formData.push(
-      {
-        level: this.formData.length,
-        hierarchyLevelId: 'assigneeDetails',
-        label1: 'Enable People performance KPIs',
-        label2: this.assigneeSwitchInfo,
-        inputType: 'boolean',
-        value: false,
-        required: false
-      }
-    );
-
-    this.formData.push(
-      {
-        level: this.formData.length,
-        hierarchyLevelId: 'developerKpiEnabled',
-        label1: 'Enable Developers KPIs',
-        label2: this.developerKpiInfo,
-        inputType: 'boolean',
-        value: false,
-        required: false
-      }
-    );
-
-    this.formData.forEach(control => {
-      this.form.addControl(
-        control.hierarchyLevelId,
-        this.formBuilder.control(control.value, [Validators.required, this.stringValidator])
+      this.formData.push(
+        {
+          level: this.formData.length,
+          hierarchyLevelId: 'projectName',
+          hierarchyLevelName: 'Project Name',
+          hierarchyLevelTooltip: 'Project Name',
+          inputType: 'text',
+          value: '',
+          required: true
+        }
       );
-    });
+
+
+      this.formData?.push(
+        {
+          level: this.formData.length,
+          hierarchyLevelId: 'assigneeDetails',
+          label1: 'Enable People performance KPIs',
+          label2: this.assigneeSwitchInfo,
+          inputType: 'boolean',
+          value: false,
+          required: false
+        }
+      );
+      this.formData?.push(
+        {
+          level: this.formData.length,
+          hierarchyLevelId: 'developerKpiEnabled',
+          label1: 'Enable Developers KPIs',
+          label2: this.developerKpiInfo,
+          inputType: 'boolean',
+          value: false,
+          required: false
+        }
+      );
+      this.formData?.forEach(control => {
+        this.form.addControl(
+          control.hierarchyLevelId,
+          this.formBuilder.control(control.value, [Validators.required, this.stringValidator])
+        );
+      });
+    }
     this.blocked = false;
     this.prefillForm();
-
-    this.route.queryParams.subscribe(params => {
-      this.clone = params['clone'];
-      if (this.clone === 'true') {
-        setTimeout(() => {
-          this.prefillForm();
-        }, 500);
-      }
-    });
+    if (this.clone === 'true') {
+      setTimeout(() => {
+        this.prefillForm();
+      }, 500);
+    }
   }
 
   prefillForm(): void {
@@ -176,7 +182,10 @@ export class BasicConfigComponent implements OnInit {
       let project = JSON.parse(JSON.stringify(this.selectedProject));
       const formValues = {};
       this.formData.forEach(field => {
-        formValues[field.hierarchyLevelId] = { name: project[field.hierarchyLevelId] };
+        const nodeDisplayName = field.hierarchyLevelId === 'project'
+          ? project['name']
+          : project[field.hierarchyLevelId];
+        formValues[field.hierarchyLevelId] = field.list?.find(item => item.nodeDisplayName === nodeDisplayName) ?? undefined;
       });
       formValues['projectName'] = 'Clone_' + this.selectedProject['name'];
       formValues['kanban'] = this.selectedProject.type === 'Kanban';
@@ -186,23 +195,96 @@ export class BasicConfigComponent implements OnInit {
     }
   }
 
-  search(event, field) {
+  search(event, field, index) {
     const filtered: any[] = [];
     const query = event.query;
-    for (let i = 0; i < field.suggestions.length; i++) {
-      const country = field.suggestions[i];
-      if (country.name.toLowerCase().indexOf(query.toLowerCase()) == 0) {
-        filtered.push(country);
+    const parentNode = index > 1 ? this.form.value[this.formData[index - 1].hierarchyLevelId] : null;
+    let filteredFieldsByParentId;
+    if (parentNode) {
+      filteredFieldsByParentId = field.list.filter(item => item.parentId == parentNode.nodeId)
+    } else if (field.filteredSuggestions && field.filteredSuggestions.length) {
+      filteredFieldsByParentId = field.filteredSuggestions;
+    } else {
+      filteredFieldsByParentId = field.list
+    }
+    for (let i = 0; i < filteredFieldsByParentId.length; i++) {
+      const listItem = filteredFieldsByParentId[i];
+      if (listItem?.nodeDisplayName?.toLowerCase().indexOf(query?.toLowerCase()) >= 0) {
+        filtered.push(listItem);
       }
     }
 
     field.filteredSuggestions = filtered;
   }
 
+  onSelectOfDropdown(event: any, currentLevel: any) {
+    const selectedItem = event;
+    const selectedNodeId = selectedItem.nodeId;
+    const selectedParentId = selectedItem.parentId;
+    const currentIndex = this.formData.findIndex(level => level === currentLevel);
+
+    // Step 1: Filter current level based on selected item
+    // currentLevel.filteredSuggestions = currentLevel.list.filter(item => item.nodeId === selectedNodeId);
+
+    // Step 2: Filter items in levels below based on selected item’s nodeId
+    if (event.hierarchyLevelId === 'project' && this.clone == 'true') {
+      const formValues = {};
+      formValues['projectName'] = 'Clone_' + event.nodeDisplayName;
+      this.form.patchValue(formValues)
+    } else {
+      this.filterBelowLevels(selectedNodeId, currentIndex);
+    }
+
+    // Step 3: Filter items in levels above based on selected item's parentId
+    this.filterAboveLevels(selectedParentId, currentIndex);
+  }
+
+  filterAboveLevels(selectedParentId: any, currentIndex: number) {
+
+    let selectParentId = selectedParentId;
+    for (let i = currentIndex - 1; i >= 0; i--) {
+      if (this.formData[i]?.list) {
+
+        this.formData[i].filteredSuggestions = this.formData[i]?.list.filter(item => item.nodeId === selectParentId);
+        selectParentId = this.formData[i]?.filteredSuggestions[0].parentId;
+
+        if (this.formData[i].filteredSuggestions && this.formData[i].filteredSuggestions.length) {
+          this.selectedItems[this.formData[i].hierarchyLevelId] = this.formData[i].filteredSuggestions[0];
+        }
+      }
+    }
+  }
+
+  filterBelowLevels(selectedNodeId: string, currentIndex: number) {
+
+    let selectParentId = [selectedNodeId];
+    for (let i = currentIndex + 1; i < this.formData.length; i++) {
+      if (this.formData[i].list) {
+        if (selectParentId.length) {
+          this.formData[i].filteredSuggestions = this.formData[i].list.filter(item => selectParentId.includes(item.parentId));
+        }
+        selectParentId = this.formData[i]?.filteredSuggestions.map(item => item.nodeId);
+
+        if (this.formData[i].filteredSuggestions && this.formData[i].filteredSuggestions.length && this.clone == 'true') {
+          this.selectedItems[this.formData[i].hierarchyLevelId] = this.formData[i].filteredSuggestions[0];
+          selectParentId = this.formData[i].filteredSuggestions[0].nodeId
+          if (this.formData[i].hierarchyLevelId === 'project') {
+            const formValues = {};
+            formValues['projectName'] = 'Clone_' + this.formData[i].filteredSuggestions[0].nodeDisplayName;
+            this.form.patchValue(formValues)
+          }
+        }
+      }
+    }
+  }
+
   onSubmit() {
+    let newProjectParentId: string = '';
     const formValue = this.form.getRawValue();
+    console.log(formValue);
     const submitData = {};
     submitData['projectName'] = formValue['projectName'];
+    submitData['projectDisplayName'] = formValue['projectName'];
     submitData['kanban'] = formValue['kanban'];
     submitData['hierarchy'] = [];
     submitData['saveAssigneeDetails'] = formValue['assigneeDetails'];
@@ -223,56 +305,68 @@ export class BasicConfigComponent implements OnInit {
     this.getFieldsResponse.forEach((element, index) => {
       submitData['hierarchy'].push({
         hierarchyLevel: {
-          level: element.level,
-          hierarchyLevelId: element.hierarchyLevelId,
-          hierarchyLevelName: element.hierarchyLevelName
+          level: formValue[element.hierarchyLevelId]?.level,
+          hierarchyLevelId: formValue[element.hierarchyLevelId]?.hierarchyLevelId,
+          hierarchyLevelName: formValue[element.hierarchyLevelId]?.hierarchyLevelName
         },
-        value: formValue[element.hierarchyLevelId].name ? formValue[element.hierarchyLevelId].name : formValue[element.hierarchyLevelId]
+        orgHierarchyNodeId: formValue[element.hierarchyLevelId]?.nodeId,
+        value: formValue[element.hierarchyLevelId]?.nodeName
       });
-      gaObj['category' + (index + 1)] = element.hierarchyLevelName;
+      gaObj['category' + (index + 1)] = element.hierarchyLevelId;
     });
     this.blocked = true;
-    this.http.addBasicConfig(submitData).subscribe(response => {
-      if (response && response.serviceResponse && response.serviceResponse.success) {
-        this.selectedProject = {};
-        this.selectedProject['id'] = response.serviceResponse.data['id'];
-        this.selectedProject['name'] = response.serviceResponse.data['projectName'];
-        this.selectedProject['Type'] = response.serviceResponse.data['kanban'] ? 'Kanban' : 'Scrum';
-        this.selectedProject['saveAssigneeDetails'] = response.serviceResponse.data['saveAssigneeDetails'];
-        this.selectedProject['developerKpiEnabled'] = response.serviceResponse.data['developerKpiEnabled'];
-        this.selectedProject['projectOnHold'] = response.serviceResponse.data['projectOnHold'];
-        response.serviceResponse.data['hierarchy'].forEach(element => {
-          this.selectedProject[element.hierarchyLevel.hierarchyLevelName] = element.value;
-        });
+    submitData['hierarchy'].pop();
+    this.http.addBasicConfig(submitData).subscribe({
+      next: (response: any) => {
+        console.log(response)
+        if (response && response.serviceResponse && response.serviceResponse.success) {
+          this.selectedProject = {};
+          this.selectedProject['id'] = response.serviceResponse.data['id'];
+          this.selectedProject['name'] = response.serviceResponse.data['projectName'];
+          this.selectedProject['Type'] = response.serviceResponse.data['kanban'] ? 'Kanban' : 'Scrum';
+          this.selectedProject['saveAssigneeDetails'] = response.serviceResponse.data['saveAssigneeDetails'];
+          this.selectedProject['developerKpiEnabled'] = response.serviceResponse.data['developerKpiEnabled'];
+          this.selectedProject['projectOnHold'] = response.serviceResponse.data['projectOnHold'];
+          response.serviceResponse.data['hierarchy'].forEach(element => {
+            this.selectedProject[element.hierarchyLevel.hierarchyLevelName] = element.value;
+          });
 
-        this.sharedService.setSelectedProject(this.selectedProject);
-        this.allProjectList?.push(this.selectedProject);
-        this.sharedService.setProjectList(this.allProjectList);
-        if (!this.ifSuperUser) {
-          if (response['projectsAccess']) {
-            const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
-            this.http.setCurrentUserDetails({ authorities });
+          this.sharedService.setSelectedProject(this.selectedProject);
+          this.allProjectList?.push(this.selectedProject);
+          this.sharedService.setProjectList(this.allProjectList);
+          if (!this.ifSuperUser) {
+            if (response['projectsAccess']) {
+              const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
+              this.http.setCurrentUserDetails({ authorities });
+            }
           }
-        }
-        this.form.reset();
-        this.messenger.add({
-          severity: 'success',
-          summary: 'Project setup initiated',
-          detail: ''
-        });
-        this.isProjectSetupPopup = false;
-        this.isProjectCOmpletionPopup = true;
+          this.form.reset();
+          this.messenger.add({
+            severity: 'success',
+            summary: 'Project setup initiated',
+            detail: ''
+          });
+          this.isProjectSetupPopup = false;
+          this.isProjectCOmpletionPopup = true;
 
-        // Google Analytics
-        this.ga.createProjectData(gaObj);
-      } else {
+          // Google Analytics
+          this.ga.createProjectData(gaObj);
+        } else {
+          this.messenger.add({
+            severity: 'error',
+            summary: response.serviceResponse.message && response.serviceResponse.message.length ? response.serviceResponse.message : 'Some error occurred. Please try again later.'
+          });
+        }
+        this.blocked = false;
+        this.getFields();
+      },
+      error: (error) => {
         this.messenger.add({
           severity: 'error',
-          summary: response.serviceResponse.message && response.serviceResponse.message.length ? response.serviceResponse.message : 'Some error occurred. Please try again later.'
+          summary: 'Some error occurred. Please try again later.'
         });
+        this.blocked = false;
       }
-      this.blocked = false;
-      this.getFields();
     });
   }
 
@@ -288,24 +382,72 @@ export class BasicConfigComponent implements OnInit {
     return null;
   }
 
-  getHierarchy() {
-    this.http.getHierarchyLevels().subscribe(formFieldData => {
-      formFieldData.forEach(element => {
-        if (element.suggestions && element.suggestions.length) {
-          element.suggestions = element.suggestions.map(suggestion => ({
-            name: suggestion,
-            code: suggestion
-          }));
+  lookForCompletHierarchyData() {
+    this.completeHierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
+    if (!this.completeHierarchyData) {
+      this.http.getAllHierarchyLevels().subscribe(res => {
+        if (res.data) {
+          this.completeHierarchyData = res.data;
+          localStorage.setItem('completeHierarchyData', JSON.stringify(res.data));
+          this.getHierarchy();
         }
-        element.value = '';
-        element.required = true;
       });
+    } else {
+      this.getHierarchy();
+    }
+  }
 
-      localStorage.setItem('hierarchyData', JSON.stringify(formFieldData));
+  getHierarchy() {
+    const filteredHierarchyData = this.completeHierarchyData?.scrum.filter(item => item.id);
+    const hierarchyMap = filteredHierarchyData?.reduce((acc, item) => {
+      acc[item.hierarchyLevelId] = item.hierarchyLevelName;
+      return acc;
+    }, {});
+    if (hierarchyMap) {
+      hierarchyMap['project'] = 'Project';
+    }
+    this.http.getOrganizationHierarchy()?.subscribe(formFieldData => {
+    if(formFieldData?.success === false){
+      this.messenger.add({ severity: 'error', summary: formFieldData.message });
+      this.blocked = false;
+    }else{
+      const flatData = formFieldData?.data;
+
+      const transformedData = typeof hierarchyMap === 'object' ? Object.entries(hierarchyMap)?.map(([hierarchyLevelId, hierarchyLevelIdName], index) => {
+        return {
+          hierarchyLevelId,
+          hierarchyLevelIdName,
+          level: index + 1,
+          list: flatData
+            .filter(item => item.hierarchyLevelId === hierarchyLevelId)
+            .map(({ id, nodeId, nodeName, nodeDisplayName, hierarchyLevelId, parentId, createdDate, modifiedDate }) => ({
+              level: index + 1,
+              hierarchyLevelName: hierarchyLevelIdName,
+              id,
+              nodeId,
+              nodeName,
+              nodeDisplayName,
+              hierarchyLevelId,
+              parentId,
+              createdDate,
+              ...(modifiedDate && { modifiedDate })
+            }))
+        };
+      }) : [];
+
+      localStorage.setItem('hierarchyData', JSON.stringify(transformedData, null, 2));
       this.getFields();
+    }
     });
   }
 
+  getNodeDisplayNameById(nodeId: string, field) {
+    const currentIndex = this.formData.findIndex(level => level === field);
+    if (this.formData[currentIndex - 1]?.list) {
+      let matchingObject = this.formData[currentIndex - 1]?.list.find(item => item.nodeId === nodeId);
+      return `(${matchingObject.nodeDisplayName})`;
+    }
+  }
   getButtonLabel(): string {
     return this.clone === 'true' ? 'Clone' : 'Save';
   }
@@ -313,14 +455,5 @@ export class BasicConfigComponent implements OnInit {
   getConeStatusFlag(): boolean {
     return this.clone === 'true';
   }
-
-  backToProjectList() {
-    if (this.clone === 'true') {
-      this.router.navigate(['./dashboard/Config/ProjectList']);
-    } else {
-      this.closeProjectSetupPopup.emit();
-    }
-  }
-
 
 }

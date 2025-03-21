@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.service.AssigneeDetailsServiceImpl;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,6 +68,7 @@ import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.service.AssigneeDetailsServiceImpl;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PRSuccessRateServiceImplTest {
@@ -130,10 +130,16 @@ public class PRSuccessRateServiceImplTest {
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		RepoToolsKpiRequestDataFactory repoToolsKpiRequestDataFactory = RepoToolsKpiRequestDataFactory.newInstance();
 		repoToolKpiMetricResponseList = repoToolsKpiRequestDataFactory.getRepoToolsKpiRequest();
-
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		});
@@ -154,8 +160,8 @@ public class PRSuccessRateServiceImplTest {
 		Set<Assignee> assigneeSet = new HashSet<>();
 		assigneeSet.add(new Assignee("aks", "Akshat Shrivastava",
 				new HashSet<>(Arrays.asList("akshat.shrivastav@publicissapient.com"))));
-		assigneeSet.add(new Assignee("llid", "Hiren",
-				new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
+		assigneeSet
+				.add(new Assignee("llid", "Hiren", new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
 		assigneeDetails.setAssignee(assigneeSet);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
 		when(kpiHelperService.populateSCMToolsRepoList(anyMap())).thenReturn(toolList3);
@@ -238,7 +244,6 @@ public class PRSuccessRateServiceImplTest {
 		toolGroup.put(Constant.TOOL_AZUREREPO, toolList2);
 		toolGroup.put(Constant.REPO_TOOLS, toolList3);
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
-
 	}
 
 	private Tool createTool(String url, String toolType, List<ProcessorItem> collectorItemList) {
@@ -269,5 +274,4 @@ public class PRSuccessRateServiceImplTest {
 		dataCount.setValue(value);
 		return dataCount;
 	}
-
 }

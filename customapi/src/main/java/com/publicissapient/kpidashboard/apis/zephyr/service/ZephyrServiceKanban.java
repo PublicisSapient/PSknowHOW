@@ -55,7 +55,6 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author pkum34
  */
-
 @Service
 @Slf4j
 public class ZephyrServiceKanban {
@@ -79,12 +78,12 @@ public class ZephyrServiceKanban {
 	 * Processes the zephyr based KPI requests for kanban.
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @return list of kpielement
 	 * @throws EntityNotFoundException
-	 *             EntityNotFoundException
+	 *           EntityNotFoundException
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
 		log.info("[ZEPHYR KANBAN][{}]. Processing KPI calculation for data {}", kpiRequest.getIds(),
@@ -92,15 +91,14 @@ public class ZephyrServiceKanban {
 		List<KpiElement> responseList = new ArrayList<>();
 		String[] kanbanProjectKeyCache = null;
 		try {
-			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(),
-					true);
+			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(), true);
 			if (null != groupName) {
 				kpiRequest.setLabel(groupName.toUpperCase());
 			} else {
 				log.error("label name for selected hierarchy not found");
 			}
-			List<AccountHierarchyDataKanban> filteredAccountDataList = filterHelperService
-					.getFilteredBuildsKanban(kpiRequest, groupName);
+			List<AccountHierarchyDataKanban> filteredAccountDataList = filterHelperService.getFilteredBuildsKanban(kpiRequest,
+					groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
 
 				kanbanProjectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
@@ -111,19 +109,18 @@ public class ZephyrServiceKanban {
 				Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
 
 				populateKanbanKpiRequest(kpiRequest);
-				Object cachedData = cacheService.getFromApplicationCache(kanbanProjectKeyCache,
-						KPISource.ZEPHYRKANBAN.name(), groupId, null);
-				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-						&& null != cachedData) {
+				Object cachedData = cacheService.getFromApplicationCache(kanbanProjectKeyCache, KPISource.ZEPHYRKANBAN.name(),
+						groupId, null);
+				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+						null != cachedData) {
 					log.info("[ZEPHYR KANBAN][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
 							kpiRequest.getIds());
 					return (List<KpiElement>) cachedData;
 				}
 
-				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-						null, filteredAccountDataList, filterHelperService.getFirstHierarachyLevel(),
-						filterHelperService.getHierarchyIdLevelMap(false)
-								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, 0));
+				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, null,
+						filteredAccountDataList, filterHelperService.getFirstHierarachyLevel(), filterHelperService
+								.getHierarchyIdLevelMap(false).getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, 0));
 
 				for (KpiElement kpiEle : kpiRequest.getKpiList()) {
 
@@ -135,8 +132,8 @@ public class ZephyrServiceKanban {
 
 		} catch (EntityNotFoundException enfe) {
 
-			log.error("[ZEPHYR KANBAN][{}]. Error while KPI calculation for data. No data found {} {}",
-					kpiRequest.getIds(), kpiRequest.getKpiList(), enfe);
+			log.error("[ZEPHYR KANBAN][{}]. Error while KPI calculation for data. No data found {} {}", kpiRequest.getIds(),
+					kpiRequest.getKpiList(), enfe);
 			throw enfe;
 
 		} catch (Exception e) {
@@ -167,9 +164,9 @@ public class ZephyrServiceKanban {
 
 	/**
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @param filteredAccountDataList
-	 *            filteredAccountDataList
+	 *          filteredAccountDataList
 	 * @return list of hierarchy
 	 */
 	private List<AccountHierarchyDataKanban> getAuthorizedFilteredList(KpiRequest kpiRequest,
@@ -181,8 +178,7 @@ public class ZephyrServiceKanban {
 		return filteredAccountDataList;
 	}
 
-	private String[] getProjectKeyCache(KpiRequest kpiRequest,
-			List<AccountHierarchyDataKanban> filteredAccountDataList) {
+	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyDataKanban> filteredAccountDataList) {
 		return authorizedProjectsService.getKanbanProjectKey(filteredAccountDataList, kpiRequest);
 	}
 
@@ -191,11 +187,11 @@ public class ZephyrServiceKanban {
 	 * method of these KPIs
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @param kpiElement
-	 *            kpiElement
+	 *          kpiElement
 	 * @param treeAggregatorDetail
-	 *            treeAggregatorDetail
+	 *          treeAggregatorDetail
 	 * @return KpiElement kpielement
 	 */
 	private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -212,8 +208,8 @@ public class ZephyrServiceKanban {
 			List<Node> projectNodes = treeAggregatorDetailRegPercent.getMapOfListOfProjectNodes()
 					.get(CommonConstant.PROJECT.toLowerCase());
 
-			if (!projectNodes.isEmpty() && (projectNodes.size() > 1
-					|| kpiHelperService.isRequiredTestToolConfigured(kpi, kpiElement, projectNodes.get(0).getProjectFilter().getBasicProjectConfigId()))) {
+			if (!projectNodes.isEmpty() && (projectNodes.size() > 1 || kpiHelperService.isRequiredTestToolConfigured(kpi,
+					kpiElement, projectNodes.get(0).getProjectFilter().getBasicProjectConfigId()))) {
 				kpiElement = zephyrKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailRegPercent);
 				kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
 				if (projectNodes.size() == 1) {
@@ -240,23 +236,22 @@ public class ZephyrServiceKanban {
 	 * Sets cache.
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 * @param responseList
-	 *            responseList
+	 *          responseList
 	 * @param groupId
-	 *            groupId
+	 *          groupId
 	 * @param kanbanProjectKeyCache
-	 *            kanbanProjectKeyCache
+	 *          kanbanProjectKeyCache
 	 */
 	private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
 			String[] kanbanProjectKeyCache) {
 		Integer projectLevel = filterHelperService.getHierarchyIdLevelMap(true)
 				.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
-		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& projectLevel >= kpiRequest.getLevel()) {
-			cacheService.setIntoApplicationCache(kanbanProjectKeyCache, responseList, KPISource.ZEPHYRKANBAN.name(),
-					groupId, null);
+		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				projectLevel >= kpiRequest.getLevel()) {
+			cacheService.setIntoApplicationCache(kanbanProjectKeyCache, responseList, KPISource.ZEPHYRKANBAN.name(), groupId,
+					null);
 		}
 	}
-
 }

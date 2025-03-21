@@ -170,7 +170,7 @@ public class OnlineDataProcessorImplTest {
 
 	@Mock
 	private AesEncryptionService aesEncryptionService;
-	
+
 	@BeforeEach
 	public void setUp() throws Exception {
 		MockitoAnnotations.openMocks(this);
@@ -179,7 +179,6 @@ public class OnlineDataProcessorImplTest {
 		setProjectConfigFieldMap();
 		when(aesEncryptionService.decrypt(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
 				.thenReturn(PLAIN_TEXT_PASSWORD);
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -202,13 +201,12 @@ public class OnlineDataProcessorImplTest {
 		when(azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE)).thenReturn(azureProcessor);
 		when(azureProcessor.getId()).thenReturn(new ObjectId("5f0c1e1c204347d129590ef8"));
 		when(azureProcessorConfig.getEstimationCriteria()).thenReturn("StoryPoints");
-		when(azureIssueRepository.findByIssueIdAndBasicProjectConfigId(any(), any()))
-				.thenReturn(new JiraIssue());
+		when(azureIssueRepository.findByIssueIdAndBasicProjectConfigId(any(), any())).thenReturn(new JiraIssue());
 		when(azureIssueCustomHistoryRepository.findByStoryIDAndBasicProjectConfigId(any(), any()))
 				.thenReturn(new JiraIssueCustomHistory());
 
-		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId("Project",
-				scrumProjectList.get(0).getId())).thenReturn(Arrays.asList(accountHierarchy));
+		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId("Project", scrumProjectList.get(0).getId()))
+				.thenReturn(Arrays.asList(accountHierarchy));
 		MetadataRestClient metadataRestClient = mock(MetadataRestClient.class);
 
 		Field field1 = new Field("Story Points", "customfield_20803", FieldType.JIRA, true, true, true, null);
@@ -229,8 +227,8 @@ public class OnlineDataProcessorImplTest {
 		IssueType issueType5 = new IssueType(new URI("self"), 1l, "Defect", false, "desc", new URI("iconURI"));
 		IssueType issueType6 = new IssueType(new URI("self"), 1l, "Epic", false, "desc", new URI("iconURI"));
 		IssueType issueType7 = new IssueType(new URI("self"), 1l, "UAT Defect", false, "desc", new URI("iconURI"));
-		List<IssueType> issueTypes = Arrays.asList(issueType1, issueType2, issueType3, issueType4, issueType5,
-				issueType6, issueType7);
+		List<IssueType> issueTypes = Arrays.asList(issueType1, issueType2, issueType3, issueType4, issueType5, issueType6,
+				issueType7);
 
 		Iterable<IssueType> issueTypeItr = issueTypes;
 		when(metadataRestClient.getIssueTypes()).thenReturn(metaDataIssueTypePromise);
@@ -252,8 +250,11 @@ public class OnlineDataProcessorImplTest {
 		when(client.getIterationsResponse(Mockito.any())).thenReturn(createIterationsResponse());
 		when(client.getWorkItemInfo(Mockito.any(), Mockito.any())).thenReturn(createWorkItemInfoResponse());
 		when(client.getUpdatesResponse(Mockito.any(), Mockito.anyString())).thenReturn(createUpdatesResponse());
-		onlineDataProcessor.validateAndCollectIssues(scrumProjectList);
 
+		Map<String, List<String>> projectIdMap = new HashMap<>();
+		projectIdMap.put(AzureConstants.SCRUM_DATA, new ArrayList<>());
+		projectIdMap.put(AzureConstants.KANBAN_DATA, new ArrayList<>());
+		onlineDataProcessor.validateAndCollectIssues(scrumProjectList, projectIdMap);
 	}
 
 	private AzureWiqlModel createWiqlResponse() throws JsonParseException, JsonMappingException, IOException {
@@ -265,19 +266,16 @@ public class OnlineDataProcessorImplTest {
 		return azureWiqlModel;
 	}
 
-	private AzureIterationsModel createIterationsResponse()
-			throws JsonParseException, JsonMappingException, IOException {
+	private AzureIterationsModel createIterationsResponse() throws JsonParseException, JsonMappingException, IOException {
 		String filePath = "src/test/resources/onlinedata/azure/azureiterationsmodel.json";
 		File file = new File(filePath);
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		AzureIterationsModel azureIterationsModel = objectMapper.readValue(file, AzureIterationsModel.class);
 		return azureIterationsModel;
-
 	}
 
-	private AzureBoardsWIModel createWorkItemInfoResponse()
-			throws JsonParseException, JsonMappingException, IOException {
+	private AzureBoardsWIModel createWorkItemInfoResponse() throws JsonParseException, JsonMappingException, IOException {
 		String filePath = "src/test/resources/onlinedata/azure/azureworkitemmodel.json";
 		File file = new File(filePath);
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -310,7 +308,6 @@ public class OnlineDataProcessorImplTest {
 		kanbanObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		ProjectBasicConfig kanbanProjectConfig = kanbanObjectMapper.readValue(kanbanFile, ProjectBasicConfig.class);
 		kanbanProjectlist.add(kanbanProjectConfig);
-
 	}
 
 	private void setProjectConfigFieldMap() throws IllegalAccessException, InvocationTargetException {
@@ -319,7 +316,7 @@ public class OnlineDataProcessorImplTest {
 		projectConfFieldMapping.setBasicProjectConfigId(scrumProjectList.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
 
-		BeanUtils.copyProperties(kanbanProjectlist.get(0),projectConfFieldMapping2);
+		BeanUtils.copyProperties(kanbanProjectlist.get(0), projectConfFieldMapping2);
 		projectConfFieldMapping2.setKanban(true);
 		projectConfFieldMapping2.setBasicProjectConfigId(kanbanProjectlist.get(0).getId());
 		projectConfFieldMapping2.setFieldMapping(fieldMappingList.get(1));
@@ -355,15 +352,21 @@ public class OnlineDataProcessorImplTest {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		accountHierarchy = objectMapper.readValue(file, AccountHierarchy.class);
-
 	}
 
 	@Test
-	public void validateAndCollectIssuesKanban() throws JsonParseException, JsonMappingException,
-			IOException, IllegalAccessException, InvocationTargetException, ParseException {
+	public void validateAndCollectIssuesKanban()
+			throws JsonParseException,
+					JsonMappingException,
+					IOException,
+					IllegalAccessException,
+					InvocationTargetException,
+					ParseException {
 		when(azureProcessorConfig.getStartDate()).thenReturn("2019-01-07T00:00:00.0000000");
-		LocalDateTime configuredStartDate = LocalDateTime.parse(azureProcessorConfig.getStartDate(),
-				DateTimeFormatter.ofPattern(AzureConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
+		LocalDateTime configuredStartDate =
+				LocalDateTime.parse(
+						azureProcessorConfig.getStartDate(),
+						DateTimeFormatter.ofPattern(AzureConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
 		Map<String, LocalDateTime> time = new HashMap();
 		time.put("User Story", configuredStartDate);
 		time.put("Issue", configuredStartDate);
@@ -374,10 +377,13 @@ public class OnlineDataProcessorImplTest {
 		when(azureProcessorConfig.getMinsToReduce()).thenReturn(30);
 		when(azureProcessorConfig.getPageSize()).thenReturn(4);
 		when(azureProcessorConfig.getEstimationCriteria()).thenReturn("StoryPoints");
-		when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(prepareProjectToolConfig());
-		when(toolRepository.findByBasicProjectConfigIdAndConnectionId(any(), any())).thenReturn(prepareProjectToolConfig());
+		when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any()))
+				.thenReturn(prepareProjectToolConfig());
+		when(toolRepository.findByBasicProjectConfigIdAndConnectionId(any(), any()))
+				.thenReturn(prepareProjectToolConfig());
 		when(connectionRepository.findById(any())).thenReturn(returnConnectionObject());
-		when(azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE)).thenReturn(azureProcessor);
+		when(azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE))
+				.thenReturn(azureProcessor);
 		when(kanbanJiraRepo.findByIssueId(any())).thenReturn(new ArrayList<KanbanJiraIssue>());
 		when(kanbanIssueHistoryRepo.findByStoryIDAndBasicProjectConfigId(any(), any()))
 				.thenReturn(new KanbanIssueCustomHistory());
@@ -385,10 +391,15 @@ public class OnlineDataProcessorImplTest {
 		when(client.getWiqlResponse(prepareAzureServer(), time, projectConfFieldMapping, false))
 				.thenReturn(createWiqlResponse());
 		when(client.getIterationsResponse(Mockito.any())).thenReturn(createIterationsResponse());
-		when(client.getWorkItemInfo(Mockito.any(), Mockito.any())).thenReturn(createWorkItemInfoResponse());
-		when(client.getUpdatesResponse(Mockito.any(), Mockito.anyString())).thenReturn(createUpdatesResponse());
+		when(client.getWorkItemInfo(Mockito.any(), Mockito.any()))
+				.thenReturn(createWorkItemInfoResponse());
+		when(client.getUpdatesResponse(Mockito.any(), Mockito.anyString()))
+				.thenReturn(createUpdatesResponse());
 
-		onlineDataProcessor.validateAndCollectIssues(kanbanProjectlist);
+		Map<String, List<String>> projectIdMap = new HashMap<>();
+		projectIdMap.put(AzureConstants.SCRUM_DATA, new ArrayList<>());
+		projectIdMap.put(AzureConstants.KANBAN_DATA, new ArrayList<>());
+		onlineDataProcessor.validateAndCollectIssues(kanbanProjectlist, projectIdMap);
 	}
 
 	private List<ProjectToolConfig> prepareProjectToolConfig() {
@@ -418,7 +429,6 @@ public class OnlineDataProcessorImplTest {
 		azureServer.setApiVersion("5.1");
 		azureServer.setUsername("");
 		return azureServer;
-
 	}
 
 	private MetadataIdentifier createMetaDataIdentifier() {
@@ -459,21 +469,19 @@ public class OnlineDataProcessorImplTest {
 		Identifier workflow6 = createIdentifier("delivered",
 				Arrays.asList("Closed", "Resolved", "Ready for Delivery", "Ready for Release"));
 		Identifier workflow7 = createIdentifier("firststatus", Arrays.asList("Open"));
-		List<Identifier> workflowIdentifer = Arrays.asList(workflow1, workflow2, workflow3, workflow4, workflow5,
-				workflow6, workflow7);
+		List<Identifier> workflowIdentifer = Arrays.asList(workflow1, workflow2, workflow3, workflow4, workflow5, workflow6,
+				workflow7);
 
 		Identifier valuestoidentify1 = createIdentifier("rootCauseValue", Arrays.asList("Coding"));
 		Identifier valuestoidentify2 = createIdentifier("rejectionResolution",
 				Arrays.asList("Invalid", "Duplicate", "Unrequired"));
 		Identifier valuestoidentify3 = createIdentifier("qaRootCause",
 				Arrays.asList("Coding", "Configuration", "Regression", "Data"));
-		List<Identifier> valuestoidentifyIdentifer = Arrays.asList(valuestoidentify1, valuestoidentify2,
-				valuestoidentify3);
+		List<Identifier> valuestoidentifyIdentifer = Arrays.asList(valuestoidentify1, valuestoidentify2, valuestoidentify3);
 
 		List<Identifier> issuelinkIdentifer = new ArrayList<>();
 		return new MetadataIdentifier(tool, templateName, templateCode, isKanban, false, issuesIdentifier,
 				customfieldIdentifer, workflowIdentifer, issuelinkIdentifer, valuestoidentifyIdentifer);
-
 	}
 
 	private Identifier createIdentifier(String type, List<String> value) {

@@ -20,20 +20,20 @@ package com.publicissapient.kpidashboard.common.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjusters;
-import java.util.Date;
-import java.util.stream.Stream;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
+import java.util.Date;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.joda.time.DateTime;
@@ -47,12 +47,9 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author narsingh9
- *
  */
 
-/**
- * Date util for common date operations
- */
+/** Date util for common date operations */
 @Slf4j
 public class DateUtil {
 
@@ -84,28 +81,25 @@ public class DateUtil {
 
 	/**
 	 * returns the formatted date
-	 * 
+	 *
 	 * @param dateTime
-	 *            LocalDateTime object
+	 *          LocalDateTime object
 	 * @param format
-	 *            response format
+	 *          response format
 	 * @return formatted date
 	 */
-
 	public static String dateTimeFormatter(LocalDateTime dateTime, final String format) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
 		return dateTime.format(formatter);
 	}
 
 	/**
-	 * 
 	 * @param dateTime
-	 *            string date
+	 *          string date
 	 * @param format
-	 *            response format
+	 *          response format
 	 * @return parsed date
 	 */
-
 	public static Date dateTimeParser(String dateTime, final String format) {
 		SimpleDateFormat formatter = new SimpleDateFormat(format);
 		Date date = null;
@@ -118,11 +112,10 @@ public class DateUtil {
 	}
 
 	/**
-	 * 
 	 * @param dateTime
-	 *            Date object
+	 *          Date object
 	 * @param format
-	 *            response format
+	 *          response format
 	 * @return formatted date
 	 */
 	public static String dateTimeFormatter(Date dateTime, final String format) {
@@ -131,13 +124,12 @@ public class DateUtil {
 	}
 
 	/**
-	 * 
 	 * @param dateTime
-	 *            dateTime
+	 *          dateTime
 	 * @param fromFormat
-	 *            fromFormat
+	 *          fromFormat
 	 * @param toFormat
-	 *            toFormat
+	 *          toFormat
 	 * @return converted date
 	 */
 	public static String dateTimeConverter(String dateTime, final String fromFormat, final String toFormat) {
@@ -150,13 +142,12 @@ public class DateUtil {
 	}
 
 	/**
-	 *
 	 * @param dateTime
-	 *            dateTime
+	 *          dateTime
 	 * @param fromFormat
-	 *            fromFormat
+	 *          fromFormat
 	 * @param toFormat
-	 *            toFormat
+	 *          toFormat
 	 * @return converted date
 	 */
 	public static String dateTimeConverterUsingFromAndTo(DateTime dateTime, final String fromFormat,
@@ -217,13 +208,13 @@ public class DateUtil {
 	 * Checks if the target date is equal to or before the end date.
 	 *
 	 * @param targetDate
-	 *            the date to check, not null
+	 *          the date to check, not null
 	 * @param endDate
-	 *            the date to compare against, not null
+	 *          the date to compare against, not null
 	 * @return {@code true} if the target date is equal to or before the end date;
 	 *         {@code false} otherwise
 	 * @throws NullPointerException
-	 *             if either targetDate or endDate is null
+	 *           if either targetDate or endDate is null
 	 */
 	public static boolean equalAndBeforeTime(LocalDate targetDate, LocalDate endDate) {
 		return targetDate.isEqual(endDate) || targetDate.isBefore(endDate);
@@ -310,8 +301,10 @@ public class DateUtil {
 	}
 
 	public static LocalDateTime convertDateTimeToLocalDateTime(DateTime dateTime) {
-		return (ObjectUtils.isNotEmpty(dateTime)) ? LocalDateTime.ofInstant(
-				java.time.Instant.ofEpochMilli(dateTime.getMillis()), ZoneId.of(dateTime.getZone().getID())) : null;
+		return (ObjectUtils.isNotEmpty(dateTime))
+				? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(dateTime.getMillis()),
+						ZoneId.of(dateTime.getZone().getID()))
+				: null;
 	}
 
 	public static String getWeekRange(LocalDate currentDate) {
@@ -335,7 +328,6 @@ public class DateUtil {
 	}
 
 	/**
-	 *
 	 * @param valueInDays
 	 * @return
 	 */
@@ -369,11 +361,11 @@ public class DateUtil {
 
 	/**
 	 * Calculating total no. of working days between two dates
-	 * 
+	 *
 	 * @param startDateTime
-	 *            startDateTime
+	 *          startDateTime
 	 * @param endDateTime
-	 *            endDateTime
+	 *          endDateTime
 	 * @return no. of days
 	 */
 	public static double calculateWorkingDays(LocalDateTime startDateTime, LocalDateTime endDateTime) {
@@ -384,17 +376,19 @@ public class DateUtil {
 			throw new IllegalArgumentException("Release Start date must be before release end date");
 		}
 
-		return Stream.iterate(startDate, date -> date.plusDays(1))
-				.limit(ChronoUnit.DAYS.between(startDate, endDate) + 1) // +1 to include endDate
+		return Stream.iterate(startDate, date -> date.plusDays(1)).limit(ChronoUnit.DAYS.between(startDate, endDate) + 1) // +1
+				// to
+				// include
+				// endDate
 				.filter(date -> !(date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY))
 				.count();
 	}
 
 	/**
 	 * @param startTime
-	 *            start time
+	 *          start time
 	 * @param endTime
-	 *            end time
+	 *          end time
 	 * @return long - time difference in milliseconds
 	 */
 	public static long calculateDuration(String startTime, String endTime) {
@@ -406,12 +400,11 @@ public class DateUtil {
 
 	/**
 	 * @param date
-	 *            String format of date
+	 *          String format of date
 	 * @return String - formatted Date
 	 */
 	public static String formatDate(String date) {
 		Instant dateTime = Instant.parse(date);
-		return dateTime.atZone(ZoneId.systemDefault()).toLocalDateTime()
-				.format(DateTimeFormatter.ofPattern(TIME_FORMAT));
+		return dateTime.atZone(ZoneId.systemDefault()).toLocalDateTime().format(DateTimeFormatter.ofPattern(TIME_FORMAT));
 	}
 }

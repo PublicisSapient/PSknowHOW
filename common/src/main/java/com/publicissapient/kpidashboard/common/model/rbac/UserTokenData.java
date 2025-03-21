@@ -29,9 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The model class to hold user token information.
- */
+/** The model class to hold user token information. */
 @Data
 @Builder
 @Getter

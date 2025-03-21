@@ -24,21 +24,18 @@ import java.util.Map;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataValue;
 
 /**
- *
  * @author jagmongr
- *
  */
 public interface EditKpiConfigService {
 	/**
 	 * Gets data by type for the Edit config.
 	 *
 	 * @param projectconfigid
-	 *            projectconfigid
+	 *          projectconfigid
 	 * @param kpiCode
-	 *            kpiCode
+	 *          kpiCode
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
 	Map<String, List<MetadataValue>> getDataForType(String projectconfigid, String kpiCode);
-
 }

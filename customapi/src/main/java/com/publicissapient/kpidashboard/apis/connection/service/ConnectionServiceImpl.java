@@ -130,8 +130,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 		List<Connection> nonAuthConnection = new ArrayList<>();
 
 		connectionData.stream()
-				.filter(e -> !e.isSharedConnection()
-						&& !e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
+				.filter(
+						e -> !e.isSharedConnection() && !e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
 				.forEach(nonAuthConnection::add);
 
 		if (CollectionUtils.isNotEmpty(nonAuthConnection)) {
@@ -146,7 +146,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 	 * Mask user info from connection details
 	 *
 	 * @param connectionData
-	 *            list of connections
+	 *          list of connections
 	 */
 	public void maskConnectionDetails(List<Connection> connectionData) {
 		connectionData.forEach(original -> {
@@ -155,8 +155,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 			original.setUpdatedBy(maskStrings(original.getUpdatedBy()));
 			if (CollectionUtils.isNotEmpty(original.getConnectionUsers())) {
 				List<String> connectionUsers = new ArrayList<>();
-				original.getConnectionUsers()
-						.forEach(connectionUser -> connectionUsers.add(maskStrings(connectionUser)));
+				original.getConnectionUsers().forEach(connectionUser -> connectionUsers.add(maskStrings(connectionUser)));
 				original.setConnectionUsers(connectionUsers);
 			}
 		});
@@ -182,9 +181,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 	/**
 	 * if length is more than 2 and less than 8, mask the last 3 characters if lenth
 	 * is more than 8 mask the last 3 character and the 4th character
-	 * 
+	 *
 	 * @param userInput
-	 *            inputString
+	 *          inputString
 	 * @return maskedString
 	 */
 	private String maskingLogic(String userInput) {
@@ -213,7 +212,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 	 * Fetch a connection by type.
 	 *
 	 * @param type
-	 *            type
+	 *          type
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -223,8 +222,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 			return new ServiceResponse(false, "No type in this collection", type);
 		}
 		List<Connection> typeList = connectionRepository.findAllWithoutSecret().stream()
-				.filter(connection -> StringUtils.isNotEmpty(connection.getType())
-						&& connection.getType().equalsIgnoreCase(type))
+				.filter(
+						connection -> StringUtils.isNotEmpty(connection.getType()) && connection.getType().equalsIgnoreCase(type))
 				.collect(Collectors.toList());
 
 		if (CollectionUtils.isEmpty(typeList)) {
@@ -240,8 +239,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 		List<Connection> nonAuthConnection = new ArrayList<>();
 		typeList.stream()
-				.filter(e -> !e.isSharedConnection()
-						&& !e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
+				.filter(
+						e -> !e.isSharedConnection() && !e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
 				.forEach(nonAuthConnection::add);
 
 		if (CollectionUtils.isNotEmpty(nonAuthConnection)) {
@@ -257,11 +256,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 	 * Create and save a connection in the database.
 	 *
 	 * @param conn
-	 *            as connection
+	 *          as connection
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
-
 	@Override
 	public ServiceResponse saveConnectionDetails(Connection conn) {
 
@@ -275,12 +273,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 		String api = "save";
 
 		if (connName == null) {
-			List<Connection> publicConnections = connectionRepository.findByTypeAndSharedConnection(conn.getType(),
-					true);
+			List<Connection> publicConnections = connectionRepository.findByTypeAndSharedConnection(conn.getType(), true);
 
-			List<Connection> privateConnections = connectionRepository
-					.findByTypeAndSharedConnection(conn.getType(), false).stream()
-					.filter(e -> e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
+			List<Connection> privateConnections = connectionRepository.findByTypeAndSharedConnection(conn.getType(), false)
+					.stream().filter(e -> e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
 					.collect(Collectors.toList());
 
 			Connection existingPublicConn = findConnectionWithSameDetails(conn, publicConnections, api);
@@ -312,8 +308,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 			}
 		}
 
-		return new ServiceResponse(false, "Connection already exists with same name. Please choose a different name",
-				null);
+		return new ServiceResponse(false, "Connection already exists with same name. Please choose a different name", null);
 	}
 
 	/*
@@ -348,49 +343,49 @@ public class ConnectionServiceImpl implements ConnectionService {
 	private Connection connByType(Connection inputConn, Connection currConn, String api) {
 		Connection existingConnection = null;
 		switch (inputConn.getType()) {
-		case TOOL_SONAR:
-			existingConnection = checkConnDetailsSonar(inputConn, currConn, api);
-			break;
-		case TOOL_BAMBOO:
-		case REPO_TOOLS:
-		case TOOL_TEAMCITY:
-		case TOOL_ARGOCD:
-			if (checkConnDetails(inputConn, currConn))
-				existingConnection = currConn;
-			break;
-		case TOOL_GITHUB:
-		case TOOL_GITLAB:
-			boolean commonConnection = checkConnDetails(inputConn, currConn);
-			checkVaultConnection(inputConn, currConn, existingConnection, commonConnection);
-			break;
-		case TOOL_AZURE:
-		case TOOL_AZUREPIPELINE:
-		case TOOL_AZUREREPO:
-			checkVaultConnection(inputConn, currConn, existingConnection,
-					inputConn.getBaseUrl().equals(currConn.getBaseUrl()));
-			break;
-		case TOOL_JIRA:
-		case TOOL_BITBUCKET:
-			if (checkConnDetails(inputConn, currConn) && inputConn.getApiEndPoint().equals(currConn.getApiEndPoint()))
-				existingConnection = currConn;
-			break;
-		case TOOL_JENKINS:
-			checkVaultConnection(inputConn, currConn, existingConnection, checkConnDetails(inputConn, currConn));
-			break;
-		case TOOL_ZEPHYR:
-			existingConnection = checkConnDetailsZephyr(inputConn, currConn, api);
-			break;
-		default:
-			existingConnection = new Connection();
-			break;
+			case TOOL_SONAR :
+				existingConnection = checkConnDetailsSonar(inputConn, currConn, api);
+				break;
+			case TOOL_BAMBOO :
+			case REPO_TOOLS :
+			case TOOL_TEAMCITY :
+			case TOOL_ARGOCD :
+				if (checkConnDetails(inputConn, currConn))
+					existingConnection = currConn;
+				break;
+			case TOOL_GITHUB :
+			case TOOL_GITLAB :
+				boolean commonConnection = checkConnDetails(inputConn, currConn);
+				checkVaultConnection(inputConn, currConn, existingConnection, commonConnection);
+				break;
+			case TOOL_AZURE :
+			case TOOL_AZUREPIPELINE :
+			case TOOL_AZUREREPO :
+				checkVaultConnection(inputConn, currConn, existingConnection,
+						inputConn.getBaseUrl().equals(currConn.getBaseUrl()));
+				break;
+			case TOOL_JIRA :
+			case TOOL_BITBUCKET :
+				if (checkConnDetails(inputConn, currConn) && inputConn.getApiEndPoint().equals(currConn.getApiEndPoint()))
+					existingConnection = currConn;
+				break;
+			case TOOL_JENKINS :
+				checkVaultConnection(inputConn, currConn, existingConnection, checkConnDetails(inputConn, currConn));
+				break;
+			case TOOL_ZEPHYR :
+				existingConnection = checkConnDetailsZephyr(inputConn, currConn, api);
+				break;
+			default :
+				existingConnection = new Connection();
+				break;
 		}
 		return existingConnection;
 	}
 
 	private boolean checkConnDetails(Connection inputConn, Connection currConn) {
 		boolean b = false;
-		if (!inputConn.isOffline() && inputConn.getUsername().equals(currConn.getUsername())
-				&& inputConn.getBaseUrl().equals(currConn.getBaseUrl()))
+		if (!inputConn.isOffline() && inputConn.getUsername().equals(currConn.getUsername()) &&
+				inputConn.getBaseUrl().equals(currConn.getBaseUrl()))
 			b = true;
 		return b;
 	}
@@ -399,7 +394,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 	 * Modify/Update a connection by id.
 	 *
 	 * @param connection
-	 *            as connection.
+	 *          as connection.
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found.
 	 */
@@ -431,10 +426,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 					connection.getConnectionName() + " is already exists. Please try again with different name", null);
 		}
 
-		if (!authorizedProjectsService.ifSuperAdminUser()
-				&& !existingConnection.getCreatedBy().equals(authenticationService.getLoggedInUser())) {
-			return new ServiceResponse(false, existingConnection.getConnectionName()
-					+ " connection can't be updated as created by user " + existingConnection.getCreatedBy(), null);
+		if (!authorizedProjectsService.ifSuperAdminUser() &&
+				!existingConnection.getCreatedBy().equals(authenticationService.getLoggedInUser())) {
+			return new ServiceResponse(false, existingConnection.getConnectionName() +
+					" connection can't be updated as created by user " + existingConnection.getCreatedBy(), null);
 		}
 
 		List<Connection> filteredConn = getFilteredConnection(username, connection, existingConnection.getId());
@@ -454,8 +449,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		if (CollectionUtils.isNotEmpty(existingConnection.getConnectionUsers())) {
 			connectionDTO.setConnectionUsers(existingConnection.getConnectionUsers());
 		}
-		return new ServiceResponse(true, "modified connection " + existingConnection.getConnectionName(),
-				connectionDTO);
+		return new ServiceResponse(true, "modified connection " + existingConnection.getConnectionName(), connectionDTO);
 	}
 
 	private Connection checkConnDetailsZephyr(Connection inputConn, Connection currConn, String api) {
@@ -477,29 +471,28 @@ public class ConnectionServiceImpl implements ConnectionService {
 			boolean accessTokenSimilarity;
 			try {
 				switch (inputConn.getType()) {
-				case TOOL_SONAR:
-				case TOOL_ZEPHYR:
-				case TOOL_GITLAB:
-					String accessToken = inputConn.getAccessToken();
-					String accessTokenExists = aesEncryptionService.decrypt(currConn.getAccessToken(),
-							customApiConfig.getAesEncryptionKey());
-					accessTokenSimilarity = accessToken.equals(accessTokenExists);
-					break;
-				case TOOL_AZUREREPO:
-					String pat = inputConn.getPat();
-					String patExists = aesEncryptionService.decrypt(currConn.getPat(),
-							customApiConfig.getAesEncryptionKey());
-					accessTokenSimilarity = pat.equals(patExists);
-					break;
-				case TOOL_JENKINS:
-					String apiKey = inputConn.getApiKey();
-					String apiKeyExists = aesEncryptionService.decrypt(currConn.getApiKey(),
-							customApiConfig.getAesEncryptionKey());
-					accessTokenSimilarity = apiKey.equals(apiKeyExists);
-					break;
-				default:
-					accessTokenSimilarity = false;
-					break;
+					case TOOL_SONAR :
+					case TOOL_ZEPHYR :
+					case TOOL_GITLAB :
+						String accessToken = inputConn.getAccessToken();
+						String accessTokenExists = aesEncryptionService.decrypt(currConn.getAccessToken(),
+								customApiConfig.getAesEncryptionKey());
+						accessTokenSimilarity = accessToken.equals(accessTokenExists);
+						break;
+					case TOOL_AZUREREPO :
+						String pat = inputConn.getPat();
+						String patExists = aesEncryptionService.decrypt(currConn.getPat(), customApiConfig.getAesEncryptionKey());
+						accessTokenSimilarity = pat.equals(patExists);
+						break;
+					case TOOL_JENKINS :
+						String apiKey = inputConn.getApiKey();
+						String apiKeyExists = aesEncryptionService.decrypt(currConn.getApiKey(),
+								customApiConfig.getAesEncryptionKey());
+						accessTokenSimilarity = apiKey.equals(apiKeyExists);
+						break;
+					default :
+						accessTokenSimilarity = false;
+						break;
 				}
 			} catch (Exception exception) {
 				accessTokenSimilarity = false;
@@ -527,8 +520,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 	private List<Connection> getFilteredConnection(String username, Connection inputConn, ObjectId objId) {
 		List<Connection> connection = connectionRepository.findByType(inputConn.getType());
 
-		return connection.stream().filter(
-				e -> e.isSharedConnection() || e.getConnectionUsers().contains(username) && !e.getId().equals(objId))
+		return connection.stream()
+				.filter(e -> e.isSharedConnection() || e.getConnectionUsers().contains(username) && !e.getId().equals(objId))
 				.collect(Collectors.toList());
 	}
 
@@ -599,7 +592,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 	 * Checks if @param Connection has non empty connectionName
 	 *
 	 * @param conn
-	 *            for details.
+	 *          for details.
 	 * @return Boolean
 	 */
 	private boolean isDataValid(Connection conn) {
@@ -654,8 +647,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 	}
 
 	private String encryptStringForDbZephyr(String plainTextAccessToken) {
-		String encryptedString = aesEncryptionService.encrypt(plainTextAccessToken,
-				customApiConfig.getAesEncryptionKey());
+		String encryptedString = aesEncryptionService.encrypt(plainTextAccessToken, customApiConfig.getAesEncryptionKey());
 		return encryptedString == null ? "" : encryptedString;
 	}
 
@@ -690,49 +682,49 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 		String typeName = conn.getType();
 		switch (typeName) {
-		case ProcessorConstants.JIRA:
-			setEncryptedPasswordFieldForDb(conn);
-			if (conn.isBearerToken()) {
-				setEncryptedPatOAuthTokenForDb(conn);
-			}
-			break;
-		case ProcessorConstants.BAMBOO:
-		case ProcessorConstants.TEAMCITY:
-		case ProcessorConstants.BITBUCKET:
-			setEncryptedPasswordFieldForDb(conn);
-			break;
-		case ProcessorConstants.GITLAB:
-		case ProcessorConstants.GITHUB:
-		case ProcessorConstants.ARGOCD:
-			setEncryptedAccessTokenForDb(conn);
-			break;
-		case ProcessorConstants.JENKINS:
-		case ProcessorConstants.NEWREILC:
-			setEncryptedApiKeyForDb(conn);
-			break;
-
-		case ProcessorConstants.AZURE:
-		case ProcessorConstants.AZUREPIPELINE:
-		case ProcessorConstants.AZUREREPO:
-			setEncryptedPatField(conn);
-			break;
-		case ProcessorConstants.SONAR:
-			if (conn.isCloudEnv() || (!conn.isCloudEnv() && conn.isAccessTokenEnabled())) {
+			case ProcessorConstants.JIRA :
+				setEncryptedPasswordFieldForDb(conn);
+				if (conn.isBearerToken()) {
+					setEncryptedPatOAuthTokenForDb(conn);
+				}
+				break;
+			case ProcessorConstants.BAMBOO :
+			case ProcessorConstants.TEAMCITY :
+			case ProcessorConstants.BITBUCKET :
+				setEncryptedPasswordFieldForDb(conn);
+				break;
+			case ProcessorConstants.GITLAB :
+			case ProcessorConstants.GITHUB :
+			case ProcessorConstants.ARGOCD :
 				setEncryptedAccessTokenForDb(conn);
-			} else {
-				setEncryptedPasswordFieldForDb(conn);
-			}
-			break;
-		case ProcessorConstants.ZEPHYR:
-			if (conn.isCloudEnv()) {
-				setEncryptedAccessTokenForDbZephyr(conn);
-			} else {
-				setEncryptedPasswordFieldForDb(conn);
-			}
-			break;
-		default:
-			log.error("Unknown type = {}", typeName);
-			break;
+				break;
+			case ProcessorConstants.JENKINS :
+			case ProcessorConstants.NEWREILC :
+				setEncryptedApiKeyForDb(conn);
+				break;
+
+			case ProcessorConstants.AZURE :
+			case ProcessorConstants.AZUREPIPELINE :
+			case ProcessorConstants.AZUREREPO :
+				setEncryptedPatField(conn);
+				break;
+			case ProcessorConstants.SONAR :
+				if (conn.isCloudEnv() || (!conn.isCloudEnv() && conn.isAccessTokenEnabled())) {
+					setEncryptedAccessTokenForDb(conn);
+				} else {
+					setEncryptedPasswordFieldForDb(conn);
+				}
+				break;
+			case ProcessorConstants.ZEPHYR :
+				if (conn.isCloudEnv()) {
+					setEncryptedAccessTokenForDbZephyr(conn);
+				} else {
+					setEncryptedPasswordFieldForDb(conn);
+				}
+				break;
+			default :
+				log.error("Unknown type = {}", typeName);
+				break;
 		}
 	}
 
@@ -740,41 +732,41 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 		String typeName = connectionDTO.getType();
 		switch (typeName) {
-		case ProcessorConstants.JIRA:
-			connectionDTO.setPassword("");
-			connectionDTO.setPatOAuthToken("");
-			break;
-		case ProcessorConstants.BAMBOO:
-		case ProcessorConstants.TEAMCITY:
-		case ProcessorConstants.BITBUCKET:
-		case ProcessorConstants.ARGOCD:
-			connectionDTO.setPassword("");
-			break;
-		case ProcessorConstants.GITLAB:
-		case ProcessorConstants.GITHUB:
-			connectionDTO.setAccessToken("");
-			break;
-		case ProcessorConstants.JENKINS:
-		case ProcessorConstants.NEWREILC:
-			connectionDTO.setApiKey("");
-			break;
-
-		case ProcessorConstants.AZURE:
-		case ProcessorConstants.AZUREPIPELINE:
-		case ProcessorConstants.AZUREREPO:
-			connectionDTO.setPat("");
-			break;
-		case ProcessorConstants.ZEPHYR:
-		case ProcessorConstants.SONAR:
-			if (connectionDTO.isCloudEnv()) {
-				connectionDTO.setAccessToken("");
-			} else {
+			case ProcessorConstants.JIRA :
 				connectionDTO.setPassword("");
-			}
-			break;
-		default:
-			log.error("Unknown type = {}", typeName);
-			break;
+				connectionDTO.setPatOAuthToken("");
+				break;
+			case ProcessorConstants.BAMBOO :
+			case ProcessorConstants.TEAMCITY :
+			case ProcessorConstants.BITBUCKET :
+			case ProcessorConstants.ARGOCD :
+				connectionDTO.setPassword("");
+				break;
+			case ProcessorConstants.GITLAB :
+			case ProcessorConstants.GITHUB :
+				connectionDTO.setAccessToken("");
+				break;
+			case ProcessorConstants.JENKINS :
+			case ProcessorConstants.NEWREILC :
+				connectionDTO.setApiKey("");
+				break;
+
+			case ProcessorConstants.AZURE :
+			case ProcessorConstants.AZUREPIPELINE :
+			case ProcessorConstants.AZUREREPO :
+				connectionDTO.setPat("");
+				break;
+			case ProcessorConstants.ZEPHYR :
+			case ProcessorConstants.SONAR :
+				if (connectionDTO.isCloudEnv()) {
+					connectionDTO.setAccessToken("");
+				} else {
+					connectionDTO.setPassword("");
+				}
+				break;
+			default :
+				log.error("Unknown type = {}", typeName);
+				break;
 		}
 	}
 
@@ -782,7 +774,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 	 * delete a connection by id.
 	 *
 	 * @param id
-	 *            deleted the connection data present at id.
+	 *          deleted the connection data present at id.
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -798,10 +790,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 			return new ServiceResponse(false, "No connectionId found to delete", null);
 		}
 		Connection existingConnection = exisConnectionOpt.get();
-		if (!authorizedProjectsService.ifSuperAdminUser()
-				&& !existingConnection.getCreatedBy().equals(authenticationService.getLoggedInUser())) {
-			return new ServiceResponse(false, existingConnection.getConnectionName()
-					+ " connection can't be Deleted as created by user " + existingConnection.getCreatedBy(), null);
+		if (!authorizedProjectsService.ifSuperAdminUser() &&
+				!existingConnection.getCreatedBy().equals(authenticationService.getLoggedInUser())) {
+			return new ServiceResponse(false, existingConnection.getConnectionName() +
+					" connection can't be Deleted as created by user " + existingConnection.getCreatedBy(), null);
 		}
 
 		List<ProjectToolConfig> projectToolConfig = toolRepository.findByConnectionId(new ObjectId(id));
@@ -854,19 +846,16 @@ public class ConnectionServiceImpl implements ConnectionService {
 				}
 				connectionRepository.save(existingConnection);
 			}
-
 		}
 	}
 
 	/**
-	 *
 	 * @param connection
-	 *            connection
+	 *          connection
 	 */
 	public void validateConnectionFlag(Connection connection) {
 		if (connection.isBrokenConnection()) {
 			updateBreakingConnection(connection, null);
 		}
 	}
-
 }

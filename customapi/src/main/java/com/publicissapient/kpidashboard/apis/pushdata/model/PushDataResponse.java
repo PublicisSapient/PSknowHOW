@@ -29,5 +29,4 @@ public class PushDataResponse {
 	private int totalRecords;
 	private int totalSavedRecords;
 	private int totalFailedRecords;
-
 }

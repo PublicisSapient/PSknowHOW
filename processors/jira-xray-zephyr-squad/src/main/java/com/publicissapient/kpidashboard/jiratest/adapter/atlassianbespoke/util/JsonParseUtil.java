@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.annotation.Nullable;
 
 import org.codehaus.jettison.json.JSONArray;
@@ -50,7 +49,6 @@ public class JsonParseUtil {
 	public static final String SELF_ATTR = "self";
 
 	private JsonParseUtil() {
-
 	}
 
 	public static <T> Collection<T> parseJsonArray(final JSONArray jsonArray, final JsonObjectParser<T> jsonParser)
@@ -231,7 +229,7 @@ public class JsonParseUtil {
 	 * date only.
 	 *
 	 * @param str
-	 *            String contains either date and time or date only
+	 *          String contains either date and time or date only
 	 * @return date and time or date only
 	 */
 	public static DateTime parseDateTimeOrDate(final String str) {
@@ -264,8 +262,7 @@ public class JsonParseUtil {
 	}
 
 	@Nullable
-	public static String getNullableString(final JSONObject jsonObject, final String attributeName)
-			throws JSONException {
+	public static String getNullableString(final JSONObject jsonObject, final String attributeName) throws JSONException {
 		final Object o = jsonObject.get(attributeName);
 		if (o == JSONObject.EXPLICIT_NULL) {
 			return null;
@@ -321,7 +318,8 @@ public class JsonParseUtil {
 
 	public static Optional<JSONArray> getOptionalArray(final JSONObject jsonObject, final String attributeName)
 			throws JSONException {
-		return jsonObject.has(attributeName) ? Optional.of(jsonObject.getJSONArray(attributeName))
+		return jsonObject.has(attributeName)
+				? Optional.of(jsonObject.getJSONArray(attributeName))
 				: Optional.<JSONArray>empty();
 	}
 
@@ -333,8 +331,8 @@ public class JsonParseUtil {
 		while (iterator.hasNext()) {
 			final Object o = iterator.next();
 			if (!(o instanceof String)) {
-				throw new JSONException("Cannot parse URIs: key is expected to be valid String. Got "
-						+ (o == null ? "null" : o.getClass()) + " instead.");
+				throw new JSONException("Cannot parse URIs: key is expected to be valid String. Got " +
+						(o == null ? "null" : o.getClass()) + " instead.");
 			}
 			final String key = (String) o;
 			uris.put(key, JsonParseUtil.parseURI(jsonObject.getString(key)));

@@ -29,8 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -40,8 +40,10 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -50,17 +52,18 @@ import com.publicissapient.kpidashboard.common.model.application.AccountHierarch
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyValueDTO;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author tauakram
- *
  */
 @Service
 @Slf4j
@@ -79,6 +82,14 @@ public class FilterHelperService {
 
 	@Autowired
 	private HierarchyLevelService hierarchyLevelService;
+
+	@Autowired
+	private OrganizationHierarchyService organizationHierarchyService;
+
+	@Autowired
+	private ProjectHierarchyService projectHierarchyService;
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	public List<AccountHierarchyData> getFilteredBuilds(KpiRequest kpiRequest, String groupName) {
 
@@ -118,7 +129,7 @@ public class FilterHelperService {
 
 	/**
 	 * filter data based on sprint state
-	 * 
+	 *
 	 * @param sprintStateList
 	 *            sprintStateList
 	 * @param hierarchyDataAll
@@ -136,9 +147,9 @@ public class FilterHelperService {
 			if (data.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
 					|| data.getNode().stream()
 							.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
-									&& node.getAccountHierarchy().getSprintState() != null
+									&& node.getProjectHierarchy().getSprintState() != null
 									&& nsprintStateList
-											.contains(node.getAccountHierarchy().getSprintState().toLowerCase()))
+											.contains(node.getProjectHierarchy().getSprintState().toLowerCase()))
 					|| data.getNode().stream()
 							.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE))) {
 				hierarchyData.add(data);
@@ -148,8 +159,8 @@ public class FilterHelperService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<AccountHierarchyDataKanban> getFilteredBuildsKanban(KpiRequest kpiRequest, String groupName)// NOPMD
-			throws EntityNotFoundException {// NOPMD
+	public List<AccountHierarchyDataKanban> getFilteredBuildsKanban(KpiRequest kpiRequest, String groupName) // NOPMD
+			throws EntityNotFoundException { // NOPMD
 		// Do not remove NOPMD comment. This is required to ignore nthcomplexity
 		// and
 		// cyclomatic Complexity.
@@ -190,6 +201,7 @@ public class FilterHelperService {
 		return filteredDataSetNew;
 	}
 
+	// todo remove
 	/**
 	 * @param projectConfig
 	 *            for filter creation
@@ -228,7 +240,6 @@ public class FilterHelperService {
 						accountHierarchy.setCreatedDate(LocalDateTime.now());
 						accountHierarchyList.add(accountHierarchy);
 					}
-
 				}
 			}
 			if (projectConfig.getIsKanban()) {
@@ -241,7 +252,6 @@ public class FilterHelperService {
 		} catch (Exception e) {
 			log.error("FilterHelperService: error while creating filter.", e);
 		}
-
 	}
 
 	private AccountHierarchy createFilterObject(ProjectBasicConfigDTO projectConfig, HierarchyLevel filter) {
@@ -292,7 +302,7 @@ public class FilterHelperService {
 
 	/**
 	 * clean filter data
-	 * 
+	 *
 	 * @param basicConfig
 	 *            id
 	 */
@@ -346,7 +356,6 @@ public class FilterHelperService {
 			}
 			accountHierarchyRepository.deleteByPathEndsWith(childNodesPath);
 		}
-
 	}
 
 	/**
@@ -383,11 +392,14 @@ public class FilterHelperService {
 			}
 			kanbanAccountHierarchyRepo.deleteByPathEndsWith(childNodesPath);
 		}
-
 	}
 
-	public void deleteAccountHierarchiesOfProject(ObjectId projectBasicConfigId, boolean isKanban) {
-		if (isKanban) {
+	public void deleteAccountHierarchiesOfProject(ProjectBasicConfig projectBasicConfig) {
+		ObjectId projectBasicConfigId = projectBasicConfig.getId();
+		organizationHierarchyService.deleteByNodeId(projectBasicConfig.getProjectNodeId());
+		projectHierarchyService.deleteByBasicProjectConfigId(projectBasicConfig.getId());
+
+		if (projectBasicConfig.getIsKanban()) {
 			deleteAccountHierarchiesOfProjectKanban(projectBasicConfigId);
 		} else {
 			deleteAccountHierarchiesOfProjectScrum(projectBasicConfigId);
@@ -395,6 +407,7 @@ public class FilterHelperService {
 	}
 
 	private void deleteAccountHierarchiesOfProjectScrum(ObjectId projectBasicConfigId) {
+
 		AccountHierarchy ahProjetLabel = getAccountHierarchyProjectLevel(projectBasicConfigId);
 		final List<ObjectId> idsForDeletion = new ArrayList<>();
 
@@ -409,14 +422,12 @@ public class FilterHelperService {
 			List<AccountHierarchy> ahAboveProjectLevel = findAccountHierarchiesAboveProvidedForDeletion(ahProjetLabel,
 					null);
 			ahAboveProjectLevel.forEach(ah -> idsForDeletion.add(ah.getId()));
-
 		}
 
 		if (CollectionUtils.isNotEmpty(idsForDeletion)) {
 
 			accountHierarchyRepository.deleteByIdIn(idsForDeletion);
 		}
-
 	}
 
 	private List<AccountHierarchy> findAccountHierarchiesBellowProjectLevelForDeletion(
@@ -437,7 +448,6 @@ public class FilterHelperService {
 								ahProjectLevel.getBasicProjectConfigId());
 				resultAccountHierarchies.addAll(ahBellowProjectLevel);
 			});
-
 		}
 
 		return resultAccountHierarchies;
@@ -462,7 +472,6 @@ public class FilterHelperService {
 			findAccountHierarchiesAboveProvidedForDeletion(parentNode, toBeDeleted);
 		}
 		return toBeDeleted;
-
 	}
 
 	private String getParentNodePath(String nodePath) {
@@ -473,7 +482,6 @@ public class FilterHelperService {
 
 		return splitterIndex == -1 ? ""
 				: nodePath.substring(splitterIndex + CommonConstant.ACC_HIERARCHY_PATH_SPLITTER.length()).trim();
-
 	}
 
 	private boolean isOnlyNode(AccountHierarchy node) {
@@ -506,7 +514,6 @@ public class FilterHelperService {
 			List<KanbanAccountHierarchy> ahAboveProjectLevel = findAccountHierarchiesAboveProvidedForDeletionKanban(
 					ahProjetLabel, null);
 			ahAboveProjectLevel.forEach(ah -> idsForDeletion.add(ah.getId()));
-
 		}
 
 		if (CollectionUtils.isNotEmpty(idsForDeletion)) {
@@ -549,7 +556,6 @@ public class FilterHelperService {
 								ahProjectLevel.getBasicProjectConfigId());
 				resultAccountHierarchies.addAll(ahBellowProjectLevel);
 			});
-
 		}
 
 		return resultAccountHierarchies;
@@ -574,7 +580,6 @@ public class FilterHelperService {
 			findAccountHierarchiesAboveProvidedForDeletionKanban(parentNode, toBeDeleted);
 		}
 		return toBeDeleted;
-
 	}
 
 	public Map<String, HierarchyLevel> getHierarchyLevelMap(boolean isKanban) {
@@ -619,7 +624,7 @@ public class FilterHelperService {
 
 	/**
 	 * Checks if filter level selected is upto project level or below project level.
-	 * 
+	 *
 	 * @param level
 	 *            filter level selected
 	 * @param isKanban
@@ -627,9 +632,10 @@ public class FilterHelperService {
 	 * @return true or false
 	 */
 	public boolean isFilterSelectedTillSprintLevel(int level, boolean isKanban) {
+		if (CollectionUtils.isEmpty(customApiConfig.getGroupIdsToExcludeFromCache()))
+			return false;
 		HierarchyLevel projectHierarchyLevel = getHierarchyLevelMap(isKanban)
 				.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, null);
 		return null != projectHierarchyLevel && projectHierarchyLevel.getLevel() >= level;
 	}
-
 }

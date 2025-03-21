@@ -19,8 +19,10 @@
 package com.publicissapient.kpidashboard.jiratest.processor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -61,9 +63,7 @@ import com.publicissapient.kpidashboard.jiratest.repository.JiraTestProcessorRep
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * The Job executor class which starts the execution of zephyr processor.
- */
+/** The Job executor class which starts the execution of zephyr processor. */
 @Component
 @Slf4j
 public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestProcessor> {
@@ -104,9 +104,8 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 	 * Instantiates a new ZEPHYR processor job executor.
 	 *
 	 * @param taskScheduler
-	 *            the task scheduler
+	 *          the task scheduler
 	 */
-
 	@Autowired
 	protected JiraTestProcessorJobExecutor(TaskScheduler taskScheduler) {
 		super(taskScheduler, ProcessorConstants.JIRA_TEST);
@@ -146,6 +145,7 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 		clearSelectedBasicProjectConfigIds();
 
 		AtomicReference<Integer> testCaseCount = new AtomicReference<>(0);
+		Set<String> projectIdForCacheClean = new HashSet<>();
 
 		for (ProjectBasicConfig project : projectList) {
 			log.info("Fetching data for project : {}", project.getProjectName());
@@ -168,7 +168,8 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 						processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 
 						if (StringUtils.isNotBlank(projectConfigMap.getProjectKey())) {
-							testCaseCount.updateAndGet(test -> test + collectTestCases(projectConfigMap));
+							int count = collectTestCases(projectConfigMap, projectIdForCacheClean);
+							testCaseCount.updateAndGet(test -> test + count);							
 						}
 						processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 						processorExecutionTraceLog.setExecutionSuccess(true);
@@ -192,6 +193,8 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 		if (testCaseCount.get() > 0) {
 			cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.TESTING_KPI_CACHE);
 		}
+		projectIdForCacheClean.forEach(projectId -> cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT,
+				projectId, CommonConstant.ZEPHYR));
 		long end = System.currentTimeMillis();
 		MDC.put(PROCESSOR_START_TIME, String.valueOf(start));
 		MDC.put(PROCESSOR_END_TIME, String.valueOf(end));
@@ -200,7 +203,6 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 		log.info("JIRA TEST Processor execution complete.");
 		MDC.clear();
 		return executionStatus;
-
 	}
 
 	@Override
@@ -212,11 +214,10 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 	 * Gets project conf Field Mapping
 	 *
 	 * @param projectConfigList
-	 *            {@link ProcessorToolConnection}
+	 *          {@link ProcessorToolConnection}
 	 * @return {@link ProjectConfFieldMapping}
 	 */
-	private List<ProjectConfFieldMapping> createProjectConfigMap(
-			final List<ProcessorToolConnection> projectConfigList) {
+	private List<ProjectConfFieldMapping> createProjectConfigMap(final List<ProcessorToolConnection> projectConfigList) {
 		List<ProjectConfFieldMapping> projectConfigMap = new ArrayList<>();
 		for (ProcessorToolConnection projectConfig : projectConfigList) {
 			ProjectConfFieldMapping projectConfFieldMapping = new ProjectConfFieldMapping();
@@ -240,13 +241,16 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 		return projectConfigMap;
 	}
 
-	private int collectTestCases(final ProjectConfFieldMapping projectConfig) {
+	private int collectTestCases(final ProjectConfFieldMapping projectConfig, Set<String> projectIdForCacheClean) {
 		AtomicReference<Integer> testCaseCountTotal = new AtomicReference<>(0);
 		if (projectConfig.getProjectKey() != null && projectConfig.getProcessorToolConnection() != null) {
 			long storyDataStart = System.currentTimeMillis();
 			MDC.put("storyDataStartTime", String.valueOf(storyDataStart));
 			int count = jiraTestService.processesJiraIssues(projectConfig);
 			testCaseCountTotal.set(count);
+			if (count > 0) {
+				projectIdForCacheClean.add(projectConfig.getBasicProjectConfigId().toString());
+			}
 			MDC.put("JiraIssueCount", String.valueOf(count));
 			long end = System.currentTimeMillis();
 			MDC.put("storyDataEndTime", String.valueOf(end));
@@ -263,18 +267,17 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 
 	/**
 	 * Cleans the cache in the Custom API
-	 * 
+	 *
 	 * @param cacheEndPoint
-	 *            the cache endpoint
+	 *          the cache endpoint
 	 * @param cacheName
-	 *            the cache name
+	 *          the cache name
 	 */
 	public void cacheRestClient(final String cacheEndPoint, final String cacheName) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 
-		UriComponentsBuilder uriBuilder = UriComponentsBuilder
-				.fromHttpUrl(jiraTestProcessorConfig.getCustomApiBaseUrl());
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(jiraTestProcessorConfig.getCustomApiBaseUrl());
 		uriBuilder.path("/");
 		uriBuilder.path(cacheEndPoint);
 		uriBuilder.path("/");
@@ -300,21 +303,65 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 	}
 
 	/**
+	 * Cleans the cache in the Custom API
+	 *
+	 * @param cacheEndPoint
+	 *            the cache endpoint
+	 * @param param1
+	 *            parameter 1
+	 * @param param2
+	 *            parameter 2
+	 */
+	private void cacheRestClient(String cacheEndPoint, String param1, String param2) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+		if (StringUtils.isNoneEmpty(param1)) {
+			cacheEndPoint = cacheEndPoint.replace(CommonConstant.PARAM1, param1);
+		}
+		if (StringUtils.isNoneEmpty(param2)) {
+			cacheEndPoint = cacheEndPoint.replace(CommonConstant.PARAM2, param2);
+		}
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder
+				.fromHttpUrl(jiraTestProcessorConfig.getCustomApiBaseUrl());
+		uriBuilder.path("/");
+		uriBuilder.path(cacheEndPoint);
+
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
+		} catch (RestClientException e) {
+			log.error("[ZEPHYR-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service {}", e);
+		}
+
+		if (null != response && response.getStatusCode().is2xxSuccessful()) {
+			log.info("[ZEPHYR-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache for: {} and {} ", param1, param2);
+		} else {
+			log.error("[ZEPHYR-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache for: {} and {} ", param1, param2);
+		}
+
+		clearToolItemCache(jiraTestProcessorConfig.getCustomApiBaseUrl());
+	}
+
+	/**
 	 * Return List of selected ProjectBasicConfig id if null then return all
 	 * ProjectBasicConfig ids
-	 * 
+	 *
 	 * @return List of ProjectBasicConfig
 	 */
 	private List<ProjectBasicConfig> getSelectedProjects() {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findActiveProjects(false);
 		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
 		if (CollectionUtils.isEmpty(selectedProjectsBasicIds)) {
 			return allProjects;
 		}
-		return CollectionUtils.emptyIfNull(allProjects).stream().filter(
-				projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
+		return CollectionUtils.emptyIfNull(allProjects).stream()
+				.filter(projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
 				.collect(Collectors.toList());
 	}
 

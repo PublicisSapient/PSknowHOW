@@ -18,21 +18,15 @@
 
 package com.publicissapient.kpidashboard.common.model.generic;
 
-/**
- * The type Job collector item.
- */
+/** The type Job collector item. */
 public class JobProcessorItem extends ProcessorItem {
-	/**
-	 * The constant INSTANCE_URL.
-	 */
+	/** The constant INSTANCE_URL. */
 	public static final String INSTANCE_URL = "instanceUrl";
-	/**
-	 * The constant JOB_NAME.
-	 */
+
+	/** The constant JOB_NAME. */
 	public static final String JOB_NAME = "jobName";
-	/**
-	 * The constant JOB_URL.
-	 */
+
+	/** The constant JOB_URL. */
 	protected static final String JOB_URL = "jobUrl";
 
 	/**
@@ -48,7 +42,7 @@ public class JobProcessorItem extends ProcessorItem {
 	 * Sets instance url.
 	 *
 	 * @param instanceUrl
-	 *            the instance url
+	 *          the instance url
 	 */
 	public void setInstanceUrl(String instanceUrl) {
 		getToolDetailsMap().put(INSTANCE_URL, instanceUrl);
@@ -67,7 +61,7 @@ public class JobProcessorItem extends ProcessorItem {
 	 * Sets job name.
 	 *
 	 * @param jobName
-	 *            the job name
+	 *          the job name
 	 */
 	public void setJobName(String jobName) {
 		getToolDetailsMap().put(JOB_NAME, jobName);
@@ -86,7 +80,7 @@ public class JobProcessorItem extends ProcessorItem {
 	 * Sets job url.
 	 *
 	 * @param jobUrl
-	 *            the job url
+	 *          the job url
 	 */
 	public void setJobUrl(String jobUrl) {
 		getToolDetailsMap().put(JOB_URL, jobUrl);

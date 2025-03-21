@@ -15,67 +15,77 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-  <div [ngSwitch]="fieldConfig?.fieldType">
+  <div [ngSwitch]="fieldConfig?.fieldType" role="group" [attr.aria-label]="fieldConfig?.fieldLabel + ' Input Group'">
 
     <div class="p-inputgroup" *ngSwitchCase="'text'">
         <input type="text" pInputText id="fieldConfig?.fieldName" placeholder="Enter {{fieldConfig?.placeHolderText ? fieldConfig?.placeHolderText : fieldConfig?.fieldLabel}}"
-        styleClass="p-w-100" [(ngModel)]="value" (change)="setValue()" [disabled]="fieldConfig?.readOnly">
+        styleClass="p-w-100" [(ngModel)]="value" (change)="setValue()" [disabled]="fieldConfig?.readOnly"
+        [attr.aria-label]="fieldConfig?.fieldLabel + ' Text Input'" [attr.aria-required]="fieldConfig?.mandatory ? 'true' : 'false'"
+        role="textbox">
         <button type="button" pButton pRipple icon="pi pi-search" *ngIf="fieldConfig?.fieldCategory"
-        (click)="showDialogToAddValue(true, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"></button>
+        (click)="showDialogToAddValue(true, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"
+        aria-label="Search and Add Value" role="button"></button>
     </div>
 
     <div class="p-inputgroup" *ngSwitchCase="'chips'">
         <p-chips styleClass="p-w-100" [disabled]="fieldConfig?.readOnly" inputId="fieldConfig?.fieldName"
-            placeholder="Enter {{fieldConfig?.placeHolderText ? fieldConfig?.placeHolderText : fieldConfig?.fieldLabel}}" addOnBlur="true"  [(ngModel)]="value" (onAdd)="setValue()" (onRemove)="setValue()">
+            placeholder="Enter {{fieldConfig?.placeHolderText ? fieldConfig?.placeHolderText : fieldConfig?.fieldLabel}}" addOnBlur="true"  [(ngModel)]="value" (onAdd)="setValue()" (onRemove)="setValue()"
+            aria-label="Chips Input" role="listbox">
         </p-chips>
         <button type="button" pButton pRipple icon="pi pi-search" *ngIf="fieldConfig?.fieldCategory"
-        (click)="showDialogToAddValue(false, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"></button>
+        (click)="showDialogToAddValue(false, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"
+        aria-label="Search and Add Multiple Values" role="button"></button>
     </div>
 
-    <div class="p-d-flex p-justify-between" *ngSwitchCase="'radiobutton'">
+    <div class="p-d-flex p-justify-between" *ngSwitchCase="'radiobutton'" role="radiogroup" [attr.aria-label]="fieldConfig?.fieldLabel + ' Options'">
         <div class="p-inputgroup">
             <ng-container *ngFor="let opt of fieldConfig.options">
                 <p-radioButton placeholder="Select" [value]="opt.value" label="{{opt.label}}" class="p-m-2" [required]="fieldConfig?.mandatory"
-                    [name]="fieldConfig?.fieldName" [(ngModel)]="value" (onClick)="setValue()">
+                    [name]="fieldConfig?.fieldName" [(ngModel)]="value" (onClick)="setValue()"
+                    [id]="fieldConfig?.fieldName + '_' + i" role="radio"
+                    [attr.aria-checked]="value === opt.value">
                 </p-radioButton>
             </ng-container>
         </div>
-        <!-- <button pButton pRipple type="button" label="Reset" class="p-button-raised" (click)="resetRadioButton()"></button> -->
     </div>
 
     <div *ngSwitchCase="'multiselect'">
         <p-multiSelect id="fieldConfig?.fieldName" [options]="fieldConfig.options" placeholder="{{fieldConfig?.placeHolderText ? fieldConfig?.placeHolderText : fieldConfig?.fieldLabel}}"
-        styleClass="p-w-100" [showHeader]="false" [(ngModel)]="value" (onChange)="setValue()">
+        styleClass="p-w-100" [showHeader]="false" [(ngModel)]="value" (onChange)="setValue()"
+        aria-label="Multi-select Input" role="listbox">
         </p-multiSelect>
     </div>
 
     <div *ngSwitchCase="'number'">
         <input type="number" [id]="fieldConfig?.fieldName" [(ngModel)]="value" (change)="setValue()" min="0"  pInputText class="form-control p-p-2 mb-2 mr-sm-2" (keydown)="enterNumericValue($event)"
-        (input)="numericInputUpDown($event)" [ngClass]="fieldConfig?.fieldName.indexOf('thresholdValue') !== -1 ? 'w-80' : ''">
+        (input)="numericInputUpDown($event)" [ngClass]="fieldConfig?.fieldName.indexOf('thresholdValue') !== -1 ? 'w-80' : ''"
+        aria-label="Numeric Input" role="spinbutton" [attr.aria-valuemin]="0" [attr.aria-valuenow]="value">
          {{ fieldConfig?.fieldName.indexOf('thresholdValue') !== -1 && thresholdUnit ? '( ' + thresholdUnit + ' )' : '' }}
     </div>
 
     <div *ngSwitchCase="'toggle'">
         <label for="fieldConfig?.fieldName" class="p-ml-2"> {{ fieldConfig?.toggleLabelLeft }}
         </label>
-            <p-inputSwitch  id="fieldConfig?.fieldName" [(ngModel)]="value" (onChange)="setValue()">
+            <p-inputSwitch  id="fieldConfig?.fieldName" [(ngModel)]="value" (onChange)="setValue()"
+            role="switch" [attr.aria-checked]="value" aria-label="Toggle Switch">
             </p-inputSwitch>
 
             <label for="fieldConfig?.fieldName" class="p-ml-2" [ngClass]="{'link': fieldConfig?.redirectUrl}" (click)="fieldConfig?.redirectUrl ? navigate(fieldConfig?.redirectUrl) : ''"> {{ fieldConfig?.toggleLabelRight }}
               <span class="fa fa-info-circle" *ngIf="fieldConfig.tooltip.toggleDefinition" aria-hidden="true" pTooltip="<span>
                                             {{ fieldConfig.tooltip.toggleDefinition }}
                                             </span>" tooltipPosition="top" tooltipEvent="hover"
-                    tooltipStyleClass="tooltiptext" [escape]="false"></span>
+                    tooltipStyleClass="tooltiptext" [escape]="false" role="button" aria-label="Toggle Information"></span>
             </label>
     </div>
 
     <div *ngSwitchCase="'dropdown'">
-        <app-additional-filter-field [fieldMappingMetaData]="fieldMappingMetaData"  (additionalFilterChange)="setAdditionalFilterValue($event)"></app-additional-filter-field>
+        <app-additional-filter-field [fieldMappingMetaData]="fieldMappingMetaData"  (additionalFilterChange)="setAdditionalFilterValue($event)"
+        aria-label="Additional Filter Dropdown"></app-additional-filter-field>
     </div>
 
     <div *ngSwitchCase="'conditionalinput'">
         <app-conditional-input id="fieldConfig?.fieldName" name="fieldConfig?.fieldName" ngDefaultControl
         [valueObj]="value" (conditionalInputChange)="setValueConditionalInput($event)" [fieldConfig]="fieldConfig"
-        [id]="fieldConfig?.fieldName"></app-conditional-input>
+        [id]="fieldConfig?.fieldName" aria-label="Conditional Input" role="group"></app-conditional-input>
     </div>
 </div>

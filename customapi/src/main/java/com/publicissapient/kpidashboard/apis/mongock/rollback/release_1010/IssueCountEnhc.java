@@ -105,8 +105,7 @@ public class IssueCountEnhc {
 	public void updateMetadataIdentifier() {
 		mongoTemplate.getCollection("metadata_identifier").updateMany(
 				new Document("templateCode", new Document("$in", Arrays.asList("7"))),
-				new Document("$push", new Document("issues", new Document("type", JIRA_STORY_CATEGORY_KPI_40)
-						.append("value", Arrays.asList("Story", "User Story", "Enabler Story", "Feature")))));
+				new Document("$push", new Document("issues", new Document("type", JIRA_STORY_CATEGORY_KPI_40).append("value",
+						Arrays.asList("Story", "User Story", "Enabler Story", "Feature")))));
 	}
-
 }

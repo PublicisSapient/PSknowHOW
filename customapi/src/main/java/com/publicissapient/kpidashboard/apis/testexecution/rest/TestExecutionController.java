@@ -16,10 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
-
+/** */
 package com.publicissapient.kpidashboard.apis.testexecution.rest;
 
 import java.util.List;
@@ -45,7 +42,6 @@ import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution
 
 /**
  * @author sansharm13
- *
  */
 @RestController
 @RequestMapping("/testexecution")
@@ -59,18 +55,15 @@ public class TestExecutionController {
 
 	/**
 	 * This api saves test_execution data.
-	 * 
+	 *
 	 * @param testExecution
-	 *            data to be saved
+	 *          data to be saved
 	 * @return service response entity
 	 */
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> addTestExecutionData(@RequestBody TestExecutionData testExecution) {
 		ServiceResponse response = new ServiceResponse(false, "Failed to add  Test Execution Data", null);
 		try {
-			String projectNodeId = testExecution.getProjectNodeId();
-			testExecution.setBasicProjectConfigId(projectNodeId
-					.substring(projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE) + 1, projectNodeId.length()));
 			policy.checkPermission(testExecution, TEST_EXECUTION_STATUS);
 			testExecution = testExecutionService.processTestExecutionData(testExecution);
 			if (null != testExecution) {

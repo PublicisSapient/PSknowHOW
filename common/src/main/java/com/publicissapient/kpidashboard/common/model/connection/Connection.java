@@ -31,9 +31,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents the Connection role data.
- */
+/** Represents the Connection role data. */
 @Data
 @Builder
 @Getter
@@ -67,10 +65,10 @@ public class Connection extends BasicModel {
 	private String createdAt;
 	private String updatedAt;
 	private String createdBy;
-	private boolean sharedConnection;// shared with everyone
+	private boolean sharedConnection; // shared with everyone
 	private String updatedBy;
 	private List<String> connectionUsers;
-	private boolean vault;// GS requirement
+	private boolean vault; // GS requirement
 	private boolean bearerToken;
 	private boolean jaasKrbAuth;
 	private String jaasConfigFilePath;
@@ -85,7 +83,6 @@ public class Connection extends BasicModel {
 	private boolean brokenConnection;
 	private String connectionErrorMsg;
 
-
 	public boolean getIsOAuth() {
 		return this.isOAuth;
 	}
@@ -98,7 +95,7 @@ public class Connection extends BasicModel {
 	 * Checks if the parameter object is equal to the class object
 	 *
 	 * @param obj
-	 *            object
+	 *          object
 	 * @return boolean true or false
 	 */
 	@Override

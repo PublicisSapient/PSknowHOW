@@ -59,8 +59,8 @@ public class ProjectOrganizationStructureChangeLog {
 							"Organization"),
 					new Document(LEVEL, 2).append(HIERARCHY_LEVEL_ID, "hierarchyLevelTwo").append(HIERARCHY_LEVEL_NAME,
 							"Business Unit"),
-					new Document(LEVEL, 3).append(HIERARCHY_LEVEL_ID, "hierarchyLevelThree")
-							.append(HIERARCHY_LEVEL_NAME, "Portfolio"));
+					new Document(LEVEL, 3).append(HIERARCHY_LEVEL_ID, "hierarchyLevelThree").append(HIERARCHY_LEVEL_NAME,
+							"Portfolio"));
 			mongoTemplate.getCollection(HIERARCHY_LEVELS).insertMany(hierarchyLevels);
 		}
 	}
@@ -80,8 +80,8 @@ public class ProjectOrganizationStructureChangeLog {
 
 	public void initializeAdditionalFilterCategories() {
 		if (mongoTemplate.getCollection(ADDITIONAL_FILTER_CATEGORIES).countDocuments() == 0) {
-			Document filterCategory = new Document(LEVEL, 1).append("filterCategoryId", "afOne")
-					.append("filterCategoryName", "Teams");
+			Document filterCategory = new Document(LEVEL, 1).append("filterCategoryId", "afOne").append("filterCategoryName",
+					"Teams");
 			mongoTemplate.getCollection(ADDITIONAL_FILTER_CATEGORIES).insertOne(filterCategory);
 		}
 	}

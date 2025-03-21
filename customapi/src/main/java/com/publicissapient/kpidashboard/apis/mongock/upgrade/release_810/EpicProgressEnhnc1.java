@@ -50,7 +50,6 @@ public class EpicProgressEnhnc1 {
 	@Execution
 	public void execution() {
 		updateKpiMaster();
-
 	}
 
 	public void updateKpiMaster() {
@@ -71,7 +70,6 @@ public class EpicProgressEnhnc1 {
 
 		// Perform the update operation
 		kpiMaster.updateMany(filter, update);
-
 	}
 
 	@RollbackExecution

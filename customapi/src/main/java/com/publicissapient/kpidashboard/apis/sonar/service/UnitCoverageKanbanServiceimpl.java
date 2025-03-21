@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
@@ -34,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -57,6 +54,7 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -67,12 +65,12 @@ import lombok.extern.slf4j.Slf4j;
  * This class is a service to compute unite coverage for kanban.
  *
  * @author shichand0
- *
  */
 @Component
 @Slf4j
 public class UnitCoverageKanbanServiceimpl
-		extends SonarKPIService<Double, List<Object>, Map<String, List<SonarHistory>>> {
+		extends
+			SonarKPIService<Double, List<Object>, Map<Pair<String, String>, List<SonarHistory>>> {
 
 	private static final String MATRIC_NAME_COVERAGE = "coverage";
 	@Autowired
@@ -92,8 +90,8 @@ public class UnitCoverageKanbanServiceimpl
 	 *      com.sapient.customdashboard.model.TreeAggregatorDetail)
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 		log.info("SONAR-UNIT-COVERAGE-KANBAN-", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
@@ -132,13 +130,13 @@ public class UnitCoverageKanbanServiceimpl
 	}
 
 	@Override
-	public Double calculateKPIMetrics(Map<String, List<SonarHistory>> stringListMap) {
+	public Double calculateKPIMetrics(Map<Pair<String, String>, List<SonarHistory>> stringListMap) {
 		return null;
 	}
 
 	@Override
-	public Map<String, List<SonarHistory>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
+	public Map<Pair<String, String>, List<SonarHistory>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate,
+			String endDate, KpiRequest kpiRequest) {
 		return getSonarHistoryForAllProjects(leafNodeList, getKanbanCurrentDateToFetchFromDb(startDate));
 	}
 
@@ -157,17 +155,16 @@ public class UnitCoverageKanbanServiceimpl
 		String startDate = dateRange.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		String endDate = dateRange.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-		Map<String, List<SonarHistory>> sonarDetailsForAllProjects = fetchKPIDataFromDb(leafNodeList, startDate,
-				endDate, kpiRequest);
+		Map<Pair<String, String>, List<SonarHistory>> sonarDetailsForAllProjects = fetchKPIDataFromDb(leafNodeList,
+				startDate, endDate, kpiRequest);
 
 		kpiWithFilter(sonarDetailsForAllProjects, mapTmp, kpiElement, kpiRequest);
-
 	}
 
-	private void kpiWithFilter(Map<String, List<SonarHistory>> sonarDetailsForAllProjects, Map<String, Node> mapTmp,
-			KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void kpiWithFilter(Map<Pair<String, String>, List<SonarHistory>> sonarDetailsForAllProjects,
+			Map<String, Node> mapTmp, KpiElement kpiElement, KpiRequest kpiRequest) {
 		List<KPIExcelData> excelData = new ArrayList<>();
-		sonarDetailsForAllProjects.forEach((projectName, projectData) -> {
+		sonarDetailsForAllProjects.forEach((projectNodePair, projectData) -> {
 			if (CollectionUtils.isNotEmpty(projectData)) {
 				List<String> projectList = new ArrayList<>();
 				List<String> debtList = new ArrayList<>();
@@ -178,29 +175,26 @@ public class UnitCoverageKanbanServiceimpl
 				for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
 					CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate,
 							kpiRequest.getDuration());
-					Long startms = dateRange.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant()
-							.toEpochMilli();
+					Long startms = dateRange.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 					Long endms = dateRange.getEndDate().atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant()
 							.toEpochMilli();
 					Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms,
-							projectName);
+							projectNodePair.getRight());
 					String date = getRange(dateRange, kpiRequest);
-					prepareCoverageList(history, date, projectName, projectList, debtList, projectWiseDataMap,
+					prepareCoverageList(history, date, projectNodePair.getRight(), projectList, debtList, projectWiseDataMap,
 							versionDate);
 					currentDate = getNextRangeDate(kpiRequest, currentDate);
 				}
-				mapTmp.get(projectName).setValue(projectWiseDataMap);
+				mapTmp.get(projectNodePair.getLeft()).setValue(projectWiseDataMap);
 				if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-					KPIExcelUtility.populateSonarKpisExcelData(mapTmp.get(projectName).getProjectFilter().getName(),
-							projectList, debtList, versionDate, excelData,
-							KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId());
+					KPIExcelUtility.populateSonarKpisExcelData(mapTmp.get(projectNodePair.getLeft()).getProjectFilter().getName(),
+							projectList, debtList, versionDate, excelData, KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId());
 				}
 			}
 		});
 
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.UNIT_TEST_COVERAGE_KANBAN.getColumns());
-
 	}
 
 	private LocalDate getNextRangeDate(KpiRequest kpiRequest, LocalDate currentDate) {
@@ -218,8 +212,8 @@ public class UnitCoverageKanbanServiceimpl
 		String range = null;
 		if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
-					DateUtil.DISPLAY_DATE_FORMAT) + " to "
-					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to " +
+					DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
 							DateUtil.DISPLAY_DATE_FORMAT);
 		} else if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.MONTH)) {
 			range = dateRange.getStartDate().getMonth().toString() + " " + dateRange.getStartDate().getYear();
@@ -229,12 +223,11 @@ public class UnitCoverageKanbanServiceimpl
 		return range;
 	}
 
-	private Map<String, Object> prepareCoverageList(Map<String, SonarHistory> history, String date,
-			String projectNodeId, List<String> projectList, List<String> debtList,
-			Map<String, List<DataCount>> projectWiseDataMap, List<String> versionDate) {
+	private Map<String, Object> prepareCoverageList(Map<String, SonarHistory> history, String date, String projectName,
+			List<String> projectList, List<String> debtList, Map<String, List<DataCount>> projectWiseDataMap,
+			List<String> versionDate) {
 		Map<String, Object> key = new HashMap<>();
 		List<Double> dateWiseCoverageList = new ArrayList<>();
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		history.forEach((keyName, sonarDetails) -> {
 			Map<String, Object> metricMap = sonarDetails.getMetrics().stream()
 					.filter(metricValue -> metricValue.getMetricValue() != null)
@@ -269,7 +262,6 @@ public class UnitCoverageKanbanServiceimpl
 		}
 
 		return value;
-
 	}
 
 	public Map<String, SonarHistory> prepareJobwiseHistoryMap(List<SonarHistory> sonarHistoryList, Long start, Long end,
@@ -305,14 +297,12 @@ public class UnitCoverageKanbanServiceimpl
 						.name(split[0]).metrics(metricsList).build();
 			}
 			map.put(key.getValue(), build);
-		}
-
-		);
+		});
 		return map;
 	}
 
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI62(),KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId());
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI62(), KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId());
 	}
 }

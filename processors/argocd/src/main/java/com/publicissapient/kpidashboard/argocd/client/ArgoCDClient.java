@@ -28,7 +28,6 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,9 +49,7 @@ import com.publicissapient.kpidashboard.argocd.dto.ApplicationsList;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Client for fetching information from ArgoCD
- */
+/** Client for fetching information from ArgoCD */
 @Service
 @Slf4j
 public class ArgoCDClient {
@@ -62,11 +59,11 @@ public class ArgoCDClient {
 
 	/**
 	 * Get the list of Applications associated to the account
-	 * 
+	 *
 	 * @param baseUrl
-	 *            ArgoCD base url
+	 *          ArgoCD base url
 	 * @param accessToken
-	 *            user access token
+	 *          user access token
 	 * @return ApplicationList
 	 */
 	public ApplicationsList getApplications(String baseUrl, String accessToken) {
@@ -86,13 +83,13 @@ public class ArgoCDClient {
 
 	/**
 	 * Get the Application details by name for the account
-	 * 
+	 *
 	 * @param baseUrl
-	 *            ArgoCD base url
+	 *          ArgoCD base url
 	 * @param applicationName
-	 *            name of ArgoCD Application
+	 *          name of ArgoCD Application
 	 * @param accessToken
-	 *            user access token
+	 *          user access token
 	 * @return Application
 	 */
 	public Application getApplicationByName(String baseUrl, String applicationName, String accessToken) {
@@ -114,15 +111,15 @@ public class ArgoCDClient {
 	 * Get the cluster names associated with the account.
 	 *
 	 * @param baseUrl
-	 *            the ArgoCD base URL
+	 *          the ArgoCD base URL
 	 * @param accessToken
-	 *            the user access token
+	 *          the user access token
 	 * @return a map where the key is the server URL and the value is the cluster
 	 *         name
 	 * @throws RestClientException
-	 *             if an error occurs while making the REST call
+	 *           if an error occurs while making the REST call
 	 * @throws RuntimeException
-	 *             if an error occurs while processing the JSON response
+	 *           if an error occurs while processing the JSON response
 	 */
 	public Map<String, String> getClusterName(String baseUrl, String accessToken) {
 		String url = baseUrl + ARGOCD_CLUSTER_ENDPOINT;

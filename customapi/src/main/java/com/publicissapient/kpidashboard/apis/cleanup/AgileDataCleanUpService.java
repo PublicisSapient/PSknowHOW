@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorType;
@@ -43,6 +44,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRe
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -95,14 +97,19 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 	@Autowired
 	private SprintRepository sprintRepository;
 
+	@Autowired
+	private OrganizationHierarchyService organizationHierarchyService;
+
+	@Autowired
+	private ProjectHierarchyService projectHierarchyService;
 
 	private static void getLevelIds(boolean flag, List<String> levelList, List<HierarchyLevel> accountHierarchyList) {
 		for (HierarchyLevel hierarchyLevel : accountHierarchyList) {
 			if (flag) {
 				levelList.add(hierarchyLevel.getHierarchyLevelId());
 			}
-			if (StringUtils.isNotEmpty(hierarchyLevel.getHierarchyLevelId()) && hierarchyLevel.getHierarchyLevelId()
-					.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
+			if (StringUtils.isNotEmpty(hierarchyLevel.getHierarchyLevelId()) &&
+					hierarchyLevel.getHierarchyLevelId().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
 				flag = true;
 			}
 		}
@@ -117,21 +124,20 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 	public void clean(String projectToolConfigId) {
 
 		ProjectToolConfig tool = projectToolConfigRepository.findById(projectToolConfigId);
-		deleteJiraIssuesAndHistory(tool);
+		ProjectBasicConfig projectBasicConfig = getProjectBasicConfig(tool.getBasicProjectConfigId().toString());
+		deleteJiraIssuesAndHistory(tool, projectBasicConfig);
 		deleteReleaseInfo(tool);
 		deleteSprintDetailsData(tool);
 		clearCache();
-
 	}
 
 	private ProjectBasicConfig getProjectBasicConfig(String basicProjectConfigId) {
 		return projectBasicConfigService.getProjectBasicConfigs(basicProjectConfigId);
 	}
 
-	private void deleteJiraIssuesAndHistory(ProjectToolConfig tool) {
+	private void deleteJiraIssuesAndHistory(ProjectToolConfig tool, ProjectBasicConfig projectBasicConfig) {
 		if (tool != null) {
 			String basicProjectConfigId = tool.getBasicProjectConfigId().toHexString();
-			ProjectBasicConfig projectBasicConfig = getProjectBasicConfig(basicProjectConfigId);
 			processorExecutionTraceLogRepository.deleteByBasicProjectConfigIdAndProcessorName(basicProjectConfigId,
 					tool.getToolName());
 
@@ -142,8 +148,8 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 				List<String> levelList = new ArrayList<>();
 				List<HierarchyLevel> accountHierarchyList = cacheService.getFullKanbanHierarchyLevel();
 				getLevelIds(flag, levelList, accountHierarchyList);
-				kanbanAccountHierarchyRepository
-						.deleteByBasicProjectConfigIdAndLabelNameIn(tool.getBasicProjectConfigId(), levelList);
+				kanbanAccountHierarchyRepository.deleteByBasicProjectConfigIdAndLabelNameIn(tool.getBasicProjectConfigId(),
+						levelList);
 
 			} else {
 				jiraIssueRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
@@ -155,6 +161,7 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 				accountHierarchyRepository.deleteByBasicProjectConfigIdAndLabelNameIn(tool.getBasicProjectConfigId(),
 						levelList);
 			}
+			projectHierarchyService.deleteByBasicProjectConfigId(projectBasicConfig.getId());
 		}
 	}
 

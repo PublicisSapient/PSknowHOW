@@ -18,10 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.constant;
 
-/**
- * Defines the constants that can be used across modules.
- *
- */
+/** Defines the constants that can be used across modules. */
 public final class CommonConstant {
 
 	public static final String JIRA_KPI_CACHE = "jiraKpiCache";
@@ -33,12 +30,16 @@ public final class CommonConstant {
 	public static final String TESTING_KPI_CACHE = "testingKpiCache";
 	public static final String JIRAKANBAN_KPI_CACHE = "jiraKanbanKpiCache";
 	public static final String CACHE_ACCOUNT_HIERARCHY = "accountHierarchy";
+
+	public static final String CACHE_ORGANIZATION_HIERARCHY = "organizationHierarchies";
+	public static final String CACHE_PROJECT_HIERARCHY = "projectHierarchies";
 	public static final String CACHE_SPRINT_HIERARCHY = "sprintHierarchy";
 	public static final String CACHE_ACCOUNT_HIERARCHY_KANBAN = "accountHierarchyKanban";
 	public static final String CACHE_TOOL_CONFIG_MAP = "toolItemMap";
 	public static final String CACHE_FIELD_MAPPING_MAP = "fieldMappingMap";
 	public static final String CACHE_BOARD_META_DATA_MAP = "boardMetaDataMap";
 	public static final String CACHE_PROJECT_CONFIG_MAP = "projectConfigMap";
+	public static final String CACHE_ALL_PROJECT_CONFIG_MAP = "allProjectConfigMap";
 	public static final String CACHE_PROJECT_TOOL_CONFIG_MAP = "projectToolConfigMap";
 	public static final String CACHE_PROJECT_KPI_DATA = "project_kpi_data_cache";
 
@@ -47,9 +48,8 @@ public final class CommonConstant {
 
 	public static final String CACHE_CLEAR_ENDPOINT = "api/cache/clearCache";
 	public static final String CLEAR_ALL_CACHE_ENDPOINT = "api/cache/clearAllCache";
-	public static final String CACHE_CLEAR_SOURCE_ENDPOINT = "api/cache/source/" + PARAM1 + "/clear";
-	public static final String CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT = "api/cache/project/" + PARAM1 + "/source/" + PARAM2
-			+ "/clear";
+	public static final String CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT = "api/cache/project/" + PARAM1 + "/source/" + PARAM2 +
+			"/clear";
 	public static final String REPROCESS = "Reprocess";
 	public static final String FILE_STATUS_UPLOADED = "Uploaded";
 
@@ -118,7 +118,6 @@ public final class CommonConstant {
 	public static final String BLANK = "";
 	public static final String COMMA = ",";
 	public static final String CACHE_KPI_MASTER = "cache_kpi_master";
-	public static final String CACHE_HIERARCHY_LEVEL_VALUE = "cache_hierarchy_level_value";
 	public static final String CACHE_PROJECT_BASIC_TREE = "cache_project_basic_tree";
 	public static final String CACHE_USER_BOARD_CONFIG = "cache_user_board_config";
 
@@ -214,8 +213,8 @@ public final class CommonConstant {
 	public static final String DOTTED_LINE_TYPE = "dotted";
 
 	public static final String JIRADEFECTTYPE = "jiradefecttype";
-	public static final String JIRAKPI135STORYIDENTIFICATION = "jiraKPI135StoryIdentification";// azure
-	public static final String JIRAKPI82STORYIDENTIFICATION = "jiraKPI82StoryIdentification";// azure
+	public static final String JIRAKPI135STORYIDENTIFICATION = "jiraKPI135StoryIdentification"; // azure
+	public static final String JIRAKPI82STORYIDENTIFICATION = "jiraKPI82StoryIdentification"; // azure
 	public static final String JIRAISSUETYPEKPI3 = "jiraIssueTypeKPI3";
 	public static final String JIRAISSUETYPENAMES = "jiraIssueTypeNames";
 	public static final String JIRAISSUEEPICTYPE = "jiraIssueEpicType";
@@ -277,8 +276,8 @@ public final class CommonConstant {
 	public static final String JIRALIVESTATUSKPI152 = "jiraLiveStatusKPI152";
 	public static final String JIRALIVESTATUSKPI151 = "jiraLiveStatusKPI151";
 
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI135 = "jiraIterationCompletionStatusKPI135";// azure all
-																										   // below
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI135 = "jiraIterationCompletionStatusKPI135"; // azure all
+	// below
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI122 = "jiraIterationCompletionStatusKPI122";
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI75 = "jiraIterationCompletionStatusKPI75";
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI145 = "jiraIterationCompletionStatusKPI145";
@@ -341,8 +340,8 @@ public final class CommonConstant {
 
 	public static final String ERROR_ALERT_NOTIFICATION = "errorAlertNotification";
 
-	public static final String USERNAME_PATTERN = "^[a-zA-Z0-9]{4,30}$";// Username can only contain letters and numbers
-																		// Maximum length is 30 and min is 4 characters
+	public static final String USERNAME_PATTERN = "^[a-zA-Z0-9]{4,30}$"; // Username can only contain letters and numbers
+	// Maximum length is 30 and min is 4 characters
 
 	public static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 
@@ -376,8 +375,8 @@ public final class CommonConstant {
 	public static final String SONARKANBAN = "SONARKANBAN";
 	public static final String BITBUCKETKANBAN = "BITBUCKETKANBAN";
 	public static final String JENKINSKANBAN = "JENKINSKANBAN";
+	public static final String ALL_KPI = "ALL_KPI";
 
 	private CommonConstant() {
-
 	}
 }

@@ -28,9 +28,7 @@ import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 
-/**
- * Client for fetching job and build information from AzurePipeline.
- */
+/** Client for fetching job and build information from AzurePipeline. */
 public interface AzurePipelineClient {
 
 	/**
@@ -39,9 +37,9 @@ public interface AzurePipelineClient {
 	 * populated.
 	 *
 	 * @param azurePipelineServer
-	 *            the URL for the AzurePipeline instance
+	 *          the URL for the AzurePipeline instance
 	 * @param lastStartTimeOfJobs
-	 *            lastStartTimeOfBuilds
+	 *          lastStartTimeOfBuilds
 	 * @param proBasicConfig
 	 * @return a summary of every build for each job on the instance
 	 */
@@ -54,14 +52,12 @@ public interface AzurePipelineClient {
 	 * will be populated.
 	 *
 	 * @param azurePipelineServer
-	 *            the URL for the AzurePipeline instance
+	 *          the URL for the AzurePipeline instance
 	 * @param lastStartTimeOfJobs
-	 *            lastStartTimeOfDeployments
+	 *          lastStartTimeOfDeployments
 	 * @param proBasicConfig
 	 * @return a summary of every deployment for each job on the instance
 	 */
-
 	Map<Deployment, Set<Deployment>> getDeploymentJobs(ProcessorToolConnection azurePipelineServer,
 			long lastStartTimeOfJobs, ProjectBasicConfig proBasicConfig);
-
 }

@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.parser;
 
 import static org.junit.Assert.assertNotNull;
@@ -25,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -37,6 +35,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.jira.dataFactories.IssueDataFactory;
 
 @RunWith(MockitoJUnitRunner.class)

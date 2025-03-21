@@ -35,6 +35,7 @@ import { HelperService } from 'src/app/services/helper.service';
 import { environment } from 'src/environments/environment';
 import { of, throwError } from 'rxjs';
 import { DatePipe } from '@angular/common';
+import { FormGroup, FormsModule } from '@angular/forms';
 
 describe('ProjectListComponent', () => {
   let component: ProjectListComponent;
@@ -45,6 +46,8 @@ describe('ProjectListComponent', () => {
   let router: Router;
   const baseUrl = environment.baseUrl;
   let confirmationService;
+  let messengerMock;
+  let formMock;
 
   const projectListData = require('../../../../test/resource/projectListData.json');
   const formFieldData = [
@@ -68,6 +71,7 @@ describe('ProjectListComponent', () => {
         'Ontario',
         'Texas',
         'Washinton'
+        
       ]
     },
     {
@@ -191,7 +195,8 @@ describe('ProjectListComponent', () => {
         HttpClientTestingModule,
         TableModule,
         DropdownModule,
-        ToolbarModule
+        ToolbarModule,
+        FormsModule // Add this line to import FormsModule
       ],
       providers: [
         HttpService,
@@ -225,6 +230,11 @@ describe('ProjectListComponent', () => {
       (key, value) => (localStore[key] = value + '')
     );
     spyOn(window.localStorage, 'clear').and.callFake(() => (localStore = {}));
+
+    // Creating mock form group
+    formMock = {
+      valid: true
+    };
 
   });
 
@@ -603,5 +613,16 @@ describe('ProjectListComponent', () => {
   component.projectDeletionStatus({success : true});
  })
 
+ it('should initialize project details when renameProject is called', () => {
+  const project = { name: 'Old Project', id: 1 };
+  
+  component.renameProject(project);
+
+  expect(component.submitted).toBe(false);
+  expect(component.selectedProject).toEqual(project);
+  expect(component.isRenameProject).toBe(true);
+  expect(component.newProjectName).toBe(project.name);
+  expect(component.projectGroup instanceof FormGroup).toBe(true);
+});
 
 });

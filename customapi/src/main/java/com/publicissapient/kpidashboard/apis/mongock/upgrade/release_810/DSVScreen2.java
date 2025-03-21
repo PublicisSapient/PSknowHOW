@@ -65,8 +65,8 @@ public class DSVScreen2 {
 
 	public void insertFieldMapping() {
 		fieldMappingStructure.insertMany(Arrays.asList(
-				createDocument("jiraStatusStartDevelopmentKPI154", "Status to identify start of development",
-						"workflow", "WorkFlow Status Mapping",
+				createDocument("jiraStatusStartDevelopmentKPI154", "Status to identify start of development", "workflow",
+						"WorkFlow Status Mapping",
 						"Status from workflow on which issue is started development. <br> Example: In Analysis<hr>"),
 				createDocument("jiraDevDoneStatusKPI154", "Status to identify Dev completed issues", "workflow",
 						"WorkFlow Status Mapping",
@@ -80,14 +80,13 @@ public class DSVScreen2 {
 				createDocument("jiraStatusForInProgressKPI154", "Status to identify In Progress issues", "workflow",
 						"WorkFlow Status Mapping",
 						"All statuses that issues have moved from the Created status and also has not been completed. <br> This field is same as the configuration field of Work Remaining KPI)")
-								.append("readOnly", true),
+						.append("readOnly", true),
 				createDocument("jiraSubTaskIdentification", "Sub-Task Issue Types", "Issue_Type", "Issue Types Mapping",
 						"Any issue type mentioned will be considered as sub-task linked with story"),
 				createDocument("storyFirstStatusKPI154", "Status when 'Story' issue type is created", "workflow",
 						"WorkFlow Status Mapping", "All issue types that identify with a Story."),
 				createDocument("jiraOnHoldStatusKPI154", "Status when issue type is put on Hold", "workflow",
 						"WorkFlow Status Mapping", "All status that identify hold/blocked statuses.")));
-
 	}
 
 	private void updateMetadata() {
@@ -114,7 +113,6 @@ public class DSVScreen2 {
 		// Get the collection
 		mongoTemplate.getCollection("metadata_identifier").bulkWrite(metaDataOperations,
 				new BulkWriteOptions().ordered(false));
-
 	}
 
 	private Document createDocument(String fieldName, String fieldLabel, String fieldCategory, String section,
@@ -122,7 +120,6 @@ public class DSVScreen2 {
 		return new Document("fieldName", fieldName).append("fieldLabel", fieldLabel).append("fieldType", "chips")
 				.append("section", section).append("fieldCategory", fieldCategory)
 				.append("tooltip", new Document("definition", definition));
-
 	}
 
 	@RollbackExecution
@@ -134,7 +131,7 @@ public class DSVScreen2 {
 
 		List<String> fieldNamesToDelete = Arrays.asList("jiraStatusStartDevelopmentKPI154", "jiraDevDoneStatusKPI154",
 				"jiraQADoneStatusKPI154", "jiraIterationCompletionStatusKPI154", "jiraStatusForInProgressKPI154",
-				"jiraSubTaskIdentification", "storyFirstStatusKPI154", "jiraOnHoldStatusKPI154" );
+				"jiraSubTaskIdentification", "storyFirstStatusKPI154", "jiraOnHoldStatusKPI154");
 		Document filter = new Document("fieldName", new Document("$in", fieldNamesToDelete));
 		// Delete documents that match the filter
 		fieldMappingStructure.deleteMany(filter);
@@ -147,12 +144,10 @@ public class DSVScreen2 {
 
 		// Create the update operation
 		Document update = new Document("$pull",
-				new Document("workflow",
-						new Document("$in",
-								Arrays.asList(new Document("type", "firstDevstatus"),
-										new Document("type", "jiraStatusForInProgressKPI154"),
-										new Document("type", "jiraStatusStartDevelopmentKPI154"),
-										new Document("type", "storyFirstStatusKPI154")))));
+				new Document("workflow", new Document("$in",
+						Arrays.asList(new Document("type", "firstDevstatus"), new Document("type", "jiraStatusForInProgressKPI154"),
+								new Document("type", "jiraStatusStartDevelopmentKPI154"),
+								new Document("type", "storyFirstStatusKPI154")))));
 
 		// Update the documents
 		collection.updateMany(metaFilter, update);

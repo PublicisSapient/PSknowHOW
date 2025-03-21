@@ -37,5 +37,4 @@ public class ZephyrClientFactoryTest {
 		ZephyrClient zephyrClient = zephyrClientFactory.getClient(cloudEnv);
 		assertEquals(zephyrClient, zephyrCloud);
 	}
-
 }

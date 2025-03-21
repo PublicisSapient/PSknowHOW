@@ -53,6 +53,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRe
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 
 @ExtendWith(SpringExtension.class)
 public class KanbanAzureIssueClientImplTest {
@@ -102,6 +103,8 @@ public class KanbanAzureIssueClientImplTest {
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 	@Mock
 	private AssigneeDetailsRepository assigneeDetailsRepository;
+	@Mock
+	private ProjectHierarchyService projectHierarchyService;
 
 	@BeforeEach
 	public void setUp() throws Exception {
@@ -118,7 +121,6 @@ public class KanbanAzureIssueClientImplTest {
 		fields = new com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields();
 		value1.setFields(fields);
 		azureUpdatesModel.setValue(valueList);
-
 	}
 
 	@Test
@@ -127,12 +129,14 @@ public class KanbanAzureIssueClientImplTest {
 		when(kanbanJiraRepo.saveAll(any())).thenReturn(null);
 		when(kanbanIssueHistoryRepo.saveAll(any())).thenReturn(null);
 		when(kanbanJiraRepo.findTopByBasicProjectConfigId(any())).thenReturn(null);
-		when(azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE)).thenReturn(azureProcessor);
+		when(azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE))
+				.thenReturn(azureProcessor);
 		when(azureProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));
 		when(azureAdapter.getPageSize()).thenReturn(30);
 		when(azureProcessorConfig.getMinsToReduce()).thenReturn(30);
 		when(azureProcessorConfig.getStartDate()).thenReturn("2019-01-07T00:00:00.0000000");
-		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any())).thenReturn(null);
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any()))
+				.thenReturn(null);
 		when(azureAdapter.getWiqlModel(any(), any(), any(), anyBoolean())).thenReturn(azureWiqlModel);
 		createIssue();
 		WorkItem work = new WorkItem();
@@ -144,10 +148,12 @@ public class KanbanAzureIssueClientImplTest {
 		value.setId(3);
 		value.setFields(field);
 		when(azureWiqlModel.getWorkItems()).thenReturn(workItems);
-		when(azureAdapter.getWorkItemInfoForIssues(anyInt(), any(), any())).thenReturn(azureBoardsWIModel);
+		when(azureAdapter.getWorkItemInfoForIssues(anyInt(), any(), any()))
+				.thenReturn(azureBoardsWIModel);
 		when(processorAzureRestClient.getUpdatesResponse(any(), any())).thenReturn(azureUpdatesModel);
-		when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId("Project",
-				kanbanProjectlist.get(0).getId())).thenReturn(Arrays.asList(kanbanAccountHierarchy));
+		when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId(
+						"Project", kanbanProjectlist.get(0).getId()))
+				.thenReturn(Arrays.asList(kanbanAccountHierarchy));
 		when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId(any(), any()))
 				.thenReturn(Arrays.asList(kanbanAccountHierarchy));
 
@@ -185,9 +191,8 @@ public class KanbanAzureIssueClientImplTest {
 		List<String> jiraType = new ArrayList<>();
 		jiraType.add("Defect");
 		fieldMapping.setJiradefecttype(jiraType);
-		jiraType = new ArrayList<>(
-				Arrays.asList(new String[] { "Story", "Defect", "Pre Story", "Feature", "Enabler Story" }));
-		String[] jiraIssueType = new String[] { "Story", "Defect", "Pre Story", "Feature", "Enabler Story" };
+		jiraType = new ArrayList<>(Arrays.asList(new String[]{"Story", "Defect", "Pre Story", "Feature", "Enabler Story"}));
+		String[] jiraIssueType = new String[]{"Story", "Defect", "Pre Story", "Feature", "Enabler Story"};
 		fieldMapping.setJiraIssueTypeNames(jiraIssueType);
 		fieldMapping.setRootCause("customfield_19121");
 
@@ -244,7 +249,7 @@ public class KanbanAzureIssueClientImplTest {
 		jiraType.add("Feature");
 		fieldMapping.setJiraSprintVelocityIssueTypeKPI138(jiraType);
 
-		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Defect", "Pre Story", "Feature" }));
+		jiraType = new ArrayList<>(Arrays.asList(new String[]{"Story", "Defect", "Pre Story", "Feature"}));
 		fieldMapping.setJiraSprintCapacityIssueTypeKpi46(jiraType);
 
 		jiraType = new ArrayList<>();
@@ -258,7 +263,7 @@ public class KanbanAzureIssueClientImplTest {
 		fieldMapping.setJiraLiveStatus("Closed");
 		fieldMapping.setRootCauseValue(Arrays.asList("Coding", "None"));
 
-		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Pre Story" }));
+		jiraType = new ArrayList<>(Arrays.asList(new String[]{"Story", "Pre Story"}));
 		fieldMapping.setJiraStoryIdentification(jiraType);
 
 		fieldMapping.setJiraDefectCreatedStatusKPI14("Open");
@@ -292,8 +297,8 @@ public class KanbanAzureIssueClientImplTest {
 		jiraType.add("Defect");
 		fieldMapping.setJiradefecttype(jiraType);
 
-		jiraIssueType = new String[] { "Support Request", "Incident", "Project Request", "Member Account Request",
-				"DOJO Consulting Request", "Test Case" };
+		jiraIssueType = new String[]{"Support Request", "Incident", "Project Request", "Member Account Request",
+				"DOJO Consulting Request", "Test Case"};
 		fieldMapping.setJiraIssueTypeNames(jiraIssueType);
 		fieldMapping.setStoryFirstStatus("Open");
 
@@ -326,8 +331,8 @@ public class KanbanAzureIssueClientImplTest {
 		fieldMapping.setJiraStoryPointsCustomField("customfield_56789");
 		fieldMapping.setJiraTechDebtIdentification("CustomField");
 
-		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Support Request", "Incident", "Project Request",
-				"Member Account Request", "DOJO Consulting Request", "Test Case" }));
+		jiraType = new ArrayList<>(Arrays.asList(new String[]{"Support Request", "Incident", "Project Request",
+				"Member Account Request", "DOJO Consulting Request", "Test Case"}));
 		fieldMapping.setTicketCountIssueType(jiraType);
 		fieldMapping.setJiraTicketVelocityIssueTypeKPI49(jiraType);
 		fieldMapping.setKanbanJiraTechDebtIssueType(jiraType);
@@ -375,7 +380,6 @@ public class KanbanAzureIssueClientImplTest {
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("segregationLabel");
 		fieldMappingList.add(fieldMapping);
-
 	}
 
 	private void setProjectConfigFieldMap() throws IllegalAccessException, InvocationTargetException {
@@ -384,7 +388,6 @@ public class KanbanAzureIssueClientImplTest {
 		projectConfFieldMapping.setBasicProjectConfigId(kanbanProjectlist.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
 		projectConfFieldMappingList.add(projectConfFieldMapping);
-
 	}
 
 	private void createIssue() throws URISyntaxException, JSONException {
@@ -410,5 +413,4 @@ public class KanbanAzureIssueClientImplTest {
 		issues.add(issue1);
 		issue1.setFields(fields);
 	}
-
 }

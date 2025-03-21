@@ -29,9 +29,7 @@ import org.apache.http.client.utils.URIBuilder;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.github.constants.GitHubConstants;
 
-/**
- * The Class GitLabURIBuilder.
- */
+/** The Class GitLabURIBuilder. */
 public class GitHubURIBuilder {
 
 	/** The repo. */
@@ -41,7 +39,7 @@ public class GitHubURIBuilder {
 	 * Instantiates a new gitlab URI builder.
 	 *
 	 * @param gitHubToolConnection
-	 *            the config
+	 *          the config
 	 */
 	public GitHubURIBuilder(ProcessorToolConnection gitHubToolConnection) {
 		this.gitHubToolConnection = gitHubToolConnection;
@@ -52,9 +50,9 @@ public class GitHubURIBuilder {
 	 *
 	 * @return the string
 	 * @throws URISyntaxException
-	 *             uri syntax exception
+	 *           uri syntax exception
 	 * @throws URISyntaxException
-	 *             the URISyntaxException
+	 *           the URISyntaxException
 	 */
 	public String build() throws URISyntaxException {
 		URI uri = getURI();
@@ -73,9 +71,9 @@ public class GitHubURIBuilder {
 	 *
 	 * @return the string
 	 * @throws URISyntaxException
-	 *             uri syntax exception
+	 *           uri syntax exception
 	 * @throws URISyntaxException
-	 *             the URISyntaxException
+	 *           the URISyntaxException
 	 */
 	public String mergeRequestUrlbuild() throws URISyntaxException {
 		URI uri = getURI();
@@ -120,20 +118,20 @@ public class GitHubURIBuilder {
 	 * Gets the path.
 	 *
 	 * @param uri
-	 *            the uri
+	 *          the uri
 	 * @return the path
 	 */
 	private String getCommitPath() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("/repos/" + gitHubToolConnection.getUsername() + "/" + gitHubToolConnection.getRepositoryName()
-				+ "/commits");
+		sb.append(
+				"/repos/" + gitHubToolConnection.getUsername() + "/" + gitHubToolConnection.getRepositoryName() + "/commits");
 		return sb.toString();
 	}
 
 	private String getMRPath() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("/repos/" + gitHubToolConnection.getUsername() + "/" + gitHubToolConnection.getRepositoryName()
-				+ "/pulls");
+		sb.append(
+				"/repos/" + gitHubToolConnection.getUsername() + "/" + gitHubToolConnection.getRepositoryName() + "/pulls");
 		return sb.toString();
 	}
 
@@ -147,5 +145,4 @@ public class GitHubURIBuilder {
 		url = StringUtils.removeEnd(url, ".git");
 		return URI.create(url.replace(" ", "%20"));
 	}
-
 }

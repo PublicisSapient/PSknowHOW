@@ -61,9 +61,7 @@ import com.publicissapient.kpidashboard.github.util.GitHubURIBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 
  * @author narsingh9
- *
  */
 @Slf4j
 @Component
@@ -81,10 +79,10 @@ public class GitHubClientImpl implements GitHubClient {
 	 * Decrypt apiToken.
 	 *
 	 * @param apiToken
-	 *            the encrypted apiToken
+	 *          the encrypted apiToken
 	 * @return the string
 	 * @throws GeneralSecurityException
-	 *             the GeneralSecurityException
+	 *           the GeneralSecurityException
 	 */
 	protected String decryptApiToken(String apiToken) throws GeneralSecurityException {
 		return StringUtils.isNotEmpty(apiToken)
@@ -96,19 +94,17 @@ public class GitHubClientImpl implements GitHubClient {
 	 * Fetch all commits.
 	 *
 	 * @param gitHubProcessorItem
-	 *            the repo
+	 *          the repo
 	 * @param firstRun
-	 *            the first run
+	 *          the first run
 	 * @param githubToolConnection
-	 *            tool and connections info
+	 *          tool and connections info
 	 * @return the list
-	 * 
 	 * @throws FetchingCommitException
-	 *             the exception
+	 *           the exception
 	 */
 	public List<CommitDetails> fetchAllCommits(GitHubProcessorItem gitHubProcessorItem, boolean firstRun,
-			ProcessorToolConnection githubToolConnection, ProjectBasicConfig proBasicConfig)
-			throws FetchingCommitException {
+			ProcessorToolConnection githubToolConnection, ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
 
 		String restUri = null;
 		List<CommitDetails> commits = new ArrayList<>();
@@ -167,9 +163,7 @@ public class GitHubClientImpl implements GitHubClient {
 					parentList.add(getString(parentObject, GitHubConstants.RESP_ID_KEY));
 				}
 			}
-			commitDetails(gitLabInfo, commits, scmRevisionNumber, message, author, timestamp, parentList,
-					proBasicConfig);
-
+			commitDetails(gitLabInfo, commits, scmRevisionNumber, message, author, timestamp, parentList, proBasicConfig);
 		}
 	}
 
@@ -188,8 +182,8 @@ public class GitHubClientImpl implements GitHubClient {
 			boolean hasMorePage = true;
 			int nextPage = 1;
 			while (hasMorePage) {
-				ResponseEntity<String> respPayload = getResponse(processorToolConnection.getUsername(),
-						decryptedApiToken, restUri);
+				ResponseEntity<String> respPayload = getResponse(processorToolConnection.getUsername(), decryptedApiToken,
+						restUri);
 				if (respPayload == null)
 					break;
 				JSONArray responseJson = getJSONFromResponse(respPayload.getBody());
@@ -211,8 +205,7 @@ public class GitHubClientImpl implements GitHubClient {
 			throw new FetchingCommitException("Failed to fetch merge request", ex);
 		}
 		gitHubProcessorItem.setUpdatedTime(System.currentTimeMillis());
-		log.info("Merge Requests From Server for project {}->{}", proBasicConfig.getProjectName(),
-				mergeRequests.size());
+		log.info("Merge Requests From Server for project {}->{}", proBasicConfig.getProjectName(), mergeRequests.size());
 		return mergeRequests;
 	}
 
@@ -286,9 +279,8 @@ public class GitHubClientImpl implements GitHubClient {
 	}
 
 	@SuppressWarnings("java:S107")
-	private void commitDetails(ProcessorToolConnection gitLabInfo, List<CommitDetails> commits,
-			String scmRevisionNumber, String message, String author, long timestamp, List<String> parentList,
-			ProjectBasicConfig proBasicConfig) {
+	private void commitDetails(ProcessorToolConnection gitLabInfo, List<CommitDetails> commits, String scmRevisionNumber,
+			String message, String author, long timestamp, List<String> parentList, ProjectBasicConfig proBasicConfig) {
 		CommitDetails gitLabCommit = new CommitDetails();
 		gitLabCommit.setBranch(gitLabInfo.getBranch());
 		gitLabCommit.setUrl(gitLabInfo.getUrl());
@@ -308,11 +300,11 @@ public class GitHubClientImpl implements GitHubClient {
 	 * Gets the response.
 	 *
 	 * @param userName
-	 *            the user name
+	 *          the user name
 	 * @param apiToken
-	 *            the GitlabAccessToken
+	 *          the GitlabAccessToken
 	 * @param url
-	 *            the url
+	 *          the url
 	 * @return the response
 	 */
 	protected ResponseEntity<String> getResponse(String userName, String apiToken, String url) {
@@ -330,9 +322,9 @@ public class GitHubClientImpl implements GitHubClient {
 	 * Gets the string.
 	 *
 	 * @param jsonObject
-	 *            the json object
+	 *          the json object
 	 * @param key
-	 *            the key
+	 *          the key
 	 * @return the string
 	 */
 	protected String getString(JSONObject jsonObject, String key) {
@@ -348,14 +340,13 @@ public class GitHubClientImpl implements GitHubClient {
 	 * Gets the JSON from response.
 	 *
 	 * @param payload
-	 *            the payload
+	 *          the payload
 	 * @return the JSON from response
 	 * @throws ParseException
-	 *             the ParseException
+	 *           the ParseException
 	 */
 	protected JSONArray getJSONFromResponse(String payload) throws ParseException {
 		JSONParser parser = new JSONParser();
 		return (JSONArray) parser.parse(payload);
 	}
-
 }

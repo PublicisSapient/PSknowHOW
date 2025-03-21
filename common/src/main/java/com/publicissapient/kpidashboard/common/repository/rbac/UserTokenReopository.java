@@ -25,16 +25,14 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 
-/**
- * Repository for {@link UserTokenData}.
- */
+/** Repository for {@link UserTokenData}. */
 public interface UserTokenReopository extends CrudRepository<UserTokenData, ObjectId> {
 
 	/**
 	 * Finds by user token.
 	 *
 	 * @param userToken
-	 *            the user token
+	 *          the user token
 	 * @return the user token data
 	 */
 	UserTokenData findByUserToken(String userToken);
@@ -43,7 +41,7 @@ public interface UserTokenReopository extends CrudRepository<UserTokenData, Obje
 	 * Deletes by user token.
 	 *
 	 * @param userToken
-	 *            the user token
+	 *          the user token
 	 */
 	void deleteByUserToken(String userToken);
 
@@ -51,7 +49,7 @@ public interface UserTokenReopository extends CrudRepository<UserTokenData, Obje
 	 * Deletes by user name.
 	 *
 	 * @param userName
-	 *            the user Name
+	 *          the user Name
 	 */
 	void deleteByuserName(String userName);
 
@@ -62,5 +60,4 @@ public interface UserTokenReopository extends CrudRepository<UserTokenData, Obje
 	UserTokenData findByUserName(String userName);
 
 	List<UserTokenData> findAllByUserName(String userName);
-
 }

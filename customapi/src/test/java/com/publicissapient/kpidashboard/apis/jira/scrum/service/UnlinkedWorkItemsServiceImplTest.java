@@ -115,10 +115,11 @@ public class UnlinkedWorkItemsServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(testCaseDetailsRepository.findNonRegressionTestDetails(Mockito.anyMap(), Mockito.anyMap(),
-				Mockito.anyString())).thenReturn(totalTestCaseList);
+		when(
+				testCaseDetailsRepository.findNonRegressionTestDetails(Mockito.anyMap(), Mockito.anyMap(), Mockito.anyString()))
+				.thenReturn(totalTestCaseList);
 		Map<String, Object> defectDataListMap = unlinkedWorkItemsService
 				.fetchKPIDataFromDbForTestWithoutStory(leafNodeList.get(0));
 		assertNotNull(defectDataListMap);
@@ -129,7 +130,7 @@ public class UnlinkedWorkItemsServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> defectDataListMap = unlinkedWorkItemsService
 				.fetchKPIDataFromDbForDefectsWithoutStoryLink(leafNodeList.get(0));
@@ -141,10 +142,10 @@ public class UnlinkedWorkItemsServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> defectDataListMap = unlinkedWorkItemsService.fetchKPIDataFromDb(leafNodeList.get(0), null,
-				null, kpiRequest);
+		Map<String, Object> defectDataListMap = unlinkedWorkItemsService.fetchKPIDataFromDb(leafNodeList.get(0), null, null,
+				kpiRequest);
 		assertNotNull(defectDataListMap);
 	}
 

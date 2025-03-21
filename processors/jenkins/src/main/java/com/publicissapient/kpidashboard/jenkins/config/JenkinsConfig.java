@@ -27,9 +27,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Bean to hold settings specific to the Jenkins processor.
- */
+/** Bean to hold settings specific to the Jenkins processor. */
 @Component
 @ConfigurationProperties(prefix = "jenkins")
 @Builder
@@ -41,8 +39,10 @@ public class JenkinsConfig {
 	private String cron;
 	private boolean includeLogs;
 	private String dockerHostIp;
+
 	@Value("${folderDepth:10}")
 	private int folderDepth;
+
 	private String customApiBaseUrl;
 
 	@Value("${aesEncryptionKey}")
@@ -50,12 +50,11 @@ public class JenkinsConfig {
 
 	/**
 	 * Provides the IP of Docker Localhost.
-	 * 
+	 *
 	 * @return the Localhost Docker IP
 	 */
 	public String getDockerHostIp() {
 
 		return dockerHostIp == null ? "" : dockerHostIp;
 	}
-
 }

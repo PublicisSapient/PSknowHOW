@@ -27,15 +27,13 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /*
 author @shi6
@@ -54,11 +52,11 @@ public class UserInfoCustomRepositoryImplTest {
 
 		when(operations.find(any(Query.class), eq(UserInfo.class))).thenReturn(Collections.emptyList());
 		// Call the method and assert the result
-		List<UserInfo> result = userInfoCustomRepository.findAdminUserOfProject(List.of("basicConfigId"));
+		List<UserInfo> result =
+				userInfoCustomRepository.findAdminUserOfProject(List.of("basicConfigId"));
 		userInfoCustomRepository.findByProjectAccess("basicConfigId");
 
 		// Assert the result or perform further verifications
 		assertEquals(Collections.emptyList(), result);
 	}
-
 }

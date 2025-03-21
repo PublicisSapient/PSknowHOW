@@ -1,5 +1,7 @@
 package com.publicissapient.kpidashboard.apis.cleanup;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,8 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectToolConf
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
+
+import java.util.List;
 
 @Service
 public class ZephyrDataCleanUpService implements ToolDataCleanUpService {
@@ -26,6 +30,9 @@ public class ZephyrDataCleanUpService implements ToolDataCleanUpService {
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
+
 	@Override
 	public void clean(String projectToolConfigId) {
 		ProjectToolConfig tool = projectToolConfigRepository.findById(projectToolConfigId);
@@ -34,6 +41,8 @@ public class ZephyrDataCleanUpService implements ToolDataCleanUpService {
 		processorExecutionTraceLogRepository.deleteByBasicProjectConfigIdAndProcessorName(
 				tool.getBasicProjectConfigId().toHexString(), tool.getToolName());
 		clearCache();
+		List<String> kpiList = kpiDataCacheService.getKpiBasedOnSource(KPISource.ZEPHYR.name());
+		kpiList.forEach(kpiId -> kpiDataCacheService.clearCache(tool.getBasicProjectConfigId().toHexString(), kpiId));
 	}
 
 	@Override

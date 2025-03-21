@@ -16,28 +16,26 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.jira.factory;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
-import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 
+import lombok.Builder;
+
 /**
  * This class loads all Jira KPIs services and map into Map on the startup of
  * server.
- * 
+ *
  * @author tauakram
  */
 @Service
@@ -52,7 +50,7 @@ public class JiraKPIServiceFactory {
 	 * This method return KPI service object on the basis of KPI Id.
 	 *
 	 * @param type
-	 *            KPI id
+	 *          KPI id
 	 * @return Jira Service object
 	 * @throws ApplicationException
 	 */
@@ -75,5 +73,4 @@ public class JiraKPIServiceFactory {
 			JIRA_SERVICE_CACHE.put(service.getQualifierType(), service);
 		}
 	}
-
 }

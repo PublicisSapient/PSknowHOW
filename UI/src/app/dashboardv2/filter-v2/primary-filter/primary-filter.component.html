@@ -1,50 +1,52 @@
-<div  #filterDiv style="overflow-y: visible; overflow-x: visible;">
+<div #filterDiv style="overflow-y: visible; overflow-x: visible;">
     <span class="p-float-label" *ngIf="primaryFilterConfig['type'] !== 'singleSelect'">
         <p-multiSelect #multiSelect inputId="multiselectFilter" [options]="filters" [(ngModel)]="selectedFilters"
-            optionLabel="nodeName" [style]="{'width':'300px', 'max-width': '100%', 'height': '40px'}"
+            optionLabel="nodeDisplayName" [style]="{'width':'300px', 'max-width': '100%', 'height': '40px'}"
             [selectionLimit]="6" [selectedItemsLabel]="'{0} selected'" defaultLabel="Select"
             [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }" [appendTo]="filterDiv" [resetFilterOnHide]="true"
-            (onChange)="onSelectionChange($event)" (onPanelShow)="moveSelectedOptionToTop()">
+            (onChange)="onSelectionChange($event)" (onPanelShow)="moveSelectedOptionToTop()" (onPanelHide)="handlePanelHide($event)"
+            (onBlur)="handleBlur()">
             <ng-template let-option pTemplate="item">
                 <div class="filter-item">
                     <div>
-                        <span>{{option.nodeName}}</span>
-                        <span *ngIf="option?.path" class="parent_span">
-                            ({{ option.path.split('_')[0]}})
+                        <span>{{option.nodeDisplayName}}</span>
+                        <span class="parent_span" *ngIf="getImmediateParentDisplayName(option)">
+                            ({{ getImmediateParentDisplayName(option) }})
                         </span>
                     </div>
                 </div>
             </ng-template>
             <ng-template pTemplate="footer">
-                <div class="p-p-3 p-text-right">
+                <div class="p-p-3 p-text-right" tabindex="0">
                     <p-button label="Apply" (onClick)="applyPrimaryFilters($event)"
-                        [style]="{backgroundColor: '#0B4BC8'}" [disabled]="!selectedFilters?.length"></p-button>
+                        [style]="{backgroundColor: '#0B4BC8'}" [disabled]="!selectedFilters?.length"
+                        aria-label="Apply selected filters" (onFocus)="preventDropdownClose($event)" (onKeyDown)="handleFooterKeydown($event)"></p-button>
                 </div>
             </ng-template>
         </p-multiSelect>
-        <label class="floating-label" for="multiselectFilter">Select {{ selectedLevel }}</label>
+        <label class="floating-label" for="multiselectFilter" [attr.aria-label]="'Select ' + selectedLevel">Select {{ selectedLevel }}</label>
     </span>
     <span *ngIf="primaryFilterConfig && primaryFilterConfig['type'] === 'singleSelect'" class="p-float-label">
         <p-dropdown *ngIf="selectedFilters" inputId="singleselectFilter" [options]="filters" [(ngModel)]="selectedFilters[0]"
-            placeholder="Select"  optionLabel="nodeName"
+            placeholder="Select"  optionLabel="nodeDisplayName"
             [style]="{'width':'300px', 'max-width': '100%', 'height': '40px'}" (onChange)="onDropdownChange($event)"
             [panelStyle]="{ 'min-width': 'min(100vw, 400px)' }" [appendTo]="filterDiv"
             [filter]="true" [hidden]="isFilterHidden(filters)" >
             <ng-template pTemplate="selectedItem" *ngIf="selectedFilters?.length">
                 <div class="filter-item-selected">
-                    <span>{{ selectedFilters[0].nodeName  }}</span>
+                    <span>{{ selectedFilters[0].nodeDisplayName  }}</span>
                 </div>
             </ng-template>
             <ng-template let-option pTemplate="item">
                 <div class="filter-item">
-                    <span>{{ option.nodeName }}</span>
+                    <span>{{ option.nodeDisplayName }}</span>
                     <span class="parent_span">
-                        ({{ service.getSelectedTab().toLowerCase() === 'iteration' ? option.sprintState : service.getSelectedTab().toLowerCase() === 'release' ? option.releaseState : option.path.split('_')[0]  }})
+                        ({{ service.getSelectedTab().toLowerCase() === 'iteration' ? option.sprintState : service.getSelectedTab().toLowerCase() === 'release' ? option.releaseState : getImmediateParentDisplayName(option) }})
                     </span>
                 </div>
             </ng-template>
         </p-dropdown>
-        
+
         <label class="floating-label" for="singleselectFilter" [hidden]="isFilterHidden(filters)">
           Select
           <ng-container *ngIf="!selectedLevel || isString(selectedLevel); else objectTemplate">

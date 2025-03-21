@@ -79,7 +79,7 @@ describe('PrimaryFilterComponent', () => {
     );
 
     component.selectedType = 'newtype';
-
+    component.selectedTab = 'my-knowhow';
     spyOn(sharedService, 'selectedTrendsEvent').and.returnValue([]);
     fixture.detectChanges();
   });
@@ -688,6 +688,7 @@ describe('PrimaryFilterComponent', () => {
       component.hierarchyLevels = ['Level 1', 'Level 2'];
       component.selectedLevel = 'Level 1';
       component.filterData = { 'Level 1': [{ nodeId: 1, labelName: 'Level 1' }] }
+      component.selectedTab = 'iteration';
 
       component.primaryFilterConfig = {
         defaultLevel: { labelName: 'Level 1' },
@@ -800,7 +801,7 @@ describe('PrimaryFilterComponent', () => {
       component.applyDefaultFilters();
 
       tick(200);
-      expect(component.selectedFilters).toBe(undefined);
+      expect(component.selectedFilters).toEqual([]);
       expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([]);
     }));
 
@@ -1025,7 +1026,7 @@ describe('PrimaryFilterComponent', () => {
 
         // Assert
         tick(100);
-        expect(component.selectedFilters).toBe(undefined);
+        expect(component.selectedFilters).toEqual([]);
         expect(sharedService.setNoSprints).toHaveBeenCalledWith(true);
 
 
@@ -1033,4 +1034,75 @@ describe('PrimaryFilterComponent', () => {
     });
   });
 
+  describe('PrimaryFilterComponent - Function Tests', () => {
+
+      it('should return immediate parent display name if level > 1', () => {
+        spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify({
+          hierarchy: [
+            { hierarchyLevelName: 'Level1', level: 1 },
+            { hierarchyLevelName: 'Level2', level: 2 },
+          ]
+        }));
+    
+        component.selectedType = 'Hierarchy';
+        component.selectedLevel = 'Level2';
+        component.filterData = {
+          Level1: [{ nodeId: 'parent123', nodeDisplayName: 'Parent Name' }]
+        };
+    
+        const result = component.getImmediateParentDisplayName({ parentId: 'parent123' });
+        expect(result).toBe('Parent Name');
+      });
+    
+      it('should return undefined if level is 1 or lower', () => {
+        spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify({
+          hierarchy: [{ hierarchyLevelName: 'Level1', level: 1 }]
+        }));
+    
+        component.selectedType = 'Hierarchy';
+        component.selectedLevel = 'Level1';
+        component.filterData = {};
+    
+        const result = component.getImmediateParentDisplayName({ parentId: 'parent123' });
+        expect(result).toBeUndefined();
+      });
+    
+      it('should set preventClose to true when preventDropdownClose() is called', () => {
+        const event = new Event('click');
+        component.preventDropdownClose(event);
+        expect(component.preventClose).toBeTrue();
+      });
+    
+      it('should reset preventClose to false on blur', () => {
+        component.preventClose = true;
+        component.handleBlur();
+        expect(component.preventClose).toBeFalse();
+      });
+    
+      it('should return false and reset preventClose if preventClose is true', () => {
+        component.preventClose = true;
+        const result = component.handlePanelHide();
+        expect(result).toBeFalse();
+        expect(component.preventClose).toBeFalse();
+      });
+    
+      it('should return true if preventClose is false', () => {
+        component.preventClose = false;
+        const result = component.handlePanelHide();
+        expect(result).toBeTrue();
+      });
+    
+      it('should set preventClose to true when "Tab" key is pressed', () => {
+        const event = new KeyboardEvent('keydown', { key: 'Tab' });
+        component.handleFooterKeydown(event);
+        expect(component.preventClose).toBeTrue();
+      });
+    
+      it('should not change preventClose for other keys', () => {
+        const event = new KeyboardEvent('keydown', { key: 'Enter' });
+        component.preventClose = false;
+        component.handleFooterKeydown(event);
+        expect(component.preventClose).toBeFalse();
+      });
+  });
 });

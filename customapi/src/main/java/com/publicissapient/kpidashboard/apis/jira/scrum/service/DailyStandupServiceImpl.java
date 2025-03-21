@@ -91,10 +91,9 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * kpi of iteration dashboard, Daily Standup View which runs for the active
  * sprint, and return data for both the screens
- * 
+ *
  * @author shi6
  */
-
 @Component
 @Slf4j
 public class DailyStandupServiceImpl extends JiraIterationKPIService {
@@ -116,7 +115,7 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 	private static final String HISTORY_ISSUES = "historyIssue";
 	private static final String EPICS = "epics";
 	private static final String FILTER_BUTTON = "button";
-	private static final String FILTER_INPROGRESS_SCR2 = "In Progress";// FOR BOTH JIRA AND AZURE
+	private static final String FILTER_INPROGRESS_SCR2 = "In Progress"; // FOR BOTH JIRA AND AZURE
 	private static final String FILTER_CLOSED_SCR2 = "Done";
 	private static final String FILTER_OPEN_SCR2 = "Open";
 	private static final String FILTER_ONHOLD_SCR2 = "On Hold";
@@ -148,9 +147,7 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 
 	private String tool;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
@@ -164,8 +161,7 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 	 */
 	@SuppressWarnings(UNCHECKED)
 	private void sprintWiseLeafNodeValue(Node sprintLeafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
-		Object basicProjectConfigId = Objects.requireNonNull(sprintLeafNode).getProjectFilter()
-				.getBasicProjectConfigId();
+		Object basicProjectConfigId = Objects.requireNonNull(sprintLeafNode).getProjectFilter().getBasicProjectConfigId();
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 		List<UserWiseCardDetail> userWiseCardDetails = new ArrayList<>();
 		tool = CollectionUtils
@@ -204,8 +200,7 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 				return issue.getAssigneeId();
 			};
 			Map<String, IterationKpiModalValue> mapOfModalObject = KpiDataHelper.createMapOfModalObject(totalIssueList);
-			Map<String, List<JiraIssue>> assigneeWiseList = totalIssueList.stream()
-					.collect(Collectors.groupingBy(function));
+			Map<String, List<JiraIssue>> assigneeWiseList = totalIssueList.stream().collect(Collectors.groupingBy(function));
 
 			Map<String, List<JiraIssue>> assigneeWiseNotCompleted = notCompletedJiraIssue.stream()
 					.collect(Collectors.groupingBy(function));
@@ -239,8 +234,8 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 					role = userWiseRole.getOrDefault(listEntry.getKey(), UNASSIGNED);
 				}
 				List<JiraIssue> jiraIssueList = listEntry.getValue();
-				populateModal(jiraIssueList, resultMap, sprintDetails, parentChildRelation, issueWiseDelay,
-						mapOfModalObject, fieldMapping);
+				populateModal(jiraIssueList, resultMap, sprintDetails, parentChildRelation, issueWiseDelay, mapOfModalObject,
+						fieldMapping);
 				String assigneeId = listEntry.getKey();
 				String assigneeName = jiraIssueList.stream().findFirst().orElse(new JiraIssue()).getAssigneeName();
 
@@ -264,15 +259,11 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 			kpiElement.setIssueData(new HashSet<>(mapOfModalObject.values()));
 			userWiseCardDetails.sort(Comparator.comparing(UserWiseCardDetail::getAssigneeName));
 			kpiElement.setModalHeads(KPIExcelColumn.DAILY_STANDUP_VIEW.getColumns());
-
 		}
 		kpiElement.setTrendValueList(userWiseCardDetails);
-
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(final Node leafNode, final String startDate, final String endDate,
 			final KpiRequest kpiRequest) {
@@ -288,42 +279,37 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 				// to modify sprintdetails on the basis of configuration for the project
 				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
-				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
-						.collect(Collectors.toSet());
-				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
-						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI119(),
-						fieldMapping.getJiraIterationCompletionStatusKPI154(),
+				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toSet());
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+						fieldMapping.getJiraIterationIssuetypeKPI119(), fieldMapping.getJiraIterationCompletionStatusKPI154(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 
-				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
-						sprintDetails, CommonConstant.NOT_COMPLETED_ISSUES);
+				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+						CommonConstant.NOT_COMPLETED_ISSUES);
 				List<String> allIssues = new ArrayList<>();
 				allIssues.addAll(notCompletedIssues);
-				allIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-						CommonConstant.COMPLETED_ISSUES));
+				allIssues.addAll(
+						KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails, CommonConstant.COMPLETED_ISSUES));
 
 				if (CollectionUtils.isNotEmpty(allIssues)) {
-					List<JiraIssue> filteredAllJiraIssue = IterationKpiHelper.getFilteredJiraIssue(allIssues,
-							totalJiraIssueList);
-					Set<JiraIssue> totalIssueList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
-							sprintDetails, null, filteredAllJiraIssue);
+					List<JiraIssue> filteredAllJiraIssue = IterationKpiHelper.getFilteredJiraIssue(allIssues, totalJiraIssueList);
+					Set<JiraIssue> totalIssueList = KpiDataHelper
+							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails, null, filteredAllJiraIssue);
 
-					List<JiraIssue> filteredNotCompletedJiraIssue = IterationKpiHelper
-							.getFilteredJiraIssue(notCompletedIssues, new ArrayList<>(totalIssueList));
+					List<JiraIssue> filteredNotCompletedJiraIssue = IterationKpiHelper.getFilteredJiraIssue(notCompletedIssues,
+							new ArrayList<>(totalIssueList));
 
 					List<JiraIssueCustomHistory> issueHistoryList = IterationKpiHelper.getFilteredJiraIssueHistory(
 							totalIssueList.stream().map(JiraIssue::getNumber).toList(), totalHistoryList);
 
 					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())) {
 						List<String> taskType = fieldMapping.getJiraSubTaskIdentification();
-						processSubtaskFromDb(basicProjectConfigId, allIssues, totalIssueList, issueHistoryList,
-								taskType);
+						processSubtaskFromDb(basicProjectConfigId, allIssues, totalIssueList, issueHistoryList, taskType);
 					}
 
 					Set<JiraIssue> epics = jiraIssueRepository.findNumberInAndBasicProjectConfigIdAndTypeName(
 							totalIssueList.stream().map(JiraIssue::getEpicLinked).toList(),
-							leafNode.getProjectFilter().getBasicProjectConfigId().toString(),
-							NormalizedJira.ISSUE_TYPE.getValue());
+							leafNode.getProjectFilter().getBasicProjectConfigId().toString(), NormalizedJira.ISSUE_TYPE.getValue());
 
 					// get sprint start and sprint end time
 					resultListMap.put(SPRINT, sprintDetails);
@@ -340,13 +326,12 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 							sprintDetails.getSprintID(), sprintDetails.getBasicProjectConfigId()));
 					// release status category for status filters
 					if (tool.equalsIgnoreCase(Constant.TOOL_AZURE)) {
-						resultListMap.put(STATE_CATEGORY, azureStateCategoryRepository
-								.findByBasicProjectConfigId(basicProjectConfigId.toString()));
+						resultListMap.put(STATE_CATEGORY,
+								azureStateCategoryRepository.findByBasicProjectConfigId(basicProjectConfigId.toString()));
 					} else {
-						resultListMap.put(STATUS_CATEGORY, jiraIssueReleaseStatusRepository
-								.findByBasicProjectConfigId(basicProjectConfigId.toString()));
+						resultListMap.put(STATUS_CATEGORY,
+								jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectConfigId.toString()));
 					}
-
 				}
 			}
 		}
@@ -381,8 +366,8 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())) {
 			Set<String> tasks = new HashSet<>(fieldMapping.getJiraSubTaskIdentification());
 			jiraIssueList.stream()
-					.filter(issue -> tasks.contains(issue.getOriginalType())
-							&& CollectionUtils.isNotEmpty(issue.getParentStoryId()))
+					.filter(
+							issue -> tasks.contains(issue.getOriginalType()) && CollectionUtils.isNotEmpty(issue.getParentStoryId()))
 					.forEach(childIssue -> childIssue.getParentStoryId().forEach(parent -> {
 						parentChild.computeIfPresent(parent, (k, v) -> {
 							v.add(childIssue.getNumber());
@@ -394,13 +379,12 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		return parentChild;
 	}
 
-	/**
-	 * calculate remaining estimate on the basis of fieldmapping
-	 */
+	/** calculate remaining estimate on the basis of fieldmapping */
 	private void calculateAssigneeWiseRemainingEstimate(Map<String, List<JiraIssue>> assigneeWiseNotCompleted,
-			Map<String, StandUpViewKpiData> remainingWork,
-			Map<String, StandUpViewKpiData> assigneeWiseRemainingEstimate, String estimationCriteria) {
-		String estimationUnit = estimationCriteria.equalsIgnoreCase(CommonConstant.STORY_POINT) ? CommonConstant.SP
+			Map<String, StandUpViewKpiData> remainingWork, Map<String, StandUpViewKpiData> assigneeWiseRemainingEstimate,
+			String estimationCriteria) {
+		String estimationUnit = estimationCriteria.equalsIgnoreCase(CommonConstant.STORY_POINT)
+				? CommonConstant.SP
 				: CommonConstant.DAY;
 
 		assigneeWiseNotCompleted.forEach((assigneeId, jiraIssueList) -> {
@@ -476,14 +460,12 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		}
 	}
 
-	private void populateModal(List<JiraIssue> jiraIssueList, Map<String, Object> resultMap,
-			SprintDetails sprintDetails, Map<String, Set<String>> linkedSubTasks,
-			Map<String, IterationPotentialDelay> issueWiseDelay, Map<String, IterationKpiModalValue> mapOfModalObject,
-			FieldMapping fieldMapping) {
+	private void populateModal(List<JiraIssue> jiraIssueList, Map<String, Object> resultMap, SprintDetails sprintDetails,
+			Map<String, Set<String>> linkedSubTasks, Map<String, IterationPotentialDelay> issueWiseDelay,
+			Map<String, IterationKpiModalValue> mapOfModalObject, FieldMapping fieldMapping) {
 		List<JiraIssue> epicList = new ArrayList<>((Set<JiraIssue>) resultMap.get(EPICS));
 
-		Map<String, String> epicMap = epicList.stream()
-				.collect(Collectors.toMap(JiraIssue::getNumber, JiraIssue::getName));
+		Map<String, String> epicMap = epicList.stream().collect(Collectors.toMap(JiraIssue::getNumber, JiraIssue::getName));
 		List<JiraIssueCustomHistory> totalHistoryList = (List<JiraIssueCustomHistory>) resultMap.get(HISTORY_ISSUES);
 		Set<String> closedStatus = (Set<String>) resultMap.get(CLOSE_STATUS);
 
@@ -496,8 +478,8 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 			for (JiraIssue jiraIssue : jiraIssueList) {
 				KPIExcelUtility.populateIterationKPI(null, null, jiraIssue, fieldMapping, mapOfModalObject);
 				JiraIssueCustomHistory issueHistory = totalHistoryList.stream()
-						.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
-								.equalsIgnoreCase(jiraIssue.getNumber()))
+						.filter(
+								jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equalsIgnoreCase(jiraIssue.getNumber()))
 						.findFirst().orElse(new JiraIssueCustomHistory());
 
 				List<JiraHistoryChangeLog> inSprintStatusLogs = IterationKpiHelper
@@ -515,23 +497,21 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 				if (CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList()) && jiraIssue.getSprintIdList().size() > 1)
 					iterationKpiModalValue.setSpill(true);
 
-				getMaxCompleteMaxTestDevStartTime(inSprintStatusLogs, fieldMapping, iterationKpiModalValue,
-						closedStatus, jiraIssue, sprintStartDateTime.toString());
+				getMaxCompleteMaxTestDevStartTime(inSprintStatusLogs, fieldMapping, iterationKpiModalValue, closedStatus,
+						jiraIssue, sprintStartDateTime.toString());
 
 				setPCDandDelay(iterationKpiModalValue, issueWiseDelay, jiraIssue);
-				iterationKpiModalValue.setStatusLogGroup(
-						createDateWiseLogs(inSprintStatusLogs, iterationKpiModalValue.getActualStartDateInTime(),
-								iterationKpiModalValue.getActualCompletionDateInTime()));
+				iterationKpiModalValue.setStatusLogGroup(createDateWiseLogs(inSprintStatusLogs,
+						iterationKpiModalValue.getActualStartDateInTime(), iterationKpiModalValue.getActualCompletionDateInTime()));
 				iterationKpiModalValue.setWorkLogGroup(createDateWiseLogs(inSprintWorkLogs));
-				iterationKpiModalValue.setAssigneeLogGroup(
-						createDateWiseLogs(inSprintAssigneeLogs, iterationKpiModalValue.getActualStartDateInTime(),
-								iterationKpiModalValue.getActualCompletionDateInTime()));
+				iterationKpiModalValue.setAssigneeLogGroup(createDateWiseLogs(inSprintAssigneeLogs,
+						iterationKpiModalValue.getActualStartDateInTime(), iterationKpiModalValue.getActualCompletionDateInTime()));
 
-				iterationKpiModalValue.setTimeWithUser(
-						calculateWithLastTime(inSprintAssigneeLogs, issueHistory.getAssigneeUpdationLog(),
+				iterationKpiModalValue
+						.setTimeWithUser(calculateWithLastTime(inSprintAssigneeLogs, issueHistory.getAssigneeUpdationLog(),
 								sprintStartDateTime, iterationKpiModalValue.getActualCompletionDateInTime()));
-				iterationKpiModalValue.setTimeWithStatus(
-						calculateWithLastTime(inSprintStatusLogs, issueHistory.getStatusUpdationLog(),
+				iterationKpiModalValue
+						.setTimeWithStatus(calculateWithLastTime(inSprintStatusLogs, issueHistory.getStatusUpdationLog(),
 								sprintStartDateTime, iterationKpiModalValue.getActualCompletionDateInTime()));
 
 				setEstimatesInSeconds(jiraIssue, iterationKpiModalValue);
@@ -547,9 +527,9 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 						return v;
 					});
 				iterationKpiModalValue.setParentStory(jiraIssue.getParentStoryId());
-				iterationKpiModalValue
-						.setIssueType(StringUtils.isNotEmpty(jiraIssue.getOriginalType()) ? jiraIssue.getOriginalType()
-								: jiraIssue.getTypeName());
+				iterationKpiModalValue.setIssueType(StringUtils.isNotEmpty(jiraIssue.getOriginalType())
+						? jiraIssue.getOriginalType()
+						: jiraIssue.getTypeName());
 				setPreclosedSubTask(fieldMapping, closedStatus, jiraIssue, iterationKpiModalValue, issueHistory);
 			}
 		}
@@ -563,8 +543,8 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		List<JiraHistoryChangeLog> filterStatusUpdationLog = issueCustomHistory.getStatusUpdationLog();
 		if (CollectionUtils.isNotEmpty(devDoneStatuses)) {
 			devCompleteDate = filterStatusUpdationLog.stream()
-					.filter(jiraHistoryChangeLog -> devDoneStatuses.contains(jiraHistoryChangeLog.getChangedTo())
-							&& jiraHistoryChangeLog.getUpdatedOn() != null)
+					.filter(jiraHistoryChangeLog -> devDoneStatuses.contains(jiraHistoryChangeLog.getChangedTo()) &&
+							jiraHistoryChangeLog.getUpdatedOn() != null)
 					.findFirst().map(jiraHistoryChangeLog -> jiraHistoryChangeLog.getUpdatedOn().toString())
 					.orElse(devCompleteDate);
 		}
@@ -575,13 +555,13 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 			FieldMapping fieldMapping, IterationKpiModalValue iterationKpiModalValue, Set<String> closedStatus,
 			JiraIssue jiraIssue, String sprintStartDateInTime) {
 
-		Set<String> testStatus = fieldMapping != null
-				&& CollectionUtils.isNotEmpty(fieldMapping.getJiraQADoneStatusKPI154())
+		Set<String> testStatus = fieldMapping != null &&
+				CollectionUtils.isNotEmpty(fieldMapping.getJiraQADoneStatusKPI154())
 						? new HashSet<>(fieldMapping.getJiraQADoneStatusKPI154())
 						: new HashSet<>();
 
-		Set<String> startOfDevelopment = fieldMapping != null
-				&& CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusStartDevelopmentKPI154())
+		Set<String> startOfDevelopment = fieldMapping != null &&
+				CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusStartDevelopmentKPI154())
 						? new HashSet<>(fieldMapping.getJiraStatusStartDevelopmentKPI154())
 						: new HashSet<>();
 
@@ -602,13 +582,12 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 			getLatestCycleStatusMap(testStatus, statusUpdationLog, testClosedStatusMap, activityLocalDate);
 		}
 
-		if (StringUtils.isNotEmpty(iterationKpiModalValue.getActualStartDateInTime())
-				&& iterationKpiModalValue.isSpill())
+		if (StringUtils.isNotEmpty(iterationKpiModalValue.getActualStartDateInTime()) && iterationKpiModalValue.isSpill())
 			iterationKpiModalValue.setActualStartDateInTime(sprintStartDateInTime);
 
 		// Getting the max date of closed and test status.
-		iterationKpiModalValue.setActualCompletionDateInTime(closedStatusDateMap.values().stream()
-				.filter(Objects::nonNull).max(LocalDateTime::compareTo).map(LocalDateTime::toString).orElse(null));
+		iterationKpiModalValue.setActualCompletionDateInTime(closedStatusDateMap.values().stream().filter(Objects::nonNull)
+				.max(LocalDateTime::compareTo).map(LocalDateTime::toString).orElse(null));
 		iterationKpiModalValue.setTestCompletedInTime(testClosedStatusMap.values().stream().filter(Objects::nonNull)
 				.max(LocalDateTime::compareTo).map(LocalDateTime::toString).orElse(null));
 	}
@@ -631,9 +610,8 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
 			jiraIssueModalObject.setPotentialDelay(iterationPotentialDelay.getPotentialDelay() + "d");
-			jiraIssueModalObject.setPredictedCompletionDate(
-					DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),
-							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+			jiraIssueModalObject.setPredictedCompletionDate(DateUtil.dateTimeConverter(
+					iterationPotentialDelay.getPredictedCompletedDate(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 
 		} else {
 			jiraIssueModalObject.setPredictedCompletionDate("-");
@@ -659,10 +637,9 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 					statusLogs.add(log.getChangedTo());
 					return statusLogs;
 				});
-
 			}
-			dateWiseLogMap = dateWiseLogMap.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(
-					Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+			dateWiseLogMap = dateWiseLogMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 		}
 		return dateWiseLogMap;
 	}
@@ -676,8 +653,8 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		}
 		if (StringUtils.isNotEmpty(actualStartDateInTime)) {
 			LocalDateTime startLocalTime = LocalDateTime.parse(actualStartDateInTime);
-			historyLog = historyLog.stream()
-					.filter(log -> DateUtil.equalAndAfterTime(log.getUpdatedOn(), startLocalTime)).toList();
+			historyLog = historyLog.stream().filter(log -> DateUtil.equalAndAfterTime(log.getUpdatedOn(), startLocalTime))
+					.toList();
 		}
 		return createDateWiseLogs(historyLog);
 	}
@@ -693,11 +670,11 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		if (StringUtils.isEmpty(actualCompletionDateInTime)) {
 			if (CollectionUtils.isNotEmpty(inSprintHistoryLogs)) {
 				inSprintHistoryLogs.sort(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn).reversed());
-				lastTimeInString = CommonUtils.convertSecondsToDays((int) Duration
-						.between(inSprintHistoryLogs.get(0).getUpdatedOn(), LocalDateTime.now()).getSeconds());
-			} else if (CollectionUtils.isNotEmpty(allLogs)) {
 				lastTimeInString = CommonUtils.convertSecondsToDays(
-						(int) Duration.between(sprintStartDateTime, LocalDateTime.now()).getSeconds());
+						(int) Duration.between(inSprintHistoryLogs.get(0).getUpdatedOn(), LocalDateTime.now()).getSeconds());
+			} else if (CollectionUtils.isNotEmpty(allLogs)) {
+				lastTimeInString = CommonUtils
+						.convertSecondsToDays((int) Duration.between(sprintStartDateTime, LocalDateTime.now()).getSeconds());
 			}
 
 		} else
@@ -720,10 +697,10 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 	 */
 	private void setPreclosedSubTask(FieldMapping fieldMapping, Set<String> closedStatus, JiraIssue jiraIssue,
 			IterationKpiModalValue iterationKpiModalValue, JiraIssueCustomHistory issueHistory) {
-		if (fieldMapping != null && CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())
-				&& fieldMapping.getJiraSubTaskIdentification().contains(jiraIssue.getOriginalType())
-				&& StringUtils.isEmpty(iterationKpiModalValue.getActualCompletionDateInTime())
-				&& closedStatus.contains(iterationKpiModalValue.getIssueStatus())) {
+		if (fieldMapping != null && CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification()) &&
+				fieldMapping.getJiraSubTaskIdentification().contains(jiraIssue.getOriginalType()) &&
+				StringUtils.isEmpty(iterationKpiModalValue.getActualCompletionDateInTime()) &&
+				closedStatus.contains(iterationKpiModalValue.getIssueStatus())) {
 			iterationKpiModalValue.setPreClosed(true);
 			iterationKpiModalValue.setTimeWithUser(Constant.BLANK);
 			iterationKpiModalValue.setTimeWithStatus(Constant.BLANK);
@@ -732,15 +709,13 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 				for (JiraHistoryChangeLog statusUpdationLog : issueHistory.getStatusUpdationLog()) {
 					LocalDateTime activityLocalDate = statusUpdationLog.getUpdatedOn();
 					if (closedStatus.contains(jiraIssue.getStatus())) {
-						getLatestCycleStatusMap(closedStatus, statusUpdationLog, closedStatusDateMap,
-								activityLocalDate);
+						getLatestCycleStatusMap(closedStatus, statusUpdationLog, closedStatusDateMap, activityLocalDate);
 					}
 				}
 				iterationKpiModalValue.setChangeDate(closedStatusDateMap.values().stream().filter(Objects::nonNull)
 						.max(LocalDateTime::compareTo).map(a -> a.toLocalDate().toString()).orElse(null));
 			}
 		}
-
 	}
 
 	/*
@@ -761,7 +736,6 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 			jiraSecondScreenFilter(fieldMapping, statusCategory, secondScreenFilters);
 		} else if (ObjectUtils.isNotEmpty(azureStateCategory)) {
 			azureSecondScreenFilter(fieldMapping, azureStateCategory, secondScreenFilters);
-
 		}
 		kpiElement.setFilterData(firstScreenFilter);
 		kpiElement.setStandUpStatusFilter(secondScreenFilters);
@@ -773,8 +747,8 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 
 		// On Hold Status configured
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraOnHoldStatusKPI154())) {
-			secondScreenFilters.add(
-					new Filter(FILTER_ONHOLD_SCR2, fieldMapping.getJiraOnHoldStatusKPI154(), FILTER_BUTTON, false, 3));
+			secondScreenFilters
+					.add(new Filter(FILTER_ONHOLD_SCR2, fieldMapping.getJiraOnHoldStatusKPI154(), FILTER_BUTTON, false, 3));
 		}
 		// In progress Filters
 		if (CollectionUtils.isNotEmpty(statusCategory.getInProgressList().values())) {
@@ -812,8 +786,8 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		List<String> inProgressStatus = new ArrayList<>();
 		// On Hold Status configured
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraOnHoldStatusKPI154())) {
-			secondScreenFilters.add(
-					new Filter(FILTER_ONHOLD_SCR2, fieldMapping.getJiraOnHoldStatusKPI154(), FILTER_BUTTON, false, 3));
+			secondScreenFilters
+					.add(new Filter(FILTER_ONHOLD_SCR2, fieldMapping.getJiraOnHoldStatusKPI154(), FILTER_BUTTON, false, 3));
 		}
 		// In progress Filters
 		if (CollectionUtils.isNotEmpty(azureStateCategory.getInProgressList())) {
@@ -836,8 +810,8 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIterationCompletionStatusKPI154())) {
 			List<String> jiraIterationCompletionStatusKPI154 = fieldMapping.getJiraIterationCompletionStatusKPI154();
 			inProgressStatus.removeAll(jiraIterationCompletionStatusKPI154);
-			secondScreenFilters.add(
-					new Filter(FILTER_COMPLETED_SCR2, jiraIterationCompletionStatusKPI154, FILTER_BUTTON, true, 2));
+			secondScreenFilters
+					.add(new Filter(FILTER_COMPLETED_SCR2, jiraIterationCompletionStatusKPI154, FILTER_BUTTON, true, 2));
 
 		} else if (CollectionUtils.isNotEmpty(azureStateCategory.getCompletedList())) {
 			List<String> closedList = new ArrayList<>(azureStateCategory.getCompletedList());
@@ -846,18 +820,16 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		}
 
 		if (CollectionUtils.isNotEmpty(azureStateCategory.getRemovedList())) {
-			secondScreenFilters.add(new Filter(FILTER_REMOVED_SCR2,
-					new ArrayList<>(azureStateCategory.getRemovedList()), FILTER_BUTTON, true, 2));
+			secondScreenFilters.add(new Filter(FILTER_REMOVED_SCR2, new ArrayList<>(azureStateCategory.getRemovedList()),
+					FILTER_BUTTON, true, 2));
 		}
 		if (CollectionUtils.isNotEmpty(azureStateCategory.getResolvedList())) {
-			secondScreenFilters.add(new Filter(FILTER_RESOLVED_SCR2,
-					new ArrayList<>(azureStateCategory.getResolvedList()), FILTER_BUTTON, true, 2));
+			secondScreenFilters.add(new Filter(FILTER_RESOLVED_SCR2, new ArrayList<>(azureStateCategory.getResolvedList()),
+					FILTER_BUTTON, true, 2));
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public String getQualifierType() {
 		return KPICode.DAILY_STANDUP_VIEW.name();
@@ -881,5 +853,4 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		private String unit;
 		private String unit1;
 	}
-
 }

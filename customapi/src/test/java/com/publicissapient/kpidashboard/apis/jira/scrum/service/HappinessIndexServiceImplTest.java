@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -29,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +41,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
@@ -48,6 +51,7 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -67,6 +71,8 @@ public class HappinessIndexServiceImplTest {
 
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	private static final String SPRINT_DETAILS = "sprintDetails";
+	private static final String HAPPINESS_INDEX_DETAILS = "happinessIndexDetails";
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -77,10 +83,18 @@ public class HappinessIndexServiceImplTest {
 	private HappinessKpiDataRepository happinessKpiDataRepository;
 	@Mock
 	private CustomApiConfig customApiConfig;
+	@Mock
+	KpiDataProvider kpiDataProvider;
+	@Mock
+	KpiDataCacheService kpiDataCacheService;
+	@Mock
+	private FilterHelperService filterHelperService;
 	private KpiRequest kpiRequest;
 
 	@InjectMocks
 	private HappinessIndexServiceImpl happinessIndexImpl;
+
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 
 	@Before
@@ -89,14 +103,21 @@ public class HappinessIndexServiceImplTest {
 		kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.HAPPINESS_INDEX_RATE.getKpiId());
 		kpiRequest.setLabel("PROJECT");
 
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
+
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
-
-		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
-		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
-		projectConfig.setProjectName("Scrum Project");
-		projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
@@ -104,7 +125,6 @@ public class HappinessIndexServiceImplTest {
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-
 	}
 
 	@Test
@@ -125,9 +145,10 @@ public class HappinessIndexServiceImplTest {
 	public void getKpiDataEmptyTest() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-
-		Mockito.when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(new ArrayList<>());
-		Mockito.when(happinessKpiDataRepository.findBySprintIDIn(Mockito.any())).thenReturn(new ArrayList<>());
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(HAPPINESS_INDEX_DETAILS, Arrays.asList(new ArrayList<>()));
+		resultListMap.put(SPRINT_DETAILS, new ArrayList<>());
+		when(kpiDataProvider.fetchHappinessIndexDataFromDb(any())).thenReturn(resultListMap);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
@@ -137,7 +158,6 @@ public class HappinessIndexServiceImplTest {
 		List<DataCount> dataCountList = (List<DataCount>) kpiElement.getTrendValueList();
 
 		assertEquals("Story Count : ", 1, dataCountList.size());
-
 	}
 
 	@Test
@@ -154,19 +174,18 @@ public class HappinessIndexServiceImplTest {
 		happinessKpiData.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
 		happinessKpiData.setUserRatingList(Arrays.asList(new UserRatingData(2, "uid", "uname")));
 
-		Mockito.when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(Arrays.asList(sprintDetails));
-		Mockito.when(happinessKpiDataRepository.findBySprintIDIn(Mockito.any()))
-				.thenReturn(Arrays.asList(happinessKpiData));
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(HAPPINESS_INDEX_DETAILS, Arrays.asList(happinessKpiData));
+		resultListMap.put(SPRINT_DETAILS, Arrays.asList(sprintDetails));
+		when(kpiDataProvider.fetchHappinessIndexDataFromDb(any())).thenReturn(resultListMap);
 		KpiElement kpiElement = happinessIndexImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		List<DataCount> dataCountList = (List<DataCount>) kpiElement.getTrendValueList();
 
 		assertEquals("Story Count : ", 1, dataCountList.size());
-
 	}
-
 }

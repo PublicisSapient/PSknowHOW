@@ -18,66 +18,66 @@
 
 package com.publicissapient.kpidashboard.apis.data;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ProcessorDataFactory {
-    private static final String FILE_PATH_PROCESSOR_ITEMS_DATA = "/json/appsetting/processors.json";
-    private List<Processor> processorDataFactory;
-    private ObjectMapper mapper;
+	private static final String FILE_PATH_PROCESSOR_ITEMS_DATA = "/json/appsetting/processors.json";
+	private List<Processor> processorDataFactory;
+	private ObjectMapper mapper;
 
-    private ProcessorDataFactory() {
-    }
+	private ProcessorDataFactory() {
+	}
 
-    public static ProcessorDataFactory newInstance(String filePath) {
+	public static ProcessorDataFactory newInstance(String filePath) {
 
-        ProcessorDataFactory factory = new ProcessorDataFactory();
-        factory.createObjectMapper();
-        factory.init(filePath);
-        return factory;
-    }
+		ProcessorDataFactory factory = new ProcessorDataFactory();
+		factory.createObjectMapper();
+		factory.init(filePath);
+		return factory;
+	}
 
-    public static ProcessorDataFactory newInstance() {
+	public static ProcessorDataFactory newInstance() {
 
-        return newInstance(null);
-    }
+		return newInstance(null);
+	}
 
-    private void init(String filePath) {
-        try {
+	private void init(String filePath) {
+		try {
 
-            String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_PROCESSOR_ITEMS_DATA : filePath;
+			String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_PROCESSOR_ITEMS_DATA : filePath;
 
-            processorDataFactory = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
-                    new TypeReference<List<Processor>>() {
-                    });
-        } catch (IOException e) {
-            log.error("Error in reading account hierarchies from file = " + filePath, e);
-        }
-    }
+			processorDataFactory = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
+					new TypeReference<List<Processor>>() {
+					});
+		} catch (IOException e) {
+			log.error("Error in reading account hierarchies from file = " + filePath, e);
+		}
+	}
 
-    private void createObjectMapper() {
+	private void createObjectMapper() {
 
-        if (mapper == null) {
-            mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		if (mapper == null) {
+			mapper = new ObjectMapper();
+			mapper.registerModule(new JavaTimeModule());
+			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		}
+	}
 
-        }
-    }
-
-    public List<Processor> getProcessorList() {
-        return processorDataFactory;
-    }
-
+	public List<Processor> getProcessorList() {
+		return processorDataFactory;
+	}
 }

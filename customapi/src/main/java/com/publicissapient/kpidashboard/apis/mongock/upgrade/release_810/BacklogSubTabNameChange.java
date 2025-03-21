@@ -42,6 +42,7 @@ public class BacklogSubTabNameChange {
 	public void execution() {
 		updateKpiSubCategory();
 	}
+
 	public void updateKpiSubCategory() {
 		List<String> kpiIdsToUpdate = Arrays.asList("kpi152", "kpi155", "kpi151");
 
@@ -64,6 +65,4 @@ public class BacklogSubTabNameChange {
 
 		mongoTemplate.getCollection("kpi_master").updateMany(filter, update);
 	}
-
-
 }

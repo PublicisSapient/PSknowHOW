@@ -104,7 +104,7 @@ export class AccessMgmtComponent implements OnInit {
 		if (this.allProjectsData?.length) {
 			if (accessLevel.toLowerCase() === 'project') {
 				const tooltipProject = this.allProjectsData?.filter((proj) => proj.id === item.itemId);
-				this.toolTipHtml = `<span>Project: ${tooltipProject[0].projectName}</span><br/>`;
+				this.toolTipHtml = `<span>Project: ${tooltipProject[0].projectDisplayName}</span><br/>`;
 				tooltipProject[0].hierarchy.forEach(hier => {
 					this.toolTipHtml += `<span>${hier.hierarchyLevel.hierarchyLevelName}: ${hier.value}</span><br/>`;
 				});
@@ -112,7 +112,7 @@ export class AccessMgmtComponent implements OnInit {
 				let selectedHierarchy = [];
 				this.allProjectsData.every((proj) => {
 					proj.hierarchy.forEach(hier => {
-						if (hier.hierarchyLevel.hierarchyLevelId === accessLevel && hier.value === item.itemName) {
+						if (hier.hierarchyLevel.hierarchyLevelId === accessLevel && hier.value === item.itemName && hier.orgHierarchyNodeId === item.itemId) {
 							selectedHierarchy = proj.hierarchy;
 							return false;
 						}

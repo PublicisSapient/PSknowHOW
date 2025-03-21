@@ -89,8 +89,8 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
@@ -105,7 +105,8 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.TEST_EXECUTION_KANBAN);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.TEST_EXECUTION_KANBAN);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.TEST_EXECUTION_KANBAN);
 
 		kpiElement.setTrendValueList(trendValues);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
@@ -133,7 +134,7 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			projectList.add(basicProjectConfigId.toString());
 		});
-		/** additional filter **/
+		/** additional filter * */
 		String subGroupCategory = KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.KANBAN, QA,
 				flterHelperService);
 
@@ -158,14 +159,12 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 		Map<String, Map<String, KanbanTestExecution>> projectAndDateWiseCapacityMap = groupByProjectsAndDate(resultMap);
 
 		kpiWithoutFilter(projectAndDateWiseCapacityMap, mapTmp, leafNodeList, kpiElement, kpiRequest);
-
 	}
 
 	private Map<String, Map<String, KanbanTestExecution>> groupByProjectsAndDate(Map<String, Object> dataFromDb) {
-		List<KanbanTestExecution> testExecutionDetails = (List<KanbanTestExecution>) dataFromDb
-				.get(TEST_EXECUTION_DETAIL);
-		Map<String, List<KanbanTestExecution>> groupByProjects = CollectionUtils.emptyIfNull(testExecutionDetails)
-				.stream().collect(Collectors.groupingBy(KanbanTestExecution::getBasicProjectConfigId));
+		List<KanbanTestExecution> testExecutionDetails = (List<KanbanTestExecution>) dataFromDb.get(TEST_EXECUTION_DETAIL);
+		Map<String, List<KanbanTestExecution>> groupByProjects = CollectionUtils.emptyIfNull(testExecutionDetails).stream()
+				.collect(Collectors.groupingBy(KanbanTestExecution::getBasicProjectConfigId));
 
 		Map<String, Map<String, KanbanTestExecution>> resultMap = new HashMap<>();
 		groupByProjects.forEach((project, testExecutions) -> resultMap.put(project, testExecutions.stream()
@@ -180,11 +179,9 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 		String requestTrackerId = getKanbanRequestTrackerId();
 
 		leafNodeList.forEach(node -> {
-
 			String projectNodeId = node.getProjectFilter().getBasicProjectConfigId().toString();
-			String projectName = node.getId().substring(0, node.getId().lastIndexOf(CommonConstant.UNDERSCORE));
-			Map<String, KanbanTestExecution> existingTestExecutionsByDates = projectWiseTestExecutions
-					.get(projectNodeId);
+			String projectName = node.getProjectFilter().getName();
+			Map<String, KanbanTestExecution> existingTestExecutionsByDates = projectWiseTestExecutions.get(projectNodeId);
 
 			if (MapUtils.isNotEmpty(existingTestExecutionsByDates)) {
 
@@ -225,7 +222,6 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.TEST_EXECUTION_KANBAN.getColumns());
-
 	}
 
 	private Map<String, Integer> aggregateValuesForDateRange(Map<String, KanbanTestExecution> dataForTreadList) {
@@ -242,7 +238,6 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 		});
 
 		return resultMap;
-
 	}
 
 	private Map<String, KanbanTestExecution> createDataForDateRange(String projectName,
@@ -274,8 +269,8 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 	private String getXAxisDataPointName(CustomDateRange dateRange, KpiRequest kpiRequest) {
 		String range = null;
 		if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
-			range = DateUtil.localDateTimeConverter(dateRange.getStartDate()) + " to "
-					+ DateUtil.localDateTimeConverter(dateRange.getEndDate());
+			range = DateUtil.localDateTimeConverter(dateRange.getStartDate()) + " to " +
+					DateUtil.localDateTimeConverter(dateRange.getEndDate());
 		} else if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.MONTH)) {
 			range = dateRange.getStartDate().getMonth().toString();
 		} else {
@@ -329,11 +324,9 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 						.round((100.0 * testExecution.getExecutedTestCase()) / testExecution.getTotalTestCases());
 				double passedPerc = Math
 						.round((100.0 * testExecution.getPassedTestCase()) / (testExecution.getExecutedTestCase()));
-				KPIExcelUtility.populateTestExcecutionExcelData(projectName, null, testExecution, executionPerc,
-						passedPerc, excelData);
-
+				KPIExcelUtility.populateTestExcecutionExcelData(projectName, null, testExecution, executionPerc, passedPerc,
+						excelData);
 			});
-
 		}
 	}
 
@@ -346,5 +339,4 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI71(), KPICode.TEST_EXECUTION_KANBAN.getKpiId());
 	}
-
 }

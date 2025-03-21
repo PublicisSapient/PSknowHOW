@@ -18,8 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -72,11 +72,9 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 /**
  * This J-Unit class tests the functionality of the DCServiceImpl.
- * 
- * @author tauakram
  *
+ * @author tauakram
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class DCServiceImplTest {
 
@@ -112,6 +110,8 @@ public class DCServiceImplTest {
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private List<DataCount> trendValues = new ArrayList<>();
 	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
+
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	@Mock
 	private FilterHelperService filterHelperService;
 	@Mock
@@ -124,6 +124,18 @@ public class DCServiceImplTest {
 		kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId());
 		kpiRequest.setLabel("PROJECT");
 
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
+
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
@@ -133,11 +145,6 @@ public class DCServiceImplTest {
 		filterLevelMap.put("SPRINT", Filters.SPRINT);
 
 		kpiWiseAggregation.put("cost_Of_Delay", "sum");
-
-		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
-		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
-		projectConfig.setProjectName("Scrum Project");
-		projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
@@ -156,13 +163,11 @@ public class DCServiceImplTest {
 		kpiWiseAggregation.put("defectCountByPriority", "sum");
 
 		setTreadValuesDataCount();
-
 	}
 
 	@After
 	public void cleanup() {
 		jiraIssueRepository.deleteAll();
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -198,26 +203,24 @@ public class DCServiceImplTest {
 					treeAggregatorDetail);
 
 			((List<DataCount>) kpiElement.getTrendValueList()).forEach(dc -> {
-
 				String priority = dc.getData();
 				switch (priority) {
-				case "High":
-					assertThat("DC Value :", dc.getCount(), equalTo(1));
-					break;
-				case "Low":
-					assertThat("DC Value :", dc.getCount(), equalTo(1));
-					break;
-				case "Medium":
-					assertThat("DC Value :", dc.getCount(), equalTo(1));
-					break;
-				case "Critical":
-					assertThat("DC Value :", dc.getCount(), equalTo(1));
-					break;
+					case "High" :
+						assertThat("DC Value :", dc.getCount(), equalTo(1));
+						break;
+					case "Low" :
+						assertThat("DC Value :", dc.getCount(), equalTo(1));
+						break;
+					case "Medium" :
+						assertThat("DC Value :", dc.getCount(), equalTo(1));
+						break;
+					case "Critical" :
+						assertThat("DC Value :", dc.getCount(), equalTo(1));
+						break;
 
-				default:
-					break;
+					default :
+						break;
 				}
-
 			});
 
 		} catch (ApplicationException enfe) {
@@ -236,7 +239,7 @@ public class DCServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 
@@ -253,8 +256,7 @@ public class DCServiceImplTest {
 				kpiRequest);
 		assertThat("Total Defects value :", ((List<JiraIssue>) defectDataListMap.get(TOTAL_DEFECT_DATA)).size(),
 				equalTo(20));
-		assertThat("Total Story :", ((List<JiraIssue>) defectDataListMap.get(SPRINT_WISE_STORY_DATA)).size(),
-				equalTo(5));
+		assertThat("Total Story :", ((List<JiraIssue>) defectDataListMap.get(SPRINT_WISE_STORY_DATA)).size(), equalTo(5));
 	}
 
 	@Test
@@ -285,5 +287,4 @@ public class DCServiceImplTest {
 		dataCount.setValue(value);
 		return dataCount;
 	}
-
 }

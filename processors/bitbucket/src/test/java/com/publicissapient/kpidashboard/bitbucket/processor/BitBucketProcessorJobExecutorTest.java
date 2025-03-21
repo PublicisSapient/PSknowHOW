@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.bitbucket.processor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
@@ -192,15 +193,16 @@ class BitBucketProcessorJobExecutorTest {
 		commitDetails.setBranch("master");
 		commitDetails.setUrl("https://test.com/scm/test/test.git");
 		commitDetailList.add(commitDetails);
-		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		Mockito.when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
 		Mockito.when(bitBucketClient.fetchAllCommits(bitbucketRepo, true, connectionDetail, proBasicConfig))
 				.thenReturn(commitDetailList);
 		Mockito.when(bitBucketRepository.findByProcessorIdAndToolConfigId(any(), any())).thenReturn(bitbucketRepos);
 		Mockito.when(bitBucketConfig.getCustomApiBaseUrl()).thenReturn("http://customapi:8080/");
 		Mockito.when(bitBucketClientFactory.getBitbucketClient(false)).thenReturn(bitBucketServerClient);
-		Mockito.when(processorExecutionTraceLogRepository
-				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BITBUCKET, "5e2ac020e4b098db0edf5145"))
+		Mockito
+				.when(processorExecutionTraceLogRepository
+						.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BITBUCKET, "5e2ac020e4b098db0edf5145"))
 				.thenReturn(optionalProcessorExecutionTraceLog);
 		bitBucketProcessorJobExecutor.execute(bitbucketProcessor);
 	}
@@ -232,7 +234,7 @@ class BitBucketProcessorJobExecutorTest {
 		commitDetails.setUrl("https://test.com/scm/test/test.git");
 		commitDetailList.add(commitDetails);
 
-		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		Mockito.when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
 		Mockito.when(bitBucketClient.fetchAllCommits(bitbucketRepo, true, connectionDetail, proBasicConfig))
 				.thenReturn(commitDetailList);
@@ -240,8 +242,9 @@ class BitBucketProcessorJobExecutorTest {
 		Mockito.when(bitBucketRepository.save(any(BitbucketRepo.class))).thenReturn(bitbucketRepo);
 		Mockito.when(bitBucketConfig.getCustomApiBaseUrl()).thenReturn("http://customapi:8080/");
 		Mockito.when(bitBucketClientFactory.getBitbucketClient(false)).thenReturn(bitBucketServerClient);
-		Mockito.when(processorExecutionTraceLogRepository
-				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BITBUCKET, "5e2ac020e4b098db0edf5145"))
+		Mockito
+				.when(processorExecutionTraceLogRepository
+						.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BITBUCKET, "5e2ac020e4b098db0edf5145"))
 				.thenReturn(optionalProcessorExecutionTraceLog);
 		bitBucketProcessorJobExecutor.execute(bitbucketProcessor);
 	}
@@ -262,6 +265,5 @@ class BitBucketProcessorJobExecutorTest {
 		} catch (RestClientException e) {
 			assertTrue(true);
 		}
-
 	}
 }

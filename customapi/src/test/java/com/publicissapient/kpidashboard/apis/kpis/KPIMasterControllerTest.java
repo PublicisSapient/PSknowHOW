@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.kpis;
 
 import static org.mockito.Mockito.when;
@@ -45,7 +43,6 @@ import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 
 /**
  * @author prigupta8
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class KPIMasterControllerTest {
@@ -82,7 +79,9 @@ public class KPIMasterControllerTest {
 	public void fetchMasterDataTest() throws Exception {
 
 		when(kpiHelperService.fetchKpiMasterList()).thenReturn(new MasterResponse(kpiMasterList));
-		mockMvc.perform(get("/masterData")).andExpect(status().is2xxSuccessful())
+		mockMvc
+				.perform(get("/masterData"))
+				.andExpect(status().is2xxSuccessful())
 				.andExpect(content().contentType("application/json"));
 	}
 }

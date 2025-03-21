@@ -70,9 +70,9 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 
 	/**
 	 * Decodes JIRA credentials provided by the user
-	 * 
+	 *
 	 * @param jiraCredentials
-	 *            jiraCredentials
+	 *          jiraCredentials
 	 * @return Map of decoded username and password
 	 */
 	public Map<String, String> decodeUserCredentials(String jiraCredentials) {
@@ -89,20 +89,19 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 		}
 
 		return credentialMap;
-
 	}
 
 	/**
 	 * Created JIRA connection using provided details
-	 * 
+	 *
 	 * @param jiraBaseUri
-	 *            JIRA server base URL
+	 *          JIRA server base URL
 	 * @param fullProxyUrl
-	 *            Jira proxy URL
+	 *          Jira proxy URL
 	 * @param username
-	 *            Jira login username
+	 *          Jira login username
 	 * @param password
-	 *            Jira Login password
+	 *          Jira Login password
 	 * @return created connection URI
 	 */
 	private URI createJiraConnection(String jiraBaseUri, String fullProxyUrl, String username, String password) {
@@ -115,8 +114,8 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 				URL baseUrl = new URL(jiraBaseUri);
 				if (StringUtils.isNotEmpty(fullProxyUrl)) {
 					URL proxyUrl = new URL(fullProxyUrl);
-					URI proxyUri = new URI(proxyUrl.getProtocol(), proxyUrl.getUserInfo(), proxyUrl.getHost(),
-							proxyUrl.getPort(), proxyUrl.getPath(), proxyUrl.getQuery(), null);
+					URI proxyUri = new URI(proxyUrl.getProtocol(), proxyUrl.getUserInfo(), proxyUrl.getHost(), proxyUrl.getPort(),
+							proxyUrl.getPath(), proxyUrl.getQuery(), null);
 					proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUri.getHost(), proxyUri.getPort()));
 					connection = baseUrl.openConnection(proxy);
 
@@ -135,8 +134,7 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 					connection = baseUrl.openConnection();
 				}
 			} else {
-				log.error(
-						"The response from Jira was blank or non existant - please check your property configurations");
+				log.error("The response from Jira was blank or non existant - please check your property configurations");
 				return null;
 			}
 
@@ -161,19 +159,18 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 
 	/**
 	 * Cleans the cache in th Custom API
-	 * 
+	 *
 	 * @param cacheEndPoint
-	 *            URL end point where Custom API cache is created
+	 *          URL end point where Custom API cache is created
 	 * @param cacheName
-	 *            Name of the Custom API cache
+	 *          Name of the Custom API cache
 	 */
 	public boolean cacheRestClient(String cacheEndPoint, String cacheName) {
 		boolean cleaned = false;
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 
-		UriComponentsBuilder uriBuilder = UriComponentsBuilder
-				.fromHttpUrl(jiraTestProcessorConfig.getCustomApiBaseUrl());
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(jiraTestProcessorConfig.getCustomApiBaseUrl());
 		uriBuilder.path("/");
 		uriBuilder.path(cacheEndPoint);
 		uriBuilder.path("/");
@@ -200,9 +197,9 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 
 	/**
 	 * Gets Jira Client
-	 * 
+	 *
 	 * @param jiraInfo
-	 *            Jira Server information
+	 *          Jira Server information
 	 * @return jira rest client
 	 */
 	public ProcessorJiraRestClient getJiraClient(JiraInfo jiraInfo) {
@@ -228,9 +225,9 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 				jiraUri = this.createJiraConnection(jiraConfigBaseUrl, proxyUri + ":" + proxyPort, username, password);
 			}
 
-			InetAddress.getByName(jiraUri.getHost());// NOSONAR
-			client = new ProcessorAsynchJiraRestClientFactory().createWithBasicHttpAuthentication(jiraUri, username,
-					password, jiraTestProcessorConfig);
+			InetAddress.getByName(jiraUri.getHost()); // NOSONAR
+			client = new ProcessorAsynchJiraRestClientFactory().createWithBasicHttpAuthentication(jiraUri, username, password,
+					jiraTestProcessorConfig);
 
 		} catch (UnknownHostException | URISyntaxException e) {
 			log.error("The Jira host name is invalid. Further jira collection cannot proceed.");
@@ -243,9 +240,9 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 
 	/**
 	 * Provides Jira client using OAuth
-	 * 
+	 *
 	 * @param jiraInfo
-	 *            Jira Server information
+	 *          Jira Server information
 	 * @return Jira rest client
 	 */
 	public ProcessorJiraRestClient getJiraOAuthClient(JiraInfo jiraInfo) {
@@ -270,9 +267,8 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 				jiraUri = this.createJiraConnection(jiraConfigBaseUrl, proxyUri + ":" + proxyPort, username, password);
 			}
 
-			InetAddress.getByName(jiraUri.getHost());// NOSONAR
-			client = new ProcessorAsynchJiraRestClientFactory().create(jiraUri, jiraOAuthClient,
-					jiraTestProcessorConfig);
+			InetAddress.getByName(jiraUri.getHost()); // NOSONAR
+			client = new ProcessorAsynchJiraRestClientFactory().create(jiraUri, jiraOAuthClient, jiraTestProcessorConfig);
 
 		} catch (UnknownHostException | URISyntaxException e) {
 			log.error("The Jira host name is invalid. Further jira collection cannot proceed.");
@@ -282,5 +278,4 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 
 		return client;
 	}
-
 }

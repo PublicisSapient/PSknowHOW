@@ -21,15 +21,15 @@ package com.publicissapient.kpidashboard.apis.sonar.factory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
-import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.sonar.service.SonarKPIService;
+
+import lombok.Builder;
 
 @Service
 @Builder
@@ -55,14 +55,11 @@ public class SonarKPIServiceFactory {
 		return service;
 	}
 
-	/**
-	 * Initializes SonarKPIService
-	 */
+	/** Initializes SonarKPIService */
 	@PostConstruct
 	public void initMyServiceCache() {
 		for (SonarKPIService<?, ?, ?> service : services) {
 			SONAR_SERVICE_CACHE.put(service.getQualifierType(), service);
 		}
 	}
-
 }

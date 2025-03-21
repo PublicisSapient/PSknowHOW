@@ -79,7 +79,7 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 
 	/**
 	 * Gets Qualifier Type from KPICode enum
-	 * 
+	 *
 	 * @return String type of <tt>REGRESSION_PASS_PERCENTAGE</tt> enum
 	 */
 	@Override
@@ -89,15 +89,15 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 
 	/**
 	 * Gets KPI Data
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param kpiElement
 	 * @param treeAggregatorDetail
 	 * @return KpiElement
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
@@ -134,7 +134,6 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 	}
 
 	/**
-	 * 
 	 * @param mapTmp
 	 * @param sprintLeafNodeList
 	 * @param trendValueList
@@ -146,8 +145,8 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
-		Collections.sort(sprintLeafNodeList, (Node o1, Node o2) -> o1.getSprintFilter().getStartDate()
-				.compareTo(o2.getSprintFilter().getStartDate()));
+		Collections.sort(sprintLeafNodeList,
+				(Node o1, Node o2) -> o1.getSprintFilter().getStartDate().compareTo(o2.getSprintFilter().getStartDate()));
 
 		// partitioning the sprintLeafNodeList by data upload enable
 		Map<Boolean, List<Node>> nodePartitionedMap = sprintLeafNodeList.stream()
@@ -186,7 +185,6 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 	}
 
 	/**
-	 * 
 	 * @param totalTest
 	 * @param automatedTest
 	 * @return automatedPercentage
@@ -212,14 +210,12 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 				totalTest.stream().forEach(test -> totalTestCaseMap.putIfAbsent(test.getNumber(), test));
 			}
 
-			KPIExcelUtility.populateRegressionAutomationExcelData(sprintName, totalTestCaseMap, automatedTest,
-					excelData, KPICode.REGRESSION_AUTOMATION_COVERAGE.getKpiId(), "");
-
+			KPIExcelUtility.populateRegressionAutomationExcelData(sprintName, totalTestCaseMap, automatedTest, excelData,
+					KPICode.REGRESSION_AUTOMATION_COVERAGE.getKpiId(), "");
 		}
 	}
 
 	/**
-	 *
 	 * @param sprintWiseTotal
 	 * @param sprintWiseAutomated
 	 * @param howerMap
@@ -245,7 +241,7 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 
 	/**
 	 * populate by tool configured
-	 * 
+	 *
 	 * @param mapTmp
 	 * @param trendValueList
 	 * @param node
@@ -271,26 +267,26 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 
 		String sprintEndDate = node.getSprintFilter().getEndDate();
 		double sprintWiseAutomation = 0;
-		if (StringUtils.isNotEmpty(sprintEndDate) && CollectionUtils.isNotEmpty(totalTest)
-				&& CollectionUtils.isNotEmpty(automatedTest)) {
+		if (StringUtils.isNotEmpty(sprintEndDate) && CollectionUtils.isNotEmpty(totalTest) &&
+				CollectionUtils.isNotEmpty(automatedTest)) {
 			String formatDate = sprintEndDate.split("\\.")[0];
 			DateTime endDate = DateUtil.stringToDateTime(formatDate, DateUtil.TIME_FORMAT);
 			List<TestCaseDetails> sprintWiseTotalTest = totalTest.stream()
-					.filter(test -> StringUtils.isNotBlank(test.getCreatedDate())
-							&& PARSER.parseDateTime(test.getCreatedDate()).isBefore(endDate))
+					.filter(test -> StringUtils.isNotBlank(test.getCreatedDate()) &&
+							PARSER.parseDateTime(test.getCreatedDate()).isBefore(endDate))
 					.collect(Collectors.toList());
 			List<TestCaseDetails> sprintWiseAutomatedTest = automatedTest.stream()
-					.filter(test -> StringUtils.isNotBlank(test.getTestAutomatedDate())
-							&& PARSER.parseDateTime(test.getTestAutomatedDate()).isBefore(endDate))
+					.filter(test -> StringUtils.isNotBlank(test.getTestAutomatedDate()) &&
+							PARSER.parseDateTime(test.getTestAutomatedDate()).isBefore(endDate))
 					.collect(Collectors.toList());
 			setHowerMap(sprintWiseAutomatedTest, sprintWiseTotalTest, howerMap, AUTOMATED, TOTAL);
-			populateExcelDataObject(requestTrackerId, excelData, node.getSprintFilter().getName(),
-					sprintWiseAutomatedTest, sprintWiseTotalTest);
+			populateExcelDataObject(requestTrackerId, excelData, node.getSprintFilter().getName(), sprintWiseAutomatedTest,
+					sprintWiseTotalTest);
 			sprintWiseAutomation = Math.round((100.0 * sprintWiseAutomatedTest.size()) / (sprintWiseTotalTest.size()));
 		}
 
-		log.debug("[REGRESSION-AUTOMATION-SPRINT-WISE][{}]. REGRESSION-AUTOMATION for sprint {}  is {}",
-				requestTrackerId, node.getSprintFilter().getName(), automationForCurrentLeaf);
+		log.debug("[REGRESSION-AUTOMATION-SPRINT-WISE][{}]. REGRESSION-AUTOMATION for sprint {}  is {}", requestTrackerId,
+				node.getSprintFilter().getName(), automationForCurrentLeaf);
 
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(sprintWiseAutomation));
@@ -307,7 +303,7 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 
 	/**
 	 * populate by uploaded data
-	 * 
+	 *
 	 * @param mapTmp
 	 * @param trendValueList
 	 * @param node
@@ -340,8 +336,8 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 			String trendLineName, Node node) {
 
 		// aggregated value of all sub-filters of a project for given sprint
-		double regressionPerc = Math.round((100.0 * executionDetail.getAutomatedRegressionTestCases())
-				/ executionDetail.getTotalRegressionTestCases());
+		double regressionPerc = Math.round(
+				(100.0 * executionDetail.getAutomatedRegressionTestCases()) / executionDetail.getTotalRegressionTestCases());
 		Map<String, Object> howerMap = new LinkedHashMap<>();
 		howerMap.put(AUTOMATED, executionDetail.getAutomatedRegressionTestCases());
 		howerMap.put(TOTAL, executionDetail.getTotalRegressionTestCases());
@@ -364,8 +360,8 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 	 */
 	public Map<String, TestExecution> createSprintWiseTestExecutionMap(List<TestExecution> resultList) {
 		return resultList.stream()
-				.filter(testExecution -> testExecution.getAutomatedRegressionTestCases() != null
-						&& testExecution.getTotalRegressionTestCases() != null)
+				.filter(testExecution -> testExecution.getAutomatedRegressionTestCases() != null &&
+						testExecution.getTotalRegressionTestCases() != null)
 				.collect(Collectors.toMap(TestExecution::getSprintId, Function.identity()));
 	}
 

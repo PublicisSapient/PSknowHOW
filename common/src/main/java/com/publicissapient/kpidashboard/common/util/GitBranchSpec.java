@@ -23,9 +23,7 @@ import java.util.regex.Pattern;
 
 import lombok.Getter;
 
-/**
- * The type Git branch spec.
- */
+/** The type Git branch spec. */
 public class GitBranchSpec {
 
 	@Getter
@@ -35,7 +33,7 @@ public class GitBranchSpec {
 	 * Instantiates a new Git branch spec.
 	 *
 	 * @param name
-	 *            the name
+	 *          the name
 	 */
 	public GitBranchSpec(String name) {
 		setName(name);
@@ -60,7 +58,7 @@ public class GitBranchSpec {
 	 * Matches boolean.
 	 *
 	 * @param item
-	 *            the item
+	 *          the item
 	 * @return the boolean
 	 */
 	public boolean matches(String item) {

@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.repository.comments;//NOPMD
+package com.publicissapient.kpidashboard.common.repository.comments; // NOPMD
 
 import org.springframework.stereotype.Repository;
 

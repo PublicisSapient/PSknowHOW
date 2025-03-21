@@ -37,8 +37,9 @@ public class HierarchyResponseDTO {
 
 	private String projectName;
 
-	private String projectId;
+	private String projectNodeId;
+
+	private String projectBasicId;
 
 	private List<SprintDetails> sprintDetailsList;
-
 }

@@ -23,13 +23,12 @@ import lombok.Data;
 
 /**
  * @author shi6
- *
- * for each additonalfilter id like "sqd", saving the ncapacity of
- *         each node
+ *         <p>
+ *         for each additonalfilter id like "sqd", saving the ncapacity of each
+ *         node
  */
 @Data
 public class AdditionalFilterCapacity {
 	private String filterId;
 	private List<LeafNodeCapacity> nodeCapacityList;
-
 }

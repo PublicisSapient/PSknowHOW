@@ -73,9 +73,8 @@ public class BambooClientDeployImpl implements BambooClient {
 		return deploySetMap;
 	}
 
-	private Set<Deployment> getEnvironments(String deployInformation, String environemntUrl,
-			HttpEntity<String> httpAuth, ProcessorToolConnection bambooServer, ProjectBasicConfig proBasicConfig)
-			throws ParseException {
+	private Set<Deployment> getEnvironments(String deployInformation, String environemntUrl, HttpEntity<String> httpAuth,
+			ProcessorToolConnection bambooServer, ProjectBasicConfig proBasicConfig) throws ParseException {
 		Set<Deployment> deployments = new HashSet<>();
 		Map<String, String> environments = parseJsonToFetchEnv(deployInformation);
 		for (Map.Entry<String, String> env : environments.entrySet()) {
@@ -112,11 +111,9 @@ public class BambooClientDeployImpl implements BambooClient {
 				try {
 					Deployment deployment = new Deployment();
 					JSONObject resultObject = (JSONObject) result;
-					deployment.setDeploymentStatus(
-							QUEUED.equalsIgnoreCase(convertToString(resultObject, "lifeCycleState"))
-									? getDeploymentStatus(QUEUED)
-									: getDeploymentStatus(
-											convertToString(resultObject, "deploymentState").toLowerCase()));
+					deployment.setDeploymentStatus(QUEUED.equalsIgnoreCase(convertToString(resultObject, "lifeCycleState"))
+							? getDeploymentStatus(QUEUED)
+							: getDeploymentStatus(convertToString(resultObject, "deploymentState").toLowerCase()));
 					JSONObject deploymentVersion = (JSONObject) (resultObject).get("deploymentVersion");
 					deployment.setNumber(convertToString(resultObject, "id"));
 					if (proBasicConfig.isSaveAssigneeDetails()) {
@@ -141,8 +138,7 @@ public class BambooClientDeployImpl implements BambooClient {
 				LocalDateTime startDateTime = Instant.ofEpochMilli(startedDate).atZone(ZoneId.systemDefault())
 						.toLocalDateTime();
 				deployment.setStartTime(DateUtil.dateTimeFormatter(startDateTime, DateUtil.TIME_FORMAT));
-				LocalDateTime endDateTime = Instant.ofEpochMilli(finishedDate).atZone(ZoneId.systemDefault())
-						.toLocalDateTime();
+				LocalDateTime endDateTime = Instant.ofEpochMilli(finishedDate).atZone(ZoneId.systemDefault()).toLocalDateTime();
 				deployment.setEndTime(DateUtil.dateTimeFormatter(endDateTime, DateUtil.TIME_FORMAT));
 				deployment.setDuration(Duration.between(startDateTime, endDateTime).toMillis());
 			}
@@ -150,8 +146,7 @@ public class BambooClientDeployImpl implements BambooClient {
 		} catch (DateTimeParseException | NumberFormatException ex) {
 			log.error("Exception while transforming date " + ex);
 			if (StringUtils.isEmpty(deployment.getStartTime())) {
-				deployment.setStartTime(
-						DateUtil.dateTimeFormatter(LocalDateTime.parse(MINIMUM_DATE), DateUtil.TIME_FORMAT));
+				deployment.setStartTime(DateUtil.dateTimeFormatter(LocalDateTime.parse(MINIMUM_DATE), DateUtil.TIME_FORMAT));
 			}
 			deployment.setEndTime(DateUtil.dateTimeFormatter(LocalDateTime.parse(MINIMUM_DATE), DateUtil.TIME_FORMAT));
 			deployment.setDuration(0);
@@ -172,10 +167,7 @@ public class BambooClientDeployImpl implements BambooClient {
 			environmentStatuses.forEach(envStatus -> {
 				JSONObject environment = (JSONObject) ((JSONObject) envStatus).get("environment");
 				environments.put(convertToString(environment, "id"), convertToString(environment, "name"));
-			}
-
-			);
-
+			});
 		}
 		return environments;
 	}
@@ -199,8 +191,7 @@ public class BambooClientDeployImpl implements BambooClient {
 
 	public String connectBamboo(String sUrl, ProcessorToolConnection bambooServer, HttpEntity<String> respEntity) {
 		log.debug("Making rest call with user: {} to Url: {}", sUrl, bambooServer.getUsername());
-		ResponseEntity<String> response = restClient.exchange(URI.create(sUrl), HttpMethod.GET, respEntity,
-				String.class);
+		ResponseEntity<String> response = restClient.exchange(URI.create(sUrl), HttpMethod.GET, respEntity, String.class);
 		if (HttpStatus.OK != response.getStatusCode()) {
 			if (response.getStatusCode().is4xxClientError()) {
 				String errMsg = ClientErrorMessageEnum.fromValue(response.getStatusCode().value()).getReasonPhrase();
@@ -210,7 +201,6 @@ public class BambooClientDeployImpl implements BambooClient {
 			throw new RestClientException("Got response" + response.toString() + " from URL :" + sUrl);
 		}
 		return response.getBody();
-
 	}
 
 	@Override
@@ -226,21 +216,20 @@ public class BambooClientDeployImpl implements BambooClient {
 
 	private DeploymentStatus getDeploymentStatus(String deployStatus) {
 		switch (deployStatus) {
-		case "success":
-			return DeploymentStatus.SUCCESS;
-		case "aborted":
-			return DeploymentStatus.ABORTED;
-		case "failed":
-			return DeploymentStatus.FAILURE;
-		case "unstable":
-			return DeploymentStatus.UNSTABLE;
-		case QUEUED:
-			return DeploymentStatus.IN_PROGRESS;
-		case "in progress":
-			return DeploymentStatus.IN_PROGRESS;
-		default:
-			return DeploymentStatus.UNKNOWN;
+			case "success" :
+				return DeploymentStatus.SUCCESS;
+			case "aborted" :
+				return DeploymentStatus.ABORTED;
+			case "failed" :
+				return DeploymentStatus.FAILURE;
+			case "unstable" :
+				return DeploymentStatus.UNSTABLE;
+			case QUEUED :
+				return DeploymentStatus.IN_PROGRESS;
+			case "in progress" :
+				return DeploymentStatus.IN_PROGRESS;
+			default :
+				return DeploymentStatus.UNKNOWN;
 		}
 	}
-
 }

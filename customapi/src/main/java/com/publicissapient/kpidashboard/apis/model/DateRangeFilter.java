@@ -15,5 +15,4 @@ public class DateRangeFilter {
 		this.types = types;
 		this.counts = counts;
 	}
-
 }

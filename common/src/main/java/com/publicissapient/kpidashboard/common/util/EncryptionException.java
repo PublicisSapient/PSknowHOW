@@ -18,15 +18,11 @@
 
 package com.publicissapient.kpidashboard.common.util;
 
-/**
- * Encryption exception too be used for encryption methods.
- */
+/** Encryption exception too be used for encryption methods. */
 public class EncryptionException extends Exception {
 	private static final long serialVersionUID = -4472911532254883259L;
 
-	/**
-	 * Constructs a {@code EncrytionException} with no detail message.
-	 */
+	/** Constructs a {@code EncrytionException} with no detail message. */
 	public EncryptionException() {
 		super();
 	}
@@ -35,7 +31,7 @@ public class EncryptionException extends Exception {
 	 * Constructs a {@code EncrytionException} with the specified detail message.
 	 *
 	 * @param str
-	 *            the detail message.
+	 *          the detail message.
 	 */
 	public EncryptionException(String str) {
 		super(str);
@@ -46,9 +42,9 @@ public class EncryptionException extends Exception {
 	 * exception.
 	 *
 	 * @param str
-	 *            the str
+	 *          the str
 	 * @param throwable
-	 *            the throwable
+	 *          the throwable
 	 */
 	public EncryptionException(String str, Throwable throwable) {
 		super(str, throwable);

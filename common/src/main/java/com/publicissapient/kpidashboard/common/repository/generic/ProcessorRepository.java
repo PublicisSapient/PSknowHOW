@@ -28,7 +28,7 @@ import com.publicissapient.kpidashboard.common.model.generic.Processor;
  * extends from Processor.
  *
  * @param <T>
- *            Class that extends {@link Processor}
+ *          Class that extends {@link Processor}
  */
 public interface ProcessorRepository<T extends Processor> extends CrudRepository<T, ObjectId> {
 
@@ -36,9 +36,8 @@ public interface ProcessorRepository<T extends Processor> extends CrudRepository
 	 * Finds a {@link Processor} by its name.
 	 *
 	 * @param processorName
-	 *            name
+	 *          name
 	 * @return a {@link Processor}
 	 */
 	T findByProcessorName(String processorName);
-
 }

@@ -73,7 +73,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * GitHubActionProcessorJobExecutor represents a class which holds all the
  * configuration and GitHub execution process.
- * 
+ *
  * @see GitHubActionProcessor
  */
 @Slf4j
@@ -151,8 +151,7 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 			for (ProcessorToolConnection gitHubActions : githubActionJobsFromConfig) {
 				String jobType = gitHubActions.getJobType();
 
-				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-						proBasicConfig.getId().toHexString());
+				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(proBasicConfig.getId().toHexString());
 
 				try {
 					processorToolConnectionService.validateConnectionFlag(gitHubActions);
@@ -162,8 +161,8 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 
 					GitHubActionClient gitHubActionClient = gitHubActionClientFactory.getGitHubActionClient(jobType);
 					if (BUILD.equalsIgnoreCase(jobType)) {
-						count1 += processBuildJob(gitHubActionClient, gitHubActions, processor,
-								processorExecutionTraceLog, proBasicConfig);
+						count1 += processBuildJob(gitHubActionClient, gitHubActions, processor, processorExecutionTraceLog,
+								proBasicConfig);
 						MDC.put("totalUpdatedCount", String.valueOf(count1));
 					} else {
 						processDeployJob(gitHubActionClient, gitHubActions, processor, proBasicConfig, deploymentJobs,
@@ -196,22 +195,21 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 		log.info("GitHubAction Processor execution finished");
 		MDC.clear();
 		return executionStatus;
-
 	}
 
 	/**
 	 * to check for client exception and update the flag if related to connection
-	 * 
+	 *
 	 * @param gitHubActions
-	 *            gitHubActions
+	 *          gitHubActions
 	 * @param exception
-	 *            exception
+	 *          exception
 	 */
 	private void isClientException(ProcessorToolConnection gitHubActions, Exception exception) {
-		if (exception instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ClientErrorMessageEnum
-					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+		if (exception instanceof HttpClientErrorException &&
+				((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) exception).getStatusCode().value())
+					.getReasonPhrase();
 			processorToolConnectionService.updateBreakingConnection(gitHubActions.getConnectionId(), errMsg);
 		}
 	}
@@ -235,7 +233,6 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		processorExecutionTraceLog.setExecutionSuccess(true);
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
-
 	}
 
 	private void addNewDeploymentJobs(Map<Deployment, Set<Deployment>> deploymentsByJob, List<Deployment> existingJobs,
@@ -252,7 +249,6 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 				job.setProcessorId(processor.getId());
 				newJobs.add(job);
 			}
-
 		}
 
 		log.info("new deployments added " + newJobs.size());
@@ -292,20 +288,18 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 		Set<String> number = buildsByJob.stream().map(Build::getNumber).collect(Collectors.toSet());
 		List<Build> buildData = buildRepository.findByProjectToolConfigIdAndNumberIn(gitHubActions.getId(), number);
 		for (Build build : buildsByJob) {
-			Build dBBuild = buildData.stream().filter(build1 -> build1.getNumber().equals(build.getNumber()))
-					.findFirst().orElse(new Build());
+			Build dBBuild = buildData.stream().filter(build1 -> build1.getNumber().equals(build.getNumber())).findFirst()
+					.orElse(new Build());
 			if (StringUtils.isEmpty(dBBuild.getNumber())) {
 				build.setJobFolder(gitHubActions.getJobName());
 				build.setProcessorId(processorId);
 				build.setBasicProjectConfigId(gitHubActions.getBasicProjectConfigId());
 				build.setProjectToolConfigId(gitHubActions.getId());
-				build.setBuildJob(gitHubActions.getJobName());
 				buildsToSave.add(build);
 				count++;
 			} else {
 
-				if (proBasicConfig.isSaveAssigneeDetails() && dBBuild.getStartedBy() == null
-						&& build.getStartedBy() != null) {
+				if (proBasicConfig.isSaveAssigneeDetails() && dBBuild.getStartedBy() == null && build.getStartedBy() != null) {
 					dBBuild.setStartedBy(build.getStartedBy());
 					buildsToSave.add(dBBuild);
 				}
@@ -325,9 +319,8 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.GITHUBACTION, basicProjectConfigId);
-		existingTraceLogOptional.ifPresent(
-				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
-						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
+		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> processorExecutionTraceLog
+				.setLastEnableAssigneeToggleState(existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 
 		return processorExecutionTraceLog;
 	}
@@ -337,15 +330,15 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 	}
 
 	private List<ProjectBasicConfig> getSelectedProjects() {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findActiveProjects(false);
 		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
 		if (CollectionUtils.isEmpty(selectedProjectsBasicIds)) {
 			return allProjects;
 		}
-		return CollectionUtils.emptyIfNull(allProjects).stream().filter(
-				projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
+		return CollectionUtils.emptyIfNull(allProjects).stream()
+				.filter(projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
 				.collect(Collectors.toList());
 	}
 
@@ -380,21 +373,21 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 	 * Cleans the cache in the Custom API
 	 *
 	 * @param cacheEndPoint
-	 *            the cache endpoint
+	 *          the cache endpoint
 	 * @param param1
-	 *            parameter 1
+	 *          parameter 1
 	 * @param param2
-	 *            parameter 2
+	 *          parameter 2
 	 */
 	private void cacheRestClient(String cacheEndPoint, String param1, String param2) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 
 		if (StringUtils.isNoneEmpty(param1)) {
-			cacheEndPoint = cacheEndPoint.replace("param1", param1);
+			cacheEndPoint = cacheEndPoint.replace(CommonConstant.PARAM1, param1);
 		}
 		if (StringUtils.isNoneEmpty(param2)) {
-			cacheEndPoint = cacheEndPoint.replace("param2", param2);
+			cacheEndPoint = cacheEndPoint.replace(CommonConstant.PARAM2, param2);
 		}
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(gitHubActionConfig.getCustomApiBaseUrl());
 		uriBuilder.path("/");
@@ -416,5 +409,4 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache for: {} and {} ", param1, param2);
 		}
 	}
-
 }

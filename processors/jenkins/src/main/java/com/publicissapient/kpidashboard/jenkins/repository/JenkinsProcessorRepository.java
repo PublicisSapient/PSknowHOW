@@ -23,9 +23,7 @@ import org.springframework.stereotype.Repository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 import com.publicissapient.kpidashboard.jenkins.model.JenkinsProcessor;
 
-/**
- * Processor repository for the JenkinsProcessor subclass.
- */
+/** Processor repository for the JenkinsProcessor subclass. */
 @Repository
 public interface JenkinsProcessorRepository extends ProcessorRepository<JenkinsProcessor> {
 }

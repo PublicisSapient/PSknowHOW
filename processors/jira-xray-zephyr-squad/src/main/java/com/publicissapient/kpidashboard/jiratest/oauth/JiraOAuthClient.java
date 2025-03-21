@@ -26,11 +26,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.atlassian.httpclient.api.Request.Builder;
-import com.atlassian.jira.rest.client.api.AuthenticationHandler;
 import org.htmlunit.FailingHttpStatusCodeException;
 import org.htmlunit.WebClient;
 import org.htmlunit.html.HtmlForm;
@@ -38,6 +33,11 @@ import org.htmlunit.html.HtmlPage;
 import org.htmlunit.html.HtmlPasswordInput;
 import org.htmlunit.html.HtmlSubmitInput;
 import org.htmlunit.html.HtmlTextInput;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.atlassian.httpclient.api.Request.Builder;
+import com.atlassian.jira.rest.client.api.AuthenticationHandler;
 import com.google.common.collect.ImmutableList;
 
 import lombok.extern.slf4j.Slf4j;
@@ -55,9 +55,8 @@ import net.oauth.signature.RSA_SHA1;
 
 /**
  * Provides Jira OAuth client authentication services
- * 
- * @author vijkumar18
  *
+ * @author vijkumar18
  */
 @Component
 @Slf4j
@@ -78,7 +77,7 @@ public class JiraOAuthClient implements AuthenticationHandler {
 
 	/**
 	 * Generates requestToken
-	 * 
+	 *
 	 * @return RequestToken
 	 */
 	public TokenSecretVerifierHolder getRequestToken() {
@@ -99,19 +98,19 @@ public class JiraOAuthClient implements AuthenticationHandler {
 			tokenSecretVerifier.verifier = message.getParameter(OAUTH_VERIFIER);
 			return tokenSecretVerifier;
 		} catch (IOException | OAuthException | URISyntaxException e) {
-			throw new RuntimeException("Failed to obtain request token", e);// NOSONAR
+			throw new RuntimeException("Failed to obtain request token", e); // NOSONAR
 		}
 	}
 
 	/**
 	 * Generates accessToken
-	 * 
+	 *
 	 * @param requestToken
-	 *            request token
+	 *          request token
 	 * @param tokenSecret
-	 *            secret
+	 *          secret
 	 * @param oauthVerifier
-	 *            oauth verifier
+	 *          oauth verifier
 	 * @return accessToken
 	 */
 	public String swapRequestTokenForAccessToken(String requestToken, String tokenSecret, String oauthVerifier) {
@@ -124,14 +123,13 @@ public class JiraOAuthClient implements AuthenticationHandler {
 					ImmutableList.of(new OAuth.Parameter(OAuth.OAUTH_VERIFIER, oauthVerifier)));
 			return message.getToken();
 		} catch (IOException | OAuthException | URISyntaxException e) {
-			throw new RuntimeException("Failed to get Token from Access Token", e);// NOSONAR
+			throw new RuntimeException("Failed to get Token from Access Token", e); // NOSONAR
 		}
-
 	}
 
 	/**
 	 * Provides OAuthAccessor
-	 * 
+	 *
 	 * @return OAuthAccessor
 	 */
 	public final OAuthAccessor getAccessor() {
@@ -171,14 +169,14 @@ public class JiraOAuthClient implements AuthenticationHandler {
 	 * Provides oauthVerifier
 	 *
 	 * @param authorizationUrl
-	 *            authorizationUrl
+	 *          authorizationUrl
 	 * @param username
-	 *            username
+	 *          username
 	 * @param password
-	 *            password
+	 *          password
 	 * @return oauthVerifier
 	 * @throws IOException
-	 *             IOException
+	 *           IOException
 	 */
 	public String getOAuthVerifier(String authorizationUrl, String username, String password) throws IOException {
 		String oauthVerifier = null;
@@ -225,19 +223,18 @@ public class JiraOAuthClient implements AuthenticationHandler {
 			}
 			return oauthVerifier;
 		}
-
 	}
 
 	/**
 	 * Provides acessToken
 	 *
 	 * @param username
-	 *            username
+	 *          username
 	 * @param password
-	 *            password
+	 *          password
 	 * @return acessToken acessToken
 	 * @throws IOException
-	 *             IOException
+	 *           IOException
 	 */
 	public String getAccessToken(String username, String password) throws IOException {
 
@@ -253,7 +250,6 @@ public class JiraOAuthClient implements AuthenticationHandler {
 		// Provides accessToken
 		return jiraOauthClient.swapRequestTokenForAccessToken(requestToken.token, jiraOAuthProperties.getConsumerKey(),
 				oauthVerifier);
-
 	}
 
 	@Override
@@ -268,8 +264,7 @@ public class JiraOAuthClient implements AuthenticationHandler {
 				request2.getHeaders().add(new OAuth.Parameter(HttpMessage.ACCEPT_ENCODING, accepted.toString()));
 			}
 			Object ps = accessor.consumer.getProperty(OAuthClient.PARAMETER_STYLE);
-			ParameterStyle style = (ps == null) ? ParameterStyle.BODY
-					: Enum.valueOf(ParameterStyle.class, ps.toString());
+			ParameterStyle style = (ps == null) ? ParameterStyle.BODY : Enum.valueOf(ParameterStyle.class, ps.toString());
 			HttpMessage httpRequest = HttpMessage.newRequest(request2, style);
 			for (Entry<String, String> ap : httpRequest.headers)
 				request.setHeader(ap.getKey(), ap.getValue());
@@ -277,14 +272,12 @@ public class JiraOAuthClient implements AuthenticationHandler {
 		} catch (Exception e) {
 			log.error("Error while authenticating jira OAuth", e);
 		}
-
 	}
 
 	@SuppressWarnings("unused")
 	final class TokenSecretVerifierHolder {
 		private String token;
-		private String verifier;// NOSONAR
-		private String secret;// NOSONAR
+		private String verifier; // NOSONAR
+		private String secret; // NOSONAR
 	}
-
 }

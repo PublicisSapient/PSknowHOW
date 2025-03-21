@@ -10,16 +10,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthenticationUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthenticationUtil;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentViewResponseDTO;
@@ -35,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Mahesh
- *
  */
 @Service
 @Slf4j
@@ -61,7 +60,7 @@ public class CommentsServiceImpl implements CommentsService {
 	/**
 	 * This method will find the comment details for selected KpiId by filtering the
 	 * comments based on the organization level and maximum comments count.
-	 * 
+	 *
 	 * @param node
 	 * @param level
 	 * @param nodeChildId
@@ -71,14 +70,14 @@ public class CommentsServiceImpl implements CommentsService {
 	@Override
 	public Map<String, Object> findCommentByKPIId(String node, String level, String nodeChildId, String kpiId) {
 		// fetching comments from history which are not deleted
-		KpiCommentsHistory kpiComments = kpiCommentsHistoryRepository.findByNodeAndLevelAndNodeChildIdAndKpiId(node,
-				level, nodeChildId, kpiId);
+		KpiCommentsHistory kpiComments = kpiCommentsHistoryRepository.findByNodeAndLevelAndNodeChildIdAndKpiId(node, level,
+				nodeChildId, kpiId);
 
 		Map<String, Object> mappedCollection = new LinkedHashMap<>();
 		if (null != kpiComments) {
 			log.info("Received all matching comment from DB, comments size: {}", kpiComments);
-			List<CommentsInfo> finalCommentsInfo = kpiComments.getCommentsInfo().stream()
-					.filter(info -> !info.isDeleted()).collect(Collectors.toList());
+			List<CommentsInfo> finalCommentsInfo = kpiComments.getCommentsInfo().stream().filter(info -> !info.isDeleted())
+					.collect(Collectors.toList());
 			mappedCollection.put("node", node);
 			mappedCollection.put("level", level);
 			mappedCollection.put("nodeChildId", nodeChildId);
@@ -97,9 +96,11 @@ public class CommentsServiceImpl implements CommentsService {
 		Map<String, Integer> hierarchyWiseComments = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(kpiCommentsList)) {
 			kpiCommentsList.stream().collect(Collectors.groupingBy(KpiCommentsHistory::getKpiId))
-					.forEach((kpiId, commentsList) -> hierarchyWiseComments.merge(kpiId, commentsList.stream()
-							.flatMap(comment -> comment.getCommentsInfo().stream().filter(info -> !info.isDeleted()))
-							.collect(Collectors.toList()).size(), Integer::sum));
+					.forEach((kpiId, commentsList) -> hierarchyWiseComments.merge(kpiId,
+							commentsList.stream()
+									.flatMap(comment -> comment.getCommentsInfo().stream().filter(info -> !info.isDeleted()))
+									.collect(Collectors.toList()).size(),
+							Integer::sum));
 		}
 		return hierarchyWiseComments;
 	}
@@ -111,7 +112,6 @@ public class CommentsServiceImpl implements CommentsService {
 	}
 
 	/**
-	 *
 	 * @param nodes
 	 * @param level
 	 * @param nodeChildId
@@ -147,7 +147,7 @@ public class CommentsServiceImpl implements CommentsService {
 	/**
 	 * This method will save the comments for selected KpiId in both kpi_comments
 	 * and kpi_comments_history collections.
-	 * 
+	 *
 	 * @param comment
 	 * @return
 	 */
@@ -170,15 +170,14 @@ public class CommentsServiceImpl implements CommentsService {
 		} else {
 			log.info("No information about commentsInfo");
 			return false;
-
 		}
-
 	}
 
 	/**
 	 * Sets the comment by the current user in the provided CommentSubmitDTO object.
 	 *
-	 * @param comment The CommentSubmitDTO object containing the comments information.
+	 * @param comment
+	 *          The CommentSubmitDTO object containing the comments information.
 	 */
 	private void setCommentByUser(CommentSubmitDTO comment) {
 		String userName = AuthenticationUtil.getUsernameFromContext();
@@ -192,7 +191,7 @@ public class CommentsServiceImpl implements CommentsService {
 	/**
 	 * This method will save the comments in the collections and re-map the comments
 	 * list on the basis of KPI max comments count to be stored in DB.
-	 * 
+	 *
 	 * @param kpiComments
 	 * @param kpiCommentsHistory
 	 * @return
@@ -207,8 +206,7 @@ public class CommentsServiceImpl implements CommentsService {
 		List<CommentsInfo> newCommentsInfoHistory = kpiCommentsHistory.getCommentsInfo();
 
 		try {
-			KPIComments matchedKpiComments = kpiCommentsRepository.findCommentsByFilter(node, level, nodeChildId,
-					kpiId);
+			KPIComments matchedKpiComments = kpiCommentsRepository.findCommentsByFilter(node, level, nodeChildId, kpiId);
 			KpiCommentsHistory matchedKpiCommentsHistory = kpiCommentsHistoryRepository
 					.findByNodeAndLevelAndNodeChildIdAndKpiId(node, level, nodeChildId, kpiId);
 
@@ -233,7 +231,7 @@ public class CommentsServiceImpl implements CommentsService {
 	 * be removed from DB from kpi_comments collection. Note, kpi_comments_history
 	 * collection will store all the comments for a selected KPI in DB irrespective
 	 * of the KPI max comments count.
-	 * 
+	 *
 	 * @param matchedKpiComment
 	 * @param newCommentsInfo
 	 */
@@ -245,8 +243,7 @@ public class CommentsServiceImpl implements CommentsService {
 			newCommentsInfo.addAll(commentsInfo);
 			matchedKpiComment.setCommentsInfo(newCommentsInfo);
 			kpiCommentsRepository.save(matchedKpiComment);
-			log.debug("Saved new comment & re-arranged existing comments into kpi_comments collection {}",
-					matchedKpiComment);
+			log.debug("Saved new comment & re-arranged existing comments into kpi_comments collection {}", matchedKpiComment);
 
 		} else {
 			commentsInfo.remove(commentsInfoSize - 1);
@@ -261,7 +258,7 @@ public class CommentsServiceImpl implements CommentsService {
 	/**
 	 * This method will re-map the KPI comments for the kpi_comments_history
 	 * collection.
-	 * 
+	 *
 	 * @param kpiCommentsHistory
 	 * @param newCommentsInfoHistory
 	 */
@@ -275,5 +272,4 @@ public class CommentsServiceImpl implements CommentsService {
 		log.debug("Saved new comment and re-arranged existing comments info into kpi_comments_history collection {}",
 				kpiCommentsHistory);
 	}
-
 }

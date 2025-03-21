@@ -76,5 +76,4 @@ public class VersionMetadataServiceImplTest {
 
 		versionMetadataServiceImpl.getVersionMetadata();
 	}
-
 }

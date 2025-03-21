@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.rbac.roles.rest;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,7 +44,6 @@ import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
 
 /**
  * @author anamital
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class RolesControllerTest {
@@ -61,9 +58,7 @@ public class RolesControllerTest {
 	@Mock
 	private RolesHelperService rolesHelperService;
 
-	/**
-	 * method includes preprocesses for test cases
-	 */
+	/** method includes preprocesses for test cases */
 	@Before
 	public void before() {
 		mockMvc = MockMvcBuilders.standaloneSetup(rolesController).build();
@@ -90,9 +85,7 @@ public class RolesControllerTest {
 		testRoleData.setPermissions(testPermissions);
 	}
 
-	/**
-	 * method includes post processes for test cases
-	 */
+	/** method includes post processes for test cases */
 	@After
 	public void after() {
 		mockMvc = null;
@@ -101,9 +94,10 @@ public class RolesControllerTest {
 
 	/**
 	 * method to test /roles restPoint ;
-	 * 
+	 *
+	 * <p>
 	 * Get all access requests
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -114,7 +108,7 @@ public class RolesControllerTest {
 
 	/**
 	 * method to test /roles/{id} restPoint ; Get single role using id
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -125,7 +119,7 @@ public class RolesControllerTest {
 
 	/**
 	 * method to test /roles/{id} restPoint ; Modify single role using id
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -137,7 +131,7 @@ public class RolesControllerTest {
 
 	/**
 	 * method to test /roles/{id} restPoint ; Create new role
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -145,5 +139,4 @@ public class RolesControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.post("/roles/").content(TestUtil.convertObjectToJsonBytes(testRoleData))
 				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
 	}
-
 }

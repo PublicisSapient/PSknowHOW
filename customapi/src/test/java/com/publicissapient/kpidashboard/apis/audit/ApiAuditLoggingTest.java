@@ -50,13 +50,11 @@ public class ApiAuditLoggingTest {
 	public void testGetMethod() throws Exception {
 
 		apiAuditLogging.doDispatch(httpServletRequest, httpServletResponse);
-
 	}
 
 	@Test
 	public void testPostMethod() throws Exception {
 		httpServletRequest.setMethod("POST");
 		apiAuditLogging.doDispatch(httpServletRequest, httpServletResponse);
-
 	}
 }

@@ -18,16 +18,15 @@
 
 package com.publicissapient.kpidashboard.gitlab.util;
 
-import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
+import java.time.Duration;
+
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 
-import java.time.Duration;
+import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 
-/**
- * The Class GitLabRestOperations.
- */
+/** The Class GitLabRestOperations. */
 @Component
 public class GitLabRestOperations implements RestOperationsFactory<RestOperations> {
 
@@ -38,8 +37,8 @@ public class GitLabRestOperations implements RestOperationsFactory<RestOperation
 	 */
 	@Override
 	public RestOperations getTypeInstance() {
-		//TODO:setReadTimeOut is depricated and removed from spring
-		return new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(20_000)).
-				setReadTimeout(Duration.ofSeconds(20_000)).build();
+		// TODO:setReadTimeOut is depricated and removed from spring
+		return new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(20_000))
+				.setReadTimeout(Duration.ofSeconds(20_000)).build();
 	}
 }

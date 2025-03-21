@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.rbac.signupapproval.service;
 
 import static org.junit.Assert.assertTrue;
@@ -27,7 +26,6 @@ import static org.mockito.Mockito.when;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,6 +45,7 @@ import com.publicissapient.kpidashboard.apis.rbac.signupapproval.policy.RejectAp
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+import com.publicissapient.kpidashboard.common.service.NotificationService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SignupManagerTest {
@@ -105,8 +104,10 @@ public class SignupManagerTest {
 		when(authenticationRepository.findByUsername(ArgumentMatchers.anyString()))
 				.thenReturn(authenticationObj(Constant.ACCESS_REQUEST_STATUS_APPROVED, false));
 		signupManager.grantAccess(testId, grantApprovalListener);
-		verify(grantApprovalListener, atLeastOnce()).onFailure(
-				authenticationObj(Constant.ACCESS_REQUEST_STATUS_APPROVED, true), "Failed to accept the request");
+		verify(grantApprovalListener, atLeastOnce())
+				.onFailure(
+						authenticationObj(Constant.ACCESS_REQUEST_STATUS_APPROVED, true),
+						"Failed to accept the request");
 	}
 
 	@Test
@@ -119,8 +120,10 @@ public class SignupManagerTest {
 		when(authenticationRepository.save(ArgumentMatchers.any()))
 				.thenReturn(authenticationObj(Constant.ACCESS_REQUEST_STATUS_REJECTED, true));
 		signupManager.rejectAccessRequest(testId, rejectApprovalListener);
-		verify(rejectApprovalListener, atLeastOnce()).onFailure(
-				authenticationObj(Constant.ACCESS_REQUEST_STATUS_REJECTED, false), "Failed to reject the request");
+		verify(rejectApprovalListener, atLeastOnce())
+				.onFailure(
+						authenticationObj(Constant.ACCESS_REQUEST_STATUS_REJECTED, false),
+						"Failed to reject the request");
 	}
 
 	@Test
@@ -148,5 +151,4 @@ public class SignupManagerTest {
 		authentication.setApproved(dbStatus);
 		return authentication;
 	}
-
 }

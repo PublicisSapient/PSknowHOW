@@ -26,9 +26,8 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 
 /**
  * The interface Common service to get maturity level.
- * 
- * @author anisingh4
  *
+ * @author anisingh4
  */
 public interface CommonService {
 
@@ -36,45 +35,41 @@ public interface CommonService {
 	 * Gets maturity level.
 	 *
 	 * @param maturityRangeList
-	 *            the maturity range list
+	 *          the maturity range list
 	 * @param kpiId
-	 *            the kpi type
+	 *          the kpi type
 	 * @param actualMaturityVal
-	 *            the actual val
+	 *          the actual val
 	 * @return the maturity level
 	 */
 	String getMaturityLevel(List<String> maturityRangeList, String kpiId, String actualMaturityVal);
 
 	/**
-	 * 
 	 * @param roles
-	 *            roles
+	 *          roles
 	 * @return list of email address based on roles
 	 */
 	public List<String> getEmailAddressBasedOnRoles(List<String> roles);
 
 	/**
 	 * This method get list of project admin email address
-	 * 
+	 *
 	 * @param projectConfigId
-	 *            projectConfigId
+	 *          projectConfigId
 	 * @return list of email address based on projectconfigid
 	 */
 	public List<String> getProjectAdminEmailAddressBasedProjectId(String projectConfigId);
 
 	/**
-	 * 
 	 * @return String
 	 * @throws UnknownHostException
 	 */
 	public String getApiHost() throws UnknownHostException;
 
 	/**
-	 * 
 	 * @param trendMap
-	 *            trendMap
+	 *          trendMap
 	 * @return sortedMap
 	 */
 	public Map<String, List<DataCount>> sortTrendValueMap(Map<String, List<DataCount>> trendMap);
-
 }

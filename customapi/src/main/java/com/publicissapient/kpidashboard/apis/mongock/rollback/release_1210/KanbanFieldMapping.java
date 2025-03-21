@@ -121,9 +121,7 @@ public class KanbanFieldMapping {
 		rollbackFieldMappingStruct();
 	}
 
-	/**
-	 * Rollback the duplicate field mapping values
-	 */
+	/** Rollback the duplicate field mapping values */
 	public void rollbackDuplicateFieldMappingValue() {
 		final Map<String, List<String>> fieldToDuplicateMap = getFieldToDuplicateMap();
 
@@ -143,9 +141,7 @@ public class KanbanFieldMapping {
 		mongoTemplate.getCollection(FIELD_MAPPING).aggregate(pipeline).toCollection();
 	}
 
-	/**
-	 * Rollback the duplicated field mapping structure
-	 */
+	/** Rollback the duplicated field mapping structure */
 	public void rollbackDuplicateFieldMappingStruct() {
 		final Map<String, List<String>> fieldToDuplicateMap = getFieldToDuplicateMap();
 
@@ -158,13 +154,11 @@ public class KanbanFieldMapping {
 				.deleteMany(new Document(FIELD_NAME, new Document("$in", duplicateFieldNames)));
 	}
 
-	/**
-	 * Rollback the threshold value for kanban KPIs
-	 */
+	/** Rollback the threshold value for kanban KPIs */
 	private void rollbackThresholdAndBg() {
 		List<String> kpiIds = Arrays.asList("kpi51", "kpi55", "kpi54", "kpi50", "kpi48", "kpi997", "kpi63", "kpi62",
-				"kpi64", "kpi67", "kpi71", "kpi49", "kpi58", "kpi66", "kpi65", "kpi53", "kpi74", "kpi114", "kpi159",
-				"kpi184", "kpi183");
+				"kpi64", "kpi67", "kpi71", "kpi49", "kpi58", "kpi66", "kpi65", "kpi53", "kpi74", "kpi114", "kpi159", "kpi184",
+				"kpi183");
 
 		Document filter = new Document("kpiId", new Document("$in", kpiIds));
 
@@ -185,8 +179,8 @@ public class KanbanFieldMapping {
 				PROVIDE_ANY_STATUS_FROM_WORKFLOW_ON_WHICH_LIVE_IS_CONSIDERED, WORK_FLOW_STATUS_MAPPING, true);
 		updateField(JIRA_LIVE_STATUS_OTA, "Live Status - Open Ticket Ageing",
 				PROVIDE_ANY_STATUS_FROM_WORKFLOW_ON_WHICH_LIVE_IS_CONSIDERED, WORK_FLOW_STATUS_MAPPING, true);
-		updateField(TICKET_COUNT_ISSUE_TYPE, ISSUE_TYPES_TO_CONSIDER, ALL_ISSUE_TYPE_TO_TRACK_TICKETS,
-				ISSUE_TYPES_MAPPING, false);
+		updateField(TICKET_COUNT_ISSUE_TYPE, ISSUE_TYPES_TO_CONSIDER, ALL_ISSUE_TYPE_TO_TRACK_TICKETS, ISSUE_TYPES_MAPPING,
+				false);
 		updateField(KANBAN_RCA_COUNT_ISSUE_TYPE, "Issue types to be included for RCA",
 				"All issue types to be considered for root cause analysis", ISSUE_TYPES_MAPPING, false);
 		updateField(JIRA_TICKET_VELOCITY_ISSUE_TYPE, ISSUE_TYPES_TO_CONSIDER, ALL_ISSUE_TYPE_TO_TRACK_TICKETS,
@@ -200,8 +194,7 @@ public class KanbanFieldMapping {
 		updateField(JIRA_TICKET_TRIAGED_STATUS, "Ticket Triaged Status",
 				"Status from workflow on which ticket is considered as Triaged.", WORK_FLOW_STATUS_MAPPING, true);
 		updateField(JIRA_TICKET_REJECTED_STATUS, "Ticket Rejected/Dropped Status",
-				"Status from workflow on which ticket is considered as Rejected/Dropped.", WORK_FLOW_STATUS_MAPPING,
-				true);
+				"Status from workflow on which ticket is considered as Rejected/Dropped.", WORK_FLOW_STATUS_MAPPING, true);
 	}
 
 	@RollbackExecution
@@ -212,25 +205,20 @@ public class KanbanFieldMapping {
 		updateFieldMappingStruct();
 	}
 
-	/**
-	 * Duplicate the field mapping values
-	 */
+	/** Duplicate the field mapping values */
 	public void duplicateFieldMappingValue() {
 		final Map<String, List<String>> fieldToDuplicateMap = getFieldToDuplicateMap();
 
 		// Use aggregation pipeline to update the documents
 		List<Bson> pipeline = new ArrayList<>();
-		fieldToDuplicateMap
-				.forEach((originalValue, duplicateFields) -> duplicateFields.forEach(duplicateField -> pipeline
-						.add(Aggregates.addFields(new Field<>(duplicateField, "$" + originalValue)))));
+		fieldToDuplicateMap.forEach((originalValue, duplicateFields) -> duplicateFields.forEach(
+				duplicateField -> pipeline.add(Aggregates.addFields(new Field<>(duplicateField, "$" + originalValue)))));
 		pipeline.add(Aggregates.merge(FIELD_MAPPING));
 
 		mongoTemplate.getCollection(FIELD_MAPPING).aggregate(pipeline).toCollection();
 	}
 
-	/**
-	 * Duplicate the field mapping structure
-	 */
+	/** Duplicate the field mapping structure */
 	public void duplicateFieldMappingStruct() {
 		Map<String, List<String>> fieldMappings = getFieldToDuplicateMap();
 
@@ -281,9 +269,7 @@ public class KanbanFieldMapping {
 		addThresholdAndBgDetails("kpi183", "6", true);
 	}
 
-	/**
-	 * Threshold value for kanban KPIs
-	 */
+	/** Threshold value for kanban KPIs */
 	private void addThresholdAndBgDetails(String kpiId, String thresholdValue, boolean isPositiveTrend) {
 		String lowerThresholdBG = isPositiveTrend ? "red" : "white";
 		String upperThresholdBG = isPositiveTrend ? "white" : "red";
@@ -323,8 +309,8 @@ public class KanbanFieldMapping {
 
 	private void updateField(String fieldName, String fieldLabel, String tooltip, String section, boolean mandatory) {
 		Document query = new Document(FIELD_NAME, fieldName);
-		Document update = new Document("$set", new Document("fieldLabel", fieldLabel)
-				.append("tooltip.definition", tooltip).append("section", section).append("mandatory", mandatory));
+		Document update = new Document("$set", new Document("fieldLabel", fieldLabel).append("tooltip.definition", tooltip)
+				.append("section", section).append("mandatory", mandatory));
 		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).updateOne(query, update);
 
 		// Check for duplicates and update them as well
@@ -336,5 +322,4 @@ public class KanbanFieldMapping {
 			}
 		}
 	}
-
 }

@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.jira.cache;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -35,7 +36,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
- *
  */
 @Service
 @Slf4j
@@ -46,9 +46,9 @@ public class JiraProcessorCacheEvictor {
 
 	/**
 	 * @param cacheEndPoint
-	 *            cacheEndPoint
+	 *          cacheEndPoint
 	 * @param cacheName
-	 *            cacheName
+	 *          cacheName
 	 * @return boolean
 	 */
 	public boolean evictCache(String cacheEndPoint, String cacheName) {
@@ -83,11 +83,11 @@ public class JiraProcessorCacheEvictor {
 
 	/**
 	 * @param cacheEndPoint
-	 *            cacheEndPoint
+	 *          cacheEndPoint
 	 * @param param1
-	 *            parameter 1
+	 *          parameter 1
 	 * @param param2
-	 *            parameter 2
+	 *          parameter 2
 	 * @return boolean
 	 */
 	public boolean evictCache(String cacheEndPoint, String param1, String param2) {
@@ -96,10 +96,10 @@ public class JiraProcessorCacheEvictor {
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 
 		if (StringUtils.isNoneEmpty(param1)) {
-			cacheEndPoint = cacheEndPoint.replace("param1", param1);
+			cacheEndPoint = cacheEndPoint.replace(CommonConstant.PARAM1, param1);
 		}
 		if (StringUtils.isNoneEmpty(param2)) {
-			cacheEndPoint = cacheEndPoint.replace("param2", param2);
+			cacheEndPoint = cacheEndPoint.replace(CommonConstant.PARAM2, param2);
 		}
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(jiraProcessorConfig.getCustomApiBaseUrl());
 		uriBuilder.path("/");
@@ -123,5 +123,4 @@ public class JiraProcessorCacheEvictor {
 		}
 		return cleaned;
 	}
-
 }

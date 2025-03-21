@@ -1,17 +1,14 @@
 /**
- * Copyright 2014 CapitalOne, LLC.
- * Further development Copyright 2022 Sapient Corporation.
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * Copyright 2014 CapitalOne, LLC. Further development Copyright 2022 Sapient Corporation.
+ *
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
+ *
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.publicissapient.kpidashboard.apis.sonar.service;
@@ -26,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -49,6 +45,7 @@ import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarDetails;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
@@ -60,7 +57,6 @@ import lombok.extern.slf4j.Slf4j;
  * This class is a service to compute unit coverage.
  *
  * @author prigupta8
- *
  */
 @Component
 @Slf4j
@@ -83,8 +79,8 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
 
 		getSonarKpiData(projectList, treeAggregatorDetail.getMapTmp(), kpiElement);
@@ -123,8 +119,8 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 	}
 
 	@Override
-	public Map<ObjectId, List<SonarDetails>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate,
-			String endDate, KpiRequest kpiRequest) {
+	public Map<ObjectId, List<SonarDetails>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+			KpiRequest kpiRequest) {
 		return new HashMap<>();
 	}
 
@@ -132,75 +128,69 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 		List<KPIExcelData> excelData = new ArrayList<>();
 		getSonarHistoryForAllProjects(pList,
 				getScrumCurrentDateToFetchFromDb(CommonConstant.WEEK, (long) customApiConfig.getSonarWeekCount()))
-						.forEach((projectNodeId, projectData) -> {
-							List<String> projectList = new ArrayList<>();
-							List<String> coverageList = new ArrayList<>();
-							List<String> versionDate = new ArrayList<>();
-							Map<String, List<DataCount>> projectWiseDataMap = new HashMap<>();
-							if (CollectionUtils.isNotEmpty(projectData)) {
-								LocalDate endDateTime = LocalDate.now().minusWeeks(1);
-								for (int i = 0; i < customApiConfig.getSonarWeekCount(); i++) {
-									LocalDate[] weeks = getWeeks(endDateTime);
-									LocalDate monday = weeks[0];
-									LocalDate sunday = weeks[1];
+				.forEach((projectNodePair, projectData) -> {
+					List<String> projectList = new ArrayList<>();
+					List<String> coverageList = new ArrayList<>();
+					List<String> versionDate = new ArrayList<>();
+					Map<String, List<DataCount>> projectWiseDataMap = new HashMap<>();
+					if (CollectionUtils.isNotEmpty(projectData)) {
+						LocalDate endDateTime = LocalDate.now().minusWeeks(1);
+						for (int i = 0; i < customApiConfig.getSonarWeekCount(); i++) {
+							LocalDate[] weeks = getWeeks(endDateTime);
+							LocalDate monday = weeks[0];
+							LocalDate sunday = weeks[1];
 
-									String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,
-											DateUtil.DISPLAY_DATE_FORMAT) + " to "
-											+ DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT,
-													DateUtil.DISPLAY_DATE_FORMAT);
-									Long startms = monday.atStartOfDay(ZoneId.systemDefault()).toInstant()
-											.toEpochMilli();
-									Long endms = sunday.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant()
-											.toEpochMilli();
-									Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms,
-											endms);
+							String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,
+									DateUtil.DISPLAY_DATE_FORMAT) + " to " +
+									DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+							Long startms = monday.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+							Long endms = sunday.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+							Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms);
 
-									if (MapUtils.isEmpty(history)) {
-										history = prepareEmptyJobWiseHistoryMap(projectData, endms);
-									}
-									prepareCoverageList(history, date, projectNodeId, projectList, coverageList,
-											projectWiseDataMap, versionDate);
-
-									endDateTime = endDateTime.minusWeeks(1);
-								}
-								tempMap.get(projectNodeId).setValue(projectWiseDataMap);
-								if (getRequestTrackerId().toLowerCase()
-										.contains(KPISource.EXCEL.name().toLowerCase())) {
-									KPIExcelUtility.populateSonarKpisExcelData(
-											tempMap.get(projectNodeId).getProjectFilter().getName(), projectList,
-											coverageList, versionDate, excelData,
-											KPICode.UNIT_TEST_COVERAGE.getKpiId());
-								}
+							if (MapUtils.isEmpty(history)) {
+								history = prepareEmptyJobWiseHistoryMap(projectData, endms);
 							}
-						});
+							prepareCoverageList(history, date, projectNodePair, projectList, coverageList, projectWiseDataMap,
+									versionDate);
+							endDateTime = endDateTime.minusWeeks(1);
+						}
+						tempMap.get(projectNodePair.getLeft()).setValue(projectWiseDataMap);
+						if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+							KPIExcelUtility.populateSonarKpisExcelData(
+									tempMap.get(projectNodePair.getLeft()).getProjectFilter().getName(), projectList, coverageList,
+									versionDate, excelData, KPICode.UNIT_TEST_COVERAGE.getKpiId());
+						}
+					}
+				});
 
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.UNIT_TEST_COVERAGE.getColumns());
 	}
 
-	private void prepareCoverageList(Map<String, SonarHistory> history, String date, String projectNodeId,
+	private void prepareCoverageList(Map<String, SonarHistory> history, String date, Pair<String, String> projectNodePair,
 			List<String> projectList, List<String> coverageList, Map<String, List<DataCount>> projectWiseDataMap,
 			List<String> versionDate) {
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		List<Double> dateWiseCoverageList = new ArrayList<>();
 		history.values().forEach(sonarDetails -> {
 			Map<String, Object> metricMap = sonarDetails.getMetrics().stream()
 					.filter(metricValue -> metricValue.getMetricValue() != null)
 					.collect(Collectors.toMap(SonarMetric::getMetricName, SonarMetric::getMetricValue));
-			Double coverage = metricMap.get(TEST_UNIT_COVERAGE) == null ? 0d
+			Double coverage = metricMap.get(TEST_UNIT_COVERAGE) == null
+					? 0d
 					: Double.parseDouble(metricMap.get(TEST_UNIT_COVERAGE).toString());
-			String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());
-			DataCount dcObj = getDataCountObject(coverage, projectName, date, keyName);
+			String projectDisplayName = projectNodePair.getRight();
+			String keyName = prepareSonarKeyName(projectDisplayName, sonarDetails.getName(), sonarDetails.getBranch());
+			DataCount dcObj = getDataCountObject(coverage, projectDisplayName, date, keyName);
 			projectWiseDataMap.computeIfAbsent(keyName, k -> new ArrayList<>()).add(dcObj);
 			projectList.add(keyName);
 			versionDate.add(date);
 			dateWiseCoverageList.add(coverage);
-			coverageList.add(metricMap.get(TEST_UNIT_COVERAGE) == null ? Constant.NOT_AVAILABLE
+			coverageList.add(metricMap.get(TEST_UNIT_COVERAGE) == null
+					? Constant.NOT_AVAILABLE
 					: metricMap.get(TEST_UNIT_COVERAGE).toString());
 		});
-		DataCount dcObj = getDataCountObject(
-				calculateKpiValue(dateWiseCoverageList, KPICode.UNIT_TEST_COVERAGE.getKpiId()), projectName, date,
-				AVERAGE_COVERAGE);
+		DataCount dcObj = getDataCountObject(calculateKpiValue(dateWiseCoverageList, KPICode.UNIT_TEST_COVERAGE.getKpiId()),
+				projectNodePair.getRight(), date, AVERAGE_COVERAGE);
 		projectWiseDataMap.computeIfAbsent(AVERAGE_COVERAGE, k -> new ArrayList<>()).add(dcObj);
 	}
 
@@ -218,9 +208,8 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 		List<String> uniqueKeys = sonarHistoryList.stream().map(SonarHistory::getKey).distinct()
 				.collect(Collectors.toList());
 		uniqueKeys.forEach(keys -> {
-			SonarHistory sonarHistory = SonarHistory.builder().processorItemId(refHistory.getProcessorItemId())
-					.date(end).timestamp(end).key(keys).name(keys).branch(refHistory.getBranch()).metrics(metricsList)
-					.build();
+			SonarHistory sonarHistory = SonarHistory.builder().processorItemId(refHistory.getProcessorItemId()).date(end)
+					.timestamp(end).key(keys).name(keys).branch(refHistory.getBranch()).metrics(metricsList).build();
 			historyMap.put(keys, sonarHistory);
 		});
 
@@ -242,8 +231,7 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 	}
 
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI17(),KPICode.UNIT_TEST_COVERAGE.getKpiId());
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI17(), KPICode.UNIT_TEST_COVERAGE.getKpiId());
 	}
-
 }

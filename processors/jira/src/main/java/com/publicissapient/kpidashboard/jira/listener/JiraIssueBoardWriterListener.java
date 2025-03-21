@@ -28,7 +28,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.scope.context.StepContext;
@@ -42,6 +41,7 @@ import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
@@ -50,7 +50,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
- *
  */
 @Component
 @Slf4j
@@ -69,7 +68,7 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.springframework.batch.core.ItemWriteListener#afterWrite(java.util.List)
 	 */
@@ -79,12 +78,11 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 		log.info("Write listner called for scrum board project and saving status in Processor execution Trace log");
 
 		List<ProcessorExecutionTraceLog> processorExecutionToSave = new ArrayList<>();
-		List<JiraIssue> jiraIssues = compositeResults.getItems().stream().map(CompositeResult::getJiraIssue)
-				.toList();
+		List<JiraIssue> jiraIssues = compositeResults.getItems().stream().map(CompositeResult::getJiraIssue).toList();
 
 		Map<String, Map<String, List<JiraIssue>>> projectBoardWiseIssues = jiraIssues.stream()
-				.filter(issue -> !issue.getTypeName().equalsIgnoreCase(JiraConstants.EPIC)).collect(Collectors
-						.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.groupingBy(JiraIssue::getBoardId)));
+				.filter(issue -> !issue.getTypeName().equalsIgnoreCase(JiraConstants.EPIC)).collect(
+						Collectors.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.groupingBy(JiraIssue::getBoardId)));
 		// getting step context
 		StepContext stepContext = StepSynchronizationManager.getContext();
 		for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : projectBoardWiseIssues.entrySet()) {
@@ -93,18 +91,15 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 			List<ProcessorExecutionTraceLog> procTraceLogList = processorExecutionTraceLogRepo
 					.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
 							Collections.singletonList(basicProjectConfigId));
-			Map<String, ProcessorExecutionTraceLog> boardWiseTraceLogMap = procTraceLogList.stream()
-					.collect(Collectors.toMap(
-							traceLog -> Optional.ofNullable(traceLog.getBoardId()).orElse(PROG_TRACE_LOG),
-							Function.identity()));
-			ProcessorExecutionTraceLog progressStatsTraceLog = boardWiseTraceLogMap.getOrDefault(PROG_TRACE_LOG, new ProcessorExecutionTraceLog());
+			Map<String, ProcessorExecutionTraceLog> boardWiseTraceLogMap = procTraceLogList.stream().collect(Collectors
+					.toMap(traceLog -> Optional.ofNullable(traceLog.getBoardId()).orElse(PROG_TRACE_LOG), Function.identity()));
+			ProcessorExecutionTraceLog progressStatsTraceLog = boardWiseTraceLogMap.getOrDefault(PROG_TRACE_LOG,
+					new ProcessorExecutionTraceLog());
 			for (Map.Entry<String, List<JiraIssue>> boardData : boardWiseIssues.entrySet()) {
 				String boardId = boardData.getKey();
-				JiraIssue firstIssue = boardData
-						.getValue().stream().sorted(
-								Comparator
-										.comparing((JiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(), DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
-										.reversed())
+				JiraIssue firstIssue = boardData.getValue().stream()
+						.sorted(Comparator.comparing((JiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
+								DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT))).reversed())
 						.findFirst().orElse(null);
 				if (firstIssue != null) {
 					ProcessorExecutionTraceLog processorExecutionTraceLog;
@@ -112,9 +107,9 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 						processorExecutionTraceLog = boardWiseTraceLogMap.get(boardId);
 					} else {
 						processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-						processorExecutionTraceLog.setFirstRunDate(DateUtil.dateTimeFormatter(
-								LocalDateTime.now().minusMonths(jiraProcessorConfig.getPrevMonthCountToFetchData()).minusDays(jiraProcessorConfig.getDaysToReduce()),
-								JiraConstants.QUERYDATEFORMAT));
+						processorExecutionTraceLog.setFirstRunDate(DateUtil
+								.dateTimeFormatter(LocalDateTime.now().minusMonths(jiraProcessorConfig.getPrevMonthCountToFetchData())
+										.minusDays(jiraProcessorConfig.getDaysToReduce()), JiraConstants.QUERYDATEFORMAT));
 					}
 					setTraceLog(processorExecutionTraceLog, basicProjectConfigId, boardId, firstIssue.getChangeDate(),
 							processorExecutionToSave);
@@ -134,8 +129,8 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 			String boardId, String changeDate, List<ProcessorExecutionTraceLog> processorExecutionToSave) {
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		processorExecutionTraceLog.setBoardId(boardId);
-		processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(changeDate,
-				JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
+		processorExecutionTraceLog.setLastSuccessfulRun(
+				DateUtil.dateTimeConverter(changeDate, JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
 		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
 		processorExecutionToSave.add(processorExecutionTraceLog);
 	}

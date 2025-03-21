@@ -24,15 +24,13 @@ import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
 
 /**
- *
  * @author anamital
  */
 public interface AccessRequestsHelperService {
 
 	/**
 	 * Gets all access requests.
-	 * 
-	 * 
+	 *
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -40,8 +38,7 @@ public interface AccessRequestsHelperService {
 
 	/**
 	 * Gets all access requests for that Id.
-	 * 
-	 * 
+	 *
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -49,9 +46,8 @@ public interface AccessRequestsHelperService {
 
 	/**
 	 * Gets all access requests created by @param username.
-	 * 
+	 *
 	 * @param username
-	 * 
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -59,11 +55,9 @@ public interface AccessRequestsHelperService {
 
 	/**
 	 * Gets all access requests created by @param username with @param status.
-	 * 
+	 *
 	 * @param username
-	 * 
 	 * @param status
-	 * 
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -71,9 +65,8 @@ public interface AccessRequestsHelperService {
 
 	/**
 	 * Gets all access requests with current status @param status.
-	 * 
+	 *
 	 * @param status
-	 * 
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -81,18 +74,17 @@ public interface AccessRequestsHelperService {
 
 	/**
 	 * Gets access requests count with current status @param status.
-	 * 
+	 *
 	 * @param status
-	 *            status
-	 * 
+	 *          status
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
-	ServiceResponse getNotificationByStatus(String status , boolean centralAuthService);
+	ServiceResponse getNotificationByStatus(String status, boolean centralAuthService);
 
 	/**
 	 * Gets access request which has the project id
-	 * 
+	 *
 	 * @param basicProjectConfigId
 	 * @return access requests
 	 */
@@ -100,11 +92,10 @@ public interface AccessRequestsHelperService {
 
 	/**
 	 * Update access request
-	 * 
+	 *
 	 * @param accessRequestsData
-	 *            access request
+	 *          access request
 	 * @return updated access request
 	 */
 	AccessRequest updateAccessRequest(AccessRequest accessRequestsData);
-
 }
