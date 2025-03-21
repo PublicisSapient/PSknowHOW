@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -38,6 +39,7 @@ import com.publicissapient.kpidashboard.common.model.application.CycleTime;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,6 +56,7 @@ public final class BacklogKpiHelper {
 	private static final String DOR_TO_DOD = "DOR to DOD";
 	private static final String DOD_TO_LIVE = "DOD to Live";
 	private static final String LEAD_TIME = "LEAD TIME";
+	public static final String STATUS_UPDATION_LOG_STORY_CHANGED_TO = "statusUpdationLog.story.changedTo";
 
 	private BacklogKpiHelper() {
 	}
@@ -88,7 +91,7 @@ public final class BacklogKpiHelper {
 
 	/**
 	 * sets jira issue by closed date and issue type
-	 * 
+	 *
 	 * @param rangeWiseJiraIssuesMap
 	 *            map of jira issues by data points
 	 * @param issueCustomHistory
@@ -182,4 +185,46 @@ public final class BacklogKpiHelper {
 		}
 		return weekHours;
 	}
+
+	/**
+	 * Filter Project Issue History based on uniqueProjectMap and date Range
+	 *
+	 * @param projectHistories
+	 *            getJiraIssuesCustomHistoryFromBaseClass()
+	 * @param uniqueProjectMap
+	 *            getUniqueProjectMap
+	 * @param startDate
+	 *            startDate
+	 * @param endDate
+	 *            endDate
+	 * @return filtered project histories
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<JiraIssueCustomHistory> filterProjectHistories(List<JiraIssueCustomHistory> projectHistories,
+			Map<String, Map<String, Object>> uniqueProjectMap, String startDate, String endDate) {
+
+		LocalDateTime startDateTime = java.time.LocalDate.parse(startDate).atStartOfDay();
+		LocalDateTime endDateTime = java.time.LocalDate.parse(endDate).atTime(23, 59, 59);
+
+		return projectHistories.stream().filter(history -> {
+			Map<String, Object> filters = uniqueProjectMap.get(history.getBasicProjectConfigId());
+			if (filters == null) {
+				return false;
+			}
+			// Check storyType if provided
+			if (filters.containsKey("storyType") && ((List<Pattern>) filters.get("storyType")).stream()
+					.noneMatch(p -> p.matcher(history.getStoryType()).matches())) {
+				return false;
+			}
+			// Evaluate statusUpdationLog conditions
+			boolean changedToOk = !filters.containsKey(STATUS_UPDATION_LOG_STORY_CHANGED_TO)
+					|| history.getStatusUpdationLog().stream()
+							.anyMatch(log -> ((List<Pattern>) filters.get(STATUS_UPDATION_LOG_STORY_CHANGED_TO))
+									.stream().anyMatch(p -> p.matcher(log.getChangedTo()).matches()));
+			boolean updatedOnOk = history.getStatusUpdationLog().stream()
+					.anyMatch(log -> DateUtil.isWithinDateTimeRange(log.getUpdatedOn(), startDateTime, endDateTime));
+			return changedToOk && updatedOnOk;
+		}).toList();
+	}
+
 }

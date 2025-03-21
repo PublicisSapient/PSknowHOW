@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -314,18 +315,20 @@ public class IssuesWithoutStoryLinkImpl extends JiraBacklogKPIService<Integer, L
 		String startDate = dateRange.getStartDate().format(DATE_FORMATTER);
 		String endDate = dateRange.getEndDate().format(DATE_FORMATTER);
 		Map<String, Object> returnMap = fetchKPIDataFromDb(leafNode, startDate, endDate, kpiRequest);
-
+		//for filtering active sprint jiraIssues
+		Set<String> activeSprintIssues = getActiveSprintJiraIssuesFromBaseClass();
 		List<String> storiesInProject = (List<String>) returnMap.get(TEST_WITHOUT_STORY_LIST);
-		List<TestCaseDetails> totalTestNonRegression = (List<TestCaseDetails>) returnMap
-				.get(TEST_WITHOUT_STORY_TEST_CASES);
+		storiesInProject.forEach(activeSprintIssues::remove);
+		List<TestCaseDetails> totalTestNonRegression = (List<TestCaseDetails>) returnMap.get(TEST_WITHOUT_STORY_TEST_CASES);
 		List<TestCaseDetails> testWithoutStory = totalTestNonRegression.stream()
 				.filter(t -> (t.getDefectStoryID() == null
 						|| !CollectionUtils.containsAny(t.getDefectStoryID(), storiesInProject)))
 				.collect(Collectors.toList());
 
-		List<JiraIssue> totalDefects = checkPriority(
-				(List<JiraIssue>) returnMap.get(DEFECTS_WITHOUT_STORY_DEFECTS_LIST));
-		List<JiraIssue> totalStories = (List<JiraIssue>) returnMap.get(DEFECTS_WITHOUT_STORY_LIST);
+		List<JiraIssue> totalDefects = checkPriority((List<JiraIssue>) returnMap.get(DEFECTS_WITHOUT_STORY_DEFECTS_LIST));
+		totalDefects.removeIf(j-> activeSprintIssues.contains(j.getNumber()));
+		List<String> totalStories = (List<String>) returnMap.get(DEFECTS_WITHOUT_STORY_LIST);
+		totalStories.forEach(activeSprintIssues::remove);
 		List<JiraIssue> defectWithoutStory = new ArrayList<>();
 		defectWithoutStory.addAll(
 				totalDefects.stream().filter(f -> !CollectionUtils.containsAny(f.getDefectStoryID(), totalStories))

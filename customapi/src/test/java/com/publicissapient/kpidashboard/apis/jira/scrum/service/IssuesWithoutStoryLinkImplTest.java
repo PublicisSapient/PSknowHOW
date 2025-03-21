@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,6 +49,7 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.TestCaseDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -62,6 +64,8 @@ import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetails
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssuesWithoutStoryLinkImplTest {
+    @Mock
+    JiraBacklogServiceR jiraBacklogServiceR;
 
 	List<TestCaseDetails> totalTestCaseList = new ArrayList<>();
 	@Mock

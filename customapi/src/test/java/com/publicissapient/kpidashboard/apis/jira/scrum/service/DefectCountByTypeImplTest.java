@@ -16,7 +16,6 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -101,7 +100,6 @@ public class DefectCountByTypeImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraIssueRepository.findByBasicProjectConfigIdAndOriginalTypeIn(any(), any())).thenReturn(issueList);
 		try {
 			KpiElement kpiElement = defectCountByTypeImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));

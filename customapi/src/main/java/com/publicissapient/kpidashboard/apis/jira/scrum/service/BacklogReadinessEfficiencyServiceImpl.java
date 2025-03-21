@@ -324,7 +324,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraBacklogKPIService
 			List<JiraIssue> allJiraIssue, FieldMapping fieldMapping) {
 		int sprintCountForBackLogStrength = customApiConfig.getSprintCountForBackLogStrength();
 		AtomicDouble storyPoint = new AtomicDouble();
-		if (!sprintDetails.isEmpty()) {
+		if (CollectionUtils.isNotEmpty(sprintDetails)) {
 			List<SprintDetails> sprintForStregthCalculation = sprintDetails.stream()
 					.filter(sprintDetail -> null != sprintDetail.getEndDate()
 							&& DateTime.parse(sprintDetail.getEndDate()).isBefore(DateTime.now()))

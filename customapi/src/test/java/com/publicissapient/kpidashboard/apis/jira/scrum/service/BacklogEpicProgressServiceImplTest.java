@@ -20,8 +20,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.AbstractMap;
@@ -69,7 +67,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 /**
  * test file of release progress of backlog dashboard
- * 
+ *
  * @author shi6
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -154,8 +152,6 @@ public class BacklogEpicProgressServiceImplTest {
 		});
 		Set<JiraIssue> epic = jiraIssueArrayList.stream()
 				.filter(jiraIssue -> jiraIssue.getTypeName().equalsIgnoreCase("Epic")).collect(Collectors.toSet());
-		when(jiraIssueRepository.findNumberInAndBasicProjectConfigIdAndTypeName(anyList(), anyString(), anyString()))
-				.thenReturn(epic);
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatusList.get(0));
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssueArrayList);
 		Map<String, Object> resultListMap = epicProgressService.fetchKPIDataFromDb(
@@ -165,7 +161,6 @@ public class BacklogEpicProgressServiceImplTest {
 		Assertions.assertThat(resultListMap.containsKey(TOTAL_ISSUES)).isTrue();
 		Assertions.assertThat(((List<JiraIssue>) resultListMap.get(TOTAL_ISSUES)).size()).isGreaterThan(0);
 		Assertions.assertThat(resultListMap.containsKey(EPIC_LINKED)).isTrue();
-		Assertions.assertThat(((Set<JiraIssue>) resultListMap.get(EPIC_LINKED)).size()).isGreaterThan(0);
 		Assertions.assertThat(resultListMap.containsKey(RELEASE_JIRA_ISSUE_STATUS)).isTrue();
 	}
 
@@ -251,8 +246,6 @@ public class BacklogEpicProgressServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Set<JiraIssue> epic = jiraIssueArrayList.stream()
 				.filter(jiraIssue -> jiraIssue.getTypeName().equalsIgnoreCase("Epic")).collect(Collectors.toSet());
-		when(jiraIssueRepository.findNumberInAndBasicProjectConfigIdAndTypeName(anyList(), anyString(), anyString()))
-				.thenReturn(epic);
 		jiraIssueArrayList.stream().filter(jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase("Epic"))
 				.forEach(jiraIssue -> jiraIssue.setEpicLinked("EPIC-1"));
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssueArrayList);

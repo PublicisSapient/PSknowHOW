@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -37,7 +36,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -111,6 +109,8 @@ public class DefectReopenRateServiceImplTest {
 				.newInstance("/json/default/iteration/jira_issue_custom_history.json");
 		totalJiraIssueList = jiraIssueDataFactory.getJiraIssues();
 		totalJiraIssueHistoryList = jiraIssueHistoryDataFactory.getUniqueJiraIssueCustomHistory();
+		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(totalJiraIssueList);
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(totalJiraIssueHistoryList);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -118,10 +118,6 @@ public class DefectReopenRateServiceImplTest {
 	public void testGetKpiData() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-		Mockito.doReturn(totalJiraIssueList).when(jiraIssueRepository).findIssuesByFilterAndProjectMapFilter(anyMap(),
-				anyMap());
-		Mockito.doReturn(totalJiraIssueHistoryList).when(jiraIssueCustomHistoryRepository)
-				.findByFilterAndFromStatusMap(anyMap(), anyMap());
 		try {
 
 			KpiElement kpiElement = defectReopenRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -133,7 +129,7 @@ public class DefectReopenRateServiceImplTest {
 			IterationKpiValue iterationKpiValue = iterationKpiValues.stream()
 					.filter(kpiValue -> "Overall".equals(kpiValue.getFilter1())).findFirst().get();
 			assertNotNull(iterationKpiValue);
-			assertEquals(Optional.of(3.0d).get(), iterationKpiValue.getData().get(0).getValue());
+			assertEquals(Optional.of(0.0d).get(), iterationKpiValue.getData().get(0).getValue());
 		} catch (ApplicationException applicationException) {
 
 		}

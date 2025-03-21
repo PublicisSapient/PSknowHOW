@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -53,6 +54,7 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -81,6 +83,8 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 	List<JiraIssue> totalIssueBacklogList = new ArrayList<>();
 	@Mock
 	JiraIssueRepository jiraIssueRepository;
+	@Mock
+	JiraBacklogServiceR jiraBacklogServiceR;
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -203,7 +207,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> defectDataListMap = productionIssuesByPriorityAndAgingService
-				.fetchKPIDataFromDb(leafNodeList.get(0), null, null, kpiRequest);
+				.fetchKPIDataFromDb(leafNodeList.get(0), LocalDate.now().minusMonths(6).toString(), LocalDate.now().toString(), kpiRequest);
 
 		assertThat("Total Defects issue list :", ((List<JiraIssue>) defectDataListMap.get(RANGE_TICKET_LIST)).size(),
 				equalTo(0));

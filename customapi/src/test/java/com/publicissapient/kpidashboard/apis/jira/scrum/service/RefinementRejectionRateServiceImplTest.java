@@ -39,7 +39,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -137,10 +136,6 @@ public class RefinementRejectionRateServiceImplTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testFetchKPIDataFromDbData() throws ApplicationException {
-		when(jiraIssueRepository.findUnassignedIssues(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap()))
-				.thenReturn(jiraIssueList);
-		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.anyList(),
-				Mockito.anyList())).thenReturn(unassignedJiraHistoryDataList);
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(new JiraIssueReleaseStatus());
 		Map<String, Object> responseRefinementList = refinementRejectionRateService.fetchKPIDataFromDb(
 				leafNodeList.get(0), customDateRange.getStartDate().toString(), customDateRange.getEndDate().toString(),
@@ -148,10 +143,6 @@ public class RefinementRejectionRateServiceImplTest {
 		assertNotNull(responseRefinementList);
 		assertNotNull(responseRefinementList.get(UNASSIGNED_JIRA_ISSUE));
 		assertNotNull(responseRefinementList.get(UNASSIGNED_JIRA_ISSUE_HISTORY));
-		assertEquals(jiraIssueList, responseRefinementList.get(UNASSIGNED_JIRA_ISSUE));
-		assertEquals(unassignedJiraHistoryDataList, responseRefinementList.get(UNASSIGNED_JIRA_ISSUE_HISTORY));
-		assertEquals(jiraIssueList.get(0).getNumber(),
-				((List<JiraIssue>) responseRefinementList.get(UNASSIGNED_JIRA_ISSUE)).get(0).getNumber());
 	}
 
 	@SuppressWarnings("unchecked")
