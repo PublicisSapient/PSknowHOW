@@ -22,7 +22,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -53,6 +52,7 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -74,7 +74,8 @@ public class FlowEfficiencyServiceImplTest {
 
 	@Mock
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-
+	@Mock
+	JiraBacklogServiceR jiraBacklogServiceR;
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -159,9 +160,6 @@ public class FlowEfficiencyServiceImplTest {
 		when(cacheService.getFromApplicationCache(
 						Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(
-						any(), any(), any(), any()))
-				.thenReturn(issueBacklogHistoryDataList);
 		List<JiraIssueCustomHistory> expectedResult = new ArrayList<>();
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put(HISTORY, issueBacklogHistoryDataList);
