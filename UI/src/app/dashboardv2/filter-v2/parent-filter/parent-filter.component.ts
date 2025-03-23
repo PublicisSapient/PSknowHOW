@@ -140,6 +140,7 @@ export class ParentFilterComponent implements OnChanges {
  */
   onDropdownChange($event: any) {
     if(this.helperService.isDropdownElementSelected($event)){
+      localStorage.setItem('selectedTrend', JSON.stringify($event.value));
       this.handleSelectedLevelChange(true)
     }
   }
