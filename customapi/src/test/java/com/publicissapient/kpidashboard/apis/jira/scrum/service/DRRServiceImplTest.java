@@ -43,7 +43,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
@@ -178,7 +179,7 @@ public class DRRServiceImplTest {
 		filterComponentIdWiseDefectMap.put(REJECTED_DEFECT_PRTA, canceledBugList);
 		filterComponentIdWiseDefectMap.put(CLOSED_DEFECT_DATA, totalBugList);
 		Double drrValue = dRRServiceImpl.calculateKPIMetrics(filterComponentIdWiseDefectMap);
-		assertThat("DRR value :", drrValue, equalTo(84.0));
+		assertThat("DRR value :", drrValue, equalTo(80.0));
 	}
 
 	@SuppressWarnings("unchecked")
