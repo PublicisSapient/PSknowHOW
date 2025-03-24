@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -155,6 +156,10 @@ public class LeadTimeServiceImplTest {
 		kpiWiseAggregation.put(LEAD_TIME, "average");
 
 		when(customApiConfig.getLeadTimeRange()).thenReturn(xAxisRange);
+		jiraIssueCustomHistories.get(0).getStatusUpdationLog().forEach(s -> s.setUpdatedOn(LocalDateTime.now().minusMonths(3)));
+		jiraIssueCustomHistories.stream()
+				.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equalsIgnoreCase("TEST-17908"))
+				.toList().get(0).getStatusUpdationLog().forEach(s -> s.setUpdatedOn(LocalDateTime.now().minusMonths(3)));
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistories);
 	}
 
@@ -199,9 +204,9 @@ public class LeadTimeServiceImplTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> resultListMap = leadTimeService.fetchKPIDataFromDb(leafNodeList.get(0), LocalDate.now().minusMonths(6).toString(), LocalDate.now().toString(), kpiRequest);
+		Map<String, Object> resultListMap = leadTimeService.fetchKPIDataFromDb(leafNodeList.get(0), LocalDate.of(2022, 7, 1).toString(), LocalDate.of(2022, 7, 31).toString(), kpiRequest);
 		List<JiraIssueCustomHistory> dataMap = (List<JiraIssueCustomHistory>) resultListMap.get(STORY_HISTORY_DATA);
-		assertThat("Lead Time Data :", dataMap.size(), equalTo(0));
+		assertThat("Lead Time Data :", dataMap.size(), equalTo(5));
 	}
 
 	@Test

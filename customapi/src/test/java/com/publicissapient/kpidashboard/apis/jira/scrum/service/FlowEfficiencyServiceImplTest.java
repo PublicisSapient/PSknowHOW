@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -75,7 +76,7 @@ public class FlowEfficiencyServiceImplTest {
 	@Mock
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	@Mock
-	JiraBacklogServiceR jiraBacklogServiceR;
+	JiraBacklogServiceR jiraService;
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -146,6 +147,9 @@ public class FlowEfficiencyServiceImplTest {
 		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
 
 		issueBacklogHistoryDataList = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
+		issueBacklogHistoryDataList.get(0).getStatusUpdationLog().get(0).setUpdatedOn(LocalDateTime.now().minusMonths(1));
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(issueBacklogHistoryDataList);
+
 	}
 
 	@Test

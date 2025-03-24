@@ -84,6 +84,8 @@ public class DefectCountByTypeImplTest {
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
+		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(issueList);
+
 	}
 
 	@Test

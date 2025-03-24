@@ -25,6 +25,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -91,6 +93,8 @@ public class RefinementRejectionRateServiceImplTest {
 	private KpiHelperService kpiHelperService;
 	@Mock
 	private JiraBacklogServiceR jiraService;
+	@Mock
+	private FieldMapping fieldMapping;
 
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
@@ -130,6 +134,11 @@ public class RefinementRejectionRateServiceImplTest {
 		}
 
 		unassignedJiraHistoryDataList = JiraIssueHistoryDataFactory.newInstance().getJiraIssueCustomHistory();
+        String formattedDateTime = LocalDateTime.now().minusDays(10).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS"));
+		jiraIssueList.stream().filter(j->j.getNumber().equalsIgnoreCase("TEST-19485")).toList().get(0).setUpdateDate(formattedDateTime);
+		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssueList);
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(unassignedJiraHistoryDataList);
+
 	}
 
 	@SuppressWarnings("unchecked")

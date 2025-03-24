@@ -84,7 +84,7 @@ public class ProductionDefectAgingServiceImplTest {
 	@Mock
 	JiraIssueRepository jiraIssueRepository;
 	@Mock
-	JiraBacklogServiceR jiraBacklogServiceR;
+	JiraBacklogServiceR jiraService;
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -137,7 +137,7 @@ public class ProductionDefectAgingServiceImplTest {
 		totalIssueBacklogList = JiraIssueDataFactory.newInstance().getJiraIssues();
 		when(jiraIssueRepository.findIssuesByDateAndTypeAndStatus(anyMap(), anyMap(), anyString(), anyString(), anyString(),
 				anyString(), anyBoolean())).thenReturn(totalIssueBacklogList);
-
+		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(totalIssueBacklogList);
 		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 	}
 
@@ -206,10 +206,10 @@ public class ProductionDefectAgingServiceImplTest {
 
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> defectDataListMap = productionIssuesByPriorityAndAgingService
-				.fetchKPIDataFromDb(leafNodeList.get(0), LocalDate.now().minusMonths(6).toString(), LocalDate.now().toString(), kpiRequest);
+				.fetchKPIDataFromDb(leafNodeList.get(0), LocalDate.of(2022, 1, 1).toString(), LocalDate.of(2022, 12, 31).toString(), kpiRequest);
 
 		assertThat("Total Defects issue list :", ((List<JiraIssue>) defectDataListMap.get(RANGE_TICKET_LIST)).size(),
-				equalTo(0));
+				equalTo(1));
 	}
 
 	@Test
