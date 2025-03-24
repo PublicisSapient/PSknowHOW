@@ -26,7 +26,7 @@
   </parent>
   <groupId>com.publicissapient.kpidashboard</groupId>
   <artifactId>jiratest-processor</artifactId>
-  <version>12.2.0-SNAPSHOT</version>
+  <version>12.2.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>Jira Test Processor Microservice</description>
   <scm>

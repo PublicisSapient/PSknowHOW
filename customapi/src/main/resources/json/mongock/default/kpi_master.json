@@ -29,7 +29,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83853321/Defect+Injection+Rate"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi14-Defect+Injection+Rate"
           }
         }
       ]
@@ -81,7 +81,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84049922/First+time+pass+rate+FTPR"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi82-First+Time+Pass+Rate"
           }
         }
       ]
@@ -134,7 +134,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886083/Defect+Density"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi111-Defect+Density"
           }
         }
       ]
@@ -186,7 +186,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84049938/Defect+Seepage+Rate"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi35-Defect+Seepage+Rate"
           }
         }
       ]
@@ -239,7 +239,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886099/Defect+Removal+Efficiency"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi34-Defect+Removal+Efficiency"
           }
         }
       ]
@@ -291,7 +291,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886115/Defect+Rejection+Rate"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi37-Defect+Rejection+Rate"
           }
         }
       ]
@@ -338,7 +338,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820546/Defect+Count+by+Priority+Quality"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi28-Defect+Count+By+Priority"
           }
         }
       ]
@@ -379,7 +379,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820562/Defect+Count+By+RCA+Quality"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi36-Defect+Count+By+RCA"
           }
         }
       ]
@@ -414,7 +414,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886196/Created+vs+Resolved"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi126-Created+vs+Resolved+defects"
           }
         }
       ]
@@ -484,7 +484,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84049954/Regression+Automation+Coverage"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi42-Regression+Automation+Coverage"
           }
         }
       ]
@@ -536,7 +536,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886131/In-Sprint+Automation+Coverage"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi16-In-Sprint+Automation+Coverage"
           }
         }
       ]
@@ -582,7 +582,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886147/Unit+Test+Coverage"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi17-Unit+Test+Coverage"
           }
         }
       ]
@@ -630,7 +630,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84049987/Sonar+Violations"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi38-Code+Violations"
           }
         }
       ]
@@ -670,7 +670,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886163/Sonar+Tech+Debt"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi27-Tech+Debt+-+Sonar+Maintainability"
           }
         }
       ]
@@ -725,7 +725,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71958608/DORA+Change+Failure+Rate"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi116-Change+Failure+Rate"
           }
         }
       ]
@@ -797,7 +797,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84049970/Test+Execution+and+pass+percentage"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi70-Test+Execution+and+pass+percentage"
           }
         }
       ]
@@ -841,7 +841,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050003/Issue+Count"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi40-Issue+Count"
           }
         }
       ]
@@ -887,7 +887,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050019/Commitment+Reliability"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi72-Commitment+Reliability"
           }
         }
       ]
@@ -944,7 +944,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886228/Sprint+Predictability"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi5-Sprint+Predictability"
           }
         }
       ]
@@ -985,7 +985,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886212/Sprint+Velocity"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi39-Sprint+Velocity"
           }
         }
       ]
@@ -1059,7 +1059,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820594/Sprint+Capacity+Utilization"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi46-Sprint+Capacity+Utilization"
           }
         }
       ]
@@ -1096,7 +1096,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713477/Developer+Mean+time+to+Merge"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi84-Mean+Time+To+Merge"
           }
         }
       ]
@@ -1142,7 +1142,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70451310/Developer+No.+of+Check-ins+and+Merge+Requests"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi11-Check-Ins+&+Merge+Requests"
           }
         }
       ]
@@ -1190,7 +1190,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886260/Code+Build+Time"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi8-Code+Build+Time"
           }
         }
       ]
@@ -1235,7 +1235,7 @@
           "type": "link",
           "kpiLinkDetail": {
             "text": "Detailed Information at",
-            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71827544/DORA+Deployment+Frequency"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi118-Deployment+Frequency"
           }
         }
       ]
@@ -1316,7 +1316,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050035/Release+Frequency"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi73-Release+Frequency"
           }
         }
       ]
@@ -1356,7 +1356,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050051/Value+delivered+Cost+of+Delay"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi113-Value+Delivery+Cost+of+Delay"
           }
         }
       ]
@@ -1389,7 +1389,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35651585/Kanban+QUALITY+KPIs#Ticket-open-vs-closed-rate-by-type"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi55-Ticket+Open+vs+Closed+rate+by+type"
           }
         }
       ]
@@ -1447,7 +1447,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35651585/Kanban+QUALITY+KPIs#Ticket-Open-vs-Closed-rate-by-Priority"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi54-Ticket+Open+vs+Closed+rate+by+Priority"
           }
         }
       ]
@@ -1504,7 +1504,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35651585/Kanban+QUALITY+KPIs#Net-Open-Ticket-Count-By-Priority"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi50-Net+Open+Ticket+Count+by+Priority"
           }
         }
       ]
@@ -1577,7 +1577,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35651585/Kanban+QUALITY+KPIs#Net-Open-Ticket-count-by-Status-(Total-Ticket-Count)"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi48-Net+Open+Ticket+By+Status"
           }
         }
       ]
@@ -1613,7 +1613,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35651585/Kanban+QUALITY+KPIs#Open-Tickets-Ageing-by-Priority-(Total-Tickets-Aging)"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi997-Open+Ticket+Ageing+By+Priority"
           }
         }
       ]
@@ -1659,7 +1659,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35651585/Kanban+QUALITY+KPIs#Regression-automation-Coverage"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi63-Regression+Automation+Coverage"
           }
         }
       ]
@@ -1705,7 +1705,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35651585/Kanban+QUALITY+KPIs#Unit-Test-Coverage"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi62-Unit+Test+Coverage"
           }
         }
       ]
@@ -1753,7 +1753,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35651585/Kanban+QUALITY+KPIs#Sonar-Violations"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi64-Code+Violations"
           }
         }
       ]
@@ -1793,7 +1793,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35651585/Kanban+QUALITY+KPIs#Sonar-Tech-Debt"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi67-Sonar+Tech+Debt"
           }
         }
       ]
@@ -1837,7 +1837,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35651585/Kanban+QUALITY+KPIs#Test-Execution-and-pass-percentage"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi71-Test+Execution+and+pass+percentage"
           }
         }
       ]
@@ -1881,7 +1881,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35717121/Kanban+SPEED+KPIs#Ticket-Velocity"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi49-Ticket+Velocity"
           }
         }
       ]
@@ -1916,7 +1916,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35717121/Kanban+SPEED+KPIs#Ticket-Velocity"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi58-Team+Capacity"
           }
         } ,
         {
@@ -1958,7 +1958,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35717121/Kanban+SPEED+KPIs#Code-Build-Time"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi66-Code+Build+Time"
           }
         }
       ]
@@ -2002,7 +2002,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35717121/Kanban+SPEED+KPIs#Number-of-Check-ins"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi65-Number+of+Check-ins"
           }
         }
       ]
@@ -2069,7 +2069,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35717121/Kanban+SPEED+KPIs#Lead-Time"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi53-Lead+Time"
           }
         }
       ]
@@ -2160,7 +2160,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35651597/Kanban+VALUE+KPIs#Release-Frequency"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi74-Release+Frequency"
           }
         }
       ]
@@ -2200,7 +2200,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/35651597/Kanban+VALUE+KPIs#Value-delivered-(Cost-of-Delay)"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi114-Value+delivered+Cost+of+Delay"
           }
         }
       ]
@@ -2280,7 +2280,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680609/Work+Remaining"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi119-Work+Remaining"
           }
         }
       ]
@@ -2319,7 +2319,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713345/Planned+Work+Status"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi128-Work+Status"
           }
         }
       ]
@@ -2358,7 +2358,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680658/Estimate+vs+Actual"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi75-Estimate+vs+Actual+time"
           }
         }
       ]
@@ -2397,7 +2397,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713361/Issues+likely+to+spill"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi123-Issues+likely+to+Spill"
           }
         }
       ]
@@ -2436,7 +2436,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713377/Closures+possible+today"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi122-Closure+Possible+Today"
           }
         }
       ]
@@ -2479,7 +2479,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70418594/Iteration+Commitment"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi120-Iteration+Commitment"
           }
         }
       ]
@@ -2518,7 +2518,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680674/Estimate+Hygiene"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi124-Issue+Hygiene"
           }
         }
       ]
@@ -2563,7 +2563,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680625/Quality+Status"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi133-Quality+Status"
           }
         }
       ]
@@ -2600,7 +2600,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680577/Iteration+Burnup"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi125-Iteration+Burnup"
           }
         }
       ]
@@ -2650,7 +2650,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713393/Wastage"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi131-Wastage"
           }
         }
       ]
@@ -2689,7 +2689,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680642/First+time+pass+rate"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi135-First+Time+Pass+Rate"
           }
         }
       ]
@@ -2734,7 +2734,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050083/Issues+without+story+link"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi129-Unlinked+Work+Items"
           }
         }
       ]
@@ -2772,7 +2772,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886319/Production+defects+Ageing"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi127-Production+Defects+Ageing"
           }
         }
       ]
@@ -2809,7 +2809,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886335/Refinement+Rejection+Rate"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi139-Refinement+Rejection+Rate"
           }
         }
       ]
@@ -2848,7 +2848,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713425/Defect+count+by+Status"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi136-Defect+Count+by"
           }
         }
       ]
@@ -2884,7 +2884,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820630/Defects+Reopen+rate"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi137-Defect+Reopen+Rate"
           }
         }
       ]
@@ -2920,7 +2920,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79986689/Release+Defect+count+by+Status"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi141-Defect+Count+by+Status"
           }
         }
       ]
@@ -2956,7 +2956,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79953937/Release+Defect+count+by+RCA"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi142-Defect+Count+by+RCA"
           }
         }
       ]
@@ -2992,7 +2992,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79691782/Release+Defect+count+by+Assignee"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi143-Defect+Count+by+Assignee"
           }
         }
       ]
@@ -3028,7 +3028,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79953921/Release+Defect+count+by+Priority"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi144-Defect+Count+by+Priority"
           }
         }
       ]
@@ -3074,7 +3074,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79757314/Release+Release+Progress"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi147-Release+Progress"
           }
         }
       ]
@@ -3121,7 +3121,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886286/Backlog+Readiness"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi138-Backlog+Readiness"
           }
         }
       ]
@@ -3159,7 +3159,7 @@
           "type": "link",
           "kpiLinkDetail": {
             "text": "Detailed Information at",
-            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70811702/Lead+time"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi3-Lead+Time"
           }
         }
       ]
@@ -3197,7 +3197,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820646/Flow+Load"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi148-Flow+Load"
           }
         }
       ]
@@ -3232,7 +3232,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050099/Flow+Distribution"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi146-Flow+Distribution"
           }
         }
       ]
@@ -3276,7 +3276,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/41582623/People"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi149-Happiness+Index"
           }
         }
       ]
@@ -3309,7 +3309,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70484023/Release+Release+Burnup"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi150-Release+Burnup"
           }
         }
       ]
@@ -3344,7 +3344,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820678/Backlog+Count+by+Status"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi151-Backlog+Count+By+Status"
           }
         }
       ]
@@ -3378,7 +3378,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050115/Backlog+Count+by+Issue+type"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi152-Backlog+Count+By+Issue+Type"
           }
         }
       ]
@@ -3412,7 +3412,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050067/PI+Predictability"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi153-PI+Predictability"
           }
         }
       ]
@@ -3467,7 +3467,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/98140489/Defect+count+by+Type"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi155-Defect+Count+By+Type"
           }
         }
       ]
@@ -3506,7 +3506,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71663772/DORA+Lead+time+for+changes"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi156-Lead+Time+For+Change"
           }
         }
       ]
@@ -3590,7 +3590,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70451310/Developer+No.+of+Check-ins+and+Merge+Requests"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi157-Check-Ins+&+Merge+Requests"
           }
         }
       ] ,
@@ -3675,7 +3675,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713477/Developer+Mean+time+to+Merge"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi158-Mean+Time+To+Merge"
           }
         }
       ] ,
@@ -3838,7 +3838,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680716/Developer+Pickup+time"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi160-Pickup+Time"
           }
         }
       ] ,
@@ -3911,7 +3911,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713493/Developer+PR+Size"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi162-PR+Size"
           }
         }
       ]
@@ -3967,7 +3967,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886244/Scope+Churn"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi164-Scope+Churn"
           }
         }
       ]
@@ -4011,7 +4011,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/98140473/Release+Defect+count+by+Testing+phase"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi163-Defect+by+Testing+Phase"
           }
         }
       ]
@@ -4055,7 +4055,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79986705/Release+Epic+Progress"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi165-Epic+Progress"
           }
         }
       ]
@@ -4091,7 +4091,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820662/Epic+Progress"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi169-Epic+Progress"
           }
         }
       ]
@@ -4128,7 +4128,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886303/Iteration+Readiness"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi161-Iteration+Readiness"
           }
         }
       ]
@@ -4172,7 +4172,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71663785/DORA+Mean+time+to+Restore"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi166-Mean+Time+to+Recover"
           }
         }
       ],
@@ -4255,7 +4255,7 @@
           "type": "link",
           "kpiLinkDetail": {
             "text": "Detailed Information at",
-            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886180/Sonar+Code+Quality"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi168-Sonar+Code+Quality"
           }
         }
       ]
@@ -4300,7 +4300,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71827496/Flow+Efficiency"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi170-Flow+Efficiency"
           }
         }
       ]
@@ -4346,7 +4346,7 @@
           "type": "link",
           "kpiLinkDetail": {
             "text": "Detailed Information at",
-            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70418714/Cycle+time"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi171-Cycle+Time"
           }
         }
       ],
@@ -4376,7 +4376,7 @@
           "type": "link",
           "kpiLinkDetail": {
             "text": "Detailed Information at",
-            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/92930049/Build+Frequency"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi172-Build+Frequency"
           }
         }
       ]
@@ -4419,7 +4419,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/106528769/Developer+Rework+Rate"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi173-Rework+Rate"
           }
         }
       ]
@@ -4461,7 +4461,7 @@
           "type": "link",
           "kpiLinkDetail": {
             "text": "Detailed Information at",
-            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680674/Estimate+Hygiene"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi176-Risks+And+Dependencies"
           }
         }
       ]
@@ -4489,7 +4489,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/144146433/Release+Defect+count+by"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi178-Defect+Count+By"
           }
         }
       ]
@@ -4521,7 +4521,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/147652609/Release+Release+Plan"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi179-Release+Plan"
           }
         }
       ]
@@ -4555,7 +4555,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/226394113/Developer+Defect+Rate"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi186-Defect+Rate"
           }
         }
       ]
@@ -4594,7 +4594,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/226459649/Developer+Innovation+Rate"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi185-Innovation+Rate"
           }
         }
       ]
@@ -4632,7 +4632,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/197263361/Developer+Revert+Rate"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi180-Revert+Rate"
           }
         }
       ]
@@ -4672,7 +4672,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/106528769/Developer+PR+Success+Rate"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi182-PR+Success+Rate"
           }
         }
       ]
@@ -4712,7 +4712,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/205357058/Developer+PR+Decline+Rate"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi181-PR+Decline+Rate"
           }
         }
       ]
@@ -4768,7 +4768,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71958608/DORA+Change+Failure+Rate"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi184-Change+Failure+Rate"
           }
         }
       ],
@@ -4837,7 +4837,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71827544/DORA+Deployment+Frequency"
+            "link" : "https://knowhow.tools.publicis.sapient.com/wiki/kpi183-Deployment+Frequency"
           }
         }
       ],

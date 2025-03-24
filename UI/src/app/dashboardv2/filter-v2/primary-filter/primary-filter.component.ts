@@ -17,7 +17,7 @@ export class PrimaryFilterComponent implements OnChanges {
   @Input() selectedTab: string = '';
   filters: any[];
   previousSelectedFilters: any = [];
-  selectedFilters: any;
+  selectedFilters: any = [];
   selectedAdditionalFilters: any;
   subscriptions: any[] = [];
   stateFilters: any = {};
@@ -255,10 +255,8 @@ export class PrimaryFilterComponent implements OnChanges {
   }
 
   onSelectionChange(event: any) {
-    if(event){
-      localStorage.setItem('selectedTrend', JSON.stringify(event.value));
-    }
     if (event?.value?.length > 0) {
+      localStorage.setItem('selectedTrend', JSON.stringify(event.value));
       this.moveSelectedOptionToTop()
     }
   }
@@ -280,10 +278,8 @@ export class PrimaryFilterComponent implements OnChanges {
   isString(val): boolean { return typeof val === 'string'; }
 
   onDropdownChange($event: any) {
-    if($event){
-      localStorage.setItem('selectedTrend', JSON.stringify($event?.value));
-    }
     if (this.helperService.isDropdownElementSelected($event)) {
+      localStorage.setItem('selectedTrend', JSON.stringify($event?.value));
       this.applyPrimaryFilters($event)
     }
   }

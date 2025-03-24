@@ -84,7 +84,8 @@ export class AppComponent implements OnInit {
     });
 
     const url = localStorage.getItem('shared_link');
-    const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess?.length ? JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects : [];
+    let currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess?.length ? JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess: [];
+    currentUserProjectAccess = currentUserProjectAccess.flatMap(row => row.projects);
     const ifSuperAdmin = JSON.parse(localStorage.getItem('currentUserDetails'))?.authorities?.includes('ROLE_SUPERADMIN');
     if (url) {
       // Extract query parameters
