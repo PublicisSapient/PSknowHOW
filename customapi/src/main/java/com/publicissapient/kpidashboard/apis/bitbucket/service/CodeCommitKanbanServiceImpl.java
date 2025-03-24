@@ -155,7 +155,6 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 
 		Map<String, List<DataCount>> projectWiseDataMap = new LinkedHashMap<>();
 		LocalDate currentDate = LocalDate.now();
-		String projectNodeId = node.getId();
 		List<RepoToolValidationData> repoToolValidationDataList = new ArrayList<>();
 		for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
 

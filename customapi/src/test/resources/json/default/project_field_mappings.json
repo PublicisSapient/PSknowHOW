@@ -8,6 +8,7 @@
     "jiradefecttype": [
       "Defect"
     ],
+    "jiraReadyForRefinementKPI139": ["Open", "In Progress"],
     "jiraIssueEpicType": [
       "Epic"
     ],
