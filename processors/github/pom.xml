@@ -22,15 +22,15 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>3.2.0</version>
-    <relativePath/>
+    <relativePath />
   </parent>
   <groupId>com.publicissapient.kpidashboard</groupId>
   <artifactId>github-processor</artifactId>
-  <version>13.0.0</version>
+  <version>13.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>Github processor service</description>
   <scm>
-    <tag>13.0.0</tag>
+    <tag>4.6.1</tag>
   </scm>
   <properties>
     <java.version>17</java.version>
