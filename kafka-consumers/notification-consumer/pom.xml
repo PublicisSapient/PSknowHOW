@@ -10,11 +10,11 @@
   </parent>
   <groupId>com.publicissapient.kpidashboard</groupId>
   <artifactId>notification-consumer</artifactId>
-  <version>12.2.1-SNAPSHOT</version>
+  <version>13.0.0</version>
   <name>notification-consumer</name>
   <description>Notification consumer for Apache Kafka</description>
   <scm>
-    <tag>4.6.1</tag>
+    <tag>13.0.0</tag>
   </scm>
   <properties>
     <java.version>17</java.version>

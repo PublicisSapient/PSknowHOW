@@ -19,10 +19,10 @@
   </parent>
   <groupId>com.publicissapient.kpidashboard</groupId>
   <artifactId>jira-processor</artifactId>
-  <version>12.2.1-SNAPSHOT</version>
+  <version>13.0.0</version>
   <description>Jira processor fetches data from JIRA api</description>
   <scm>
-    <tag>4.6.1</tag>
+    <tag>13.0.0</tag>
   </scm>
   <properties>
     <java.version>17</java.version>

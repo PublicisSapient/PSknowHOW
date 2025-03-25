@@ -20,12 +20,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.publicissapient.kpidashboard</groupId>
   <artifactId>Kpidashboard</artifactId>
-  <version>12.2.1-SNAPSHOT</version>
+  <version>13.0.0</version>
   <packaging>pom</packaging>
   <scm>
     <connection>scm:git:https://github.com/PublicisSapient/PSknowHOW.git</connection>
     <developerConnection>scm:git:https://github.com/PublicisSapient/PSknowHOW.git</developerConnection>
-    <tag>4.6.1</tag>
+    <tag>13.0.0</tag>
     <url>https://github.com/PublicisSapient/PSknowHOW.git</url>
   </scm>
   <properties>
