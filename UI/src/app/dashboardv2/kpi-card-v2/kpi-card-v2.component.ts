@@ -11,8 +11,6 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CommentsV2Component } from 'src/app/component/comments-v2/comments-v2.component';
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 import { MessageService } from 'primeng/api';
-import * as d3 from 'd3';
-import { Subject } from 'rxjs';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 
@@ -41,6 +39,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   showComments: boolean = false;
   @Input() kpiSize;
   @Input() kpiDataStatusCode: string = '';
+  @Input() filterApplyData: any;
   // showComments: boolean = false;
   loading: boolean = false;
   noData: boolean = false;
@@ -93,8 +92,25 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   colorPalette = ['#FBCF5F', '#6079C5', '#A4F6A5'];
   selectedButtonValue;
   cardData;
-  reportModuleEnabled: boolean = false;
+  reportObj: any = {};
+  displayAddToReportsModal: boolean = false;
+  createNewReportTemplate: boolean = false;
+  reportName: string = '';
+  existingReportData: any[] = [];
+  iterationKPIFilterValues: any[] = [];
+  @Input() chartColorList: any[];
+  @Input() yAxis: string = '';
+  @Input() kpiThresholdObj: any;
+  @Input() releaseEndDate: string = '';
+  @Input() hieararchy: any;
+  @Input() kpiHeight: number = 0;
 
+
+  // reports: chartWithFiltersComponent
+  selectedMainCategory: any;
+  selectedMainFilter: any;
+  selectedFilter2: any;
+  success: boolean = false;
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
     private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService, private kpiHelperService: KpiHelperService,
@@ -145,6 +161,22 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.selectedTab = this.service.getSelectedTab() ? this.service.getSelectedTab().toLowerCase() : '';
     }));
     /** assign 1st value to radio button by default */
+
+    this.subscriptions.push(this.service.onChartChangeObs.subscribe((stringifiedData) => {
+      if (stringifiedData) {
+        stringifiedData = JSON.parse(stringifiedData);
+        this.selectedMainCategory = stringifiedData['selectedMainCategory'];
+        this.selectedMainFilter = stringifiedData['selectedMainFilter'];
+        this.selectedFilter2 = stringifiedData['selectedFilter2'];
+      }
+    }));
+
+    this.subscriptions.push(this.service.onSelectedReportChangeObs.subscribe((reportData) => {
+      if (reportData) {
+        this.reportName = reportData.name;
+        this.success = false;
+      }
+    }))
   }
 
   async initializeMenu() {
@@ -182,18 +214,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         },
       },
     ];
-
-    this.reportModuleEnabled = await this.featureFlagService.isFeatureEnabled('REPORTS');
-
-    if (this.reportModuleEnabled) {
-      this.menuItems.push({
-        label: 'Add to Report',
-        icon: 'pi pi-briefcase',
-        command: ($event) => {
-          this.addToReport();
-        },
-      });
-    }
   }
 
   /**
@@ -218,7 +238,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.showComments = true;
       this.openCommentModal();
     } else if (event.report) {
-      this.addToReport();
+      this.addToReportAction();
     }
   }
 
@@ -242,6 +262,35 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         }
       }
     }
+
+    // if (changes['trendValueList'] && changes['trendValueList'].currentValue) {
+
+    if (this.selectedTab !== 'iteration') {
+      if (!this.loader && (!this.checkIfDataPresent(this.kpiDataStatusCode)) || (!this.kpiData?.kpiDetail?.isAdditionalFilterSupport && this.iSAdditionalFilterSelected)) {
+        this.menuItems = this.menuItems.filter(item => item.label !== 'Add to Report');
+        this.menuItems.push({
+          label: 'Add to Report',
+          icon: 'pi pi-briefcase',
+          command: ($event) => {
+            this.addToReportAction();
+          },
+          disabled: true
+        });
+      } else if (!this.loader) {
+        this.menuItems = this.menuItems.filter(item => item.label !== 'Add to Report');
+        this.menuItems.push({
+          label: 'Add to Report',
+          icon: 'pi pi-briefcase',
+          command: ($event) => {
+            this.addToReportAction();
+          },
+          disabled: false
+        });
+      }
+    }
+    // }
+
+
 
     //#region new card kpi
     if (this.selectedTab === 'iteration' && !this.loader) {
@@ -599,6 +648,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     });
     this.displaySprintDetailsModal = true;
   }
+
+
   //#region new card
 
   /**
@@ -612,6 +663,17 @@ export class KpiCardV2Component implements OnInit, OnChanges {
        */
   onFilterChange(event) {
     const { selectedKeyObj, selectedKey, ...updatedEvent } = event;
+
+
+    // extract the filter values for report
+    this.iterationKPIFilterValues = [];
+    this.kpiFilterData['filterGroup']?.filterGroup1.forEach(element => {
+      let obj = element;
+      obj['value'] = updatedEvent[element.filterKey];
+      this.iterationKPIFilterValues.push(obj);
+    });
+
+    console.log(this.iterationKPIFilterValues);
 
     // Dynamically determine the exclusion value
     const exclusionValue = selectedKeyObj?.Category;
@@ -742,20 +804,24 @@ export class KpiCardV2Component implements OnInit, OnChanges {
      * @throws {Error} Throws an error if the data structure is not as expected.
      */
   showCummalative() {
-    if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar') {
-      return this.kpiHelperService.convertToHoursIfTime(this.currentChartData.totalCount, 'day')
-    } else if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar-chart') {
-      if (!!this.selectedButtonValue?.length && !!this.selectedButtonValue[0]?.key) {
-        return this.copyCardData.issueData.reduce((sum, issue) => sum + (issue.tempCount || 0), 0)
+    if (this.kpiData?.kpiDetail?.chartType !== 'chartWithFilter') {
+      if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar') {
+        return this.kpiHelperService.convertToHoursIfTime(this.currentChartData.totalCount, 'day')
+      } else if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar-chart') {
+        if (!!this.selectedButtonValue?.length && !!this.selectedButtonValue[0]?.key) {
+          return this.copyCardData.issueData.reduce((sum, issue) => sum + (issue.tempCount || 0), 0)
+        } else {
+          return this.currentChartData.totalCount
+        }
       } else {
+        if (!!this.selectedButtonValue && Array.isArray(this.selectedButtonValue) && !!this.selectedButtonValue[0].key) {
+          const totalValue = this.calculateValue(this.copyCardData.issueData, this.selectedButtonValue[0].key)
+          return this.kpiHelperService.convertToHoursIfTime(totalValue, this.selectedButtonValue[0].unit)
+        }
         return this.currentChartData.totalCount
       }
     } else {
-      if (!!this.selectedButtonValue && !!this.selectedButtonValue[0].key) {
-        const totalValue = this.calculateValue(this.copyCardData.issueData, this.selectedButtonValue[0].key)
-        return this.kpiHelperService.convertToHoursIfTime(totalValue, this.selectedButtonValue[0].unit)
-      }
-      return this.currentChartData.totalCount
+      return null;
     }
   }
 
@@ -771,43 +837,247 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     return filterData?.filterGroup;
   }
 
-  addToReport() {
-    let reportObj = {
+  //#region reports
+  /**
+       * Prepares and adds KPI report metadata to the report object, 
+       * including various configurations based on the current state 
+       * and selected options, then displays the report modal.
+       * 
+       * @param {void} 
+       * @returns {void} 
+       */
+  addToReportAction() {
+    this.success = false;
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    let additional_filters = this.service.getBackupOfFilterSelectionState('additional_level') || {};
+    additional_filters = this.setAdditionalFilterLevels(additional_filters);
+    console.log(additional_filters);
+
+    this.getExistingReports();
+    let metaDataObj = {
+      kpiName: this.kpiData.kpiName,
       kpiId: this.kpiData.kpiId,
-      chartData: this.currentChartData?.chartData ? this.currentChartData?.chartData : this.kpiChartData[this.kpiData?.kpiId],
-      kpiDetail: this.kpiData.kpiDetail,
-      kpiDataStatusCode: this.kpiDataStatusCode,
+      kpiSource: this.kpiData.kpiDetail.kpiSource,
+      kpiUnit: this.kpiData.kpiDetail.kpiUnit,
+      kpiCategory: this.kpiData.kpiDetail.kpiCategory,
+      kpiFilter: this.kpiData.kpiDetail.kpiFilter,
       chartType: this.kpiData.kpiDetail.chartType,
-      colors: this.getColorList(this.colors)
+      filterOptions: this.filterOptions,
+      radioOption: this.radioOption,
+      trend: this.trendData,
+      trendColors: this.trendBoxColorObj,
+      selectedKPIFilters: this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() === 'radiobutton' ? this.radioOption : this.filterOptions,
+      selectedTab: this.selectedTab,
+      selectedType: this.service.getSelectedType()?.toLowerCase(),
+      filterApplyData: this.filterApplyData,
+      kpiSelectedFilterObj: this.kpiSelectedFilterObj[this.kpiData?.kpiId],
+      yAxis: this.yAxis,
+      xAxis: this.kpiData.kpiDetail.xaxisLabel,
+      chartColorList: this.chartColorList || {},
+      kpiThresholdObj: this.kpiThresholdObj,
+      capturedAt: formattedDate,
+      kpiHeight: this.kpiHeight,
+      hieararchy: this.hieararchy,
+      additional_filters: additional_filters
+    }
+
+    if (metaDataObj.chartType === 'bar-with-y-axis-group') {
+      metaDataObj['yaxisOrder'] = this.kpiData.kpiDetail.yaxisOrder;
+    }
+
+    if (metaDataObj.chartType === 'chartWithFilter') {
+      metaDataObj['selectedMainCategory'] = this.selectedMainCategory;
+      metaDataObj['selectedMainFilter'] = this.selectedMainFilter;
+      metaDataObj['selectedFilter2'] = this.selectedFilter2 || null;
+    }
+
+    if (this.selectedTab === 'iteration') {
+      metaDataObj['selectedButtonValue'] = this.getSelectButtonValue();
+      metaDataObj['cardData'] = this.cardData;
+      if (metaDataObj['cardData']) {
+        metaDataObj['cardData']['summary'] = this.showCummalative();
+      }
+      metaDataObj['iterationKPIFilterValues'] = this.iterationKPIFilterValues;
+    }
+
+    if (metaDataObj.chartType === 'horizontalPercentBarChart') {
+      metaDataObj['kpiHeight'] = 200;
+    }
+
+    if (this.selectedTab === 'iteration' && metaDataObj.chartType === 'CumulativeMultilineChart') {
+      metaDataObj.chartType = 'CumulativeMultilineChartv2';
+    }
+
+    if(metaDataObj.chartType === 'line' || metaDataObj.chartType === 'grouped_column_plus_line') {
+      metaDataObj['upperThresholdBG'] = this.kpiData.kpiDetail.upperThresholdBG;
+      metaDataObj['lowerThresholdBG'] = this.kpiData.kpiDetail.lowerThresholdBG;
+    }
+
+
+    metaDataObj['releaseEndDate'] = this.releaseEndDate;
+
+    this.reportObj = {
+      id: this.kpiData.kpiId,
+      chartData: this.currentChartData?.chartData ? this.currentChartData?.chartData : this.kpiChartData,
+      metadata: metaDataObj,
     };
 
-    let storedReportData = localStorage.getItem('reportData');
-    if (!storedReportData) {
-      storedReportData = JSON.stringify([reportObj]);
-      localStorage.setItem('reportData', storedReportData);
-      this.messageService.add({ severity: 'success', summary: 'KPI added to default report' });
-    } else {
-      let parsedData = JSON.parse(storedReportData);
-      let kpiIndex = parsedData.findIndex(x => x.kpiId === reportObj.kpiId);
-      if (kpiIndex === -1) {
-        parsedData.push(reportObj);
-        localStorage.setItem('reportData', JSON.stringify(parsedData));
-        this.messageService.add({ severity: 'success', summary: 'KPI added to default report' });
-      } else {
-        parsedData = parsedData.filter(x => x.kpiId !== reportObj.kpiId);
-        parsedData.push(reportObj);
-        localStorage.setItem('reportData', JSON.stringify(parsedData));
-        this.messageService.add({ severity: 'warn', summary: 'KPI updated and added to default report' });
+    this.displayAddToReportsModal = true;
+  }
+
+  setAdditionalFilterLevels(obj) {
+    let completeHierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
+    completeHierarchyData = completeHierarchyData[this.service.getSelectedType()?.toLowerCase()];
+    let result = {};
+    Object.keys(obj).forEach((key) => {
+      let newKey = completeHierarchyData.filter((level) => level.hierarchyLevelId === key)[0].hierarchyLevelName;
+      result[newKey] = obj[key];
+    });
+
+    return result;
+  }
+
+  getSelectButtonValue() {
+    let result = '';
+    let options = this.getSelectButtonOptions();
+
+    if (options?.length) {
+      this.selectedButtonValue = this.selectedButtonValue || { Category: (options[0].hasOwnProperty('key') ? options[0]?.key : options[0]?.categoryName) };
+      result = options.filter(x => {
+        if (x.hasOwnProperty('key')) {
+          return x.key === this.selectedButtonValue.Category
+        } else if (x.hasOwnProperty('categoryName')) {
+          return x.categoryName === this.selectedButtonValue.Category
+        }
+      })[0][this.getOptionLabel()];
+    }
+    return result;
+  }
+
+  getSelectButtonOptions(): any[] {
+    if (this.kpiData.kpiDetail.chartType === 'stacked-bar-chart') {
+      return this.kpiFilterData['dataGroup']?.dataGroup1 || [];
+    } else if (this.kpiData.kpiDetail.chartType === 'grouped-bar-chart') {
+      return this.kpiFilterData['categoryData']?.categoryGroup || [];
+    }
+    return [];
+  }
+
+  getOptionLabel(): string {
+    return this.kpiData.kpiDetail.chartType === 'stacked-bar-chart' ? 'name' : 'categoryName';
+  }
+
+  getExistingReports() {
+    this.http.fetchReports().subscribe({
+      next: (response) => {
+        if (response['success']) {
+          if (response['data']['content'] && response['data']['content'].length) {
+            this.generateReportSlider(response['data']['content']);
+          }
+        }
+      },
+      error: (error) => {
+        this.existingReportData = [];
+        this.generateReportSlider([]);
       }
+    });
+  }
+
+  generateReportSlider(response, newReport = false) {
+    let storedReportData = response;
+    if (storedReportData?.length) {
+      this.existingReportData = storedReportData;
+      if (!newReport) {
+        this.reportName = this.existingReportData[0].name;
+      }
+    } else {
+      this.existingReportData = [];
+    }
+    if (!this.existingReportData?.length) {
+      this.createNewReportTemplate = true;
+      this.service.setNoReports(true);
+    } else {
+      this.createNewReportTemplate = false;
+      this.service.setNoReports(false);
     }
   }
 
-  getColorList(colorObj) {
-    let result = [];
-    Object.keys(colorObj).forEach(key => {
-      result.push(colorObj[key].color);
+  toggleCreateNewReportTemplate(event) {
+    this.reportName = '';
+    this.createNewReportTemplate = !this.createNewReportTemplate;
+  }
+
+  addToReportPost() {
+    let data = { ...this.reportObj };
+    data.chartData = JSON.stringify(data.chartData);
+    let submitData = {
+      name: this.reportName,
+      kpis: [data]
+    };
+
+    this.http.createReport(submitData).subscribe(data => {
+      if (data['success']) {
+        this.messageService.add({ severity: 'success', summary: 'Report created successfully' });
+        this.existingReportData.push(data['data']);
+        this.createNewReportTemplate = false;
+        this.reportName = data['data'].name;
+        this.generateReportSlider(this.existingReportData, true);
+        this.success = true;
+      } else {
+        this.messageService.add({ severity: 'error', summary: 'Error while creating report' });
+        this.success = false;
+      }
     });
-    return result;
+  }
+
+
+  addToReportPut() {
+    let reportId = this.existingReportData.find(x => x.name === this.reportName).id;
+    let existingKPIs = this.existingReportData.find(x => x.name === this.reportName).kpis;
+
+    let data = { ...this.reportObj };
+    data.chartData = JSON.stringify(data.chartData);
+
+    if (!existingKPIs.find(x => x.id === data.id)) {
+      existingKPIs.push(data)
+    } else {
+      existingKPIs = this.replaceObjectById(existingKPIs, data);
+    }
+
+
+    let submitData = {
+      name: this.reportName,
+      kpis: [...existingKPIs]
+    };
+
+
+    this.http.updateReport(reportId, submitData).subscribe(data => {
+      if (data['success']) {
+        this.messageService.add({ severity: 'success', summary: 'Report updated successfully' });
+        this.existingReportData = this.replaceObjectByName(this.existingReportData, data['data']);
+        this.success = true;
+      } else {
+        this.messageService.add({ severity: 'error', summary: 'Error while updating report' });
+        this.success = false;
+      }
+    });
+  }
+
+  replaceObjectByName(arr: any[], replacement: any): any[] {
+    return arr.map(obj => (obj.name === replacement.name ? replacement : obj));
+  }
+
+  replaceObjectById(arr: any[], replacement: any): any[] {
+    return arr.map(obj => (obj.id === replacement.id ? replacement : obj));
+  }
+
+  closeAddToReportsModal() {
+    this.createNewReportTemplate = false;
+    this.displayAddToReportsModal = false;
   }
 
   handleKeyboardSelect(event: KeyboardEvent) {
@@ -816,8 +1086,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     const currentIndex = this.dropdownArr[0].options.findIndex(
       option => option.value === this.radioOption
     );
-    
-    switch(event.key) {
+
+    switch (event.key) {
       case 'ArrowRight':
         // Select next option
         if (currentIndex < this.dropdownArr[0].options.length - 1) {
@@ -840,7 +1110,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     const triggeringElement = document.getElementById('sprint-details-trigger');
     triggeringElement?.focus();
   }
-  
+
   onTabChange(event: any) {
     // Optional: Improve tab change accessibility
     const newTabElement = document.getElementById(`project-tab-${event.index}`);

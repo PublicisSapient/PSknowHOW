@@ -135,6 +135,14 @@ export class SharedService {
   isSprintGoal; 
   sprintGoalData : any = {};
 
+  // for reports
+  onChartChange = new Subject<any>();
+  onChartChangeObs = this.onChartChange.asObservable();
+  noReports: boolean = true;
+  selectedReport: any = {};
+  onSelectedReportChange = new Subject<any>();
+  onSelectedReportChangeObs = this.onSelectedReportChange.asObservable();
+
   constructor(private router: Router, private route: ActivatedRoute) {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
@@ -150,6 +158,15 @@ export class SharedService {
     // Observable to subscribe to
     this.selectedTrendsEvent = this.selectedTrendsEventSubject.asObservable();
     this.isSprintGoal = new EventEmitter();
+  }
+
+  // for reports
+  setNoReports(val) {
+    this.noReports = val;
+  }
+
+  getNoReports() {
+    return this.noReports;
   }
 
   // for DSV

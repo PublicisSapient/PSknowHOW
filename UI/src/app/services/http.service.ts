@@ -178,6 +178,8 @@ export class HttpService {
   private recommendationsUrl = this.baseUrl + '/api/kpiRecommendation';
   private urlShortener = this.baseUrl + '/api/stringShortener/shorten';
   private urlRestore = this.baseUrl + '/api/stringShortener/longString';
+  private createReportUrl = this.baseUrl + '/api/reports';
+  private fetchReportsUrl = this.baseUrl + '/api/reports?createdBy=';
 
   currentUserDetails = null;
   private saveMetaDataStepURL = this.baseUrl + '/api/processor/metadata/step/';
@@ -1186,7 +1188,7 @@ export class HttpService {
     return this.http.get<any>(this.organizationHierarchy);
   }
 
-  fetchJiramappingBE(basicConfigID){
+  fetchJiramappingBE(basicConfigID) {
     return this.http.post<object>(this.saveMetaDataStepURL + basicConfigID, {});
   }
 
@@ -1196,5 +1198,19 @@ export class HttpService {
 
   handleRestoreUrl(stateFilterData, kpiFilterData) {
     return this.http.get<any>(`${this.urlRestore}?stateFilters=${stateFilterData}&kpiFilters=${kpiFilterData}`);
+  }
+
+  createReport(payload: any): Observable<object> {
+    return this.http.post<any>(this.createReportUrl, payload);
+  }
+
+  updateReport(id: string, payload: any): Observable<object> {
+    return this.http.put<any>(this.createReportUrl + '/' + id, payload);
+  }
+
+  fetchReports(): Observable<object> {
+    let userId = this.currentUserDetails['user_name'];
+    //Pagination to be handled
+    return this.http.get<object>(this.fetchReportsUrl + userId + '&page=0&limit=9999');
   }
 }

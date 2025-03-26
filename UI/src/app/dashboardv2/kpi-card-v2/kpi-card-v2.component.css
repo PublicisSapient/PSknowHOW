@@ -413,3 +413,20 @@
   display: inline-block;
   margin-right: 8px;
 }
+
+:host ::ng-deep .add-to-reports-overlay.p-dialog,
+:host ::ng-deep .add-to-reports-overlay.p-dialog .p-dialog-header,
+:host ::ng-deep .add-to-reports-overlay.p-dialog .p-dialog-content:last-of-type {
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background-color: #fff;
+}
+
+
+:host ::ng-deep .add-to-reports-overlay.p-dialog .p-dialog-header .add-to-reports-btn {
+  border: 1px solid #0B4BC8;
+  color: #0B4BC8;
+  background-color: #fff;
+  border-radius: 5px;
+  font-size: 12px;
+}

@@ -3,7 +3,7 @@ import { HttpService } from '../../services/http.service';
 import { MenuItem } from 'primeng/api';
 import { SharedService } from 'src/app/services/shared.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
-import { Router,NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { HelperService } from 'src/app/services/helper.service';
 import { environment } from 'src/environments/environment';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
@@ -35,8 +35,7 @@ export class HeaderComponent implements OnInit {
   isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
   userRole: string = '';
   noToolsConfigured: boolean;
-  reportModuleEnabled: boolean = false;
-  isNotConfigPage : boolean = false;
+  isNotConfigPage: boolean = false;
 
   constructor(
     private httpService: HttpService,
@@ -46,14 +45,14 @@ export class HeaderComponent implements OnInit {
     private helperService: HelperService,
     private featureFlagService: FeatureFlagsService) { }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit() {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         // Get the current URL and check if 'Config' is present
         this.isNotConfigPage = !this.router.url.split('?')[0].includes('Config');
       }
     });
-  
+
     this.getNotification();
     this.items = [
       { label: 'Dashboard', icon: '' },
@@ -133,7 +132,7 @@ export class HeaderComponent implements OnInit {
       this.getNotification();
     })
 
-    this.reportModuleEnabled = await this.featureFlagService.isFeatureEnabled('REPORTS');
+    this.getExistingReports();
   }
 
   // when user would want to give access on project from notification list
@@ -147,6 +146,8 @@ export class HeaderComponent implements OnInit {
           this.router.navigate(['/dashboard/Config/Profile/GrantNewUserAuthRequests']);
           break;
         default:
+          this.router.navigate(['/dashboard/Config/Profile/RequestStatus']);
+          break;
       }
     } else {
       this.router.navigate(['/dashboard/Config/Profile/RequestStatus']);
@@ -191,5 +192,27 @@ export class HeaderComponent implements OnInit {
     if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
       this.router.navigate([`/dashboard/my-knowhow`]);
     }
+  }
+
+  getExistingReports() {
+    this.httpService.fetchReports().subscribe({
+      next: (response) => {
+        if (response['success']) {
+          if (response['data']['content'] && response['data']['content'].length) {
+            this.sharedService.setNoReports(false);
+          } else {
+            this.sharedService.setNoReports(true);
+          }
+        }
+      },
+      error: (error) => {
+        this.sharedService.setNoReports(true);
+      }
+    });
+  }
+
+  goToReports() {
+    this.lastVisitedFromUrl = window.location.hash.substring(1);
+    this.router.navigate(['/dashboard/Report/default-report']);
   }
 }

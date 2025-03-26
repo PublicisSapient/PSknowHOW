@@ -31,7 +31,13 @@
     transition: all 0.5s ease;
 }
 
-.copyright{
+.copyright {
     text-align: center;
     font-size: 12px;
+}
+
+@media print {
+    .footer {
+        border-top: none;
+    }
 }

@@ -1,21 +1,31 @@
 <div id="chartWithFilter_Container">
   <div class="p-d-flex p-jc-between">
-    <p-selectButton [options]="filters?.filterGroup1" [(ngModel)]="selectedMainFilter"
+    <p-selectButton *ngIf="!selectedMainFilterForReport" [options]="filters?.filterGroup1" [(ngModel)]="selectedMainFilter"
       (onOptionClick)="mainFilterSelect($event)" optionLabel="filterName"></p-selectButton>
-    <ng-container *ngIf="filters?.filterGroup2">
+    <div *ngIf="selectedMainFilterForReport">Grouped By {{ selectedMainFilterForReport?.filterKey }} </div>
+    <ng-container *ngIf="filters?.filterGroup2 && !selectedMainFilterForReport">
       <p-button label="Apply Filters" icon="pi pi-filter" styleClass="filter-btn"
         (click)="op.toggle($event)"></p-button>
     </ng-container>
-    <ng-container *ngIf="category && category?.length">
+    <ng-container *ngIf="category && category?.length && !selectedMainCategoryForReport">
       <p-selectButton [options]="category" [(ngModel)]="selectedMainCategory"
       (onOptionClick)="categorySelect($event)" optionLabel="categoryName"></p-selectButton>
     </ng-container>
+    <div *ngIf="selectedMainCategoryForReport">{{ selectedMainCategoryForReport?.categoryName }} </div>
   </div>
+  
   <p-overlayPanel #op>
     <app-kpi-additional-filter [data]="data" [dataCopy]="dataCopy" [modifiedData]="modifiedData"
       [selectedFilter2]="selectedFilter2" [selectedMainFilter]="selectedMainFilter" [filters]="filters"
       (modifiedDataResult)="applyAdditionalFilters($event)"></app-kpi-additional-filter>
   </p-overlayPanel>
+  <div *ngIf="selectedFilter2ForReport">
+    <ul>
+      <li *ngFor="let filter of selectedFilter2ForReport; let i = index;">
+          <span>{{ filter.filterKey }} &nbsp;&nbsp; : {{ filter.filterType?.toLowerCase() === 'single' ? filter.selectedValue : filter.selectedValue.join(', ') }}</span>
+      </li>
+  </ul>
+  </div>
   <div class="p-d-flex p-jc-between" *ngIf="modifiedData?.length">
     <div id="legend" [ngStyle]="{'width': selectedTab === 'iteration' ? '400px' : '250px'}">
       <table style="width: 100%;">

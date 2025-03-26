@@ -270,17 +270,17 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   setSelectedType(type) {
-      this.selectedType = type?.toLowerCase();
-      if (type.toLowerCase() === 'kanban') {
-        this.kanban = true;
-      } else {
-        this.kanban = false;
-      }
-      this.filterApplyData = {};
-      this.service.setSelectedType(this.selectedType);
-      this.service.setBackupOfFilterSelectionState({ 'selected_type': this.selectedType })
-      this.service.setScrumKanban(this.selectedType);
-    
+    this.selectedType = type?.toLowerCase();
+    if (type.toLowerCase() === 'kanban') {
+      this.kanban = true;
+    } else {
+      this.kanban = false;
+    }
+    this.filterApplyData = {};
+    this.service.setSelectedType(this.selectedType);
+    this.service.setBackupOfFilterSelectionState({ 'selected_type': this.selectedType })
+    this.service.setScrumKanban(this.selectedType);
+
   }
 
   processBoardData(boardData) {
@@ -394,7 +394,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }, {});
       this.setCategories();
     }
-    this.service.setDataForSprintGoal({filterDataArr : this.filterDataArr[this.selectedType]})
+    this.service.setDataForSprintGoal({ filterDataArr: this.filterDataArr[this.selectedType] })
   }
 
   setCategories() {
@@ -579,8 +579,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.colorObj = {};
     for (let i = 0; i < data?.length; i++) {
 
-      
-      let projectHirearchy = this.selectedLevel==='Project'?this.getHirearchy(data[i]?.nodeId):this.getElementsAboveLevel(this.getHirearchy(data[i]?.nodeId),this.selectedLevel);
+
+      let projectHirearchy = this.selectedLevel === 'Project' ? this.getHirearchy(data[i]?.nodeId) : this.getElementsAboveLevel(this.getHirearchy(data[i]?.nodeId), this.selectedLevel);
       if (data[i]?.nodeId) {
         this.colorObj[data[i].nodeId] = {
           nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName, nodeDisplayName: data[i].nodeDisplayName, immediateParentDisplayName: this.getImmediateParentDisplayName(data[i]),
@@ -599,14 +599,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     const targetIndex = hierarchyData.findIndex(item => item.hierarchyLevel.hierarchyLevelName === targetLevelName);
     return targetIndex !== -1 ? hierarchyData.slice(0, targetIndex + 1) : [];
   }
- 
+
   getHirearchy(id) {
     let selectedHierarchy = [];
     const projects = this.service.getProjectWithHierarchy();
-    if(this.selectedLevel === 'Project'){
-     return projects.filter(x => x.projectNodeId === id)[0]?.hierarchy
-    }else{
-      const foundProject = projects.find(proj => 
+    if (this.selectedLevel === 'Project') {
+      return projects.filter(x => x.projectNodeId === id)[0]?.hierarchy
+    } else {
+      const foundProject = projects.find(proj =>
         proj.hierarchy.some(hier => {
           if (hier?.hierarchyLevel?.hierarchyLevelName === this.selectedLevel && hier.orgHierarchyNodeId === id) {
             selectedHierarchy = proj.hierarchy;
@@ -888,6 +888,34 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
     }
     this.setSelectedMapLevels();
+    if (this.filterType === 'Sprint:' || this.filterType === 'Release:') {
+      console.log(this.filterDataArr[this.selectedType]);
+      let filterType = '';
+      if (typeof this.selectedLevel === 'object' && this.selectedLevel !== null) {
+        filterType = `${this.selectedLevel.emittedLevel}`;
+      } else if (typeof this.selectedLevel === 'string') {
+        filterType = `${this.selectedLevel}`;
+      } else {
+        filterType = '';
+      }
+      let eventCopy = [...event];
+      eventCopy[0].labelName = filterType;
+      this.filterApplyData['hieararchy'] = this.findParentLevels(eventCopy[0], this.filterDataArr[this.selectedType]);
+    } 
+    // else if (this.selectedTab === 'backlog' || this.selectedTab === 'developer') {
+    //   let eventCopy = [...event];
+    //   let filterType = '';
+    //   if (typeof this.selectedLevel === 'object' && this.selectedLevel !== null) {
+    //     filterType = `${this.selectedLevel.emittedLevel}`;
+    //   } else if (typeof this.selectedLevel === 'string') {
+    //     filterType = `${this.selectedLevel}`;
+    //   } else {
+    //     filterType = '';
+    //   }
+    //   eventCopy[0].labelName = filterType;
+    //   this.filterApplyData['hieararchy'] = this.findParentLevels(eventCopy[0], this.filterDataArr[this.selectedType]);
+    // }
+
     if (!this.kanban) {
       if (this.selectedTab.toLocaleLowerCase() !== 'developer') {
         this.filterApplyData['ids'] = [...new Set(event.map((proj) => proj.nodeId))];
@@ -943,6 +971,52 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+  findParentLevels(targetNode, hierarchy) {
+    const parentMap = {};
+
+    function findParent(nodeId, level) {
+      for (const category in hierarchy) {
+        for (const node of hierarchy[category]) {
+          if (node.nodeId === nodeId) {
+            parentMap[level] = node;
+            if (node.parentId) {
+              findParent(node.parentId, node.level - 1);
+            }
+            return;
+          }
+        }
+      }
+    }
+
+    if (targetNode.parentId) {
+      findParent(targetNode.parentId, targetNode.level - 1);
+    }
+
+    const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType];
+    let result = {};
+    Object.keys(parentMap).forEach((key) => {
+      if (parentMap[key].labelName?.toLowerCase() === 'project' || parentMap[key].labelName === '') {
+        delete parentMap[key];
+      }
+    });
+    Object.keys(parentMap).forEach((key) => {
+      if (levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === parentMap[key].labelName.toLowerCase())[0]) {
+        result[levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === parentMap[key].labelName.toLowerCase())[0].hierarchyLevelName] = parentMap[key];
+      } else {
+        alert();
+      }
+    })
+
+    const sortedData = Object.entries(result)
+      .sort(([, a], [, b]) => a['level'] - b['level']) // Sort by level
+      .reduce((acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+      }, {} as Record<string, any>);
+    return sortedData;
+  }
+
 
   arrayDeepCompare(a1, a2) {
     return a1.length === a2.length && a1.every((o, idx) => typeof o !== 'string' ? this.helperService.deepEqual(o, a2[idx]) : o === a2[idx]);
@@ -1602,7 +1676,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.service.updateSprintGoalFlag(this.showSprintGoalsPanel);
   }
 
-  getBgClass(){
+  getBgClass() {
     return this.showSprintGoalsPanel ? 'icon-apply' : 'icon-not-active';
   }
 
@@ -1616,10 +1690,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     });
   }
 
-  isSprintGoalsHidden():boolean{
-    if(!this.kanban && ['my-knowhow','speed','quality'].includes(this.selectedTab?.toLocaleLowerCase())){
+  isSprintGoalsHidden(): boolean {
+    if (!this.kanban && ['my-knowhow', 'speed', 'quality'].includes(this.selectedTab?.toLocaleLowerCase())) {
       return true;
-    }else{
+    } else {
       return false;
     }
   }

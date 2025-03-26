@@ -82,7 +82,7 @@ export class MultilineV2Component implements OnChanges {
 
   // Runs when property "data" changed
   ngOnChanges(changes: SimpleChanges) {
-    if (this.selectedtype?.toLowerCase() === 'kanban' || this.service.getSelectedTab().toLowerCase() === 'developer') {
+    if (this.selectedtype?.toLowerCase() === 'kanban' || this.service.getSelectedTab()?.toLowerCase() === 'developer') {
       this.xCaption = this.service.getSelectedDateFilter();
     }
     if (Object.keys(changes)?.length > 0) {

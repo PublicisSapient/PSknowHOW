@@ -1,3 +1,6 @@
+:host {
+    width: 80%;
+}
 :host .kpi-card-container {
     background: #fff;
     border: 1px solid #D5DBE1;
@@ -14,8 +17,6 @@
     border-radius: 10px;
     opacity: 1;
     position: relative;
-    max-height: 500px;
-    height: 100%;
 }
 
 :host .kpi-card-header {
@@ -409,4 +410,53 @@
     border-radius: 50%;
     display: inline-block;
     margin-right: 8px;
+}
+
+:host ::ng-deep .kpi-filter-container {
+    margin-top: 20px;
+}
+
+:host ::ng-deep .kpi-filter-container ul li {
+    /* display: inline; */
+    margin-right: 15px;
+}
+
+.subtext {
+    font-size: 12px;
+    color: #707070;
+}
+
+:host ::ng-deep .text-data {
+    font-size: 1.5rem;
+    color: var(--color-secondary-blue);
+    margin: 0;
+}
+
+:host ::ng-deep .text-label {
+    color: var(--color-cyan-blue);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+:host ::ng-deep .text-time {
+    color: var(--color-red);
+}
+
+:host ::ng-deep .text-data .unit {
+    font-size: 1.5rem; 
+}
+
+:host ::ng-deep app-horizontal-percent-bar-chartv2 .chart-container {
+    height: 400px;
+}
+
+:host ::ng-deep app-tabular-kpi-with-donut-chart .donut-container {
+    margin-top: -5%;
+}
+
+@media print {
+    :host ::ng-deep body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
 }

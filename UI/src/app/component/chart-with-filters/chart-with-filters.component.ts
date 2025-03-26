@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef } 
 import * as d3 from 'd3';
 import { ExportExcelComponent } from '../export-excel/export-excel.component';
 import { SharedService } from 'src/app/services/shared.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-chart-with-filters',
@@ -25,22 +26,31 @@ export class ChartWithFiltersComponent implements OnInit, OnChanges {
   selectedFilter2;
   elem;
   selectedMainCategory: string = '';
+  @Input() selectedMainFilterForReport: any = null;
+  @Input() selectedMainCategoryForReport: any = null;
+  @Input() selectedFilter2ForReport: any = null;
   psColors = ['#FBCF5F', '#A4F6A5', '#FFB688', '#D38EEC', '#ED8888', '#6079C5', '#9FE8FA', '#D4CEB0', '#99CDA9', '#6079C5'];
 
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
   ngOnInit(): void {
-    this.selectedMainFilter = this.service.getKpiSubFilterObj()[this.kpiId] && this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainFilter'] ? 
-    this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainFilter'] : 
-    this.filters.filterGroup1[0];
+    this.selectedMainFilter = this.selectedMainFilterForReport ? this.selectedMainFilterForReport : this.service.getKpiSubFilterObj()[this.kpiId] && this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainFilter'] ?
+      this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainFilter'] :
+      this.filters.filterGroup1[0];
     if (this.category && this.category.length && this.category[1]) {
-      this.selectedMainCategory = this.service.getKpiSubFilterObj()[this.kpiId] && this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainCategory'] ? 
-      this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainCategory'] : 
-      this.category[1];
+      this.selectedMainCategory = this.selectedMainCategoryForReport ? this.selectedMainCategoryForReport : this.service.getKpiSubFilterObj()[this.kpiId] && this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainCategory'] ?
+        this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainCategory'] :
+        this.category[1];
     }
     this.modifiedData = this.groupData(this.data, this.selectedMainFilter.filterKey);
-    if(this.selectedMainCategory){this.categorySelect({option:this.selectedMainCategory})}
-    this.mainFilterSelect({option:this.selectedMainFilter})
+    if (this.data.filter(issue => !!issue.Category)?.length) {
+      this.categorySelect({ option: this.selectedMainCategory })
+    } else {
+      this.selectedMainCategory = null;
+      this.selectedMainCategoryForReport = null;
+    }
+    this.mainFilterSelect({ option: this.selectedMainFilter },)
+    this.service.onChartChange.next(JSON.stringify({ modifiedData: this.modifiedData, selectedMainCategory: this.selectedMainCategory, selectedMainFilter: this.selectedMainFilter }));
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -58,13 +68,13 @@ export class ChartWithFiltersComponent implements OnInit, OnChanges {
       this.modifiedData = this.groupData(this.data, 'Issue Status');
       this.dataCopy = Object.assign([], this.data);
 
-      this.selectedMainFilter = this.service.getKpiSubFilterObj()[this.kpiId] && this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainFilter'] ? 
-      this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainFilter'] : 
-      this.filters.filterGroup1[0];
+      this.selectedMainFilter = this.service.getKpiSubFilterObj()[this.kpiId] && this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainFilter'] ?
+        this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainFilter'] :
+        this.filters.filterGroup1[0];
       if (this.category && this.category.length && this.category[1]) {
-        this.selectedMainCategory = this.service.getKpiSubFilterObj()[this.kpiId] && this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainCategory'] ? 
-        this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainCategory'] : 
-        this.category[1];
+        this.selectedMainCategory = this.service.getKpiSubFilterObj()[this.kpiId] && this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainCategory'] ?
+          this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainCategory'] :
+          this.category[1];
       }
       this.populateLegend(this.modifiedData);
 
@@ -75,7 +85,59 @@ export class ChartWithFiltersComponent implements OnInit, OnChanges {
       };
 
       this.populateAdditionalFilters();
+      let fakeEvent = {};
+
+      (this.selectedFilter2 || this.selectedFilter2ForReport)?.forEach(element => {
+        if (element.selectedValue) {
+          if (element.filterType === 'Single') {
+            this.dataCopy = this.dataCopy.filter((d) => d[element.filterKey] === element.selectedValue);
+          } else {
+
+            this.dataCopy = this.dataCopy.filter((d) => {
+              let dataProperty = new Set(d[element.filterKey]);
+              return element.selectedValue.filter(item => dataProperty.has(item)).length > 0;
+            });
+          }
+        }
+      });
+
+      fakeEvent['modifiedData'] = this.groupDataForAdditionalFilters(this.dataCopy, this.selectedMainFilter.filterKey);
+      fakeEvent['dataCopy'] = this.dataCopy;
+      fakeEvent['selectedFilter2'] = this.selectedFilter2ForReport;
+      if (fakeEvent['selectedFilter2']) {
+        this.applyAdditionalFilters(fakeEvent);
+      }
       setTimeout(() => this.draw(this.modifiedData), 100);
+    }
+  }
+
+  groupDataForAdditionalFilters(arr, property) {
+    if (arr?.length) {
+      // Create an object to store the grouped counts
+      const groupedCounts = {};
+
+      // Iterate through the array
+      arr.forEach(item => {
+        // Get the value of the specified property
+        const propValue = item[property];
+
+        // If the value is already in the groupedCounts object, increment its count
+        if (groupedCounts[propValue]) {
+          groupedCounts[propValue]++;
+        } else {
+          // Otherwise, initialize the count for this value to 1
+          groupedCounts[propValue] = 1;
+        }
+      });
+
+      // Convert the groupedCounts object to an array of objects
+      const result = Object.keys(groupedCounts).map(key => ({
+        [key]: groupedCounts[key]
+      }));
+
+      return result;
+    } else {
+      return [];
     }
   }
 
@@ -180,8 +242,8 @@ export class ChartWithFiltersComponent implements OnInit, OnChanges {
     this.draw(this.modifiedData);
     this.legendData = [];
     this.populateLegend(this.modifiedData);
-    this.service.setKpiSubFilterObj({ [this.kpiId]: { selectedMainCategory: this.selectedMainCategory,  selectedMainFilter: this.selectedMainFilter } });
-
+    this.service.setKpiSubFilterObj({ [this.kpiId]: { selectedMainCategory: this.selectedMainCategory, selectedMainFilter: this.selectedMainFilter } });
+    this.service.onChartChange.next(JSON.stringify({ modifiedData: this.modifiedData, selectedMainCategory: this.selectedMainCategory, selectedMainFilter: this.selectedMainFilter, selectedFilter2: this.selectedFilter2 || null }));
   }
 
   exploreData(filterVal) {
@@ -236,17 +298,20 @@ export class ChartWithFiltersComponent implements OnInit, OnChanges {
   applyAdditionalFilters(event) {
     this.modifiedData = event.modifiedData;
     this.dataCopy = event.dataCopy;
+    this.selectedFilter2 = event.selectedFilter2;
     this.populateLegend(this.modifiedData);
     setTimeout(() => this.draw(this.modifiedData), 100);
+    this.service.onChartChange.next(JSON.stringify({ modifiedData: this.modifiedData, selectedMainCategory: this.selectedMainCategory, selectedMainFilter: this.selectedMainFilter, selectedFilter2: this.selectedFilter2 || null }));
   }
 
   categorySelect(event) {
     this.dataCopy = this.data.filter(issue => issue.Category.includes(event.option.categoryName));
     this.modifiedData = this.groupData(this.dataCopy, this.selectedMainFilter.filterKey);
-    setTimeout(() => {this.draw(this.modifiedData);}, 0);
+    setTimeout(() => { this.draw(this.modifiedData); }, 0);
     this.legendData = [];
     this.populateLegend(this.modifiedData);
-    this.service.setKpiSubFilterObj({ [this.kpiId]: { selectedMainCategory: event.option,  selectedMainFilter: this.selectedMainFilter } });
+    this.service.setKpiSubFilterObj({ [this.kpiId]: { selectedMainCategory: event.option, selectedMainFilter: this.selectedMainFilter } });
+    this.service.onChartChange.next(JSON.stringify({ modifiedData: this.modifiedData, selectedMainCategory: this.selectedMainCategory, selectedMainFilter: this.selectedMainFilter, selectedFilter2: this.selectedFilter2 || null }));
   }
 
   clearAdditionalFilters() {

@@ -146,9 +146,19 @@ header {
 
 .tab-button button.active {
   color: #007bff;
-  border-bottom: 2px solid #007bff;
+  border-bottom: 3px solid #007bff;
 }
 
 .tab-button button:hover {
   color: #0056b3;
+}
+
+@media print {
+  :host ::ng-deep header nav .tab-container {
+    display: none;
+  }
+
+  :host ::ng-deep header div[role="button"] {
+    display: none;
+  }
 }
