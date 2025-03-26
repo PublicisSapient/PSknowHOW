@@ -5,12 +5,12 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>3.2.0</version>
-    <relativePath/>
+    <relativePath />
     <!-- lookup parent from repository -->
   </parent>
   <groupId>com.publicissapient.kpidashboard</groupId>
   <artifactId>notification-consumer</artifactId>
-  <version>12.2.1-SNAPSHOT</version>
+  <version>13.0.0-SNAPSHOT</version>
   <name>notification-consumer</name>
   <description>Notification consumer for Apache Kafka</description>
   <scm>
