@@ -195,7 +195,7 @@ public class KPIExcelUtility {
 
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
 				fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT) && (jiraIssue != null)) {
-			excelData.setStoryPoint(String.valueOf(roundingOff(jiraIssue.getStoryPoints())));
+			excelData.setStoryPoint(jiraIssue.getStoryPoints() != null ? String.valueOf(roundingOff(jiraIssue.getStoryPoints())) : "0");
 		} else if ((jiraIssue != null) && (null != jiraIssue.getAggregateTimeOriginalEstimateMinutes())) {
 			Double originalEstimateInHours = Double.valueOf(jiraIssue.getAggregateTimeOriginalEstimateMinutes()) / 60;
 			excelData.setStoryPoint(roundingOff(originalEstimateInHours / fieldMapping.getStoryPointToHourMapping()) + "/" +

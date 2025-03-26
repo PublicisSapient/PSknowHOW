@@ -57,21 +57,21 @@ public class JobScheduler {
 	@Autowired
 	JobLauncher jobLauncher;
 
-	@Qualifier("fetchIssueScrumBoardJob")
-	@Autowired
-	Job fetchIssueScrumBoardJob;
+//	@Qualifier("fetchIssueScrumBoardJob")
+//	@Autowired
+//	Job fetchIssueScrumBoardJob;
 
 	@Qualifier("fetchIssueScrumJqlJob")
 	@Autowired
 	Job fetchIssueScrumJqlJob;
 
-	@Qualifier("fetchIssueKanbanBoardJob")
-	@Autowired
-	Job fetchIssueKanbanBoardJob;
-
-	@Qualifier("fetchIssueKanbanJqlJob")
-	@Autowired
-	Job fetchIssueKanbanJqlJob;
+//	@Qualifier("fetchIssueKanbanBoardJob")
+//	@Autowired
+//	Job fetchIssueKanbanBoardJob;
+//
+//	@Qualifier("fetchIssueKanbanJqlJob")
+//	@Autowired
+//	Job fetchIssueKanbanJqlJob;
 
 	@Autowired
 	private FetchProjectConfiguration fetchProjectConfiguration;
@@ -100,7 +100,7 @@ public class JobScheduler {
 					try {
 						// making execution onGoing for project
 						ongoingExecutionsService.markExecutionInProgress(projectId);
-						jobLauncher.run(fetchIssueScrumBoardJob, params);
+//						jobLauncher.run(fetchIssueScrumBoardJob, params);
 					} catch (Exception e) {
 						log.info("Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
 								projectId, e);
@@ -162,7 +162,7 @@ public class JobScheduler {
 					try {
 						// making execution onGoing for project
 						ongoingExecutionsService.markExecutionInProgress(projectId);
-						jobLauncher.run(fetchIssueKanbanBoardJob, params);
+//						jobLauncher.run(fetchIssueKanbanBoardJob, params);
 					} catch (Exception e) {
 						log.info("Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
 								projectId, e);
@@ -194,7 +194,7 @@ public class JobScheduler {
 					try {
 						// making execution onGoing for project
 						ongoingExecutionsService.markExecutionInProgress(projectId);
-						jobLauncher.run(fetchIssueKanbanJqlJob, params);
+//						jobLauncher.run(fetchIssueKanbanJqlJob, params);
 					} catch (Exception e) {
 						log.info("Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
 								projectId, e);

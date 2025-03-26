@@ -213,7 +213,7 @@ public class FieldMappingController {
 
 	private boolean checkTool(ProjectToolConfig projectToolConfig) {
 		return (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA) ||
-				projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.AZURE));
+				projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.AZURE) || projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.RALLY));
 	}
 
 	private boolean checkCustomTemplateCode(ProjectToolConfig projectToolConfig) {

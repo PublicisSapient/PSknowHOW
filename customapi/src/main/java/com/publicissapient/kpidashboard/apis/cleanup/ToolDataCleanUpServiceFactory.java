@@ -71,6 +71,7 @@ public class ToolDataCleanUpServiceFactory {
 		switch (toolName) {
 			case ProcessorConstants.JIRA :
 			case ProcessorConstants.AZURE :
+			case ProcessorConstants.RALLY:
 				toolCategory = ProcessorType.AGILE_TOOL.toString();
 				break;
 			case ProcessorConstants.JIRA_TEST :

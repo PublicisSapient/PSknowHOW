@@ -63,6 +63,7 @@
         <module>azure-repo</module>
         <module>azure-boards</module>
         <module>argocd</module>
+        <module>rally</module>
       </modules>
       <build>
         <testResources>

@@ -144,7 +144,7 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 			String sprintName = (String) PropertyUtils.getSimpleProperty(sprintDetails, "sprintName");
 			String sprintId = (String) PropertyUtils.getSimpleProperty(sprintDetails, "sprintID");
 			String state = (String) PropertyUtils.getSimpleProperty(sprintDetails, "state");
-			projectHierachy.setNodeId(sprintId);
+				projectHierachy.setNodeId(sprintId);
 			// IF WANT TO CHANGE THE NAME
 			projectHierachy.setNodeName(sprintName);
 			projectHierachy.setNodeDisplayName(sprintName);

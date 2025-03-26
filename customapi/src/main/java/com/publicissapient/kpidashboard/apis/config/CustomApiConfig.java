@@ -324,6 +324,9 @@ public class CustomApiConfig { // NOPMD
 	private String repoToolMembersUrl;
 	private String defectRateUrl;
 
+	@Value("${rally.test.connection}")
+	private String rallyTestConnection;
+
 	@Setter
 	@Getter
 	private int sprintVelocityVarianceThreshold;
@@ -1347,5 +1350,13 @@ public class CustomApiConfig { // NOPMD
 
 	public void setRepoToolPRDeclineRateUrl(String repoToolPRDeclineRateUrl) {
 		this.repoToolPRDeclineRateUrl = repoToolPRDeclineRateUrl;
+	}
+
+	public String getRallyTestConnection() {
+		return rallyTestConnection;
+	}
+
+	public void setRallyTestConnection(String rallyTestConnection) {
+		this.rallyTestConnection = rallyTestConnection;
 	}
 }

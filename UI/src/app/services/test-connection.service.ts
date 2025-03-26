@@ -274,4 +274,16 @@ export class TestConnectionService {
     );
   }
 
+  testRally(baseUrl,accessToken): Observable<any> {
+    const postData = {
+      baseUrl,
+      accessToken
+    };
+    let headers: HttpHeaders = new HttpHeaders();
+    headers = headers.append('requestArea', 'thirdParty');
+    return this.http.post(environment.baseUrl + '/api/testconnection/rally', postData
+      , { headers }
+    );
+  }
+
 }

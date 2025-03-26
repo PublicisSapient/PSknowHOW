@@ -713,10 +713,10 @@ public final class KpiDataHelper {
 			// closed, then the first sprint in which it appeared in RFT should be
 			// considered as the only sprint when it was closed, and not in further sprint,
 			// as it changes the velocity of each sprint
-			newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus,
-					projectWiseDuplicateIssuesWithMinCloseDate);
-			dbSprintDetail.setCompletedIssues(newCompletedSet);
-			dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
+//			newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus,
+//					projectWiseDuplicateIssuesWithMinCloseDate);
+//			dbSprintDetail.setCompletedIssues(newCompletedSet);
+//			dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
 			Set<SprintIssue> totalIssue = new HashSet<>();
 			totalIssue.addAll(dbSprintDetail.getCompletedIssues());
 			totalIssue.addAll(dbSprintDetail.getNotCompletedIssues());

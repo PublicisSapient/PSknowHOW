@@ -43,6 +43,7 @@ public final class Constant {
 	public static final String TOOL_BAMBOO = "Bamboo";
 	public static final String TOOL_GITHUB = "GitHub";
 	public static final String TOOL_ARGOCD = "ArgoCD";
+	public static final String TOOL_RALLY = "Rally";
 	public static final String EXCEL_YES = "Y";
 
 	public static final String MEDIAN = "median";

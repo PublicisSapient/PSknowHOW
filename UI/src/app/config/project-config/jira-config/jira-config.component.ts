@@ -2383,6 +2383,90 @@ export class JiraConfigComponent implements OnInit {
           };
         }
         break;
+      case 'Rally':
+      {
+        this.formTitle = 'Rally';
+        this.connectionTableCols = [
+          {
+            field: 'connectionName',
+            header: 'Connection Name',
+            class: 'long-text',
+          },
+          { field: 'username', header: 'User Name', class: 'long-text' },
+          { field: 'offline', header: 'Is Offline?', class: 'small-text' },
+          {
+            field: 'apiEndPoint',
+            header: 'API Endpoint',
+            class: 'long-text',
+          },
+          { field: 'apiKey', header: 'API Key', class: 'normal' },
+          { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
+          { field: 'cloudEnv', header: 'Cloud Env.?', class: 'small-text' },
+          { field: 'isOAuth', header: 'OAuth', class: 'small-text' }
+        ];
+        this.configuredToolTableCols = [
+          {
+            field: 'connectionName',
+            header: 'Connection Name',
+            class: 'long-text',
+          },
+          { field: 'projectKey', header: 'Project Key', class: 'long-text' },
+          { field: 'queryEnabled', header: 'Query Enabled', class: 'small-text' },
+        ];
+        this.formTemplate = {
+          group: 'Rally',
+          elements: [
+            {
+              type: 'text',
+              label: 'Rally Project Key',
+              id: 'projectKey',
+              validators: ['required'],
+              containerClass: 'p-sm-8',
+              show: true,
+              placeholder: 'E.g. “DTS” in publicissapient.atlassian.net/jira/software/c/projects/DTS/boards/22',
+              tooltip: `User can get this value from JIRA/AZURE/Rally.<br />
+               Generally all issues name are started with Project key<br /> <i>
+                Impacted : Jira/Azure/Rally Collector and all Kpi</i>`,
+              onFocusOut: this.projectKeyChanged
+            },
+            {
+              type: 'boolean',
+              label: 'Use Boards',
+              label2: 'Use RQL Query',
+              id: 'queryEnabled',
+              model: 'queryEnabled',
+              onChangeEventHandler: (event) => this.jiraMethodChange(this, event),
+              validators: [],
+              containerClass: 'p-sm-12',
+              tooltip: ``,
+              disabled: 'false',
+              show: true,
+            },
+            {
+              type: 'textarea',
+              label: 'RQL Query',
+              id: 'boardQuery',
+              validators: [],
+              containerClass: 'p-sm-12',
+              disabled: 'queryEnabled',
+              show: true,
+            },
+            {
+              type: 'basicDropdown',
+              label: 'Rally Configuration Template',
+              label2: '',
+              id: 'originalTemplateCode',
+              onChangeEventHandler: (event) => this.jiraMethodChange(this, event),
+              validators: [],
+              containerClass: 'p-sm-6',
+              tooltip: ``,
+              disabled: 'false',
+              show: true,
+            }
+          ],
+        };
+      }
+        break;
     }
 
     const group = {};
@@ -2557,7 +2641,7 @@ export class JiraConfigComponent implements OnInit {
 
     }
 
-    if (this.urlParam !== 'Jira') {
+   if (this.urlParam !== 'Jira' && this.urlParam !== 'Rally') {
       delete submitData['originalTemplateCode'];
     }
     else{
@@ -2641,7 +2725,7 @@ export class JiraConfigComponent implements OnInit {
             } else {
               this.toolForm.reset();
             }
-           
+
             /** This will be called for JIRA tool */
             this.fetchJiraMappingOptioninBE(this.urlParam,submitData['basicProjectConfigId']);
 
@@ -2704,7 +2788,7 @@ export class JiraConfigComponent implements OnInit {
             } else {
               this.isConfigureTool = false;
             }
-            
+
             /** This will be called for JIRA tool */
             this.fetchJiraMappingOptioninBE(this.urlParam,submitData['basicProjectConfigId']);
 
@@ -2832,7 +2916,10 @@ export class JiraConfigComponent implements OnInit {
       isKanban = this.selectedProject?.Type?.toLowerCase() === 'kanban' ? true : false;
     }
     this.http.getJiraTemplate(this.selectedProject?.id).subscribe(resp => {
-      this.jiraTemplate = resp.filter(temp => temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban);
+      this.jiraTemplate = resp.filter(temp =>
+        temp.tool?.toLowerCase() === (this.urlParam === "Rally" ? "rally" : "jira") &&
+        temp.kanban === isKanban
+      );
       if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
         const selectedTemplate = this.jiraTemplate.find(tem => tem.templateCode === this.selectedToolConfig[0]['originalTemplateCode'])
         this.toolForm.get('originalTemplateCode')?.setValue(selectedTemplate?.templateCode);
