@@ -8,25 +8,24 @@ import { ActivatedRoute, Router } from '@angular/router';
 describe('KpiTableComponent', () => {
   let component: KpiTableComponent;
   let fixture: ComponentFixture<KpiTableComponent>;
-  let sharedService: SharedService
+  let sharedService: SharedService;
   const routerMock = {
-    navigate: jasmine.createSpy('navigate')
+    navigate: jasmine.createSpy('navigate'),
   };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ KpiTableComponent ],
+      declarations: [KpiTableComponent],
       providers: [
         SharedService,
         { provide: ActivatedRoute, useValue: { snapshot: { params: {} } } },
-        { provide: Router, useValue: routerMock }
+        { provide: Router, useValue: routerMock },
       ],
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(KpiTableComponent);
     component = fixture.componentInstance;
-    sharedService = TestBed.inject(SharedService)
+    sharedService = TestBed.inject(SharedService);
     fixture.detectChanges();
   });
 
@@ -34,40 +33,43 @@ describe('KpiTableComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show tooltip on mouse enter', () =>{
+  it('should show tooltip on mouse enter', () => {
     const event = {
-      'pageY': '560',
-      'pageX': '600'
+      pageY: '560',
+      pageX: '600',
     };
     const field = 'frequency';
     const data = {
-      'hoverText': ["1-sprint1", "2-sprint2", "3-sprint3"]
-    }
+      hoverText: ['1-sprint1', '2-sprint2', '3-sprint3'],
+    };
     component.mouseEnter(event, field, data);
     expect(component.showToolTip).toBe(true);
-  })
+  });
 
   it('should hide tooltip on mouse leave', () => {
     component.mouseLeave();
     expect(component.showToolTip).toBe(false);
     expect(component.toolTipHtml).toBe('');
-  })
+  });
 
-  it('should assign colors to node', ()=> {
+  it('should assign colors to node', () => {
     component.tabs = [];
     component.colorObj = {
-      "AddingIterationProject_64e739541426ba469c39c102": {
-          "nodeName": "AddingIterationProject",
-          "color": "#079FFF"
-      }
+      AddingIterationProject_64e739541426ba469c39c102: {
+        nodeName: 'AddingIterationProject',
+        color: '#079FFF',
+      },
     };
     component.assignColorToNodes();
-    expect(Object.keys(component.nodeColors)?.length).toEqual(Object.keys(component.colorObj)?.length);
-    expect(component.tabs?.length).toEqual(Object.keys(component.nodeColors)?.length);
-  })
+    expect(Object.keys(component.nodeColors)?.length).toEqual(
+      Object.keys(component.colorObj)?.length,
+    );
+    expect(component.tabs?.length).toEqual(
+      Object.keys(component.nodeColors)?.length,
+    );
+  });
 
   describe('YourComponent', () => {
-
     beforeEach(() => {
       spyOn(component, 'assignColorToNodes');
     });
@@ -98,7 +100,11 @@ describe('KpiTableComponent', () => {
 
     it('should update kpiConfigData if it has changed', () => {
       const changes: SimpleChanges = {
-        kpiConfigData: new SimpleChange({ config: 'B' }, { config: 'A' }, false),
+        kpiConfigData: new SimpleChange(
+          { config: 'B' },
+          { config: 'A' },
+          false,
+        ),
       };
       component.ngOnChanges(changes);
       expect(component.kpiConfigData).toEqual({ config: 'A' });
@@ -106,17 +112,20 @@ describe('KpiTableComponent', () => {
 
     it('should not update kpiConfigData if it has not changed', () => {
       const changes: SimpleChanges = {
-        kpiConfigData: new SimpleChange({ config: 'A' }, { config: 'A' }, false),
+        kpiConfigData: new SimpleChange(
+          { config: 'A' },
+          { config: 'A' },
+          false,
+        ),
       };
       component.ngOnChanges(changes);
       expect(component.kpiConfigData).toEqual({ config: 'A' });
     });
 
-    it('should set kpi loader',()=>{
-      sharedService.setMaturiyTableLoader(true)
+    it('should set kpi loader', () => {
+      sharedService.setMaturiyTableLoader(true);
       component.ngOnInit();
-       expect(component.loader).toBeTruthy();
-    })
+      expect(component.loader).toBeTruthy();
+    });
   });
-
 });

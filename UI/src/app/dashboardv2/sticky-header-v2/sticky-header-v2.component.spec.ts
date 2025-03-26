@@ -19,19 +19,28 @@ describe('StickyHeaderV2Component', () => {
     mapColorToProjectObsSubject = new Subject();
 
     // Create mock objects
-    mockSharedService = jasmine.createSpyObj('SharedService', ['onTabSwitch', 'mapColorToProjectObs']);
-    mockHelperService = jasmine.createSpyObj('HelperService', ['getObjectKeys']);
+    mockSharedService = jasmine.createSpyObj('SharedService', [
+      'onTabSwitch',
+      'mapColorToProjectObs',
+    ]);
+    mockHelperService = jasmine.createSpyObj('HelperService', [
+      'getObjectKeys',
+    ]);
 
     // Mock the service observables
-    Object.defineProperty(mockSharedService, 'onTabSwitch', { value: onTabSwitch.asObservable() });
-    Object.defineProperty(mockSharedService, 'mapColorToProjectObs', { value: mapColorToProjectObsSubject.asObservable() });
+    Object.defineProperty(mockSharedService, 'onTabSwitch', {
+      value: onTabSwitch.asObservable(),
+    });
+    Object.defineProperty(mockSharedService, 'mapColorToProjectObs', {
+      value: mapColorToProjectObsSubject.asObservable(),
+    });
 
     await TestBed.configureTestingModule({
       declarations: [StickyHeaderV2Component],
       providers: [
         { provide: SharedService, useValue: mockSharedService },
-        { provide: HelperService, useValue: mockHelperService }
-      ]
+        { provide: HelperService, useValue: mockHelperService },
+      ],
     }).compileComponents();
   });
 
@@ -60,12 +69,17 @@ describe('StickyHeaderV2Component', () => {
   it('should subscribe to mapColorToProjectObs and update colorObj', () => {
     const mockData = [
       { nodeId: '1', nodeName: 'Project A', labelName: 'project' },
-      { nodeId: '2', nodeName: 'Project B', labelName: 'project' }
+      { nodeId: '2', nodeName: 'Project B', labelName: 'project' },
     ];
 
     mapColorToProjectObsSubject.next(mockData);
 
-    expect(component.colorObj['1']).toEqual({ nodeName: 'Project A', color: '#FFB587', nodeId: '1', labelName: 'project' });
+    expect(component.colorObj['1']).toEqual({
+      nodeName: 'Project A',
+      color: '#FFB587',
+      nodeId: '1',
+      labelName: 'project',
+    });
   });
 
   it('should return object keys using helperService', () => {
@@ -80,7 +94,10 @@ describe('StickyHeaderV2Component', () => {
 
   // --> skipping this test case for now.
   xit('should unsubscribe from all subscriptions on destroy', () => {
-    const subscriptionSpy = spyOn(Subscription.prototype, 'unsubscribe').and.callThrough();
+    const subscriptionSpy = spyOn(
+      Subscription.prototype,
+      'unsubscribe',
+    ).and.callThrough();
 
     component.ngOnDestroy();
 

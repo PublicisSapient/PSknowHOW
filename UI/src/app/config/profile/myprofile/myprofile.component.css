@@ -16,74 +16,71 @@
  *
  ******************************************************************************/
 
-
-
 /* .content{
     width: 80%;
     margin: 0 auto;
 } */
 
 .form-title-container {
-    padding: 15px;
+  padding: 15px;
 }
 
 .content .form_title {
-    text-align: left;
-    margin: 0;
+  text-align: left;
+  margin: 0;
 }
 
-
 .action-container {
-    padding: 0;
+  padding: 0;
 }
 
 .action-link {
-    display: inline-block;
-    margin-bottom: 10px;
-    text-decoration: none;
+  display: inline-block;
+  margin-bottom: 10px;
+  text-decoration: none;
 }
 
 .action-link.disabled {
-    pointer-events: none;
-    cursor: default;
+  pointer-events: none;
+  cursor: default;
 }
 
 .action-link.disabled .action-box {
-    cursor: default;
-    background-color: #B4B4B4;
+  cursor: default;
+  background-color: #b4b4b4;
 }
 
 .action-box {
-    height: 65px;
-    width: 100%;
-    margin-right: 20px;
-    /* margin-bottom: 20px; */
-    cursor: pointer;
-    padding: 20px;
-    color: var(--color-white);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    /* border-bottom-left-radius: 0;
+  height: 65px;
+  width: 100%;
+  margin-right: 20px;
+  /* margin-bottom: 20px; */
+  cursor: pointer;
+  padding: 20px;
+  color: var(--color-white);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  /* border-bottom-left-radius: 0;
     border-top-right-radius: 0; */
 }
 
 .action-icon {
-    font-size: 20px;
-    margin: 0 1rem 0 0;
-    display: inline-block;
+  font-size: 20px;
+  margin: 0 1rem 0 0;
+  display: inline-block;
 }
 
 .action-text {
-    display: inline-block;
-    font-size: 20px;
+  display: inline-block;
+  font-size: 20px;
 }
 
 .sub-text {
-    color: #585858;
-    display: inline-block;
-    margin: 5px  0 0;
-    vertical-align: bottom;
+  color: #585858;
+  display: inline-block;
+  margin: 5px 0 0;
+  vertical-align: bottom;
 }
 
 /* .action-box:first-child {
@@ -95,89 +92,94 @@
 } */
 
 .bg-role {
-    background-color: #5E5E5E;
+  background-color: #5e5e5e;
 }
 
 .bg-raise {
-    background-color: #FFE63B;
+  background-color: #ffe63b;
 }
 
 .bg-view {
-    background-color:  #00E6C3;
+  background-color: #00e6c3;
 }
 
 .bg-status {
-    background-color: #4ddbff;
+  background-color: #4ddbff;
 }
 
 .bg-password {
-    background-color:  #079FFF;
+  background-color: #079fff;
 }
 
 .info-block {
-    font-size: 13px;
+  font-size: 13px;
 }
 
 .invalid-text {
-    width: 100%;
-    font-size: 16px;
-    color: var(--color-red);
-    margin: 5px 0;
-  }
+  width: 100%;
+  font-size: 16px;
+  color: var(--color-red);
+  margin: 5px 0;
+}
 
-  .loader {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    z-index: 888;
-    background-color: rgba(0,0,0,0.2);
-    top: 0;
-    left: 0;
+.loader {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  z-index: 888;
+  background-color: rgba(0, 0, 0, 0.2);
+  top: 0;
+  left: 0;
 }
 
 .options-list {
-    text-align: left;
-    color: #dc3545;
-    line-height: 24px;
-    margin-top: 10px;
+  text-align: left;
+  color: #dc3545;
+  line-height: 24px;
+  margin-top: 10px;
 }
 
 .options-div {
-    display: table;
-    margin: 0 auto;
+  display: table;
+  margin: 0 auto;
 }
 
 .inline-div {
-    display: inline-block;
+  display: inline-block;
 }
 
 th#role {
-    width: 200px;
-    font-weight: bold;
+  width: 200px;
+  font-weight: bold;
 }
 
 td.med-td {
-    width: 160px;
-    word-break: break-all;
-    padding: 0;
-    border: none;
-    border-left: 1px solid #e4e4e4;
-    border-bottom: 1px solid #e4e4e4;
+  width: 160px;
+  word-break: break-all;
+  padding: 0;
+  border: none;
+  border-left: 1px solid #e4e4e4;
+  border-bottom: 1px solid #e4e4e4;
 }
 
-::ng-deep #project-access-table .p-datatable .p-datatable-tbody > tr > td.custom-table-cell {
-    padding: 0;
-    border-width: 1px 1px 1px 1px;
+::ng-deep
+  #project-access-table
+  .p-datatable
+  .p-datatable-tbody
+  > tr
+  > td.custom-table-cell {
+  padding: 0;
+  border-width: 1px 1px 1px 1px;
 }
 
 ::ng-deep table.special-bordered {
-    width: 100%;
-    height: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
 }
 
 ::ng-deep tr.border-bottom {
-    border-bottom: 1px solid #e4e4e4;
+  border-bottom: 1px solid #e4e4e4;
 }
 
 .notification-toggle {
@@ -198,9 +200,3 @@ td.med-td {
   font-size: 12px;
   margin-left: 10px;
 }
-
-
-
-
-
-

@@ -29,7 +29,10 @@ import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { DashboardComponent } from '../../dashboard/dashboard.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpService } from '../../services/http.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { environment } from 'src/environments/environment';
 import { throwError, of } from 'rxjs';
 import { SharedService } from 'src/app/services/shared.service';
@@ -37,26 +40,29 @@ import { SharedService } from 'src/app/services/shared.service';
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
-  const fakeRegister = JSON.stringify({ 'X-Authentication-Token': 'dummytokenstring', Success: 'Success' });
+  const fakeRegister = JSON.stringify({
+    'X-Authentication-Token': 'dummytokenstring',
+    Success: 'Success',
+  });
   let httpMock;
   let httpreq;
   let httpService;
   let sharedService;
   // const errorMsz = 'Cannot complete the registration process, Try with different email';
   const errorMsz = {
-    message:'Cannot complete the registration process, Try with different email',
-    success:false
+    message:
+      'Cannot complete the registration process, Try with different email',
+    success: false,
   };
   const baseUrl = environment.baseUrl;
 
   beforeEach(waitForAsync(() => {
-
-
     const routes: Routes = [
       {
-        path: 'dashboard', component: DashboardComponent
+        path: 'dashboard',
+        component: DashboardComponent,
       },
-      { path: 'authentication/register', component: RegisterComponent }
+      { path: 'authentication/register', component: RegisterComponent },
     ];
 
     TestBed.configureTestingModule({
@@ -66,14 +72,16 @@ describe('RegisterComponent', () => {
         ReactiveFormsModule,
         CommonModule,
         RouterTestingModule.withRoutes(routes),
-        HttpClientTestingModule],
-      declarations: [
-        LoginComponent,
-        RegisterComponent, DashboardComponent],
-      providers: [{ provide: APP_CONFIG, useValue: AppConfig }, HttpService, SharedService],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-      .compileComponents();
+        HttpClientTestingModule,
+      ],
+      declarations: [LoginComponent, RegisterComponent, DashboardComponent],
+      providers: [
+        { provide: APP_CONFIG, useValue: AppConfig },
+        HttpService,
+        SharedService,
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -110,7 +118,6 @@ describe('RegisterComponent', () => {
     expect(component.error).toBe(errorMsz.message);
   }));
 
-
   it('invalid form check', waitForAsync(() => {
     component.registorForm.controls['username'].setValue('');
     component.registorForm.controls['password'].setValue('');
@@ -141,42 +148,44 @@ describe('RegisterComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it("should come success response on register",()=>{
+  it('should come success response on register', () => {
     component.registorForm.controls['username'].setValue('fakeuser');
     component.registorForm.controls['password'].setValue('Fake@123');
     component.registorForm.controls['confirmpassword'].setValue('Fake@123');
     component.registorForm.controls['email'].setValue('fake@gmail.com');
     const fakeRegister = {
-      success: true
-    }
-    spyOn(httpService,'register').and.returnValue(of(fakeRegister))
+      success: true,
+    };
+    spyOn(httpService, 'register').and.returnValue(of(fakeRegister));
     component.onSubmit();
     expect(component.success).not.toBeNull();
-  })
+  });
 
-  it("should come failure response on register",()=>{
+  it('should come failure response on register', () => {
     component.registorForm.controls['username'].setValue('fakeuser');
     component.registorForm.controls['password'].setValue('Fake@123');
     component.registorForm.controls['confirmpassword'].setValue('Fake@123');
     component.registorForm.controls['email'].setValue('fake@gmail.com');
     const fakeRegister = {
-      success: false
-    }
-    spyOn(httpService,'register').and.returnValue(of(fakeRegister))
+      success: false,
+    };
+    spyOn(httpService, 'register').and.returnValue(of(fakeRegister));
     component.onSubmit();
     expect(component.success).not.toBeNull();
-  })
+  });
 
-  it("should loading false on register error",()=>{
+  it('should loading false on register error', () => {
     component.registorForm.controls['username'].setValue('fakeuser');
     component.registorForm.controls['password'].setValue('Fake@123');
     component.registorForm.controls['confirmpassword'].setValue('Fake@123');
     component.registorForm.controls['email'].setValue('fake@gmail.com');
     const fakeRegister = {
-      success: false
-    }
-    spyOn(httpService,'register').and.returnValue(throwError(() => new Error()))
+      success: false,
+    };
+    spyOn(httpService, 'register').and.returnValue(
+      throwError(() => new Error()),
+    );
     component.onSubmit();
     expect(component.loading).toBeFalsy();
-  })
+  });
 });

@@ -4,7 +4,7 @@ import { SharedService } from 'src/app/services/shared.service';
 @Component({
   selector: 'app-kpi-table',
   templateUrl: './kpi-table.component.html',
-  styleUrls: ['./kpi-table.component.css']
+  styleUrls: ['./kpi-table.component.css'],
 })
 export class KpiTableComponent implements OnInit {
   @Input() cols: Array<object> = [];
@@ -20,24 +20,31 @@ export class KpiTableComponent implements OnInit {
   nodeColors: object = {};
   loader: boolean = false;
 
-  constructor(private service : SharedService) { }
+  constructor(private service: SharedService) {}
 
   ngOnInit(): void {
     this.assignColorToNodes();
-    this.service.maturityTableLoader.subscribe(value=>{
+    this.service.maturityTableLoader.subscribe((value) => {
       this.loader = value;
-    })
+    });
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    
-    if (changes['kpiData']?.currentValue != undefined && changes['kpiData']?.currentValue != changes['kpiData']?.previousValue) {
+    if (
+      changes['kpiData']?.currentValue != undefined &&
+      changes['kpiData']?.currentValue != changes['kpiData']?.previousValue
+    ) {
       this.kpiData = changes['kpiData']?.currentValue;
     }
-    if (changes['colorObj']?.currentValue != changes['colorObj']?.previousValue) {
+    if (
+      changes['colorObj']?.currentValue != changes['colorObj']?.previousValue
+    ) {
       this.assignColorToNodes();
     }
-    if (changes['kpiConfigData']?.currentValue != changes['kpiConfigData']?.previousValue) {
+    if (
+      changes['kpiConfigData']?.currentValue !=
+      changes['kpiConfigData']?.previousValue
+    ) {
       this.kpiConfigData = changes['kpiConfigData']?.currentValue;
     }
   }
@@ -65,7 +72,7 @@ export class KpiTableComponent implements OnInit {
     this.tabs = [];
     for (let key in this.colorObj) {
       this.nodeColors[key] = this.colorObj[key]?.color;
-      this.tabs.push({...this.colorObj[key]});
+      this.tabs.push({ ...this.colorObj[key] });
     }
   }
 }

@@ -32,7 +32,7 @@ declare const require: any;
 @Component({
   selector: 'app-project-list',
   templateUrl: './project-list.component.html',
-  styleUrls: ['./project-list.component.css']
+  styleUrls: ['./project-list.component.css'],
 })
 export class ProjectListComponent implements OnInit {
   projectList: any = [];
@@ -45,16 +45,16 @@ export class ProjectListComponent implements OnInit {
   dateFilterList: any = [
     {
       key: 'Last 10 days',
-      value: 10
+      value: 10,
     },
     {
       key: 'Last 15 days',
-      value: 15
+      value: 15,
     },
     {
       key: 'Last 30 days',
-      value: 30
-    }
+      value: 30,
+    },
   ];
   authorities: Array<string> = [];
   cols: Array<any> = [];
@@ -66,13 +66,20 @@ export class ProjectListComponent implements OnInit {
   selectedProductForExecutingAction: any;
   isRenameProject = false;
   submitted = false;
-  newProjectName: string = "";
+  newProjectName: string = '';
   projectGroup;
   selectedProject: any;
-    @ViewChild('kpimenu') kpimenu: Menu;
+  @ViewChild('kpimenu') kpimenu: Menu;
 
-  constructor(private http: HttpService, private sharedService: SharedService, private messenger: MessageService, private router: Router, private confirmationService: ConfirmationService,
-    private getAuthorizationService: GetAuthorizationService, private helper: HelperService) { }
+  constructor(
+    private http: HttpService,
+    private sharedService: SharedService,
+    private messenger: MessageService,
+    private router: Router,
+    private confirmationService: ConfirmationService,
+    private getAuthorizationService: GetAuthorizationService,
+    private helper: HelperService,
+  ) {}
 
   ngOnInit(): void {
     this.getData();
@@ -82,42 +89,53 @@ export class ProjectListComponent implements OnInit {
 
     this.items = [
       {
-        label: 'Edit Config', icon: 'pi pi-file-edit', command: () => {
+        label: 'Edit Config',
+        icon: 'pi pi-file-edit',
+        command: () => {
           this.editConfiguration(this.selectedProductForExecutingAction, 2);
-        }
+        },
       },
       {
-        label: 'Delete Project', icon: 'pi pi-trash', command: () => {
+        label: 'Delete Project',
+        icon: 'pi pi-trash',
+        command: () => {
           this.deleteProject(this.selectedProductForExecutingAction);
-        }
+        },
       },
       {
-        label: 'Clone Project', icon: 'pi pi-copy', command: () => {
+        label: 'Clone Project',
+        icon: 'pi pi-copy',
+        command: () => {
           this.editProject(this.selectedProductForExecutingAction, true);
-        }
+        },
       },
       {
-        label: 'Rename Project', icon: 'pi pi-file-edit', command: () => {
+        label: 'Rename Project',
+        icon: 'pi pi-file-edit',
+        command: () => {
           this.renameProject(this.selectedProductForExecutingAction);
-        }
+        },
       },
       {
-        label: 'Settings', icon: 'pi pi-wrench', command: () => {
-          this.allProjectList.forEach(project => {
+        label: 'Settings',
+        icon: 'pi pi-wrench',
+        command: () => {
+          this.allProjectList.forEach((project) => {
             this.editConfiguration(this.selectedProductForExecutingAction, 0);
-          })
-        }
-      }
+          });
+        },
+      },
     ];
 
     this.roleBasedItems = [
       {
-        label: 'Edit Config', icon: 'pi pi-file-edit', command: () => {
+        label: 'Edit Config',
+        icon: 'pi pi-file-edit',
+        command: () => {
           this.editConfiguration(this.selectedProductForExecutingAction, 2);
-        }
+        },
       },
     ];
-
   }
 
   public handleActionsClick(currentProject) {
@@ -126,12 +144,20 @@ export class ProjectListComponent implements OnInit {
 
   /* Assign role along with project Id */
   roleAccessAssign() {
-    const projectsAccess = !!this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'undefined' && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'null' ? this.sharedService.getCurrentUserDetails('projectsAccess') : [];
-    this.authorities = this.sharedService.getCurrentUserDetails('authorities') ? this.sharedService.getCurrentUserDetails('authorities') : [];
+    const projectsAccess =
+      !!this.sharedService.getCurrentUserDetails('projectsAccess') &&
+      this.sharedService.getCurrentUserDetails('projectsAccess') !==
+        'undefined' &&
+      this.sharedService.getCurrentUserDetails('projectsAccess') !== 'null'
+        ? this.sharedService.getCurrentUserDetails('projectsAccess')
+        : [];
+    this.authorities = this.sharedService.getCurrentUserDetails('authorities')
+      ? this.sharedService.getCurrentUserDetails('authorities')
+      : [];
     if (projectsAccess.length) {
-      projectsAccess.forEach(projectAccess => {
+      projectsAccess.forEach((projectAccess) => {
         this.roleAccess[projectAccess.role] = [];
-        projectAccess?.projects?.forEach(project => {
+        projectAccess?.projects?.forEach((project) => {
           this.roleAccess[projectAccess.role].push(project.projectId);
         });
       });
@@ -162,7 +188,7 @@ export class ProjectListComponent implements OnInit {
     this.cols = [];
     this.allProjectList = [];
     this.loading = true;
-    this.http.getProjectListData().subscribe(responseList => {
+    this.http.getProjectListData().subscribe((responseList) => {
       if (responseList[0].success) {
         this.projectList = responseList[0]?.data;
         if (this.projectList?.length > 0) {
@@ -176,7 +202,7 @@ export class ProjectListComponent implements OnInit {
         this.loading = false;
         this.messenger.add({
           severity: 'error',
-          summary: 'Some error occurred. Please try again later.'
+          summary: 'Some error occurred. Please try again later.',
         });
       }
     });
@@ -185,8 +211,13 @@ export class ProjectListComponent implements OnInit {
   fillColumns() {
     for (let i = this.projectList[0]?.hierarchy?.length - 1; i >= 0; i--) {
       const obj = {
-        id: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelId'],
-        heading: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelName']
+        id: this.projectList[0]?.hierarchy[i]?.hierarchyLevel[
+          'hierarchyLevelId'
+        ],
+        heading:
+          this.projectList[0]?.hierarchy[i]?.hierarchyLevel[
+            'hierarchyLevelName'
+          ],
       };
       this.cols?.push(obj);
     }
@@ -195,12 +226,12 @@ export class ProjectListComponent implements OnInit {
   addProjectType() {
     const projectObj = {
       id: 'name',
-      heading: 'Project'
+      heading: 'Project',
     };
     this.cols?.unshift(projectObj);
     const typeObj = {
       id: 'type',
-      heading: 'Type'
+      heading: 'Type',
     };
     this.cols?.push(typeObj);
     for (let i = 0; i < this.cols?.length; i++) {
@@ -217,7 +248,9 @@ export class ProjectListComponent implements OnInit {
         projectOnHold: this.projectList[i]?.projectOnHold,
       };
       for (let j = 0; j < this.projectList[i]?.hierarchy?.length; j++) {
-        obj[this.projectList[i]?.hierarchy[j]?.hierarchyLevel['hierarchyLevelId']] = this.projectList[i]?.hierarchy[j]?.value;
+        obj[
+          this.projectList[i]?.hierarchy[j]?.hierarchyLevel['hierarchyLevelId']
+        ] = this.projectList[i]?.hierarchy[j]?.value;
       }
       this.allProjectList?.push(obj);
     }
@@ -233,7 +266,9 @@ export class ProjectListComponent implements OnInit {
     if (!clone) {
       this.router.navigate(['./dashboard/Config/BasicConfig']);
     } else {
-      this.router.navigate(['./dashboard/Config/BasicConfig'], { queryParams: { 'clone': true }});
+      this.router.navigate(['./dashboard/Config/BasicConfig'], {
+        queryParams: { clone: true },
+      });
     }
   }
 
@@ -244,29 +279,33 @@ export class ProjectListComponent implements OnInit {
       header: `Delete ${project.name}?`,
       icon: 'pi pi-info-circle',
       accept: () => {
-        this.http.deleteProject(project).subscribe(response => {
-          this.projectDeletionStatus(response);
-          let arr = this.sharedService.getCurrentUserDetails('projectsAccess');
-          if (arr?.length) {
-            arr?.map((item) => {
-              item.projects = item.projects.filter(x => x.projectId != project.id);
-            });
-            arr = arr?.filter(item => item.projects?.length > 0);
-            this.http.setCurrentUserDetails({ projectsAccess: arr });
-          }
-        }, error => {
-          this.projectDeletionStatus(error);
-        });
+        this.http.deleteProject(project).subscribe(
+          (response) => {
+            this.projectDeletionStatus(response);
+            let arr =
+              this.sharedService.getCurrentUserDetails('projectsAccess');
+            if (arr?.length) {
+              arr?.map((item) => {
+                item.projects = item.projects.filter(
+                  (x) => x.projectId != project.id,
+                );
+              });
+              arr = arr?.filter((item) => item.projects?.length > 0);
+              this.http.setCurrentUserDetails({ projectsAccess: arr });
+            }
+          },
+          (error) => {
+            this.projectDeletionStatus(error);
+          },
+        );
       },
-      reject: () => {
-
-      }
+      reject: () => {},
     });
   }
 
-
   getAlertMessageOnClickDelete() {
-    const commonMsg = 'Project and related data will be deleted forever, are you sure you want to delete it?';
+    const commonMsg =
+      'Project and related data will be deleted forever, are you sure you want to delete it?';
 
     return commonMsg;
   }
@@ -280,11 +319,11 @@ export class ProjectListComponent implements OnInit {
         header: 'Project Deletion Status',
         icon: 'fa fa-check-circle alert-success',
         accept: () => {
-          console.log('accept')
+          console.log('accept');
         },
         reject: () => {
-          console.log('reject')
-        }
+          console.log('reject');
+        },
       });
     } else {
       this.confirmationService.confirm({
@@ -292,19 +331,21 @@ export class ProjectListComponent implements OnInit {
         header: 'Project Deletion Status',
         icon: 'fa fa-times-circle alert-danger',
         accept: () => {
-          console.log('accept')
+          console.log('accept');
         },
         reject: () => {
-          console.log('reject')
-        }
+          console.log('reject');
+        },
       });
     }
   }
 
   editConfiguration(project, tabNum) {
     this.sharedService.setSelectedProject(project);
-    this.router.navigate([`/dashboard/Config/ConfigSettings/${project['id']}`], { queryParams: { 'type': project['type'].toLowerCase(), tab: tabNum } });
-
+    this.router.navigate(
+      [`/dashboard/Config/ConfigSettings/${project['id']}`],
+      { queryParams: { type: project['type'].toLowerCase(), tab: tabNum } },
+    );
   }
 
   renameProject(project) {
@@ -312,41 +353,50 @@ export class ProjectListComponent implements OnInit {
     this.selectedProject = project;
     this.isRenameProject = true;
     this.newProjectName = project.name;
-     this.projectGroup = new FormGroup({
-          projectName: new FormControl()
-      });
+    this.projectGroup = new FormGroup({
+      projectName: new FormControl(),
+    });
   }
   onSubmit(form: any) {
     this.submitted = true;
-    if(this.newProjectName === this.selectedProject.name) {
+    if (this.newProjectName === this.selectedProject.name) {
       return;
     }
     if (form.valid) {
-      const updatedDetails = {...this.projectList.filter(x => x.projectDisplayName === this.selectedProject.name)[0]};
+      const updatedDetails = {
+        ...this.projectList.filter(
+          (x) => x.projectDisplayName === this.selectedProject.name,
+        )[0],
+      };
       updatedDetails['projectName'] = this.newProjectName;
       updatedDetails['projectDisplayName'] = this.newProjectName;
-      this.http.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
-            if (response && response.serviceResponse && response.serviceResponse.success) {
-              this.messenger.add({
-                severity: 'success',
-                summary: 'Project renamed successfully.'
-              });
-              this.getData();
-            } else {
-              this.messenger.add({
-                severity: 'error',
-                summary: 'Some error occurred. Please try again later.'
-              });
-            }
-          })
+      this.http
+        .updateProjectDetails(updatedDetails, this.selectedProject.id)
+        .subscribe((response) => {
+          if (
+            response &&
+            response.serviceResponse &&
+            response.serviceResponse.success
+          ) {
+            this.messenger.add({
+              severity: 'success',
+              summary: 'Project renamed successfully.',
+            });
+            this.getData();
+          } else {
+            this.messenger.add({
+              severity: 'error',
+              summary: 'Some error occurred. Please try again later.',
+            });
+          }
+        });
       this.isRenameProject = false;
       console.log('Form submitted:', this.newProjectName);
     }
   }
 
-  toggleMenu(event,project) {
+  toggleMenu(event, project) {
     this.kpimenu.toggle(event);
-    this.handleActionsClick(project)
+    this.handleActionsClick(project);
   }
-
 }

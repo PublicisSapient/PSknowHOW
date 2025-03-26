@@ -23,12 +23,19 @@ import { DecodeUrlGuard } from './decodeURL.guard';
 import { HelperService } from './helper.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AppInitializerService {
-
-  constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient, private route: ActivatedRoute, private ga: GoogleAnalyticsService, private helperService: HelperService) {
-  }
+  constructor(
+    private sharedService: SharedService,
+    private httpService: HttpService,
+    private router: Router,
+    private featureToggleService: FeatureFlagsService,
+    private http: HttpClient,
+    private route: ActivatedRoute,
+    private ga: GoogleAnalyticsService,
+    private helperService: HelperService,
+  ) {}
   commonRoutes: Routes = [
     { path: '', redirectTo: 'iteration', pathMatch: 'full' },
     { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
@@ -39,123 +46,181 @@ export class AppInitializerService {
     //     // }
     // },
     {
-      path: 'kpi-maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
+      path: 'kpi-maturity',
+      component: MaturityComponent,
+      pathMatch: 'full',
+      canActivate: [AccessGuard],
       data: {
-        feature: "Maturity"
-      }
-    }
+        feature: 'Maturity',
+      },
+    },
   ];
   routes: Routes = [
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     {
       path: 'authentication',
-      loadChildren: () => import('../../app/authentication/authentication.module').then(m => m.AuthenticationModule),
+      loadChildren: () =>
+        import('../../app/authentication/authentication.module').then(
+          (m) => m.AuthenticationModule,
+        ),
       resolve: [Logged],
-      canActivate: [SSOGuard]
+      canActivate: [SSOGuard],
     },
     {
-      path: 'dashboard', component: DashboardV2Component,
+      path: 'dashboard',
+      component: DashboardV2Component,
       canActivateChild: [FeatureGuard],
       children: [
         ...this.commonRoutes,
         {
           path: 'Config',
-          loadChildren: () => import('../../app/config/config.module').then(m => m.ConfigModule),
+          loadChildren: () =>
+            import('../../app/config/config.module').then(
+              (m) => m.ConfigModule,
+            ),
           data: {
-            feature: "Config"
-          }
+            feature: 'Config',
+          },
         },
         {
           path: 'Report',
-          loadChildren: () => import('../../app/dashboardv2/reports-module/reports-module.module').then(m => m.ReportsModuleModule),
+          loadChildren: () =>
+            import(
+              '../../app/dashboardv2/reports-module/reports-module.module'
+            ).then((m) => m.ReportsModuleModule),
           data: {
-            feature: "Report"
-          }
+            feature: 'Report',
+          },
         },
-        { path: ':boardName', component: ExecutiveV2Component, pathMatch: 'full', canActivate: [DecodeUrlGuard] },
+        {
+          path: ':boardName',
+          component: ExecutiveV2Component,
+          pathMatch: 'full',
+          canActivate: [DecodeUrlGuard],
+        },
         { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
-        { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
-
-      ], canActivate: [AuthGuard],
+        {
+          path: 'unauthorized-access',
+          component: UnauthorisedAccessComponent,
+          pathMatch: 'full',
+        },
+      ],
+      canActivate: [AuthGuard],
     },
     { path: 'authentication-fail', component: SsoAuthFailureComponent },
-    { path: '**', redirectTo: 'authentication' }
+    { path: '**', redirectTo: 'authentication' },
   ];
 
   routesAuth: Routes = [
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     {
-      path: 'dashboard', component: DashboardV2Component,
+      path: 'dashboard',
+      component: DashboardV2Component,
       children: [
         ...this.commonRoutes,
         { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
-        { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
+        {
+          path: 'unauthorized-access',
+          component: UnauthorisedAccessComponent,
+          pathMatch: 'full',
+        },
         {
           path: 'Config',
-          loadChildren: () => import('../../app/config/config.module').then(m => m.ConfigModule),
+          loadChildren: () =>
+            import('../../app/config/config.module').then(
+              (m) => m.ConfigModule,
+            ),
           data: {
-            feature: "Config"
-          }
+            feature: 'Config',
+          },
         },
         {
           path: 'Report',
-          loadChildren: () => import('../../app/dashboardv2/reports-module/reports-module.module').then(m => m.ReportsModuleModule),
+          loadChildren: () =>
+            import(
+              '../../app/dashboardv2/reports-module/reports-module.module'
+            ).then((m) => m.ReportsModuleModule),
           data: {
-            feature: "Report"
-          }
+            feature: 'Report',
+          },
         },
-        { path: ':boardName', component: ExecutiveV2Component, pathMatch: 'full', canActivate: [DecodeUrlGuard] },
-
-      ], canActivate: [AuthGuard],
+        {
+          path: ':boardName',
+          component: ExecutiveV2Component,
+          pathMatch: 'full',
+          canActivate: [DecodeUrlGuard],
+        },
+      ],
+      canActivate: [AuthGuard],
     },
     { path: 'pageNotFound', component: PageNotFoundComponent },
-    { path: '**', redirectTo: 'pageNotFound' }
+    { path: '**', redirectTo: 'pageNotFound' },
   ];
 
   async checkFeatureFlag() {
-    let loc = window.location.hash ? JSON.parse(JSON.stringify(window.location.hash?.split('#')[1])) : '';
+    let loc = window.location.hash
+      ? JSON.parse(JSON.stringify(window.location.hash?.split('#')[1]))
+      : '';
     // loc = decodeURIComponent(loc);
-    if (loc && loc.indexOf('authentication') === -1 && loc.indexOf('Error') === -1 && loc.indexOf('Config') === -1) {
-      localStorage.setItem('shared_link', (loc))
+    if (
+      loc &&
+      loc.indexOf('authentication') === -1 &&
+      loc.indexOf('Error') === -1 &&
+      loc.indexOf('Config') === -1
+    ) {
+      localStorage.setItem('shared_link', loc);
     }
     return new Promise<void>(async (resolve, reject) => {
       if (!environment['production']) {
-        this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
+        this.featureToggleService.config = this.featureToggleService
+          .loadConfig()
+          .then((res) => res);
         this.validateToken(loc);
       } else {
         const env$ = this.http.get('assets/env.json').pipe(
-          tap(env => {
+          tap((env) => {
             environment['baseUrl'] = env['baseUrl'] || '';
-            environment['SSO_LOGIN'] = env['SSO_LOGIN'] === 'true' ? true : false;
-            environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] === 'true' ? true : false;
+            environment['SSO_LOGIN'] =
+              env['SSO_LOGIN'] === 'true' ? true : false;
+            environment['AUTHENTICATION_SERVICE'] =
+              env['AUTHENTICATION_SERVICE'] === 'true' ? true : false;
             environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
             environment['CENTRAL_API_URL'] = env['CENTRAL_API_URL'] || '';
             environment['MAP_URL'] = env['MAP_URL'] || '';
             environment['RETROS_URL'] = env['RETROS_URL'] || '';
-            environment['SPEED_SUITE'] = env['SPEED_SUITE'] === 'true' ? true : false;
-            if (loc && loc.indexOf('authentication') === -1 && loc.indexOf('Error') === -1 && loc.indexOf('Config') === -1) {
-              localStorage.setItem('shared_link', loc)
+            environment['SPEED_SUITE'] =
+              env['SPEED_SUITE'] === 'true' ? true : false;
+            if (
+              loc &&
+              loc.indexOf('authentication') === -1 &&
+              loc.indexOf('Error') === -1 &&
+              loc.indexOf('Config') === -1
+            ) {
+              localStorage.setItem('shared_link', loc);
             }
             this.validateToken(loc);
-          }));
-        env$.toPromise().then(async res => {
-          this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
+          }),
+        );
+        env$.toPromise().then(async (res) => {
+          this.featureToggleService.config = this.featureToggleService
+            .loadConfig()
+            .then((res) => res);
         });
       }
 
-
-
       // load google Analytics script on all instances except local and if customAPI property is true
-      let addGAScript = await this.featureToggleService.isFeatureEnabled('GOOGLE_ANALYTICS');
+      let addGAScript = await this.featureToggleService.isFeatureEnabled(
+        'GOOGLE_ANALYTICS',
+      );
       if (addGAScript) {
         if (window.location.origin.indexOf('localhost') === -1) {
-          this.ga.load('gaTagManager').then(data => {
+          this.ga.load('gaTagManager').then((data) => {
             console.log('script loaded ', data);
-          })
+          });
         }
       }
       resolve();
-    })
+    });
   }
 
   validateToken(location) {
@@ -165,37 +230,44 @@ export class AppInitializerService {
         this.router.navigate([location]);
       } else {
         // Make API call or initialization logic here...
-        this.httpService.getUserDetailsForCentral().subscribe((response) => {
-          if (response?.['success']) {
-            this.httpService.setCurrentUserDetails(response?.['data']);
-            this.router.resetConfig([...this.routesAuth]);
-            localStorage.setItem("user_name", response?.['data']?.user_name);
-            localStorage.setItem("user_email", response?.['data']?.user_email);
-            this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
-          }
-
-          if (location) {
-            let redirect_uri = JSON.parse(localStorage.getItem('redirect_uri'));
-            if (redirect_uri) {
-              localStorage.removeItem('redirect_uri');
+        this.httpService.getUserDetailsForCentral().subscribe(
+          (response) => {
+            if (response?.['success']) {
+              this.httpService.setCurrentUserDetails(response?.['data']);
+              this.router.resetConfig([...this.routesAuth]);
+              localStorage.setItem('user_name', response?.['data']?.user_name);
+              localStorage.setItem(
+                'user_email',
+                response?.['data']?.user_email,
+              );
+              this.ga.setLoginMethod(
+                response?.['data'],
+                response?.['data']?.authType,
+              );
             }
-            this.router.navigateByUrl(location);
-          } else {
-            if (localStorage.getItem('shared_link')) {
-              this.helperService.urlShorteningRedirection();
+
+            if (location) {
+              let redirect_uri = JSON.parse(
+                localStorage.getItem('redirect_uri'),
+              );
+              if (redirect_uri) {
+                localStorage.removeItem('redirect_uri');
+              }
+              this.router.navigateByUrl(location);
             } else {
-              this.router.navigate(['/dashboard/iteration']);
+              if (localStorage.getItem('shared_link')) {
+                this.helperService.urlShorteningRedirection();
+              } else {
+                this.router.navigate(['/dashboard/iteration']);
+              }
             }
-          }
-        }, error => {
-          console.log(error);
-        });
-
-
+          },
+          (error) => {
+            console.log(error);
+          },
+        );
       }
       resolve();
-
-    })
-
+    });
   }
 }

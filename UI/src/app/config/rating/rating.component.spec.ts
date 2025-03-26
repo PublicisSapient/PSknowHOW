@@ -28,7 +28,7 @@ describe('RatingComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [RatingComponent],
-      imports: [ReactiveFormsModule] // Import ReactiveFormsModule for form handling
+      imports: [ReactiveFormsModule], // Import ReactiveFormsModule for form handling
     }).compileComponents();
   });
 
@@ -51,14 +51,14 @@ describe('RatingComponent', () => {
         currentValue: { happinessRating: 4 },
         previousValue: { happinessRating: 3 },
         firstChange: false,
-        isFirstChange: () => false
+        isFirstChange: () => false,
       },
       editable: {
         currentValue: true,
         previousValue: false,
         firstChange: false,
-        isFirstChange: () => false
-      }
+        isFirstChange: () => false,
+      },
     };
 
     component.ngOnChanges(changes);
@@ -72,8 +72,8 @@ describe('RatingComponent', () => {
         currentValue: true,
         previousValue: false,
         firstChange: false,
-        isFirstChange: () => false
-      }
+        isFirstChange: () => false,
+      },
     };
 
     component.ngOnChanges(changes);
@@ -87,8 +87,8 @@ describe('RatingComponent', () => {
         currentValue: false,
         previousValue: true,
         firstChange: false,
-        isFirstChange: () => false
-      }
+        isFirstChange: () => false,
+      },
     };
 
     component.ngOnChanges(changes);
@@ -103,7 +103,10 @@ describe('RatingComponent', () => {
   });
 
   it('should call setValue when currentAssignee is updated', () => {
-    const setValueSpy = spyOn(component.form.controls['happinessRating'], 'setValue');
+    const setValueSpy = spyOn(
+      component.form.controls['happinessRating'],
+      'setValue',
+    );
     const newAssignee = { happinessRating: 4 };
 
     const changes: SimpleChanges = {
@@ -111,8 +114,8 @@ describe('RatingComponent', () => {
         currentValue: newAssignee,
         previousValue: component.currentAssignee,
         firstChange: false,
-        isFirstChange: () => false
-      }
+        isFirstChange: () => false,
+      },
     };
 
     component.ngOnChanges(changes);

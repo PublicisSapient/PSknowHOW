@@ -22,7 +22,7 @@ import { HelperService } from '../../services/helper.service';
 @Component({
   selector: 'app-kpi-line-gauge',
   templateUrl: './kpi-line-gauge.component.html',
-  styleUrls: []
+  styleUrls: [],
 })
 export class KpiComponent implements OnInit {
   @Input('title') title: string;
@@ -37,11 +37,10 @@ export class KpiComponent implements OnInit {
   @Input() yAxisCaption: string; // label at y axis
   @Input() loaderArray: string[];
   constructor(
-    private helperService: HelperService,
-    // private executive: ExecutiveComponent
-  ) { }
+    private helperService: HelperService, // private executive: ExecutiveComponent
+  ) {}
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   // downloadExcel(kpiId, kpiName, isKanban) {
   //   this.executive.downloadExcel(kpiId, kpiName, isKanban,false);

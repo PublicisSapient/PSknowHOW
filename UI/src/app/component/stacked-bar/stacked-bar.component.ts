@@ -1,10 +1,18 @@
-import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewContainerRef,
+} from '@angular/core';
 
 import * as d3 from 'd3';
 
 @Component({
   selector: 'app-stacked-bar',
-  templateUrl: './stacked-bar.component.html'
+  templateUrl: './stacked-bar.component.html',
 })
 export class StackedBarComponent implements OnInit, OnChanges {
   @Input() data: any[] = []; // Data to be passed from parent component
@@ -15,7 +23,10 @@ export class StackedBarComponent implements OnInit, OnChanges {
   private svg: any;
   private tooltip: any;
 
-  constructor(private elRef: ElementRef, private viewContainerRef: ViewContainerRef) {
+  constructor(
+    private elRef: ElementRef,
+    private viewContainerRef: ViewContainerRef,
+  ) {
     this.elem = this.viewContainerRef.element.nativeElement;
   }
 
@@ -39,10 +50,12 @@ export class StackedBarComponent implements OnInit, OnChanges {
 
     // Calculate chart width dynamically
     const chartWidth =
-      (d3.select(this.elem).select('.chart-container').node().offsetWidth - margin.left - margin.right) || window.innerWidth;
+      d3.select(this.elem).select('.chart-container').node().offsetWidth -
+        margin.left -
+        margin.right || window.innerWidth;
 
     // Filter out categories with zero value
-    const filteredData = this.data.filter(d => d.value !== 0);
+    const filteredData = this.data.filter((d) => d.value !== 0);
 
     // If all values are zero, return early
     if (filteredData.length === 0) {
@@ -54,7 +67,7 @@ export class StackedBarComponent implements OnInit, OnChanges {
     const totalValue = filteredData.reduce((sum, d) => sum + d.value, 0);
 
     // Normalize data for percentage
-    const normalizedData = filteredData.map(d => ({
+    const normalizedData = filteredData.map((d) => ({
       ...d,
       percentage: (d.value / totalValue) * 100,
     }));
@@ -101,20 +114,22 @@ export class StackedBarComponent implements OnInit, OnChanges {
         } else {
           // return `M${0},0
           // C${radius},${chartHeight / 4} ${radius},${(3 * chartHeight) / 4} 0,${chartHeight}
-          // L${width - radius},${chartHeight} 
+          // L${width - radius},${chartHeight}
           // C${width},${(3 * chartHeight) / 4} ${width},${chartHeight / 4} ${width - radius},0
           // Z`;
 
           return `M${x - radius},0
-        C${x + radius},${chartHeight / 4} ${x },${(4 * chartHeight) / 4} ${x - radius},${chartHeight}
+        C${x + radius},${chartHeight / 4} ${x},${(4 * chartHeight) / 4} ${
+            x - radius
+          },${chartHeight}
         L${x + width - radius},${chartHeight} 
-        C${x + width},${(3 * chartHeight) / 4} ${x + width},${chartHeight / 4} ${x + width - radius},0
+        C${x + width},${(3 * chartHeight) / 4} ${x + width},${
+            chartHeight / 4
+          } ${x + width - radius},0
         Z`;
-
-
         }
       })
-      .attr('fill', d => d.color);
+      .attr('fill', (d) => d.color);
 
     // Reset cumulativeWidth for labels
     cumulativeWidth = 0;
@@ -124,7 +139,7 @@ export class StackedBarComponent implements OnInit, OnChanges {
       .data(normalizedData)
       .enter()
       .append('text')
-      .attr('x', d => {
+      .attr('x', (d) => {
         const width = (chartWidth * d.percentage) / 100;
         const x = cumulativeWidth + width / 2;
         cumulativeWidth += width;
@@ -136,7 +151,7 @@ export class StackedBarComponent implements OnInit, OnChanges {
       .style('font-weight', 'bold')
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
-      .text(d => d.value);
+      .text((d) => d.value);
   }
 
   private updateChart(): void {

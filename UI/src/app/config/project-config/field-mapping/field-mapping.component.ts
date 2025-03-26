@@ -45,32 +45,45 @@ export class FieldMappingComponent implements OnInit {
   populateDropdowns = true;
   uploadedFileName = '';
   fieldMappingConfig = [];
-  @ViewChild('fieldMappingFormComp') fieldMappingFormComp: FieldMappingFormComponent;
+  @ViewChild('fieldMappingFormComp')
+  fieldMappingFormComp: FieldMappingFormComponent;
   kpiId: string;
   metaDataTemplateCode: string;
 
-
   private setting = {
     element: {
-      dynamicDownload: null as HTMLElement
-    }
+      dynamicDownload: null as HTMLElement,
+    },
   };
   selectedProject: any;
 
-  constructor(private formBuilder: UntypedFormBuilder, private router: Router, private sharedService: SharedService,
-    private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService, private confirmationService: ConfirmationService) { }
+  constructor(
+    private formBuilder: UntypedFormBuilder,
+    private router: Router,
+    private sharedService: SharedService,
+    private http: HttpService,
+    private messenger: MessageService,
+    private getAuthorizationService: GetAuthorizationService,
+    private confirmationService: ConfirmationService,
+  ) {}
 
   ngOnInit(): void {
-
     if (this.sharedService.getSelectedProject()) {
       this.selectedConfig = this.sharedService.getSelectedProject();
-      this.disableSave = this.getAuthorizationService.checkIfViewer(this.selectedConfig);
+      this.disableSave = this.getAuthorizationService.checkIfViewer(
+        this.selectedConfig,
+      );
     } else {
       this.router.navigate(['./dashboard/Config/ProjectList']);
     }
-    this.kpiId = this.selectedConfig?.type?.toLowerCase() === 'kanban' ? 'kpi1' : 'kpi0';
+    this.kpiId =
+      this.selectedConfig?.type?.toLowerCase() === 'kanban' ? 'kpi1' : 'kpi0';
     if (this.sharedService.getSelectedToolConfig()) {
-      this.selectedToolConfig = this.sharedService.getSelectedToolConfig().filter(tool => tool.toolName === 'Jira' || tool.toolName === 'Azure');
+      this.selectedToolConfig = this.sharedService
+        .getSelectedToolConfig()
+        .filter(
+          (tool) => tool.toolName === 'Jira' || tool.toolName === 'Azure',
+        );
       if (!this.selectedToolConfig || !this.selectedToolConfig.length) {
         this.router.navigate(['./dashboard/Config/ProjectList']);
       } else {
@@ -82,12 +95,19 @@ export class FieldMappingComponent implements OnInit {
   }
 
   getMappings() {
-    this.selectedFieldMapping = this.sharedService.getSelectedFieldMapping()?.fieldMappingResponses;
-    this.metaDataTemplateCode = this.sharedService.getSelectedFieldMapping()?.metaTemplateCode;
-    if (this.selectedFieldMapping && Object.keys(this.selectedFieldMapping).length) {
+    this.selectedFieldMapping =
+      this.sharedService.getSelectedFieldMapping()?.fieldMappingResponses;
+    this.metaDataTemplateCode =
+      this.sharedService.getSelectedFieldMapping()?.metaTemplateCode;
+    if (
+      this.selectedFieldMapping &&
+      Object.keys(this.selectedFieldMapping).length
+    ) {
       for (const obj in this.selectedFieldMapping) {
         if (this.fieldMappingForm && this.fieldMappingForm.controls[obj]) {
-          this.fieldMappingForm.controls[obj].setValue(this.selectedFieldMapping[obj]);
+          this.fieldMappingForm.controls[obj].setValue(
+            this.selectedFieldMapping[obj],
+          );
         }
       }
     }
@@ -95,26 +115,40 @@ export class FieldMappingComponent implements OnInit {
 
   getKPIFieldMappingRelationships() {
     if (this.selectedConfig && Object.keys(this.selectedConfig)?.length) {
-      const finalMappingURL = this.selectedConfig?.type?.toLowerCase() === 'kanban' ? `${this.selectedConfig.id}/kpi1` : `${this.selectedConfig.id}/kpi0`
-      this.http.getKPIFieldMappingConfig(finalMappingURL).subscribe(response => {
-        if (response && response['success']) {
-          this.fieldMappingConfig = response?.data.fieldConfiguration;
-        }
-      });
+      const finalMappingURL =
+        this.selectedConfig?.type?.toLowerCase() === 'kanban'
+          ? `${this.selectedConfig.id}/kpi1`
+          : `${this.selectedConfig.id}/kpi0`;
+      this.http
+        .getKPIFieldMappingConfig(finalMappingURL)
+        .subscribe((response) => {
+          if (response && response['success']) {
+            this.fieldMappingConfig = response?.data.fieldConfiguration;
+          }
+        });
     } else {
       this.router.navigate(['./dashboard/Config/ProjectList']);
     }
   }
 
   getDropdownData() {
-    if (this.selectedToolConfig && this.selectedToolConfig.length && this.selectedToolConfig[0].id) {
-      this.http.getKPIConfigMetadata(this.sharedService.getSelectedProject().id, this.kpiId).subscribe(Response => {
-        if (Response.success) {
-          this.fieldMappingMetaData = Response.data;
-        } else {
-          this.fieldMappingMetaData = [];
-        }
-      });
+    if (
+      this.selectedToolConfig &&
+      this.selectedToolConfig.length &&
+      this.selectedToolConfig[0].id
+    ) {
+      this.http
+        .getKPIConfigMetadata(
+          this.sharedService.getSelectedProject().id,
+          this.kpiId,
+        )
+        .subscribe((Response) => {
+          if (Response.success) {
+            this.fieldMappingMetaData = Response.data;
+          } else {
+            this.fieldMappingMetaData = [];
+          }
+        });
     }
   }
 
@@ -130,32 +164,33 @@ export class FieldMappingComponent implements OnInit {
     fileReader.onerror = (error) => {
       console.log(error);
     };
-  };
-
-
-  export() {
-    this.http.getFieldMappings(this.selectedToolConfig[0].id).subscribe(resp => {
-      this.dyanmicDownloadByHtmlTag({
-        fileName: 'mappings.json',
-        text: JSON.stringify(resp['data'])
-      });
-    });
   }
 
-  private dyanmicDownloadByHtmlTag(arg: {
-    fileName: string;
-    text: string;
-  }) {
+  export() {
+    this.http
+      .getFieldMappings(this.selectedToolConfig[0].id)
+      .subscribe((resp) => {
+        this.dyanmicDownloadByHtmlTag({
+          fileName: 'mappings.json',
+          text: JSON.stringify(resp['data']),
+        });
+      });
+  }
+
+  private dyanmicDownloadByHtmlTag(arg: { fileName: string; text: string }) {
     if (!this.setting.element.dynamicDownload) {
       this.setting.element.dynamicDownload = document.createElement('a');
     }
     const element = this.setting.element.dynamicDownload;
-    const fileType = arg.fileName.indexOf('.json') > -1 ? 'text/json' : 'text/plain';
-    element.setAttribute('href', `data:${fileType};charset=utf-8,${encodeURIComponent(arg.text)}`);
+    const fileType =
+      arg.fileName.indexOf('.json') > -1 ? 'text/json' : 'text/plain';
+    element.setAttribute(
+      'href',
+      `data:${fileType};charset=utf-8,${encodeURIComponent(arg.text)}`,
+    );
     element.setAttribute('download', arg.fileName);
 
     const event = new MouseEvent('click');
     element.dispatchEvent(event);
   }
-
 }
