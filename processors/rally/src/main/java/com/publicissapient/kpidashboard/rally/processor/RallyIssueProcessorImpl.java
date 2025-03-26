@@ -455,7 +455,7 @@ public class RallyIssueProcessorImpl implements RallyIssueProcessor {
 	private void setJiraIssueValues(JiraIssue jiraIssue, Issue issue, FieldMapping fieldMapping,
 			Map<String, IssueField> fields) {
 
-		// Priority
+		/*// Priority
 		if (issue.getPriority() != null) {
 			jiraIssue.setPriority(JiraProcessorUtil.deodeUTF8String(issue.getPriority().getName()));
 		}
@@ -463,7 +463,7 @@ public class RallyIssueProcessorImpl implements RallyIssueProcessor {
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueEpicType())
 				&& fieldMapping.getJiraIssueEpicType().contains(issue.getIssueType().getName())) {
 			setEpicIssueData(fieldMapping, jiraIssue, fields);
-		}
+		}*/
 		// Release Version
 		if (issue.getFixVersions() != null) {
 			List<ReleaseVersion> releaseVersions = new ArrayList<>();
@@ -932,10 +932,10 @@ public class RallyIssueProcessorImpl implements RallyIssueProcessor {
 		// log.error("Rally Processor | No list of current paged RALLY's issues found");
 		// return jiraIssue;
 		// }
-		// FieldMapping fieldMapping = projectConfig.getFieldMapping();
-		// if (null == fieldMapping) {
-		// return jiraIssue;
-		// }
+		FieldMapping fieldMapping = projectConfig.getFieldMapping();
+		 if (null == fieldMapping) {
+		 return jiraIssue;
+		 }
 		// Set<String> issueTypeNames =
 		// Arrays.stream(fieldMapping.getJiraIssueTypeNames()).map(String::toLowerCase)
 		// .collect(Collectors.toSet());
@@ -953,7 +953,7 @@ public class RallyIssueProcessorImpl implements RallyIssueProcessor {
 		jiraIssue.setProcessorId(processorId);
 		jiraIssue.setJiraStatus(hierarchicalRequirement.getScheduleState());
 		jiraIssue.setTypeId(hierarchicalRequirement.getObjectID());
-		// Map<String, IssueField> fields = buildFieldMap(issue.getFields());
+	//	Map<String, IssueField> fields = buildFieldMap(hierarchicalRequirement.getFields());
 		// IssueField epic = fields.get(fieldMapping.getEpicName());
 		jiraIssue.setIssueId(hierarchicalRequirement.getFormattedID());
 		// jiraIssue.setTypeId(JiraProcessorUtil.deodeUTF8String(issueType.getId()));
@@ -981,7 +981,7 @@ public class RallyIssueProcessorImpl implements RallyIssueProcessor {
 		// setIssueTechStoryType(fieldMapping, issue, jiraIssue, fields);
 		// jiraIssue.setAffectedVersions(getAffectedVersions(issue));
 		// setIssueEpics(issueEpics, epic, jiraIssue);
-		// setJiraIssueValues(jiraIssue, issue, fieldMapping, fields);
+		//setJiraIssueValues(jiraIssue, hierarchicalRequirement, fieldMapping, fields);
 		if (hierarchicalRequirement.getIteration() != null) {
 			jiraIssue.setSprintBeginDate(hierarchicalRequirement.getIteration().getStartDate());
 			jiraIssue.setSprintEndDate(hierarchicalRequirement.getIteration().getEndDate());

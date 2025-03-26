@@ -111,7 +111,8 @@ public class RallyProcessorJob {
 	@Bean
 	public Job fetchIssueScrumRqlJob(@Qualifier("fetchIssueSprintJob") Job fetchIssueScrumRqlJob) {
 		return builderFactory.getJobBuilder("FetchIssueScrum RQL Job", jobRepository).incrementer(new RunIdIncrementer())
-				.start(metaDataStep()).next(processProjectStatusStep()).next(fetchIssueScrumRqlChunkStep()).listener(jobListenerScrum).build();
+				.start(metaDataStep()).next(processProjectStatusStep()).next(fetchIssueScrumRqlChunkStep())
+				.next(scrumReleaseDataStep()).listener(jobListenerScrum).build();
 	}
 
 	@TrackExecutionTime
