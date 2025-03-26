@@ -27,6 +27,7 @@ import com.atlassian.jira.rest.client.internal.async.DisposableHttpClient;
 import com.publicissapient.kpidashboard.jiratest.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jiratest.adapter.impl.async.impl.ProcessorAsynchJiraRestClient;
 import com.publicissapient.kpidashboard.jiratest.config.JiraTestProcessorConfig;
+import com.publicissapient.kpidashboard.jiratest.spnego.SpnegoAuthenticationHandler;
 
 public class ProcessorAsynchJiraRestClientFactory extends AsynchronousJiraRestClientFactory {
 
@@ -64,5 +65,9 @@ public class ProcessorAsynchJiraRestClientFactory extends AsynchronousJiraRestCl
 	public ProcessorJiraRestClient createWithBasicHttpAuthentication(final URI serverUri, final String username,
 			final String password, JiraTestProcessorConfig jiraTestProcessorConfig) {
 		return create(serverUri, new BasicHttpAuthenticationHandler(username, password), jiraTestProcessorConfig);
+	}
+	public ProcessorJiraRestClient createWithAuthenticationCookies(final URI serverUri, final String authCookies,
+			JiraTestProcessorConfig jiraTestProcessorConfig) {
+		return create(serverUri, new SpnegoAuthenticationHandler(authCookies), jiraTestProcessorConfig);
 	}
 }

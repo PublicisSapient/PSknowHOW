@@ -118,13 +118,34 @@ public class AdditionalFilterHelper {
 
 		return values;
 	}
+//	private Set<String> getLabels(Issue issue, AdditionalFilterConfig additionalFilterConfig) {
+//		Set<String> configuredLabels = additionalFilterConfig.getValues();
+//		Set<String> issueLabels = issue.getLabels();
+//
+//		Set<String> commonLabels = issueLabels.stream()
+//				.filter(label -> configuredLabels.stream()
+//						.anyMatch(configuredLabel -> configuredLabel.equalsIgnoreCase(label)))
+//				.collect(Collectors.toSet());
+//		return commonLabels;
+//	}
 
 	private Set<String> getLabels(Issue issue, AdditionalFilterConfig additionalFilterConfig) {
-		Set<String> configuredLabels = additionalFilterConfig.getValues();
-		Set<String> labels = issue.getLabels();
-		Set<String> common = new HashSet<>(labels);
-		common.retainAll(configuredLabels);
-		return common;
+		Set<String> configuredLabelsValuesFromUI = additionalFilterConfig.getValues();
+		Set<String> issueLabelsValuesFromJira = issue.getLabels();
+		// Convert configuredLabels to lowercase once
+		Set<String> configuredLabelsLower = new HashSet<>();
+		for (String label : configuredLabelsValuesFromUI) {
+			configuredLabelsLower.add(label.toLowerCase());
+		}
+		// Convert issueLabelsValuesFromJira to lowercase once
+		Set<String> issueLabelsFromJiraLower = new HashSet<>();
+		for (String label : issueLabelsValuesFromJira) {
+			issueLabelsFromJiraLower.add(label.toLowerCase());
+		}
+		Set<String> commonLabels = new HashSet<>();
+		commonLabels = new HashSet<>(configuredLabelsLower);
+		commonLabels.retainAll(issueLabelsFromJiraLower);
+		return commonLabels;
 	}
 
 	private Set<BasicComponent> getComponents(Issue issue, AdditionalFilterConfig additionalFilterConfig) {

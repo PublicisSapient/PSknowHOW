@@ -343,17 +343,31 @@ public final class CommonUtils {
 	public static List<Pattern> convertTestFolderToPatternList(List<String> stringList) {
 		List<Pattern> regexList = new ArrayList<>();
 		for (String value : stringList) {
-			String pattern = new StringBuilder(value).toString();
-			if (pattern.contains(Constant.FORWARD_SLASH)) {
-				pattern = pattern.replace(Constant.FORWARD_SLASH, Constant.BACKWARD_FORWARD_SLASH);
-			}
-			regexList.add(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE));
-			if (!value.startsWith(Constant.FORWARD_SLASH)) {
-				value = Constant.FORWARD_SLASH.concat(value);
-			}
-			regexList.add(CommonUtils.convertToPatternText(value));
+			perpPatternList(value, regexList);
 		}
 		return regexList;
+	}
+	public static List<Pattern> convertIssuesListToBranchPattern(List<String> stringList) {
+		List<Pattern> regexList = new ArrayList<>();
+		for (String value : stringList) {
+			perpPatternList(value, regexList);
+			if (!value.startsWith(Constant.FEATURE_BRANCH)) {
+				value = Constant.FEATURE_BRANCH.concat(value);
+				regexList.add(CommonUtils.convertToPatternText(value));
+			}
+		}
+		return regexList;
+	}
+	private static void perpPatternList(String value, List<Pattern> regexList) {
+		String pattern = new StringBuilder(value).toString();
+		if (pattern.contains(Constant.FORWARD_SLASH)) {
+			pattern = pattern.replace(Constant.FORWARD_SLASH, Constant.BACKWARD_FORWARD_SLASH);
+		}
+		regexList.add(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE));
+		if (!value.startsWith(Constant.FORWARD_SLASH)) {
+			value = Constant.FORWARD_SLASH.concat(value);
+		}
+		regexList.add(CommonUtils.convertToPatternText(value));
 	}
 
 	/**

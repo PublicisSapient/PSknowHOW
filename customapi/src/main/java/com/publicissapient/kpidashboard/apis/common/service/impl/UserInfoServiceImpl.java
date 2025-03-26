@@ -152,6 +152,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return userInfoRepository.findByUsername(username);
 	}
 
+
+	@Override
+	public UserInfo getFistUserInfo(String username) {
+		return userInfoRepository.findFirstByUsername(username);
+	}
 	@Override
 	public Collection<UserInfo> getUsers() {
 		List<UserInfo> userInfoList = userInfoRepository.findAll();

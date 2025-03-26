@@ -310,7 +310,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 				String toBranchForMRKPI156 = toBranchForMRList.get(projectBasicConfigId);
 				List<MergeRequests> mergeRequestList = mergeRequestRepository
 						.findMergeRequestListBasedOnBasicProjectConfigId(new ObjectId(projectBasicConfigId),
-								CommonUtils.convertTestFolderToPatternList(new ArrayList<>(issueIdList)),
+								CommonUtils.convertIssuesListToBranchPattern(new ArrayList<>(issueIdList)),
 								toBranchForMRKPI156);
 				projectWiseMergeRequestList.put(projectBasicConfigId, mergeRequestList);
 			}
