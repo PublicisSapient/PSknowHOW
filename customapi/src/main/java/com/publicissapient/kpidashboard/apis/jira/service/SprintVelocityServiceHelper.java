@@ -60,7 +60,7 @@ public class SprintVelocityServiceHelper {
 	 */
 	public double calculateSprintVelocityValue(Map<Pair<String, String>, Set<JiraIssue>> currentSprintLeafVelocityMap,
 			Pair<String, String> currentNodeIdentifier, FieldMapping fieldMapping) {
-		double sprintVelocityForCurrentLeaf = 0.0d;
+		double sprintVelocityForCurrentLeaf = Double.NaN;
 		if (Objects.nonNull(currentSprintLeafVelocityMap.get(currentNodeIdentifier))) {
 			log.debug("Current Node identifier is present in currentSprintLeafVelocityMap map {} ", currentNodeIdentifier);
 			Set<JiraIssue> issueDetailsSet = currentSprintLeafVelocityMap.get(currentNodeIdentifier);

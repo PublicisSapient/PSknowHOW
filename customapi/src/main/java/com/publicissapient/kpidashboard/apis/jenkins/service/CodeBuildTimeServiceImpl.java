@@ -90,8 +90,8 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
-			throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
+			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
 		Map<String, List<DataCount>> trendValueMap = new HashMap<>();
 		Node root = treeAggregatorDetail.getRoot();
@@ -137,11 +137,12 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	 * @param projectLeafNodeList
 	 * @param trendValueMap
 	 */
-	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp, List<Node> projectLeafNodeList,
-			Map<String, List<DataCount>> trendValueMap) {
+	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp,
+			List<Node> projectLeafNodeList, Map<String, List<DataCount>> trendValueMap) {
 
 		String requestTrackerId = getRequestTrackerId();
-		LocalDateTime localStartDate = LocalDateTime.now().minusDays(customApiConfig.getJenkinsWeekCount() * DAYS_IN_WEEKS);
+		LocalDateTime localStartDate = LocalDateTime.now()
+				.minusDays(customApiConfig.getJenkinsWeekCount() * DAYS_IN_WEEKS);
 		LocalDateTime localEndDate = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
 		String startDate = localStartDate.format(formatter);
@@ -184,8 +185,8 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 				mapTmp.get(node.getId()).setValue(null);
 				return;
 			}
-			prepareInfoForBuild(codeBuildTimeInfo, end, aggBuildList, trendLineName, trendValueMap, Constant.AGGREGATED_VALUE,
-					aggDataMap);
+			prepareInfoForBuild(codeBuildTimeInfo, end, aggBuildList, trendLineName, trendValueMap,
+					Constant.AGGREGATED_VALUE, aggDataMap);
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 
 			populateValidationDataObject(requestTrackerId, excelData, trendLineName, codeBuildTimeInfo);
@@ -198,11 +199,11 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	 * to get the job name
 	 *
 	 * @param trendLineName
-	 *          trendLineName
+	 *            trendLineName
 	 * @param entry
-	 *          entry
+	 *            entry
 	 * @param buildList
-	 *          list of builds
+	 *            list of builds
 	 * @return returns the job name
 	 */
 	protected static String getJobName(String trendLineName, Map.Entry<String, List<Build>> entry,
@@ -283,8 +284,8 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	 */
 	private boolean checkDateIsInWeeks(LocalDate monday, LocalDate sunday, Build build) {
 		LocalDate buildTime = Instant.ofEpochMilli(build.getStartTime()).atZone(ZoneId.systemDefault()).toLocalDate();
-		return (buildTime.isAfter(monday) || buildTime.isEqual(monday)) &&
-				(buildTime.isBefore(sunday) || buildTime.isEqual(sunday));
+		return (buildTime.isAfter(monday) || buildTime.isEqual(monday))
+				&& (buildTime.isBefore(sunday) || buildTime.isEqual(sunday));
 	}
 
 	/**
@@ -308,8 +309,8 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 			codeBuildTimeInfo.addBuildStartTime(
 					DateUtil.dateTimeFormatter(new Date(build.getStartTime()), DateUtil.DISPLAY_DATE_TIME_FORMAT));
 			codeBuildTimeInfo.addWeeks(date);
-			codeBuildTimeInfo
-					.addBuildEndTime(DateUtil.dateTimeFormatter(new Date(build.getEndTime()), DateUtil.DISPLAY_DATE_TIME_FORMAT));
+			codeBuildTimeInfo.addBuildEndTime(
+					DateUtil.dateTimeFormatter(new Date(build.getEndTime()), DateUtil.DISPLAY_DATE_TIME_FORMAT));
 			codeBuildTimeInfo.addDuration(createDurationString(minutes, seconds));
 			codeBuildTimeInfo.addBuildStatus(build.getBuildStatus().toString());
 			codeBuildTimeInfo.addStartedBy(build.getStartedBy());
@@ -337,20 +338,20 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	 */
 	private DataCount createDataCount(String trendLineName, Long valueForCurrentLeaf, String date) {
 		DataCount dataCount = new DataCount();
-		dataCount.setData(
-				String.valueOf(valueForCurrentLeaf == null ? 0L : TimeUnit.MILLISECONDS.toMinutes(valueForCurrentLeaf)));
-		dataCount.setSProjectName(trendLineName);
-		dataCount.setDate(date);
-		dataCount.setHoverValue(new HashMap<>());
-		dataCount.setValue(valueForCurrentLeaf == null ? 0L : TimeUnit.MILLISECONDS.toMinutes(valueForCurrentLeaf));
-
-		if (valueForCurrentLeaf == null) {
-			dataCount.setPriority("0 sec");
-		} else {
+		if (valueForCurrentLeaf != null) {
+			dataCount.setData(String.valueOf(TimeUnit.MILLISECONDS.toMinutes(valueForCurrentLeaf)));
+			dataCount.setValue(TimeUnit.MILLISECONDS.toMinutes(valueForCurrentLeaf));
 			long minutes = TimeUnit.MILLISECONDS.toMinutes(valueForCurrentLeaf);
 			long seconds = TimeUnit.MILLISECONDS.toSeconds(valueForCurrentLeaf);
 			dataCount.setPriority(minutes + Constant.MIN + seconds + Constant.SEC);
+		} else {
+			dataCount.setData(null);
+			dataCount.setValue(null);
+			dataCount.setPriority(null);
 		}
+		dataCount.setSProjectName(trendLineName);
+		dataCount.setDate(date);
+		dataCount.setHoverValue(new HashMap<>());
 		return dataCount;
 	}
 

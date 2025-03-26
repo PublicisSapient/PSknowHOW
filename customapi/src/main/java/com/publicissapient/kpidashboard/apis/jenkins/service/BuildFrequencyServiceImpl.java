@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -310,10 +311,12 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 				}
 			}
 
-			Integer valueForCurrentLeaf = durationList.size();
-			if (null != valueForCurrentLeaf) {
-				weekRange.put(date, valueForCurrentLeaf);
+			Integer valueForCurrentLeaf = null;
+			if(CollectionUtils.isNotEmpty(durationList)){
+				valueForCurrentLeaf = durationList.size();
+
 			}
+			weekRange.put(date, valueForCurrentLeaf);
 			weekRange.putIfAbsent(date, null);
 			endDateTime = endDateTime.minusWeeks(1);
 		}
@@ -337,11 +340,17 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	 */
 	private DataCount createDataCount(String trendLineName, Integer valueForCurrentLeaf, String date) {
 		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(valueForCurrentLeaf == null ? 0L : valueForCurrentLeaf));
+		if (valueForCurrentLeaf != null) {
+			dataCount.setData(String.valueOf(valueForCurrentLeaf));
+			dataCount.setValue(valueForCurrentLeaf);
+		} else {
+			dataCount.setData(null);
+			dataCount.setValue(null);
+			dataCount.setPriority(null);
+		}
 		dataCount.setSProjectName(trendLineName);
 		dataCount.setDate(date);
 		dataCount.setHoverValue(new HashMap<>());
-		dataCount.setValue(valueForCurrentLeaf == null ? 0L : valueForCurrentLeaf);
 		return dataCount;
 	}
 

@@ -297,18 +297,20 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 			Double storyCount = 0.0;
 			List<JiraIssue> totalPresentStoryIssue = new ArrayList<>();
 			List<JiraIssue> totalPresentTotalIssue = new ArrayList<>();
-
+			Map<String, Double> issueCountMap = new LinkedHashMap<>();
+			issueCountMap.put(STORY_COUNT, Double.NaN);
+			issueCountMap.put(TOTAL_COUNT, Double.NaN);
 			if (CollectionUtils.isNotEmpty(sprintWiseIssueNumbers.get(currentNodeIdentifier))) {
 				List<String> totalPresentJiraIssue = sprintWiseIssueNumbers.get(currentNodeIdentifier);
 				storyCount = ((Integer) totalPresentJiraIssue.size()).doubleValue();
 				totalPresentStoryIssue = sprintWiseStoryCatIssues.get(currentNodeIdentifier);
 				totalPresentTotalIssue = sprintWiseTotalCatIssues.get(currentNodeIdentifier);
 				populateExcelData(requestTrackerId, allJiraIssue, excelData, node, totalPresentJiraIssue, fieldMapping);
+				issueCountMap.put(STORY_COUNT, (double) totalPresentStoryIssue.size());
+				issueCountMap.put(TOTAL_COUNT, (double) totalPresentTotalIssue.size());
 			}
 
-			Map<String, Double> issueCountMap = new LinkedHashMap<>();
-			issueCountMap.put(STORY_COUNT, (double) totalPresentStoryIssue.size());
-			issueCountMap.put(TOTAL_COUNT, (double) totalPresentTotalIssue.size());
+
 			log.debug("[ISSUECOUNT-SPRINT-WISE][{}]. Total Stories Count for sprint {}  is {}", requestTrackerId,
 					node.getSprintFilter().getName(), storyCount);
 
@@ -316,11 +318,10 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 			for (Map.Entry<String, Double> map : issueCountMap.entrySet()) {
 				DataCount dataCount = new DataCount();
-				dataCount.setData(String.valueOf(map.getValue()));
+				setDataAndValue(map, dataCount);
 				dataCount.setSProjectName(trendLineName);
 				dataCount.setSSprintID(node.getSprintFilter().getId());
 				dataCount.setSSprintName(node.getSprintFilter().getName());
-				dataCount.setValue(map.getValue());
 				dataCount.setKpiGroup(map.getKey());
 				dataCount.setHoverValue(generateHoverMap(totalPresentStoryIssue, totalPresentTotalIssue, map.getKey()));
 				dataCountMap.put(map.getKey(), new ArrayList<>(Arrays.asList(dataCount)));
@@ -330,6 +331,16 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 		kpiElement.setExcelData(excelData);
 		kpiElement
 				.setExcelColumns(KPIExcelColumn.ISSUE_COUNT.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+	}
+
+	private static void setDataAndValue(Map.Entry<String, Double> map, DataCount dataCount) {
+		if (!map.getValue().isNaN()) {
+			dataCount.setData(String.valueOf(map.getValue()));
+			dataCount.setValue(map.getValue());
+		} else {
+			dataCount.setData(null);
+			dataCount.setValue(null);
+		}
 	}
 
 	private Map<String, Object> generateHoverMap(List<JiraIssue> totalPresentStoryIssue,

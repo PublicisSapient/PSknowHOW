@@ -644,8 +644,8 @@ public abstract class ToolsKPIService<R, S> {
 	}
 
 	private Pair<String, String> getMaturityValuePair(String kpiName, String kpiId, List<DataCount> dataCounts) {
-		Pair<String, String> maturityValue = null;
-		if (null != configHelperService.calculateMaturity().get(kpiId)) {
+		Pair<String, String> maturityValue = null; //SC
+		if (null != configHelperService.calculateMaturity().get(kpiId) && false) {
 			maturityValue = collectValuesForMaturity(dataCounts, kpiName, kpiId);
 		}
 		return maturityValue;

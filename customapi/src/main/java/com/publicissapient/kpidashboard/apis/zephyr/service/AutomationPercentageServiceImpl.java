@@ -110,8 +110,8 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
-			throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
+			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
@@ -151,7 +151,8 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 		Map<ObjectId, FieldMapping> basicProjetWiseConfig = configHelperService.getFieldMappingMap();
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			List<ProjectToolConfig> zephyrTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId, TOOL_ZEPHYR);
+			List<ProjectToolConfig> zephyrTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId,
+					TOOL_ZEPHYR);
 
 			List<ProjectToolConfig> jiraTestTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId,
 					TOOL_JIRA_TEST);
@@ -241,15 +242,14 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 	@SuppressWarnings("unchecked")
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> filterComponentIdWiseDefectMap) {
-		Double automatedPercentage = 0d;
 		List<JiraIssue> automatedTest = (List<JiraIssue>) filterComponentIdWiseDefectMap.get(AUTOMATEDTESTCASEKEY);
 		List<JiraIssue> totalTest = (List<JiraIssue>) filterComponentIdWiseDefectMap.get(TESTCASEKEY);
 		if (CollectionUtils.isNotEmpty(automatedTest) && CollectionUtils.isNotEmpty(totalTest)) {
 			int automatedCount = automatedTest.size();
 			int totalCount = totalTest.size();
-			automatedPercentage = (double) Math.round((100.0 * automatedCount) / (totalCount));
+			return (double) Math.round((100.0 * automatedCount) / (totalCount));
 		}
-		return automatedPercentage;
+		return Double.NaN;
 	}
 
 	/**
@@ -264,8 +264,8 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
-		Collections.sort(sprintLeafNodeList,
-				(Node o1, Node o2) -> o1.getSprintFilter().getStartDate().compareTo(o2.getSprintFilter().getStartDate()));
+		Collections.sort(sprintLeafNodeList, (Node o1, Node o2) -> o1.getSprintFilter().getStartDate()
+				.compareTo(o2.getSprintFilter().getStartDate()));
 
 		// partitioning the sprintLeafNodeList by data upload enable
 		Map<Boolean, List<Node>> nodePartitionedMap = sprintLeafNodeList.stream()
@@ -286,11 +286,11 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 			defectDataListMap = fetchKPIDataFromDb(uploadDataDisableNodes, null, null, kpiRequest);
 		}
 
-		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) defectDataListMap.getOrDefault(SPRINTSTORIES,
-				new ArrayList<>());
+		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) defectDataListMap
+				.getOrDefault(SPRINTSTORIES, new ArrayList<>());
 
-		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(
-				Collectors.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
+		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
+				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
 
 		List<TestCaseDetails> testCaseList = (List<TestCaseDetails>) defectDataListMap.getOrDefault(TESTCASEKEY,
 				new ArrayList<>());
@@ -309,7 +309,8 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 			sprintWiseAutomatedTestList.addAll(automatedTestCases(testCaseList, sprintWiseStories));
 			sprintWiseTotalTestList.addAll(totalTestCases(testCaseList, sprintWiseStories));
 			Map<String, Object> currentSprintLeafNodeDefectDataMap = new HashMap<>();
-			currentSprintLeafNodeDefectDataMap.put(AUTOMATEDTESTCASEKEY, automatedTestCases(testCaseList, sprintWiseStories));
+			currentSprintLeafNodeDefectDataMap.put(AUTOMATEDTESTCASEKEY,
+					automatedTestCases(testCaseList, sprintWiseStories));
 			currentSprintLeafNodeDefectDataMap.put(TESTCASEKEY, totalTestCases(testCaseList, sprintWiseStories));
 
 			Double autoPercentage = calculateKPIMetrics(currentSprintLeafNodeDefectDataMap);
@@ -331,38 +332,52 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 						trendLineName);
 			} else {
 				// flow 2 : populating by configured tool
-				Pair<String, String> currentNodeIdentifier = Pair
-						.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
+				Pair<String, String> currentNodeIdentifier = Pair.of(
+						node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
 
 				Map<String, Object> howerMap = new LinkedHashMap<>();
 				Map<String, Object> currentSprintLeafNodeDefectDataMap = new HashMap<>();
-				currentSprintLeafNodeDefectDataMap.put(AUTOMATEDTESTCASEKEY, sprintWiseAutoTestMap.get(currentNodeIdentifier));
+				currentSprintLeafNodeDefectDataMap.put(AUTOMATEDTESTCASEKEY,
+						sprintWiseAutoTestMap.get(currentNodeIdentifier));
 				currentSprintLeafNodeDefectDataMap.put(TESTCASEKEY, sprintWiseTotalTestMap.get(currentNodeIdentifier));
-				double automationForCurrentLeaf = 0.0;
-				if (null != sprintWisePercentage.get(currentNodeIdentifier)) {
-					automationForCurrentLeaf = sprintWisePercentage.get(currentNodeIdentifier);
+				double automationForCurrentLeaf = Double.NaN;
+
+				Double value = sprintWisePercentage.get(currentNodeIdentifier);
+				if (value != null) {
+					automationForCurrentLeaf = value;
 				}
-				mapTmp.get(node.getId()).setValue(automationForCurrentLeaf);
+				// mapTmp.get(node.getId()).setValue(automationForCurrentLeaf);
 				populateExcelDataObject(requestTrackerId, currentSprintLeafNodeDefectDataMap, excelData, validationKey,
 						projectWiseStories.get(node.getProjectFilter().getBasicProjectConfigId().toString()));
 				log.debug("[TEST-AUTOMATION-SPRINT-WISE][{}]. TEST-AUTOMATION for sprint {}  is {}", requestTrackerId,
 						node.getSprintFilter().getName(), automationForCurrentLeaf);
 				setHowerMap(sprintWiseAutoTestMap, sprintWiseTotalTestMap, currentNodeIdentifier, howerMap);
-				DataCount dataCount = new DataCount();
-				dataCount.setData(String.valueOf(Math.round(automationForCurrentLeaf)));
-				dataCount.setSProjectName(trendLineName);
-				dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-				dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-				dataCount.setSSprintID(node.getSprintFilter().getId());
-				dataCount.setSSprintName(node.getSprintFilter().getName());
-				dataCount.setHoverValue(howerMap);
-				dataCount.setValue(automationForCurrentLeaf);
-				mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
+				DataCount dataCount = getDataCount(mapTmp, node, automationForCurrentLeaf, trendLineName, howerMap);
 				trendValueList.add(dataCount);
 			}
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.INSPRINT_AUTOMATION_COVERAGE.getColumns());
+	}
+
+	private static DataCount getDataCount(Map<String, Node> mapTmp, Node node, double automationForCurrentLeaf,
+			String trendLineName, Map<String, Object> howerMap) {
+		DataCount dataCount = new DataCount();
+		if (Double.isNaN(automationForCurrentLeaf)) {
+			dataCount.setData(String.valueOf(automationForCurrentLeaf));
+		} else {
+			dataCount.setData(String.valueOf(Math.round(automationForCurrentLeaf)));
+
+		}
+		dataCount.setSProjectName(trendLineName);
+		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+		dataCount.setSSprintID(node.getSprintFilter().getId());
+		dataCount.setSSprintName(node.getSprintFilter().getName());
+		dataCount.setValue(automationForCurrentLeaf);
+		dataCount.setHoverValue(howerMap);
+		mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
+		return dataCount;
 	}
 
 	/**
@@ -385,8 +400,8 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 			DataCount dataCount = new DataCount();
 			dataCount.setSubFilter(Constant.EMPTY_STRING);
 			dataCount.setSProjectName(trendLineName);
-			dataCount.setValue(0.0);
-			dataCount.setLineValue(0.0);
+			dataCount.setValue(Double.NaN);
+			dataCount.setLineValue(Double.NaN);
 			dataCount.setHoverValue(new HashMap<>());
 			dataCount.setSSprintID(node.getSprintFilter().getId());
 			dataCount.setSSprintName(node.getSprintFilter().getName());
@@ -404,10 +419,10 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 			List<SprintWiseStory> sprintWiseStory) {
 		return testCaseList.stream()
 				.filter(tc -> sprintWiseStory.stream()
-						.anyMatch(st -> st.getBasicProjectConfigId().equals(tc.getBasicProjectConfigId()) &&
-								CollectionUtils.isNotEmpty(tc.getDefectStoryID()) &&
-								CollectionUtils.containsAny(tc.getDefectStoryID(), st.getStoryList()) &&
-								NormalizedJira.YES_VALUE.getValue().equals(tc.getIsTestAutomated())))
+						.anyMatch(st -> st.getBasicProjectConfigId().equals(tc.getBasicProjectConfigId())
+								&& CollectionUtils.isNotEmpty(tc.getDefectStoryID())
+								&& CollectionUtils.containsAny(tc.getDefectStoryID(), st.getStoryList())
+								&& NormalizedJira.YES_VALUE.getValue().equals(tc.getIsTestAutomated())))
 				.collect(Collectors.toList());
 	}
 
@@ -419,20 +434,23 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 			List<SprintWiseStory> sprintWiseStory) {
 		return testCaseList.stream()
 				.filter(tc -> sprintWiseStory.stream()
-						.anyMatch(st -> st.getBasicProjectConfigId().equals(tc.getBasicProjectConfigId()) &&
-								CollectionUtils.isNotEmpty(tc.getDefectStoryID()) &&
-								CollectionUtils.containsAny(tc.getDefectStoryID(), st.getStoryList())))
+						.anyMatch(st -> st.getBasicProjectConfigId().equals(tc.getBasicProjectConfigId())
+								&& CollectionUtils.isNotEmpty(tc.getDefectStoryID())
+								&& CollectionUtils.containsAny(tc.getDefectStoryID(), st.getStoryList())))
 				.collect(Collectors.toList());
 	}
 
-	private void populateExcelDataObject(String requestTrackerId, Map<String, Object> currentSprintLeafNodeDefectDataMap,
-			List<KPIExcelData> excelData, String sprint, Set<JiraIssue> jiraIssues) {
+	private void populateExcelDataObject(String requestTrackerId,
+			Map<String, Object> currentSprintLeafNodeDefectDataMap, List<KPIExcelData> excelData, String sprint,
+			Set<JiraIssue> jiraIssues) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			List<TestCaseDetails> automatedTest = (List<TestCaseDetails>) currentSprintLeafNodeDefectDataMap
 					.get(AUTOMATEDTESTCASEKEY);
-			List<TestCaseDetails> totalTest = (List<TestCaseDetails>) currentSprintLeafNodeDefectDataMap.get(TESTCASEKEY);
-			KPIExcelUtility.populateInSprintAutomationExcelData(sprint, totalTest, automatedTest, jiraIssues, excelData);
+			List<TestCaseDetails> totalTest = (List<TestCaseDetails>) currentSprintLeafNodeDefectDataMap
+					.get(TESTCASEKEY);
+			KPIExcelUtility.populateInSprintAutomationExcelData(sprint, totalTest, automatedTest, jiraIssues,
+					excelData);
 		}
 	}
 
@@ -485,8 +503,8 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 	 */
 	public Map<String, TestExecution> createSprintWiseTestExecutionMap(List<TestExecution> resultList) {
 		return resultList.stream()
-				.filter(testExecution -> testExecution.getAutomatedTestCases() != null &&
-						testExecution.getAutomatableTestCases() != null)
+				.filter(testExecution -> testExecution.getAutomatedTestCases() != null
+						&& testExecution.getAutomatableTestCases() != null)
 				.collect(Collectors.toMap(TestExecution::getSprintId, Function.identity()));
 	}
 

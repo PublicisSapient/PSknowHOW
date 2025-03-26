@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -230,7 +231,7 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					.collect(Collectors.toList());
 			sprintWiseDefectListMap.put(sprint, defectList);
 
-			double dirForCurrentLeaf = 0.0d;
+			double dirForCurrentLeaf = Double.NaN;
 			if (CollectionUtils.isNotEmpty(defectList) && CollectionUtils.isNotEmpty(sprintWiseStories)) {
 				dirForCurrentLeaf = ((double) defectList.size() / totalStoryIdList.size()) * 100;
 			}
@@ -264,28 +265,42 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 							fieldMapping, customApiConfig, node);
 				}
 			} else {
-				defectInjectionRateForCurrentLeaf = 0.0d;
+				defectInjectionRateForCurrentLeaf = Double.NaN;
 			}
 
 			log.debug("[DIR-SPRINT-WISE][{}]. DIR for sprint {}  is {}", requestTrackerId,
 					node.getSprintFilter().getName(), defectInjectionRateForCurrentLeaf);
 
-			DataCount dataCount = new DataCount();
-			dataCount.setData(String.valueOf(Math.round(defectInjectionRateForCurrentLeaf)));
-			dataCount.setSProjectName(trendLineName);
-			dataCount.setSSprintID(node.getSprintFilter().getId());
-			dataCount.setSSprintName(node.getSprintFilter().getName());
-			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-			dataCount.setValue(defectInjectionRateForCurrentLeaf);
-			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
-			mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
-
+			DataCount dataCount = createDataCount(mapTmp, node, defectInjectionRateForCurrentLeaf, trendLineName,
+					sprintWiseHowerMap, currentNodeIdentifier);
 			trendValueList.add(dataCount);
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(
 				KPIExcelColumn.DEFECT_INJECTION_RATE.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+	}
+
+	private static DataCount createDataCount(Map<String, Node> mapTmp, Node node,
+			double defectInjectionRateForCurrentLeaf, String trendLineName,
+			Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
+			Pair<String, String> currentNodeIdentifier) {
+		DataCount dataCount = new DataCount();
+		if (Double.isNaN(defectInjectionRateForCurrentLeaf)) {
+			dataCount.setData(null);
+			dataCount.setValue(null);
+		} else {
+			dataCount.setData(String.valueOf(Math.round(defectInjectionRateForCurrentLeaf)));
+			dataCount.setValue(defectInjectionRateForCurrentLeaf);
+		}
+
+		dataCount.setSProjectName(trendLineName);
+		dataCount.setSSprintID(node.getSprintFilter().getId());
+		dataCount.setSSprintName(node.getSprintFilter().getName());
+		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+		dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
+		mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
+		return dataCount;
 	}
 
 	/**

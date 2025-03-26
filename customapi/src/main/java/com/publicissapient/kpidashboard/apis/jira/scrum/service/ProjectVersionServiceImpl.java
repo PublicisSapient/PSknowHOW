@@ -168,7 +168,12 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 				if (dateCount.keySet().contains(yearMonth)) {
 					projectVersionList.add(pv);
 					dateList.add(yearMonth);
-					dateCount.put(yearMonth, dateCount.get(yearMonth) + 1);
+					double currentValue = dateCount.get(yearMonth);
+					if (Double.isNaN(currentValue)) {
+						currentValue = 0; // Set to 0 if NaN
+					}
+					dateCount.put(yearMonth, currentValue + 1);
+
 				}
 			}
 		}

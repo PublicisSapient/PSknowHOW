@@ -98,12 +98,12 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		Map<String, Double> lastNMonth = new LinkedHashMap<>();
 		DateTime currentDate = DateTime.now();
 		String currentDateStr = currentDate.getYear() + Constant.DASH + currentDate.getMonthOfYear();
-		lastNMonth.put(currentDateStr, 0.0);
+		lastNMonth.put(currentDateStr, Double.NaN);
 		DateTime lastMonth = DateTime.now();
 		for (int i = 1; i < count; i++) {
 			lastMonth = lastMonth.minusMonths(1);
 			String lastMonthStr = lastMonth.getYear() + Constant.DASH + lastMonth.getMonthOfYear();
-			lastNMonth.put(lastMonthStr, 0.0);
+			lastNMonth.put(lastMonthStr, Double.NaN);
 		}
 		return lastNMonth;
 	}

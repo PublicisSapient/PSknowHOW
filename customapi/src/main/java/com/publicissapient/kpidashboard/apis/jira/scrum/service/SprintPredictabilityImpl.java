@@ -96,8 +96,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Long, List<Object>,
 
 	private static void setEstimation(FieldMapping fieldMapping, AtomicDouble effectSumDouble, SprintIssue sprintIssue,
 			JiraIssue jiraIssue) {
-		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
-				fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			effectSumDouble.addAndGet(Optional.ofNullable(sprintIssue.getStoryPoints()).orElse(0.0d));
 		} else if (null != jiraIssue.getAggregateTimeOriginalEstimateMinutes()) {
 			Double totalOriginalEstimateInHours = (double) (jiraIssue.getAggregateTimeOriginalEstimateMinutes()) / 60;
@@ -126,8 +126,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Long, List<Object>,
 	 * @throws ApplicationException
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
-			throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
+			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
@@ -180,10 +180,11 @@ public class SprintPredictabilityImpl extends JiraKPIService<Long, List<Object>,
 			Map<String, Object> result;
 			if (fetchCachedData) { // fetch data from cache only if Filter is selected till Sprint
 				// level.
-				result = kpiDataCacheService.fetchSprintPredictabilityData(kpiRequest, basicProjectConfigId, sprintIdList,
-						KPICode.SPRINT_PREDICTABILITY.getKpiId());
+				result = kpiDataCacheService.fetchSprintPredictabilityData(kpiRequest, basicProjectConfigId,
+						sprintIdList, KPICode.SPRINT_PREDICTABILITY.getKpiId());
 			} else { // fetch data from DB if filters below Sprint level (i.e. additional filters)
-				result = kpiDataProvider.fetchSprintPredictabilityDataFromDb(kpiRequest, basicProjectConfigId, sprintList);
+				result = kpiDataProvider.fetchSprintPredictabilityDataFromDb(kpiRequest, basicProjectConfigId,
+						sprintList);
 			}
 
 			sprintWiseJiraList.addAll((List<JiraIssue>) result.get(SPRINT_WISE_PREDICTABILITY));
@@ -225,8 +226,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Long, List<Object>,
 		String startDate;
 		String endDate;
 
-		sprintLeafNodeList.sort(
-				(node1, node2) -> node1.getSprintFilter().getStartDate().compareTo(node2.getSprintFilter().getStartDate()));
+		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
+				.compareTo(node2.getSprintFilter().getStartDate()));
 
 		startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
@@ -246,8 +247,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Long, List<Object>,
 
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
-		Map<String, JiraIssue> jiraIssueMap = sprintWiseJiraStoryList.stream()
-				.collect(Collectors.toMap(JiraIssue::getNumber, Function.identity(), (existing, replacement) -> existing));
+		Map<String, JiraIssue> jiraIssueMap = sprintWiseJiraStoryList.stream().collect(
+				Collectors.toMap(JiraIssue::getNumber, Function.identity(), (existing, replacement) -> existing));
 
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
 
@@ -268,16 +269,18 @@ public class SprintPredictabilityImpl extends JiraKPIService<Long, List<Object>,
 							filterIssueDetailsSet.add(issueDetails);
 						}
 					});
+					SprintWiseStory sprintWiseStory = new SprintWiseStory();
+					sprintWiseStory.setSprint(sd.getSprintID());
+					sprintWiseStory.setSprintName(sd.getSprintName());
+					sprintWiseStory.setBasicProjectConfigId(sd.getBasicProjectConfigId().toString());
+					sprintWiseStory.setStoryList(storyList);
+					sprintWiseStory.setEffortSum(effectSumDouble.get());
+					sprintWisePredictabilityList.add(sprintWiseStory);
+					Pair<String, String> currentNodeIdentifier = Pair.of(sd.getBasicProjectConfigId().toString(),
+							sd.getSprintID());
+					currentSprintLeafPredictabilityMap.put(currentNodeIdentifier, filterIssueDetailsSet);
 				}
-				SprintWiseStory sprintWiseStory = new SprintWiseStory();
-				sprintWiseStory.setSprint(sd.getSprintID());
-				sprintWiseStory.setSprintName(sd.getSprintName());
-				sprintWiseStory.setBasicProjectConfigId(sd.getBasicProjectConfigId().toString());
-				sprintWiseStory.setStoryList(storyList);
-				sprintWiseStory.setEffortSum(effectSumDouble.get());
-				sprintWisePredictabilityList.add(sprintWiseStory);
-				Pair<String, String> currentNodeIdentifier = Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID());
-				currentSprintLeafPredictabilityMap.put(currentNodeIdentifier, filterIssueDetailsSet);
+
 			});
 		}
 
@@ -289,29 +292,37 @@ public class SprintPredictabilityImpl extends JiraKPIService<Long, List<Object>,
 			String trendLineName = node.getProjectFilter().getName();
 			String currentSprintComponentId = node.getSprintFilter().getId();
 
-			Pair<String, String> currentNodeIdentifier = Pair.of(node.getProjectFilter().getBasicProjectConfigId().toString(),
-					currentSprintComponentId);
+			Pair<String, String> currentNodeIdentifier = Pair
+					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
 			populateExcelDataObject(requestTrackerId, excelData, currentSprintLeafPredictabilityMap, node, fieldMapping,
 					jiraIssueMap);
-			log.debug("[SPRINTPREDICTABILITY-SPRINT-WISE][{}]. SPRINTPREDICTABILITY for sprint {}  is {}", requestTrackerId,
-					node.getSprintFilter().getName(), currentNodeIdentifier);
-			if (predictability.get(currentNodeIdentifier) != null) {
-				DataCount dataCount = new DataCount();
-				dataCount.setData(String.valueOf(Math.round(predictability.get(currentNodeIdentifier))));
-				dataCount.setSProjectName(trendLineName);
-				dataCount.setSSprintID(node.getSprintFilter().getId());
-				dataCount.setSSprintName(node.getSprintFilter().getName());
-				dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-				dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-				dataCount.setValue(Math.round(predictability.get(currentNodeIdentifier)));
-				dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
-				mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
-				trendValueList.add(dataCount);
-			}
+			log.debug("[SPRINTPREDICTABILITY-SPRINT-WISE][{}]. SPRINTPREDICTABILITY for sprint {}  is {}",
+					requestTrackerId, node.getSprintFilter().getName(), currentNodeIdentifier);
+
+			DataCount dataCount = new DataCount();
+			createDataCountData(predictability, currentNodeIdentifier, dataCount, sprintWiseHowerMap);
+			dataCount.setSProjectName(trendLineName);
+			dataCount.setSSprintID(node.getSprintFilter().getId());
+			dataCount.setSSprintName(node.getSprintFilter().getName());
+			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+			mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
+			trendValueList.add(dataCount);
+
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(
 				KPIExcelColumn.SPRINT_PREDICTABILITY.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+	}
+
+	private static void createDataCountData(Map<Pair<String, String>, Double> predictability,
+			Pair<String, String> currentNodeIdentifier, DataCount dataCount,
+			Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap) {
+		if (predictability.get(currentNodeIdentifier) != null) {
+			dataCount.setData(String.valueOf(Math.round(predictability.get(currentNodeIdentifier))));
+			dataCount.setValue(Math.round(predictability.get(currentNodeIdentifier)));
+			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
+		}
 	}
 
 	@Override
@@ -339,7 +350,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Long, List<Object>,
 				String projectKey = storyList.get(count).getBasicProjectConfigId();
 				Pair<String, String> sprintKey = Pair.of(projectKey, storyList.get(count).getSprint());
 
-				if ((count + varCount) < storyList.size()) {
+				if ((count + varCount) < storyList.size()) { // 3
 					Double total = 0d;
 					Double avg = calculateAverage(storyList, varCount, count, total);
 					if (avg == 0) {
@@ -427,17 +438,17 @@ public class SprintPredictabilityImpl extends JiraKPIService<Long, List<Object>,
 	 * @param jiraIssueMap
 	 */
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap, Node node, FieldMapping fieldMapping,
-			Map<String, JiraIssue> jiraIssueMap) {
+			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap, Node node,
+			FieldMapping fieldMapping, Map<String, JiraIssue> jiraIssueMap) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			Pair<String, String> currentNodeIdentifier = Pair.of(node.getProjectFilter().getBasicProjectConfigId().toString(),
-					node.getSprintFilter().getId());
+			Pair<String, String> currentNodeIdentifier = Pair
+					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
 
-			if (MapUtils.isNotEmpty(currentSprintLeafVelocityMap) &&
-					CollectionUtils.isNotEmpty(currentSprintLeafVelocityMap.get(currentNodeIdentifier))) {
+			if (MapUtils.isNotEmpty(currentSprintLeafVelocityMap)
+					&& CollectionUtils.isNotEmpty(currentSprintLeafVelocityMap.get(currentNodeIdentifier))) {
 				Set<IssueDetails> issueDetailsSet = currentSprintLeafVelocityMap.get(currentNodeIdentifier);
-				KPIExcelUtility.populateSprintPredictability(node.getSprintFilter().getName(), issueDetailsSet, excelData,
-						fieldMapping, jiraIssueMap, customApiConfig);
+				KPIExcelUtility.populateSprintPredictability(node.getSprintFilter().getName(), issueDetailsSet,
+						excelData, fieldMapping, jiraIssueMap, customApiConfig);
 			}
 		}
 	}

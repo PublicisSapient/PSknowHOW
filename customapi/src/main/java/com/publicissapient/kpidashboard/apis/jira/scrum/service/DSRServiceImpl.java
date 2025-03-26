@@ -274,7 +274,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					List<JiraIssue> issueList = uatDefect.getOrDefault(label, new ArrayList<>());
 					int totalDefectCount = subCategoryWiseTotalBugList.size();
 					Map<String, Object> howerMap = new HashMap<>();
-					Double dsrPercentage = 0d;
+					Double dsrPercentage = Double.NaN;
 					if (CollectionUtils.isNotEmpty(issueList) && CollectionUtils.isNotEmpty(subCategoryWiseTotalBugList)) {
 						createDSRValidation(issueList, label, validationDataList);
 						int uatDefectCount = issueList.size();
@@ -288,8 +288,11 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					overallHowerMap.put(label, howerMap);
 				}
 
-				uatLabels.forEach(label -> finalMap.computeIfAbsent(label, val -> 0D));
-				Double overAllCount = finalMap.values().stream().mapToDouble(val -> val).sum();
+				uatLabels.forEach(label -> finalMap.computeIfAbsent(label, val -> Double.NaN));
+				Double overAllCount = finalMap.values().stream().filter(val -> !Double.isNaN(val)).mapToDouble(val -> val).sum();
+				if (finalMap.values().stream().allMatch(a->Double.isNaN(a))) {
+					overAllCount = Double.NaN;
+				}
 				finalMap.put(CommonConstant.OVERALL, overAllCount);
 
 				Map<String, Object> overHowerMap = new HashMap<>();
@@ -343,7 +346,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			Map<String, Object> defaultMap = new HashMap<>();
 			defaultMap.put(CommonConstant.OVERALL, overHowerMap);
 
-			DataCount dataCount = getDataCountObject(node, trendLineName, defaultMap, CommonConstant.OVERALL, 0D);
+			DataCount dataCount = getDataCountObject(node, trendLineName, defaultMap, CommonConstant.OVERALL, Double.NaN);
 			trendValueList.add(dataCount);
 			dataCountMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dataCount);
 		}
