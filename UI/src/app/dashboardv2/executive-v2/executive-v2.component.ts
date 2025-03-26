@@ -2399,7 +2399,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
         }
       } else if (
-      /**if trendValueList is an array */
+        /**if trendValueList is an array */
         trendValueList?.length > 0 &&
         trendValueList[0]?.hasOwnProperty('filter1')
       ) {

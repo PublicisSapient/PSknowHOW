@@ -37,9 +37,8 @@ export class KpiComponent implements OnInit {
   @Input() yAxisCaption: string; // label at y axis
   @Input() loaderArray: string[];
   constructor(
-    private helperService: HelperService,
-  ) // private executive: ExecutiveComponent
-  {}
+    private helperService: HelperService, // private executive: ExecutiveComponent
+  ) {}
 
   ngOnInit() {}
 

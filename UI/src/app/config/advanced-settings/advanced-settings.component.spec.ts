@@ -337,13 +337,11 @@ describe('AdvancedSettingsComponent', () => {
     };
     component.runProcessor('Jira');
     fixture.detectChanges();
-    httpMock
-      .match(baseUrl + '/api/processor/trigger/Jira')[0]
-      .flush({
-        message:
-          'Got HTTP response: 200 on url: http://jira_processor:50008/processor/run',
-        success: true,
-      });
+    httpMock.match(baseUrl + '/api/processor/trigger/Jira')[0].flush({
+      message:
+        'Got HTTP response: 200 on url: http://jira_processor:50008/processor/run',
+      success: true,
+    });
   });
 
   it('should continue get stacks of jira processor untill flag true', fakeAsync(() => {
@@ -507,13 +505,11 @@ describe('AdvancedSettingsComponent', () => {
     };
     component.runProcessor('Github');
     // fixture.detectChanges();
-    httpMock
-      .match(baseUrl + '/api/processor/trigger/Github')[0]
-      .flush({
-        message:
-          'Got HTTP response: 200 on url: http://nonjira-processor:50008/processor/run',
-        success: true,
-      });
+    httpMock.match(baseUrl + '/api/processor/trigger/Github')[0].flush({
+      message:
+        'Got HTTP response: 200 on url: http://nonjira-processor:50008/processor/run',
+      success: true,
+    });
   });
 
   it('should all tools config', fakeAsync(() => {

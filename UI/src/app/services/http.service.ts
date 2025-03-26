@@ -1244,4 +1244,8 @@ export class HttpService {
       this.fetchReportsUrl + userId + '&page=0&limit=9999',
     );
   }
+
+  deleteReport(id: string): Observable<any> {
+    return this.http.delete<any>(this.createReportUrl + '/' + id);
+  }
 }
