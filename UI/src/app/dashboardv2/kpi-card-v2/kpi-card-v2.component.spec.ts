@@ -16,7 +16,12 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  tick,
+  fakeAsync,
+} from '@angular/core/testing';
 import { KpiCardV2Component } from './kpi-card-v2.component';
 
 import { RouterTestingModule } from '@angular/router/testing';
@@ -32,7 +37,10 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { DialogService } from 'primeng/dynamicdialog';
 import { KpiHelperService } from '../../services/kpi-helper.service';
 import { of, throwError } from 'rxjs';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { MessageService } from 'primeng/api';
 
 describe('KpiCardV2Component', () => {
@@ -40,7 +48,7 @@ describe('KpiCardV2Component', () => {
   let fixture: ComponentFixture<KpiCardV2Component>;
   let getAuth: GetAuthService;
   let httpMock: HttpTestingController;
-  let httpService: HttpService
+  let httpService: HttpService;
   let sharedService: SharedService;
   let helperService: HelperService;
   let dialogService: DialogService;
@@ -50,41 +58,50 @@ describe('KpiCardV2Component', () => {
   const fakeKpiFieldMappingList = require('../../../test/resource/fakeMappingFieldConfig.json');
   const dropDownMetaData = require('../../../test/resource/KPIConfig.json');
   const fakeSelectedFieldMapping = {
-    "id": "63282cbaf5c740241aff32a1",
-    "projectToolConfigId": "63282ca6487eff1e8b70b1bb",
-    "basicProjectConfigId": "63282c82487eff1e8b70b1b9",
-    "sprintName": "customfield_12700",
-    "jiradefecttype": [
-      "Defect"
+    id: '63282cbaf5c740241aff32a1',
+    projectToolConfigId: '63282ca6487eff1e8b70b1bb',
+    basicProjectConfigId: '63282c82487eff1e8b70b1b9',
+    sprintName: 'customfield_12700',
+    jiradefecttype: ['Defect'],
+    defectPriority: [],
+    jiraIssueTypeNames: [
+      'Story',
+      'Enabler Story',
+      'Change request',
+      'Defect',
+      'Epic',
     ],
-    "defectPriority": [],
-    "jiraIssueTypeNames": [
-      "Story",
-      "Enabler Story",
-      "Change request",
-      "Defect",
-      "Epic"
-    ],
-    "jiraBugRaisedByQACustomField": "",
-    "jiraBugRaisedByQAIdentification": "",
-    "jiraBugRaisedByQAValue": [],
-    "jiraDefectDroppedStatus": [],
-    "epicCostOfDelay": "customfield_58102",
-    "epicRiskReduction": "customfield_58101",
-
+    jiraBugRaisedByQACustomField: '',
+    jiraBugRaisedByQAIdentification: '',
+    jiraBugRaisedByQAValue: [],
+    jiraDefectDroppedStatus: [],
+    epicCostOfDelay: 'customfield_58102',
+    epicRiskReduction: 'customfield_58101',
   };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [KpiCardV2Component],
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserAnimationsModule],
+      imports: [
+        RouterTestingModule,
+        HttpClientTestingModule,
+        BrowserAnimationsModule,
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
-      providers: [SharedService, GetAuthService, HttpService, HelperService, CommonModule, DatePipe, DialogService, KpiHelperService, MessageService,
-        { provide: APP_CONFIG, useValue: AppConfig }
-      ]
-    })
-      .compileComponents();
+      providers: [
+        SharedService,
+        GetAuthService,
+        HttpService,
+        HelperService,
+        CommonModule,
+        DatePipe,
+        DialogService,
+        KpiHelperService,
+        MessageService,
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(KpiCardV2Component);
     component = fixture.componentInstance;
@@ -94,201 +111,203 @@ describe('KpiCardV2Component', () => {
     sharedService = TestBed.inject(SharedService);
     helperService = TestBed.inject(HelperService);
     dialogService = TestBed.inject(DialogService);
-    mockService = jasmine.createSpyObj(SharedService, ['selectedFilterOptionObs', 'getSelectedTab']);
+    mockService = jasmine.createSpyObj(SharedService, [
+      'selectedFilterOptionObs',
+      'getSelectedTab',
+    ]);
     kpiHelperService = TestBed.inject(KpiHelperService); //jasmine.createSpyObj(KpiHelperService, ['getChartDataSet']);
     messageService = TestBed.inject(MessageService);
     component.kpiData = {
       kpiId: 'kpi72',
-      kpiDetail: { kpiFilter: 'radioButton' }
+      kpiDetail: { kpiFilter: 'radioButton' },
     };
     component.dropdownArr = [{ options: ['option1', 'option2'] }];
     component.kpimenu = jasmine.createSpyObj('Menu', ['toggle']);
 
     httpService.setCurrentUserDetails({
-      "user_email": "rishabh@mailinator.com",
-      "user_id": "67a9dc720edaa90655f684b6",
-      "projectsAccess": [
+      user_email: 'rishabh@mailinator.com',
+      user_id: '67a9dc720edaa90655f684b6',
+      projectsAccess: [
         {
-          "role": "ROLE_PROJECT_ADMIN",
-          "projects": [
+          role: 'ROLE_PROJECT_ADMIN',
+          projects: [
             {
-              "projectName": "Abu Dhabi Housing Authority",
-              "projectId": "66601953bc80f461490c653d",
-              "hierarchy": [
+              projectName: 'Abu Dhabi Housing Authority',
+              projectId: '66601953bc80f461490c653d',
+              hierarchy: [
                 {
-                  "hierarchyLevel": {
-                    "level": 1,
-                    "hierarchyLevelId": "bu",
-                    "hierarchyLevelName": "BU"
+                  hierarchyLevel: {
+                    level: 1,
+                    hierarchyLevelId: 'bu',
+                    hierarchyLevelName: 'BU',
                   },
-                  "orgHierarchyNodeId": "1acc3651-0313-4331-9093-087aa930c4c5",
-                  "value": "International"
+                  orgHierarchyNodeId: '1acc3651-0313-4331-9093-087aa930c4c5',
+                  value: 'International',
                 },
                 {
-                  "hierarchyLevel": {
-                    "level": 2,
-                    "hierarchyLevelId": "ver",
-                    "hierarchyLevelName": "Vertical"
+                  hierarchyLevel: {
+                    level: 2,
+                    hierarchyLevelId: 'ver',
+                    hierarchyLevelName: 'Vertical',
                   },
-                  "orgHierarchyNodeId": "b849d1b3-69bd-45fc-8d4f-b117ef0660b0",
-                  "value": "Travel"
+                  orgHierarchyNodeId: 'b849d1b3-69bd-45fc-8d4f-b117ef0660b0',
+                  value: 'Travel',
                 },
                 {
-                  "hierarchyLevel": {
-                    "level": 3,
-                    "hierarchyLevelId": "acc",
-                    "hierarchyLevelName": "Account"
+                  hierarchyLevel: {
+                    level: 3,
+                    hierarchyLevelId: 'acc',
+                    hierarchyLevelName: 'Account',
                   },
-                  "orgHierarchyNodeId": "0498fcab-69ce-40ca-9e1e-a02e3bb526a5",
-                  "value": "ADEO"
+                  orgHierarchyNodeId: '0498fcab-69ce-40ca-9e1e-a02e3bb526a5',
+                  value: 'ADEO',
                 },
                 {
-                  "hierarchyLevel": {
-                    "level": 4,
-                    "hierarchyLevelId": "port",
-                    "hierarchyLevelName": "Engagement"
+                  hierarchyLevel: {
+                    level: 4,
+                    hierarchyLevelId: 'port',
+                    hierarchyLevelName: 'Engagement',
                   },
-                  "orgHierarchyNodeId": "38a58b11-c94a-486c-9f24-48d815d3ec0c",
-                  "value": "App Development"
-                }
-              ]
+                  orgHierarchyNodeId: '38a58b11-c94a-486c-9f24-48d815d3ec0c',
+                  value: 'App Development',
+                },
+              ],
             },
             {
-              "projectName": "ATS",
-              "projectId": "6641e8cd1ec9a84d82ce380d",
-              "hierarchy": [
+              projectName: 'ATS',
+              projectId: '6641e8cd1ec9a84d82ce380d',
+              hierarchy: [
                 {
-                  "hierarchyLevel": {
-                    "level": 1,
-                    "hierarchyLevelId": "bu",
-                    "hierarchyLevelName": "BU"
+                  hierarchyLevel: {
+                    level: 1,
+                    hierarchyLevelId: 'bu',
+                    hierarchyLevelName: 'BU',
                   },
-                  "orgHierarchyNodeId": "ad7cae57-9f07-44df-8e50-b807e81a156c",
-                  "value": "North America"
+                  orgHierarchyNodeId: 'ad7cae57-9f07-44df-8e50-b807e81a156c',
+                  value: 'North America',
                 },
                 {
-                  "hierarchyLevel": {
-                    "level": 2,
-                    "hierarchyLevelId": "ver",
-                    "hierarchyLevelName": "Vertical"
+                  hierarchyLevel: {
+                    level: 2,
+                    hierarchyLevelId: 'ver',
+                    hierarchyLevelName: 'Vertical',
                   },
-                  "orgHierarchyNodeId": "5267cdbd-5db5-4377-aa1c-7941a94a4f87",
-                  "value": "Financial Services"
+                  orgHierarchyNodeId: '5267cdbd-5db5-4377-aa1c-7941a94a4f87',
+                  value: 'Financial Services',
                 },
                 {
-                  "hierarchyLevel": {
-                    "level": 3,
-                    "hierarchyLevelId": "acc",
-                    "hierarchyLevelName": "Account"
+                  hierarchyLevel: {
+                    level: 3,
+                    hierarchyLevelId: 'acc',
+                    hierarchyLevelName: 'Account',
                   },
-                  "orgHierarchyNodeId": "75752111-6d80-49f2-9c73-36dff4711b75",
-                  "value": "DTCC (TRM-PS)"
+                  orgHierarchyNodeId: '75752111-6d80-49f2-9c73-36dff4711b75',
+                  value: 'DTCC (TRM-PS)',
                 },
                 {
-                  "hierarchyLevel": {
-                    "level": 4,
-                    "hierarchyLevelId": "port",
-                    "hierarchyLevelName": "Engagement"
+                  hierarchyLevel: {
+                    level: 4,
+                    hierarchyLevelId: 'port',
+                    hierarchyLevelName: 'Engagement',
                   },
-                  "orgHierarchyNodeId": "92b9e249-44c4-4cff-be25-7a09eeed1ad9",
-                  "value": "CMRS"
-                }
-              ]
+                  orgHierarchyNodeId: '92b9e249-44c4-4cff-be25-7a09eeed1ad9',
+                  value: 'CMRS',
+                },
+              ],
             },
             {
-              "projectName": "PSknowHOW",
-              "projectId": "65118da7965fbb0d14bce23c",
-              "hierarchy": [
+              projectName: 'PSknowHOW',
+              projectId: '65118da7965fbb0d14bce23c',
+              hierarchy: [
                 {
-                  "hierarchyLevel": {
-                    "level": 1,
-                    "hierarchyLevelId": "bu",
-                    "hierarchyLevelName": "BU"
+                  hierarchyLevel: {
+                    level: 1,
+                    hierarchyLevelId: 'bu',
+                    hierarchyLevelName: 'BU',
                   },
-                  "orgHierarchyNodeId": "8f3ea064-46ca-45eb-a80d-20574993cb47",
-                  "value": "Internal"
+                  orgHierarchyNodeId: '8f3ea064-46ca-45eb-a80d-20574993cb47',
+                  value: 'Internal',
                 },
                 {
-                  "hierarchyLevel": {
-                    "level": 2,
-                    "hierarchyLevelId": "ver",
-                    "hierarchyLevelName": "Vertical"
+                  hierarchyLevel: {
+                    level: 2,
+                    hierarchyLevelId: 'ver',
+                    hierarchyLevelName: 'Vertical',
                   },
-                  "orgHierarchyNodeId": "eae72283-edb8-4ea9-98c6-6189351b0942",
-                  "value": "PS Internal"
+                  orgHierarchyNodeId: 'eae72283-edb8-4ea9-98c6-6189351b0942',
+                  value: 'PS Internal',
                 },
                 {
-                  "hierarchyLevel": {
-                    "level": 3,
-                    "hierarchyLevelId": "acc",
-                    "hierarchyLevelName": "Account"
+                  hierarchyLevel: {
+                    level: 3,
+                    hierarchyLevelId: 'acc',
+                    hierarchyLevelName: 'Account',
                   },
-                  "orgHierarchyNodeId": "9edb8a54-3a7a-4fb5-b1c6-0b648f7f77dc",
-                  "value": "Methods and Tools"
+                  orgHierarchyNodeId: '9edb8a54-3a7a-4fb5-b1c6-0b648f7f77dc',
+                  value: 'Methods and Tools',
                 },
                 {
-                  "hierarchyLevel": {
-                    "level": 4,
-                    "hierarchyLevelId": "port",
-                    "hierarchyLevelName": "Engagement"
+                  hierarchyLevel: {
+                    level: 4,
+                    hierarchyLevelId: 'port',
+                    hierarchyLevelName: 'Engagement',
                   },
-                  "orgHierarchyNodeId": "f27001d2-c935-4b14-ab5a-4d038c586978",
-                  "value": "DTS"
-                }
-              ]
+                  orgHierarchyNodeId: 'f27001d2-c935-4b14-ab5a-4d038c586978',
+                  value: 'DTS',
+                },
+              ],
             },
             {
-              "projectName": " Bang  Olufsen Omnichannel implementation",
-              "projectId": "66d7da7258ffc53913fb840c",
-              "hierarchy": [
+              projectName: ' Bang  Olufsen Omnichannel implementation',
+              projectId: '66d7da7258ffc53913fb840c',
+              hierarchy: [
                 {
-                  "hierarchyLevel": {
-                    "level": 1,
-                    "hierarchyLevelId": "bu",
-                    "hierarchyLevelName": "BU"
+                  hierarchyLevel: {
+                    level: 1,
+                    hierarchyLevelId: 'bu',
+                    hierarchyLevelName: 'BU',
                   },
-                  "orgHierarchyNodeId": "bea9afff-a419-4b90-a000-21e9f6a280bc",
-                  "value": "EU"
+                  orgHierarchyNodeId: 'bea9afff-a419-4b90-a000-21e9f6a280bc',
+                  value: 'EU',
                 },
                 {
-                  "hierarchyLevel": {
-                    "level": 2,
-                    "hierarchyLevelId": "ver",
-                    "hierarchyLevelName": "Vertical"
+                  hierarchyLevel: {
+                    level: 2,
+                    hierarchyLevelId: 'ver',
+                    hierarchyLevelName: 'Vertical',
                   },
-                  "orgHierarchyNodeId": "12b46925-a494-40e6-8225-b8bc04192072",
-                  "value": "Consumer Products"
+                  orgHierarchyNodeId: '12b46925-a494-40e6-8225-b8bc04192072',
+                  value: 'Consumer Products',
                 },
                 {
-                  "hierarchyLevel": {
-                    "level": 3,
-                    "hierarchyLevelId": "acc",
-                    "hierarchyLevelName": "Account"
+                  hierarchyLevel: {
+                    level: 3,
+                    hierarchyLevelId: 'acc',
+                    hierarchyLevelName: 'Account',
                   },
-                  "orgHierarchyNodeId": "835d444e-39e1-4ace-bab5-08de9b618158",
-                  "value": "Bang & Olufsen A/S"
+                  orgHierarchyNodeId: '835d444e-39e1-4ace-bab5-08de9b618158',
+                  value: 'Bang & Olufsen A/S',
                 },
                 {
-                  "hierarchyLevel": {
-                    "level": 4,
-                    "hierarchyLevelId": "port",
-                    "hierarchyLevelName": "Engagement"
+                  hierarchyLevel: {
+                    level: 4,
+                    hierarchyLevelId: 'port',
+                    hierarchyLevelName: 'Engagement',
                   },
-                  "orgHierarchyNodeId": "9b9f47ea-10ab-4426-95bd-fc6e0703c537",
-                  "value": "Bang & Olufsen"
-                }
-              ]
-            }
-          ]
-        }
+                  orgHierarchyNodeId: '9b9f47ea-10ab-4426-95bd-fc6e0703c537',
+                  value: 'Bang & Olufsen',
+                },
+              ],
+            },
+          ],
+        },
       ],
-      "user_name": "RishabhQA",
-      "X-Authentication-Token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJSaXNoYWJoUUEiLCJkZXRhaWxzIjoiU1RBTkRBUkQiLCJyb2xlcyI6WyJST0xFX1BST0pFQ1RfQURNSU4iXSwiZXhwIjoxNzQxODQyNzM3fQ.XIr0Yyb1ETNS14uUPg923AJgiXW0Th8Njv4vnwJPmysxKk-jey1syMDUqnOzJFRwDnDFl8Mfbc0L48GcxbU6Ow",
-      "authType": "STANDARD",
-      "notificationEmail": null,
-      "authorities": [
-        "ROLE_PROJECT_ADMIN"
-      ]
+      user_name: 'RishabhQA',
+      'X-Authentication-Token':
+        'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJSaXNoYWJoUUEiLCJkZXRhaWxzIjoiU1RBTkRBUkQiLCJyb2xlcyI6WyJST0xFX1BST0pFQ1RfQURNSU4iXSwiZXhwIjoxNzQxODQyNzM3fQ.XIr0Yyb1ETNS14uUPg923AJgiXW0Th8Njv4vnwJPmysxKk-jey1syMDUqnOzJFRwDnDFl8Mfbc0L48GcxbU6Ow',
+      authType: 'STANDARD',
+      notificationEmail: null,
+      authorities: ['ROLE_PROJECT_ADMIN'],
     });
 
     fixture.detectChanges();
@@ -310,8 +329,8 @@ describe('KpiCardV2Component', () => {
     component.selectedTab = 'iteration';
     component.kpiData = {
       kpiDetail: {
-        chartType: 'bar'
-      }
+        chartType: 'bar',
+      },
     };
 
     spyOn(sharedService, 'getSelectedType').and.returnValue('scrum');
@@ -357,7 +376,7 @@ describe('KpiCardV2Component', () => {
   it('should set the correct radioOption when dropdownArr changes', () => {
     // Mock service to return a backup value
     spyOn(sharedService, 'getKpiSubFilterObj').and.returnValue({
-      kpi72: { filter1: ['BackupOption'] }
+      kpi72: { filter1: ['BackupOption'] },
     });
 
     // Simulate changes in dropdownArr
@@ -366,8 +385,8 @@ describe('KpiCardV2Component', () => {
         currentValue: [{ options: ['option1', 'option2'] }],
         previousValue: [],
         firstChange: false,
-        isFirstChange: () => false
-      }
+        isFirstChange: () => false,
+      },
     };
 
     // Trigger ngOnChanges with the mocked changes
@@ -387,8 +406,8 @@ describe('KpiCardV2Component', () => {
         currentValue: [{ options: ['option1', 'option2'] }],
         previousValue: [],
         firstChange: false,
-        isFirstChange: () => false
-      }
+        isFirstChange: () => false,
+      },
     };
 
     // Trigger ngOnChanges with the mocked changes
@@ -401,7 +420,7 @@ describe('KpiCardV2Component', () => {
   it('should set radioOption to the first value from backup if it exists without filter1', () => {
     // Mock service to return a backup value without filter1
     spyOn(sharedService, 'getKpiSubFilterObj').and.returnValue({
-      kpi72: ['BackupOption']
+      kpi72: ['BackupOption'],
     });
 
     // Simulate changes in dropdownArr
@@ -410,8 +429,8 @@ describe('KpiCardV2Component', () => {
         currentValue: [{ options: ['option1', 'option2'] }],
         previousValue: [],
         firstChange: false,
-        isFirstChange: () => false
-      }
+        isFirstChange: () => false,
+      },
     };
 
     // Trigger ngOnChanges with the mocked changes
@@ -463,211 +482,189 @@ describe('KpiCardV2Component', () => {
   it('should prepare Data for display', () => {
     component.colors = {
       'API POD 1 - Core_6524a7677c8bb73cd0c3fe67': {
-        "nodeName": "API POD 1 - Core",
-        "color": "#6079C5",
-        "nodeId": "API POD 1 - Core_6524a7677c8bb73cd0c3fe67"
-      }
-    }
+        nodeName: 'API POD 1 - Core',
+        color: '#6079C5',
+        nodeId: 'API POD 1 - Core_6524a7677c8bb73cd0c3fe67',
+      },
+    };
 
-    component.trendValueList = [{
-      "data": "API POD 1 - Core",
-      "maturity": "4",
-      "value": [
-        {
-          "data": "29",
-          "sSprintID": "55039_API POD 1 - Core_6524a7677c8bb73cd0c3fe67",
-          "sSprintName": "Sprint 16_API POD 1 - Core",
-          "hoverValue": {
-            "Defects": 5,
-            "Stories": 17
+    component.trendValueList = [
+      {
+        data: 'API POD 1 - Core',
+        maturity: '4',
+        value: [
+          {
+            data: '29',
+            sSprintID: '55039_API POD 1 - Core_6524a7677c8bb73cd0c3fe67',
+            sSprintName: 'Sprint 16_API POD 1 - Core',
+            hoverValue: {
+              Defects: 5,
+              Stories: 17,
+            },
+            sprintIds: ['55039_API POD 1 - Core_6524a7677c8bb73cd0c3fe67'],
+            sprintNames: ['Sprint 16_API POD 1 - Core'],
+            value: 29.411764705882355,
+            sprojectName: 'API POD 1 - Core',
+            sortSprint: 'Sprint 16',
+            xName: 1,
           },
-          "sprintIds": [
-            "55039_API POD 1 - Core_6524a7677c8bb73cd0c3fe67"
-          ],
-          "sprintNames": [
-            "Sprint 16_API POD 1 - Core"
-          ],
-          "value": 29.411764705882355,
-          "sprojectName": "API POD 1 - Core",
-          "sortSprint": "Sprint 16",
-          "xName": 1
-        },
-        {
-          "data": "40",
-          "sSprintID": "55040_API POD 1 - Core_6524a7677c8bb73cd0c3fe67",
-          "sSprintName": "Sprint 17_API POD 1 - Core",
-          "hoverValue": {
-            "Defects": 4,
-            "Stories": 10
+          {
+            data: '40',
+            sSprintID: '55040_API POD 1 - Core_6524a7677c8bb73cd0c3fe67',
+            sSprintName: 'Sprint 17_API POD 1 - Core',
+            hoverValue: {
+              Defects: 4,
+              Stories: 10,
+            },
+            sprintIds: ['55040_API POD 1 - Core_6524a7677c8bb73cd0c3fe67'],
+            sprintNames: ['Sprint 17_API POD 1 - Core'],
+            value: 40,
+            sprojectName: 'API POD 1 - Core',
+            sortSprint: 'Sprint 17',
+            xName: 2,
           },
-          "sprintIds": [
-            "55040_API POD 1 - Core_6524a7677c8bb73cd0c3fe67"
-          ],
-          "sprintNames": [
-            "Sprint 17_API POD 1 - Core"
-          ],
-          "value": 40,
-          "sprojectName": "API POD 1 - Core",
-          "sortSprint": "Sprint 17",
-          "xName": 2
-        },
-        {
-          "data": "109",
-          "sSprintID": "55041_API POD 1 - Core_6524a7677c8bb73cd0c3fe67",
-          "sSprintName": "Sprint 18_API POD 1 - Core",
-          "hoverValue": {
-            "Defects": 12,
-            "Stories": 11
+          {
+            data: '109',
+            sSprintID: '55041_API POD 1 - Core_6524a7677c8bb73cd0c3fe67',
+            sSprintName: 'Sprint 18_API POD 1 - Core',
+            hoverValue: {
+              Defects: 12,
+              Stories: 11,
+            },
+            sprintIds: ['55041_API POD 1 - Core_6524a7677c8bb73cd0c3fe67'],
+            sprintNames: ['Sprint 18_API POD 1 - Core'],
+            value: 109.09090909090908,
+            sprojectName: 'API POD 1 - Core',
+            sortSprint: 'Sprint 18',
+            xName: 3,
           },
-          "sprintIds": [
-            "55041_API POD 1 - Core_6524a7677c8bb73cd0c3fe67"
-          ],
-          "sprintNames": [
-            "Sprint 18_API POD 1 - Core"
-          ],
-          "value": 109.09090909090908,
-          "sprojectName": "API POD 1 - Core",
-          "sortSprint": "Sprint 18",
-          "xName": 3
-        },
-        {
-          "data": "80",
-          "sSprintID": "55042_API POD 1 - Core_6524a7677c8bb73cd0c3fe67",
-          "sSprintName": "Sprint 19_API POD 1 - Core",
-          "hoverValue": {
-            "Defects": 8,
-            "Stories": 10
+          {
+            data: '80',
+            sSprintID: '55042_API POD 1 - Core_6524a7677c8bb73cd0c3fe67',
+            sSprintName: 'Sprint 19_API POD 1 - Core',
+            hoverValue: {
+              Defects: 8,
+              Stories: 10,
+            },
+            sprintIds: ['55042_API POD 1 - Core_6524a7677c8bb73cd0c3fe67'],
+            sprintNames: ['Sprint 19_API POD 1 - Core'],
+            value: 80,
+            sprojectName: 'API POD 1 - Core',
+            sortSprint: 'Sprint 19',
+            xName: 4,
           },
-          "sprintIds": [
-            "55042_API POD 1 - Core_6524a7677c8bb73cd0c3fe67"
-          ],
-          "sprintNames": [
-            "Sprint 19_API POD 1 - Core"
-          ],
-          "value": 80,
-          "sprojectName": "API POD 1 - Core",
-          "sortSprint": "Sprint 19",
-          "xName": 4
-        },
-        {
-          "data": "67",
-          "sSprintID": "55043_API POD 1 - Core_6524a7677c8bb73cd0c3fe67",
-          "sSprintName": "Sprint 20_API POD 1 - Core",
-          "hoverValue": {
-            "Defects": 4,
-            "Stories": 6
+          {
+            data: '67',
+            sSprintID: '55043_API POD 1 - Core_6524a7677c8bb73cd0c3fe67',
+            sSprintName: 'Sprint 20_API POD 1 - Core',
+            hoverValue: {
+              Defects: 4,
+              Stories: 6,
+            },
+            sprintIds: ['55043_API POD 1 - Core_6524a7677c8bb73cd0c3fe67'],
+            sprintNames: ['Sprint 20_API POD 1 - Core'],
+            value: 66.66666666666666,
+            sprojectName: 'API POD 1 - Core',
+            sortSprint: 'Sprint 20',
+            xName: 5,
           },
-          "sprintIds": [
-            "55043_API POD 1 - Core_6524a7677c8bb73cd0c3fe67"
-          ],
-          "sprintNames": [
-            "Sprint 20_API POD 1 - Core"
-          ],
-          "value": 66.66666666666666,
-          "sprojectName": "API POD 1 - Core",
-          "sortSprint": "Sprint 20",
-          "xName": 5
-        }
-      ],
-      "maturityValue": "65.03"
-    }]
+        ],
+        maturityValue: '65.03',
+      },
+    ];
 
     component.kpiData = {
       kpiDetail: {
-        "id": "64b4ed7acba3c12de16472ec",
-        "kpiId": "kpi14",
-        "kpiName": "Defect Injection Rate",
-        "isDeleted": "False",
-        "defaultOrder": 1,
-        "kpiUnit": "%",
-        "chartType": "line",
-        "upperThresholdBG": "red",
-        "lowerThresholdBG": "white",
-        "showTrend": true,
-        "isPositiveTrend": false,
-        "calculateMaturity": true,
-        "hideOverallFilter": false,
-        "kpiSource": "Jira",
-        "maxValue": "200",
-        "thresholdValue": 10,
-        "kanban": false,
-        "groupId": 3,
-        "kpiInfo": {
-          "definition": "Meausures the Percentage of Defect created and linked to stories in a sprint against the number of stories in the same sprint",
-          "formula": [
+        id: '64b4ed7acba3c12de16472ec',
+        kpiId: 'kpi14',
+        kpiName: 'Defect Injection Rate',
+        isDeleted: 'False',
+        defaultOrder: 1,
+        kpiUnit: '%',
+        chartType: 'line',
+        upperThresholdBG: 'red',
+        lowerThresholdBG: 'white',
+        showTrend: true,
+        isPositiveTrend: false,
+        calculateMaturity: true,
+        hideOverallFilter: false,
+        kpiSource: 'Jira',
+        maxValue: '200',
+        thresholdValue: 10,
+        kanban: false,
+        groupId: 3,
+        kpiInfo: {
+          definition:
+            'Meausures the Percentage of Defect created and linked to stories in a sprint against the number of stories in the same sprint',
+          formula: [
             {
-              "lhs": "DIR for a sprint",
-              "operator": "division",
-              "operands": [
-                "No. of defects tagged to all stories closed in a sprint",
-                "Total no. of stories closed in the sprint"
-              ]
-            }
+              lhs: 'DIR for a sprint',
+              operator: 'division',
+              operands: [
+                'No. of defects tagged to all stories closed in a sprint',
+                'Total no. of stories closed in the sprint',
+              ],
+            },
           ],
-          "details": [
+          details: [
             {
-              "type": "link",
-              "kpiLinkDetail": {
-                "text": "Detailed Information at",
-                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Injection-Rate"
-              }
-            }
-          ]
+              type: 'link',
+              kpiLinkDetail: {
+                text: 'Detailed Information at',
+                link: 'https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Injection-Rate',
+              },
+            },
+          ],
         },
-        "aggregationCriteria": "average",
-        "maturityRange": [
-          "-175",
-          "175-125",
-          "125-75",
-          "75-25",
-          "25-"
-        ],
-        "trendCalculative": false,
-        "xaxisLabel": "Sprints",
-        "yaxisLabel": "Percentage",
-        "isAdditionalFilterSupport": true
-      }
-    }
+        aggregationCriteria: 'average',
+        maturityRange: ['-175', '175-125', '125-75', '75-25', '25-'],
+        trendCalculative: false,
+        xaxisLabel: 'Sprints',
+        yaxisLabel: 'Percentage',
+        isAdditionalFilterSupport: true,
+      },
+    };
 
     component.prepareData();
 
-    expect(component.sprintDetailsList).toEqual(
-      [{
-        "project": "API POD 1 - Core",
-        "hoverList": [
+    expect(component.sprintDetailsList).toEqual([
+      {
+        project: 'API POD 1 - Core',
+        hoverList: [
           {
-            "duration": "Sprint 16_API POD 1 - Core",
-            "value": 29.41,
-            "unit": " %",
-            "params": "Defects : 5, Stories : 17"
+            duration: 'Sprint 16_API POD 1 - Core',
+            value: 29.41,
+            unit: ' %',
+            params: 'Defects : 5, Stories : 17',
           },
           {
-            "duration": "Sprint 17_API POD 1 - Core",
-            "value": 40,
-            "unit": " %",
-            "params": "Defects : 4, Stories : 10"
+            duration: 'Sprint 17_API POD 1 - Core',
+            value: 40,
+            unit: ' %',
+            params: 'Defects : 4, Stories : 10',
           },
           {
-            "duration": "Sprint 18_API POD 1 - Core",
-            "value": 109.09,
-            "unit": " %",
-            "params": "Defects : 12, Stories : 11"
+            duration: 'Sprint 18_API POD 1 - Core',
+            value: 109.09,
+            unit: ' %',
+            params: 'Defects : 12, Stories : 11',
           },
           {
-            "duration": "Sprint 19_API POD 1 - Core",
-            "value": 80,
-            "unit": " %",
-            "params": "Defects : 8, Stories : 10"
+            duration: 'Sprint 19_API POD 1 - Core',
+            value: 80,
+            unit: ' %',
+            params: 'Defects : 8, Stories : 10',
           },
           {
-            "duration": "Sprint 20_API POD 1 - Core",
-            "value": 66.67,
-            "unit": " %",
-            "params": "Defects : 4, Stories : 6"
-          }
+            duration: 'Sprint 20_API POD 1 - Core',
+            value: 66.67,
+            unit: ' %',
+            params: 'Defects : 4, Stories : 6',
+          },
         ],
-        "color": "#6079C5"
-      }])
+        color: '#6079C5',
+      },
+    ]);
   });
 
   it('should get Mapping configuration', () => {
@@ -676,40 +673,53 @@ describe('KpiCardV2Component', () => {
       kpiDetail: {
         kpiId: 'kpi3',
         kpiSource: 'Jira',
-        combinedKpiSource: 'Jira/Azure'
-      }
+        combinedKpiSource: 'Jira/Azure',
+      },
     };
     spyOn(sharedService, 'getSelectedTab').and.returnValue('My Dashboard');
     spyOn(sharedService, 'getSelectedType').and.returnValue('scrum');
-    spyOn(sharedService, 'getSelectedTrends').and.returnValue([{ basicProjectConfigId: '123' }]);
-    spyOn(httpService, 'getKPIFieldMappingConfig').and.returnValue(of(fakeKpiFieldMappingList));
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue([
+      { basicProjectConfigId: '123' },
+    ]);
+    spyOn(httpService, 'getKPIFieldMappingConfig').and.returnValue(
+      of(fakeKpiFieldMappingList),
+    );
 
     const fakeMetaDataList = [
       {
         projectID: '123',
         kpiSource: 'jira',
-        metaData: dropDownMetaData.data
-      }
-    ]
-    spyOn(sharedService, 'getFieldMappingMetaData').and.returnValue(fakeMetaDataList);
+        metaData: dropDownMetaData.data,
+      },
+    ];
+    spyOn(sharedService, 'getFieldMappingMetaData').and.returnValue(
+      fakeMetaDataList,
+    );
     component.getKPIFieldMappingConfig();
-    expect(component.fieldMappingConfig.length).toEqual(fakeKpiFieldMappingList.data.fieldConfiguration.length);
-  })
+    expect(component.fieldMappingConfig.length).toEqual(
+      fakeKpiFieldMappingList.data.fieldConfiguration.length,
+    );
+  });
 
   it('should get FieldMapping', () => {
     component.selectedToolConfig = [{ id: '123' }];
     component.kpiData = {
-      kpiId: 'pi123'
-    }
-    spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(of({
-      success: true, data: {
-        fieldMappingResponses: fakeSelectedFieldMapping,
-        metaTemplateCode: '10'
-      }
-    }));
+      kpiId: 'pi123',
+    };
+    spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(
+      of({
+        success: true,
+        data: {
+          fieldMappingResponses: fakeSelectedFieldMapping,
+          metaTemplateCode: '10',
+        },
+      }),
+    );
     component.getFieldMapping();
-    expect(Object.keys(component.selectedFieldMapping).length).toBeGreaterThan(0);
-  })
+    expect(Object.keys(component.selectedFieldMapping).length).toBeGreaterThan(
+      0,
+    );
+  });
 
   xit('should get FieldMappingMetaData', () => {
     // Mock the selectedToolConfig
@@ -726,7 +736,9 @@ describe('KpiCardV2Component', () => {
     };
 
     // Spy on the service method and return a mocked observable
-    spyOn(httpService, 'getKPIConfigMetadata').and.returnValue(of(mockDropDownMetaData));
+    spyOn(httpService, 'getKPIConfigMetadata').and.returnValue(
+      of(mockDropDownMetaData),
+    );
 
     // Call the method under test
     component.getFieldMappingMetaData('jira');
@@ -734,7 +746,6 @@ describe('KpiCardV2Component', () => {
     // Assert that the fieldMappingMetaData is set correctly
     expect(component.fieldMappingMetaData).not.toBeNull();
   });
-
 
   it('should handle filter change for radio', () => {
     const spy = spyOn(component.optionSelected, 'emit');
@@ -744,7 +755,7 @@ describe('KpiCardV2Component', () => {
 
   it('should handle filter change for single select', () => {
     const filterOptionsingle = {
-      filter1: [{}]
+      filter1: [{}],
     };
     component.filterOptions = {};
     const spy = spyOn(component.optionSelected, 'emit');
@@ -809,7 +820,7 @@ describe('KpiCardV2Component', () => {
     const filterOptions = {
       'Event 1': 'Option 1',
       'Event 2': 'Option 2',
-      'Event 3': 'Option 3'
+      'Event 3': 'Option 3',
     };
 
     component.handleClearAll(event);
@@ -822,7 +833,7 @@ describe('KpiCardV2Component', () => {
     const filterOptions = {
       'Event 1': 'Option 1',
       'Event 2': 'Option 2',
-      'Event 3': 'Option 3'
+      'Event 3': 'Option 3',
     };
 
     const emitSpy = spyOn(component.optionSelected, 'emit');
@@ -837,7 +848,7 @@ describe('KpiCardV2Component', () => {
     const filterOptions = {
       'Event 1': 'Option 1',
       'Event 2': 'Option 2',
-      'Event 3': 'Option 3'
+      'Event 3': 'Option 3',
     };
 
     component.handleClearAll(event);
@@ -845,7 +856,7 @@ describe('KpiCardV2Component', () => {
     expect(filterOptions).toEqual({
       'Event 1': 'Option 1',
       'Event 2': 'Option 2',
-      'Event 3': 'Option 3'
+      'Event 3': 'Option 3',
     });
   });
 
@@ -853,8 +864,8 @@ describe('KpiCardV2Component', () => {
     const filterData = {
       kpi72: {
         filter1: ['Overall'],
-        filter2: ['Other']
-      }
+        filter2: ['Other'],
+      },
     };
 
     mockService.selectedFilterOptionObs = of(filterData);
@@ -870,12 +881,12 @@ describe('KpiCardV2Component', () => {
     const filterData = {
       kpi72: {
         filter1: ['Specific'],
-        filter2: ['Other']
+        filter2: ['Other'],
       },
       kpi113: {
         filter1: ['Specific'],
-        filter2: ['Other']
-      }
+        filter2: ['Other'],
+      },
     };
 
     component.kpiData = {
@@ -887,7 +898,7 @@ describe('KpiCardV2Component', () => {
         id: '633ed17f2c2d5abef2451ff3',
         kpiId: 'kpi72',
       },
-      shown: true
+      shown: true,
     };
 
     sharedService.setKpiSubFilterObj(filterData);
@@ -895,22 +906,21 @@ describe('KpiCardV2Component', () => {
     component.ngOnInit();
 
     expect(component.kpiSelectedFilterObj).toEqual(filterData);
-    expect(component.filterOptions["filter1"]).toBe('Specific');
-    expect(component.filterOptions["filter2"]).toBe('Other');
+    expect(component.filterOptions['filter1']).toBe('Specific');
+    expect(component.filterOptions['filter2']).toBe('Other');
   });
-
 
   xit('should handle Overall values in filter1 correctly for kpi72', () => {
     const filterData = {
       kpi72: {
         filter1: ['Overall'],
         filter2: ['Other'],
-        filter3: ['OtherFilters']
+        filter3: ['OtherFilters'],
       },
       kpi113: {
         filter1: ['Specific'],
-        filter2: ['Other']
-      }
+        filter2: ['Other'],
+      },
     };
 
     component.kpiData = {
@@ -922,7 +932,7 @@ describe('KpiCardV2Component', () => {
         id: '633ed17f2c2d5abef2451ff3',
         kpiId: 'kpi72',
       },
-      shown: true
+      shown: true,
     };
 
     sharedService.setKpiSubFilterObj(filterData);
@@ -930,7 +940,7 @@ describe('KpiCardV2Component', () => {
     component.ngOnInit();
 
     expect(component.kpiSelectedFilterObj).toEqual(filterData);
-    expect(component.filterOptions["filter1"]).toEqual('Overall');
+    expect(component.filterOptions['filter1']).toEqual('Overall');
     // expect(component.filterOptions["filter2"]).toEqual('Overall');
   });
 
@@ -938,12 +948,12 @@ describe('KpiCardV2Component', () => {
     const filterData = {
       kpi72: {
         filter3: ['option3'],
-        filter: ['Overall']
+        filter: ['Overall'],
       },
       kpi113: {
         filter1: ['Specific'],
-        filter2: ['Other']
-      }
+        filter2: ['Other'],
+      },
     };
 
     component.kpiData = {
@@ -955,7 +965,7 @@ describe('KpiCardV2Component', () => {
         id: '633ed17f2c2d5abef2451ff3',
         kpiId: 'kpi72',
       },
-      shown: true
+      shown: true,
     };
 
     sharedService.setKpiSubFilterObj(filterData);
@@ -970,11 +980,11 @@ describe('KpiCardV2Component', () => {
   it('should handle kpiFilter radio button logic', fakeAsync(() => {
     const filterData = {
       kpi72: {
-        filter1: ['option2']
+        filter1: ['option2'],
       },
       kpi113: {
-        filter1: ['option2']
-      }
+        filter1: ['option2'],
+      },
     };
 
     component.kpiData = {
@@ -985,9 +995,9 @@ describe('KpiCardV2Component', () => {
       kpiDetail: {
         id: '633ed17f2c2d5abef2451ff3',
         kpiId: 'kpi113',
-        kpiFilter: 'radiobutton'
+        kpiFilter: 'radiobutton',
       },
-      shown: true
+      shown: true,
     };
     component.dropdownArr = [];
     sharedService.setKpiSubFilterObj(filterData);
@@ -996,8 +1006,7 @@ describe('KpiCardV2Component', () => {
     tick(100);
     fixture.detectChanges();
     expect(component.radioOption).toEqual('option2');
-  })
-  );
+  }));
 
   it('should set displayConfigModel to false and emit reloadKPITab event', () => {
     component.displayConfigModel = true;
@@ -1010,7 +1019,6 @@ describe('KpiCardV2Component', () => {
     expect(reloadKPISpy).toHaveBeenCalledWith({ id: 1, name: 'KPI 1' });
   });
 
-
   it('should emit downloadExcel event with true value', () => {
     component.downloadExcel = new EventEmitter();
     const exportSpy = spyOn(component.downloadExcel, 'emit');
@@ -1018,7 +1026,6 @@ describe('KpiCardV2Component', () => {
 
     expect(exportSpy).toHaveBeenCalledWith(true);
   });
-
 
   it('should call getKPIFieldMappingConfig function', () => {
     mockService.getSelectedTab.and.returnValue('Tab1');
@@ -1042,48 +1049,50 @@ describe('KpiCardV2Component', () => {
     expect(component.getColorCssClasses(3)).toBeUndefined(); // No class should exist for index 3
   });
 
-
-
   it('should return true if any rowData has a non-null and non-undefined value for the specified field', () => {
     component.sprintDetailsList = [
       {
         hoverList: [
           { field1: null, field2: 'value2' },
-          { field1: 'value1', field2: 'value2' }
-        ]
+          { field1: 'value1', field2: 'value2' },
+        ],
       },
       {
         hoverList: [
           { field1: 'value1', field2: null },
-          { field1: null, field2: null }
-        ]
-      }
+          { field1: null, field2: null },
+        ],
+      },
     ];
     component.selectedTabIndex = 0;
     expect(component.hasData('field1')).toBe(true);
     expect(component.hasData('field2')).toBe(true);
   });
 
-  it("should return execution date of processor", () => {
-    const tracelog = [{
-      processorName: 'Jira',
-      executionSuccess: false,
-      executionEndedAt: '2023-01-04T06:02:20'
-    }]
+  it('should return execution date of processor', () => {
+    const tracelog = [
+      {
+        processorName: 'Jira',
+        executionSuccess: false,
+        executionEndedAt: '2023-01-04T06:02:20',
+      },
+    ];
     spyOn(component, 'findTraceLogForTool').and.returnValue(tracelog);
-    const resp = component.showExecutionDate('Jira')
-    expect(resp).not.toBe("NA")
-  })
+    const resp = component.showExecutionDate('Jira');
+    expect(resp).not.toBe('NA');
+  });
 
   it('should find tracelog for specfic tool', () => {
-    spyOn(sharedService, 'getProcessorLogDetails').and.returnValue([{
-      processorName: 'jira',
-      executionSuccess: false,
-      executionEndedAt: '2023-01-04T06:02:20'
-    }])
-    const toolDetails = component.findTraceLogForTool("jira");
+    spyOn(sharedService, 'getProcessorLogDetails').and.returnValue([
+      {
+        processorName: 'jira',
+        executionSuccess: false,
+        executionEndedAt: '2023-01-04T06:02:20',
+      },
+    ]);
+    const toolDetails = component.findTraceLogForTool('jira');
     expect(toolDetails).toBeDefined();
-  })
+  });
 
   it('should handle Overall values in filter1 correctly for non kpi72', () => {
     const filterData = {
@@ -1091,12 +1100,11 @@ describe('KpiCardV2Component', () => {
         filter: ['OtherFilters', 'Overall'],
         filter1: ['Overall'],
         filter2: ['Other'],
-
       },
       kpi113: {
         filter1: ['Specific'],
-        filter2: ['Other']
-      }
+        filter2: ['Other'],
+      },
     };
 
     component.kpiData = {
@@ -1108,7 +1116,7 @@ describe('KpiCardV2Component', () => {
         id: '633ed17f2c2d5abef2451ff3',
         kpiId: 'kpi7',
       },
-      shown: true
+      shown: true,
     };
 
     sharedService.setKpiSubFilterObj(filterData);
@@ -1116,7 +1124,7 @@ describe('KpiCardV2Component', () => {
     component.ngOnInit();
 
     expect(component.kpiSelectedFilterObj).toEqual(filterData);
-   // expect(component.filterOptions["filter1"]).toEqual(['Overall']);
+    // expect(component.filterOptions["filter1"]).toEqual(['Overall']);
   });
 
   xit('should show tooltip', () => {
@@ -1129,7 +1137,7 @@ describe('KpiCardV2Component', () => {
       component.filterOptions = {
         key1: 'value1',
         key2: 'value2',
-        Key3: 'value3'
+        Key3: 'value3',
       };
       component.optionSelected = jasmine.createSpyObj('EventEmitter', ['emit']);
     });
@@ -1138,7 +1146,7 @@ describe('KpiCardV2Component', () => {
       component.handleClearAll('key2');
       expect(component.filterOptions).toEqual({
         key1: 'value1',
-        Key3: 'value3'
+        Key3: 'value3',
       });
     });
 
@@ -1146,7 +1154,7 @@ describe('KpiCardV2Component', () => {
       component.handleClearAll('KEY3');
       expect(component.filterOptions).toEqual({
         key1: 'value1',
-        key2: 'value2'
+        key2: 'value2',
       });
     });
 
@@ -1155,7 +1163,7 @@ describe('KpiCardV2Component', () => {
       expect(component.filterOptions).toEqual({
         key1: 'value1',
         key2: 'value2',
-        Key3: 'value3'
+        Key3: 'value3',
       });
     });
 
@@ -1169,7 +1177,9 @@ describe('KpiCardV2Component', () => {
     component.kpiDataStatusCode = '201';
     component.showWarning(true);
 
-    expect(component.warning).toBe('Configure the missing mandatory field mappings in KPI Settings for accurate data display.');
+    expect(component.warning).toBe(
+      'Configure the missing mandatory field mappings in KPI Settings for accurate data display.',
+    );
   });
 
   it('should clear the warning message when val is false', () => {
@@ -1219,7 +1229,10 @@ describe('KpiCardV2Component', () => {
 
         component.handleClearAll('filter1');
 
-        expect(component.filterOptions).toEqual({ filter1: [], filter2: 'value2' });
+        expect(component.filterOptions).toEqual({
+          filter1: [],
+          filter2: 'value2',
+        });
         expect(emitSpy).toHaveBeenCalledWith(component.filterOptions);
       });
     });
@@ -1346,7 +1359,7 @@ describe('KpiCardV2Component', () => {
     it('should move selected option to top', () => {
       component.dropdownArr[0].options = ['option1', 'option2'];
       component.handleChange('multi', { value: ['option2'] });
-      expect(component.dropdownArr[0].options).toEqual(['option2', 'option1'])
+      expect(component.dropdownArr[0].options).toEqual(['option2', 'option1']);
     });
   });
 
@@ -1365,7 +1378,10 @@ describe('KpiCardV2Component', () => {
 
     it('should call onOpenFieldMappingDialog when event.setting is true', () => {
       // Arrange
-      const onOpenFieldMappingDialogSpy = spyOn(component, 'onOpenFieldMappingDialog' as any);
+      const onOpenFieldMappingDialogSpy = spyOn(
+        component,
+        'onOpenFieldMappingDialog' as any,
+      );
       const event = { setting: true };
 
       // Act
@@ -1404,7 +1420,10 @@ describe('KpiCardV2Component', () => {
     it('should not call any method when event is empty', () => {
       // Arrange
       const prepareDataSpy = spyOn(component, 'prepareData' as any);
-      const onOpenFieldMappingDialogSpy = spyOn(component, 'onOpenFieldMappingDialog' as any);
+      const onOpenFieldMappingDialogSpy = spyOn(
+        component,
+        'onOpenFieldMappingDialog' as any,
+      );
       const exportToExcelSpy = spyOn(component, 'exportToExcel' as any);
       const openCommentModalSpy = spyOn(component, 'openCommentModal' as any);
       const event = {};
@@ -1481,12 +1500,12 @@ describe('KpiCardV2Component', () => {
           { key2: 'value2' },
           undefined,
           {},
-          { key3: 'value3' }
+          { key3: 'value3' },
         ];
         const expectedOutput = [
           { key1: 'value1' },
           { key2: 'value2' },
-          { key3: 'value3' }
+          { key3: 'value3' },
         ];
 
         const result = component.sanitizeArray(input);
@@ -1521,25 +1540,16 @@ describe('KpiCardV2Component', () => {
     });
   });
 
-
   describe('KpiCardV2Component.calculateValue() calculateValue method', () => {
     describe('Happy Path Tests', () => {
       it('should calculate the total value correctly for numeric values', () => {
-        const issueData = [
-          { value: 10 },
-          { value: 20 },
-          { value: 30 },
-        ];
+        const issueData = [{ value: 10 }, { value: 20 }, { value: 30 }];
         const result = component.calculateValue(issueData, 'value');
         expect(result).toBe('60');
       });
 
       it('should return "0" when no numeric values are present', () => {
-        const issueData = [
-          { value: 'a' },
-          { value: 'b' },
-          { value: 'c' },
-        ];
+        const issueData = [{ value: 'a' }, { value: 'b' }, { value: 'c' }];
         const result = component.calculateValue(issueData, 'value');
         expect(result).toBe('0');
       });
@@ -1571,13 +1581,19 @@ describe('KpiCardV2Component', () => {
       it('should reset copyCardData and currentChartData to initial state', () => {
         // Arrange
         component.cardData = {
-          issueData: [{ id: 1, name: 'Issue 1' }, { id: 2, name: 'Issue 2' }],
+          issueData: [
+            { id: 1, name: 'Issue 1' },
+            { id: 2, name: 'Issue 2' },
+          ],
         };
         component.copyCardData = { issueData: [] };
         component.currentChartData = { chartData: [], totalCount: 0 };
 
         spyOn(kpiHelperService, 'getChartDataSet').and.returnValue({
-          chartData: [{ id: 1, name: 'Issue 1' }, { id: 2, name: 'Issue 2' }],
+          chartData: [
+            { id: 1, name: 'Issue 1' },
+            { id: 2, name: 'Issue 2' },
+          ],
           totalCount: 2,
         });
 
@@ -1585,8 +1601,13 @@ describe('KpiCardV2Component', () => {
         component.onFilterClear();
 
         // Assert
-        expect(component.copyCardData.issueData).toEqual(component.cardData.issueData);
-        expect(component.currentChartData.chartData).toEqual([{ id: 1, name: 'Issue 1' }, { id: 2, name: 'Issue 2' }]);
+        expect(component.copyCardData.issueData).toEqual(
+          component.cardData.issueData,
+        );
+        expect(component.currentChartData.chartData).toEqual([
+          { id: 1, name: 'Issue 1' },
+          { id: 2, name: 'Issue 2' },
+        ]);
         expect(component.currentChartData.totalCount).toBe(2);
       });
     });
@@ -1596,7 +1617,10 @@ describe('KpiCardV2Component', () => {
         // Arrange
         component.cardData = { issueData: [] };
         component.copyCardData = { issueData: [{ id: 1, name: 'Issue 1' }] };
-        component.currentChartData = { chartData: [{ id: 1, name: 'Issue 1' }], totalCount: 1 };
+        component.currentChartData = {
+          chartData: [{ id: 1, name: 'Issue 1' }],
+          totalCount: 1,
+        };
 
         spyOn(kpiHelperService, 'getChartDataSet').and.returnValue({
           chartData: [],
@@ -1616,7 +1640,10 @@ describe('KpiCardV2Component', () => {
         // Arrange
         component.cardData = { issueData: null };
         component.copyCardData = { issueData: [{ id: 1, name: 'Issue 1' }] };
-        component.currentChartData = { chartData: [{ id: 1, name: 'Issue 1' }], totalCount: 1 };
+        component.currentChartData = {
+          chartData: [{ id: 1, name: 'Issue 1' }],
+          totalCount: 1,
+        };
 
         spyOn(kpiHelperService, 'getChartDataSet').and.returnValue({
           chartData: [],
@@ -1640,126 +1667,119 @@ describe('KpiCardV2Component', () => {
         const mockEvent = {
           selectedKeyObj: { Category: 'SomeCategory' },
           selectedKey: 'SomeKey',
-          otherFilter: 'SomeValue'
+          otherFilter: 'SomeValue',
         };
 
         const mockIssueData = [
           { Category: ['SomeCategory'], SomeKey: 10 },
-          { Category: ['OtherCategory'], SomeKey: 20 }
+          { Category: ['OtherCategory'], SomeKey: 20 },
         ];
 
         component.cardData = { issueData: mockIssueData };
         component.copyCardData = { issueData: mockIssueData };
         component.colorPalette = ['#FBCF5F', '#6079C5', '#A4F6A5'];
         component.kpiFilterData = {
-          "dataGroup": {
-            "summary": {
-              "name": "Overall Commitment",
-              "aggregation": "sum"
+          dataGroup: {
+            summary: {
+              name: 'Overall Commitment',
+              aggregation: 'sum',
             },
-            "dataGroup1": [
+            dataGroup1: [
               {
-                "key": "",
-                "name": "Issues",
-                "order": 1,
-                "aggregation": "count",
-                "unit": "",
-                "showAsLegend": false,
-                "showDenominator": false,
-                "multipleValue": false
+                key: '',
+                name: 'Issues',
+                order: 1,
+                aggregation: 'count',
+                unit: '',
+                showAsLegend: false,
+                showDenominator: false,
+                multipleValue: false,
               },
               {
-                "key": "value",
-                "name": "Story Point",
-                "order": 2,
-                "aggregation": "sum",
-                "unit": "SP",
-                "showAsLegend": false,
-                "showDenominator": false,
-                "multipleValue": false
-              }
-            ]
+                key: 'value',
+                name: 'Story Point',
+                order: 2,
+                aggregation: 'sum',
+                unit: 'SP',
+                showAsLegend: false,
+                showDenominator: false,
+                multipleValue: false,
+              },
+            ],
           },
-          "filterGroup": {
-            "filterGroup1": [
+          filterGroup: {
+            filterGroup1: [
               {
-                "filterKey": "Issue Type",
-                "filterName": "Filter by issue type",
-                "filterType": "Multi",
-                "order": 1
+                filterKey: 'Issue Type',
+                filterName: 'Filter by issue type',
+                filterType: 'Multi',
+                order: 1,
               },
               {
-                "filterKey": "Issue Status",
-                "filterName": "Filter by status",
-                "filterType": "Multi",
-                "order": 2
-              }
-            ]
+                filterKey: 'Issue Status',
+                filterName: 'Filter by status',
+                filterType: 'Multi',
+                order: 2,
+              },
+            ],
           },
-          "issueData": [
+          issueData: [
             {
-              "value": 0,
-              "Issue Id": "BOOC-18097",
-              "Issue URL": "https://tools.publicis.sapient.com/jira/browse/BOOC-18097",
-              "Issue Description": "Test profile in stage are not loading",
-              "Issue Status": "In Development",
-              "Issue Type": "Story",
-              "Size(story point/hours)": "",
-              "Remaining Hours": 480,
-              "Logged Work": "1d ",
-              "Original Estimate": "2d ",
-              "Priority": "P4 - Minor",
-              "Due Date": "",
-              "Remaining Estimate": "1d ",
-              "Remaining Days": "1d ",
-              "Dev Due Date": "",
-              "Assignee": "Pratyush Upadhyay",
-              "Change Date": "2024-11-19",
-              "Labels": [],
-              "Created Date": "2024-09-11",
-              "Root Cause List": [
-                "None"
-              ],
-              "Owner Full Name": [
-                "Pratyush Upadhyay"
-              ],
-              "Sprint Name": "CRM Support - Sprint 71",
-              "Resolution": "Fixed or Completed",
-              "Release Name": "",
-              "Updated Date": "2024-11-19",
-              "Testing Phase": [
-                "Undefined"
-              ],
-              "Category": [
-                "Initial Commitment"
-              ]
+              value: 0,
+              'Issue Id': 'BOOC-18097',
+              'Issue URL':
+                'https://tools.publicis.sapient.com/jira/browse/BOOC-18097',
+              'Issue Description': 'Test profile in stage are not loading',
+              'Issue Status': 'In Development',
+              'Issue Type': 'Story',
+              'Size(story point/hours)': '',
+              'Remaining Hours': 480,
+              'Logged Work': '1d ',
+              'Original Estimate': '2d ',
+              Priority: 'P4 - Minor',
+              'Due Date': '',
+              'Remaining Estimate': '1d ',
+              'Remaining Days': '1d ',
+              'Dev Due Date': '',
+              Assignee: 'Pratyush Upadhyay',
+              'Change Date': '2024-11-19',
+              Labels: [],
+              'Created Date': '2024-09-11',
+              'Root Cause List': ['None'],
+              'Owner Full Name': ['Pratyush Upadhyay'],
+              'Sprint Name': 'CRM Support - Sprint 71',
+              Resolution: 'Fixed or Completed',
+              'Release Name': '',
+              'Updated Date': '2024-11-19',
+              'Testing Phase': ['Undefined'],
+              Category: ['Initial Commitment'],
             },
           ],
-          "chartType": "stacked-bar-chart",
-          "categoryData": {
-            "categoryKey": "Category",
-            "categoryGroup": [
+          chartType: 'stacked-bar-chart',
+          categoryData: {
+            categoryKey: 'Category',
+            categoryGroup: [
               {
-                "categoryName": "Initial Commitment",
-                "categoryValue": "+",
-                "order": 1
+                categoryName: 'Initial Commitment',
+                categoryValue: '+',
+                order: 1,
               },
               {
-                "categoryName": "Scope added",
-                "categoryValue": "+",
-                "order": 2
+                categoryName: 'Scope added',
+                categoryValue: '+',
+                order: 2,
               },
               {
-                "categoryName": "Scope removed",
-                "categoryValue": "-",
-                "order": -1
-              }
-            ]
-          }
+                categoryName: 'Scope removed',
+                categoryValue: '-',
+                order: -1,
+              },
+            ],
+          },
         };
         spyOn(kpiHelperService, 'getChartDataSet').and.returnValue({
           chartData: [],
-          totalCount: 0
+          totalCount: 0,
         });
 
         component.onFilterChange(mockEvent);
@@ -1773,126 +1793,119 @@ describe('KpiCardV2Component', () => {
       it('should handle empty filter gracefully', () => {
         const mockEvent = {
           selectedKeyObj: { Category: 'value' },
-          selectedKey: 'SomeKey'
+          selectedKey: 'SomeKey',
         };
 
         const mockIssueData = [
           { Category: ['SomeCategory'], SomeKey: 10 },
-          { Category: ['OtherCategory'], SomeKey: 20 }
+          { Category: ['OtherCategory'], SomeKey: 20 },
         ];
 
         component.cardData = { issueData: mockIssueData };
         component.copyCardData = { issueData: mockIssueData };
         component.colorPalette = ['#FBCF5F', '#6079C5', '#A4F6A5'];
         component.kpiFilterData = {
-          "dataGroup": {
-            "summary": {
-              "name": "Overall Commitment",
-              "aggregation": "sum"
+          dataGroup: {
+            summary: {
+              name: 'Overall Commitment',
+              aggregation: 'sum',
             },
-            "dataGroup1": [
+            dataGroup1: [
               {
-                "key": "",
-                "name": "Issues",
-                "order": 1,
-                "aggregation": "count",
-                "unit": "",
-                "showAsLegend": false,
-                "showDenominator": false,
-                "multipleValue": false
+                key: '',
+                name: 'Issues',
+                order: 1,
+                aggregation: 'count',
+                unit: '',
+                showAsLegend: false,
+                showDenominator: false,
+                multipleValue: false,
               },
               {
-                "key": "value",
-                "name": "Story Point",
-                "order": 2,
-                "aggregation": "sum",
-                "unit": "SP",
-                "showAsLegend": false,
-                "showDenominator": false,
-                "multipleValue": false
-              }
-            ]
+                key: 'value',
+                name: 'Story Point',
+                order: 2,
+                aggregation: 'sum',
+                unit: 'SP',
+                showAsLegend: false,
+                showDenominator: false,
+                multipleValue: false,
+              },
+            ],
           },
-          "filterGroup": {
-            "filterGroup1": [
+          filterGroup: {
+            filterGroup1: [
               {
-                "filterKey": "Issue Type",
-                "filterName": "Filter by issue type",
-                "filterType": "Multi",
-                "order": 1
+                filterKey: 'Issue Type',
+                filterName: 'Filter by issue type',
+                filterType: 'Multi',
+                order: 1,
               },
               {
-                "filterKey": "Issue Status",
-                "filterName": "Filter by status",
-                "filterType": "Multi",
-                "order": 2
-              }
-            ]
+                filterKey: 'Issue Status',
+                filterName: 'Filter by status',
+                filterType: 'Multi',
+                order: 2,
+              },
+            ],
           },
-          "issueData": [
+          issueData: [
             {
-              "value": 0,
-              "Issue Id": "BOOC-18097",
-              "Issue URL": "https://tools.publicis.sapient.com/jira/browse/BOOC-18097",
-              "Issue Description": "Test profile in stage are not loading",
-              "Issue Status": "In Development",
-              "Issue Type": "Story",
-              "Size(story point/hours)": "",
-              "Remaining Hours": 480,
-              "Logged Work": "1d ",
-              "Original Estimate": "2d ",
-              "Priority": "P4 - Minor",
-              "Due Date": "",
-              "Remaining Estimate": "1d ",
-              "Remaining Days": "1d ",
-              "Dev Due Date": "",
-              "Assignee": "Pratyush Upadhyay",
-              "Change Date": "2024-11-19",
-              "Labels": [],
-              "Created Date": "2024-09-11",
-              "Root Cause List": [
-                "None"
-              ],
-              "Owner Full Name": [
-                "Pratyush Upadhyay"
-              ],
-              "Sprint Name": "CRM Support - Sprint 71",
-              "Resolution": "Fixed or Completed",
-              "Release Name": "",
-              "Updated Date": "2024-11-19",
-              "Testing Phase": [
-                "Undefined"
-              ],
-              "Category": [
-                "Initial Commitment"
-              ]
+              value: 0,
+              'Issue Id': 'BOOC-18097',
+              'Issue URL':
+                'https://tools.publicis.sapient.com/jira/browse/BOOC-18097',
+              'Issue Description': 'Test profile in stage are not loading',
+              'Issue Status': 'In Development',
+              'Issue Type': 'Story',
+              'Size(story point/hours)': '',
+              'Remaining Hours': 480,
+              'Logged Work': '1d ',
+              'Original Estimate': '2d ',
+              Priority: 'P4 - Minor',
+              'Due Date': '',
+              'Remaining Estimate': '1d ',
+              'Remaining Days': '1d ',
+              'Dev Due Date': '',
+              Assignee: 'Pratyush Upadhyay',
+              'Change Date': '2024-11-19',
+              Labels: [],
+              'Created Date': '2024-09-11',
+              'Root Cause List': ['None'],
+              'Owner Full Name': ['Pratyush Upadhyay'],
+              'Sprint Name': 'CRM Support - Sprint 71',
+              Resolution: 'Fixed or Completed',
+              'Release Name': '',
+              'Updated Date': '2024-11-19',
+              'Testing Phase': ['Undefined'],
+              Category: ['Initial Commitment'],
             },
           ],
-          "chartType": "stacked-bar-chart",
-          "categoryData": {
-            "categoryKey": "Category",
-            "categoryGroup": [
+          chartType: 'stacked-bar-chart',
+          categoryData: {
+            categoryKey: 'Category',
+            categoryGroup: [
               {
-                "categoryName": "Initial Commitment",
-                "categoryValue": "+",
-                "order": 1
+                categoryName: 'Initial Commitment',
+                categoryValue: '+',
+                order: 1,
               },
               {
-                "categoryName": "Scope added",
-                "categoryValue": "+",
-                "order": 2
+                categoryName: 'Scope added',
+                categoryValue: '+',
+                order: 2,
               },
               {
-                "categoryName": "Scope removed",
-                "categoryValue": "-",
-                "order": -1
-              }
-            ]
-          }
+                categoryName: 'Scope removed',
+                categoryValue: '-',
+                order: -1,
+              },
+            ],
+          },
         };
         spyOn(kpiHelperService, 'getChartDataSet').and.returnValue({
           chartData: [],
-          totalCount: 0
+          totalCount: 0,
         });
 
         component.onFilterChange(mockEvent);
@@ -1904,126 +1917,119 @@ describe('KpiCardV2Component', () => {
       it('should handle null filter object', () => {
         const mockEvent = {
           selectedKeyObj: null,
-          selectedKey: 'SomeKey'
+          selectedKey: 'SomeKey',
         };
 
         const mockIssueData = [
           { Category: ['SomeCategory'], SomeKey: 10 },
-          { Category: ['OtherCategory'], SomeKey: 20 }
+          { Category: ['OtherCategory'], SomeKey: 20 },
         ];
 
         component.cardData = { issueData: mockIssueData };
         component.copyCardData = { issueData: mockIssueData };
         component.colorPalette = ['#FBCF5F', '#6079C5', '#A4F6A5'];
         component.kpiFilterData = {
-          "dataGroup": {
-            "summary": {
-              "name": "Overall Commitment",
-              "aggregation": "sum"
+          dataGroup: {
+            summary: {
+              name: 'Overall Commitment',
+              aggregation: 'sum',
             },
-            "dataGroup1": [
+            dataGroup1: [
               {
-                "key": "",
-                "name": "Issues",
-                "order": 1,
-                "aggregation": "count",
-                "unit": "",
-                "showAsLegend": false,
-                "showDenominator": false,
-                "multipleValue": false
+                key: '',
+                name: 'Issues',
+                order: 1,
+                aggregation: 'count',
+                unit: '',
+                showAsLegend: false,
+                showDenominator: false,
+                multipleValue: false,
               },
               {
-                "key": "value",
-                "name": "Story Point",
-                "order": 2,
-                "aggregation": "sum",
-                "unit": "SP",
-                "showAsLegend": false,
-                "showDenominator": false,
-                "multipleValue": false
-              }
-            ]
+                key: 'value',
+                name: 'Story Point',
+                order: 2,
+                aggregation: 'sum',
+                unit: 'SP',
+                showAsLegend: false,
+                showDenominator: false,
+                multipleValue: false,
+              },
+            ],
           },
-          "filterGroup": {
-            "filterGroup1": [
+          filterGroup: {
+            filterGroup1: [
               {
-                "filterKey": "Issue Type",
-                "filterName": "Filter by issue type",
-                "filterType": "Multi",
-                "order": 1
+                filterKey: 'Issue Type',
+                filterName: 'Filter by issue type',
+                filterType: 'Multi',
+                order: 1,
               },
               {
-                "filterKey": "Issue Status",
-                "filterName": "Filter by status",
-                "filterType": "Multi",
-                "order": 2
-              }
-            ]
+                filterKey: 'Issue Status',
+                filterName: 'Filter by status',
+                filterType: 'Multi',
+                order: 2,
+              },
+            ],
           },
-          "issueData": [
+          issueData: [
             {
-              "value": 0,
-              "Issue Id": "BOOC-18097",
-              "Issue URL": "https://tools.publicis.sapient.com/jira/browse/BOOC-18097",
-              "Issue Description": "Test profile in stage are not loading",
-              "Issue Status": "In Development",
-              "Issue Type": "Story",
-              "Size(story point/hours)": "",
-              "Remaining Hours": 480,
-              "Logged Work": "1d ",
-              "Original Estimate": "2d ",
-              "Priority": "P4 - Minor",
-              "Due Date": "",
-              "Remaining Estimate": "1d ",
-              "Remaining Days": "1d ",
-              "Dev Due Date": "",
-              "Assignee": "Pratyush Upadhyay",
-              "Change Date": "2024-11-19",
-              "Labels": [],
-              "Created Date": "2024-09-11",
-              "Root Cause List": [
-                "None"
-              ],
-              "Owner Full Name": [
-                "Pratyush Upadhyay"
-              ],
-              "Sprint Name": "CRM Support - Sprint 71",
-              "Resolution": "Fixed or Completed",
-              "Release Name": "",
-              "Updated Date": "2024-11-19",
-              "Testing Phase": [
-                "Undefined"
-              ],
-              "Category": [
-                "Initial Commitment"
-              ]
+              value: 0,
+              'Issue Id': 'BOOC-18097',
+              'Issue URL':
+                'https://tools.publicis.sapient.com/jira/browse/BOOC-18097',
+              'Issue Description': 'Test profile in stage are not loading',
+              'Issue Status': 'In Development',
+              'Issue Type': 'Story',
+              'Size(story point/hours)': '',
+              'Remaining Hours': 480,
+              'Logged Work': '1d ',
+              'Original Estimate': '2d ',
+              Priority: 'P4 - Minor',
+              'Due Date': '',
+              'Remaining Estimate': '1d ',
+              'Remaining Days': '1d ',
+              'Dev Due Date': '',
+              Assignee: 'Pratyush Upadhyay',
+              'Change Date': '2024-11-19',
+              Labels: [],
+              'Created Date': '2024-09-11',
+              'Root Cause List': ['None'],
+              'Owner Full Name': ['Pratyush Upadhyay'],
+              'Sprint Name': 'CRM Support - Sprint 71',
+              Resolution: 'Fixed or Completed',
+              'Release Name': '',
+              'Updated Date': '2024-11-19',
+              'Testing Phase': ['Undefined'],
+              Category: ['Initial Commitment'],
             },
           ],
-          "chartType": "stacked-bar-chart",
-          "categoryData": {
-            "categoryKey": "Category",
-            "categoryGroup": [
+          chartType: 'stacked-bar-chart',
+          categoryData: {
+            categoryKey: 'Category',
+            categoryGroup: [
               {
-                "categoryName": "Initial Commitment",
-                "categoryValue": "+",
-                "order": 1
+                categoryName: 'Initial Commitment',
+                categoryValue: '+',
+                order: 1,
               },
               {
-                "categoryName": "Scope added",
-                "categoryValue": "+",
-                "order": 2
+                categoryName: 'Scope added',
+                categoryValue: '+',
+                order: 2,
               },
               {
-                "categoryName": "Scope removed",
-                "categoryValue": "-",
-                "order": -1
-              }
-            ]
-          }
+                categoryName: 'Scope removed',
+                categoryValue: '-',
+                order: -1,
+              },
+            ],
+          },
         };
         spyOn(kpiHelperService, 'getChartDataSet').and.returnValue({
           chartData: [],
-          totalCount: 0
+          totalCount: 0,
         });
 
         component.onFilterChange(mockEvent);
@@ -2044,19 +2050,27 @@ describe('KpiCardV2Component', () => {
         const result = component.showCummalative();
 
         expect(result).toBe('1d');
-        expect(kpiHelperService.convertToHoursIfTime).toHaveBeenCalledWith(480, 'day');
+        expect(kpiHelperService.convertToHoursIfTime).toHaveBeenCalledWith(
+          480,
+          'day',
+        );
       });
 
       it('should return cumulative value for other chart types with selectedButtonValue', () => {
         component.kpiData = { kpiDetail: { chartType: 'other-chart' } };
         component.selectedButtonValue = [{ key: 'someKey', unit: 'hours' }];
-        component.copyCardData = { issueData: [{ someKey: 60 }, { someKey: 120 }] };
+        component.copyCardData = {
+          issueData: [{ someKey: 60 }, { someKey: 120 }],
+        };
         spyOn(kpiHelperService, 'convertToHoursIfTime').and.returnValue('3h');
 
         const result = component.showCummalative();
 
         expect(result).toBe('3h');
-        expect(kpiHelperService.convertToHoursIfTime).toHaveBeenCalledWith('180', 'hours');
+        expect(kpiHelperService.convertToHoursIfTime).toHaveBeenCalledWith(
+          '180',
+          'hours',
+        );
       });
     });
 
@@ -2098,7 +2112,9 @@ describe('KpiCardV2Component', () => {
         // Arrange
         const value = 150; // 2 hours and 30 minutes
         const unit = 'hours';
-        spyOn(kpiHelperService, 'convertToHoursIfTime').and.returnValue('2h 30m');
+        spyOn(kpiHelperService, 'convertToHoursIfTime').and.returnValue(
+          '2h 30m',
+        );
 
         // Act
         const result = component.convertToHoursIfTime(value, unit);
@@ -2139,7 +2155,9 @@ describe('KpiCardV2Component', () => {
         // Arrange
         const value = -90; // -1 hour and 30 minutes
         const unit = 'hours';
-        spyOn(kpiHelperService, 'convertToHoursIfTime').and.returnValue('-1h 30m');
+        spyOn(kpiHelperService, 'convertToHoursIfTime').and.returnValue(
+          '-1h 30m',
+        );
 
         // Act
         const result = component.convertToHoursIfTime(value, unit);
@@ -2152,7 +2170,9 @@ describe('KpiCardV2Component', () => {
         // Arrange
         const value = 10000; // 166 hours and 40 minutes
         const unit = 'hours';
-        spyOn(kpiHelperService, 'convertToHoursIfTime').and.returnValue('166h 40m');
+        spyOn(kpiHelperService, 'convertToHoursIfTime').and.returnValue(
+          '166h 40m',
+        );
 
         // Act
         const result = component.convertToHoursIfTime(value, unit);
@@ -2161,7 +2181,6 @@ describe('KpiCardV2Component', () => {
         expect(result).toBe('166h 40m');
       });
     });
-
   });
 
   // describe('getColorList', () => {
@@ -2194,7 +2213,6 @@ describe('KpiCardV2Component', () => {
   //   });
   // });
 
-
   describe('KpiCardV2Component.addToReportAction() addToReportAction method', () => {
     describe('Happy Path Tests', () => {
       it('should initialize reportObj with correct metadata and chartData', () => {
@@ -2224,9 +2242,9 @@ describe('KpiCardV2Component', () => {
         component.kpiThresholdObj = {};
         component.releaseEndDate = '2023-10-10';
         component.hieararchy = {};
-  
+
         component.addToReportAction();
-  
+
         expect(component.reportObj).toEqual({
           id: '123',
           chartData: 'someData',
@@ -2257,18 +2275,18 @@ describe('KpiCardV2Component', () => {
             releaseEndDate: '2023-10-10',
             selectedButtonValue: '',
             cardData: undefined,
-            iterationKPIFilterValues: [  ],
-            additional_filters: {}
+            iterationKPIFilterValues: [],
+            additional_filters: {},
           },
         });
       });
-  
+
       it('should set displayAddToReportsModal to true', () => {
         component.addToReportAction();
         expect(component.displayAddToReportsModal).toBe(true);
       });
     });
-  
+
     describe('Edge Case Tests', () => {
       it('should handle missing currentChartData gracefully', () => {
         component.kpiData = {
@@ -2285,7 +2303,7 @@ describe('KpiCardV2Component', () => {
         };
         component.currentChartData = null;
         component.kpiChartData = 'chartData';
-  
+
         component.addToReportAction();
         expect(component.reportObj.chartData).toBe('chartData');
       });
@@ -2293,77 +2311,86 @@ describe('KpiCardV2Component', () => {
   });
 
   describe('KpiCardV2Component.getSelectButtonValue() getSelectButtonValue method', () => {
-    
     describe('Happy Paths', () => {
       it('should return the correct button value when options are available and selectedButtonValue is set', () => {
         component.kpiData = { kpiDetail: { chartType: 'stacked-bar-chart' } };
         component.kpiFilterData = {
           dataGroup: {
-            dataGroup1: [{ key: 'key1', name: 'Option 1' }, { key: 'key2', name: 'Option 2' }]
-          }
+            dataGroup1: [
+              { key: 'key1', name: 'Option 1' },
+              { key: 'key2', name: 'Option 2' },
+            ],
+          },
         };
         component.selectedButtonValue = { Category: 'key1' };
-  
+
         const result = component.getSelectButtonValue();
         expect(result).toBe('Option 1');
       });
-  
+
       it('should return the first option when selectedButtonValue is not set', () => {
         component.kpiData = { kpiDetail: { chartType: 'stacked-bar-chart' } };
         component.kpiFilterData = {
           dataGroup: {
-            dataGroup1: [{ key: 'key1', name: 'Option 1' }, { key: 'key2', name: 'Option 2' }]
-          }
+            dataGroup1: [
+              { key: 'key1', name: 'Option 1' },
+              { key: 'key2', name: 'Option 2' },
+            ],
+          },
         };
         component.selectedButtonValue = null;
-  
+
         const result = component.getSelectButtonValue();
         expect(result).toBe('Option 1');
       });
     });
-  
+
     describe('Edge Cases', () => {
       it('should return an empty string when no options are available', () => {
         component.kpiData = { kpiDetail: { chartType: 'stacked-bar-chart' } };
         component.kpiFilterData = {
           dataGroup: {
-            dataGroup1: []
-          }
+            dataGroup1: [],
+          },
         };
         component.selectedButtonValue = { Category: 'key1' };
-  
+
         const result = component.getSelectButtonValue();
         expect(result).toBe('');
       });
     });
   });
 
-  describe('KpiCardV2Component.getExistingReports() getExistingReports method', () => {  
+  describe('KpiCardV2Component.getExistingReports() getExistingReports method', () => {
     describe('Happy Paths', () => {
       it('should set existingReportData and reportName when response is successful and contains data', () => {
         const mockResponse = {
           success: true,
           data: {
-            content: [{ name: 'Report 1' }, { name: 'Report 2' }]
-          }
+            content: [{ name: 'Report 1' }, { name: 'Report 2' }],
+          },
         };
-        spyOn(httpService, 'fetchReports').and.returnValue(of(mockResponse) as any);
+        spyOn(httpService, 'fetchReports').and.returnValue(
+          of(mockResponse) as any,
+        );
         spyOn(sharedService, 'setNoReports');
         component.getExistingReports();
-  
+
         expect(component.existingReportData).toEqual(mockResponse.data.content);
         expect(component.reportName).toBe('Report 1');
         expect(component.createNewReportTemplate).toBe(false);
         expect(sharedService.setNoReports).toHaveBeenCalledWith(false);
       });
     });
-  
+
     describe('Edge Cases', () => {
       it('should handle error response gracefully', () => {
-        spyOn(httpService, 'fetchReports').and.returnValue(throwError(() => new Error('Error')) as any);
+        spyOn(httpService, 'fetchReports').and.returnValue(
+          throwError(() => new Error('Error')) as any,
+        );
         spyOn(sharedService, 'setNoReports');
         component.getExistingReports();
-  
+
         expect(component.existingReportData).toEqual([]);
         expect(component.createNewReportTemplate).toBe(true);
         expect(sharedService.setNoReports).toHaveBeenCalledWith(true);
@@ -2372,34 +2399,33 @@ describe('KpiCardV2Component', () => {
   });
 
   describe('KpiCardV2Component.toggleCreateNewReportTemplate() toggleCreateNewReportTemplate method', () => {
-    
     describe('Happy Paths', () => {
       it('should toggle createNewReportTemplate from false to true', () => {
         component.createNewReportTemplate = false;
         component.toggleCreateNewReportTemplate({} as any);
         expect(component.createNewReportTemplate).toBe(true);
       });
-  
+
       it('should toggle createNewReportTemplate from true to false', () => {
         component.createNewReportTemplate = true;
         component.toggleCreateNewReportTemplate({} as any);
         expect(component.createNewReportTemplate).toBe(false);
       });
-  
+
       it('should reset reportName to an empty string', () => {
         component.reportName = 'Some Report';
         component.toggleCreateNewReportTemplate({} as any);
         expect(component.reportName).toBe('');
       });
     });
-  
+
     describe('Edge Cases', () => {
       it('should handle undefined event gracefully', () => {
         component.createNewReportTemplate = false;
         component.toggleCreateNewReportTemplate(undefined as any);
         expect(component.createNewReportTemplate).toBe(true);
       });
-  
+
       it('should handle null event gracefully', () => {
         component.createNewReportTemplate = true;
         component.toggleCreateNewReportTemplate(null as any);
@@ -2415,15 +2441,17 @@ describe('KpiCardV2Component', () => {
         component.reportObj = { chartData: { some: 'data' } };
         component.reportName = 'Test Report';
         const mockResponse = { success: true, data: { name: 'Test Report' } };
-        spyOn(httpService, 'createReport').and.returnValue(of(mockResponse) as any);
+        spyOn(httpService, 'createReport').and.returnValue(
+          of(mockResponse) as any,
+        );
         spyOn(messageService, 'add');
         // Act
         component.addToReportPost();
-  
+
         // Assert
         expect(httpService.createReport).toHaveBeenCalledWith({
           name: 'Test Report',
-          kpis: [{ chartData: JSON.stringify({ some: 'data' }) }]
+          kpis: [{ chartData: JSON.stringify({ some: 'data' }) }],
         });
         expect(component.existingReportData).toContain(mockResponse.data);
         expect(component.createNewReportTemplate).toBe(false);
@@ -2431,83 +2459,105 @@ describe('KpiCardV2Component', () => {
         expect(component.success).toBe(true);
         expect(messageService.add).toHaveBeenCalledWith({
           severity: 'success',
-          summary: 'Report created successfully'
+          summary: 'Report created successfully',
         });
       });
     });
-  
+
     describe('Edge Cases', () => {
       it('should handle error when creating a report', () => {
         // Arrange
         component.reportObj = { chartData: { some: 'data' } };
         component.reportName = 'Test Report';
         const mockErrorResponse = { success: false };
-        spyOn(httpService, 'createReport').and.returnValue(of(mockErrorResponse) as any);
+        spyOn(httpService, 'createReport').and.returnValue(
+          of(mockErrorResponse) as any,
+        );
         spyOn(messageService, 'add');
         // Act
         component.addToReportPost();
-  
+
         // Assert
         expect(httpService.createReport).toHaveBeenCalledWith({
           name: 'Test Report',
-          kpis: [{ chartData: JSON.stringify({ some: 'data' }) }]
+          kpis: [{ chartData: JSON.stringify({ some: 'data' }) }],
         });
         expect(component.success).toBe(false);
         expect(messageService.add).toHaveBeenCalledWith({
           severity: 'error',
-          summary: 'Error while creating report'
+          summary: 'Error while creating report',
         });
       });
     });
   });
 
   describe('KpiCardV2Component.addToReportPut() addToReportPut method', () => {
-  
-    beforeEach(() => {  
+    beforeEach(() => {
       component.existingReportData = [
         { name: 'Report1', id: '1', kpis: [] },
-        { name: 'Report2', id: '2', kpis: [] }
+        { name: 'Report2', id: '2', kpis: [] },
       ];
       component.reportName = 'Report1';
       component.reportObj = { id: 'kpi1', chartData: {} };
     });
-  
+
     describe('Happy paths', () => {
       it('should add a new KPI to the report if it does not exist', () => {
-        spyOn(httpService, 'updateReport').and.returnValue(of({ success: true, data: { name: 'Report1', kpis: [{ id: 'kpi1' }] } } as any));
+        spyOn(httpService, 'updateReport').and.returnValue(
+          of({
+            success: true,
+            data: { name: 'Report1', kpis: [{ id: 'kpi1' }] },
+          } as any),
+        );
         spyOn(messageService, 'add');
         component.addToReportPut();
-  
+
         expect(httpService.updateReport).toHaveBeenCalledWith('1', {
           name: 'Report1',
-          kpis: [{ id: 'kpi1', chartData: '{}' }]
+          kpis: [{ id: 'kpi1', chartData: '{}' }],
         });
-        expect(messageService.add).toHaveBeenCalledWith({ severity: 'success', summary: 'Report updated successfully' });
+        expect(messageService.add).toHaveBeenCalledWith({
+          severity: 'success',
+          summary: 'Report updated successfully',
+        });
         expect(component.success).toBe(true);
       });
-  
+
       it('should update an existing KPI in the report', () => {
         component.existingReportData[0].kpis.push({ id: 'kpi1' });
-        spyOn(httpService, 'updateReport').and.returnValue(of({ success: true, data: { name: 'Report1', kpis: [{ id: 'kpi1' }] } } as any));
+        spyOn(httpService, 'updateReport').and.returnValue(
+          of({
+            success: true,
+            data: { name: 'Report1', kpis: [{ id: 'kpi1' }] },
+          } as any),
+        );
         spyOn(messageService, 'add');
         component.addToReportPut();
-  
+
         expect(httpService.updateReport).toHaveBeenCalledWith('1', {
           name: 'Report1',
-          kpis: [{ id: 'kpi1', chartData: '{}' }]
+          kpis: [{ id: 'kpi1', chartData: '{}' }],
         });
-        expect(messageService.add).toHaveBeenCalledWith({ severity: 'success', summary: 'Report updated successfully' });
+        expect(messageService.add).toHaveBeenCalledWith({
+          severity: 'success',
+          summary: 'Report updated successfully',
+        });
         expect(component.success).toBe(true);
       });
     });
-  
+
     describe('Edge cases', () => {
       it('should handle error when updating report fails', () => {
-        spyOn(httpService, 'updateReport').and.returnValue(of({ success: false } as any));
+        spyOn(httpService, 'updateReport').and.returnValue(
+          of({ success: false } as any),
+        );
         spyOn(messageService, 'add');
         component.addToReportPut();
-  
-        expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', summary: 'Error while updating report' });
+
+        expect(messageService.add).toHaveBeenCalledWith({
+          severity: 'error',
+          summary: 'Error while updating report',
+        });
         expect(component.success).toBe(false);
       });
     });
@@ -2516,7 +2566,7 @@ describe('KpiCardV2Component', () => {
     it('should focus on the triggering element', () => {
       const focusSpy = spyOn(HTMLElement.prototype, 'focus');
       const mockElement = document.createElement('div');
-      mockElement.id='sprint-details-trigger';
+      mockElement.id = 'sprint-details-trigger';
 
       document.body.appendChild(mockElement);
       component.resetDialogFocus();
@@ -2524,12 +2574,12 @@ describe('KpiCardV2Component', () => {
       document.body.removeChild(mockElement);
     });
   });
-  
+
   xdescribe('onTabChange', () => {
     it('should focus on the new tab element', () => {
-    //  const focusSpy = spyOn(HTMLElement.prototype, 'focus');
+      //  const focusSpy = spyOn(HTMLElement.prototype, 'focus');
       const mockElement = document.createElement('div');
-      mockElement.id='project_tab_1';
+      mockElement.id = 'project_tab_1';
 
       document.body.appendChild(mockElement);
       const focusSpy = spyOn(mockElement, 'focus').and.callThrough();
@@ -2544,7 +2594,9 @@ describe('KpiCardV2Component', () => {
 
   describe('handleKeyboardSelect', () => {
     it('should select next option when ArrowRight key is pressed', () => {
-      component.dropdownArr = [{ options: [{ value: 'option1' }, { value: 'option2' }] }];
+      component.dropdownArr = [
+        { options: [{ value: 'option1' }, { value: 'option2' }] },
+      ];
       component.radioOption = 'option1';
       const event = new KeyboardEvent('keydown', { key: 'ArrowRight' });
       component.handleKeyboardSelect(event);
@@ -2552,7 +2604,9 @@ describe('KpiCardV2Component', () => {
     });
 
     it('should select previous option when ArrowLeft key is pressed', () => {
-      component.dropdownArr = [{ options: [{ value: 'option1' }, { value: 'option2' }] }];
+      component.dropdownArr = [
+        { options: [{ value: 'option1' }, { value: 'option2' }] },
+      ];
       component.radioOption = 'option2';
       const event = new KeyboardEvent('keydown', { key: 'ArrowLeft' });
       component.handleKeyboardSelect(event);
@@ -2560,7 +2614,9 @@ describe('KpiCardV2Component', () => {
     });
 
     it('should not select next option when ArrowRight key is pressed and currentIndex is at the end', () => {
-      component.dropdownArr = [{ options: [{ value: 'option1' }, { value: 'option2' }] }];
+      component.dropdownArr = [
+        { options: [{ value: 'option1' }, { value: 'option2' }] },
+      ];
       component.radioOption = 'option2';
       const event = new KeyboardEvent('keydown', { key: 'ArrowRight' });
       component.handleKeyboardSelect(event);
@@ -2568,7 +2624,9 @@ describe('KpiCardV2Component', () => {
     });
 
     it('should not select previous option when ArrowLeft key is pressed and currentIndex is at the beginning', () => {
-      component.dropdownArr = [{ options: [{ value: 'option1' }, { value: 'option2' }] }];
+      component.dropdownArr = [
+        { options: [{ value: 'option1' }, { value: 'option2' }] },
+      ];
       component.radioOption = 'option1';
       const event = new KeyboardEvent('keydown', { key: 'ArrowLeft' });
       component.handleKeyboardSelect(event);
@@ -2581,7 +2639,7 @@ describe('KpiCardV2Component', () => {
       component.showTooltip(true);
       expect(component.isTooltip).toBe(true);
     });
-  
+
     it('should set isTooltip to false when showTooltip is called with false', () => {
       component.showTooltip(false);
       expect(component.isTooltip).toBe(false);

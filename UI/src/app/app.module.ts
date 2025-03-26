@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 /******************* Modules   ***********************/
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -55,7 +54,6 @@ import { GaugechartComponent } from './component/gaugechart/gaugechart.component
 import { MaturityComponent } from './dashboard/maturity/maturity.component';
 import { GroupstackchartComponent } from './component/groupedstackchart/groupstackchart.component';
 
-
 import { ErrorComponent } from './dashboard/error/error.component';
 import { KpiComponent } from './component/kpi-line-gauge/kpi-line-gauge.component';
 import { SharedModuleModule } from '../app/shared-module/shared-module.module';
@@ -69,8 +67,6 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { SkeletonModule } from 'primeng/skeleton';
 import { BlockUIModule } from 'primeng/blockui';
 /******************************************************/
-
-
 
 /******************* Services   ***********************/
 import { ExcelService } from './services/excel.service';
@@ -132,126 +128,125 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { AddToReportPopUpComponent } from './component/add-to-report-pop-up/add-to-report-pop-up.component';
 import { PanelModule } from 'primeng/panel';
 
-
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
-    return (): Promise<any> => {
-        return appInitializerService.checkFeatureFlag();
-    }
+  return (): Promise<any> => {
+    return appInitializerService.checkFeatureFlag();
+  };
 }
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        CircularProgressComponent,
-        ProgressbarComponent,
-        CircularchartComponent,
-        NumberchartComponent,
-        LineBarChartComponent,
-        LineBarChartWithHowerComponent,
-        GaugechartComponent,
-        
-        MaturityComponent,
-        GroupstackchartComponent,
-        KpiComponent,
-        ErrorComponent,
-        // FooterComponent,
-        OverlappedProgressbarComponent,
-        HorizontalStackProgressbarComponent,
-        CircularProgressWithLegendsComponent,
-        TrendIndicatorComponent,
-        TooltipComponent,
-        NoAccessComponent,
-        GroupedColumnPlusLineChartComponent,
-        TableComponent,
-        ExportExcelComponent,
-        CommentsComponent,
-        CommentsV2Component,
-        SsoAuthFailureComponent,
-        UnauthorisedAccessComponent,
-        HorizontalPercentBarChartComponent,
-        FeedbackComponent,
-        KpiTableComponent,
-        DailyScrumComponent,
-        DailyScrumTabComponent,
-        AssigneeBoardComponent,
-        IssueCardComponent,
-        IssueBodyComponent,
-        DailyScrumGraphComponent,
-        MultilineStyleComponent,
-        FeedbackComponent,
-        PageNotFoundComponent,
-        FilterNewComponent,
-        ParentFilterComponent,
-        PrimaryFilterComponent,
-        AdditionalFilterComponent,
-        NavNewComponent,
-        ExecutiveV2Component,
-        DashboardV2Component,
-        KpiCardV2Component,
-        PageNotFoundComponent,
-        RecommendationsComponent,
-        StickyHeaderV2Component,
-        AddToReportPopUpComponent,
-    ],
-    imports: [
-        SharedModuleModule,
-        DropdownModule,
-        BrowserModule,
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        HttpClientModule,
-        InterceptorModule,
-        AppRoutingModule,
-        // NgSelectModule,
-        MultiSelectModule,
-        BrowserAnimationsModule,
-        InputSwitchModule,
-        RippleModule,
-        BadgeModule,
-        TabViewModule,
-        TableModule,
-        ButtonModule,
-        TabMenuModule,
-        MenuModule,
-        DialogModule,
-        RadioButtonModule,
-        InputTextareaModule,
-        AccordionModule,
-        DialogModule,
-        FontAwesomeModule,
-        DragDropModule,
-        OverlayPanelModule,
-        PanelModule,
-        CheckboxModule,
-        SkeletonModule,
-        BlockUIModule,
-        InputTextModule,
-        ScrollTopModule,
-        SelectButtonModule
-    ],
-    providers: [
-        ExcelService,
-        SharedService,
-        GetAuthService,
-        HelperService,
-        GetAuthorizationService,
-        JsonExportImportService,
-        MessageService,
-        DatePipe,
-        FeatureFlagsService,
-        AuthGuard,
-        DialogService,
-        KpiHelperService,
-        { provide: APP_CONFIG, useValue: AppConfig },
-        {
-            provide: APP_INITIALIZER,
-            useFactory: initializeApp,
-            deps: [AppInitializerService],
-            multi: true
-        }
-    ],
-    bootstrap: [AppComponent]
+  declarations: [
+    AppComponent,
+    CircularProgressComponent,
+    ProgressbarComponent,
+    CircularchartComponent,
+    NumberchartComponent,
+    LineBarChartComponent,
+    LineBarChartWithHowerComponent,
+    GaugechartComponent,
+
+    MaturityComponent,
+    GroupstackchartComponent,
+    KpiComponent,
+    ErrorComponent,
+    // FooterComponent,
+    OverlappedProgressbarComponent,
+    HorizontalStackProgressbarComponent,
+    CircularProgressWithLegendsComponent,
+    TrendIndicatorComponent,
+    TooltipComponent,
+    NoAccessComponent,
+    GroupedColumnPlusLineChartComponent,
+    TableComponent,
+    ExportExcelComponent,
+    CommentsComponent,
+    CommentsV2Component,
+    SsoAuthFailureComponent,
+    UnauthorisedAccessComponent,
+    HorizontalPercentBarChartComponent,
+    FeedbackComponent,
+    KpiTableComponent,
+    DailyScrumComponent,
+    DailyScrumTabComponent,
+    AssigneeBoardComponent,
+    IssueCardComponent,
+    IssueBodyComponent,
+    DailyScrumGraphComponent,
+    MultilineStyleComponent,
+    FeedbackComponent,
+    PageNotFoundComponent,
+    FilterNewComponent,
+    ParentFilterComponent,
+    PrimaryFilterComponent,
+    AdditionalFilterComponent,
+    NavNewComponent,
+    ExecutiveV2Component,
+    DashboardV2Component,
+    KpiCardV2Component,
+    PageNotFoundComponent,
+    RecommendationsComponent,
+    StickyHeaderV2Component,
+    AddToReportPopUpComponent,
+  ],
+  imports: [
+    SharedModuleModule,
+    DropdownModule,
+    BrowserModule,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    InterceptorModule,
+    AppRoutingModule,
+    // NgSelectModule,
+    MultiSelectModule,
+    BrowserAnimationsModule,
+    InputSwitchModule,
+    RippleModule,
+    BadgeModule,
+    TabViewModule,
+    TableModule,
+    ButtonModule,
+    TabMenuModule,
+    MenuModule,
+    DialogModule,
+    RadioButtonModule,
+    InputTextareaModule,
+    AccordionModule,
+    DialogModule,
+    FontAwesomeModule,
+    DragDropModule,
+    OverlayPanelModule,
+    PanelModule,
+    CheckboxModule,
+    SkeletonModule,
+    BlockUIModule,
+    InputTextModule,
+    ScrollTopModule,
+    SelectButtonModule,
+  ],
+  providers: [
+    ExcelService,
+    SharedService,
+    GetAuthService,
+    HelperService,
+    GetAuthorizationService,
+    JsonExportImportService,
+    MessageService,
+    DatePipe,
+    FeatureFlagsService,
+    AuthGuard,
+    DialogService,
+    KpiHelperService,
+    { provide: APP_CONFIG, useValue: AppConfig },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeApp,
+      deps: [AppInitializerService],
+      multi: true,
+    },
+  ],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

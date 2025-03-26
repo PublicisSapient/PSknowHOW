@@ -2,10 +2,9 @@ import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-ps-kpi-card-chart-renderer',
-  templateUrl: './ps-kpi-card-chart-renderer.component.html'
+  templateUrl: './ps-kpi-card-chart-renderer.component.html',
 })
 export class PsKpiCardChartRendererComponent implements OnInit {
-
   @Input() chartData: any;
   @Input() chartType: string;
   @Input() chartWidth: any;
@@ -13,9 +12,7 @@ export class PsKpiCardChartRendererComponent implements OnInit {
   @Input() kpiId: string = '';
   @Input() kpiDetails: any;
   @Input() kpiName: string = '';
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

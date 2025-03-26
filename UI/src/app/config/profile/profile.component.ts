@@ -24,33 +24,39 @@ import { SharedService } from 'src/app/services/shared.service';
 declare let $: any;
 
 @Component({
-    selector: 'app-profile',
-    templateUrl: './profile.component.html',
-    styleUrls: ['./profile.component.css']
+  selector: 'app-profile',
+  templateUrl: './profile.component.html',
+  styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent implements OnInit {
-    isSuperAdmin = false;
-    isProjectAdmin = false;
-    changePswdDisabled = false;
-    loginType: string = '';
-    constructor(private getAuthorizationService: GetAuthorizationService, public router: Router, private sharedService : SharedService) {}
+  isSuperAdmin = false;
+  isProjectAdmin = false;
+  changePswdDisabled = false;
+  loginType: string = '';
+  constructor(
+    private getAuthorizationService: GetAuthorizationService,
+    public router: Router,
+    private sharedService: SharedService,
+  ) {}
 
-    ngOnInit() {
-        if (this.getAuthorizationService.checkIfSuperUser()) {
-            // logged in as SuperAdmin
-            this.isSuperAdmin = true;
-        }
-
-        if(this.getAuthorizationService.checkIfProjectAdmin()) {
-            this.isProjectAdmin = true;
-        }
-        // this.sharedService.currentUserDetailsObs.subscribe(details=>{
-            if (this.sharedService.getCurrentUserDetails() && !this.sharedService.getCurrentUserDetails('user_email')) {
-                    this.changePswdDisabled = true;
-                }
-        //   })
-
-        this.loginType = this.sharedService.getCurrentUserDetails('authType');
+  ngOnInit() {
+    if (this.getAuthorizationService.checkIfSuperUser()) {
+      // logged in as SuperAdmin
+      this.isSuperAdmin = true;
     }
 
+    if (this.getAuthorizationService.checkIfProjectAdmin()) {
+      this.isProjectAdmin = true;
+    }
+    // this.sharedService.currentUserDetailsObs.subscribe(details=>{
+    if (
+      this.sharedService.getCurrentUserDetails() &&
+      !this.sharedService.getCurrentUserDetails('user_email')
+    ) {
+      this.changePswdDisabled = true;
+    }
+    //   })
+
+    this.loginType = this.sharedService.getCurrentUserDetails('authType');
+  }
 }

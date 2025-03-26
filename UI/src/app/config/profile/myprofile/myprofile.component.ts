@@ -17,7 +17,11 @@
  ******************************************************************************/
 
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormGroup, Validators, UntypedFormBuilder } from '@angular/forms';
+import {
+  UntypedFormGroup,
+  Validators,
+  UntypedFormBuilder,
+} from '@angular/forms';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { HttpService } from '../../../services/http.service';
 import { ProfileComponent } from '../profile.component';
@@ -27,7 +31,7 @@ import { MessageService } from 'primeng/api';
 @Component({
   selector: 'app-myprofile',
   templateUrl: './myprofile.component.html',
-  styleUrls: ['./myprofile.component.css', '../profile.component.css']
+  styleUrls: ['./myprofile.component.css', '../profile.component.css'],
 })
 export class MyprofileComponent implements OnInit {
   isSuperAdmin = false;
@@ -35,11 +39,11 @@ export class MyprofileComponent implements OnInit {
   emailSubmitted = false;
   emailConfigured = false;
   userEmailForm: UntypedFormGroup;
-  userName: string
+  userName: string;
   authorities = this.sharedService.getCurrentUserDetails('authorities');
   notificationEmailForm: UntypedFormGroup;
   userRole = this.authorities?.length ? this.authorities.join(',') : '--';
-  userEmail: string
+  userEmail: string;
   userEmailConfigured = false;
   message: string;
   dataLoading = false;
@@ -48,17 +52,21 @@ export class MyprofileComponent implements OnInit {
   dynamicCols: Array<any> = [];
   ssoLogin = environment.SSO_LOGIN;
   loginType: string = '';
-  constructor(private formBuilder: UntypedFormBuilder, private getAuthorizationService: GetAuthorizationService, private http: HttpService, private profile: ProfileComponent,
-    public sharedService: SharedService , private messageService: MessageService) { }
+  constructor(
+    private formBuilder: UntypedFormBuilder,
+    private getAuthorizationService: GetAuthorizationService,
+    private http: HttpService,
+    private profile: ProfileComponent,
+    public sharedService: SharedService,
+    private messageService: MessageService,
+  ) {}
 
-
-
-/**
- * Initializes the component by checking user roles, setting access permissions,
- * and configuring forms for user email and notification preferences.
- * 
- * @returns {void} - No return value.
- */
+  /**
+   * Initializes the component by checking user roles, setting access permissions,
+   * and configuring forms for user email and notification preferences.
+   *
+   * @returns {void} - No return value.
+   */
   ngOnInit() {
     if (this.getAuthorizationService.checkIfSuperUser()) {
       // logged in as SuperAdmin
@@ -69,35 +77,62 @@ export class MyprofileComponent implements OnInit {
       this.isProjectAdmin = true;
     }
 
-    if ((!this.isSuperAdmin) && (!this.sharedService.getCurrentUserDetails('projectsAccess')?.length)) {
+    if (
+      !this.isSuperAdmin &&
+      !this.sharedService.getCurrentUserDetails('projectsAccess')?.length
+    ) {
       this.noAccess = true;
     }
 
     this.setUserDetails(this.sharedService.getCurrentUserDetails());
     if (this.sharedService.getCurrentUserDetails('projectsAccess')?.length) {
-      const accessList = JSON.parse(JSON.stringify(this.sharedService.getCurrentUserDetails('projectsAccess')));
+      const accessList = JSON.parse(
+        JSON.stringify(
+          this.sharedService.getCurrentUserDetails('projectsAccess'),
+        ),
+      );
       this.groupProjects(accessList);
       this.getTableHeadings();
     }
 
-
-    this.userEmailForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]],
-      confirmEmail: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]]
-    }, { validator: this.checkConfirmEmail });
+    this.userEmailForm = this.formBuilder.group(
+      {
+        email: [
+          '',
+          [
+            Validators.required,
+            Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,3}$'),
+          ],
+        ],
+        confirmEmail: [
+          '',
+          [
+            Validators.required,
+            Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,3}$'),
+          ],
+        ],
+      },
+      { validator: this.checkConfirmEmail },
+    );
     this.loginType = this.sharedService.getCurrentUserDetails('authType');
 
     this.notificationEmailForm = this.formBuilder.group({
-      "accessAlertNotification": [this.sharedService.getCurrentUserDetails('notificationEmail')?.accessAlertNotification || false],
-      "errorAlertNotification": [this.sharedService.getCurrentUserDetails('notificationEmail')?.errorAlertNotification || false]
-    })
+      accessAlertNotification: [
+        this.sharedService.getCurrentUserDetails('notificationEmail')
+          ?.accessAlertNotification || false,
+      ],
+      errorAlertNotification: [
+        this.sharedService.getCurrentUserDetails('notificationEmail')
+          ?.errorAlertNotification || false,
+      ],
+    });
   }
 
   setUserDetails(details) {
     if (details) {
       this.userName = details['user_name'] ? details['user_name'] : '--';
       if (details['user_email']) {
-        this.userEmail = details['user_email']
+        this.userEmail = details['user_email'];
         this.emailConfigured = true;
       } else {
         this.userEmail = '--';
@@ -108,14 +143,18 @@ export class MyprofileComponent implements OnInit {
   getTableHeadings() {
     let cols = JSON.parse(localStorage.getItem('hierarchyData'));
     if (!cols) {
-      const tempCols = JSON.parse(localStorage.getItem('completeHierarchyData'))?.['scrum'];
-      let projectLevel = tempCols?.filter((item) => item.hierarchyLevelId?.toLowerCase() === 'project')?.[0]?.level;
+      const tempCols = JSON.parse(
+        localStorage.getItem('completeHierarchyData'),
+      )?.['scrum'];
+      let projectLevel = tempCols?.filter(
+        (item) => item.hierarchyLevelId?.toLowerCase() === 'project',
+      )?.[0]?.level;
       cols = tempCols.filter((item) => item.level < projectLevel);
     }
     cols?.forEach((x) => {
       const obj = {
         id: x.hierarchyLevelId,
-        name: x.hierarchyLevelName
+        name: x.hierarchyLevelName,
       };
       this.dynamicCols?.push(obj);
     });
@@ -129,15 +168,19 @@ export class MyprofileComponent implements OnInit {
         const obj = {
           role: inArr[k]?.role,
           projectName: inArr[k]?.projects[i]?.projectName,
-          projectId: inArr[k]?.projects[i]?.projectId
+          projectId: inArr[k]?.projects[i]?.projectId,
         };
         const hierarchyArr = inArr[k]?.projects[i]?.hierarchy;
         for (let j = 0; j < hierarchyArr?.length; j++) {
-          obj[hierarchyArr[j].hierarchyLevel.hierarchyLevelId] = hierarchyArr[j]?.value;
+          obj[hierarchyArr[j].hierarchyLevel.hierarchyLevelId] =
+            hierarchyArr[j]?.value;
         }
         projectsArr?.push(obj);
       }
-      this.roleBasedProjectList = [...this.roleBasedProjectList, ...projectsArr];
+      this.roleBasedProjectList = [
+        ...this.roleBasedProjectList,
+        ...projectsArr,
+      ];
     }
   }
 
@@ -153,31 +196,32 @@ export class MyprofileComponent implements OnInit {
     return this.userEmailForm.controls;
   }
 
-
   toggleNotificationEmail(event: any, toggleField: string) {
     const updatedFlag = event.checked;
     this.notificationEmailForm[toggleField] = updatedFlag;
     let obj = {};
-    for(let key in this.notificationEmailForm.value){
-      obj[key] = this.notificationEmailForm.value[key]
+    for (let key in this.notificationEmailForm.value) {
+      obj[key] = this.notificationEmailForm.value[key];
     }
     //call http service
-    this.http.notificationEmailToggleChange(obj)
-      .subscribe(
-        response => {
-          if (response?.['success'] && response['data']) {
-            const userDetails = response['data'];
-            this.messageService.add({ severity: 'success', summary: response['message'] });
-            this.http.setCurrentUserDetails({
-              notificationEmail: userDetails['notificationEmail'],
-            });
-          } else if (response && !response['success']) {
-            if (response['message']) {
-              this.messageService.add({ severity: 'error', summary: response['message'] });
-            }
-          }
+    this.http.notificationEmailToggleChange(obj).subscribe((response) => {
+      if (response?.['success'] && response['data']) {
+        const userDetails = response['data'];
+        this.messageService.add({
+          severity: 'success',
+          summary: response['message'],
+        });
+        this.http.setCurrentUserDetails({
+          notificationEmail: userDetails['notificationEmail'],
+        });
+      } else if (response && !response['success']) {
+        if (response['message']) {
+          this.messageService.add({
+            severity: 'error',
+            summary: response['message'],
+          });
         }
-      );
+      }
+    });
   }
-
 }

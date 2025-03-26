@@ -27,8 +27,6 @@ user click on tab or type(scrum , kanban).
 @author anuj
 **************/
 
-
-
 @Injectable()
 export class SharedService {
   public passDataToDashboard;
@@ -65,7 +63,8 @@ export class SharedService {
   private masterdata = {};
   private chartColorList = {};
   changedMainDashboardValueSub = new Subject<any>();
-  changedMainDashboardValueObs = this.changedMainDashboardValueSub.asObservable();
+  changedMainDashboardValueObs =
+    this.changedMainDashboardValueSub.asObservable();
   currentSelectedSprintSub = new Subject<any>();
   currentSelectedSprint;
   mapColorToProject = new BehaviorSubject<any>({});
@@ -89,15 +88,18 @@ export class SharedService {
   currentUserDetails = null;
   currentUserDetailsSubject = new BehaviorSubject<any>(null);
   currentUserDetailsObs = this.currentUserDetailsSubject.asObservable();
-  public onTypeOrTabRefresh = new Subject<{ selectedTab: string, selectedType: string }>();
+  public onTypeOrTabRefresh = new Subject<{
+    selectedTab: string;
+    selectedType: string;
+  }>();
   public onScrumKanbanSwitch = new Subject<{ selectedType: string }>();
   public onTabSwitch = new Subject<{ selectedBoard: string }>();
   noRelease = new BehaviorSubject<any>(false);
   noReleaseObs = this.noRelease.asObservable();
-  fieldMappingOptionsMetaData: any = []
-  kpiCardView: string = "chart";
+  fieldMappingOptionsMetaData: any = [];
+  kpiCardView: string = 'chart';
   maturityTableLoader = new Subject<boolean>();
-  globalConfigData: any
+  globalConfigData: any;
   visibleSideBarSubject = new BehaviorSubject(false);
   visibleSideBarObs = this.visibleSideBarSubject.asObservable();
   addtionalFilterBackup = {};
@@ -121,7 +123,8 @@ export class SharedService {
   boardNamesListObs = this.boardNamesListSubject.asObservable();
 
   isRecommendationsEnabledSubject = new BehaviorSubject<boolean>(false);
-  isRecommendationsEnabledObs = this.isRecommendationsEnabledSubject.asObservable();
+  isRecommendationsEnabledObs =
+    this.isRecommendationsEnabledSubject.asObservable();
 
   selectedMap = {};
 
@@ -132,8 +135,8 @@ export class SharedService {
   selectedFilterArray: any = [];
   selectedFilters: any = {};
   selectedUrlFilters: string = '{}';
-  isSprintGoal; 
-  sprintGoalData : any = {};
+  isSprintGoal;
+  sprintGoalData: any = {};
 
   // for reports
   onChartChange = new Subject<any>();
@@ -313,13 +316,23 @@ export class SharedService {
     return this.setNoData.asObservable();
   }
 
-
   raiseError(error) {
     this.passErrorToErrorPage.emit(error);
   }
 
   // calls when user select different Tab (executive , quality etc)
-  select(masterData, filterData, filterApplyData, selectedTab, isAdditionalFilters?, makeAPICall = true, configDetails = null, loading = false, dashConfigData = null, selectedType = null) {
+  select(
+    masterData,
+    filterData,
+    filterApplyData,
+    selectedTab,
+    isAdditionalFilters?,
+    makeAPICall = true,
+    configDetails = null,
+    loading = false,
+    dashConfigData = null,
+    selectedType = null,
+  ) {
     this.sharedObject = {};
     this.sharedObject.masterData = masterData;
     this.sharedObject.filterData = filterData;
@@ -398,7 +411,11 @@ export class SharedService {
     const hasHelp = segments && segments.includes('Help');
     const hasError = segments && segments.includes('Error');
 
-    if (selectedFilterObj && Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj).includes('selected_type')) {
+    if (
+      selectedFilterObj &&
+      Object.keys(selectedFilterObj).length === 1 &&
+      Object.keys(selectedFilterObj).includes('selected_type')
+    ) {
       this.selectedFilters = { ...selectedFilterObj };
     } else if (selectedFilterObj) {
       this.selectedFilters = { ...this.selectedFilters, ...selectedFilterObj };
@@ -411,12 +428,21 @@ export class SharedService {
     this.setBackupOfUrlFilters(JSON.stringify(this.selectedFilters || {}));
 
     // NOTE: Do not navigate if the state filters are same as previous, this is to reduce the number of navigation calls, hence refactoring the code
-    if ((this.tempStateFilters !== stateFilterEnc) && (!hasConfig && !hasError && !hasHelp)) {
+    if (
+      this.tempStateFilters !== stateFilterEnc &&
+      !hasConfig &&
+      !hasError &&
+      !hasHelp
+    ) {
       this.tempStateFilters = stateFilterEnc;
       setTimeout(() => {
         this.router.navigate([], {
-          queryParams: { 'stateFilters': stateFilterEnc, 'selectedTab': this.selectedTab, 'selectedType': this.selectedtype },
-          relativeTo: this.route
+          queryParams: {
+            stateFilters: stateFilterEnc,
+            selectedTab: this.selectedTab,
+            selectedType: this.selectedtype,
+          },
+          relativeTo: this.route,
         });
       });
     }
@@ -427,7 +453,9 @@ export class SharedService {
       return true;
     }
     if (Array.isArray(value)) {
-      return value.length === 0 || value.every(x => this.isObjectArrayEmpty(x)); // Recursively check all elements
+      return (
+        value.length === 0 || value.every((x) => this.isObjectArrayEmpty(x))
+      ); // Recursively check all elements
     }
     if (typeof value === 'object') {
       const keys = Object.keys(value);
@@ -459,11 +487,10 @@ export class SharedService {
     return this.selectedUrlFilters;
   }
 
-
   removeQueryParams() {
     this.router.navigate([], {
       queryParams: {}, // Clear query params
-      relativeTo: this.route
+      relativeTo: this.route,
     });
   }
 
@@ -475,16 +502,28 @@ export class SharedService {
     const hasError = segments.includes('Error');
     if (!value) {
       this.selectedKPIFilterObj = {};
-    } else if (Object.keys(value)?.length && Object.keys(value)[0].indexOf('kpi') !== -1) {
+    } else if (
+      Object.keys(value)?.length &&
+      Object.keys(value)[0].indexOf('kpi') !== -1
+    ) {
       Object.keys(value).forEach((key) => {
         this.selectedKPIFilterObj[key] = value[key];
       });
     }
-    const kpiFilterParamStr = btoa(Object.keys(this.selectedKPIFilterObj).length ? JSON.stringify(this.selectedKPIFilterObj) : '');
+    const kpiFilterParamStr = btoa(
+      Object.keys(this.selectedKPIFilterObj).length
+        ? JSON.stringify(this.selectedKPIFilterObj)
+        : '',
+    );
 
     if (!hasConfig && !hasError && !hasHelp) {
       this.router.navigate([], {
-        queryParams: { 'stateFilters': this.tempStateFilters, 'kpiFilters': kpiFilterParamStr, 'selectedTab': this.selectedTab, 'selectedType': this.selectedtype }, // Pass the object here
+        queryParams: {
+          stateFilters: this.tempStateFilters,
+          kpiFilters: kpiFilterParamStr,
+          selectedTab: this.selectedTab,
+          selectedType: this.selectedtype,
+        }, // Pass the object here
         relativeTo: this.route,
       });
     }
@@ -543,7 +582,7 @@ export class SharedService {
     return this.selectedLevel;
   }
   setSelectedTrends(values) {
-    values.forEach(trend => {
+    values.forEach((trend) => {
       if (trend?.path) {
         trend.path = trend.path?.replace(/___/g, '###');
       }
@@ -555,16 +594,20 @@ export class SharedService {
     return this.selectedTrends;
   }
 
-
   // calls when sidenav refresh
   setSideNav(flag) {
     this.isSideNav.emit(flag);
   }
 
   getCurrentUserDetails(key = null) {
-    this.currentUserDetails = JSON.parse(localStorage.getItem('currentUserDetails'));
+    this.currentUserDetails = JSON.parse(
+      localStorage.getItem('currentUserDetails'),
+    );
     if (key) {
-      if (this.currentUserDetails && this.currentUserDetails.hasOwnProperty(key)) {
+      if (
+        this.currentUserDetails &&
+        this.currentUserDetails.hasOwnProperty(key)
+      ) {
         return this.currentUserDetails[key];
       }
     } else if (this.currentUserDetails) {
@@ -574,11 +617,14 @@ export class SharedService {
   }
 
   setNoRelease(value) {
-    this.noRelease.next(value)
+    this.noRelease.next(value);
   }
 
   setFieldMappingMetaData(metaDataObj) {
-    this.fieldMappingOptionsMetaData = [...this.fieldMappingOptionsMetaData, metaDataObj];
+    this.fieldMappingOptionsMetaData = [
+      ...this.fieldMappingOptionsMetaData,
+      metaDataObj,
+    ];
   }
 
   getFieldMappingMetaData() {
@@ -586,7 +632,7 @@ export class SharedService {
   }
 
   setMaturiyTableLoader(value) {
-    this.maturityTableLoader.next(value)
+    this.maturityTableLoader.next(value);
   }
 
   setGlobalConfigData(data) {
@@ -633,15 +679,12 @@ export class SharedService {
   }
 
   getProcessorLogDetails() {
-    return this.processorTraceLogs
+    return this.processorTraceLogs;
   }
 
   setUpdatedBoardList(kpiListData, selectedType) {
     const boardNameArr = [];
-    if (
-      kpiListData[selectedType] &&
-      Array.isArray(kpiListData[selectedType])
-    ) {
+    if (kpiListData[selectedType] && Array.isArray(kpiListData[selectedType])) {
       for (let i = 0; i < kpiListData[selectedType]?.length; i++) {
         let kpiShownCount = 0;
         let board = kpiListData[selectedType][i];
@@ -659,11 +702,10 @@ export class SharedService {
         if (kpiShownCount > 0) {
           boardNameArr.push({
             boardName: board?.boardName,
-            link: board?.boardSlug
+            link: board?.boardSlug,
           });
         }
       }
-
     }
 
     for (let i = 0; i < kpiListData['others']?.length; i++) {
@@ -676,8 +718,7 @@ export class SharedService {
       if (kpiShownCount > 0) {
         boardNameArr.push({
           boardName: kpiListData['others'][i].boardName,
-          link:
-            kpiListData['others'][i].boardSlug
+          link: kpiListData['others'][i].boardSlug,
         });
       }
     }
@@ -696,26 +737,31 @@ export class SharedService {
     this.isRecommendationsEnabledSubject.next(value);
   }
 
-  getProjectWithHierarchy(){
+  getProjectWithHierarchy() {
     return JSON.parse(localStorage.getItem('projectWithHierarchy') || '[]');
   }
 
   extractHierarchyData(hierarchyArray) {
     let result = {};
     if (!Array.isArray(hierarchyArray)) {
-        console.error("Invalid input: hierarchyArray should be an array.");
-        return result; // Return empty object if input is not an array
+      console.error('Invalid input: hierarchyArray should be an array.');
+      return result; // Return empty object if input is not an array
     }
-    hierarchyArray.forEach(item => {
-        if (item && typeof item === 'object' && item.hierarchyLevel && item.value) {
-            if (item.hierarchyLevel.hierarchyLevelName) {
-                result[item.hierarchyLevel.hierarchyLevelName] = item.value;
-            } else {
-                console.warn("Missing hierarchyLevelName in:", item);
-            }
+    hierarchyArray.forEach((item) => {
+      if (
+        item &&
+        typeof item === 'object' &&
+        item.hierarchyLevel &&
+        item.value
+      ) {
+        if (item.hierarchyLevel.hierarchyLevelName) {
+          result[item.hierarchyLevel.hierarchyLevelName] = item.value;
         } else {
-            console.warn("Invalid item structure:", item);
+          console.warn('Missing hierarchyLevelName in:', item);
         }
+      } else {
+        console.warn('Invalid item structure:', item);
+      }
     });
     return result;
   }
@@ -729,33 +775,36 @@ export class SharedService {
   //#region  can be remove after iteraction component removal
 
   isTrendValueListValid(trendValueList: any[]): boolean {
-    return trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1');
+    return (
+      trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')
+    );
   }
 
-  populateDropdownFromTrendValues(trendValueList: any[], dropdownArr: any[]): void {
-    trendValueList.forEach(item => {
+  populateDropdownFromTrendValues(
+    trendValueList: any[],
+    dropdownArr: any[],
+  ): void {
+    trendValueList.forEach((item) => {
       if (!dropdownArr.includes(item?.filter1)) {
         dropdownArr.push(item?.filter1);
       }
     });
   }
 
-
   shouldRemoveOverallFilter(kpiObj: any): boolean {
     return (
       kpiObj &&
       kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') &&
-      (
-        kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() === 'multiselectdropdown' ||
+      (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() ===
+        'multiselectdropdown' ||
         (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() === 'dropdown' &&
           kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') &&
-          kpiObj['kpiDetail']['hideOverallFilter'])
-      )
+          kpiObj['kpiDetail']['hideOverallFilter']))
     );
   }
 
   removeOverallFilter(dropdownArr: any[]): void {
-    const index = dropdownArr.findIndex(x => x?.toLowerCase() === 'overall');
+    const index = dropdownArr.findIndex((x) => x?.toLowerCase() === 'overall');
     if (index > -1) {
       dropdownArr.splice(index, 1);
     }
@@ -765,29 +814,26 @@ export class SharedService {
     return [
       {
         filterType: 'Select a filter',
-        options: dropdownArr
-      }
+        options: dropdownArr,
+      },
     ];
   }
 
   setUserDetailsAsBlankObj() {
-    this.currentUserDetails = {}
+    this.currentUserDetails = {};
   }
 
-  updateSprintGoalFlag(flag){
+  updateSprintGoalFlag(flag) {
     this.isSprintGoal.emit(flag);
   }
 
-  setDataForSprintGoal(data){
-     this.sprintGoalData = {...this.sprintGoalData,...data};
+  setDataForSprintGoal(data) {
+    this.sprintGoalData = { ...this.sprintGoalData, ...data };
   }
 
-  getDataForSprintGoal(){
-    return this.sprintGoalData
+  getDataForSprintGoal() {
+    return this.sprintGoalData;
   }
-
 
   //#endregion
 }
-
-

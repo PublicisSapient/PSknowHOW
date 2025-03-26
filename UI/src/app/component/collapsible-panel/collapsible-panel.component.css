@@ -1,9 +1,9 @@
 .p-panel-toggleable.p-panel-expanded .p-toggleable-content:not(.ng-animating) {
-    height: auto !important;
+  height: auto !important;
 }
 
 .sprint-goals-container {
-    border: 1px solid #c0c0c0;
-    border-radius: 5px;
-    background: #fff;
+  border: 1px solid #c0c0c0;
+  border-radius: 5px;
+  background: #fff;
 }

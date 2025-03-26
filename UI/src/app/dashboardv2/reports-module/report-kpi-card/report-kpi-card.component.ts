@@ -4,7 +4,7 @@ import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 @Component({
   selector: 'app-report-kpi-card',
   templateUrl: './report-kpi-card.component.html',
-  styleUrls: ['./report-kpi-card.component.css']
+  styleUrls: ['./report-kpi-card.component.css'],
 })
 export class ReportKpiCardComponent {
   @Input() kpiData: any;
@@ -29,12 +29,12 @@ export class ReportKpiCardComponent {
   @Input() releaseEndDate: string;
   @Input() hieararchy: any = null;
   @Input() additional_filters: any = {};
-  constructor(private kpiHelperService: KpiHelperService) { }
+  constructor(private kpiHelperService: KpiHelperService) {}
 
-/**
-   * Responds to changes in input properties. 
+  /**
+   * Responds to changes in input properties.
    * Sorts colors, sets KPI filters, and updates chart type based on changes.
-   * 
+   *
    * @param changes - An object containing the changed input properties.
    * @returns void
    * @throws None
@@ -42,29 +42,31 @@ export class ReportKpiCardComponent {
   ngOnChanges(changes: SimpleChanges) {
     this.sortColors();
     this.setKpiFilters();
-    if(changes['chartType']) {
-      if(!changes['chartType'].currentValue) {
+    if (changes['chartType']) {
+      if (!changes['chartType'].currentValue) {
         this.chartType = 'old-table';
       }
     }
   }
 
-/**
-     * Sorts the trend colors based on the hierarchy IDs from the kpiTrendsObj.
-     * Updates the trendColors and colors properties of the class instance.
-     * 
-     * @throws {TypeError} If kpiTrendsObj is not an array or contains invalid entries.
-     */
+  /**
+   * Sorts the trend colors based on the hierarchy IDs from the kpiTrendsObj.
+   * Updates the trendColors and colors properties of the class instance.
+   *
+   * @throws {TypeError} If kpiTrendsObj is not an array or contains invalid entries.
+   */
   sortColors() {
     let result = {};
 
     for (let i = 0; i < this.kpiTrendsObj?.length; i++) {
-      result[this.kpiTrendsObj[i].hierarchyId] = (this.trendColors[this.kpiTrendsObj[i].hierarchyId]);
+      result[this.kpiTrendsObj[i].hierarchyId] =
+        this.trendColors[this.kpiTrendsObj[i].hierarchyId];
     }
 
     this.trendColors = result;
-    this.colors = Object.keys(this.trendColors).map((key) => this.trendColors[key].color);
-
+    this.colors = Object.keys(this.trendColors).map(
+      (key) => this.trendColors[key].color,
+    );
   }
 
   setKpiFilters() {
@@ -102,31 +104,39 @@ export class ReportKpiCardComponent {
   }
 
   /**
- * Converts a given value to hours if the specified unit represents time.
- * @param val - The value to be converted.
- * @param unit - The unit of the value, which determines if conversion is necessary.
- * @returns The converted value in days/hours (unit).
- */
+   * Converts a given value to hours if the specified unit represents time.
+   * @param val - The value to be converted.
+   * @param unit - The unit of the value, which determines if conversion is necessary.
+   * @returns The converted value in days/hours (unit).
+   */
   convertToHoursIfTime(val, unit) {
-    return this.kpiHelperService.convertToHoursIfTime(val, unit)
+    return this.kpiHelperService.convertToHoursIfTime(val, unit);
   }
 
   /**
- * Checks for the presence of a filter group in the provided filter data.
- * @param filterData - An object containing filter information, which may include a filterGroup property.
- * @returns The filterGroup property if it exists; otherwise, undefined.
- * @throws No exceptions are thrown.
- */
+   * Checks for the presence of a filter group in the provided filter data.
+   * @param filterData - An object containing filter information, which may include a filterGroup property.
+   * @returns The filterGroup property if it exists; otherwise, undefined.
+   * @throws No exceptions are thrown.
+   */
   checkFilterPresence(filterData) {
     return filterData?.filterGroup;
   }
 
   checkSprint(value, unit, kpiId) {
-    if ((this.kpiSelectedFilterObj?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj['filter1']?.length > 0 && this.kpiSelectedFilterObj['filter1'][0]?.toLowerCase() !== 'overall')
-      || (this.kpiSelectedFilterObj?.hasOwnProperty('filter2') && this.kpiSelectedFilterObj['filter2']?.length > 0 && this.kpiSelectedFilterObj['filter2'][0]?.toLowerCase() !== 'overall')) {
-      return '-'
+    if (
+      (this.kpiSelectedFilterObj?.hasOwnProperty('filter1') &&
+        this.kpiSelectedFilterObj['filter1']?.length > 0 &&
+        this.kpiSelectedFilterObj['filter1'][0]?.toLowerCase() !== 'overall') ||
+      (this.kpiSelectedFilterObj?.hasOwnProperty('filter2') &&
+        this.kpiSelectedFilterObj['filter2']?.length > 0 &&
+        this.kpiSelectedFilterObj['filter2'][0]?.toLowerCase() !== 'overall')
+    ) {
+      return '-';
     } else {
-      return Math.floor(value) < value ? `${Math.round(value)} ${unit}` : `${value} ${unit}`;
+      return Math.floor(value) < value
+        ? `${Math.round(value)} ${unit}`
+        : `${value} ${unit}`;
     }
   }
 }

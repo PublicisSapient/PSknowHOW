@@ -15,11 +15,11 @@
  * limitations under the License.
  *
  ******************************************************************************/
-.container{
-    height: 100%;
-    flex-direction: column;
+.container {
+  height: 100%;
+  flex-direction: column;
 }
 
- .message{
-    font-size: 3rem;
- }
+.message {
+  font-size: 3rem;
+}

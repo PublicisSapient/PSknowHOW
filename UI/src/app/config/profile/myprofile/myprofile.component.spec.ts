@@ -16,13 +16,22 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+  waitForAsync,
+} from '@angular/core/testing';
 import { UntypedFormGroup, FormControl } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { MyprofileComponent } from './myprofile.component';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { CommonModule } from '@angular/common';
 import { HttpService } from '../../../services/http.service';
 import { APP_CONFIG, AppConfig } from '../../../services/app.config';
@@ -42,7 +51,16 @@ describe('MyprofileComponent', () => {
   let authService;
   let messageService;
   const baseUrl = environment.baseUrl;
-  const successResponse = { message: 'Email updated successfully', success: true, data: { username: 'testUser', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'testuser@gmail.com' } };
+  const successResponse = {
+    message: 'Email updated successfully',
+    success: true,
+    data: {
+      username: 'testUser',
+      authorities: ['ROLE_SUPERADMIN'],
+      authType: 'STANDARD',
+      emailAddress: 'testuser@gmail.com',
+    },
+  };
   const hierarchyData = [
     {
       level: 1,
@@ -51,19 +69,19 @@ describe('MyprofileComponent', () => {
       suggestions: [
         {
           name: 'Canada',
-          code: 'Canada'
+          code: 'Canada',
         },
         {
           name: 'India',
-          code: 'India'
+          code: 'India',
         },
         {
           name: 'USA',
-          code: 'USA'
-        }
+          code: 'USA',
+        },
       ],
       value: '',
-      required: true
+      required: true,
     },
     {
       level: 2,
@@ -72,27 +90,27 @@ describe('MyprofileComponent', () => {
       suggestions: [
         {
           name: 'Haryana',
-          code: 'Haryana'
+          code: 'Haryana',
         },
         {
           name: 'Karnataka',
-          code: 'Karnataka'
+          code: 'Karnataka',
         },
         {
           name: 'Ontario',
-          code: 'Ontario'
+          code: 'Ontario',
         },
         {
           name: 'Texas',
-          code: 'Texas'
+          code: 'Texas',
         },
         {
           name: 'Washinton',
-          code: 'Washinton'
-        }
+          code: 'Washinton',
+        },
       ],
       value: '',
-      required: true
+      required: true,
     },
     {
       level: 3,
@@ -101,140 +119,137 @@ describe('MyprofileComponent', () => {
       suggestions: [
         {
           name: 'Bangalore',
-          code: 'Bangalore'
+          code: 'Bangalore',
         },
         {
           name: 'Gurgaon',
-          code: 'Gurgaon'
+          code: 'Gurgaon',
         },
         {
           name: 'Houston',
-          code: 'Houston'
+          code: 'Houston',
         },
         {
           name: 'Kurukshetra',
-          code: 'Kurukshetra'
+          code: 'Kurukshetra',
         },
         {
           name: 'Ottawa',
-          code: 'Ottawa'
+          code: 'Ottawa',
         },
         {
           name: 'Remond',
-          code: 'Remond'
+          code: 'Remond',
         },
         {
           name: 'Seattle',
-          code: 'Seattle'
-        }
+          code: 'Seattle',
+        },
       ],
       value: '',
-      required: true
-    }
+      required: true,
+    },
   ];
   const mockProjectsAccess = [
     {
-      "role": "ROLE_PROJECT_VIEWER",
-      "projects": [
+      role: 'ROLE_PROJECT_VIEWER',
+      projects: [
         {
-          "projectName": "PSknowHOW",
-          "projectId": "65118da7965fbb0d14bce23c",
-          "hierarchy": [
+          projectName: 'PSknowHOW',
+          projectId: '65118da7965fbb0d14bce23c',
+          hierarchy: [
             {
-              "hierarchyLevel": {
-                "level": 1,
-                "hierarchyLevelId": "bu",
-                "hierarchyLevelName": "BU"
+              hierarchyLevel: {
+                level: 1,
+                hierarchyLevelId: 'bu',
+                hierarchyLevelName: 'BU',
               },
-              "value": "Internal"
+              value: 'Internal',
             },
             {
-              "hierarchyLevel": {
-                "level": 2,
-                "hierarchyLevelId": "ver",
-                "hierarchyLevelName": "Vertical"
+              hierarchyLevel: {
+                level: 2,
+                hierarchyLevelId: 'ver',
+                hierarchyLevelName: 'Vertical',
               },
-              "value": "PS Internal"
+              value: 'PS Internal',
             },
             {
-              "hierarchyLevel": {
-                "level": 3,
-                "hierarchyLevelId": "acc",
-                "hierarchyLevelName": "Account"
+              hierarchyLevel: {
+                level: 3,
+                hierarchyLevelId: 'acc',
+                hierarchyLevelName: 'Account',
               },
-              "value": "Methods and Tools"
+              value: 'Methods and Tools',
             },
             {
-              "hierarchyLevel": {
-                "level": 4,
-                "hierarchyLevelId": "port",
-                "hierarchyLevelName": "Engagement"
+              hierarchyLevel: {
+                level: 4,
+                hierarchyLevelId: 'port',
+                hierarchyLevelName: 'Engagement',
               },
-              "value": "DTS"
-            }
-          ]
-        }
-      ]
+              value: 'DTS',
+            },
+          ],
+        },
+      ],
     },
     {
-      "role": "ROLE_PROJECT_ADMIN",
-      "projects": [
+      role: 'ROLE_PROJECT_ADMIN',
+      projects: [
         {
-          "projectName": "ABC",
-          "projectId": "66d7da7258ffc53913fb840c",
-          "hierarchy": [
+          projectName: 'ABC',
+          projectId: '66d7da7258ffc53913fb840c',
+          hierarchy: [
             {
-              "hierarchyLevel": {
-                "level": 1,
-                "hierarchyLevelId": "bu",
-                "hierarchyLevelName": "BU"
+              hierarchyLevel: {
+                level: 1,
+                hierarchyLevelId: 'bu',
+                hierarchyLevelName: 'BU',
               },
-              "value": "EU"
+              value: 'EU',
             },
             {
-              "hierarchyLevel": {
-                "level": 2,
-                "hierarchyLevelId": "ver",
-                "hierarchyLevelName": "Vertical"
+              hierarchyLevel: {
+                level: 2,
+                hierarchyLevelId: 'ver',
+                hierarchyLevelName: 'Vertical',
               },
-              "value": "Consumer Products"
+              value: 'Consumer Products',
             },
             {
-              "hierarchyLevel": {
-                "level": 3,
-                "hierarchyLevelId": "acc",
-                "hierarchyLevelName": "Account"
+              hierarchyLevel: {
+                level: 3,
+                hierarchyLevelId: 'acc',
+                hierarchyLevelName: 'Account',
               },
-              "value": "ABC A/S"
+              value: 'ABC A/S',
             },
             {
-              "hierarchyLevel": {
-                "level": 4,
-                "hierarchyLevelId": "port",
-                "hierarchyLevelName": "Engagement"
+              hierarchyLevel: {
+                level: 4,
+                hierarchyLevelId: 'port',
+                hierarchyLevelName: 'Engagement',
               },
-              "value": "ABC"
-            }
-          ]
-        }
-      ]
-    }
+              value: 'ABC',
+            },
+          ],
+        },
+      ],
+    },
   ];
 
   const mockCurrentUserDetails = {
-    "user_name": "SUPERADMIN",
-    "user_email": "abc@publicissapient.com",
-    "authType": "STANDARD",
-    "authorities": [
-      "ROLE_SUPERADMIN"
-    ],
-    "projectsAccess": mockProjectsAccess,
-    "notificationEmail": {
-      "accessAlertNotification": false,
-      "errorAlertNotification": false
-    }
+    user_name: 'SUPERADMIN',
+    user_email: 'abc@publicissapient.com',
+    authType: 'STANDARD',
+    authorities: ['ROLE_SUPERADMIN'],
+    projectsAccess: mockProjectsAccess,
+    notificationEmail: {
+      accessAlertNotification: false,
+      errorAlertNotification: false,
+    },
   };
-
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -244,12 +259,17 @@ describe('MyprofileComponent', () => {
         CommonModule,
         HttpClientTestingModule,
         RouterTestingModule,
-        InputSwitchModule
+        InputSwitchModule,
       ],
       declarations: [MyprofileComponent],
-      providers: [HttpService, ProfileComponent, SharedService, MessageService, { provide: APP_CONFIG, useValue: AppConfig }]
-    })
-      .compileComponents();
+      providers: [
+        HttpService,
+        ProfileComponent,
+        SharedService,
+        MessageService,
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -263,14 +283,19 @@ describe('MyprofileComponent', () => {
     let localStore = {};
 
     spyOn(window.localStorage, 'getItem').and.callFake((key) =>
-      key in localStore ? localStore[key] : null
+      key in localStore ? localStore[key] : null,
     );
     spyOn(window.localStorage, 'setItem').and.callFake(
-      (key, value) => (localStore[key] = value + '')
+      (key, value) => (localStore[key] = value + ''),
     );
     component.sharedService.currentUserDetails = mockCurrentUserDetails;
     spyOn(window.localStorage, 'clear').and.callFake(() => (localStore = {}));
-    httpService.setCurrentUserDetails({ username: 'testUser', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'testuser@gmail.com' })
+    httpService.setCurrentUserDetails({
+      username: 'testUser',
+      authorities: ['ROLE_SUPERADMIN'],
+      authType: 'STANDARD',
+      emailAddress: 'testuser@gmail.com',
+    });
     localStorage.setItem('hierarchyData', JSON.stringify(hierarchyData));
     fixture.detectChanges();
   });
@@ -280,93 +305,98 @@ describe('MyprofileComponent', () => {
   });
 
   it('should group projects role-wise', () => {
-    component.groupProjects(JSON.parse('[{"role":"DUMMY","projects":[{"projectName":"Jenkin_kanban","projectId":"6331857a7bb22322e4e01479","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Leve1"}]}]},{"role":"DUMMY","projects":[{"projectName":"Tools proj","projectId":"6332f0a468b5d05cf59c42a6","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Org1"}]}]}]'));
+    component.groupProjects(
+      JSON.parse(
+        '[{"role":"DUMMY","projects":[{"projectName":"Jenkin_kanban","projectId":"6331857a7bb22322e4e01479","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Leve1"}]}]},{"role":"DUMMY","projects":[{"projectName":"Tools proj","projectId":"6332f0a468b5d05cf59c42a6","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Org1"}]}]}]',
+      ),
+    );
     expect(Object.keys(component.roleBasedProjectList).length).toEqual(2);
   });
 
   it('should populate dynamicCols with objects based on the hierarchyData from localStorage', () => {
-    localStorage.setItem('hierarchyData', '[{"hierarchyLevelId": 1, "hierarchyLevelName": "Level 1"}, {"hierarchyLevelId": 2, "hierarchyLevelName": "Level 2"}]')
+    localStorage.setItem(
+      'hierarchyData',
+      '[{"hierarchyLevelId": 1, "hierarchyLevelName": "Level 1"}, {"hierarchyLevelId": 2, "hierarchyLevelName": "Level 2"}]',
+    );
     component.getTableHeadings();
     expect(component.dynamicCols.length).toEqual(3);
   });
 
-  it('should update notification email flag successfully', (fakeAsync(() => {
+  it('should update notification email flag successfully', fakeAsync(() => {
     // component.ngOnInit();
     const event = { checked: true };
     const toggleField = 'accessAlertNotification';
     component.notificationEmailForm = new UntypedFormGroup({
-      "accessAlertNotification": new FormControl(false),
-      "errorAlertNotification": new FormControl(false)
+      accessAlertNotification: new FormControl(false),
+      errorAlertNotification: new FormControl(false),
     });
 
     const successResponse = {
       success: true,
       message: 'Flag Updated successfully in user info details',
       data: {
-        "username": "dummyUser",
-        "authorities": [
-          "ROLE_PROJECT_ADMIN"
-        ],
-        "authType": "SAML",
-        "emailAddress": "someemail@abc.com",
-        "notificationEmail": {
-          "accessAlertNotification": true,
-          "errorAlertNotification": false
-        }
-      }
+        username: 'dummyUser',
+        authorities: ['ROLE_PROJECT_ADMIN'],
+        authType: 'SAML',
+        emailAddress: 'someemail@abc.com',
+        notificationEmail: {
+          accessAlertNotification: true,
+          errorAlertNotification: false,
+        },
+      },
     };
     shared.currentUserDetailsSubject.next({
-      user_name: "dummyUser",
-      user_email: "someemail@abc.com",
+      user_name: 'dummyUser',
+      user_email: 'someemail@abc.com',
       notificationEmail: {
-        "accessAlertNotification": true,
-        "errorAlertNotification": false
-      }
-    })
-    spyOn(httpService, 'notificationEmailToggleChange').and.returnValue(of(successResponse))
+        accessAlertNotification: true,
+        errorAlertNotification: false,
+      },
+    });
+    spyOn(httpService, 'notificationEmailToggleChange').and.returnValue(
+      of(successResponse),
+    );
     const spyObj = spyOn(httpService, 'setCurrentUserDetails');
     component.toggleNotificationEmail(event, toggleField);
     tick();
     expect(spyObj).toHaveBeenCalled();
-  })));
+  }));
 
-  it('should give error while updating notification email flag', (fakeAsync(() => {
+  it('should give error while updating notification email flag', fakeAsync(() => {
     // component.ngOnInit();
     const event = { checked: true };
     const toggleField = 'accessAlertNotification';
     component.notificationEmailForm = new UntypedFormGroup({
-      "accessAlertNotification": new FormControl(false),
-      "errorAlertNotification": new FormControl(false)
+      accessAlertNotification: new FormControl(false),
+      errorAlertNotification: new FormControl(false),
     });
 
     const errResponse = {
       success: false,
-      message: 'Something went wrong'
+      message: 'Something went wrong',
     };
 
-    spyOn(httpService, 'notificationEmailToggleChange').and.returnValue(of(errResponse))
+    spyOn(httpService, 'notificationEmailToggleChange').and.returnValue(
+      of(errResponse),
+    );
     const spyObj = spyOn(messageService, 'add');
     component.toggleNotificationEmail(event, toggleField);
     tick();
     expect(spyObj).toHaveBeenCalled();
-  })));
+  }));
 
   describe('MyprofileComponent.ngOnInit() ngOnInit method', () => {
-    beforeEach(() => {
-
-    });
+    beforeEach(() => {});
 
     describe('Happy Path', () => {
       it('should set isSuperAdmin to true if user is a super admin', () => {
-        spyOn(authService, 'checkIfSuperUser')
-          .and.returnValue(true as any);
+        spyOn(authService, 'checkIfSuperUser').and.returnValue(true as any);
         component.ngOnInit();
         expect(component.isSuperAdmin).toBe(true);
       });
 
       it('should set isProjectAdmin to true if user is a project admin', () => {
-        spyOn(authService, 'checkIfProjectAdmin')
-          .and.returnValue(true as any);
+        spyOn(authService, 'checkIfProjectAdmin').and.returnValue(true as any);
         component.ngOnInit();
         expect(component.isProjectAdmin).toBe(true);
       });
@@ -382,9 +412,13 @@ describe('MyprofileComponent', () => {
       it('should group projects and call getTableHeadings fn when there are projects in projectsAccess', () => {
         spyOn(component, 'groupProjects');
         spyOn(component, 'getTableHeadings');
-        spyOn(shared, 'getCurrentUserDetails').and.returnValue(mockProjectsAccess);
+        spyOn(shared, 'getCurrentUserDetails').and.returnValue(
+          mockProjectsAccess,
+        );
         component.ngOnInit();
-        expect(component.groupProjects).toHaveBeenCalledWith(mockProjectsAccess);
+        expect(component.groupProjects).toHaveBeenCalledWith(
+          mockProjectsAccess,
+        );
         expect(component.getTableHeadings).toHaveBeenCalled();
       });
     });
@@ -395,8 +429,16 @@ describe('MyprofileComponent', () => {
       it('should populate dynamicCols with hierarchy data from localStorage', () => {
         // Arrange
         const hierarchyData = JSON.stringify([
-          { hierarchyLevelId: 'level1', hierarchyLevelName: 'Level 1', level: 1 },
-          { hierarchyLevelId: 'level2', hierarchyLevelName: 'Level 2', level: 2 },
+          {
+            hierarchyLevelId: 'level1',
+            hierarchyLevelName: 'Level 1',
+            level: 1,
+          },
+          {
+            hierarchyLevelId: 'level2',
+            hierarchyLevelName: 'Level 2',
+            level: 2,
+          },
         ]);
         localStorage.setItem('hierarchyData', hierarchyData);
 
@@ -451,9 +493,10 @@ describe('MyprofileComponent', () => {
       });
 
       it('should set noAccess to false when user is  SuperAdmin and has project access', () => {
-
         spyOn(authService, 'checkIfSuperUser').and.returnValue(true as any);
-        spyOn(shared, 'getCurrentUserDetails').and.returnValue(mockProjectsAccess);
+        spyOn(shared, 'getCurrentUserDetails').and.returnValue(
+          mockProjectsAccess,
+        );
         component.ngOnInit();
 
         expect(component.noAccess).toBe(false);

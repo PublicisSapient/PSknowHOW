@@ -30,7 +30,7 @@ import { SharedService } from 'src/app/services/shared.service';
 @Component({
   selector: 'app-bar-with-y-axis-group',
   templateUrl: './bar-with-y-axis-group.component.html',
-  styleUrls: ['./bar-with-y-axis-group.component.css']
+  styleUrls: ['./bar-with-y-axis-group.component.css'],
 })
 export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
   @Input() data: any;
@@ -41,33 +41,39 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
   @Input() selectedtype: string;
   elem: any;
   dataPoints: any;
-  sprintList : Array<any> = [];
-  @Input() viewType :string = 'chart'
-  @Input() lowerThresholdBG : string;
-  @Input() upperThresholdBG : string;
-  @Input() yAxisOrder : Array<any>;
-  @Input() thresholdValue : number;
-  resizeObserver = new ResizeObserver(entries => {
+  sprintList: Array<any> = [];
+  @Input() viewType: string = 'chart';
+  @Input() lowerThresholdBG: string;
+  @Input() upperThresholdBG: string;
+  @Input() yAxisOrder: Array<any>;
+  @Input() thresholdValue: number;
+  resizeObserver = new ResizeObserver((entries) => {
     const data = this.formatData(this.data);
     this.draw(data);
   });
 
-  constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
+  constructor(
+    private viewContainerRef: ViewContainerRef,
+    private service: SharedService,
+  ) {}
 
   ngOnInit(): void {
-    this.service.showTableViewObs.subscribe(view => {
+    this.service.showTableViewObs.subscribe((view) => {
       this.viewType = view;
-     });
-   }
+    });
+  }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (this.selectedtype?.toLowerCase() === 'kanban'|| this.service.getSelectedTab().toLowerCase() === 'developer') {
+    if (
+      this.selectedtype?.toLowerCase() === 'kanban' ||
+      this.service.getSelectedTab().toLowerCase() === 'developer'
+    ) {
       this.xCaption = this.service.getSelectedDateFilter();
     }
-      this.elem = this.viewContainerRef.element.nativeElement;
-      this.dataPoints = this.data.length;
-      const data = this.formatData(this.data);
-      this.draw(data);
+    this.elem = this.viewContainerRef.element.nativeElement;
+    this.dataPoints = this.data.length;
+    const data = this.formatData(this.data);
+    this.draw(data);
   }
 
   formatData(data) {
@@ -83,14 +89,14 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
           hoverValue: data[0].value[i].hoverValue,
           sSprintName: data[0].value[i].sSprintName,
           rate: data[0].data,
-          date :data[0].value[i].date
+          date: data[0].value[i].date,
         });
       } else {
         newObj['value'].push({
           value: data[0].value[i].value,
           sSprintName: data[0].value[i].sSprintName,
           rate: data[0].data,
-          date :data[0].value[i].date
+          date: data[0].value[i].date,
         });
       }
     }
@@ -107,7 +113,11 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
         // eslint-disable-next-line @typescript-eslint/no-shadow
         const newObj = {};
         newObj['value'] = [];
-        if (result[j] && result[j]['categorie'] && j + 1 === result[j]['categorie']) {
+        if (
+          result[j] &&
+          result[j]['categorie'] &&
+          j + 1 === result[j]['categorie']
+        ) {
           if (data[i].value[j].hoverValue) {
             result[j].value.push({
               value: data[i].value[j].value,
@@ -131,16 +141,16 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
 
   draw(data) {
     const unitAbbs = {
-      'hours' : 'Hrs',
-      'sp' : 'SP',
-      'days' : 'Day',
-      'mrs' : 'MRs',
-      'min' : 'Min',
-      '%' : '%',
-      'check-ins' : 'CI',
-      'tickets' : 'T',
-      'unit' :'unit'
-    }
+      hours: 'Hrs',
+      sp: 'SP',
+      days: 'Day',
+      mrs: 'MRs',
+      min: 'Min',
+      '%': '%',
+      'check-ins': 'CI',
+      tickets: 'T',
+      unit: 'unit',
+    };
     let sprintList = [];
     const viewType = this.viewType;
     const selectedProjectCount = this.service.getSelectedTrends().length;
@@ -149,15 +159,21 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
     d3.select(this.elem).select('#horizontalSVG').select('svg').remove();
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
     if (viewType === 'large' && selectedProjectCount === 1) {
-      data = data.map(details => {
+      data = data.map((details) => {
         let finalResult = {};
         const XValue = details.value[0].sSprintName || details.value[0].date;
-        const projectName = '_'+this.service.getSelectedTrends()[0]?.nodeName;
-        const removeProject = XValue.includes(projectName) ? XValue.replace(projectName,'') : XValue;
-        finalResult = { ...details,sortName:removeProject, value: [{ ...details.value[0], sortSprint: removeProject}] }
-        sprintList.push(removeProject)
-        return finalResult
-      })
+        const projectName = '_' + this.service.getSelectedTrends()[0]?.nodeName;
+        const removeProject = XValue.includes(projectName)
+          ? XValue.replace(projectName, '')
+          : XValue;
+        finalResult = {
+          ...details,
+          sortName: removeProject,
+          value: [{ ...details.value[0], sortSprint: removeProject }],
+        };
+        sprintList.push(removeProject);
+        return finalResult;
+      });
     }
 
     const self = this;
@@ -168,26 +184,45 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
 
     const margin = { top: 35, right: 50, bottom: 50, left: 50 };
     const barWidth = 20;
-    const containerWidth = d3.select(this.elem).select('#chart').node().offsetWidth || window.innerWidth;
-    const resizeWidth = (containerWidth > (data.length * barWidth * 10) ? containerWidth : (data.length * barWidth * 10))
+    const containerWidth =
+      d3.select(this.elem).select('#chart').node().offsetWidth ||
+      window.innerWidth;
+    const resizeWidth =
+      containerWidth > data.length * barWidth * 10
+        ? containerWidth
+        : data.length * barWidth * 10;
     const width = data.length <= 5 ? containerWidth - 70 : resizeWidth;
-    const height = (viewType === 'large' && selectedProjectCount === 1) ? 250 - paddingTop : 210 - paddingTop;
-    const paddingFactor = width < 600 ? 0.30 : 0.55;
+    const height =
+      viewType === 'large' && selectedProjectCount === 1
+        ? 250 - paddingTop
+        : 210 - paddingTop;
+    const paddingFactor = width < 600 ? 0.3 : 0.55;
 
-    const xScale = d3.scaleBand().range([0, width]).padding([((6 + this.dataPoints) / (3 * this.dataPoints)) * paddingFactor]);;
+    const xScale = d3
+      .scaleBand()
+      .range([0, width])
+      .padding([
+        ((6 + this.dataPoints) / (3 * this.dataPoints)) * paddingFactor,
+      ]);
 
     const barScale = d3.scaleBand();
     let tempAxis;
     if (viewType === 'large' && selectedProjectCount === 1) {
       /** Temporary axis for wrapping text only */
-      tempAxis =  d3.scaleBand().rangeRound([0, width - margin.left]).domain(sprintList)
+      tempAxis = d3
+        .scaleBand()
+        .rangeRound([0, width - margin.left])
+        .domain(sprintList);
       xScale.domain(sprintList);
-    }else{
+    } else {
       xScale.domain(categoriesNames);
     }
     barScale.domain(rateNames).range([0, xScale.bandwidth()]);
 
-    let y = d3.scaleBand().range([height - margin.top, 0]).domain(Object.values(this.yAxisOrder).reverse());;
+    let y = d3
+      .scaleBand()
+      .range([height - margin.top, 0])
+      .domain(Object.values(this.yAxisOrder).reverse());
 
     let tickPadding = 10;
     if (width < 600) {
@@ -196,7 +231,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
 
     const xAxis = d3.axisBottom(xScale).tickSize(0).tickPadding(tickPadding);
 
-    const yAxis = d3.axisLeft(y).ticks(5)
+    const yAxis = d3.axisLeft(y).ticks(5);
 
     const color = this.color && d3.scaleOrdinal().range(this.color);
 
@@ -204,42 +239,62 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
     let tooltipContainer;
     if (selectedProjectCount === 1) {
       d3.select(this.elem).select('#horizontalSVG').select('div').remove();
-      d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
-      tooltipContainer = d3.select(this.elem).select('#horizontalSVG').
-        append('div')
+      d3.select(this.elem)
+        .select('#horizontalSVG')
+        .select('tooltip-container')
+        .remove();
+      tooltipContainer = d3
+        .select(this.elem)
+        .select('#horizontalSVG')
+        .append('div')
         .attr('class', 'tooltip-container')
         .attr('height', height + 35 + 'px')
         .attr('width', width + 'px')
         .selectAll('div')
         .data(data)
         .join('div')
-        .attr('class', d=>{
+        .attr('class', (d) => {
           let cssClass = 'tooltip2';
           let value = d.lineValue;
-          if(this.thresholdValue && this.thresholdValue !==0  && value < this.thresholdValue){
-            cssClass += this.lowerThresholdBG === 'red' ? ' red-bg' : ' white-bg';
+          if (
+            this.thresholdValue &&
+            this.thresholdValue !== 0 &&
+            value < this.thresholdValue
+          ) {
+            cssClass +=
+              this.lowerThresholdBG === 'red' ? ' red-bg' : ' white-bg';
           } else {
-            cssClass += (this.upperThresholdBG === 'red' && this.thresholdValue) ? ' red-bg' : ' white-bg';
+            cssClass +=
+              this.upperThresholdBG === 'red' && this.thresholdValue
+                ? ' red-bg'
+                : ' white-bg';
           }
           return cssClass;
         })
-        .style('left', (d,i) => {
+        .style('left', (d, i) => {
           let left = d.value[0]?.date || d.value[0]?.sortSprint;
-          if(viewType === 'large'){
+          if (viewType === 'large') {
             return xScale(left) + xScale.bandwidth() / 2 + 'px';
-          }else{
-            return xScale(i+1) + xScale.bandwidth() / 2 + 'px';
+          } else {
+            return xScale(i + 1) + xScale.bandwidth() / 2 + 'px';
           }
         })
-        .style('top', d => y(this.yAxisOrder[d.value[0].value]) + 'px')
-        .text(d => (d.value[0].value)+ ` ${showUnit ? unitAbbs[showUnit?.toLowerCase()] : ''}`)
+        .style('top', (d) => y(this.yAxisOrder[d.value[0].value]) + 'px')
+        .text(
+          (d) =>
+            d.value[0].value +
+            ` ${showUnit ? unitAbbs[showUnit?.toLowerCase()] : ''}`,
+        )
         .transition()
         .duration(500)
         .style('display', 'block')
         .style('opacity', 1);
-    }else{
+    } else {
       d3.select(this.elem).select('#horizontalSVG').select('div').remove();
-      d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+      d3.select(this.elem)
+        .select('#horizontalSVG')
+        .select('tooltip-container')
+        .remove();
     }
 
     const svgX = d3
@@ -248,7 +303,6 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
       .append('svg')
       .attr('width', width)
       .attr('height', height);
-
 
     const svgY = d3
       .select(this.elem)
@@ -264,17 +318,20 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
       .attr('stroke-width', '1')
       .attr('opacity', '1')
       .call(xAxis)
-      .selectAll(".tick text")
+      .selectAll('.tick text');
 
-      if (viewType === 'large' && selectedProjectCount === 1) {
-        xAxisText.each((d, i, nodes) => {
-          const textElement = d3.select(nodes[i]);
-          const width = tempAxis.bandwidth();
-          this.wrap(textElement, width);
-        });
-      }
+    if (viewType === 'large' && selectedProjectCount === 1) {
+      xAxisText.each((d, i, nodes) => {
+        const textElement = d3.select(nodes[i]);
+        const width = tempAxis.bandwidth();
+        this.wrap(textElement, width);
+      });
+    }
 
-    const XCaption = d3.select(this.elem).select('#xCaptionContainer').append('text');
+    const XCaption = d3
+      .select(this.elem)
+      .select('#xCaptionContainer')
+      .append('text');
 
     if (this.xCaption) {
       XCaption.text(this.xCaption);
@@ -297,12 +354,15 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
       .text(self.yCaption);
 
     // gridlines
-    svgX.selectAll('line.gridline').data(Object.values(this.yAxisOrder)).enter()
+    svgX
+      .selectAll('line.gridline')
+      .data(Object.values(this.yAxisOrder))
+      .enter()
       .append('svg:line')
       .attr('x1', 0)
       .attr('x2', width)
-      .attr('y1', (d) =>y(d) + y.bandwidth()/2)
-      .attr('y2', (d) => y(d) + y.bandwidth()/2)
+      .attr('y1', (d) => y(d) + y.bandwidth() / 2)
+      .attr('y2', (d) => y(d) + y.bandwidth() / 2)
       .style('stroke', '#dedede')
       .style('fill', 'none')
       .attr('class', 'gridline');
@@ -338,41 +398,65 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
       .enter()
       .append('rect')
       .attr('width', barWidth)
-      .attr('x', (d, i) =>{
+      .attr('x', (d, i) => {
         if (viewType === 'large' && selectedProjectCount === 1) {
-          return paddingFactor < 0.55 && data.length <= 5 && self.dataPoints === 1 ? xScale(d.sortSprint || d.date) + barWidth / 1.5 : xScale(d.sortSprint || d.date)
-        }else{
-          return paddingFactor < 0.55 && data.length <= 5 && self.dataPoints === 1 ? barScale(d.rate) + barWidth / 1.5 : barScale(d.rate)
+          return paddingFactor < 0.55 &&
+            data.length <= 5 &&
+            self.dataPoints === 1
+            ? xScale(d.sortSprint || d.date) + barWidth / 1.5
+            : xScale(d.sortSprint || d.date);
+        } else {
+          return paddingFactor < 0.55 &&
+            data.length <= 5 &&
+            self.dataPoints === 1
+            ? barScale(d.rate) + barWidth / 1.5
+            : barScale(d.rate);
         }
       })
-      .style('fill', (d) => (color && color(d.rate)))
-      .attr('y', (d) =>y(this.yAxisOrder[d.value]) + y.bandwidth()/2)
-      .attr('height', (d) => (height - margin.top - (y(this.yAxisOrder[d.value]) + y.bandwidth()/2)))
-      .attr('class', 'bar')
+      .style('fill', (d) => color && color(d.rate))
+      .attr('y', (d) => y(this.yAxisOrder[d.value]) + y.bandwidth() / 2)
+      .attr(
+        'height',
+        (d) =>
+          height -
+          margin.top -
+          (y(this.yAxisOrder[d.value]) + y.bandwidth() / 2),
+      )
+      .attr('class', 'bar');
   }
 
   wrap(text, width) {
-    text.each(function() {
+    text.each(function () {
       var text = d3.select(this),
-          words = text.text().split(/\s+/).reverse(),
-          word,
-          line = [],
-          lineNumber = 0,
-          lineHeight = 1.1, // ems
-          y = text.attr("y"),
-          dy = parseFloat(text.attr("dy")),
-          tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em")
-      while (word = words.pop()) {
-        line.push(word)
-        tspan.text(line.join(" "))
-        if (tspan.node().getComputedTextLength() > (width-5)) {
-          line.pop()
-          tspan.text(line.join(" "))
-          line = [word]
-          tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr('y'),
+        dy = parseFloat(text.attr('dy')),
+        tspan = text
+          .text(null)
+          .append('tspan')
+          .attr('x', 0)
+          .attr('y', y)
+          .attr('dy', dy + 'em');
+      while ((word = words.pop())) {
+        line.push(word);
+        tspan.text(line.join(' '));
+        if (tspan.node().getComputedTextLength() > width - 5) {
+          line.pop();
+          tspan.text(line.join(' '));
+          line = [word];
+          tspan = text
+            .append('tspan')
+            .attr('x', 0)
+            .attr('y', y)
+            .attr('dy', `${++lineNumber * lineHeight + dy}em`)
+            .text(word);
         }
       }
-    })
+    });
   }
 
   ngAfterViewInit() {
@@ -380,11 +464,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
   }
 
   ngOnDestroy(): void {
-    this.data = []
+    this.data = [];
     this.resizeObserver.unobserve(d3.select(this.elem).select('#chart').node());
   }
-
 }
-
-
-

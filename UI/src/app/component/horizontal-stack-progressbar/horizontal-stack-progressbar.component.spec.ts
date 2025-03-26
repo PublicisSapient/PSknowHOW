@@ -8,9 +8,8 @@ describe('HorizontalStackProgressbarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ HorizontalStackProgressbarComponent ]
-    })
-    .compileComponents();
+      declarations: [HorizontalStackProgressbarComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

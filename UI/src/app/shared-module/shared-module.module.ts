@@ -110,7 +110,7 @@ import { ReportKpiCardComponent } from '../dashboardv2/reports-module/report-kpi
     MenuModule,
     TabMenuModule,
     TableModule,
-    ToastModule
+    ToastModule,
   ],
   exports: [
     NgSelectModule,
@@ -152,7 +152,7 @@ import { ReportKpiCardComponent } from '../dashboardv2/reports-module/report-kpi
     RecentCommentsComponent,
     CumulativeLineChartComponent,
     ReportKpiCardComponent,
-    BarWithYAxisGroupComponent
+    BarWithYAxisGroupComponent,
   ],
   declarations: [
     ProjectFilterComponent,
@@ -193,9 +193,8 @@ import { ReportKpiCardComponent } from '../dashboardv2/reports-module/report-kpi
     RecentCommentsComponent,
     CumulativeLineChartComponent,
     ReportKpiCardComponent,
-    BarWithYAxisGroupComponent
-
+    BarWithYAxisGroupComponent,
   ],
-  providers: [ConfirmationService, KpiHelperService]
+  providers: [ConfirmationService, KpiHelperService],
 })
-export class SharedModuleModule { }
+export class SharedModuleModule {}

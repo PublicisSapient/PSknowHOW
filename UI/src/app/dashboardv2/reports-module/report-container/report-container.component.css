@@ -1,194 +1,188 @@
 .slider-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Centers the slider */
-    width: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centers the slider */
+  width: 80%;
 }
 
 .nav-button {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 1.5rem;
-    padding: 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 0.5rem;
 }
 
 .slider-container {
-    display: flex;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    white-space: nowrap;
-    max-width: 80%; /* Adjust as needed */
-   
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  white-space: nowrap;
+  max-width: 80%; /* Adjust as needed */
 }
 
 .slider-container::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 :host ::ng-deep .slider-item .p-button {
-    flex: 0 0 auto;
-    border: 1px solid #ccc;
-    background-color: #f5f5f5;
-    color: rgb(107, 115, 124);
-    border-radius: 4px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.3s;
+  flex: 0 0 auto;
+  border: 1px solid #ccc;
+  background-color: #f5f5f5;
+  color: rgb(107, 115, 124);
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.3s;
 }
 
 :host ::ng-deep .slider-item.active .p-button {
-    border: 1px solid #06A0FF;
-    background-color: #06A0FF;
-    color: #fff;
+  border: 1px solid #06a0ff;
+  background-color: #06a0ff;
+  color: #fff;
 }
 
 :host ::ng-deep .slider-item:hover {
-    background: #e0e0e0;
+  background: #e0e0e0;
 }
 
 /* Optional styling for navigation buttons */
 .nav-button.left {
-    margin-right: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 .nav-button.right {
-    margin-left: 0.5rem;
+  margin-left: 0.5rem;
 }
 
 .selected-filter-container {
-    background-color: #F5F9FF;
-    border-radius: 10px;
-    flex-direction: column;  
-    border-bottom: 5px solid #fff;
+  background-color: #f5f9ff;
+  border-radius: 10px;
+  flex-direction: column;
+  border-bottom: 5px solid #fff;
 }
 
 .align-list-marker {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    margin-right: 5px;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
 }
 
-
 :host ::ng-deep .delete-kpi-btn {
-    border: 1px solid red;
-    color: #FFF;
-    background-color: red;
-    border-radius: 5px;
-    font-size: 12px;
-    margin-bottom: 10px;
+  border: 1px solid red;
+  color: #fff;
+  background-color: red;
+  border-radius: 5px;
+  font-size: 12px;
+  margin-bottom: 10px;
 }
 
 .slider-div {
-    display: flex;
-    /* flex-direction: column; */
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    width: 100%;
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
 }
 
 .kpi-div {
-    border: 1px solid #cecece;
-    border-radius: 10px;
-    background-color: #fff;
+  border: 1px solid #cecece;
+  border-radius: 10px;
+  background-color: #fff;
 }
 
 .print-header {
-    display: none;
+  display: none;
 }
 
-.report-kpi-card-container{
-    display: flex;
-    justify-content: center;
-    width: 100%;
+.report-kpi-card-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 /* Center-align the report selection */
 .center-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centers the content horizontally */
-    justify-content: center; /* Centers vertically (if needed) */
-    text-align: center;
-    width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers the content horizontally */
+  justify-content: center; /* Centers vertically (if needed) */
+  text-align: center;
+  width: 90%;
 }
 
 /* Right-align the Print Report button */
 .print-button-container {
-    display: flex;
-    justify-content: flex-end;
-    padding-right: 20px; /* Adjust as needed */
-    margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 20px; /* Adjust as needed */
+  margin-top: 10px;
 }
 
-
 @media print {
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    background-color: #fff;
+  }
 
-    html,
-    body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        print-color-adjust: exact;
-        -webkit-print-color-adjust: exact;
-        background-color: #fff;
-    }
+  .kpi-div {
+    height: 90vh;
+    /* Full viewport height */
+  }
 
-    .kpi-div {
-        height: 90vh;
-        /* Full viewport height */
-    }
+  .kpi-div:not(:first-child) {
+    page-break-after: always;
+    height: 90vh;
+    /* Ensures it starts on a new page */
+  }
 
-    .kpi-div:not(:first-child) {
-        page-break-after: always;
-        height: 90vh;
-        /* Ensures it starts on a new page */
-    }
+  .print-header {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
 
-    .print-header {
-        display: block;
-        width: 100%;
-        text-align: center;
-    }
+  @page {
+    size: A4 portrait;
+    /* Ensures the page is A4 size */
+    margin: 0;
+    /* Removes any default margins */
+  }
 
-    @page {
-        size: A4 portrait;
-        /* Ensures the page is A4 size */
-        margin: 0;
-        /* Removes any default margins */
-    }
+  :host ::ng-deep body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 
-    :host ::ng-deep body {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
+  :host ::ng-deep div.report-kpi-card-container {
+    width: 100%;
+  }
 
-    :host ::ng-deep div.report-kpi-card-container {
-        width: 100%;
-    }
+  :host ::ng-deep .delete-kpi-btn {
+    display: none !important;
+  }
 
-    :host ::ng-deep .delete-kpi-btn {
-        display: none !important;
-    }
+  :host ::ng-deep svg {
+    width: 95% !important;
+  }
 
-    :host ::ng-deep svg {
-        width: 95% !important;
-    }
+  :host ::ng-deep .align-list-marker {
+    display: inline-block !important;
+    width: 10px;
+    height: 10px;
+    margin-right: 5px;
+  }
 
-    :host ::ng-deep .align-list-marker {
-        display: inline-block !important;
-        width: 10px;
-        height: 10px;
-        margin-right: 5px;
-    }
-
-    .slider-div {
-        display: none;
-    }
-
-
+  .slider-div {
+    display: none;
+  }
 }

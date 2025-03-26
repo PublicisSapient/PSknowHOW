@@ -27,13 +27,12 @@
   position: absolute;
   left: 0;
   right: 0;
-
 }
 
 ::ng-deep .needle {
-  fill: #4A4A4A;
+  fill: #4a4a4a;
 }
 
 ::ng-deep .needle-center {
-  fill: #4A4A4A;
+  fill: #4a4a4a;
 }

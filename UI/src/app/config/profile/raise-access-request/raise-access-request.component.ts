@@ -28,7 +28,10 @@ declare let $: any;
 @Component({
   selector: 'app-profile-mgmt',
   templateUrl: './raise-access-request.component.html',
-  styleUrls: ['./raise-access-request.component.css', '../profile.component.css']
+  styleUrls: [
+    './raise-access-request.component.css',
+    '../profile.component.css',
+  ],
 })
 export class RaiseAccessRequestComponent implements OnInit {
   requestForm: UntypedFormGroup;
@@ -42,23 +45,29 @@ export class RaiseAccessRequestComponent implements OnInit {
   requestData = {};
   raiseRequestResponse = {};
   roleSelected = false;
-  constructor(private httpService: HttpService, private messageService: MessageService, private router: Router, private sharedService: SharedService) { }
+  constructor(
+    private httpService: HttpService,
+    private messageService: MessageService,
+    private router: Router,
+    private sharedService: SharedService,
+  ) {}
 
   ngOnInit() {
     this.getRolesList();
-    this.requestData['username'] = this.sharedService.getCurrentUserDetails('user_name');
+    this.requestData['username'] =
+      this.sharedService.getCurrentUserDetails('user_name');
     this.requestData['status'] = 'Pending';
     this.requestData['reviewComments'] = '';
     this.requestData['role'] = '';
     this.requestData['accessNode'] = {
       accessLevel: '',
-      accessItems: []
+      accessItems: [],
     };
   }
 
   // sets the selected role as "active"
   selectRole(item, itemList) {
-    itemList.forEach(element => {
+    itemList.forEach((element) => {
       element.active = false;
     });
     item.active = true;
@@ -68,63 +77,82 @@ export class RaiseAccessRequestComponent implements OnInit {
 
   // fetches the roles list
   getRolesList() {
-    this.rolesRequest = this.httpService.getRolesList()
-      .subscribe(roles => {
-        this.rolesData = roles;
-        if (this.rolesData['success']) {
-          this.roleList = roles.data;
-          this.roleList = this.roleList.filter(role => role.roleName !== 'ROLE_SUPERADMIN');
-        } else {
-          // show error message
-          this.messageService.add({ severity: 'error', summary: 'Error in fetching roles. Please try after some time.' });
-        }
-      });
+    this.rolesRequest = this.httpService.getRolesList().subscribe((roles) => {
+      this.rolesData = roles;
+      if (this.rolesData['success']) {
+        this.roleList = roles.data;
+        this.roleList = this.roleList.filter(
+          (role) => role.roleName !== 'ROLE_SUPERADMIN',
+        );
+      } else {
+        // show error message
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error in fetching roles. Please try after some time.',
+        });
+      }
+    });
   }
 
   // called on the click of "Submit" button
   submitRequest() {
-    this.accessRequest = this.httpService.saveAccessRequest(this.requestData)
-      .subscribe(request => {
+    this.accessRequest = this.httpService
+      .saveAccessRequest(this.requestData)
+      .subscribe((request) => {
         this.raiseRequestResponse = request;
         if (this.raiseRequestResponse['success']) {
           // clear selections
           this.roleSelected = false;
-          this.roleList.forEach(element => {
+          this.roleList.forEach((element) => {
             element.active = false;
           });
 
-          if (this.raiseRequestResponse['data'] && this.raiseRequestResponse['data'].status.toLowerCase() == 'approved') {
-            this.messageService.add({ severity: 'success', summary: 'Request has been auto-approved.', detail: '' });
+          if (
+            this.raiseRequestResponse['data'] &&
+            this.raiseRequestResponse['data'].status.toLowerCase() == 'approved'
+          ) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Request has been auto-approved.',
+              detail: '',
+            });
           } else {
-            this.messageService.add({ severity: 'success', summary: 'Request submitted.', detail: '' });
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Request submitted.',
+              detail: '',
+            });
           }
         } else {
-          this.messageService.add({ severity: 'error', summary: request.message });
+          this.messageService.add({
+            severity: 'error',
+            summary: request.message,
+          });
           this.roleSelected = false;
-          this.roleList.forEach(element => {
+          this.roleList.forEach((element) => {
             element.active = false;
           });
         }
       });
-
   }
 
   projectSelectedEvent(accessItem): void {
     if (accessItem && accessItem.value && accessItem.value.length) {
-      this.roleList.forEach(element => {
+      this.roleList.forEach((element) => {
         element.active = false;
       });
       this.roleSelected = false;
       this.requestData['role'] = '';
       this.requestData['accessNode'] = {
-        accessLevel: accessItem.accessType
+        accessLevel: accessItem.accessType,
       };
 
-      this.requestData['accessNode']['accessItems'] = accessItem.value.map((item) => ({
-        itemId: item.itemId,
-        itemName: item.itemName
-      }));
-
+      this.requestData['accessNode']['accessItems'] = accessItem.value.map(
+        (item) => ({
+          itemId: item.itemId,
+          itemName: item.itemName,
+        }),
+      );
     } else {
       this.requestData['accessNode'] = {};
     }

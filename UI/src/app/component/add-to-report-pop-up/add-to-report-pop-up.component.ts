@@ -1,10 +1,16 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  ViewChild,
+} from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-add-to-report-pop-up',
   templateUrl: './add-to-report-pop-up.component.html',
-  styleUrls: ['./add-to-report-pop-up.component.css']
+  styleUrls: ['./add-to-report-pop-up.component.css'],
 })
 export class AddToReportPopUpComponent implements AfterViewInit {
   @Input() reportObj: any;
@@ -12,16 +18,18 @@ export class AddToReportPopUpComponent implements AfterViewInit {
   @Input() existingReportData: any[] = [];
   @Input() reportName: string = '';
   // Reference to the scrollable container element
-  @ViewChild('sliderContainer', { static: false }) sliderContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('sliderContainer', { static: false })
+  sliderContainer!: ElementRef<HTMLDivElement>;
 
-  constructor(private service: SharedService) { }
+  constructor(private service: SharedService) {}
 
   ngOnChanges() {
-    this.reportObj.metadata.trendColors = this.removeDuplicateKeys(this.reportObj.metadata.trendColors);
+    this.reportObj.metadata.trendColors = this.removeDuplicateKeys(
+      this.reportObj.metadata.trendColors,
+    );
   }
 
-  ngAfterViewInit() {
-  }
+  ngAfterViewInit() {}
 
   objectValues(obj): any[] {
     // return this.helperService.getObjectKeys(obj)
@@ -51,7 +59,7 @@ export class AddToReportPopUpComponent implements AfterViewInit {
     // For objects, sort keys, then canonicalize.
     const sortedKeys = Object.keys(obj).sort();
     const sortedObj = {};
-    sortedKeys.forEach(key => {
+    sortedKeys.forEach((key) => {
       sortedObj[key] = obj[key];
     });
     return JSON.stringify(sortedObj);
@@ -66,7 +74,7 @@ export class AddToReportPopUpComponent implements AfterViewInit {
     const seen = new Set();
     const result = {};
 
-    Object.keys(inputObj).forEach(key => {
+    Object.keys(inputObj).forEach((key) => {
       // Create a canonical fingerprint for deep comparison.
       const fingerprint = this.canonicalize(inputObj[key]);
       if (!seen.has(fingerprint)) {
@@ -79,23 +87,33 @@ export class AddToReportPopUpComponent implements AfterViewInit {
   }
 
   scrollLeft(): void {
-    this.sliderContainer.nativeElement.scrollBy({ left: -200, behavior: 'smooth' });
+    this.sliderContainer.nativeElement.scrollBy({
+      left: -200,
+      behavior: 'smooth',
+    });
   }
 
   scrollRight(): void {
-    this.sliderContainer.nativeElement.scrollBy({ left: 200, behavior: 'smooth' });
+    this.sliderContainer.nativeElement.scrollBy({
+      left: 200,
+      behavior: 'smooth',
+    });
   }
 
   segregateSprints(additional_filters, key, superkey) {
     if (key.toLowerCase() === 'sprint') {
-      return additional_filters[key].filter(elem => elem.parentId === superkey.nodeId).map(elem => elem.nodeDisplayName).join(',');
+      return additional_filters[key]
+        .filter((elem) => elem.parentId === superkey.nodeId)
+        .map((elem) => elem.nodeDisplayName)
+        .join(',');
     } else {
-      return additional_filters[key].map(elem => elem.nodeDisplayName).join(',')
+      return additional_filters[key]
+        .map((elem) => elem.nodeDisplayName)
+        .join(',');
     }
   }
 
   emitReportName(report) {
     this.service.onSelectedReportChange.next(report);
   }
-
 }
