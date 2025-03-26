@@ -134,6 +134,9 @@ public class ReportService {
 
         existingReport.setName(reportRequest.getName());
 
+        // Ensure existing KPIs list is mutable
+        existingReport.setKpis(new ArrayList<>(existingReport.getKpis()));
+
         // Convert incoming KPI list to a map for quick lookup
         Map<String, KpiRequest> incomingKpisMap = reportRequest.getKpis().stream().collect(Collectors.toMap(KpiRequest::getId, kpi -> kpi));// Remove KPIs that are in existingReport but missing in incoming request
         existingReport.getKpis().removeIf(existingKpi -> !incomingKpisMap.containsKey(existingKpi.getId()));
