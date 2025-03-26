@@ -25,15 +25,7 @@ export class ReportContainerComponent implements OnInit {
      * @returns {void} - No return value.
      */
   ngOnInit(): void {
-    this.http.fetchReports().subscribe((data) => {
-      this.reportsData = data['data']['content'];
-
-      this.selectedReport = this.reportsData[0];
-      this.selectedReport.kpis.forEach((kpi) => {
-        kpi.chartData = JSON.parse(kpi.chartData);
-      });
-      this.generateChartData(this.reportsData[0]);
-    });
+    this.getReportsData();
   }
 
   /**
@@ -142,5 +134,29 @@ export class ReportContainerComponent implements OnInit {
     setTimeout(() => {
       window.print();
     }, 100);
+  }
+
+  getReportsData() {
+    this.http.fetchReports().subscribe((data) => {
+      this.reportsData = data['data']['content'];
+
+      this.selectedReport = this.reportsData[0];
+      this.selectedReport.kpis.forEach((kpi) => {
+        kpi.chartData = JSON.parse(kpi.chartData);
+      });
+      this.generateChartData(this.reportsData[0]);
+    });
+  }
+
+  removeReport(report: any, event: MouseEvent) {
+    event.stopPropagation(); // Prevent triggering the button's onClick
+    let deletedReportId = report?.id;
+    this.http.deleteComment(deletedReportId).subscribe((res) => {
+      if(res.success){
+        this.reportsData = this.reportsData.filter(r => r !== report);
+        //this.getReportsData();
+      }
+    })
+   
   }
 }

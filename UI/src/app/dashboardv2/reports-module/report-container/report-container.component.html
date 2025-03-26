@@ -13,8 +13,14 @@
             <!-- Scrollable container for report buttons -->
             <div class="slider-container" #sliderContainer>
                 <p-button *ngFor="let report of reportsData" class="slider-item"
-                    [ngClass]="{active: selectedReport.name === report.name}" (onClick)="setSelectedReport(report);">
-                    {{ report.name }}
+                [ngClass]="{active: selectedReport.name === report.name}" (onClick)="setSelectedReport(report)">
+                
+                <ng-template pTemplate="content">
+                    <div class="button-content">
+                        {{ report.name }}
+                        <span class="close-icon" (click)="removeReport(report, $event)">×</span>
+                    </div>
+                </ng-template>
                 </p-button>
             </div>
 
