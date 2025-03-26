@@ -59,7 +59,6 @@ export class ParentFilterComponent implements OnChanges {
             nodeDisplayName: item.nodeDisplayName
           }
         });
-        console.log(this.filterLevels)
         this.filterLevels = this.helperService.sortAlphabetically(this.filterLevels);
 
         this.stateFilters = JSON.parse(this.service.getBackupOfUrlFilters())['primary_level'] || this.service.getBackupOfFilterSelectionState('primary_level');

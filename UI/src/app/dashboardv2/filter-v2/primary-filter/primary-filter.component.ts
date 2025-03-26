@@ -313,7 +313,7 @@ export class PrimaryFilterComponent implements OnChanges {
     }
 
     const selectedTrend = JSON.parse(localStorage.getItem('selectedTrend') || 'null');
-    if (selectedTrend && selectedTrend[0]?.labelName?.toLowerCase() === defaultLabelName) {
+    if (selectedTrend && selectedTrend[0]?.labelName?.toLowerCase() === defaultLabelName && selectedTrend[0]?.labelName?.toLowerCase() === backupState?.parent_level) {
       retValue = selectedTrend[0];
     }
 
