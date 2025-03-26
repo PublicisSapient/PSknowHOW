@@ -995,7 +995,8 @@ export class HelperService {
   // url shortening redirection logic
   urlShorteningRedirection() {
     const shared_link = localStorage.getItem('shared_link');
-    const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess?.length ? JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects : [];
+    let currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess?.length ? JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess : [];
+    currentUserProjectAccess = currentUserProjectAccess.flatMap(row => row.projects);
     if (shared_link) {
       // Extract query parameters
       const queryParams = new URLSearchParams(shared_link.split('?')[1]);
@@ -1030,6 +1031,8 @@ export class HelperService {
           decodedStateFilters = atob(stateFilters);
           this.urlRedirection(decodedStateFilters, currentUserProjectAccess, shared_link);
         }
+      }else{
+        this.router.navigate(['./dashboard/iteration']);
       }
     } else if (window.location.hash.indexOf('selectedTab') !== -1) {
       this.router.navigate(['./dashboard/'], { queryParamsHandling: 'merge' });

@@ -92,7 +92,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   colorPalette = ['#FBCF5F', '#6079C5', '#A4F6A5'];
   selectedButtonValue;
   cardData;
-  reportModuleEnabled: boolean = false;
   reportObj: any = {};
   displayAddToReportsModal: boolean = false;
   createNewReportTemplate: boolean = false;
@@ -243,7 +242,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
   }
 
-  async ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges) {
     this.userRole = this.authService.getRole();
     this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
     this.disableSettings = (this.colors && (Object.keys(this.colors)?.length > 1 || (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' && this.selectedTab !== 'iteration' && this.selectedTab !== 'release')))
@@ -265,9 +264,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
 
     // if (changes['trendValueList'] && changes['trendValueList'].currentValue) {
-    this.reportModuleEnabled = await this.featureFlagService.isFeatureEnabled('REPORTS');
 
-    if (this.reportModuleEnabled && this.selectedTab !== 'iteration') {
+    if (this.selectedTab !== 'iteration') {
       if (!this.loader && (!this.checkIfDataPresent(this.kpiDataStatusCode)) || (!this.kpiData?.kpiDetail?.isAdditionalFilterSupport && this.iSAdditionalFilterSelected)) {
         this.menuItems = this.menuItems.filter(item => item.label !== 'Add to Report');
         this.menuItems.push({

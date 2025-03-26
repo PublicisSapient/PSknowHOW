@@ -33,7 +33,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
     this.sharedService.onTabSwitch
       .subscribe(data => {
         this.selectedTab = data.selectedBoard;
-        // this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
+        this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
         // this.router.navigate(['/dashboard/' + this.activeItem['slug']]);
       });
 

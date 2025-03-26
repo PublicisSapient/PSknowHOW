@@ -167,7 +167,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			if (fetchCachedData) { // fetch data from cache only if Filter is selected till Sprint
 				// level.
 				result = kpiDataCacheService.fetchDSRData(kpiRequest, basicProjectConfigId, sprintIdList,
-						KPICode.ISSUE_COUNT.getKpiId());
+						KPICode.DEFECT_SEEPAGE_RATE.getKpiId());
 			} else { // fetch data from DB if filters below Sprint level (i.e. additional filters)
 				result = kpiDataProvider.fetchDSRData(kpiRequest, basicProjectConfigId, sprintList);
 			}

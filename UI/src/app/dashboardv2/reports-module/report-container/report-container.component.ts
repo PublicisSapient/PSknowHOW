@@ -124,9 +124,9 @@ export class ReportContainerComponent implements OnInit {
 
   segregateSprints(additional_filters, key, superkey) {
     if (key.toLowerCase() === 'sprint') {
-      return additional_filters[key].filter(elem => elem.parentId === superkey.nodeId).map(elem => elem.nodeDisplayName).join(',');
+      return additional_filters[key].filter(elem => elem.parentId === superkey.nodeId).map(elem => elem.nodeDisplayName).join(', ');
     } else {
-      return additional_filters[key].map(elem => elem.nodeDisplayName).join(',')
+      return additional_filters[key].map(elem => elem.nodeDisplayName).join(', ')
     }
   }
   
