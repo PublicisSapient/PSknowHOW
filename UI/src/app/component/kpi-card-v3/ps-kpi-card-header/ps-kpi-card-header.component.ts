@@ -24,7 +24,6 @@ export class PsKpiCardHeaderComponent implements OnInit {
   disableSettings: boolean = false;
   userRole: string;
   checkIfViewer: boolean;
-  reportModuleEnabled: boolean = false;
   constructor(private kpiHelperService: KpiHelperService, public service: SharedService, private authService: GetAuthorizationService, private featureFlagService: FeatureFlagsService) { }
 
   ngOnInit(): void {
@@ -36,32 +35,27 @@ export class PsKpiCardHeaderComponent implements OnInit {
     this.initializeMenu();
   }
 
-  async ngOnChanges(changes: SimpleChanges) {
-    if (!this.reportModuleEnabled) {
-      this.reportModuleEnabled = await this.featureFlagService.isFeatureEnabled('REPORTS');
-    }
-    if (this.reportModuleEnabled) {
-      if (changes['currentChartData'] && (this.currentChartData?.chartData?.length || this.currentChartData?.chartData?.data?.length || this.currentChartData?.chartData?.chartData?.length)) {
-        this.menuItems = this.menuItems.filter(item => item.label !== 'Add to Report');
-        this.menuItems.push({
-          label: 'Add to Report',
-          icon: 'pi pi-briefcase',
-          command: ($event) => {
-            this.addToReport();
-          },
-          disabled: false
-        });
-      } else {
-        this.menuItems = this.menuItems.filter(item => item.label !== 'Add to Report');
-        this.menuItems.push({
-          label: 'Add to Report',
-          icon: 'pi pi-briefcase',
-          command: ($event) => {
-            this.addToReport();
-          },
-          disabled: true
-        });
-      }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['currentChartData'] && (this.currentChartData?.chartData?.length || this.currentChartData?.chartData?.data?.length || this.currentChartData?.chartData?.chartData?.length)) {
+      this.menuItems = this.menuItems?.filter(item => item.label !== 'Add to Report') || [];
+      this.menuItems.push({
+        label: 'Add to Report',
+        icon: 'pi pi-briefcase',
+        command: ($event) => {
+          this.addToReport();
+        },
+        disabled: false
+      });
+    } else {
+      this.menuItems = this.menuItems?.filter(item => item.label !== 'Add to Report') || [];
+      this.menuItems.push({
+        label: 'Add to Report',
+        icon: 'pi pi-briefcase',
+        command: ($event) => {
+          this.addToReport();
+        },
+        disabled: true
+      });
     }
   }
 

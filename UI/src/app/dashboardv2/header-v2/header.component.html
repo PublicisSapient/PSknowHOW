@@ -13,7 +13,7 @@
     </div>
 
     <!-- Report and Dashboard Navigation -->
-    <div class="tab-container" *ngIf="reportModuleEnabled && router.url.indexOf('Config') === -1">
+    <div class="tab-container" *ngIf="router.url.indexOf('Config') === -1">
       <div class="tab-buttons" role="tablist">
         <div class="tab-button" *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')">
           <button pButton pRipple class="p-button-outlined" [disabled]="backToDashboardLoader" routerLinkActive="active"
