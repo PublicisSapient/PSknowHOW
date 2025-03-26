@@ -151,7 +151,7 @@ export class ReportContainerComponent implements OnInit {
   removeReport(report: any, event: MouseEvent) {
     event.stopPropagation(); // Prevent triggering the button's onClick
     let deletedReportId = report?.id;
-    this.http.deleteComment(deletedReportId).subscribe((res) => {
+    this.http.deleteReport(deletedReportId).subscribe((res) => {
       if(res.success){
         this.reportsData = this.reportsData.filter(r => r !== report);
         //this.getReportsData();
