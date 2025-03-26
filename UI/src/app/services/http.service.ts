@@ -1213,4 +1213,8 @@ export class HttpService {
     //Pagination to be handled
     return this.http.get<object>(this.fetchReportsUrl + userId + '&page=0&limit=9999');
   }
+
+  deleteReport(id: string): Observable<any> {
+    return this.http.delete<any>(this.createReportUrl + '/' + id);
+  }
 }
