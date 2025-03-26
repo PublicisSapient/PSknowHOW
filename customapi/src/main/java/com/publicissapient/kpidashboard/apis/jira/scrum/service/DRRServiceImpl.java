@@ -28,10 +28,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.ws.rs.core.Feature;
 
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -41,6 +40,8 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -106,8 +107,8 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
-			throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
+			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
@@ -162,11 +163,12 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				result = kpiDataProvider.fetchDRRData(kpiRequest, basicProjectConfigId, sprintList);
 			}
 
-			totalSubTaskDefects.addAll((List<JiraIssue>) result.getOrDefault(TOTAL_SPRINT_SUBTASK_DEFECTS, new ArrayList<>()));
-			subTaskBugsCustomHistory
-					.addAll((List<JiraIssueCustomHistory>) result.getOrDefault(SUB_TASK_BUGS_HISTORY, new ArrayList<>()));
-			List<SprintDetails> sprintDetailsList = (List<SprintDetails>) result.getOrDefault(SPRINT_WISE_SPRINT_DETAILS,
-					new ArrayList<>());
+			totalSubTaskDefects
+					.addAll((List<JiraIssue>) result.getOrDefault(TOTAL_SPRINT_SUBTASK_DEFECTS, new ArrayList<>()));
+			subTaskBugsCustomHistory.addAll(
+					(List<JiraIssueCustomHistory>) result.getOrDefault(SUB_TASK_BUGS_HISTORY, new ArrayList<>()));
+			List<SprintDetails> sprintDetailsList = (List<SprintDetails>) result
+					.getOrDefault(SPRINT_WISE_SPRINT_DETAILS, new ArrayList<>());
 			sprintDetails.addAll(sprintDetailsList.stream().filter(sprint -> sprintList.contains(sprint.getSprintID()))
 					.collect(Collectors.toSet()));
 			totalIssue.addAll((List<JiraIssue>) result.getOrDefault(STORY_LIST, new ArrayList<>()));
@@ -249,12 +251,10 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			if (StringUtils.isNotEmpty(defectRejectionStatus))
 				dodAndDefectRejStatus.add(defectRejectionStatus.toLowerCase());
 
-			List<JiraIssue> sprintSubtask = KpiDataHelper.getTotalSprintSubTasks(
-					totalSubtaskList.stream()
-							.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList()) &&
-									jiraIssue.getSprintIdList().contains(sd.getSprintID().split("_")[0]))
-							.collect(Collectors.toList()),
-					sd, totalSubtaskHistory, dodAndDefectRejStatus);
+			List<JiraIssue> sprintSubtask = KpiDataHelper.getTotalSprintSubTasks(totalSubtaskList.stream()
+					.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList())
+							&& jiraIssue.getSprintIdList().contains(sd.getSprintID().split("_")[0]))
+					.collect(Collectors.toList()), sd, totalSubtaskHistory, dodAndDefectRejStatus);
 
 			List<JiraIssue> sprintRejectedDefects = canceledDefectList.stream()
 					.filter(element -> totalSprintIssues.contains(element.getNumber())).collect(Collectors.toList());
@@ -269,8 +269,8 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					.filter(element -> dodAndDefectRejStatus.contains(element.getStatus().toLowerCase()))
 					.collect(Collectors.toList());
 
-			sprintCompletedDefects.addAll(KpiDataHelper.getCompletedSubTasksByHistory(sprintSubtask, totalSubtaskHistory, sd,
-					dodAndDefectRejStatus, new HashMap<>()));
+			sprintCompletedDefects.addAll(KpiDataHelper.getCompletedSubTasksByHistory(sprintSubtask,
+					totalSubtaskHistory, sd, dodAndDefectRejStatus, new HashMap<>()));
 
 			List<JiraIssue> sprintWiseRejectedDefectList = new ArrayList<>();
 			List<JiraIssue> sprintWiseCompletedDefectList = new ArrayList<>();
@@ -282,9 +282,11 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			sprintWiseRejectedAndTotalDefects.put(REJECTED_DEFECT_DATA, sprintRejectedDefects);
 			sprintWiseRejectedAndTotalDefects.put(CLOSED_DEFECT_DATA, sprintCompletedDefects);
-			if (CollectionUtils.isNotEmpty(sprintRejectedDefects) && CollectionUtils.isNotEmpty(sprintCompletedDefects)) {
+			if (CollectionUtils.isNotEmpty(sprintRejectedDefects)
+					&& CollectionUtils.isNotEmpty(sprintCompletedDefects)) {
 
 				drrForCurrentLeaf = calculateKPIMetrics(sprintWiseRejectedAndTotalDefects);
+				sprintWiseDRRMap.put(sprint, drrForCurrentLeaf);
 			}
 			subCategoryWiseDRRList.add(drrForCurrentLeaf);
 			sprintWiseRejectedDefectList.addAll(sprintRejectedDefects);
@@ -294,43 +296,49 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			setSprintWiseLogger(sprint, sprintWiseCompletedDefectList, sprintWiseRejectedDefectList);
 
-			sprintWiseDRRMap.put(sprint, drrForCurrentLeaf);
+
 			setHoverMap(sprintWiseHowerMap, sprint, sprintWiseRejectedDefectList, sprintWiseCompletedDefectList);
 		});
 
 		sprintLeafNodeList.forEach(node -> {
 			// Leaf node wise data
 			String trendLineName = node.getProjectFilter().getName();
-			Pair<String, String> currentNodeIdentifier = Pair.of(node.getProjectFilter().getBasicProjectConfigId().toString(),
-					node.getSprintFilter().getId());
+			Pair<String, String> currentNodeIdentifier = Pair
+					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
 
 			double drrForCurrentLeaf;
 
 			if (sprintWiseDRRMap.containsKey(currentNodeIdentifier)) {
 				drrForCurrentLeaf = sprintWiseDRRMap.get(currentNodeIdentifier);
-				List<JiraIssue> sprintWiseRejectedDefectList = sprintWiseRejectedDefectListMap.get(currentNodeIdentifier);
-				List<JiraIssue> sprintWiseCompletedDefectList = sprintWiseCompletedDefectListMap.get(currentNodeIdentifier);
+				List<JiraIssue> sprintWiseRejectedDefectList = sprintWiseRejectedDefectListMap
+						.get(currentNodeIdentifier);
+				List<JiraIssue> sprintWiseCompletedDefectList = sprintWiseCompletedDefectListMap
+						.get(currentNodeIdentifier);
 				List<JiraIssue> sprintWiseCompAndRejectedList = new ArrayList<>(sprintWiseCompletedDefectList);
 				sprintWiseCompAndRejectedList.addAll(sprintWiseRejectedDefectList);
 				populateExcelDataObject(requestTrackerId, node.getSprintFilter().getName(), excelData,
 						sprintWiseRejectedDefectList, sprintWiseCompAndRejectedList, storyList);
 
 			} else {
-				drrForCurrentLeaf = 0.0d;
+				drrForCurrentLeaf = Double.NaN;
 			}
 
-			log.debug("[DRR-SPRINT-WISE][{}]. DRR for sprint {}  is {}", requestTrackerId, node.getSprintFilter().getName(),
-					drrForCurrentLeaf);
+			log.debug("[DRR-SPRINT-WISE][{}]. DRR for sprint {}  is {}", requestTrackerId,
+					node.getSprintFilter().getName(), drrForCurrentLeaf);
 
 			DataCount dataCount = new DataCount();
-			dataCount.setData(String.valueOf(Math.round(drrForCurrentLeaf)));
+			if (!Double.isNaN(drrForCurrentLeaf)) {
+				dataCount.setData(String.valueOf(Math.round(drrForCurrentLeaf)));
+				dataCount.setValue(drrForCurrentLeaf);
+				dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
+			}
+
 			dataCount.setSProjectName(trendLineName);
 			dataCount.setSSprintID(node.getSprintFilter().getId());
 			dataCount.setSSprintName(node.getSprintFilter().getName());
 			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
 			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-			dataCount.setValue(drrForCurrentLeaf);
-			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
+
 			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
 			trendValueList.add(dataCount);
 		});
@@ -345,8 +353,8 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	 * @param sprintLeafNodeList
 	 */
 	private void sortSprintLeafNodeListAsc(List<Node> sprintLeafNodeList) {
-		sprintLeafNodeList.sort(
-				(node1, node2) -> node1.getSprintFilter().getStartDate().compareTo(node2.getSprintFilter().getStartDate()));
+		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
+				.compareTo(node2.getSprintFilter().getStartDate()));
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, String sprintName, List<KPIExcelData> excelData,
@@ -410,7 +418,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	 * @param completed
 	 */
 	private void setHoverMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHoverMap,
-							 Pair<String, String> sprint, List<JiraIssue> rejected, List<JiraIssue> completed) {
+			Pair<String, String> sprint, List<JiraIssue> rejected, List<JiraIssue> completed) {
 		Map<String, Object> howerMap = new LinkedHashMap<>();
 		if (CollectionUtils.isNotEmpty(rejected)) {
 			howerMap.put(REJECTED, rejected.size());

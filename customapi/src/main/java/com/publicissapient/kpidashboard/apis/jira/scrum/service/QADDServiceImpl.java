@@ -214,25 +214,29 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 							customApiConfig, node);
 				}
 			} else {
-				qaddForCurrentLeaf = 0.0d;
+				qaddForCurrentLeaf = Double.NaN;
 			}
 			// aggregated value to exclude the sprint with sum of story points
 			// is zero
 			if (qaddForCurrentLeaf == -1000.0) {
-				qaddForCurrentLeaf = 0.0d;
+				qaddForCurrentLeaf = Double.NaN;
 			}
 			log.debug("[QADD-SPRINT-WISE][{}]. QADD for sprint {}  is {}", requestTrackerId,
 					node.getSprintFilter().getName(), qaddForCurrentLeaf);
 
 			DataCount dataCount = new DataCount();
-			dataCount.setData(String.valueOf(Math.round(qaddForCurrentLeaf)));
+			if(!Double.isNaN(qaddForCurrentLeaf)){
+				dataCount.setData(String.valueOf(Math.round(qaddForCurrentLeaf)));
+				dataCount.setValue(qaddForCurrentLeaf);
+				dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
+			}
+
 			dataCount.setSProjectName(trendLineName);
 			dataCount.setSSprintID(node.getSprintFilter().getId());
 			dataCount.setSSprintName(node.getSprintFilter().getName());
 			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
 			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-			dataCount.setValue(qaddForCurrentLeaf);
-			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
+
 			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
 
 			trendValueList.add(dataCount);
