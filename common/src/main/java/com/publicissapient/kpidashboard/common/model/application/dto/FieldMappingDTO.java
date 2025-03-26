@@ -548,6 +548,7 @@ public class FieldMappingDTO extends FieldMappingHistory {
 	private List<String> issueTypesToConsiderKpi113;
 	private List<String> closedIssueStatusToConsiderKpi113;
 
+	private boolean includeActiveSprintInBacklogKPI;
 	/**
 	 * Get jira issue type names string [ ].
 	 *

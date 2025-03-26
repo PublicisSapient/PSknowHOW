@@ -78,6 +78,8 @@ public class JiraBacklogServiceRTest {
 	@Mock
 	KpiHelperService kpiHelperService;
 	@Mock
+	JiraBacklogServiceR jiraBacklogServiceR;
+	@Mock
 	FilterHelperService filterHelperService;
 	List<KpiElement> mockKpiElementList = new ArrayList<>();
 	@Mock
@@ -151,7 +153,7 @@ public class JiraBacklogServiceRTest {
 		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
 		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
 		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
-
+		when(configHelperService.getFieldMapping(any())).thenReturn(fieldMapping);
 		try (MockedStatic<JiraNonTrendKPIServiceFactory> utilities = Mockito
 				.mockStatic(JiraNonTrendKPIServiceFactory.class)) {
 			utilities

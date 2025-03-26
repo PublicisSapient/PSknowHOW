@@ -32,7 +32,7 @@ public enum FieldMappingEnum {
 					"epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize", "additionalFilterConfig",
 					"jiraDueDateField", "jiraDueDateCustomField", "jiraDevDueDateField", "jiraDevDueDateCustomField",
 					"jiraIssueEpicType", "storyFirstStatus", "notificationEnabler", "epicLink", "jiraSubTaskDefectType",
-					"jiraSubTaskIdentification")),
+					"jiraSubTaskIdentification", "includeActiveSprintInBacklogKPI")),
 
 	KPI1("Processor (Kanban)", KPISource.JIRA.name(),
 			Arrays.asList("jiraIssueTypeNames", "storyFirstStatus", "rootCauseIdentifier", "epicCostOfDelay",

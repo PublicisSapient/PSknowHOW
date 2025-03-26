@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -53,6 +54,7 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -81,6 +83,8 @@ public class ProductionDefectAgingServiceImplTest {
 	List<JiraIssue> totalIssueBacklogList = new ArrayList<>();
 	@Mock
 	JiraIssueRepository jiraIssueRepository;
+	@Mock
+	JiraBacklogServiceR jiraService;
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -133,7 +137,7 @@ public class ProductionDefectAgingServiceImplTest {
 		totalIssueBacklogList = JiraIssueDataFactory.newInstance().getJiraIssues();
 		when(jiraIssueRepository.findIssuesByDateAndTypeAndStatus(anyMap(), anyMap(), anyString(), anyString(), anyString(),
 				anyString(), anyBoolean())).thenReturn(totalIssueBacklogList);
-
+		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(totalIssueBacklogList);
 		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 	}
 
@@ -202,10 +206,10 @@ public class ProductionDefectAgingServiceImplTest {
 
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> defectDataListMap = productionIssuesByPriorityAndAgingService
-				.fetchKPIDataFromDb(leafNodeList.get(0), null, null, kpiRequest);
+				.fetchKPIDataFromDb(leafNodeList.get(0), LocalDate.of(2022, 1, 1).toString(), LocalDate.of(2022, 12, 31).toString(), kpiRequest);
 
 		assertThat("Total Defects issue list :", ((List<JiraIssue>) defectDataListMap.get(RANGE_TICKET_LIST)).size(),
-				equalTo(0));
+				equalTo(1));
 	}
 
 	@Test

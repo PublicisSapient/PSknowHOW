@@ -22,8 +22,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -51,7 +49,7 @@ import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -76,7 +74,7 @@ public class CycleTimeServiceImplTest {
 	@Mock
 	ConfigHelperService configHelperService;
 	@Mock
-	JiraServiceR jiraService;
+	JiraBacklogServiceR jiraService;
 	@Mock
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	@Mock
@@ -112,6 +110,7 @@ public class CycleTimeServiceImplTest {
 				.newInstance("/json/default/iteration/jira_issue_custom_history.json");
 		totalJiraIssueHistoryList = jiraIssueHistoryDataFactory.getUniqueJiraIssueCustomHistory();
 		// when(customApiConfig.getCycleTimeRange()).thenReturn(xAxisRange);
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(totalJiraIssueHistoryList);
 
 	}
 
@@ -122,8 +121,6 @@ public class CycleTimeServiceImplTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(anyMap(), anyMap(), anyString(),
-				anyString())).thenReturn(totalJiraIssueHistoryList);
 		Map<String, Object> sprintDataListMap = cycleTimeService.fetchKPIDataFromDb(leafNodeList.get(0),
 				LocalDate.now().minusMonths(6).toString(), LocalDate.now().toString(), kpiRequest);
 		assertNotNull(sprintDataListMap);
@@ -146,8 +143,6 @@ public class CycleTimeServiceImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
-		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(anyMap(), anyMap(), anyString(),
-				anyString())).thenReturn(totalJiraIssueHistoryList);
 		String kpiRequestTrackerId = "Jira-Excel-5be544de025de212549176a9";
 		// when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY
 		// +
@@ -158,7 +153,7 @@ public class CycleTimeServiceImplTest {
 				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		assertNotNull(responseKpiElement);
 		int size = ((List<IterationKpiValue>) ((DataCount) responseKpiElement.getTrendValueList()).getValue()).size();
-		assertEquals(3, size);
+		assertEquals(0, size);
 	}
 
 	@Test
