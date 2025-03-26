@@ -170,7 +170,7 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 					dateList.add(yearMonth);
 					double currentValue = dateCount.get(yearMonth);
 					if (Double.isNaN(currentValue)) {
-						currentValue = 0; // Set to 0 if NaN
+						currentValue = 0d; // Set to 0 if NaN
 					}
 					dateCount.put(yearMonth, currentValue + 1);
 

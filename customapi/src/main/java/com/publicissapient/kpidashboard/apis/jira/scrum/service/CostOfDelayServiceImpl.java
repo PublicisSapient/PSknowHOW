@@ -241,6 +241,9 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 					} else {
 						howerMap.put(date, epicWiseCost);
 					}
+					if(value.isNaN()){
+						value=0d;
+					}
 					return value + costOfDelay;
 				});
 			}

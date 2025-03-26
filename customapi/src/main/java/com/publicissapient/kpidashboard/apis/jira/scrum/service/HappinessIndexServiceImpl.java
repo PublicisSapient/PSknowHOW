@@ -178,7 +178,7 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 			String currentSprintComponentId = node.getSprintFilter().getId();
 			Pair<String, String> currentNodeIdentifier = Pair.of(node.getProjectFilter().getBasicProjectConfigId().toString(),
 					currentSprintComponentId);
-			Double happinessIndexValue = 0.0;
+			Double happinessIndexValue = Double.NaN;
 
 			if (CollectionUtils.isNotEmpty(sprintWiseHappinessIndexNumbers.get(currentNodeIdentifier))) {
 				List<Double> totalRatingsValue = sprintWiseHappinessIndexNumbers.get(currentNodeIdentifier).stream()
@@ -191,13 +191,16 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 					node.getSprintFilter().getName(), happinessIndexValue);
 
 			DataCount dataCount = new DataCount();
-			dataCount.setData(String.valueOf(happinessIndexValue));
+			if(!happinessIndexValue.isNaN()){
+				dataCount.setData(String.valueOf(happinessIndexValue));
+				dataCount.setValue(happinessIndexValue);
+			}
 			dataCount.setSProjectName(trendLineName);
 			dataCount.setSSprintID(node.getSprintFilter().getId());
 			dataCount.setSSprintName(node.getSprintFilter().getName());
 			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
 			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-			dataCount.setValue(happinessIndexValue);
+
 			dataCount.setHoverValue(new HashMap<>());
 			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
 			trendValueList.add(dataCount);
