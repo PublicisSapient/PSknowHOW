@@ -231,13 +231,13 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					.collect(Collectors.toList());
 			sprintWiseDefectListMap.put(sprint, defectList);
 
-			double dirForCurrentLeaf = Double.NaN;
-			if (CollectionUtils.isNotEmpty(defectList) && CollectionUtils.isNotEmpty(sprintWiseStories)) {
-				dirForCurrentLeaf = ((double) defectList.size() / totalStoryIdList.size()) * 100;
+			if ( CollectionUtils.isNotEmpty(totalStoryIdList)) {
+				double dirForCurrentLeaf = ((double) defectList.size() / totalStoryIdList.size()) * 100;
+				sprintWiseDefectList.addAll(defectList);
+				sprintWiseDIRMap.put(sprint, dirForCurrentLeaf);
+				setHowerMap(sprintWiseHowerMap, sprint, totalStoryIdList, sprintWiseDefectList);
 			}
-			sprintWiseDefectList.addAll(defectList);
-			sprintWiseDIRMap.put(sprint, dirForCurrentLeaf);
-			setHowerMap(sprintWiseHowerMap, sprint, totalStoryIdList, sprintWiseDefectList);
+
 		});
 		List<KPIExcelData> excelData = new ArrayList<>();
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -285,20 +285,17 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
 			Pair<String, String> currentNodeIdentifier) {
 		DataCount dataCount = new DataCount();
-		if (Double.isNaN(defectInjectionRateForCurrentLeaf)) {
-			dataCount.setData(null);
-			dataCount.setValue(null);
-		} else {
+		if (!Double.isNaN(defectInjectionRateForCurrentLeaf)) {
 			dataCount.setData(String.valueOf(Math.round(defectInjectionRateForCurrentLeaf)));
 			dataCount.setValue(defectInjectionRateForCurrentLeaf);
+			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 		}
-
 		dataCount.setSProjectName(trendLineName);
 		dataCount.setSSprintID(node.getSprintFilter().getId());
 		dataCount.setSSprintName(node.getSprintFilter().getName());
 		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
 		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-		dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
+
 		mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
 		return dataCount;
 	}

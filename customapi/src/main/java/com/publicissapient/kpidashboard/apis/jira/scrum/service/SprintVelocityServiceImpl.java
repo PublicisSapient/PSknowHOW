@@ -268,11 +268,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			if (!Double.isNaN(sprintVelocityForCurrentLeaf)) {
 				dataCount.setData(String.valueOf(roundingOff(sprintVelocityForCurrentLeaf)));
 				dataCount.setLineValue(roundingOff(sprintVelocityForCurrentLeaf));
-			} else {
-				dataCount.setData(null);
-				dataCount.setLineValue(null);
 			}
-
 			dataCount.setSProjectName(trendLineName);
 			dataCount.setSSprintID(node.getSprintFilter().getId());
 			dataCount.setSSprintName(node.getSprintFilter().getName());

@@ -366,12 +366,12 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 		if (value >= 0) {
 			dataCount.setData(String.valueOf(value));
 			dataCount.setValue(value);
-			if (key.equalsIgnoreCase(CommonConstant.OVERALL)) {
-				dataCount.setHoverValue(overAllHoverValueMap);
-			} else {
-				hoverValueMap.put(key, value.intValue());
-				dataCount.setHoverValue(hoverValueMap);
-			}
+		}
+		if (key.equalsIgnoreCase(CommonConstant.OVERALL)) {
+			dataCount.setHoverValue(overAllHoverValueMap);
+		} else {
+			hoverValueMap.put(key, value.intValue());
+			dataCount.setHoverValue(hoverValueMap);
 		}
 
 		dataCount.setSProjectName(trendLineName);

@@ -372,8 +372,9 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 		if (value >= 0) {
 			dataCount.setData(String.valueOf(value));
 			dataCount.setValue(value);
-			dataCount.setHoverValue(hoverValues);
+
 		}
+		dataCount.setHoverValue(hoverValues);
 		dataCount.setSProjectName(projectName);
 		dataCount.setKpiGroup(kpiGroup);
 		dataCount.setDate(date);

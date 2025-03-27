@@ -365,8 +365,9 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 		if (!Double.isNaN(automationForCurrentLeaf)) {
 			dataCount.setData(String.valueOf(Math.round(automationForCurrentLeaf)));
 			dataCount.setValue(automationForCurrentLeaf);
-			dataCount.setHoverValue(howerMap);
+
 		}
+		dataCount.setHoverValue(howerMap);
 		dataCount.setSProjectName(trendLineName);
 		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
 		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));

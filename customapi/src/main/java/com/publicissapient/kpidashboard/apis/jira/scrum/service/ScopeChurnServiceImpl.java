@@ -546,9 +546,6 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 		if (!Double.isNaN(data)) {
 			dataCount.setData(String.valueOf(Math.round(data)));
 			dataCount.setValue(Math.round(data));
-		} else {
-			dataCount.setData(null);
-			dataCount.setValue(null);
 		}
 	}
 

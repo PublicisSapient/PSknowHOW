@@ -282,9 +282,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			sprintWiseRejectedAndTotalDefects.put(REJECTED_DEFECT_DATA, sprintRejectedDefects);
 			sprintWiseRejectedAndTotalDefects.put(CLOSED_DEFECT_DATA, sprintCompletedDefects);
-			if (CollectionUtils.isNotEmpty(sprintRejectedDefects)
-					&& CollectionUtils.isNotEmpty(sprintCompletedDefects)) {
-
+			if (CollectionUtils.isNotEmpty(sprintCompletedDefects)) {
 				drrForCurrentLeaf = calculateKPIMetrics(sprintWiseRejectedAndTotalDefects);
 				sprintWiseDRRMap.put(sprint, drrForCurrentLeaf);
 			}
@@ -330,9 +328,8 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			if (!Double.isNaN(drrForCurrentLeaf)) {
 				dataCount.setData(String.valueOf(Math.round(drrForCurrentLeaf)));
 				dataCount.setValue(drrForCurrentLeaf);
-				dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 			}
-
+			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 			dataCount.setSProjectName(trendLineName);
 			dataCount.setSSprintID(node.getSprintFilter().getId());
 			dataCount.setSSprintName(node.getSprintFilter().getName());

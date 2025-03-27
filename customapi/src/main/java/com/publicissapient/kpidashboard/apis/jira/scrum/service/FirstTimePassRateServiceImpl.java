@@ -222,8 +222,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				if (!Double.isNaN(ftprForCurrentLeaf)) {
 					dataCount.setData(String.valueOf(Math.round(ftprForCurrentLeaf)));
 					dataCount.setValue(ftprForCurrentLeaf);
-					dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 				}
+				dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 				dataCount.setSProjectName(trendLineName);
 				dataCount.setSSprintID(node.getSprintFilter().getId());
 				dataCount.setSSprintName(node.getSprintFilter().getName());

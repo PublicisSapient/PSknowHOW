@@ -227,11 +227,12 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 		DataCount dataCount = new DataCount();
 		if(!Double.isNaN(value)) {
 			dataCount.setData(String.valueOf(value));
-			Map<String, Object> hoverValueMap = new HashMap<>();
-			hoverValueMap.put(keyName, value);
-			dataCount.setHoverValue(hoverValueMap);
+
 			dataCount.setValue(value);
 		}
+		Map<String, Object> hoverValueMap = new HashMap<>();
+		hoverValueMap.put(keyName, value);
+		dataCount.setHoverValue(hoverValueMap);
 		dataCount.setSSprintID(date);
 		dataCount.setSSprintName(date);
 		dataCount.setSProjectName(projectName);

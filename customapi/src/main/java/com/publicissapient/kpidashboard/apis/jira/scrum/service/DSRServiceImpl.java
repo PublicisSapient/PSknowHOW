@@ -275,7 +275,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					int totalDefectCount = subCategoryWiseTotalBugList.size();
 					Map<String, Object> howerMap = new HashMap<>();
 					Double dsrPercentage = Double.NaN;
-					if (CollectionUtils.isNotEmpty(issueList) && CollectionUtils.isNotEmpty(subCategoryWiseTotalBugList)) {
+					if (CollectionUtils.isNotEmpty(subCategoryWiseTotalBugList)) {
 						createDSRValidation(issueList, label, validationDataList);
 						int uatDefectCount = issueList.size();
 						howerMap.put(UAT, uatDefectCount);
@@ -357,9 +357,9 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		DataCount dataCount = new DataCount();
 		if(!Double.isNaN(value)) {
 			dataCount.setData(String.valueOf(value));
-			dataCount.setHoverValue((Map<String, Object>) overAllHoverValueMap.get(key));
 			dataCount.setValue(value);
 		}
+		dataCount.setHoverValue((Map<String, Object>) overAllHoverValueMap.get(key));
 		dataCount.setSProjectName(trendLineName);
 		dataCount.setSSprintID(node.getSprintFilter().getId());
 		dataCount.setSSprintName(node.getSprintFilter().getName());

@@ -229,7 +229,6 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 				dataCount.setData(String.valueOf(Math.round(qaddForCurrentLeaf)));
 				dataCount.setValue(qaddForCurrentLeaf);
 			}
-
 			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 			dataCount.setSProjectName(trendLineName);
 			dataCount.setSSprintID(node.getSprintFilter().getId());

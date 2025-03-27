@@ -269,9 +269,8 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 		if (value >= 0L) {
 			dataCount.setData(String.valueOf(value));
 			dataCount.setValue(value);
-			dataCount.setHoverValue(hoverValues);
 		}
-
+		dataCount.setHoverValue(hoverValues);
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
 

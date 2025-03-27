@@ -322,16 +322,13 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				subCategoryWiseClosedAndTotalDefectList.put(CLOSED_DEFECT_DATA, subCategoryWiseClosedDefectList);
 				subCategoryWiseClosedAndTotalDefectList.put(TOTAL_DEFECT_DATA, subCategoryWiseTotalDefectList);
 				Pair<String, String> sprint = Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID());
-				if (CollectionUtils.isNotEmpty(subCategoryWiseClosedDefectList)
-						&& CollectionUtils.isNotEmpty(subCategoryWiseTotalDefectList)) {
-
+				if ( CollectionUtils.isNotEmpty(subCategoryWiseTotalDefectList)) {
 					double dreForCurrentLeaf = calculateKPIMetrics(subCategoryWiseClosedAndTotalDefectList);
 					sprintWiseDREMap.put(sprint, dreForCurrentLeaf);
 				}
 
 				sprintWiseClosedDefectList.addAll(subCategoryWiseClosedDefectList);
 				sprintWiseTotaldDefectList.addAll(subCategoryWiseTotalDefectList);
-
 				sprintWiseCloseddDefectListMap.put(sprint, sprintWiseClosedDefectList);
 				sprintWiseTotaldDefectListMap.put(sprint, sprintWiseTotaldDefectList);
 
@@ -364,9 +361,8 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			if (!Double.isNaN(dreForCurrentLeaf)) {
 				dataCount.setData(String.valueOf(Math.round(dreForCurrentLeaf)));
 				dataCount.setValue(dreForCurrentLeaf);
-				dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 			}
-
+			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 			dataCount.setSProjectName(trendLineName);
 			dataCount.setSSprintID(node.getSprintFilter().getId());
 			dataCount.setSSprintName(node.getSprintFilter().getName());

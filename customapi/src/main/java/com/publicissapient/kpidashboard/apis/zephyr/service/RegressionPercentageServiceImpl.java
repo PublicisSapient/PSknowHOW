@@ -291,9 +291,10 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 		DataCount dataCount = new DataCount();
 		if (!Double.isNaN(sprintWiseAutomation)) {
 			dataCount.setData(String.valueOf(sprintWiseAutomation));
-			dataCount.setHoverValue(howerMap);
+
 			dataCount.setValue(sprintWiseAutomation);
 		}
+		dataCount.setHoverValue(howerMap);
 		dataCount.setSProjectName(trendLineName);
 		dataCount.setSSprintID(node.getSprintFilter().getId());
 		dataCount.setSSprintName(node.getSprintFilter().getName());
