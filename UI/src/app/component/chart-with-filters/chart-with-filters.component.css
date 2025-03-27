@@ -1,116 +1,119 @@
 #chartWithFilter_Container {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 #legend {
-    overflow-y: auto;
-    margin-top: 20px;
-    max-height: 200px;
+  overflow-y: auto;
+  margin-top: 20px;
+  max-height: 200px;
 }
 
 #legend table {
-    font-size: 12px;
+  font-size: 12px;
 }
 
 #legend table th,
 td {
-    text-align: left;
-    height: 20px;
-    padding: 5px;
+  text-align: left;
+  height: 20px;
+  padding: 5px;
 }
 
 .color_indicator {
-    height: 10px;
-    width: 10px;
-    border-radius: 50%;
-    /* opacity: 0.7; */
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  /* opacity: 0.7; */
 }
 
 #legend .legend_link {
-    color: var(--color-blue);
-    text-decoration: underline;
+  color: var(--color-blue);
+  text-decoration: underline;
 }
 
 /** Primeng style overrides **/
 
 :host ::ng-deep .p-selectbutton .p-button {
-    background-color: #EAEDF0;
-    color: #5D6670;
-    font-size: 10px;
-    font-family: inherit;
-    height: 30px;
-    border: 2px solid #EAEDF0;
-    border-radius: 8px !important;
-    transition: none;
+  background-color: #eaedf0;
+  color: #5d6670;
+  font-size: 10px;
+  font-family: inherit;
+  height: 30px;
+  border: 2px solid #eaedf0;
+  border-radius: 8px !important;
+  transition: none;
 }
 
 :host ::ng-deep .p-selectbutton.p-buttonset.p-component {
-    background-color: #EAEDF0;
-    border-radius: 8px !important;
-    width: fit-content;
+  background-color: #eaedf0;
+  border-radius: 8px !important;
+  width: fit-content;
 }
 
 :host ::ng-deep .p-selectbutton .p-button.p-highlight {
-    background-color: #fff;
-    color: #202429;
-    font-size: 10px;
-    font-family: Poppins_Medium, sans-serif;
-    font-weight: bold;
-    height: 30px;
-    border: 2px solid #EAEDF0;
-    border-radius: 8px !important;
+  background-color: #fff;
+  color: #202429;
+  font-size: 10px;
+  font-family: Poppins_Medium, sans-serif;
+  font-weight: bold;
+  height: 30px;
+  border: 2px solid #eaedf0;
+  border-radius: 8px !important;
 }
 
 :host ::ng-deep .p-selectbutton .p-button.p-highlight,
 .p-selectbutton .p-button:focus.p-highlight,
 .p-selectbutton .p-button:hover.p-highlight {
-    border: 2px solid #EAEDF0;
+  border: 2px solid #eaedf0;
 }
 
-:host ::ng-deep .p-selectbutton .p-button:not(.p-disabled):not(.p-highlight):hover {
-    border: 2px solid #EAEDF0;
+:host
+  ::ng-deep
+  .p-selectbutton
+  .p-button:not(.p-disabled):not(.p-highlight):hover {
+  border: 2px solid #eaedf0;
 }
 
 :host ::ng-deep .filter-btn {
-    background-color: #fff;
-    color: inherit;
-    border: 1px solid #333333;
-    height: 30px;
-    font-size: 10px;
+  background-color: #fff;
+  color: inherit;
+  border: 1px solid #333333;
+  height: 30px;
+  font-size: 10px;
 }
 
 :host ::ng-deep .p-multiselect .p-multiselect-label {
-    padding: 10px;
+  padding: 10px;
 }
 
 :host ::ng-deep .p-dropdown-label.p-inputtext {
-    font-size: 12px;
+  font-size: 12px;
 }
 
 /** Primeng style overrides end **/
 
 .min-ht {
-    min-height: 250px;
-    position: relative;
+  min-height: 250px;
+  position: relative;
 }
 
 .no-data {
-    position: absolute;
-    top: 0 !important;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: fit-content;
-    padding: 10px;
-    font-size: 13px;
-    height: 40px;
-    text-align: center;
-    background-color: #dedede;
-    margin: auto;
+  position: absolute;
+  top: 0 !important;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: fit-content;
+  padding: 10px;
+  font-size: 13px;
+  height: 40px;
+  text-align: center;
+  background-color: #dedede;
+  margin: auto;
 }
 
 .text-blue {
-    text-decoration: underline;
-    cursor: pointer;
+  text-decoration: underline;
+  cursor: pointer;
 }

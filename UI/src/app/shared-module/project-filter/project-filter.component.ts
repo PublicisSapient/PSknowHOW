@@ -26,7 +26,7 @@ import { MultiSelect } from 'primeng/multiselect';
 @Component({
   selector: 'app-project-filter',
   templateUrl: './project-filter.component.html',
-  styleUrls: ['./project-filter.component.css']
+  styleUrls: ['./project-filter.component.css'],
 })
 export class ProjectFilterComponent implements OnInit {
   @Output() projectSelectedEvent = new EventEmitter<string>();
@@ -44,7 +44,12 @@ export class ProjectFilterComponent implements OnInit {
   selectedValTemplateValue = <any>[];
   selectedValueIsStillThere: any = {};
   valueRemoved: any = {};
-  constructor(private httpService: HttpService, private service: SharedService, private messageService: MessageService, private helper: HelperService) { }
+  constructor(
+    private httpService: HttpService,
+    private service: SharedService,
+    private messageService: MessageService,
+    private helper: HelperService,
+  ) {}
 
   ngOnInit(): void {
     this.getProjects();
@@ -53,19 +58,28 @@ export class ProjectFilterComponent implements OnInit {
   // fetches all projects
   getProjects() {
     this.resetDropdowns = true;
-    this.httpService.getAllProjects()
-      .subscribe(projectsData => {
-        if (projectsData[0] !== 'error' && !projectsData.error && projectsData?.data) {
-          this.data = projectsData.data;
-          this.hierarchyArray = this.data[0].hierarchy.map((elem) => elem.hierarchyLevel.hierarchyLevelId);
+    this.httpService.getAllProjects().subscribe((projectsData) => {
+      if (
+        projectsData[0] !== 'error' &&
+        !projectsData.error &&
+        projectsData?.data
+      ) {
+        this.data = projectsData.data;
+        this.hierarchyArray = this.data[0].hierarchy.map(
+          (elem) => elem.hierarchyLevel.hierarchyLevelId,
+        );
 
-          this.service.sendProjectData(this.data);
-          this.populateDataLists(projectsData.data, 'all');
-        } else {
-          // show error message
-          this.messageService.add({ severity: 'error', summary: 'User needs to be assigned a project for the access to work on dashboards.' });
-        }
-      });
+        this.service.sendProjectData(this.data);
+        this.populateDataLists(projectsData.data, 'all');
+      } else {
+        // show error message
+        this.messageService.add({
+          severity: 'error',
+          summary:
+            'User needs to be assigned a project for the access to work on dashboards.',
+        });
+      }
+    });
   }
 
   populateDataLists(data, filterType, projectFilter = null) {
@@ -76,37 +90,64 @@ export class ProjectFilterComponent implements OnInit {
           selectedFilterValues = this.hierarchyData[filterType];
         }
 
-        this.hierarchyArray.forEach(h => {
+        this.hierarchyArray.forEach((h) => {
           if (h !== filterType) {
             this.hierarchyData[h] = [];
           }
         });
 
-        data.forEach(dataElem => {
+        data.forEach((dataElem) => {
           dataElem.hierarchy.forEach((hierarchyElem, index) => {
             if (filterType === 'all') {
-              if (!this.hierarchyData[hierarchyElem.hierarchyLevel.hierarchyLevelId] || !this.hierarchyData[hierarchyElem.hierarchyLevel.hierarchyLevelId].length) {
-                this.hierarchyData[hierarchyElem.hierarchyLevel.hierarchyLevelId] = [];
+              if (
+                !this.hierarchyData[
+                  hierarchyElem.hierarchyLevel.hierarchyLevelId
+                ] ||
+                !this.hierarchyData[
+                  hierarchyElem.hierarchyLevel.hierarchyLevelId
+                ].length
+              ) {
+                this.hierarchyData[
+                  hierarchyElem.hierarchyLevel.hierarchyLevelId
+                ] = [];
               }
 
-              this.hierarchyData[hierarchyElem.hierarchyLevel.hierarchyLevelId].push({
+              this.hierarchyData[
+                hierarchyElem.hierarchyLevel.hierarchyLevelId
+              ].push({
                 name: hierarchyElem.value,
                 code: hierarchyElem.orgHierarchyNodeId,
-                parent: index >= 1 ? `(${dataElem.hierarchy[index - 1].value})` : ''
+                parent:
+                  index >= 1 ? `(${dataElem.hierarchy[index - 1].value})` : '',
               });
             } else {
-
-              if (hierarchyElem.hierarchyLevel.hierarchyLevelId === filterType) {
+              if (
+                hierarchyElem.hierarchyLevel.hierarchyLevelId === filterType
+              ) {
                 // do nothing
               } else {
-                if (!this.hierarchyData[hierarchyElem.hierarchyLevel.hierarchyLevelId] || !this.hierarchyData[hierarchyElem.hierarchyLevel.hierarchyLevelId].length) {
-                  this.hierarchyData[hierarchyElem.hierarchyLevel.hierarchyLevelId] = [];
+                if (
+                  !this.hierarchyData[
+                    hierarchyElem.hierarchyLevel.hierarchyLevelId
+                  ] ||
+                  !this.hierarchyData[
+                    hierarchyElem.hierarchyLevel.hierarchyLevelId
+                  ].length
+                ) {
+                  this.hierarchyData[
+                    hierarchyElem.hierarchyLevel.hierarchyLevelId
+                  ] = [];
                 }
 
-                this.hierarchyData[hierarchyElem.hierarchyLevel.hierarchyLevelId].push({
+                this.hierarchyData[
+                  hierarchyElem.hierarchyLevel.hierarchyLevelId
+                ].push({
                   name: hierarchyElem.value,
                   code: hierarchyElem.orgHierarchyNodeId,
-                  parent: index >= 1 ? `(${dataElem.hierarchy[index - 1].value})` : ''
+                  parent:
+                    index >= 1
+                      ? `(${dataElem.hierarchy[index - 1].value})`
+                      : '',
                 });
               }
             }
@@ -114,16 +155,22 @@ export class ProjectFilterComponent implements OnInit {
         });
       }
       Object.keys(this.hierarchyData).forEach((key) => {
-        this.hierarchyData[key] = this.findUniques(this.hierarchyData[key], ['name', 'code', 'parent']);
+        this.hierarchyData[key] = this.findUniques(this.hierarchyData[key], [
+          'name',
+          'code',
+          'parent',
+        ]);
       });
       if (!projectFilter) {
         this.projects = Object.assign([], data);
       }
 
       const dataIdMap = data.map((d) => d.id);
-      const selectedValProjectsIdMap = this.selectedValProjects.map((d) => d.id);
+      const selectedValProjectsIdMap = this.selectedValProjects.map(
+        (d) => d.id,
+      );
       this.selectedValProjects = [];
-      dataIdMap.forEach(element => {
+      dataIdMap.forEach((element) => {
         if (selectedValProjectsIdMap.includes(element)) {
           this.selectedValProjects.push(data.filter((d) => d.id === element));
         }
@@ -182,37 +229,56 @@ export class ProjectFilterComponent implements OnInit {
   findUniques(data, propertyArray) {
     data = this.helper.sortByField(data, ['name']);
     const seen = Object.create(null);
-    return data?.filter(o => {
-      const key = propertyArray.map(k => o[k]).join('|');
-      if (!seen[key]) {
-        seen[key] = true;
-        return true;
-      }
-    }).map((proj) => {
-      const obj = {};
-      propertyArray.forEach(element => {
-        obj[element] = proj[element];
+    return data
+      ?.filter((o) => {
+        const key = propertyArray.map((k) => o[k]).join('|');
+        if (!seen[key]) {
+          seen[key] = true;
+          return true;
+        }
+      })
+      .map((proj) => {
+        const obj = {};
+        propertyArray.forEach((element) => {
+          obj[element] = proj[element];
+        });
+        return obj;
       });
-      return obj;
-    });
   }
 
-  filterData(event, filterType, filterValueCode, filterValueName, filterValueParent) {
+  filterData(
+    event,
+    filterType,
+    filterValueCode,
+    filterValueName,
+    filterValueParent,
+  ) {
     this.valueRemoved = {};
     event.stopPropagation();
     this.filteredData = JSON.parse(JSON.stringify(this.data));
     if (!this.selectedVal[filterType]) {
       this.selectedVal[filterType] = [];
     }
-    if (!this.selectedVal[filterType] || !this.selectedVal[filterType].filter(f => f.code === filterValueCode).length) {
+    if (
+      !this.selectedVal[filterType] ||
+      !this.selectedVal[filterType].filter((f) => f.code === filterValueCode)
+        .length
+    ) {
       const obj = {
         name: filterValueName,
         code: filterValueCode,
-        parent: filterValueParent
+        parent: filterValueParent,
       };
       this.selectedVal[filterType].push(obj);
     } else {
-      this.valueRemoved['val'] = this.selectedVal[filterType].splice(this.selectedVal[filterType].indexOf(this.selectedVal[filterType].filter(f => f.code === filterValueCode)[0]), 1);
+      this.valueRemoved['val'] = this.selectedVal[filterType].splice(
+        this.selectedVal[filterType].indexOf(
+          this.selectedVal[filterType].filter(
+            (f) => f.code === filterValueCode,
+          )[0],
+        ),
+        1,
+      );
       if (!this.selectedVal[filterType].length) {
         delete this.selectedVal[filterType];
       }
@@ -222,9 +288,16 @@ export class ProjectFilterComponent implements OnInit {
     let newFilteredData = [];
     if (Object.keys(this.selectedVal).length) {
       Object.keys(this.selectedVal).forEach((filterType) => {
-        if (this.selectedVal[filterType] && this.selectedVal[filterType].length) {
-          this.selectedValTemplateValue[filterType] = this.selectedVal[filterType]?.map(s => s.name).join(', ');
-          this.filteredData.forEach(proj => {
+        if (
+          this.selectedVal[filterType] &&
+          this.selectedVal[filterType].length
+        ) {
+          this.selectedValTemplateValue[filterType] = this.selectedVal[
+            filterType
+          ]
+            ?.map((s) => s.name)
+            .join(', ');
+          this.filteredData.forEach((proj) => {
             if (proj.hierarchy.length) {
               if (this.hierarchyMatch(proj)) {
                 newFilteredData.push(proj);
@@ -234,7 +307,11 @@ export class ProjectFilterComponent implements OnInit {
         }
       });
 
-      newFilteredData = this.findUniques(newFilteredData, ['id', 'projectDisplayName', 'hierarchy']);
+      newFilteredData = this.findUniques(newFilteredData, [
+        'id',
+        'projectDisplayName',
+        'hierarchy',
+      ]);
       this.filteredData = newFilteredData;
       if (Object.keys(this.selectedVal).length) {
         this.filtersApplied = true;
@@ -248,9 +325,11 @@ export class ProjectFilterComponent implements OnInit {
         const levelData = this.hierarchyData[level].map((m) => m.code);
         if (this.selectedVal[level] && this.selectedVal[level].length) {
           const selectedLevelData = this.selectedVal[level].map((m) => m.code);
-          selectedLevelData.forEach(element => {
+          selectedLevelData.forEach((element) => {
             if (levelData.indexOf(element) === -1) {
-              this.selectedVal[level] = this.selectedVal[level].filter((f) => f.code !== element);
+              this.selectedVal[level] = this.selectedVal[level].filter(
+                (f) => f.code !== element,
+              );
             }
           });
         }
@@ -269,19 +348,22 @@ export class ProjectFilterComponent implements OnInit {
       const key = item.hierarchyLevel.hierarchyLevelId; // Extract hierarchyLevelId as key
       acc[key] = {
         code: item.orgHierarchyNodeId,
-        value: item.value
+        value: item.value,
       };
       return acc;
     }, {});
 
     Object.keys(this.selectedVal).forEach((key) => {
-      if(projHieararchy[key]) {
-        if(this.selectedVal[key].map(x => x.code).includes(projHieararchy[key].code)) {
+      if (projHieararchy[key]) {
+        if (
+          this.selectedVal[key]
+            .map((x) => x.code)
+            .includes(projHieararchy[key].code)
+        ) {
           result = true;
         }
       }
     });
-
 
     return result;
   }
@@ -315,20 +397,21 @@ export class ProjectFilterComponent implements OnInit {
         if (this.selectedVal[hierarchy] && this.selectedVal[hierarchy].length) {
           obj['accessType'] = hierarchy;
           obj['value'] = [];
-          const selectedHierarchyArr = this.selectedVal[hierarchy].map((item) => ({
-            itemId: item.code,
-            itemName: item.name
-          }));
+          const selectedHierarchyArr = this.selectedVal[hierarchy].map(
+            (item) => ({
+              itemId: item.code,
+              itemName: item.name,
+            }),
+          );
           obj['value'] = [...selectedHierarchyArr];
         }
       });
-
     } else {
       obj['accessType'] = 'project';
       obj['value'] = this.selectedValProjects.map((item) => ({
-          itemId: item.projectNodeId,
-          itemName: item.projectDisplayName
-        }));
+        itemId: item.projectNodeId,
+        itemName: item.projectDisplayName,
+      }));
     }
     obj['hierarchyArr'] = this.hierarchyArray;
     obj['valueRemoved'] = this.valueRemoved;
@@ -336,6 +419,6 @@ export class ProjectFilterComponent implements OnInit {
   }
 
   getSelectedValTemplateValue(hierarchyLevelId) {
-    return this.selectedVal[hierarchyLevelId]?.map(s => s.name).join(', ');
+    return this.selectedVal[hierarchyLevelId]?.map((s) => s.name).join(', ');
   }
 }

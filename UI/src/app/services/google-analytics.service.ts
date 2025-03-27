@@ -4,7 +4,7 @@ import { ScriptStore } from './script-store';
 declare let document: any;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GoogleAnalyticsService {
   window = window;
@@ -14,11 +14,10 @@ export class GoogleAnalyticsService {
     ScriptStore.forEach((script: any) => {
       this.scripts[script.name] = {
         loaded: false,
-        src: script.src
+        src: script.src,
       };
     });
   }
-
 
   load(...scripts: string[]) {
     const promises: any[] = [];
@@ -36,28 +35,37 @@ export class GoogleAnalyticsService {
         const script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = this.scripts[name].src;
-        if (script.readyState) {  //IE
+        if (script.readyState) {
+          //IE
           script.onreadystatechange = () => {
-            if (script.readyState === 'loaded' || script.readyState === 'complete') {
+            if (
+              script.readyState === 'loaded' ||
+              script.readyState === 'complete'
+            ) {
               script.onreadystatechange = null;
               this.scripts[name].loaded = true;
               resolve({ script: name, loaded: true, status: 'Loaded' });
             }
           };
-        } else {  //Others
+        } else {
+          //Others
           script.onload = () => {
             this.scripts[name].loaded = true;
             resolve({ script: name, loaded: true, status: 'Loaded' });
           };
         }
-        script.onerror = (error: any) => resolve({ script: name, loaded: false, status: 'Loaded' });
+        script.onerror = (error: any) =>
+          resolve({ script: name, loaded: false, status: 'Loaded' });
         document.getElementsByTagName('head')[0].appendChild(script);
       }
     });
   }
 
   setPageLoad(data) {
-    const dataLayer = this.window && this.window.hasOwnProperty('dataLayer') ? this.window['dataLayer'] : [];
+    const dataLayer =
+      this.window && this.window.hasOwnProperty('dataLayer')
+        ? this.window['dataLayer']
+        : [];
 
     dataLayer.push({
       event: 'pageLoad',
@@ -66,59 +74,77 @@ export class GoogleAnalyticsService {
       uiType: data.uiType,
       server: {
         instanceName: window.location.origin,
-        version: data.version
-      }
+        version: data.version,
+      },
     });
   }
 
   setLoginMethod(data, loginType) {
-    const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
+    const dataLayer =
+      this.window && typeof this.window['dataLayer'] !== undefined
+        ? this.window['dataLayer']
+        : [];
     dataLayer.push({
-      'event': 'login',
-      'authentication_method': loginType,
-      'user_id': data.user_id
+      event: 'login',
+      authentication_method: loginType,
+      user_id: data.user_id,
     });
   }
 
   setProjectData(data) {
-    const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
+    const dataLayer =
+      this.window && typeof this.window['dataLayer'] !== undefined
+        ? this.window['dataLayer']
+        : [];
     for (let i = 0; i < data?.length; i++) {
       dataLayer?.push({
         event: 'ProjectViewed',
-        ...data[i]
+        ...data[i],
       });
     }
   }
 
   setProjectToolsData(data) {
-    const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
+    const dataLayer =
+      this.window && typeof this.window['dataLayer'] !== undefined
+        ? this.window['dataLayer']
+        : [];
     dataLayer?.push({
       event: 'ProjectToolsConfigured',
-      ...data
+      ...data,
     });
   }
 
   setKpiData(data) {
-    const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
+    const dataLayer =
+      this.window && typeof this.window['dataLayer'] !== undefined
+        ? this.window['dataLayer']
+        : [];
     dataLayer?.push({
       event: 'kpiViewed',
-      ...data
+      ...data,
     });
   }
 
   createProjectData(data) {
-    const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
+    const dataLayer =
+      this.window && typeof this.window['dataLayer'] !== undefined
+        ? this.window['dataLayer']
+        : [];
     dataLayer?.push({
       event: 'projectCreated',
-      ...data
+      ...data,
     });
   }
 
-  setUIType(data){
-    const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
+  setUIType(data) {
+    const dataLayer =
+      this.window && typeof this.window['dataLayer'] !== undefined
+        ? this.window['dataLayer']
+        : [];
     dataLayer?.push({
       event: 'uiType',
-      ...data
+      ...data,
     });
   }
 }

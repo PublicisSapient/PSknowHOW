@@ -19,52 +19,55 @@
 import { ProfileModule } from './profile.module';
 import { ProfileComponent } from './profile.component';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { SharedService } from 'src/app/services/shared.service';
 
 describe('ProfileModule', () => {
   let fixture: ComponentFixture<ProfileComponent>;
   let profileModule: ProfileModule;
-  let component : ProfileComponent ;
+  let component: ProfileComponent;
   let authService: GetAuthorizationService;
   let sharedService: SharedService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations : [ProfileComponent],
-      imports : [RouterTestingModule],
-      providers : [GetAuthorizationService,SharedService]
-
+      declarations: [ProfileComponent],
+      imports: [RouterTestingModule],
+      providers: [GetAuthorizationService, SharedService],
     }).compileComponents();
     profileModule = new ProfileModule();
     fixture = TestBed.createComponent(ProfileComponent);
     component = fixture.componentInstance;
     authService = TestBed.inject(GetAuthorizationService);
-    sharedService =TestBed.inject(SharedService);
+    sharedService = TestBed.inject(SharedService);
   });
 
   it('should create an instance', () => {
     expect(profileModule).toBeTruthy();
   });
 
-  it("should user login as super admin",()=>{
-    spyOn(authService,'checkIfSuperUser').and.returnValue(true);
+  it('should user login as super admin', () => {
+    spyOn(authService, 'checkIfSuperUser').and.returnValue(true);
     component.ngOnInit();
     expect(component.isSuperAdmin).toBeTruthy();
-  })
+  });
 
-  it("should user login as project admin",()=>{
-    spyOn(authService,'checkIfProjectAdmin').and.returnValue(true);
+  it('should user login as project admin', () => {
+    spyOn(authService, 'checkIfProjectAdmin').and.returnValue(true);
     component.ngOnInit();
     expect(component.isProjectAdmin).toBeTruthy();
-  })
+  });
 
-  it("should AD login enable and change password disable",()=>{
-   localStorage.setItem('loginType',"AD");
-   localStorage.setItem('currentUserDetails',JSON.stringify({}))
+  it('should AD login enable and change password disable', () => {
+    localStorage.setItem('loginType', 'AD');
+    localStorage.setItem('currentUserDetails', JSON.stringify({}));
     component.ngOnInit();
     expect(component.changePswdDisabled).toBeTruthy();
-  })
-
+  });
 });

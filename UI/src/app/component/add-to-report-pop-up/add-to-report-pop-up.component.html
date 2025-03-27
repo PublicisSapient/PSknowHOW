@@ -1,0 +1,85 @@
+<!-- Existing Reports Slider-->
+<div class="slider-wrapper" *ngIf="!createNewReportTemplate && existingReportData?.length">
+    <!-- Left Navigation Button -->
+    <button class="nav-button left" (click)="scrollLeft()">
+        <i class="pi pi-chevron-left"></i>
+    </button>
+
+    <!-- Scrollable container for report buttons -->
+    <div class="slider-container" #sliderContainer>
+        <p-button *ngFor="let report of existingReportData" class="slider-item"
+            [ngClass]="{active: reportName === report.name}" (onClick)="reportName = report.name; emitReportName(report);">
+            {{ report.name }}
+        </p-button>
+    </div>
+
+    <!-- Right Navigation Button -->
+    <button class="nav-button right" (click)="scrollRight()">
+        <i class="pi pi-chevron-right"></i>
+    </button>
+</div>
+<!-- Existing Reports Slider End-->
+
+
+<div class="selected-filter-container p-d-flex p-jc-between p-p-3"
+    *ngIf="reportObj.metadata.hieararchy && objectKeys(reportObj.metadata.hieararchy)?.length">
+    <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
+        <div class="p-col-4" *ngFor="let superKey of objectKeys(reportObj.metadata.hieararchy)">
+            <strong>{{ superKey }}&nbsp;:&nbsp;</strong> <span>{{
+                reportObj.metadata.hieararchy[superKey].nodeDisplayName }}</span>
+        </div>
+        <div class="p-d-flex p-jc-between"
+        *ngFor="let superKey of objectValues(reportObj.metadata.trendColors)">
+        <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
+            <div *ngFor="let key of objectKeys(superKey['tooltip']); let i = index;" class="p-col-4">
+                <strong>{{ key }}&nbsp;:&nbsp;</strong> <span>{{ superKey['tooltip'][key] }}</span>
+            </div>
+            <div class="p-col-12">
+                <strong>{{superKey['labelName'] | titlecase }}:&nbsp;</strong>
+                <span class="align-list-marker" [ngStyle]="{'background':superKey?.color}"></span>
+                <span>{{ superKey['nodeDisplayName'] }}</span>
+            </div>
+        </div>
+        <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
+            <div *ngFor="let key of objectKeys(reportObj.metadata.additional_filters); let i = index;" class="p-col-4">
+                <strong>{{ key }}&nbsp;:&nbsp;</strong> <span>{{ segregateSprints(reportObj.metadata.additional_filters, key, superKey ) }}</span>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<ng-container *ngIf="!objectKeys(reportObj.metadata.hieararchy)?.length">
+    <div class="selected-filter-container p-d-flex p-p-3"
+        *ngFor="let superKey of objectValues(reportObj.metadata.trendColors)">
+        <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
+            <div *ngFor="let key of objectKeys(superKey['tooltip']); let i = index;" class="p-col-4">
+                <strong>{{ key }}&nbsp;:&nbsp;</strong> <span>{{ superKey['tooltip'][key] }}</span>
+            </div>
+            <div class="p-col-4">
+                <strong>{{superKey['labelName'] | titlecase }}:&nbsp;</strong>
+                <span class="align-list-marker" [ngStyle]="{'background':superKey?.color}"></span>
+                <span>{{ superKey['nodeDisplayName'] }}</span>
+            </div>
+        </div>
+        <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
+            <div *ngFor="let key of objectKeys(reportObj.metadata.additional_filters); let i = index;" class="p-col-4">
+                <strong>{{ key }}&nbsp;:&nbsp;</strong> <span>{{ segregateSprints(reportObj.metadata.additional_filters, key, superKey ) }}</span>
+            </div>
+        </div>
+    </div>
+</ng-container>
+
+<app-report-kpi-card [currentChartData]="reportObj.chartData" [kpiDataStatusCode]="reportObj.metadata.kpiDataStatusCode"
+    [kpiData]="reportObj.metadata" [chartType]="reportObj.metadata.chartType" [kpiTrendsObj]="reportObj.metadata.trend"
+    [trendColors]="reportObj.metadata.trendColors" [kpiFilters]="reportObj.metadata.selectedKPIFilters"
+    [selectedButtonValue]="reportObj.metadata.selectedButtonValue" [cardData]="reportObj.metadata.cardData"
+    [kpiFilterData]="reportObj.metadata?.kpiFilterData" [selectedTab]="reportObj.metadata.selectedTab"
+    [iterationKPIFilterValues]="reportObj.metadata.iterationKPIFilterValues"
+    [filterApplyData]="reportObj.metadata.filterApplyData"
+    [kpiSelectedFilterObj]="reportObj.metadata.kpiSelectedFilterObj"
+    [chartColorList]="reportObj.metadata.chartColorList" [yAxis]="reportObj.metadata.yAxis"
+    [capturedAt]="reportObj.metadata.capturedAt" [kpiHeight]="reportObj.metadata.kpiHeight"
+    [releaseEndDate]="reportObj.metadata.releaseEndDate" [hieararchy]="reportObj.metadata.hieararchy"
+    [additional_filters]="reportObj.metadata.additional_filters">
+</app-report-kpi-card>

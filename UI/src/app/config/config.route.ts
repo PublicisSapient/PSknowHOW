@@ -29,58 +29,60 @@ import { FeatureGuard } from '../services/feature.guard';
 import { ViewerGuard } from '../services/viewer.guard';
 
 export const ConfigRoutes: Routes = [
-    {
+  {
+    path: '',
+    component: ConfigComponent,
+    canActivateChild: [FeatureGuard],
+    children: [
+      {
         path: '',
-        component: ConfigComponent,
-        canActivateChild : [FeatureGuard],
-        children: [
-            {
-                path: '',
-                canActivate: [GuestGuard],
-                loadChildren: () => import('./project-config/project-config.module').then(m => m.ProjectConfigModule), canLoad: [FeatureGuard],
-                data: {
-                  feature: "Project Config"
-                }
-            },
-            {
-                path: 'Upload',
-                component: UploadComponent,
-                canActivate: [GuestGuard]
-            },
-            {
-                path: 'Capacity',
-                component: CapacityPlanningComponent,
-                canActivate: [GuestGuard]
-            },
-            {
-                path: 'Dashboardconfig',
-                component: DashboardconfigComponent,
-                canActivate: [ViewerGuard, GuestGuard]
-            }
-            ,
-            {
-                path: 'Profile',
-                canActivate: [GuestGuard],
-                loadChildren: () => import('./profile/profile.module').then(m => m.ProfileModule), canLoad: [FeatureGuard],
-                data: {
-                  feature: "Profile"
-                }
-            },
-            {
-                path: 'AdvancedSettings',
-                component: AdvancedSettingsComponent,
-                canActivate: [GuestGuard]
-            }
-        ]
-    }
+        canActivate: [GuestGuard],
+        loadChildren: () =>
+          import('./project-config/project-config.module').then(
+            (m) => m.ProjectConfigModule,
+          ),
+        canLoad: [FeatureGuard],
+        data: {
+          feature: 'Project Config',
+        },
+      },
+      {
+        path: 'Upload',
+        component: UploadComponent,
+        canActivate: [GuestGuard],
+      },
+      {
+        path: 'Capacity',
+        component: CapacityPlanningComponent,
+        canActivate: [GuestGuard],
+      },
+      {
+        path: 'Dashboardconfig',
+        component: DashboardconfigComponent,
+        canActivate: [ViewerGuard, GuestGuard],
+      },
+      {
+        path: 'Profile',
+        canActivate: [GuestGuard],
+        loadChildren: () =>
+          import('./profile/profile.module').then((m) => m.ProfileModule),
+        canLoad: [FeatureGuard],
+        data: {
+          feature: 'Profile',
+        },
+      },
+      {
+        path: 'AdvancedSettings',
+        component: AdvancedSettingsComponent,
+        canActivate: [GuestGuard],
+      },
+    ],
+  },
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(ConfigRoutes)],
-    exports: [RouterModule],
-    providers: [
-        AccessGuard, FeatureGuard, ViewerGuard
-    ]
+  imports: [RouterModule.forChild(ConfigRoutes)],
+  exports: [RouterModule],
+  providers: [AccessGuard, FeatureGuard, ViewerGuard],
 })
-
-export class ConfigRoutingModule { }
+export class ConfigRoutingModule {}

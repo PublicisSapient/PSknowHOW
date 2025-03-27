@@ -1,4 +1,9 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 
 import { RecommendationsComponent } from './recommendations.component';
 import { HttpService } from 'src/app/services/http.service';
@@ -17,59 +22,58 @@ describe('RecommendationsComponent', () => {
   let service: SharedService;
   let messageService: MessageService;
   const filterData = {
-    "kpiIdList": ["kpi72"],
-    "ids": [
-      "xyz_123"
-    ],
-    "level": 6,
-    "selectedMap": {
-      "project": [],
-      "sprint": ["xyz_123"]
+    kpiIdList: ['kpi72'],
+    ids: ['xyz_123'],
+    level: 6,
+    selectedMap: {
+      project: [],
+      sprint: ['xyz_123'],
     },
-    "sprintIncluded": [
-      "CLOSED"
-    ],
-    "label": "sprint"
+    sprintIncluded: ['CLOSED'],
+    label: 'sprint',
   };
-  const recommendationsRes = [{
-    "projectId": "xyz",
-    "sprintId": "xyz_123",
-    "recommendations": [
-      {
-        "kpiId": "kpi14",
-        "kpiName": "KPI name for kpi14",
-        "maturity": 3,
-        "recommendationSummary": "The project quality can be improved!",
-        "recommendationDetails": "The last data has showed a decrease in the quality of the project for the last sprints!",
-        "recommendationType": "Warnings",
-        "filter": "Overall"
-      },
-      {
-        "kpiId": "kpi35",
-        "kpiName": "KPI name for kpi35",
-        "maturity": 5,
-        "recommendationSummary": "Nice job!",
-        "recommendationDetails": "The team did a great job during the last sprints!",
-        "recommendationType": "Good Practices",
-        "filter": "Overall"
-      },
-      {
-        "kpiId": "kpi11",
-        "kpiName": "KPI name for kpi11",
-        "maturity": 5,
-        "recommendationSummary": "Nice job!",
-        "recommendationDetails": "The team did a great job during the last sprints!",
-        "recommendationType": "Critical",
-        "filter": "Overall"
-      },
-    ]
-  }]
+  const recommendationsRes = [
+    {
+      projectId: 'xyz',
+      sprintId: 'xyz_123',
+      recommendations: [
+        {
+          kpiId: 'kpi14',
+          kpiName: 'KPI name for kpi14',
+          maturity: 3,
+          recommendationSummary: 'The project quality can be improved!',
+          recommendationDetails:
+            'The last data has showed a decrease in the quality of the project for the last sprints!',
+          recommendationType: 'Warnings',
+          filter: 'Overall',
+        },
+        {
+          kpiId: 'kpi35',
+          kpiName: 'KPI name for kpi35',
+          maturity: 5,
+          recommendationSummary: 'Nice job!',
+          recommendationDetails:
+            'The team did a great job during the last sprints!',
+          recommendationType: 'Good Practices',
+          filter: 'Overall',
+        },
+        {
+          kpiId: 'kpi11',
+          kpiName: 'KPI name for kpi11',
+          maturity: 5,
+          recommendationSummary: 'Nice job!',
+          recommendationDetails:
+            'The team did a great job during the last sprints!',
+          recommendationType: 'Critical',
+          filter: 'Overall',
+        },
+      ],
+    },
+  ];
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule
-      ],
+      imports: [HttpClientTestingModule],
       declarations: [RecommendationsComponent],
       providers: [
         {
@@ -81,11 +85,10 @@ describe('RecommendationsComponent', () => {
         HttpService,
         SharedService,
         { provide: APP_CONFIG, useValue: AppConfig },
-        MessageService
+        MessageService,
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-      .compileComponents();
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    }).compileComponents();
     service = TestBed.inject(SharedService);
     messageService = TestBed.inject(MessageService);
     fixture = TestBed.createComponent(RecommendationsComponent);
@@ -100,29 +103,34 @@ describe('RecommendationsComponent', () => {
 
   it('should get recommendations based on kpiIdList', fakeAsync(() => {
     component.selectedSprint = {};
-    const sprintObj = { nodeId: 'xyz_123', 'nodeName': 'xyz' };
+    const sprintObj = { nodeId: 'xyz_123', nodeName: 'xyz' };
     spyOn(service, 'getSprintForRnR').and.returnValue(sprintObj);
     component.filterData = filterData;
     component.displayModal = true;
     component.tabs = [];
     component.maturities = [];
     component.recommendationsData = [];
-    spyOn(httpService, 'getRecommendations').and.returnValue(of(recommendationsRes))
+    spyOn(httpService, 'getRecommendations').and.returnValue(
+      of(recommendationsRes),
+    );
     component.handleClick();
     tick();
     expect(component.tabs.length).toBe(3);
     expect(component.maturities.length).toBe(2);
     expect(component.recommendationsData.length).toBe(3);
-  }))
+  }));
 
   it('should display error message on error', fakeAsync(() => {
     component.filterData = filterData;
     // Arrange
-    const errorMessage = 'Error in Kpi Column Configurations. Please try after sometime!';
+    const errorMessage =
+      'Error in Kpi Column Configurations. Please try after sometime!';
     // spyOn(component, 'handleClick').and.callThrough();
-    const spy = spyOn(httpService, 'getRecommendations').and.returnValue(throwError(errorMessage));
+    const spy = spyOn(httpService, 'getRecommendations').and.returnValue(
+      throwError(errorMessage),
+    );
     const messageSpy = spyOn(messageService, 'add');
-    const sprintObj = { nodeId: 'xyz_123', 'nodeName': 'xyz' };
+    const sprintObj = { nodeId: 'xyz_123', nodeName: 'xyz' };
     spyOn(service, 'getSprintForRnR').and.returnValue(sprintObj);
     // Act
     component.handleClick();
@@ -130,7 +138,9 @@ describe('RecommendationsComponent', () => {
 
     // Assert
     expect(spy).toHaveBeenCalled();
-    expect(messageSpy).toHaveBeenCalledWith({ severity: 'error', summary: errorMessage });
+    expect(messageSpy).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: errorMessage,
+    });
   }));
 });
-

@@ -17,15 +17,14 @@
  ******************************************************************************/
 
 export const environment = {
-    production: true,
-    baseUrl: '',
-    SSO_LOGIN: false,
-    CENTRAL_LOGIN_URL: '',
-    CENTRAL_API_URL: '',
-    RESOURCE: 'PSKnowHOW',
-    AUTHENTICATION_SERVICE: false,
-    SPEED_SUITE: false,
-    MAP_URL:'',
-    RETROS_URL: ''
-  };
-  
+  production: true,
+  baseUrl: '',
+  SSO_LOGIN: false,
+  CENTRAL_LOGIN_URL: '',
+  CENTRAL_API_URL: '',
+  RESOURCE: 'PSKnowHOW',
+  AUTHENTICATION_SERVICE: false,
+  SPEED_SUITE: false,
+  MAP_URL: '',
+  RETROS_URL: '',
+};

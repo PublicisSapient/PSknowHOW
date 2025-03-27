@@ -8,9 +8,8 @@ describe('TabularKpiWithDonutChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TabularKpiWithDonutChartComponent ]
-    })
-    .compileComponents();
+      declarations: [TabularKpiWithDonutChartComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(TabularKpiWithDonutChartComponent);
     component = fixture.componentInstance;

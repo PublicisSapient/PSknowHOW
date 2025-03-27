@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 /******************* Modules   ***********************/
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -30,7 +29,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 
 import { DropdownModule } from 'primeng/dropdown';
 import { RippleModule } from 'primeng/ripple';
-import { ToastModule } from 'primeng/toast';
+
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { AccordionModule } from 'primeng/accordion';
@@ -54,8 +53,7 @@ import { GaugechartComponent } from './component/gaugechart/gaugechart.component
 
 import { MaturityComponent } from './dashboard/maturity/maturity.component';
 import { GroupstackchartComponent } from './component/groupedstackchart/groupstackchart.component';
-import { GroupstackchartComponentv2 } from './component/groupedstackchart-v2/groupstackchart-v2.component';
-import { PiechartComponent } from './component/piechart/piechart.component';
+
 import { ErrorComponent } from './dashboard/error/error.component';
 import { KpiComponent } from './component/kpi-line-gauge/kpi-line-gauge.component';
 import { SharedModuleModule } from '../app/shared-module/shared-module.module';
@@ -69,8 +67,6 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { SkeletonModule } from 'primeng/skeleton';
 import { BlockUIModule } from 'primeng/blockui';
 /******************************************************/
-
-
 
 /******************* Services   ***********************/
 import { ExcelService } from './services/excel.service';
@@ -96,12 +92,12 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
 import { SsoAuthFailureComponent } from './component/sso-auth-failure/sso-auth-failure.component';
 import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/unauthorised-access.component';
-import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
+
 import { CommentsComponent } from './component/comments/comments.component';
 import { CommentsV2Component } from './component/comments-v2/comments-v2.component';
 import { HorizontalPercentBarChartComponent } from './component/horizontal-percent-bar-chart/horizontal-percent-bar-chart.component';
 import { InputTextModule } from 'primeng/inputtext';
-import { StackedAreaChartComponent } from './component/stacked-area-chart/stacked-area-chart.component';
+
 import { FeedbackComponent } from './feedback/feedback.component';
 import { KpiTableComponent } from './dashboard/kpi-table/kpi-table.component';
 import { DailyScrumComponent } from './dashboard/daily-scrum/daily-scrum.component';
@@ -111,7 +107,7 @@ import { IssueCardComponent } from './dashboard/issue-card/issue-card.component'
 import { IssueBodyComponent } from './dashboard/issue-body/issue-body.component';
 import { DailyScrumGraphComponent } from './component/daily-scrum-graph/daily-scrum-graph.component';
 import { MultilineStyleComponent } from './component/multiline-style/multiline-style.component';
-import { BarWithYAxisGroupComponent } from './component/bar-with-y-axis-group/bar-with-y-axis-group.component';
+
 import { FeatureFlagsService } from './services/feature-toggle.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { AppInitializerService } from './services/app-initializer.service';
@@ -129,135 +125,128 @@ import { RecommendationsComponent } from './component/recommendations/recommenda
 import { StickyHeaderV2Component } from './dashboardv2/sticky-header-v2/sticky-header-v2.component';
 import { KpiHelperService } from './services/kpi-helper.service';
 import { SelectButtonModule } from 'primeng/selectbutton';
-import { CollapsiblePanelComponent } from './component/collapsible-panel/collapsible-panel.component';
+import { AddToReportPopUpComponent } from './component/add-to-report-pop-up/add-to-report-pop-up.component';
 import { PanelModule } from 'primeng/panel';
-
 
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
-    return (): Promise<any> => {
-        return appInitializerService.checkFeatureFlag();
-    }
+  return (): Promise<any> => {
+    return appInitializerService.checkFeatureFlag();
+  };
 }
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        CircularProgressComponent,
-        ProgressbarComponent,
-        CircularchartComponent,
-        NumberchartComponent,
-        LineBarChartComponent,
-        LineBarChartWithHowerComponent,
-        GaugechartComponent,
-        
-        MaturityComponent,
-        GroupstackchartComponent,
-        GroupstackchartComponentv2,
-        PiechartComponent,
-        KpiComponent,
-        ErrorComponent,
-        // FooterComponent,
-        OverlappedProgressbarComponent,
-        HorizontalStackProgressbarComponent,
-        CircularProgressWithLegendsComponent,
-        TrendIndicatorComponent,
-        TooltipComponent,
-        NoAccessComponent,
-        GroupedColumnPlusLineChartComponent,
-        TableComponent,
-        ExportExcelComponent,
-        CommentsComponent,
-        CommentsV2Component,
-        SsoAuthFailureComponent,
-        UnauthorisedAccessComponent,
-        GroupBarChartComponent,
-        HorizontalPercentBarChartComponent,
-        StackedAreaChartComponent,
-        FeedbackComponent,
-        KpiTableComponent,
-        DailyScrumComponent,
-        DailyScrumTabComponent,
-        AssigneeBoardComponent,
-        IssueCardComponent,
-        IssueBodyComponent,
-        DailyScrumGraphComponent,
-        MultilineStyleComponent,
-        FeedbackComponent,
-        BarWithYAxisGroupComponent,
-        PageNotFoundComponent,
-        FilterNewComponent,
-        ParentFilterComponent,
-        PrimaryFilterComponent,
-        AdditionalFilterComponent,
-        NavNewComponent,
-        ExecutiveV2Component,
-        DashboardV2Component,
-        KpiCardV2Component,
-        PageNotFoundComponent,
-        RecommendationsComponent,
-        StickyHeaderV2Component,
-        CollapsiblePanelComponent,
-    ],
-    imports: [
-        SharedModuleModule,
-        DropdownModule,
-        BrowserModule,
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        HttpClientModule,
-        InterceptorModule,
-        AppRoutingModule,
-        // NgSelectModule,
-        MultiSelectModule,
-        BrowserAnimationsModule,
-        InputSwitchModule,
-        RippleModule,
-        BadgeModule,
-        TabViewModule,
-        TableModule,
-        ButtonModule,
-        TabMenuModule,
-        MenuModule,
-        ToastModule,
-        DialogModule,
-        RadioButtonModule,
-        InputTextareaModule,
-        AccordionModule,
-        DialogModule,
-        FontAwesomeModule,
-        DragDropModule,
-        OverlayPanelModule,
-        PanelModule,
-        CheckboxModule,
-        SkeletonModule,
-        BlockUIModule,
-        InputTextModule,
-        ScrollTopModule,
-        SelectButtonModule
-    ],
-    providers: [
-        ExcelService,
-        SharedService,
-        GetAuthService,
-        HelperService,
-        GetAuthorizationService,
-        JsonExportImportService,
-        MessageService,
-        DatePipe,
-        FeatureFlagsService,
-        AuthGuard,
-        DialogService,
-        KpiHelperService,
-        { provide: APP_CONFIG, useValue: AppConfig },
-        {
-            provide: APP_INITIALIZER,
-            useFactory: initializeApp,
-            deps: [AppInitializerService],
-            multi: true
-        }
-    ],
-    bootstrap: [AppComponent]
+  declarations: [
+    AppComponent,
+    CircularProgressComponent,
+    ProgressbarComponent,
+    CircularchartComponent,
+    NumberchartComponent,
+    LineBarChartComponent,
+    LineBarChartWithHowerComponent,
+    GaugechartComponent,
+
+    MaturityComponent,
+    GroupstackchartComponent,
+    KpiComponent,
+    ErrorComponent,
+    // FooterComponent,
+    OverlappedProgressbarComponent,
+    HorizontalStackProgressbarComponent,
+    CircularProgressWithLegendsComponent,
+    TrendIndicatorComponent,
+    TooltipComponent,
+    NoAccessComponent,
+    GroupedColumnPlusLineChartComponent,
+    TableComponent,
+    ExportExcelComponent,
+    CommentsComponent,
+    CommentsV2Component,
+    SsoAuthFailureComponent,
+    UnauthorisedAccessComponent,
+    HorizontalPercentBarChartComponent,
+    FeedbackComponent,
+    KpiTableComponent,
+    DailyScrumComponent,
+    DailyScrumTabComponent,
+    AssigneeBoardComponent,
+    IssueCardComponent,
+    IssueBodyComponent,
+    DailyScrumGraphComponent,
+    MultilineStyleComponent,
+    FeedbackComponent,
+    PageNotFoundComponent,
+    FilterNewComponent,
+    ParentFilterComponent,
+    PrimaryFilterComponent,
+    AdditionalFilterComponent,
+    NavNewComponent,
+    ExecutiveV2Component,
+    DashboardV2Component,
+    KpiCardV2Component,
+    PageNotFoundComponent,
+    RecommendationsComponent,
+    StickyHeaderV2Component,
+    AddToReportPopUpComponent,
+  ],
+  imports: [
+    SharedModuleModule,
+    DropdownModule,
+    BrowserModule,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    InterceptorModule,
+    AppRoutingModule,
+    // NgSelectModule,
+    MultiSelectModule,
+    BrowserAnimationsModule,
+    InputSwitchModule,
+    RippleModule,
+    BadgeModule,
+    TabViewModule,
+    TableModule,
+    ButtonModule,
+    TabMenuModule,
+    MenuModule,
+    DialogModule,
+    RadioButtonModule,
+    InputTextareaModule,
+    AccordionModule,
+    DialogModule,
+    FontAwesomeModule,
+    DragDropModule,
+    OverlayPanelModule,
+    PanelModule,
+    CheckboxModule,
+    SkeletonModule,
+    BlockUIModule,
+    InputTextModule,
+    ScrollTopModule,
+    SelectButtonModule,
+  ],
+  providers: [
+    ExcelService,
+    SharedService,
+    GetAuthService,
+    HelperService,
+    GetAuthorizationService,
+    JsonExportImportService,
+    MessageService,
+    DatePipe,
+    FeatureFlagsService,
+    AuthGuard,
+    DialogService,
+    KpiHelperService,
+    { provide: APP_CONFIG, useValue: AppConfig },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeApp,
+      deps: [AppInitializerService],
+      multi: true,
+    },
+  ],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

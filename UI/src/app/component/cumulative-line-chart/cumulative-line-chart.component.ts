@@ -1,10 +1,17 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewContainerRef,
+} from '@angular/core';
 import * as d3 from 'd3';
 
 @Component({
   selector: 'app-cumulative-line-chart',
   templateUrl: './cumulative-line-chart.component.html',
-  styleUrls: ['./cumulative-line-chart.component.css']
+  styleUrls: ['./cumulative-line-chart.component.css'],
 })
 export class CumulativeLineChartComponent implements OnInit, OnChanges {
   @Input() data;
@@ -15,28 +22,34 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
   VisibleXAxisLbl = [];
   graphData;
   elem;
+  @Input() onPopup: boolean = false;
 
-  constructor(private viewContainerRef: ViewContainerRef) { }
+  constructor(private viewContainerRef: ViewContainerRef) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges) {
     this.elem = this.viewContainerRef.element.nativeElement;
-    this.graphData = this.data[0]['dataGroup'].map(d => ({ ...d }));
+    this.graphData = this.data[0]['dataGroup'].map((d) => ({ ...d }));
     this.draw();
   }
 
   draw() {
     const elem = this.elem;
-    d3.select(elem).select("#chart").select('svg').remove();
+    d3.select(elem).select('#chart').select('svg').remove();
     d3.select('.yaxis-container').select('svg').remove();
     const margin = { top: 30, right: 22, bottom: 20, left: 10 };
-    let width = d3.select(elem).select('#chart').node().offsetWidth - margin.left - margin.right;
+    let width = this.onPopup
+      ? 650
+      : d3.select(elem).select('#chart').node().offsetWidth -
+        margin.left -
+        margin.right;
     const height = 220 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
-    const svg = d3.select(elem).select("#chart")
+    const svg = d3
+      .select(elem)
+      .select('#chart')
       .append('svg')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
@@ -47,11 +60,11 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
     const maxYValue = [];
     this.formatDateOnXAxis(this.graphData);
 
-    this.graphData.forEach(d => {
+    this.graphData.forEach((d) => {
       const lineData = d.value;
       const lineDataCategorywise = {};
       const maxY = [];
-      lineData.forEach(lineDetails => {
+      lineData.forEach((lineDetails) => {
         lineDataCategorywise[lineDetails.kpiGroup] = lineDetails;
         lineDetails['filter'] = d.filter;
         maxY.push(lineDetails['value']);
@@ -63,9 +76,10 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       maxYValue.push(Math.max(...maxY));
     });
 
-    const xCoordinates = this.graphData.map(d => d.filter);
+    const xCoordinates = this.graphData.map((d) => d.filter);
 
-    const x = d3.scaleBand()
+    const x = d3
+      .scaleBand()
       .domain(xCoordinates)
       .range([0, width])
       .paddingOuter(0);
@@ -86,29 +100,38 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
     } else if (xLength > 90 && xLength <= 110) {
       gap = 6;
     } else {
-      gap = 7
+      gap = 7;
     }
 
     for (var i = 0; i < xCoordinates.length; i += gap) {
       this.VisibleXAxisLbl.push(xCoordinates[i]);
     }
     if (!this.VisibleXAxisLbl.includes(xCoordinates[xCoordinates.length - 1])) {
-      this.VisibleXAxisLbl[this.VisibleXAxisLbl.length - 1] = xCoordinates[xCoordinates.length - 1];
+      this.VisibleXAxisLbl[this.VisibleXAxisLbl.length - 1] =
+        xCoordinates[xCoordinates.length - 1];
     }
     /**X-Axis Gaps */
 
     const initialCoordinate = x(xCoordinates[1]);
 
-    const svgX = svg.append('g')
+    const svgX = svg
+      .append('g')
       .attr('class', 'xAxis')
       .attr('transform', `translate(0, ${height})`)
-      .call(d3.axisBottom(x).tickFormat((d, i) => this.VisibleXAxisLbl.includes(d) ? d : ""));
+      .call(
+        d3
+          .axisBottom(x)
+          .tickFormat((d, i) => (this.VisibleXAxisLbl.includes(d) ? d : '')),
+      );
 
-    const y = d3.scaleLinear()
+    const y = d3
+      .scaleLinear()
       .domain([0, Math.ceil(Math.max(...maxYValue) / 5) * 5])
       .range([height, 0]);
 
-    const svgY = d3.select(elem).select('.yaxis-container')
+    const svgY = d3
+      .select(elem)
+      .select('.yaxis-container')
       .append('svg')
       .attr('width', width + 50)
       .attr('height', height + margin.top + margin.bottom)
@@ -116,7 +139,6 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       .attr('transform', `translate(50,${margin.top})`)
       .attr('class', 'yAxis')
       .call(d3.axisLeft(y).ticks(6).tickSize(0));
-
 
     // highlight todays Date
     if (this.currentDayIndex >= 0) {
@@ -129,23 +151,28 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
     //Add horizontal  gridlines for each y tick
     svgY
       .append('g')
-      .selectAll('line.gridline').data(y.ticks(6)).enter()
+      .selectAll('line.gridline')
+      .data(y.ticks(6))
+      .enter()
       .append('svg:line')
       .attr('x1', 0)
       .attr('x2', width + 50)
-      .attr('y1', d => y(d))
-      .attr('y2', d => y(d))
+      .attr('y1', (d) => y(d))
+      .attr('y2', (d) => y(d))
       .style('stroke', '#dedede')
       .style('fill', 'none')
       .attr('class', 'gridline');
 
     //Add vertical gridlines for each x tick
-    svg.append('g')
+    svg
+      .append('g')
       .attr('transform', `translate(0, ${height})`)
-      .selectAll('line.gridline').data(xCoordinates).enter()
+      .selectAll('line.gridline')
+      .data(xCoordinates)
+      .enter()
       .append('svg:line')
-      .attr('x1', d => x(d) + initialCoordinate / 2)
-      .attr('x2', d => x(d) + initialCoordinate / 2)
+      .attr('x1', (d) => x(d) + initialCoordinate / 2)
+      .attr('x2', (d) => x(d) + initialCoordinate / 2)
       .attr('y1', 0)
       .attr('y2', -height)
       .style('stroke', '#dedede')
@@ -153,10 +180,11 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       .style('fill', 'none')
       .attr('class', 'gridline');
 
-    const color = d3.scaleOrdinal()
+    const color = d3
+      .scaleOrdinal()
       .domain(categories)
       // .range(['#5AA5A2', '#4472C4', '#D99748', '#CDBA38', '#D8725F']);
-      .range(['#FBCF5F', '#6079C5', '#A4F6A5', '#83A1C1'])
+      .range(['#FBCF5F', '#6079C5', '#A4F6A5', '#83A1C1']);
     const tooltipContainer = d3.select(elem).select('.tooltip-container');
 
     const showTooltip = (linedata) => {
@@ -165,9 +193,9 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
         .data(linedata)
         .join('div')
         .attr('class', 'tooltip')
-        .style('left', d => x(d.filter) + initialCoordinate / 2 + 'px')
-        .style('top', d => y(d.value) + 8 + 'px')
-        .text(d => d.value)
+        .style('left', (d) => x(d.filter) + initialCoordinate / 2 + 'px')
+        .style('top', (d) => y(d.value) + 8 + 'px')
+        .text((d) => d.value)
         .transition()
         .duration(500)
         .style('display', 'block')
@@ -184,30 +212,32 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
     };
 
     for (const kpiGroup of categories) {
-      const lineData = this.graphData.filter(d => d['lineDataCategorywise'].hasOwnProperty(kpiGroup)).map(d => d['lineDataCategorywise'][kpiGroup]);
-
+      const lineData = this.graphData
+        .filter((d) => d['lineDataCategorywise'].hasOwnProperty(kpiGroup))
+        .map((d) => d['lineDataCategorywise'][kpiGroup]);
 
       const line = svg
         .append('g')
         .attr('transform', `translate(0,0)`)
         .append('path')
         .datum(lineData)
-        .attr('d', d3.line()
-          .x((d) => x(d.filter) + initialCoordinate / 2)
-          .y((d) => y(d.value))
+        .attr(
+          'd',
+          d3
+            .line()
+            .x((d) => x(d.filter) + initialCoordinate / 2)
+            .y((d) => y(d.value)),
         )
         .attr('stroke', (d) => color(kpiGroup))
         .style('stroke-width', 2)
         .style('fill', 'none')
         .style('cursor', 'pointer')
         .on('mouseover', function (event, linedata) {
-          d3.select(this)
-            .style('stroke-width', 4);
+          d3.select(this).style('stroke-width', 4);
           showTooltip(linedata);
         })
         .on('mouseout', function (event, d) {
-          d3.select(this)
-            .style('stroke-width', 2);
+          d3.select(this).style('stroke-width', 2);
           hideTooltip();
         });
 
@@ -219,8 +249,8 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
         .data(lineData)
         .enter()
         .append('circle')
-        .attr('cx', d => x(d.filter) + initialCoordinate / 2)
-        .attr('cy', d => y(d.value))
+        .attr('cx', (d) => x(d.filter) + initialCoordinate / 2)
+        .attr('cy', (d) => y(d.value))
         .attr('r', 3)
         .style('stroke-width', 5)
         .attr('stroke', 'transparent')
@@ -244,21 +274,26 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
         });
     }
     //Add xCaption
-    d3.select(elem).select('#container')
+    d3.select(elem)
+      .select('#container')
       .select('.x-caption span')
       .text(this.xCaption);
 
     //Add YCaption
-    d3.select(elem).select('.yaxis-container')
+    d3.select(elem)
+      .select('.yaxis-container')
       .append('div')
       .attr('class', 'y-caption')
       .append('span')
       .text(this.yCaption);
 
-    const legendDiv = d3.select(elem).select('#legendContainer')
+    const legendDiv = d3
+      .select(elem)
+      .select('#legendContainer')
       .style('margin-left', 60 + 'px');
 
-    legendDiv.transition()
+    legendDiv
+      .transition()
       .duration(200)
       .style('display', 'block')
       .style('opacity', 1)
@@ -267,11 +302,12 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
     let htmlString = '';
 
     categories.forEach((d) => {
-      htmlString += `<div class="legend_item"><div class="legend_color_indicator" style="background-color: ${color(d)}"></div> <span class="p-m-1"> ${d}</span></div>`;
+      htmlString += `<div class="legend_item"><div class="legend_color_indicator" style="background-color: ${color(
+        d,
+      )}"></div> <span class="p-m-1"> ${d}</span></div>`;
     });
 
-    legendDiv.html(htmlString)
-      .style('bottom', 0 + 'px');
+    legendDiv.html(htmlString).style('bottom', 0 + 'px');
 
     if (this.kpiId === 'kpi125') {
       const dottedLineData = this.generateDottedLineDataForKpi();
@@ -281,9 +317,12 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
         .attr('transform', `translate(0,0)`)
         .append('path')
         .datum(dottedLineData)
-        .attr('d', d3.line()
-          .x((d) => x(d.filter) + initialCoordinate / 2)
-          .y((d) => y(d.value))
+        .attr(
+          'd',
+          d3
+            .line()
+            .x((d) => x(d.filter) + initialCoordinate / 2)
+            .y((d) => y(d.value)),
         )
         .attr('stroke', '#D8725F')
         .style('stroke-width', 3)
@@ -291,29 +330,21 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
         .style('fill', 'none')
         .style('cursor', 'pointer')
         .on('mouseover', function (event, linedata) {
-          d3.select(this)
-            .style('stroke-width', 5);
+          d3.select(this).style('stroke-width', 5);
           showTooltip(linedata);
-
         })
         .on('mouseout', function (event, d) {
-          d3.select(this)
-            .style('stroke-width', 3);
+          d3.select(this).style('stroke-width', 3);
           hideTooltip();
         });
 
       htmlString += `<div class="legend_item"><div class="legend_color_indicator_dashed"></div> <span class="p-m-1"> ${this.data[0].additionalGroup[0]}</span></div>`;
       legendDiv.html(htmlString);
     }
-
-
   }
 
-
-
   formatDateOnXAxis(data) {
-
-    const days = ["SUN", "MON", "TUE", "WED", "THUR", "FRI", "SAT"];
+    const days = ['SUN', 'MON', 'TUE', 'WED', 'THUR', 'FRI', 'SAT'];
     return data.map((d, i) => {
       const date = new Date(d['filter']);
       const currentDate = new Date();
@@ -321,7 +352,13 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       if (date.toDateString() === currentDate.toDateString()) {
         this.currentDayIndex = i;
       }
-      d['filter'] = `${days[date.getDay()]} ${(date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate()}/${(date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}`;
+      d['filter'] = `${days[date.getDay()]} ${
+        date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
+      }/${
+        date.getMonth() + 1 < 10
+          ? '0' + (date.getMonth() + 1)
+          : date.getMonth() + 1
+      }`;
       return d;
     });
   }
@@ -329,24 +366,35 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
   generateDottedLineDataForKpi() {
     const dottedLineData = [];
     if (this.data[0].additionalGroup) {
-      const dottedLineDataIndex = this.graphData.findIndex(d => d['lineDataCategorywise'].hasOwnProperty('Predicted Completion'));
+      const dottedLineDataIndex = this.graphData.findIndex((d) =>
+        d['lineDataCategorywise'].hasOwnProperty('Predicted Completion'),
+      );
       if (dottedLineDataIndex !== -1) {
         const startlineDataPoint = {
-          ...this.graphData[dottedLineDataIndex]['lineDataCategorywise']['Predicted Completion'],
-          kpiGroup: this.data[0].additionalGroup[0]
+          ...this.graphData[dottedLineDataIndex]['lineDataCategorywise'][
+            'Predicted Completion'
+          ],
+          kpiGroup: this.data[0].additionalGroup[0],
         };
         let endlineDataPoint;
         dottedLineData.push(startlineDataPoint);
-        if (this.graphData[dottedLineDataIndex].lineDataCategorywise.hasOwnProperty('Completion Till Date')) {
+        if (
+          this.graphData[
+            dottedLineDataIndex
+          ].lineDataCategorywise.hasOwnProperty('Completion Till Date')
+        ) {
           endlineDataPoint = {
-            ...this.graphData[dottedLineDataIndex]['lineDataCategorywise']['Completion Till Date'],
-            kpiGroup: this.data[0].additionalGroup[0]
+            ...this.graphData[dottedLineDataIndex]['lineDataCategorywise'][
+              'Completion Till Date'
+            ],
+            kpiGroup: this.data[0].additionalGroup[0],
           };
-
         } else {
           endlineDataPoint = {
-            ...this.graphData[dottedLineDataIndex - 1]['lineDataCategorywise']['Completion Till Date'],
-            kpiGroup: this.data[0].additionalGroup[0]
+            ...this.graphData[dottedLineDataIndex - 1]['lineDataCategorywise'][
+              'Completion Till Date'
+            ],
+            kpiGroup: this.data[0].additionalGroup[0],
           };
         }
         dottedLineData.push(endlineDataPoint);
@@ -354,5 +402,4 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
     }
     return dottedLineData;
   }
-
 }

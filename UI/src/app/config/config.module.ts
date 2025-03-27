@@ -93,7 +93,7 @@ import { ScrollTopModule } from 'primeng/scrolltop';
     TabViewModule,
     AutoCompleteModule,
     OverlayPanelModule,
-    ScrollTopModule
+    ScrollTopModule,
   ],
   declarations: [
     ConfigComponent,
@@ -107,9 +107,8 @@ import { ScrollTopModule } from 'primeng/scrolltop';
     CompareStartEndWithCurrentDatePipe,
     ManageAssigneeComponent,
     RatingComponent,
-    CapacityPlanningComponent
+    CapacityPlanningComponent,
   ],
-  providers: [MessageService, ConfirmationService]
-
+  providers: [MessageService, ConfirmationService],
 })
-export class ConfigModule { }
+export class ConfigModule {}

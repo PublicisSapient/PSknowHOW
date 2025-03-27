@@ -22,9 +22,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -54,6 +55,7 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -85,6 +87,8 @@ public class LeadTimeServiceImplTest {
 	@Mock
 	CustomApiConfig customApiConfig;
 	@Mock
+	private JiraBacklogServiceR jiraService;
+	@Mock
 	CacheService cacheService;
 	@Mock
 	ConfigHelperService configHelperService;
@@ -96,6 +100,8 @@ public class LeadTimeServiceImplTest {
 	CustomApiConfig customApiSetting;
 	@Mock
 	FieldMappingRepository fieldMappingRepository;
+	@Mock
+	JiraBacklogServiceR jiraBacklogServiceR;
 	@Mock
 	private CommonService commonService;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
@@ -150,6 +156,11 @@ public class LeadTimeServiceImplTest {
 		kpiWiseAggregation.put(LEAD_TIME, "average");
 
 		when(customApiConfig.getLeadTimeRange()).thenReturn(xAxisRange);
+		jiraIssueCustomHistories.get(0).getStatusUpdationLog().forEach(s -> s.setUpdatedOn(LocalDateTime.now().minusMonths(3)));
+		jiraIssueCustomHistories.stream()
+				.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equalsIgnoreCase("TEST-17908"))
+				.toList().get(0).getStatusUpdationLog().forEach(s -> s.setUpdatedOn(LocalDateTime.now().minusMonths(3)));
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistories);
 	}
 
 	@After
@@ -193,12 +204,9 @@ public class LeadTimeServiceImplTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(any(), any(), any(), any()))
-				.thenReturn(jiraIssueCustomHistories);
-
-		Map<String, Object> resultListMap = leadTimeService.fetchKPIDataFromDb(leafNodeList.get(0), null, null, kpiRequest);
+		Map<String, Object> resultListMap = leadTimeService.fetchKPIDataFromDb(leafNodeList.get(0), LocalDate.of(2022, 7, 1).toString(), LocalDate.of(2022, 7, 31).toString(), kpiRequest);
 		List<JiraIssueCustomHistory> dataMap = (List<JiraIssueCustomHistory>) resultListMap.get(STORY_HISTORY_DATA);
-		assertThat("Lead Time Data :", dataMap.size(), equalTo(92));
+		assertThat("Lead Time Data :", dataMap.size(), equalTo(5));
 	}
 
 	@Test
@@ -207,8 +215,6 @@ public class LeadTimeServiceImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
-		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(any(), any(), any(), any()))
-				.thenReturn(jiraIssueCustomHistories);
 		String kpiRequestTrackerId = "Jira-Excel-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);

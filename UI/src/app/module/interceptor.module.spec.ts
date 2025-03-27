@@ -16,8 +16,15 @@
  *
  ******************************************************************************/
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HTTP_INTERCEPTORS, HttpClient, HttpRequest } from '@angular/common/http';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
+import {
+  HTTP_INTERCEPTORS,
+  HttpClient,
+  HttpRequest,
+} from '@angular/common/http';
 import { HttpsRequestInterceptor } from './interceptor.module';
 import { GetAuthService } from '../services/getauth.service';
 import { SharedService } from '../services/shared.service';
@@ -37,8 +44,14 @@ describe('HttpsRequestInterceptor', () => {
 
   beforeEach(() => {
     mockGetAuthService = jasmine.createSpyObj('GetAuthService', ['checkAuth']);
-    mockSharedService = jasmine.createSpyObj('SharedService', ['getCurrentUserDetails', 'clearAllCookies']);
-    mockHttpService = jasmine.createSpyObj('HttpService', ['setCurrentUserDetails', 'unauthorisedAccess']);
+    mockSharedService = jasmine.createSpyObj('SharedService', [
+      'getCurrentUserDetails',
+      'clearAllCookies',
+    ]);
+    mockHttpService = jasmine.createSpyObj('HttpService', [
+      'setCurrentUserDetails',
+      'unauthorisedAccess',
+    ]);
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
     const mockActivatedRoute = {
       snapshot: {
@@ -56,8 +69,12 @@ describe('HttpsRequestInterceptor', () => {
         { provide: HttpService, useValue: mockHttpService },
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: HTTP_INTERCEPTORS, useClass: HttpsRequestInterceptor, multi: true }
-      ]
+        {
+          provide: HTTP_INTERCEPTORS,
+          useClass: HttpsRequestInterceptor,
+          multi: true,
+        },
+      ],
     });
 
     httpClient = TestBed.inject(HttpClient);
@@ -86,12 +103,14 @@ describe('HttpsRequestInterceptor', () => {
   it('should remove httpErrorHandler and requestArea headers if present', () => {
     const mockUrl = '/api/test';
 
-    httpClient.get(mockUrl, {
-      headers: {
-        httpErrorHandler: 'local',
-        requestArea: 'external'
-      }
-    }).subscribe();
+    httpClient
+      .get(mockUrl, {
+        headers: {
+          httpErrorHandler: 'local',
+          requestArea: 'external',
+        },
+      })
+      .subscribe();
 
     const req = httpMock.expectOne(mockUrl);
     expect(req.request.headers.has('httpErrorHandler')).toBeFalse();
@@ -129,8 +148,11 @@ describe('HttpsRequestInterceptor', () => {
     httpClient.get(mockUrl).subscribe({
       error: () => {
         expect(mockHttpService.setCurrentUserDetails).toHaveBeenCalledWith({});
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['./authentication/login'], { queryParams: {  returnUrl: '/' } });
-      }
+        expect(mockRouter.navigate).toHaveBeenCalledWith(
+          ['./authentication/login'],
+          { queryParams: { returnUrl: '/' } },
+        );
+      },
     });
 
     httpMock.expectOne(mockUrl).flush(null, mockErrorResponse);
@@ -144,7 +166,7 @@ describe('HttpsRequestInterceptor', () => {
       error: () => {
         expect(mockHttpService.unauthorisedAccess).toBeUndefined();
         expect(mockRouter.navigate).toHaveBeenCalledWith(['./dashboard/Error']);
-      }
+      },
     });
 
     httpMock.expectOne(mockUrl).flush(null, mockErrorResponse);
@@ -152,12 +174,15 @@ describe('HttpsRequestInterceptor', () => {
 
   it('should navigate to error page if request is blocked', () => {
     const mockUrl = '/api/test';
-    const mockErrorResponse = { status: 500, statusText: 'Internal Server Error' };
+    const mockErrorResponse = {
+      status: 500,
+      statusText: 'Internal Server Error',
+    };
 
     httpClient.get(mockUrl).subscribe({
       error: () => {
         expect(mockRouter.navigate).toHaveBeenCalledWith(['./dashboard/Error']);
-      }
+      },
     });
 
     httpMock.expectOne(mockUrl).flush(null, mockErrorResponse);
@@ -165,16 +190,17 @@ describe('HttpsRequestInterceptor', () => {
 
   it('should not navigate to error page if request URL is in redirectExceptions', () => {
     const mockUrl = environment.baseUrl + '/api/jira/kpi';
-    const mockErrorResponse = { status: 500, statusText: 'Internal Server Error' };
+    const mockErrorResponse = {
+      status: 500,
+      statusText: 'Internal Server Error',
+    };
 
     httpClient.get(mockUrl).subscribe({
       error: () => {
         expect(mockRouter.navigate).not.toHaveBeenCalled();
-      }
+      },
     });
 
     httpMock.expectOne(mockUrl).flush(null, mockErrorResponse);
   });
-
 });
-

@@ -27,13 +27,12 @@ import { Router } from '@angular/router';
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: FieldMappingFieldComponent,
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 export class FieldMappingFieldComponent implements ControlValueAccessor {
-
-  constructor(private router : Router){}
+  constructor(private router: Router) {}
 
   @Input() fieldConfig;
   @Output() onSearch = new EventEmitter();
@@ -42,9 +41,8 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
   value;
   isDisabled = false;
 
-  onChange = (val) => {
-  };
-  onTouched = () => { };
+  onChange = (val) => {};
+  onTouched = () => {};
   writeValue(val: any): void {
     this.value = val;
   }
@@ -61,12 +59,11 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
   setValue(isAddtional?) {
     if (typeof this.value === 'string' || this.value instanceof String) {
       this.onChange(this.value.trim());
-    } else if (Array.isArray(this.value) && (isAddtional != true)) {
+    } else if (Array.isArray(this.value) && isAddtional != true) {
       this.value = this.value.map((val) => val.trim());
       this.onChange(this.value);
-    }
-    else {
-      if(this.value == null){
+    } else {
+      if (this.value == null) {
         this.value = 0;
       }
       this.onChange(this.value);
@@ -76,9 +73,9 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
   setValueConditionalInput(event) {
     this.value = event.map((val) => {
       return {
-        'labelValue': val.labelValue,
-        'countValue': val.countValue
-      }
+        labelValue: val.labelValue,
+        countValue: val.countValue,
+      };
     });
 
     this.onChange(this.value);
@@ -99,7 +96,12 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
   }
 
   enterNumericValue(event) {
-    if (!!event && !!event.preventDefault && event.key === '.' || event.key === 'e' || event.key === '-' || event.key === '+') {
+    if (
+      (!!event && !!event.preventDefault && event.key === '.') ||
+      event.key === 'e' ||
+      event.key === '-' ||
+      event.key === '+'
+    ) {
       event.preventDefault();
       return;
     }
@@ -108,7 +110,7 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
     this.setValue();
   }
 
-  navigate(url){
+  navigate(url) {
     this.router.navigate([url]);
   }
 }

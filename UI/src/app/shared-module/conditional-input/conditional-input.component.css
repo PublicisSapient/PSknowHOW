@@ -1,18 +1,32 @@
-:host ::ng-deep .p-multiselect-panel .p-multiselect-items li.p-multiselect-item {
-    pointer-events: none;
-    z-index: 1;
+:host
+  ::ng-deep
+  .p-multiselect-panel
+  .p-multiselect-items
+  li.p-multiselect-item {
+  pointer-events: none;
+  z-index: 1;
 }
 
-:host ::ng-deep .p-multiselect-panel .p-multiselect-items li.p-multiselect-item .p-checkbox,
-:host ::ng-deep .p-multiselect-panel .p-multiselect-items li.p-multiselect-item .count-box {
-    z-index: 2;
-    pointer-events: all;
+:host
+  ::ng-deep
+  .p-multiselect-panel
+  .p-multiselect-items
+  li.p-multiselect-item
+  .p-checkbox,
+:host
+  ::ng-deep
+  .p-multiselect-panel
+  .p-multiselect-items
+  li.p-multiselect-item
+  .count-box {
+  z-index: 2;
+  pointer-events: all;
 }
 
 :host ::ng-deep .count-box {
-    margin-left: 20px;
+  margin-left: 20px;
 }
 
 :host ::ng-deep .p-inputnumber-buttons-horizontal .p-inputnumber-input {
-    pointer-events: none;
+  pointer-events: none;
 }

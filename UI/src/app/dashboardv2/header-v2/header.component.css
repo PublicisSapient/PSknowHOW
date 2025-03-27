@@ -4,7 +4,7 @@ header {
   padding: 0 20px;
 }
 
-.logo>img {
+.logo > img {
   height: 40px;
 }
 
@@ -48,7 +48,12 @@ header {
   padding: 1rem 0.5rem;
 }
 
-::ng-deep .custom-menu .p-tabmenu .p-tabmenu-nav li.p-highlight .p-menuitem-link:focus {
+::ng-deep
+  .custom-menu
+  .p-tabmenu
+  .p-tabmenu-nav
+  li.p-highlight
+  .p-menuitem-link:focus {
   background-color: none;
 }
 
@@ -118,7 +123,6 @@ header {
   margin-top: -2px;
 }
 
-
 .tab-container {
   display: flex;
   justify-content: space-between;
@@ -146,9 +150,19 @@ header {
 
 .tab-button button.active {
   color: #007bff;
-  border-bottom: 2px solid #007bff;
+  border-bottom: 3px solid #007bff;
 }
 
 .tab-button button:hover {
   color: #0056b3;
+}
+
+@media print {
+  :host ::ng-deep header nav .tab-container {
+    display: none;
+  }
+
+  :host ::ng-deep header div[role='button'] {
+    display: none;
+  }
 }
