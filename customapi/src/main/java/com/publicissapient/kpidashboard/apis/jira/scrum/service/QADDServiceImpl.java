@@ -219,7 +219,7 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 			// aggregated value to exclude the sprint with sum of story points
 			// is zero
 			if (qaddForCurrentLeaf == -1000.0) {
-				qaddForCurrentLeaf = Double.NaN;
+				qaddForCurrentLeaf = 0.0d;
 			}
 			log.debug("[QADD-SPRINT-WISE][{}]. QADD for sprint {}  is {}", requestTrackerId,
 					node.getSprintFilter().getName(), qaddForCurrentLeaf);
@@ -228,9 +228,9 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 			if(!Double.isNaN(qaddForCurrentLeaf)){
 				dataCount.setData(String.valueOf(Math.round(qaddForCurrentLeaf)));
 				dataCount.setValue(qaddForCurrentLeaf);
-				dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 			}
 
+			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 			dataCount.setSProjectName(trendLineName);
 			dataCount.setSSprintID(node.getSprintFilter().getId());
 			dataCount.setSSprintName(node.getSprintFilter().getName());
@@ -382,12 +382,11 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 			} else if (CollectionUtils.isNotEmpty(additionalFilterDefectList)) {
 				qaddForCurrentLeaf = (additionalFilterDefectList.size() / storyPointsTotal) * 100;
 			}
-		} else {
-			qaddForCurrentLeaf = -1000.0;
+			qaddList.add(qaddForCurrentLeaf);
+			sprintWiseDefectList.addAll(additionalFilterDefectList);
+			totalStoryIdList.addAll(storyIdList == null ? Collections.emptyList() : storyIdList);
 		}
-		qaddList.add(qaddForCurrentLeaf);
-		sprintWiseDefectList.addAll(additionalFilterDefectList);
-		totalStoryIdList.addAll(storyIdList == null ? Collections.emptyList() : storyIdList);
+
 	}
 
 	private void populateList(Set<JiraIssue> additionalFilterDefectList, HashMap<String, JiraIssue> mapOfStories) {
@@ -461,7 +460,11 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiId) {
-		return calculateKpiValueForDouble(valueList, kpiId);
+		if(CollectionUtils.isNotEmpty(valueList)){
+			return calculateKpiValueForDouble(valueList, kpiId);
+		}
+		return Double.NaN;
+
 	}
 
 	@Override
