@@ -1,7 +1,7 @@
 import React from 'react';
 import BgItem from "../../components/BgItem";
 
-const bg = ['APGroup', 'KnowHOWGroup', 'RetrosGroup'];
+const bg = ['KnowHOWGroup', 'RetrosGroup','APGroup'];
 
 const SuiteLogos = () => {
     const speedSuite = process.env.NODE_ENV === 'production' ? window.env['REACT_APP_SPEED_SUITE'] : process.env.REACT_APP_SPEED_SUITE;
@@ -17,7 +17,7 @@ const SuiteLogos = () => {
             {
                 isSpeedSuite && 
                 bg.map((item, index) => (
-                    <BgItem key={index} item={item} className={item === 'KnowHOWGroup' ? 'h-16' : ''} />
+                    <BgItem key={index} item={item} />
                 ))
             }
                 

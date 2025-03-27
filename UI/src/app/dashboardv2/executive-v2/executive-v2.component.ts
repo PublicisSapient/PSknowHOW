@@ -416,7 +416,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   urlRedirection(decodedStateFilters) {
     const stateFiltersObjLocal = JSON.parse(decodedStateFilters);
-    const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess?.length ? JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects : [];
+    let currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess?.length ? JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess : [];
+    currentUserProjectAccess = currentUserProjectAccess.flatMap(row => row.projects);
     const ifSuperAdmin = JSON.parse(localStorage.getItem('currentUserDetails'))?.authorities?.includes('ROLE_SUPERADMIN');
     let stateFilterObj = [];
     let projectLevelSelected = false;
