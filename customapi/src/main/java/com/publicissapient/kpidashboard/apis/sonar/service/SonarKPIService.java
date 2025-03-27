@@ -54,11 +54,11 @@ import com.publicissapient.kpidashboard.common.repository.sonar.SonarHistoryRepo
 
 /**
  * @param <R>
- *          KPIs calculated value type
+ *            KPIs calculated value type
  * @param <S>
- *          Trend object type
+ *            Trend object type
  * @param <T>
- *          Bind DB data with type
+ *            Bind DB data with type
  * @author prigupta8
  */
 public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> implements ApplicationKPIService<R, S, T> {
@@ -118,7 +118,8 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 	 */
 	private List<SonarHistory> getSonarHistoryBasedOnProject(ObjectId projectId, LocalDate currentDate) {
 		List<SonarHistory> projectSonarList = new ArrayList<>();
-		if (null != configHelperService.getToolItemMap() && null != configHelperService.getToolItemMap().get(projectId)) {
+		if (null != configHelperService.getToolItemMap()
+				&& null != configHelperService.getToolItemMap().get(projectId)) {
 			List<Tool> sonarConfigListBasedOnProject = configHelperService.getToolItemMap().get(projectId)
 					.get(Constant.TOOL_SONAR);
 
@@ -128,7 +129,8 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 				sonarConfigListBasedOnProject.forEach(job -> {
 					if (CollectionUtils.isNotEmpty(job.getProcessorItemList())) {
 						List<ObjectId> processorItemList = new ArrayList<>();
-						job.getProcessorItemList().forEach(processorItem -> processorItemList.add(processorItem.getId()));
+						job.getProcessorItemList()
+								.forEach(processorItem -> processorItemList.add(processorItem.getId()));
 						List<SonarHistory> sonarHistoryList = sonarHistoryRepository
 								.findByProcessorItemIdInAndTimestampGreaterThan(processorItemList, timestamp);
 						if (CollectionUtils.isNotEmpty(sonarHistoryList)) {
@@ -151,8 +153,8 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 	public Map<Pair<String, String>, List<SonarHistory>> getSonarHistoryForAllProjects(List<Node> projectList,
 			LocalDate currentDate) {
 		Map<Pair<String, String>, List<SonarHistory>> map = new HashMap<>();
-		projectList.stream()
-				.filter(node -> null != node.getProjectFilter() && null != node.getProjectFilter().getBasicProjectConfigId())
+		projectList.stream().filter(
+				node -> null != node.getProjectFilter() && null != node.getProjectFilter().getBasicProjectConfigId())
 				.forEach(node -> map.put(Pair.of(node.getId(), node.getProjectFilter().getName()),
 						getSonarHistoryBasedOnProject(node.getProjectFilter().getBasicProjectConfigId(), currentDate)));
 		return map;
@@ -172,9 +174,9 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 	 * get start date to fetch from db for scrum
 	 *
 	 * @param duration
-	 *          day/week/month
+	 *            day/week/month
 	 * @param value
-	 *          value of how many days/week/months
+	 *            value of how many days/week/months
 	 * @return
 	 */
 	public LocalDate getScrumCurrentDateToFetchFromDb(String duration, Long value) {
@@ -191,11 +193,11 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 	 * Prepare sonar key name considering multiple project can have same sonar key
 	 *
 	 * @param projectName
-	 *          projectName
+	 *            projectName
 	 * @param sonarKeyName
-	 *          sonarKeyName
+	 *            sonarKeyName
 	 * @param branchName
-	 *          sonar branch name
+	 *            sonar branch name
 	 * @return modified keyname
 	 */
 	public String prepareSonarKeyName(String projectName, String sonarKeyName, String branchName) {
@@ -210,14 +212,15 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 	 * this method return jobwise latest data of week
 	 *
 	 * @param sonarHistoryList
-	 *          sonarHistoryList
+	 *            sonarHistoryList
 	 * @param start
-	 *          start
+	 *            start
 	 * @param end
-	 *          end
+	 *            end
 	 * @return map
 	 */
-	public Map<String, SonarHistory> prepareJobwiseHistoryMap(List<SonarHistory> sonarHistoryList, Long start, Long end) {
+	public Map<String, SonarHistory> prepareJobwiseHistoryMap(List<SonarHistory> sonarHistoryList, Long start,
+			Long end) {
 		Map<String, SonarHistory> map = new HashMap<>();
 		for (SonarHistory sonarHistory : sonarHistoryList) {
 			if (sonarHistory.getTimestamp().compareTo(start) > 0 && sonarHistory.getTimestamp().compareTo(end) < 0) {
@@ -234,7 +237,7 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 	 * return start and end of week
 	 *
 	 * @param currentDate
-	 *          currentDate
+	 *            currentDate
 	 * @return array of localdate
 	 */
 	public LocalDate[] getWeeks(LocalDate currentDate) {
@@ -263,11 +266,15 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 	 */
 	public DataCount getDataCountObject(Long value, Map<String, Object> hoverValues, String projectName, String date) {
 		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(value));
+		if (value >= 0L) {
+			dataCount.setData(String.valueOf(value));
+			dataCount.setValue(value);
+			dataCount.setHoverValue(hoverValues);
+		}
+
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
-		dataCount.setValue(value);
-		dataCount.setHoverValue(hoverValues);
+
 		return dataCount;
 	}
 

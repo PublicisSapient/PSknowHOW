@@ -355,13 +355,17 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	private DataCount getDataCountObject(Node node, String trendLineName, Map<String, Object> overAllHoverValueMap,
 			String key, Double value) {
 		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(value));
+		if(!Double.isNaN(value)) {
+			dataCount.setData(String.valueOf(value));
+			dataCount.setHoverValue((Map<String, Object>) overAllHoverValueMap.get(key));
+			dataCount.setValue(value);
+		}
 		dataCount.setSProjectName(trendLineName);
 		dataCount.setSSprintID(node.getSprintFilter().getId());
 		dataCount.setSSprintName(node.getSprintFilter().getName());
-		dataCount.setValue(value);
+
 		dataCount.setKpiGroup(key);
-		dataCount.setHoverValue((Map<String, Object>) overAllHoverValueMap.get(key));
+
 
 		return dataCount;
 	}

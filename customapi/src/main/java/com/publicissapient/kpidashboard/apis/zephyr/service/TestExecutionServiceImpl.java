@@ -177,9 +177,6 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 				DataCount dataCount = new DataCount();
 				dataCount.setSubFilter(Constant.EMPTY_STRING);
 				dataCount.setSProjectName(trendLineName);
-				dataCount.setValue(0.0);
-				dataCount.setLineValue(0.0);
-				dataCount.setHoverValue(new HashMap<>());
 				dataCount.setSSprintID(node.getSprintFilter().getId());
 				dataCount.setSSprintName(node.getSprintFilter().getName());
 				resultList.add(dataCount);
@@ -251,7 +248,7 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 	public Map<String, TestExecution> createSprintWiseTestExecutionMap(List<TestExecution> resultList) {
 		return resultList.stream()
 				.filter(testExecution -> testExecution.getExecutedTestCase() != null &&
-						testExecution.getTotalTestCases() != null && testExecution.getPassedTestCase() != null)
+						testExecution.getTotalTestCases() != null && testExecution.getPassedTestCase() != null && testExecution.getTotalTestCases()>0)
 				.collect(Collectors.toMap(TestExecution::getSprintId, Function.identity()));
 	}
 

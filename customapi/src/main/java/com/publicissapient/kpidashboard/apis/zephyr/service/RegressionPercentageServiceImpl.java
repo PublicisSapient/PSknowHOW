@@ -361,7 +361,8 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 	public Map<String, TestExecution> createSprintWiseTestExecutionMap(List<TestExecution> resultList) {
 		return resultList.stream()
 				.filter(testExecution -> testExecution.getAutomatedRegressionTestCases() != null
-						&& testExecution.getTotalRegressionTestCases() != null)
+						&& testExecution.getTotalRegressionTestCases() != null
+						&& testExecution.getTotalRegressionTestCases() > 0)
 				.collect(Collectors.toMap(TestExecution::getSprintId, Function.identity()));
 	}
 

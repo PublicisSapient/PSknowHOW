@@ -72,8 +72,8 @@ import lombok.extern.slf4j.Slf4j;
 public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object>, Map<ObjectId, List<SonarDetails>>> {
 
 	private static final Map<String, String> SEVERITY_MAP = Map.of(Constant.CRITICAL_VIOLATIONS, "critical",
-			Constant.BLOCKER_VIOLATIONS, "blocker", Constant.MAJOR_VIOLATIONS, "major", Constant.MINOR_VIOLATIONS, "minor",
-			Constant.INFO_VIOLATIONS, "info");
+			Constant.BLOCKER_VIOLATIONS, "blocker", Constant.MAJOR_VIOLATIONS, "major", Constant.MINOR_VIOLATIONS,
+			"minor", Constant.INFO_VIOLATIONS, "info");
 
 	private static final Map<String, String> TYPE_MAP = Map.of(Constant.BUGS, "bugs", Constant.VULNERABILITIES,
 			"vulnerabilities", Constant.CODE_SMELL, "code smells");
@@ -94,17 +94,17 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 	 * Gets KPI Data
 	 *
 	 * @param kpiRequest
-	 *          kpiRequest
+	 *            kpiRequest
 	 * @param kpiElement
-	 *          kpiElement
+	 *            kpiElement
 	 * @param treeAggregatorDetail
-	 *          treeAggregatorDetail
+	 *            treeAggregatorDetail
 	 * @return KpiElement KpiElement
 	 * @throws ApplicationException
-	 *           throw error
+	 *             throw error
 	 */
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
-			throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
+			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
 
 		getSonarKpiData(projectList, treeAggregatorDetail.getMapTmp(), kpiElement);
@@ -161,10 +161,12 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 							LocalDate sunday = weeks[1];
 
 							String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,
-									DateUtil.DISPLAY_DATE_FORMAT) + " to " +
-									DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+									DateUtil.DISPLAY_DATE_FORMAT) + " to "
+									+ DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT,
+											DateUtil.DISPLAY_DATE_FORMAT);
 							Long startms = monday.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
-							Long endms = sunday.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+							Long endms = sunday.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant()
+									.toEpochMilli();
 							Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms,
 									projectNodePair.getValue());
 							prepareViolationsList(history, date, projectNodePair.getValue(), projectList, violations,
@@ -176,8 +178,8 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 						tempMap.get(projectNodePair.getKey()).setValue(projectWiseDataMap);
 						if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 							KPIExcelUtility.populateSonarViolationsExcelData(
-									tempMap.get(projectNodePair.getKey()).getProjectFilter().getName(), projectList, violations,
-									versionDate, excelData, KPICode.CODE_VIOLATIONS.getKpiId());
+									tempMap.get(projectNodePair.getKey()).getProjectFilter().getName(), projectList,
+									violations, versionDate, excelData, KPICode.CODE_VIOLATIONS.getKpiId());
 						}
 					}
 				});
@@ -194,29 +196,29 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 	 * Segregate data week wise
 	 *
 	 * @param sonarHistoryList
-	 *          sonarHistoryList
+	 *            sonarHistoryList
 	 * @param start
-	 *          startdate
+	 *            startdate
 	 * @param end
-	 *          enddate
+	 *            enddate
 	 * @param projectNodeId
-	 *          projectNodeId
+	 *            projectNodeId
 	 * @return map
 	 */
-	private Map<String, SonarHistory> prepareJobwiseHistoryMap(List<SonarHistory> sonarHistoryList, Long start, Long end,
-			String projectNodeId) {
+	private Map<String, SonarHistory> prepareJobwiseHistoryMap(List<SonarHistory> sonarHistoryList, Long start,
+			Long end, String projectNodeId) {
 		Map<String, SonarHistory> map = new HashMap<>();
 		Map<ObjectId, String> keyNameProcessorMap = new HashMap<>();
 		List<SonarMetric> metricsList = new ArrayList<>();
 
-		metricsList.add(SonarMetric.builder().metricName(Constant.CRITICAL_VIOLATIONS).metricValue("0").build());
-		metricsList.add(SonarMetric.builder().metricName(Constant.BLOCKER_VIOLATIONS).metricValue("0").build());
-		metricsList.add(SonarMetric.builder().metricName(Constant.MAJOR_VIOLATIONS).metricValue("0").build());
-		metricsList.add(SonarMetric.builder().metricName(Constant.MINOR_VIOLATIONS).metricValue("0").build());
-		metricsList.add(SonarMetric.builder().metricName(Constant.INFO_VIOLATIONS).metricValue("0").build());
-		metricsList.add(SonarMetric.builder().metricName(Constant.BUGS).metricValue("0").build());
-		metricsList.add(SonarMetric.builder().metricName(Constant.VULNERABILITIES).metricValue("0").build());
-		metricsList.add(SonarMetric.builder().metricName(Constant.CODE_SMELL).metricValue("0").build());
+		metricsList.add(SonarMetric.builder().metricName(Constant.CRITICAL_VIOLATIONS).metricValue(Double.NaN).build());
+		metricsList.add(SonarMetric.builder().metricName(Constant.BLOCKER_VIOLATIONS).metricValue(Double.NaN).build());
+		metricsList.add(SonarMetric.builder().metricName(Constant.MAJOR_VIOLATIONS).metricValue(Double.NaN).build());
+		metricsList.add(SonarMetric.builder().metricName(Constant.MINOR_VIOLATIONS).metricValue(Double.NaN).build());
+		metricsList.add(SonarMetric.builder().metricName(Constant.INFO_VIOLATIONS).metricValue(Double.NaN).build());
+		metricsList.add(SonarMetric.builder().metricName(Constant.BUGS).metricValue(Double.NaN).build());
+		metricsList.add(SonarMetric.builder().metricName(Constant.VULNERABILITIES).metricValue(Double.NaN).build());
+		metricsList.add(SonarMetric.builder().metricName(Constant.CODE_SMELL).metricValue(Double.NaN).build());
 
 		for (SonarHistory sonarHistory : sonarHistoryList) {
 			String keyName = prepareSonarKeyName(projectNodeId, sonarHistory.getName(), sonarHistory.getBranch());
@@ -249,19 +251,19 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 	 * Prepares the list of violations for a given project and date range.
 	 *
 	 * @param history
-	 *          A map containing the Sonar history data.
+	 *            A map containing the Sonar history data.
 	 * @param date
-	 *          The date range for which the violations are being prepared.
+	 *            The date range for which the violations are being prepared.
 	 * @param projectName
-	 *          The nodeDisplayName of the project node.
+	 *            The nodeDisplayName of the project node.
 	 * @param projectList
-	 *          A list to store the project names.
+	 *            A list to store the project names.
 	 * @param violations
-	 *          A list to store the violations.
+	 *            A list to store the violations.
 	 * @param projectWiseDataMap
-	 *          A map to store the data counts for each project.
+	 *            A map to store the data counts for each project.
 	 * @param versionDate
-	 *          A list to store the version dates.
+	 *            A list to store the version dates.
 	 */
 	private void prepareViolationsList(Map<String, SonarHistory> history, String date, String projectName,
 			List<String> projectList, List<List<String>> violations, Map<String, List<DataCount>> projectWiseDataMap,
@@ -278,34 +280,36 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 			Map<String, Object> sonarViolationsHoverMapByType = createAndSortViolationsMap(TYPE_MAP, metricMap);
 
 			globalSonarViolationsHoverMapBySeverity.add(sonarViolationsHoverMapBySeverity.entrySet().stream()
-					.filter(entry -> SEVERITY_MAP.containsValue(entry.getKey()))
+					.filter(entry -> SEVERITY_MAP.containsValue(entry.getKey()) && 0 <= (Integer) entry.getValue())
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
-			globalSonarViolationsHoverMapByType
-					.add(sonarViolationsHoverMapByType.entrySet().stream().filter(entry -> TYPE_MAP.containsValue(entry.getKey()))
-							.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
-			Long sonarViolations = sonarViolationsHoverMapBySeverity.values().stream().map(Integer.class::cast)
-					.mapToLong(val -> val).sum();
+			globalSonarViolationsHoverMapByType.add(sonarViolationsHoverMapByType.entrySet().stream()
+					.filter(entry -> TYPE_MAP.containsValue(entry.getKey()) && 0 <= (Integer) entry.getValue())
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+
+			Long sonarViolations = getSonarViolations(sonarViolationsHoverMapBySeverity);
 
 			String keyName = prepareSonarKeyName(projectName, sonarDetails.getName(), sonarDetails.getBranch());
 			String kpiGroup = keyName + "#" + SEVERITY;
-			DataCount dcObjSeverety = getDataCountObject(sonarViolations, sonarViolationsHoverMapBySeverity, projectName,
-					date, kpiGroup);
+			DataCount dcObjSeverety = getDataCountObject(sonarViolations, sonarViolationsHoverMapBySeverity,
+					projectName, date, kpiGroup);
 			projectWiseDataMap.computeIfAbsent(kpiGroup, k -> new ArrayList<>()).add(dcObjSeverety);
-			sonarViolations = sonarViolationsHoverMapByType.values().stream().map(Integer.class::cast).mapToLong(val -> val)
-					.sum();
+			sonarViolations = getSonarViolations(sonarViolationsHoverMapByType);
 			kpiGroup = keyName + "#" + TYPE;
 			DataCount dcObjType = getDataCountObject(sonarViolations, sonarViolationsHoverMapByType, projectName, date,
 					kpiGroup);
 			projectWiseDataMap.computeIfAbsent(kpiGroup, k -> new ArrayList<>()).add(dcObjType);
 			projectList.add(keyName);
 			versionDate.add(date);
-			dateWiseViolationsList.add(sonarViolations);
+			if(sonarViolations>=0) {
+				dateWiseViolationsList.add(sonarViolations);
+			}
 			Function<Map<String, Object>, String> mapToString = map -> map.entrySet().stream()
 					.map(entry -> entry.getValue() + " " + entry.getKey()).collect(Collectors.joining(", "));
 			violations.add(Arrays.asList(mapToString.apply(sonarViolationsHoverMapBySeverity),
 					mapToString.apply(sonarViolationsHoverMapByType)));
 		});
-		DataCount dcObj = getDataCountObject(calculateKpiValue(dateWiseViolationsList, KPICode.CODE_VIOLATIONS.getKpiId()),
+		DataCount dcObj = getDataCountObject(
+				calculateKpiValue(dateWiseViolationsList, KPICode.CODE_VIOLATIONS.getKpiId()),
 				calculateKpiValueForIntMap(globalSonarViolationsHoverMapBySeverity, KPICode.CODE_VIOLATIONS.getKpiId()),
 				projectName, date);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL + "#" + SEVERITY, k -> new ArrayList<>()).add(dcObj);
@@ -316,14 +320,24 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL + "#" + TYPE, k -> new ArrayList<>()).add(dcObj);
 	}
 
+	private static Long getSonarViolations(Map<String, Object> sonarViolationsHoverMapBySeverity) {
+		List<Object> filteredList = sonarViolationsHoverMapBySeverity.values().stream()
+				.filter(a -> 0 <= (Integer) a).toList();
+		Long sonarViolations = -1L;
+		if (CollectionUtils.isNotEmpty(filteredList)) {
+			sonarViolations = filteredList.stream().map(Integer.class::cast).mapToLong(val -> val).sum();
+		}
+		return sonarViolations;
+	}
+
 	/**
 	 * Creates and sorts a map of violations based on the provided reference map and
 	 * metric map.
 	 *
 	 * @param referenceMap
-	 *          A map containing the reference values for sorting.
+	 *            A map containing the reference values for sorting.
 	 * @param metricMap
-	 *          A map containing the metric values to be evaluated and sorted.
+	 *            A map containing the metric values to be evaluated and sorted.
 	 * @return A sorted map of violations.
 	 */
 	private Map<String, Object> createAndSortViolationsMap(Map<String, String> referenceMap,
@@ -341,26 +355,29 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 	 * Creates a DataCount object with the provided values.
 	 *
 	 * @param value
-	 *          The value to be set in the DataCount object.
+	 *            The value to be set in the DataCount object.
 	 * @param hoverValues
-	 *          A map containing hover values to be set in the DataCount object.
+	 *            A map containing hover values to be set in the DataCount object.
 	 * @param projectName
-	 *          The name of the project to be set in the DataCount object.
+	 *            The name of the project to be set in the DataCount object.
 	 * @param date
-	 *          The date to be set in the DataCount object.
+	 *            The date to be set in the DataCount object.
 	 * @param kpiGroup
-	 *          The KPI group to be set in the DataCount object.
+	 *            The KPI group to be set in the DataCount object.
 	 * @return A DataCount object populated with the provided values.
 	 */
 	public DataCount getDataCountObject(Long value, Map<String, Object> hoverValues, String projectName, String date,
 			String kpiGroup) {
 		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(value));
+		if (value >= 0) {
+			dataCount.setData(String.valueOf(value));
+			dataCount.setValue(value);
+			dataCount.setHoverValue(hoverValues);
+		}
 		dataCount.setSProjectName(projectName);
 		dataCount.setKpiGroup(kpiGroup);
 		dataCount.setDate(date);
-		dataCount.setValue(value);
-		dataCount.setHoverValue(hoverValues);
+
 		return dataCount;
 	}
 
@@ -372,7 +389,7 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 
 	/**
 	 * @param sonarDetailsMap
-	 *          sonarDetailsMap
+	 *            sonarDetailsMap
 	 */
 	@Override
 	public Long calculateKPIMetrics(Map<ObjectId, List<SonarDetails>> sonarDetailsMap) {
@@ -381,15 +398,20 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 
 	/**
 	 * @param violations
-	 *          violations
+	 *            violations
 	 * @param valueMap
-	 *          valueMap
+	 *            valueMap
 	 * @param key
-	 *          key
+	 *            key
 	 */
 	private void evaluateViolations(Object violations, Map<String, Object> valueMap, String key) {
+
 		if (violations instanceof Double) {
-			valueMap.put(key, ((Double) violations).intValue());
+			if (!Double.isNaN((Double) violations)) {
+				valueMap.put(key, ((Double) violations).intValue());
+			} else {
+				valueMap.put(key, -1);
+			}
 		} else if (violations instanceof String) {
 			valueMap.put(key, (Integer.parseInt(violations.toString())));
 		} else {
@@ -399,14 +421,19 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 
 	/** Not used */
 	@Override
-	public Map<ObjectId, List<SonarDetails>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
+	public Map<ObjectId, List<SonarDetails>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate,
+			String endDate, KpiRequest kpiRequest) {
 		return new HashMap<>();
 	}
 
 	@Override
 	public Long calculateKpiValue(List<Long> valueList, String kpiId) {
-		return calculateKpiValueForLong(valueList, kpiId);
+		if (CollectionUtils.isNotEmpty(valueList)) {
+			return calculateKpiValueForLong(valueList, kpiId);
+		} else {
+			return -1L;
+		}
+
 	}
 
 	@Override

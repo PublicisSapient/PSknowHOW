@@ -346,7 +346,6 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 				if (value != null) {
 					automationForCurrentLeaf = value;
 				}
-				// mapTmp.get(node.getId()).setValue(automationForCurrentLeaf);
 				populateExcelDataObject(requestTrackerId, currentSprintLeafNodeDefectDataMap, excelData, validationKey,
 						projectWiseStories.get(node.getProjectFilter().getBasicProjectConfigId().toString()));
 				log.debug("[TEST-AUTOMATION-SPRINT-WISE][{}]. TEST-AUTOMATION for sprint {}  is {}", requestTrackerId,
@@ -363,19 +362,16 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 	private static DataCount getDataCount(Map<String, Node> mapTmp, Node node, double automationForCurrentLeaf,
 			String trendLineName, Map<String, Object> howerMap) {
 		DataCount dataCount = new DataCount();
-		if (Double.isNaN(automationForCurrentLeaf)) {
-			dataCount.setData(String.valueOf(automationForCurrentLeaf));
-		} else {
+		if (!Double.isNaN(automationForCurrentLeaf)) {
 			dataCount.setData(String.valueOf(Math.round(automationForCurrentLeaf)));
-
+			dataCount.setValue(automationForCurrentLeaf);
+			dataCount.setHoverValue(howerMap);
 		}
 		dataCount.setSProjectName(trendLineName);
 		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
 		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
 		dataCount.setSSprintID(node.getSprintFilter().getId());
 		dataCount.setSSprintName(node.getSprintFilter().getName());
-		dataCount.setValue(automationForCurrentLeaf);
-		dataCount.setHoverValue(howerMap);
 		mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
 		return dataCount;
 	}
@@ -400,8 +396,6 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 			DataCount dataCount = new DataCount();
 			dataCount.setSubFilter(Constant.EMPTY_STRING);
 			dataCount.setSProjectName(trendLineName);
-			dataCount.setValue(Double.NaN);
-			dataCount.setLineValue(Double.NaN);
 			dataCount.setHoverValue(new HashMap<>());
 			dataCount.setSSprintID(node.getSprintFilter().getId());
 			dataCount.setSSprintName(node.getSprintFilter().getName());
@@ -502,9 +496,8 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 	 * @return
 	 */
 	public Map<String, TestExecution> createSprintWiseTestExecutionMap(List<TestExecution> resultList) {
-		return resultList.stream()
-				.filter(testExecution -> testExecution.getAutomatedTestCases() != null
-						&& testExecution.getAutomatableTestCases() != null)
+		return resultList.stream().filter(testExecution -> testExecution.getAutomatedTestCases() != null
+				&& testExecution.getAutomatableTestCases() != null && testExecution.getAutomatableTestCases() > 0)
 				.collect(Collectors.toMap(TestExecution::getSprintId, Function.identity()));
 	}
 
