@@ -1,0 +1,205 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008
+      labels: 0.0.0
+      author: kunkambl
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: SUPERADMIN
+              - column:
+                  name: password
+                  value: ${SUPERADMIN_PASSWORD}
+              - column:
+                  name: first_name
+                  value: SUPER
+              - column:
+                  name: last_name
+                  value: ADMIN
+              - column:
+                  name: display_name
+                  value: SUPERADMIN
+              - column:
+                  name: email
+                  value: superadmin@superadmin.com
+              - column:
+                  name: saml_email
+                  value: ""
+              - column:
+                  name: approved
+                  valueBoolean: true
+              - column:
+                  name: user_verified
+                  valueBoolean: true
+              - column:
+                  name: auth_type
+                  value: STANDARD
+              - column:
+                  name: created_date
+                  valueDate: CURRENT_DATE
+            preconditions:
+              - sqlCheck:
+                  expectedResult: 0
+                  sql: SELECT COUNT(*) FROM users WHERE username = 'SUPERADMIN'
+
+  - changeSet:
+      id: 009
+      labels: 0.0.0
+      author: kunkambl
+      changes:
+        - insert:
+            tableName: resource
+            columns:
+              - column:
+                  name: name
+                  value: PSKnowHOW
+              - column:
+                  name: created_by
+                  valueComputed: (SELECT id FROM users WHERE username = 'SUPERADMIN')
+              - column:
+                  name: created_date
+                  valueDate: CURRENT_DATE
+        - insert:
+            tableName: resource
+            columns:
+              - column:
+                  name: name
+                  value: MAP
+              - column:
+                  name: created_by
+                  valueComputed: (SELECT id FROM users WHERE username = 'SUPERADMIN')
+              - column:
+                  name: created_date
+                  valueDate: CURRENT_DATE
+        - insert:
+            tableName: resource
+            columns:
+              - column:
+                  name: name
+                  value: RETRO
+              - column:
+                  name: created_by
+                  valueComputed: (SELECT id FROM users WHERE username = 'SUPERADMIN')
+              - column:
+                  name: created_date
+                  valueDate: CURRENT_DATE
+
+  - changeSet:
+      id: 010
+      labels: 0.0.0
+      author: kunkambl
+      changes:
+        - insert:
+            tableName: role
+            columns:
+              - column:
+                  name: name
+                  value: ROLE_SUPERADMIN
+              - column:
+                  name: description
+                  value: ROLE_SUPERADMIN
+              - column:
+                  name: root_user
+                  valueBoolean: true
+              - column:
+                  name: default_role
+                  valueBoolean: false
+              - column:
+                  name: resource_id
+                  valueComputed: (SELECT id FROM resource WHERE name = 'PSKnowHOW')
+              - column:
+                  name: created_by
+                  valueComputed: (SELECT id FROM users WHERE username = 'SUPERADMIN')
+              - column:
+                  name: created_date
+                  valueDate: CURRENT_DATE
+
+  - changeSet:
+      id: 011
+      labels: 0.0.0
+      author: kunkambl
+      changes:
+        - insert:
+            tableName: role
+            columns:
+              - column:
+                  name: name
+                  value: ROLE_NA
+              - column:
+                  name: description
+                  value: ROLE_NA
+              - column:
+                  name: root_user
+                  valueBoolean: false
+              - column:
+                  name: default_role
+                  valueBoolean: true
+              - column:
+                  name: resource_id
+                  valueComputed: (SELECT id FROM resource WHERE name = 'PSKnowHOW')
+              - column:
+                  name: created_by
+                  valueComputed: (SELECT id FROM users WHERE username = 'SUPERADMIN')
+              - column:
+                  name: created_date
+                  valueDate: CURRENT_DATE
+
+  - changeSet:
+      id: 012
+      labels: 0.0.0
+      author: kunkambl
+      changes:
+        - insert:
+            tableName: user_role
+            columns:
+              - column:
+                  name: role_id
+                  valueComputed: (SELECT id FROM role WHERE name = 'ROLE_SUPERADMIN')
+              - column:
+                  name: username
+                  value: SUPERADMIN
+              - column:
+                  name: created_by
+                  valueComputed: (SELECT id FROM users WHERE username = 'SUPERADMIN')
+              - column:
+                  name: created_date
+                  valueDate: CURRENT_DATE
+
+  - changeSet:
+      id: 013
+      labels: 0.0.0
+      author: kunkambl
+      changes:
+        - insert:
+            tableName: global_config
+            columns:
+              - column:
+                  name: env
+                  value: production
+              - column:
+                  name: email_host
+                  value: ${AUTH_EMAIL_HOST}
+              - column:
+                  name: email_port
+                  valueNumeric: 25
+              - column:
+                  name: from_email
+                  value: no-reply@example.com
+        - insert:
+            tableName: global_config
+            columns:
+              - column:
+                  name: env
+                  value: development
+              - column:
+                  name: email_host
+                  value: ${AUTH_EMAIL_HOST}
+              - column:
+                  name: email_port
+                  valueNumeric: 25
+              - column:
+                  name: from_email
+                  value: no-reply@example.com
