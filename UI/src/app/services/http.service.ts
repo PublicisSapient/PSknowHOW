@@ -163,6 +163,7 @@ export class HttpService {
   private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
   private commentsSummaryUrl = this.baseUrl + '/api/comments/commentsSummary';
   private jiraTemplateUrl = this.baseUrl + '/api/templates';
+  private jiraConfigurationUrl = this.baseUrl + '/api/configuration';
   private currentUserDetailsURL = this.baseUrl + '/api/userinfo/userData';
   private getKpiColumnsUrl = this.baseUrl + '/api/kpi-column-config';
   private postKpiColumnsConfigUrl =
@@ -1143,6 +1144,10 @@ export class HttpService {
 
   getJiraTemplate(projectId) {
     return this.http.get<any>(`${this.jiraTemplateUrl}/${projectId}`);
+  }
+
+  getJiraConfigurationTypeOptions(projectId){
+    return this.http.get<any>(`${this.jiraConfigurationUrl}/${projectId}`);
   }
 
   getMappingTemplateFlag(toolID, data) {
