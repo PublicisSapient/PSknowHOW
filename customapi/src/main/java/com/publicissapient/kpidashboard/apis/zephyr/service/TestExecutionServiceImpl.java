@@ -178,6 +178,7 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 				DataCount dataCount = new DataCount();
 				dataCount.setData(CommonConstant.NO_DATA);
 				dataCount.setValue(CommonConstant.NO_DATA);
+				dataCount.setLineValue(CommonConstant.NO_DATA);
 				dataCount.setHoverValue(new HashMap<>());
 				dataCount.setSubFilter(Constant.EMPTY_STRING);
 				dataCount.setSProjectName(trendLineName);
