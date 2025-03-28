@@ -224,18 +224,7 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 			log.debug("[QADD-SPRINT-WISE][{}]. QADD for sprint {}  is {}", requestTrackerId,
 					node.getSprintFilter().getName(), qaddForCurrentLeaf);
 
-			DataCount dataCount = new DataCount();
-			if(!Double.isNaN(qaddForCurrentLeaf)){
-				dataCount.setData(String.valueOf(Math.round(qaddForCurrentLeaf)));
-				dataCount.setValue(qaddForCurrentLeaf);
-			}
-			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
-			dataCount.setSProjectName(trendLineName);
-			dataCount.setSSprintID(node.getSprintFilter().getId());
-			dataCount.setSSprintName(node.getSprintFilter().getName());
-			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-
+			DataCount dataCount = createDataCount(node, qaddForCurrentLeaf, sprintWiseHowerMap, currentNodeIdentifier, trendLineName);
 			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
 
 			trendValueList.add(dataCount);
@@ -244,6 +233,25 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(
 				KPIExcelColumn.DEFECT_DENSITY.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+	}
+
+	private static DataCount createDataCount(Node node, double qaddForCurrentLeaf, Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap, Pair<String, String> currentNodeIdentifier, String trendLineName) {
+		DataCount dataCount = new DataCount();
+		if(!Double.isNaN(qaddForCurrentLeaf)){
+			dataCount.setData(String.valueOf(Math.round(qaddForCurrentLeaf)));
+			dataCount.setValue(qaddForCurrentLeaf);
+		}
+		else{
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
+		}
+		dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
+		dataCount.setSProjectName(trendLineName);
+		dataCount.setSSprintID(node.getSprintFilter().getId());
+		dataCount.setSSprintName(node.getSprintFilter().getName());
+		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+		return dataCount;
 	}
 
 	/**

@@ -273,8 +273,12 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 		if (value >= 0L) {
 			dataCount.setData(refineQuality(value));
 			dataCount.setValue(value);
-			dataCount.setHoverValue(new HashMap<>());
 		}
+		else {
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
+		}
+		dataCount.setHoverValue(new HashMap<>());
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
 

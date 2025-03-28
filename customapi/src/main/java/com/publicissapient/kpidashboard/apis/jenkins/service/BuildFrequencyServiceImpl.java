@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -344,8 +345,8 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 			dataCount.setData(String.valueOf(valueForCurrentLeaf));
 			dataCount.setValue(valueForCurrentLeaf);
 		} else {
-			dataCount.setData(null);
-			dataCount.setValue(null);
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
 			dataCount.setPriority(null);
 		}
 		dataCount.setSProjectName(trendLineName);

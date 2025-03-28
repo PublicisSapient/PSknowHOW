@@ -376,6 +376,7 @@ public final class CommonConstant {
 	public static final String BITBUCKETKANBAN = "BITBUCKETKANBAN";
 	public static final String JENKINSKANBAN = "JENKINSKANBAN";
 	public static final String ALL_KPI = "ALL_KPI";
+	public static final String NO_DATA = "NAN";
 
 	private CommonConstant() {
 	}

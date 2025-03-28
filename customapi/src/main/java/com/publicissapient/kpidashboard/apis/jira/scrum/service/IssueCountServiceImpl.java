@@ -338,8 +338,8 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 			dataCount.setData(String.valueOf(map.getValue()));
 			dataCount.setValue(map.getValue());
 		} else {
-			dataCount.setData(null);
-			dataCount.setValue(null);
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
 		}
 	}
 

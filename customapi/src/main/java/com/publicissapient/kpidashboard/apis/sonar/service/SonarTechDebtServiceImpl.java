@@ -186,12 +186,6 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 		List<SonarMetric> metricsList = new ArrayList<>();
 		Map<String, SonarHistory> historyMap = new HashMap<>();
 		SonarHistory refHistory = sonarHistoryList.get(0);
-/*
-		SonarMetric sonarMetric = new SonarMetric();
-		sonarMetric.setMetricName(SQALE_INDEX);
-		sonarMetric.setMetricValue("0");
-		metricsList.add(sonarMetric);*/
-
 		List<String> uniqueKeys = sonarHistoryList.stream().map(SonarHistory::getKey).distinct()
 				.collect(Collectors.toList());
 		uniqueKeys.forEach(keys -> {

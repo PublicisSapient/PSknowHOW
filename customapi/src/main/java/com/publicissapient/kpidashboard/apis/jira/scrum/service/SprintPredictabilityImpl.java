@@ -301,6 +301,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Long, List<Object>,
 
 			DataCount dataCount = new DataCount();
 			createDataCountData(predictability, currentNodeIdentifier, dataCount, sprintWiseHowerMap);
+			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 			dataCount.setSProjectName(trendLineName);
 			dataCount.setSSprintID(node.getSprintFilter().getId());
 			dataCount.setSSprintName(node.getSprintFilter().getName());
@@ -321,7 +322,10 @@ public class SprintPredictabilityImpl extends JiraKPIService<Long, List<Object>,
 		if (predictability.get(currentNodeIdentifier) != null) {
 			dataCount.setData(String.valueOf(Math.round(predictability.get(currentNodeIdentifier))));
 			dataCount.setValue(Math.round(predictability.get(currentNodeIdentifier)));
-			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
+		}
+		else {
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
 		}
 	}
 

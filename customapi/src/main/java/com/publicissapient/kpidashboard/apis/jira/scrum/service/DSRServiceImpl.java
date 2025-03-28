@@ -359,6 +359,10 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			dataCount.setData(String.valueOf(value));
 			dataCount.setValue(value);
 		}
+		else{
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
+		}
 		dataCount.setHoverValue((Map<String, Object>) overAllHoverValueMap.get(key));
 		dataCount.setSProjectName(trendLineName);
 		dataCount.setSSprintID(node.getSprintFilter().getId());

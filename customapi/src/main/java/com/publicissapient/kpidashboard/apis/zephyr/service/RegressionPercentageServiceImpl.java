@@ -52,6 +52,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
@@ -288,11 +289,21 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 		log.debug("[REGRESSION-AUTOMATION-SPRINT-WISE][{}]. REGRESSION-AUTOMATION for sprint {}  is {}",
 				requestTrackerId, node.getSprintFilter().getName(), automationForCurrentLeaf);
 
+		DataCount dataCount = createDataCount(node, trendLineName, sprintWiseAutomation, howerMap);
+
+		mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
+		trendValueList.add(dataCount);
+	}
+
+	private static DataCount createDataCount(Node node, String trendLineName, double sprintWiseAutomation,
+			Map<String, Object> howerMap) {
 		DataCount dataCount = new DataCount();
 		if (!Double.isNaN(sprintWiseAutomation)) {
 			dataCount.setData(String.valueOf(sprintWiseAutomation));
-
 			dataCount.setValue(sprintWiseAutomation);
+		} else {
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
 		}
 		dataCount.setHoverValue(howerMap);
 		dataCount.setSProjectName(trendLineName);
@@ -300,9 +311,7 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 		dataCount.setSSprintName(node.getSprintFilter().getName());
 		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
 		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-
-		mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
-		trendValueList.add(dataCount);
+		return dataCount;
 	}
 
 	/**

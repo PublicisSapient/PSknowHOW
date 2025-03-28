@@ -328,7 +328,11 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		if (!map.getValue().equals(-1L)) {
 			dataCount.setData(String.valueOf(map.getValue()));
 			dataCount.setValue(map.getValue());
+		}else {
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
 		}
+
 
 	}
 

@@ -547,6 +547,11 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 			dataCount.setData(String.valueOf(Math.round(data)));
 			dataCount.setValue(Math.round(data));
 		}
+		else {
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
+		}
+
 	}
 
 	/*

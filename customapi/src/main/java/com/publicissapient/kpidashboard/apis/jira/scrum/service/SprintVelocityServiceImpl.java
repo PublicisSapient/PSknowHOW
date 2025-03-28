@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -264,16 +265,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			setSprintWiseLogger(node.getSprintFilter().getName(),
 					currentSprintLeafVelocityMap.get(currentNodeIdentifier), sprintVelocityForCurrentLeaf);
 
-			DataCount dataCount = new DataCount();
-			if (!Double.isNaN(sprintVelocityForCurrentLeaf)) {
-				dataCount.setData(String.valueOf(roundingOff(sprintVelocityForCurrentLeaf)));
-				dataCount.setLineValue(roundingOff(sprintVelocityForCurrentLeaf));
-			}
-			dataCount.setSProjectName(trendLineName);
-			dataCount.setSSprintID(node.getSprintFilter().getId());
-			dataCount.setSSprintName(node.getSprintFilter().getName());
-			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+			DataCount dataCount = createDataCount(node, sprintVelocityForCurrentLeaf, trendLineName);
 
 			if (!avgVelocityCount.containsKey(projId)) {
 				avgVelocityCount.put(projId, 0);
@@ -281,20 +273,44 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 
 			double averageVelocity = getAverageVelocity(sprintVelocity, avgVelocityCount.get(projId), projId,
 					currentSprintComponentId);
-			if (averageVelocity >= 0) {
-				dataCount.setValue(averageVelocity);
-				Map<String, Object> hoverValue = new HashMap<>();
-				hoverValue.put(AVERAGE_VELOCITY, roundingOff(averageVelocity));
-				hoverValue.put(VELOCITY, roundingOff((Double) dataCount.getLineValue()));
-				dataCount.setHoverValue(hoverValue);
-				avgVelocityCount.put(projId, avgVelocityCount.get(projId) + 1);
-			}
+			createValueForAverageVelocity(averageVelocity, dataCount, avgVelocityCount, projId);
 			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
 			trendValueList.add(dataCount);
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(
 				KPIExcelColumn.SPRINT_VELOCITY.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+	}
+
+	private void createValueForAverageVelocity(double averageVelocity, DataCount dataCount, Map<String, Integer> avgVelocityCount, String projId) {
+		if (averageVelocity >= 0) {
+			dataCount.setValue(averageVelocity);
+			Map<String, Object> hoverValue = new HashMap<>();
+			hoverValue.put(AVERAGE_VELOCITY, roundingOff(averageVelocity));
+			hoverValue.put(VELOCITY, roundingOff((Double) dataCount.getLineValue()));
+			dataCount.setHoverValue(hoverValue);
+			avgVelocityCount.put(projId, avgVelocityCount.get(projId) + 1);
+		}
+		else{
+			dataCount.setValue(CommonConstant.NO_DATA);
+		}
+	}
+
+	private DataCount createDataCount(Node node, double sprintVelocityForCurrentLeaf, String trendLineName) {
+		DataCount dataCount = new DataCount();
+		if (!Double.isNaN(sprintVelocityForCurrentLeaf)) {
+			dataCount.setData(String.valueOf(roundingOff(sprintVelocityForCurrentLeaf)));
+			dataCount.setLineValue(roundingOff(sprintVelocityForCurrentLeaf));
+		}
+		else {
+			dataCount.setData(CommonConstant.NO_DATA);
+		}
+		dataCount.setSProjectName(trendLineName);
+		dataCount.setSSprintID(node.getSprintFilter().getId());
+		dataCount.setSSprintName(node.getSprintFilter().getName());
+		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+		return dataCount;
 	}
 
 	/**

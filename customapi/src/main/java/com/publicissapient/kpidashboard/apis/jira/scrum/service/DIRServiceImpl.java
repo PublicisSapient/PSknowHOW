@@ -288,8 +288,12 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		if (!Double.isNaN(defectInjectionRateForCurrentLeaf)) {
 			dataCount.setData(String.valueOf(Math.round(defectInjectionRateForCurrentLeaf)));
 			dataCount.setValue(defectInjectionRateForCurrentLeaf);
-			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 		}
+		else{
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
+		}
+		dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 		dataCount.setSProjectName(trendLineName);
 		dataCount.setSSprintID(node.getSprintFilter().getId());
 		dataCount.setSSprintName(node.getSprintFilter().getName());

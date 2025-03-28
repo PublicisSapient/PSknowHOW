@@ -193,7 +193,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			String currentSprintComponentId = node.getSprintFilter().getId();
 			Pair<String, String> currentNodeIdentifier = Pair
 					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
-			double ftprForCurrentLeaf=Double.NaN;
+			double ftprForCurrentLeaf = Double.NaN;
 
 			if (sprintWiseFTPRMap.containsKey(currentNodeIdentifier)) {
 				ftprForCurrentLeaf = sprintWiseFTPRMap.get(currentNodeIdentifier);
@@ -218,26 +218,35 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				log.debug("[FTPR-SPRINT-WISE][{}]. FTPR for sprint {}  is {}", requestTrackerId,
 						node.getSprintFilter().getName(), ftprForCurrentLeaf);
 			}
-				DataCount dataCount = new DataCount();
-				if (!Double.isNaN(ftprForCurrentLeaf)) {
-					dataCount.setData(String.valueOf(Math.round(ftprForCurrentLeaf)));
-					dataCount.setValue(ftprForCurrentLeaf);
-				}
-				dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
-				dataCount.setSProjectName(trendLineName);
-				dataCount.setSSprintID(node.getSprintFilter().getId());
-				dataCount.setSSprintName(node.getSprintFilter().getName());
-				dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-				dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+			DataCount dataCount = createDataCount(node, ftprForCurrentLeaf, sprintWiseHowerMap, currentNodeIdentifier,
+					trendLineName);
+			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
 
-
-				mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
-
-				trendValueList.add(dataCount);
-			});
+			trendValueList.add(dataCount);
+		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(
 				KPIExcelColumn.FIRST_TIME_PASS_RATE.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+	}
+
+	private static DataCount createDataCount(Node node, double ftprForCurrentLeaf,
+			Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
+			Pair<String, String> currentNodeIdentifier, String trendLineName) {
+		DataCount dataCount = new DataCount();
+		if (!Double.isNaN(ftprForCurrentLeaf)) {
+			dataCount.setData(String.valueOf(Math.round(ftprForCurrentLeaf)));
+			dataCount.setValue(ftprForCurrentLeaf);
+		} else {
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
+		}
+		dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
+		dataCount.setSProjectName(trendLineName);
+		dataCount.setSSprintID(node.getSprintFilter().getId());
+		dataCount.setSSprintName(node.getSprintFilter().getName());
+		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+		return dataCount;
 	}
 
 	private void setHowerMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,

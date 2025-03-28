@@ -190,24 +190,32 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 			log.debug("[HAPPINESS-INDEX-SPRINT-WISE][{}]. happiness index for sprint {}  is {}", requestTrackerId,
 					node.getSprintFilter().getName(), happinessIndexValue);
 
-			DataCount dataCount = new DataCount();
-			if(!happinessIndexValue.isNaN()){
-				dataCount.setData(String.valueOf(happinessIndexValue));
-				dataCount.setValue(happinessIndexValue);
-			}
-			dataCount.setSProjectName(trendLineName);
-			dataCount.setSSprintID(node.getSprintFilter().getId());
-			dataCount.setSSprintName(node.getSprintFilter().getName());
-			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-
-			dataCount.setHoverValue(new HashMap<>());
+			DataCount dataCount = createDataCount(node, happinessIndexValue, trendLineName);
 			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
 			trendValueList.add(dataCount);
 		}
 
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.HAPPINESS_INDEX_RATE.getColumns());
+	}
+
+	private static DataCount createDataCount(Node node, Double happinessIndexValue, String trendLineName) {
+		DataCount dataCount = new DataCount();
+		if (!happinessIndexValue.isNaN()) {
+			dataCount.setData(String.valueOf(happinessIndexValue));
+			dataCount.setValue(happinessIndexValue);
+		} else {
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
+		}
+		dataCount.setSProjectName(trendLineName);
+		dataCount.setSSprintID(node.getSprintFilter().getId());
+		dataCount.setSSprintName(node.getSprintFilter().getName());
+		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+
+		dataCount.setHoverValue(new HashMap<>());
+		return dataCount;
 	}
 
 	/**

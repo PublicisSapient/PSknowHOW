@@ -294,7 +294,6 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			setSprintWiseLogger(sprint, sprintWiseCompletedDefectList, sprintWiseRejectedDefectList);
 
-
 			setHoverMap(sprintWiseHowerMap, sprint, sprintWiseRejectedDefectList, sprintWiseCompletedDefectList);
 		});
 
@@ -324,17 +323,8 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			log.debug("[DRR-SPRINT-WISE][{}]. DRR for sprint {}  is {}", requestTrackerId,
 					node.getSprintFilter().getName(), drrForCurrentLeaf);
 
-			DataCount dataCount = new DataCount();
-			if (!Double.isNaN(drrForCurrentLeaf)) {
-				dataCount.setData(String.valueOf(Math.round(drrForCurrentLeaf)));
-				dataCount.setValue(drrForCurrentLeaf);
-			}
-			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
-			dataCount.setSProjectName(trendLineName);
-			dataCount.setSSprintID(node.getSprintFilter().getId());
-			dataCount.setSSprintName(node.getSprintFilter().getName());
-			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+			DataCount dataCount = createDataCount(node, drrForCurrentLeaf, sprintWiseHowerMap, currentNodeIdentifier,
+					trendLineName);
 
 			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
 			trendValueList.add(dataCount);
@@ -342,6 +332,26 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(
 				KPIExcelColumn.DEFECT_REJECTION_RATE.getColumns(sprintLeafNodeList, cacheService, filterHelperService));
+	}
+
+	private static DataCount createDataCount(Node node, double drrForCurrentLeaf,
+			Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
+			Pair<String, String> currentNodeIdentifier, String trendLineName) {
+		DataCount dataCount = new DataCount();
+		if (!Double.isNaN(drrForCurrentLeaf)) {
+			dataCount.setData(String.valueOf(Math.round(drrForCurrentLeaf)));
+			dataCount.setValue(drrForCurrentLeaf);
+		} else {
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
+		}
+		dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
+		dataCount.setSProjectName(trendLineName);
+		dataCount.setSSprintID(node.getSprintFilter().getId());
+		dataCount.setSSprintName(node.getSprintFilter().getName());
+		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+		return dataCount;
 	}
 
 	/**

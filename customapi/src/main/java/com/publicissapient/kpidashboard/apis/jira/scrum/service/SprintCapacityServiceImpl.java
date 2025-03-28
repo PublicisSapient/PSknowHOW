@@ -227,7 +227,11 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 		if (!Double.isNaN(estimateTimeForCurrentLeaf)) {
 			dataCount.setData(String.valueOf(estimateTimeForCurrentLeaf));
 			dataCount.setValue(estimateTimeForCurrentLeaf);
+		} else {
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
 		}
+
 	}
 
 	/**

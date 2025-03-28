@@ -367,6 +367,10 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 			dataCount.setData(String.valueOf(value));
 			dataCount.setValue(value);
 		}
+		else{
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
+		}
 		if (key.equalsIgnoreCase(CommonConstant.OVERALL)) {
 			dataCount.setHoverValue(overAllHoverValueMap);
 		} else {
@@ -377,7 +381,6 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 		dataCount.setSProjectName(trendLineName);
 		dataCount.setSSprintID(node.getSprintFilter().getId());
 		dataCount.setSSprintName(node.getSprintFilter().getName());
-
 		dataCount.setKpiGroup(key);
 
 		return dataCount;

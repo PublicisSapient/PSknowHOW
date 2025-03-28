@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -345,8 +346,8 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 			long seconds = TimeUnit.MILLISECONDS.toSeconds(valueForCurrentLeaf);
 			dataCount.setPriority(minutes + Constant.MIN + seconds + Constant.SEC);
 		} else {
-			dataCount.setData(null);
-			dataCount.setValue(null);
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
 			dataCount.setPriority(null);
 		}
 		dataCount.setSProjectName(trendLineName);

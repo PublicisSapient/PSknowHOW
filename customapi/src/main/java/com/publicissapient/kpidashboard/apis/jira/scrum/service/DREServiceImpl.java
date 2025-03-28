@@ -357,17 +357,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			log.debug("[DRE-SPRINT-WISE][{}]. DRE for sprint {}  is {}", requestTrackerId,
 					node.getSprintFilter().getName(), dreForCurrentLeaf);
 
-			DataCount dataCount = new DataCount();
-			if (!Double.isNaN(dreForCurrentLeaf)) {
-				dataCount.setData(String.valueOf(Math.round(dreForCurrentLeaf)));
-				dataCount.setValue(dreForCurrentLeaf);
-			}
-			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
-			dataCount.setSProjectName(trendLineName);
-			dataCount.setSSprintID(node.getSprintFilter().getId());
-			dataCount.setSSprintName(node.getSprintFilter().getName());
-			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+			DataCount dataCount = createDataCount(node, dreForCurrentLeaf, sprintWiseHowerMap, currentNodeIdentifier, trendLineName);
 
 			mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
 			trendValueList.add(dataCount);
@@ -375,6 +365,25 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_REMOVAL_EFFICIENCY.getColumns(sprintLeafNodeList, cacheService,
 				flterHelperService));
+	}
+
+	private static DataCount createDataCount(Node node, double dreForCurrentLeaf, Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap, Pair<String, String> currentNodeIdentifier, String trendLineName) {
+		DataCount dataCount = new DataCount();
+		if (!Double.isNaN(dreForCurrentLeaf)) {
+			dataCount.setData(String.valueOf(Math.round(dreForCurrentLeaf)));
+			dataCount.setValue(dreForCurrentLeaf);
+		}
+		else{
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
+		}
+		dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
+		dataCount.setSProjectName(trendLineName);
+		dataCount.setSSprintID(node.getSprintFilter().getId());
+		dataCount.setSSprintName(node.getSprintFilter().getName());
+		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+		return dataCount;
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, String sprintName, List<KPIExcelData> excelData,

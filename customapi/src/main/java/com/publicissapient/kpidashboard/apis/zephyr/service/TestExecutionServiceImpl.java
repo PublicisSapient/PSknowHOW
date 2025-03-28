@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,8 +157,8 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		log.info("[TEST-EXECUTION-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}");
-		Collections.sort(sprintLeafNodeList,
-				(Node o1, Node o2) -> o1.getSprintFilter().getStartDate().compareTo(o2.getSprintFilter().getStartDate()));
+		Collections.sort(sprintLeafNodeList, (Node o1, Node o2) -> o1.getSprintFilter().getStartDate()
+				.compareTo(o2.getSprintFilter().getStartDate()));
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 
@@ -175,6 +176,9 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 				setSprintNodeValue(sprintWiseDataMap.get(sprintId), resultList, trendLineName, node, excelData);
 			} else {
 				DataCount dataCount = new DataCount();
+				dataCount.setData(CommonConstant.NO_DATA);
+				dataCount.setValue(CommonConstant.NO_DATA);
+				dataCount.setHoverValue(new HashMap<>());
 				dataCount.setSubFilter(Constant.EMPTY_STRING);
 				dataCount.setSProjectName(trendLineName);
 				dataCount.setSSprintID(node.getSprintFilter().getId());

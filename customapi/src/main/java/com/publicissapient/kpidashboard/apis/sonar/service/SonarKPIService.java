@@ -270,10 +270,13 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 			dataCount.setData(String.valueOf(value));
 			dataCount.setValue(value);
 		}
+		else {
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
+		}
 		dataCount.setHoverValue(hoverValues);
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
-
 		return dataCount;
 	}
 

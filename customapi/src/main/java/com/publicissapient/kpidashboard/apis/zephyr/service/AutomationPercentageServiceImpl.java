@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -365,7 +366,9 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 		if (!Double.isNaN(automationForCurrentLeaf)) {
 			dataCount.setData(String.valueOf(Math.round(automationForCurrentLeaf)));
 			dataCount.setValue(automationForCurrentLeaf);
-
+		} else {
+			dataCount.setData(CommonConstant.NO_DATA);
+			dataCount.setValue(CommonConstant.NO_DATA);
 		}
 		dataCount.setHoverValue(howerMap);
 		dataCount.setSProjectName(trendLineName);
