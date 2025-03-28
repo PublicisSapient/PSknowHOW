@@ -12,7 +12,7 @@ databaseChangeLog:
                   value: SUPERADMIN
               - column:
                   name: password
-                  value: ${SUPERADMIN_PASSWORD}
+                  value: ${auth.superadmin.password}
               - column:
                   name: first_name
                   value: SUPER
@@ -181,7 +181,7 @@ databaseChangeLog:
                   value: production
               - column:
                   name: email_host
-                  value: ${AUTH_EMAIL_HOST}
+                  value: ${auth.email.host}
               - column:
                   name: email_port
                   valueNumeric: 25
@@ -196,7 +196,7 @@ databaseChangeLog:
                   value: development
               - column:
                   name: email_host
-                  value: ${AUTH_EMAIL_HOST}
+                  value: ${auth.email.host}
               - column:
                   name: email_port
                   valueNumeric: 25
