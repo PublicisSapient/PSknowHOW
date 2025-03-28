@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/installation/create-table.yaml
+      labels: "0.0.0"
+      context: installation
+  - include:
+      file: db/changelog/installation/insert-installation-data.yaml
+      labels: "0.0.0"
+      context: installation
