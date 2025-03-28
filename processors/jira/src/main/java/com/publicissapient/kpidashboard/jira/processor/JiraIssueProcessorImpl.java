@@ -233,7 +233,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			}
 		}
 	}
-
 	private void setSubTaskLinkage(JiraIssue jiraIssue, FieldMapping fieldMapping, Issue issue,
 			Map<String, IssueField> fields) {
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification()) &&
