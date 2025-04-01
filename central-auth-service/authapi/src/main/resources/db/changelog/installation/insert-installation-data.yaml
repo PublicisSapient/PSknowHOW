@@ -3,6 +3,11 @@ databaseChangeLog:
       id: 008
       labels: 0.0.0
       author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM auth.users WHERE username = 'SUPERADMIN'
       changes:
         - insert:
             tableName: users
@@ -40,15 +45,16 @@ databaseChangeLog:
               - column:
                   name: created_date
                   valueDate: CURRENT_DATE
-            preconditions:
-              - sqlCheck:
-                  expectedResult: 0
-                  sql: SELECT COUNT(*) FROM users WHERE username = 'SUPERADMIN'
 
   - changeSet:
       id: 009
       labels: 0.0.0
       author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM resource WHERE name IN ('PSKnowHOW', 'MAP', 'RETRO')
       changes:
         - insert:
             tableName: resource
@@ -91,6 +97,11 @@ databaseChangeLog:
       id: 010
       labels: 0.0.0
       author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM role WHERE name = 'ROLE_SUPERADMIN'
       changes:
         - insert:
             tableName: role
@@ -121,6 +132,11 @@ databaseChangeLog:
       id: 011
       labels: 0.0.0
       author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM role WHERE name = 'ROLE_NA'
       changes:
         - insert:
             tableName: role
@@ -151,6 +167,11 @@ databaseChangeLog:
       id: 012
       labels: 0.0.0
       author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM user_role WHERE role_id = (SELECT id FROM role WHERE name = 'ROLE_SUPERADMIN') AND username = 'SUPERADMIN'
       changes:
         - insert:
             tableName: user_role
@@ -172,6 +193,11 @@ databaseChangeLog:
       id: 013
       labels: 0.0.0
       author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM global_config WHERE env IN ('production', 'development')
       changes:
         - insert:
             tableName: global_config

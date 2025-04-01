@@ -3,6 +3,11 @@ databaseChangeLog:
       id: 001
       labels: 0.0.0
       author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: users
       changes:
         - createTable:
             tableName: users
@@ -74,6 +79,11 @@ databaseChangeLog:
       id: 002
       labels: 0.0.0
       author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: resource
       changes:
         - createTable:
             tableName: resource
@@ -115,6 +125,11 @@ databaseChangeLog:
       id: 003
       labels: 0.0.0
       author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: role
       changes:
         - createTable:
             tableName: role
@@ -173,6 +188,11 @@ databaseChangeLog:
       id: 004
       labels: 0.0.0
       author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: user_role
       changes:
         - createTable:
             tableName: user_role
@@ -220,6 +240,11 @@ databaseChangeLog:
       id: 005
       labels: 0.0.0
       author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: global_config
       changes:
         - createTable:
             tableName: global_config
@@ -256,6 +281,11 @@ databaseChangeLog:
       id: 006
       labels: 0.0.0
       author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: forgot_password_token
       changes:
         - createTable:
             tableName: forgot_password_token
@@ -286,6 +316,11 @@ databaseChangeLog:
       id: 007
       labels: 0.0.0
       author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: user_verification_token
       changes:
         - createTable:
             tableName: user_verification_token
