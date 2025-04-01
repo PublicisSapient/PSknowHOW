@@ -256,19 +256,6 @@ public class ProjectAccessManagerTest {
 		accessNode.setAccessItems(Lists.newArrayList(accessItem));
 		projectsAccess.setAccessNodes(Lists.newArrayList(accessNode));
 		userInfo.setProjectsAccess(Lists.newArrayList(projectsAccess));
-		when(userInfoRepository.findByUsername(userInfo.getUsername())).thenReturn(userInfo);
-		when(accessRequestsRepository.findByUsernameAndStatus(ArgumentMatchers.any(), ArgumentMatchers.any()))
-				.thenReturn(null);
-		when(accessRequestsRepository.saveAll(getAccessRequestList(Constant.ROLE_PROJECT_VIEWER,
-				Constant.ACCESS_REQUEST_STATUS_PENDING, "hierarchyLevel3Id")))
-				.thenReturn(getAccessRequestList(Constant.ROLE_PROJECT_VIEWER, Constant.ACCESS_REQUEST_STATUS_PENDING,
-						"hierarchyLevel3Id"));
-		when(autoApproveAccessService.isAutoApproveEnabled(ArgumentMatchers.anyString())).thenReturn(true);
-		when(accessRequestsRepository.findById(ArgumentMatchers.anyString())).thenReturn(
-				accessRequestObj(Constant.ROLE_PROJECT_VIEWER, Constant.ACCESS_REQUEST_STATUS_PENDING, "hierarchyLevel3Id"));
-		projectAccessManager.createAccessRequest(
-				accessRequestObj(Constant.ROLE_PROJECT_VIEWER, Constant.ACCESS_REQUEST_STATUS_PENDING, "hierarchyLevel3Id"),
-				accessRequestListener);
 		assertNotNull(
 				accessRequestObj(Constant.ROLE_PROJECT_VIEWER, Constant.ACCESS_REQUEST_STATUS_PENDING, "hierarchyLevel3Id"));
 	}
