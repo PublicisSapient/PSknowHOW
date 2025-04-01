@@ -69,7 +69,7 @@ public class ChangeKpiMasterDocumentationLink {
 
 					// Construct and update to the new link
 					String newLink = String.format("https://knowhow.tools.publicis.sapient.com/wiki/%s-%s", kpiId,
-							kpiName.replace(" ", "+").replaceAll("[()%]", ""));
+							kpiName.replaceAll("[()%]", "").trim().replace(" ", "+"));
 					updateDetails(kpiInfo, newLink);
 				}
 
