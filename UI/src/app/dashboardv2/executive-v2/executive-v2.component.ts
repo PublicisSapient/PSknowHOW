@@ -261,7 +261,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     );
     this.subscriptions.push(
       this.service.isSprintGoal.subscribe(
-        (flag) => (this.showSprintGoalsPanel = flag),
+        (flag) => {this.showSprintGoalsPanel = flag
+          this.getSprintGoalData();
+        },
       ),
     );
 
@@ -4337,5 +4339,53 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       return kpi['isEnabled'];
     }
+  }
+
+  getSprintGoalData() {
+    const kpiJiraTest = this.helperService.groupKpiFromMaster(
+      'Jira',
+      false,
+      this.updatedConfigGlobalData,
+      this.filterApplyData,
+      this.filterData,
+      ['kpi187'],
+      25,
+      '',
+    )
+    kpiJiraTest.kpiList = [
+      {
+          "kpiId": "kpi187",
+          "kpiName": "Sprint Goals",
+          "isDeleted": "False",
+          "defaultOrder": 31,
+          "kpiUnit": "",
+          "showTrend": false,
+          "calculateMaturity": false,
+          "hideOverallFilter": false,
+          "kpiSource": "Jira",
+          "combinedKpiSource": "Jira/Azure",
+          "kanban": false,
+          "groupId": 32,
+          "kpiInfo": {
+              "details": [
+                  {
+                      "type": "paragraph",
+                      "value": "KPI for tracking Goals of project."
+                  },
+                  {
+                      "type": "link",
+                      "kpiLinkDetail": {
+                          "text": "Detailed Information at",
+                          "link": "https://knowhow.tools.publicis.sapient.com/wiki/kpi187-Sprint+Goals"
+                      }
+                  }
+              ]
+          },
+          "trendCalculative": false,
+          "isAdditionalFilterSupport": false,
+          "chartType": ""
+      }
+  ]
+    this.postJiraKpi(kpiJiraTest, 'jira');
   }
 }
