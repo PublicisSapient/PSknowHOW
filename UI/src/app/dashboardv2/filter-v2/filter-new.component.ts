@@ -348,7 +348,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       );
 
       this.masterDataCopy['kpiList'] = JSON.parse(
-        JSON.stringify(this.masterData['kpiList']),
+        JSON.stringify(this.masterData['kpiList'].filter(x=>x.kpiId != 'kpi187')),
       );
 
       this.setSelectAll();
