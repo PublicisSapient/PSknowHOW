@@ -22,15 +22,27 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TestConnectionService {
-
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   /** get: test JIRA connection */
 
-  testJira(baseUrl, apiEndPoint, username, password, vault, bearerToken, patOAuthToken, jaasKrbAuth, jaasConfigFilePath, krb5ConfigFilePath, jaasUser, samlEndPoint): Observable<any> {
+  testJira(
+    baseUrl,
+    apiEndPoint,
+    username,
+    password,
+    vault,
+    bearerToken,
+    patOAuthToken,
+    jaasKrbAuth,
+    jaasConfigFilePath,
+    krb5ConfigFilePath,
+    jaasUser,
+    samlEndPoint,
+  ): Observable<any> {
     const postData = {
       baseUrl,
       username,
@@ -42,16 +54,28 @@ export class TestConnectionService {
       jaasConfigFilePath,
       krb5ConfigFilePath,
       jaasUser,
-      samlEndPoint
+      samlEndPoint,
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');
-    return this.http.post(environment.baseUrl + '/api/testconnection/jira', postData
-      , { headers }
+    return this.http.post(
+      environment.baseUrl + '/api/testconnection/jira',
+      postData,
+      { headers },
     );
   }
 
-  testZephyr(baseUrl, username, password, apiEndPoint, accessToken, cloudEnv, vault, bearerToken, patOAuthToken): Observable<any> {
+  testZephyr(
+    baseUrl,
+    username,
+    password,
+    apiEndPoint,
+    accessToken,
+    cloudEnv,
+    vault,
+    bearerToken,
+    patOAuthToken,
+  ): Observable<any> {
     const postData = {
       baseUrl,
       username,
@@ -61,12 +85,14 @@ export class TestConnectionService {
       cloudEnv,
       vault,
       bearerToken,
-      patOAuthToken
+      patOAuthToken,
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');
-    return this.http.post(environment.baseUrl + '/api/testconnection/zephyr', postData
-      , { headers }
+    return this.http.post(
+      environment.baseUrl + '/api/testconnection/zephyr',
+      postData,
+      { headers },
     );
   }
 
@@ -75,77 +101,99 @@ export class TestConnectionService {
       baseUrl,
       username,
       password: pat ? pat : '',
-      vault
+      vault,
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');
-    return this.http.post(environment.baseUrl + '/api/testconnection/azureboard', postData
-      , { headers }
+    return this.http.post(
+      environment.baseUrl + '/api/testconnection/azureboard',
+      postData,
+      { headers },
     );
   }
 
-    testGitLab(baseUrl, accessToken, vault): Observable<any> {
-      const postData = {
-        baseUrl,
-        accessToken: accessToken ? accessToken : '',
-        vault
-      };
-      let headers: HttpHeaders = new HttpHeaders();
-      headers = headers.append('requestArea', 'thirdParty');
-      return this.http.post(environment.baseUrl + '/api/testconnection/gitlab', postData
-        , { headers }
-      );
-    }
+  testGitLab(baseUrl, accessToken, vault): Observable<any> {
+    const postData = {
+      baseUrl,
+      accessToken: accessToken ? accessToken : '',
+      vault,
+    };
+    let headers: HttpHeaders = new HttpHeaders();
+    headers = headers.append('requestArea', 'thirdParty');
+    return this.http.post(
+      environment.baseUrl + '/api/testconnection/gitlab',
+      postData,
+      { headers },
+    );
+  }
 
-  testBitbucket(baseUrl, username, password, apiEndPoint, cloudEnv, vault): Observable<any> {
+  testBitbucket(
+    baseUrl,
+    username,
+    password,
+    apiEndPoint,
+    cloudEnv,
+    vault,
+  ): Observable<any> {
     const postData = {
       baseUrl,
       username,
       password: password ? password : '',
       apiEndPoint,
       cloudEnv,
-      vault
+      vault,
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');
-    return this.http.post(environment.baseUrl + '/api/testconnection/bitbucket', postData
-      , { headers }
+    return this.http.post(
+      environment.baseUrl + '/api/testconnection/bitbucket',
+      postData,
+      { headers },
     );
   }
 
-  testSonar(baseUrl, username, password, accesstoken, cloudEnv, vault, accessTokenEnabled): Observable<any> {
-
+  testSonar(
+    baseUrl,
+    username,
+    password,
+    accesstoken,
+    cloudEnv,
+    vault,
+    accessTokenEnabled,
+  ): Observable<any> {
     let postData = {};
 
     if (cloudEnv) {
-
       postData = {
         baseUrl,
         accessToken: accesstoken ? accesstoken : '',
         cloudEnv: true,
         vault,
-        accessTokenEnabled
+        accessTokenEnabled,
       };
     } else {
       postData = {
         baseUrl,
         cloudEnv: false,
         vault,
-        accessTokenEnabled : accessTokenEnabled === undefined ? false : accessTokenEnabled
+        accessTokenEnabled:
+          accessTokenEnabled === undefined ? false : accessTokenEnabled,
       };
 
       if (accessTokenEnabled) {
         postData['accessToken'] = accesstoken ? accesstoken : '';
       } else {
         postData['password'] = password ? password : '';
-        postData['username'] =  username;
+        postData['username'] = username;
       }
     }
 
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');
-    return this.http.post(environment.baseUrl + '/api/testconnection/sonar', postData
-      , { headers }
+    return this.http.post(
+      environment.baseUrl + '/api/testconnection/sonar',
+      postData,
+      { headers },
     );
   }
 
@@ -154,12 +202,14 @@ export class TestConnectionService {
       baseUrl,
       username,
       apiKey: apiKey ? apiKey : '',
-      vault
+      vault,
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');
-    return this.http.post(environment.baseUrl + '/api/testconnection/jenkins', postData
-      , { headers }
+    return this.http.post(
+      environment.baseUrl + '/api/testconnection/jenkins',
+      postData,
+      { headers },
     );
   }
 
@@ -168,7 +218,7 @@ export class TestConnectionService {
     headers = headers.append('requestArea', 'external');
     headers = headers.append(apiKeyFieldName, apiKey);
     return this.http.get(`${apiEndPoint}Select * from Metric`, {
-      headers
+      headers,
     });
   }
 
@@ -177,12 +227,14 @@ export class TestConnectionService {
       baseUrl,
       username,
       password: password ? password : '',
-      vault
+      vault,
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');
-    return this.http.post(environment.baseUrl + '/api/testconnection/bamboo', postData
-      , { headers }
+    return this.http.post(
+      environment.baseUrl + '/api/testconnection/bamboo',
+      postData,
+      { headers },
     );
   }
 
@@ -191,12 +243,14 @@ export class TestConnectionService {
       baseUrl,
       username,
       password: password ? password : '',
-      vault
+      vault,
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');
-    return this.http.post(environment.baseUrl + '/api/testconnection/teamcity', postData
-      , { headers }
+    return this.http.post(
+      environment.baseUrl + '/api/testconnection/teamcity',
+      postData,
+      { headers },
     );
   }
 
@@ -205,12 +259,14 @@ export class TestConnectionService {
       baseUrl,
       username,
       password: pat ? pat : '',
-      vault
+      vault,
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');
-    return this.http.post(environment.baseUrl + '/api/testconnection/azurepipeline', postData
-      , { headers }
+    return this.http.post(
+      environment.baseUrl + '/api/testconnection/azurepipeline',
+      postData,
+      { headers },
     );
   }
 
@@ -219,14 +275,15 @@ export class TestConnectionService {
       baseUrl,
       username,
       password: pat ? pat : '',
-      vault
+      vault,
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');
-    return this.http.post(environment.baseUrl + '/api/testconnection/azurerepo', postData
-      , { headers }
+    return this.http.post(
+      environment.baseUrl + '/api/testconnection/azurerepo',
+      postData,
+      { headers },
     );
-
   }
 
   testGithub(baseUrl, username, accessToken, vault): Observable<any> {
@@ -234,16 +291,25 @@ export class TestConnectionService {
       baseUrl,
       username,
       accessToken: accessToken ? accessToken : '',
-      vault
+      vault,
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');
-    return this.http.post(environment.baseUrl + '/api/testconnection/github', postData
-      , { headers }
+    return this.http.post(
+      environment.baseUrl + '/api/testconnection/github',
+      postData,
+      { headers },
     );
   }
 
-  testRepoTool(baseUrl,apiEndPoint, repoToolProvider, username, accessToken, email): Observable<any> {
+  testRepoTool(
+    baseUrl,
+    apiEndPoint,
+    repoToolProvider,
+    username,
+    accessToken,
+    email,
+  ): Observable<any> {
     let postData = {};
 
     postData = {
@@ -252,26 +318,29 @@ export class TestConnectionService {
       repoToolProvider,
       username,
       accessToken,
-      email
+      email,
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');
-    return this.http.post(environment.baseUrl + '/api/testconnection/repotool', postData
-      , { headers }
+    return this.http.post(
+      environment.baseUrl + '/api/testconnection/repotool',
+      postData,
+      { headers },
     );
   }
 
-  testArgoCD(baseUrl,username,accessToken): Observable<any> {
+  testArgoCD(baseUrl, username, accessToken): Observable<any> {
     const postData = {
       baseUrl,
       username,
-      accessToken
+      accessToken,
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');
-    return this.http.post(environment.baseUrl + '/api/testconnection/argocd', postData
-      , { headers }
+    return this.http.post(
+      environment.baseUrl + '/api/testconnection/argocd',
+      postData,
+      { headers },
     );
   }
-
 }

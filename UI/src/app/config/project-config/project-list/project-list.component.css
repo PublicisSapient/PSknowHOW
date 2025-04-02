@@ -24,7 +24,8 @@
   padding: 16px;
   margin: 4px 0;
   border-radius: 4px;
-  box-shadow:0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 1px 5px 0 rgba(0, 0, 0, 0.12);
 }
 
 .back-button {
@@ -38,8 +39,8 @@
 }
 
 div.main {
-    width: calc(100% - 16px);
-    margin: 8px;
+  width: calc(100% - 16px);
+  margin: 8px;
 }
 
 /* ::ng-deep .p-datatable .p-datatable-thead > tr > th {
@@ -48,34 +49,35 @@ div.main {
 	top: 0;
   } */
 
-  .p-datatable .p-datatable-header, ::ng-deep .bg-grey.p-toolbar {
-	  background-color: #f8f9fa;
-  }
+.p-datatable .p-datatable-header,
+::ng-deep .bg-grey.p-toolbar {
+  background-color: #f8f9fa;
+}
 
-  ::ng-deep.p-datatable .p-datatable-loading-overlay{
-    background-color: initial;
-  }
-  .col-head{
-    word-break: break-word;
-  }
+::ng-deep.p-datatable .p-datatable-loading-overlay {
+  background-color: initial;
+}
+.col-head {
+  word-break: break-word;
+}
 
-  :host::ng-deep .p-dialog.field-mapping {
-    min-width: 90vw !important;
-    width: auto !important;
-    max-width: 90vw;
-    min-height: 20vh !important;
-  }
+:host::ng-deep .p-dialog.field-mapping {
+  min-width: 90vw !important;
+  width: auto !important;
+  max-width: 90vw;
+  min-height: 20vh !important;
+}
 
-  ::ng-deep .action-btns {
-    font-size: 14px;
-    text-wrap: nowrap;
-    color: #06a0ff;
-  }
+::ng-deep .action-btns {
+  font-size: 14px;
+  text-wrap: nowrap;
+  color: #06a0ff;
+}
 
-  ::ng-deep  .p-datatable.p-datatable-striped .p-datatable-tbody>tr>td {
-    word-break: normal;
-  }
+::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr > td {
+  word-break: normal;
+}
 
-  .p-invalid {
-      color: red;
-  }
+.p-invalid {
+  color: red;
+}

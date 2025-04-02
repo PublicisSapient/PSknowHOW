@@ -1,5 +1,5 @@
 .filter-container {
-  background-color: #F5F9FF;
+  background-color: #f5f9ff;
   font-size: 0.75rem;
   display: flex;
   max-width: 100vw;
@@ -11,9 +11,8 @@
   max-width: 300px;
 }
 
-:host ::ng-deep .p-float-label .p-inputwrapper-filled~label {
+:host ::ng-deep .p-float-label .p-inputwrapper-filled ~ label {
   font-size: 0.75rem;
-
 }
 
 :host ::ng-deep .p-multiselect-panel,
@@ -62,7 +61,7 @@
   background-color: #fff;
 }
 
-.view-tabs input:checked+label {
+.view-tabs input:checked + label {
   position: relative;
   background: #0b4bc8;
 }
@@ -73,19 +72,19 @@
   border-color: var(--color-cyan-blue) !important;
 }
 
-.view-tabs input:checked+label img.ico-active {
+.view-tabs input:checked + label img.ico-active {
   display: inline-block;
 }
 
-.view-tabs input:checked+label img.ico-default {
+.view-tabs input:checked + label img.ico-default {
   display: none;
 }
 
-.view-tabs input+label img.ico-active {
+.view-tabs input + label img.ico-active {
   display: none;
 }
 
-.view-tabs input+label img.ico-default {
+.view-tabs input + label img.ico-default {
   display: inline-block;
 }
 
@@ -97,8 +96,8 @@
 }
 
 .tab.active {
-  border-bottom: 2px solid #0B4BC8;
-  color: #0B4BC8;
+  border-bottom: 2px solid #0b4bc8;
+  color: #0b4bc8;
   font-weight: bold;
 }
 
@@ -107,12 +106,12 @@
   opacity: 1;
   border-top-right-radius: 8px;
   border-top-left-radius: 8px;
-  background-color: #F3F3F3;
-  color: #BEBEBE;
+  background-color: #f3f3f3;
+  color: #bebebe;
 }
 
 .active.disabled {
-  background-color: #F3F3F3;
+  background-color: #f3f3f3;
   color: #979797;
   border-bottom: 2px solid #979797;
 }
@@ -121,12 +120,12 @@
 
 /* Selected Filters start */
 .selected-filter-container {
-  background-color: #F5F9FF;
+  background-color: #f5f9ff;
 }
 
 .selected-filter-container ul {
   list-style: none;
-  background-color: #F5F9FF;
+  background-color: #f5f9ff;
 }
 
 ul li.selectedfilter {
@@ -196,7 +195,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 }
 
 :host ::ng-deep .filter-options-container::before {
-  content: "\A";
+  content: '\A';
   width: 10px;
   height: 10px;
   position: absolute;
@@ -306,9 +305,9 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 
 .date-filter-btn {
   background-color: #fff;
-  border: 1px solid #D7DADE;
+  border: 1px solid #d7dade;
   border-radius: 5px;
-  color: #52595C;
+  color: #52595c;
   font-size: 12px;
 }
 
@@ -323,17 +322,17 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 }
 
 .btn-apply {
-  background-color: #0B4BC8;
+  background-color: #0b4bc8;
 }
 
 .icon-apply {
-  background-color: #0B4BC8;
+  background-color: #0b4bc8;
   color: #fff;
 }
 
-.icon-not-active{
+.icon-not-active {
   background-color: #fff;
-  color: #52595C;
+  color: #52595c;
 }
 
 .active-state {
@@ -344,13 +343,13 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   color: var(--color-green);
   background: #d9efd9;
   border-radius: 3px;
-  font-size: .85rem;
+  font-size: 0.85rem;
   cursor: pointer;
 }
 
 .refresh-state {
   color: var(--color-white);
-  background: #0B4BC8;
+  background: #0b4bc8;
   border-radius: 3px;
   font-size: 1rem;
   cursor: pointer;
@@ -386,6 +385,6 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 }
 
 .disabled {
-  background-color: #F3F3F3;
+  background-color: #f3f3f3;
   pointer-events: none;
 }

@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -136,8 +137,8 @@ public class DefectCountByTypeImpl extends JiraBacklogKPIService<Integer, List<O
 			log.info("Defect Count By Type kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
-			List<JiraIssue> totalJiraIssue = jiraIssueRepository.findByBasicProjectConfigIdAndOriginalTypeIn(
-					leafNode.getProjectFilter().getBasicProjectConfigId().toString(), fieldMapping.getJiradefecttype());
+			List<JiraIssue> totalJiraIssue = getBackLogJiraIssuesFromBaseClass().stream()
+					.filter(j -> fieldMapping.getJiradefecttype().contains(j.getOriginalType())).toList();
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 		}
 		return resultListMap;
@@ -205,6 +206,6 @@ public class DefectCountByTypeImpl extends JiraBacklogKPIService<Integer, List<O
 
 	@Override
 	public String getQualifierType() {
-		return "";
+		return KPICode.DEFECT_COUNT_BY_TYPE.name();
 	}
 }

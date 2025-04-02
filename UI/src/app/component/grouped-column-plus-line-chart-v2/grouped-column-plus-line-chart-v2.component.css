@@ -17,87 +17,87 @@
  ******************************************************************************/
 
 #chart {
-    position: relative;
+  position: relative;
 }
 
 #graphContainer {
-    display: flex;
-    justify-content: left;
-    overflow-y: visible;
+  display: flex;
+  justify-content: left;
+  overflow-y: visible;
 }
 
 ::ng-deep .yAxis line {
-    stroke: #dedede;
-    z-index: 2;
+  stroke: #dedede;
+  z-index: 2;
 }
 
 :host ::ng-deep .xAxis .domain,
 :host ::ng-deep .yAxis .domain {
-    display: none;
+  display: none;
 }
 
 :host ::ng-deep div.tooltip {
-    position: absolute;
-    text-align: center;
-    max-width: 220px;
-    padding: 5px;
-    font-size: 10px;
-    background: #202429;
-    color: #F5F9FF;
-    border-radius: 5px;
-    /* box-shadow: 0px 0px 6px #b9b9bb; */
-    z-index: 1200;
-    pointer-events: none;
+  position: absolute;
+  text-align: center;
+  max-width: 220px;
+  padding: 5px;
+  font-size: 10px;
+  background: #202429;
+  color: #f5f9ff;
+  border-radius: 5px;
+  /* box-shadow: 0px 0px 6px #b9b9bb; */
+  z-index: 1200;
+  pointer-events: none;
 }
 
 ::ng-deep div.tooltip p {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 ::ng-deep .toolTipValue {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 #xCaptionContainer {
-    text-align: center;
-    color: #49535E;
-    font-size: 12px;
-    margin-top: -20px;
+  text-align: center;
+  color: #49535e;
+  font-size: 12px;
+  margin-top: -20px;
 }
 
 #legendIndicator {
-    position: absolute;
-    bottom: -20px;
+  position: absolute;
+  bottom: -20px;
 }
 
 :host ::ng-deep.tooltip2 {
-    display: none;
-    font-size: 0.7rem;
-    padding: 2px;
-    position: absolute;
-    border-radius: 2px;
-    /* box-shadow: 0px 0px 6px #b9b9bb; */
-    opacity: 0.5;
-    pointer-events: none;
-    width: max-content;
+  display: none;
+  font-size: 0.7rem;
+  padding: 2px;
+  position: absolute;
+  border-radius: 2px;
+  /* box-shadow: 0px 0px 6px #b9b9bb; */
+  opacity: 0.5;
+  pointer-events: none;
+  width: max-content;
 }
 
 :host ::ng-deep.red-bg {
-    color: white;
-    background: #FF3C4D;
-    padding: 0 4px;
+  color: white;
+  background: #ff3c4d;
+  padding: 0 4px;
 }
 
 :host ::ng-deep.white-bg {
-    color: var(--color-gray-34);
-    background: rgba(255, 255, 255, 0.95);
+  color: var(--color-gray-34);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 :host ::ng-deep.tooltip-container {
-    position: relative;
-    z-index: 899;
+  position: relative;
+  z-index: 899;
 }
 
 :host ::ng-deep .y-axis-grid .domain {
-    stroke: #EAEDF0;
-  }
+  stroke: #eaedf0;
+}

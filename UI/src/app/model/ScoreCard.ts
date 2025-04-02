@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-export class ScoreCard{
+export class ScoreCard {
   id: string;
   projectID: string;
   created: string;
@@ -25,5 +25,4 @@ export class ScoreCard{
   constructor(values: Object = {}) {
     Object.assign(this, values);
   }
-
 }

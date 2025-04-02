@@ -22,7 +22,7 @@ import 'zone.js/dist/zone-testing';
 import { getTestBed } from '@angular/core/testing';
 import {
   BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting
+  platformBrowserDynamicTesting,
 } from '@angular/platform-browser-dynamic/testing';
 
 declare const require: any;
@@ -30,7 +30,7 @@ declare const require: any;
 // First, initialize the Angular testing environment.
 getTestBed().initTestEnvironment(
   BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting()
+  platformBrowserDynamicTesting(),
 );
 
 // // This will run only this files tests
@@ -42,15 +42,9 @@ const moduleArray = ['dashboard', 'config', 'authentication', ''];
 const context = require.context('./', true, /\.spec\.ts/);
 
 moduleArray.forEach((module) => {
-  context.keys().forEach(element => {
+  context.keys().forEach((element) => {
     if (element.indexOf(module) !== -1) {
       [element].map(context);
     }
   });
 });
-
-
-
-
-
-

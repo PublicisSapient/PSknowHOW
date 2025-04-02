@@ -26,7 +26,7 @@ describe('TrendIndicatorV2Component', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TrendIndicatorV2Component]
+      declarations: [TrendIndicatorV2Component],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TrendIndicatorV2Component);
@@ -47,7 +47,11 @@ describe('TrendIndicatorV2Component', () => {
 
   it('should generate flat array', () => {
     const dataSet = [
-      { Project: 'red', 'Latest Trend': '10 (up)', 'KPI Maturity': '5 P (high)' }
+      {
+        Project: 'red',
+        'Latest Trend': '10 (up)',
+        'KPI Maturity': '5 P (high)',
+      },
     ];
     const result = component.generateFlatArray(dataSet);
     expect(result.length).toBe(3);
@@ -65,117 +69,135 @@ describe('TrendIndicatorV2Component', () => {
     expect(result).toBe('NA');
   });
 
-describe('ngOnChanges', () => {
-  let component: TrendIndicatorV2Component;
-  let fixture: ComponentFixture<TrendIndicatorV2Component>;
+  describe('ngOnChanges', () => {
+    let component: TrendIndicatorV2Component;
+    let fixture: ComponentFixture<TrendIndicatorV2Component>;
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(TrendIndicatorV2Component);
-    component = fixture.componentInstance;
-  });
-  afterEach(() => {
-    TestBed.resetTestingModule(); // Reset the module after each test to prevent conflicts
-  });
-
-  it('should do nothing if trendData is empty', () => {
-    const changes: SimpleChanges = {
-      trendData: new SimpleChange([], [], false)
-    };
-
-    component.ngOnChanges(changes);
-
-    expect(component.dataObj).toEqual([]);
-    expect(component.headerObj).toEqual([]);
-  });
-
-  it('should update dataObj and headerObj when trendData is available', () => {
-    // Mock color object
-    component.colorObj = {
-      '1': { nodeId: '1', color: 'red' },
-      '2': { nodeId: '2', color: 'blue' }
-    };
-
-    // Mock trendData
-    component.trendData = [
-      { hierarchyName: 'Project A', hierarchyId: '1', value: '50', trend: 'up' },
-      { hierarchyName: 'Project B', hierarchyId: '2', value: '30', trend: 'down' }
-    ];
-
-    // Spy on methods
-    spyOn(component, 'getMaturityValue').and.returnValue('High');
-    spyOn(component, 'generateFlatArray').and.callFake((data) => data);
-
-    const changes: SimpleChanges = {
-      trendData: new SimpleChange(null, component.trendData, true)
-    };
-
-    component.ngOnChanges(changes);
-
-    expect(component.dataObj.length).toBe(2);
-    expect(component.headerObj).toEqual(['Project', 'Latest Trend', 'KPI Maturity']);
-
-    expect(component.dataObj[0]).toEqual({
-      'Project': 'red',
-      'Latest Trend': '50 (up)',
-      'KPI Maturity': 'High'
+    beforeEach(() => {
+      fixture = TestBed.createComponent(TrendIndicatorV2Component);
+      component = fixture.componentInstance;
+    });
+    afterEach(() => {
+      TestBed.resetTestingModule(); // Reset the module after each test to prevent conflicts
     });
 
-    expect(component.dataObj[1]).toEqual({
-      'Project': 'blue',
-      'Latest Trend': '30 (down)',
-      'KPI Maturity': 'High'
+    it('should do nothing if trendData is empty', () => {
+      const changes: SimpleChanges = {
+        trendData: new SimpleChange([], [], false),
+      };
+
+      component.ngOnChanges(changes);
+
+      expect(component.dataObj).toEqual([]);
+      expect(component.headerObj).toEqual([]);
     });
 
-    expect(component.getMaturityValue).toHaveBeenCalledTimes(2);
-    expect(component.generateFlatArray).toHaveBeenCalled();
-  });
+    it('should update dataObj and headerObj when trendData is available', () => {
+      // Mock color object
+      component.colorObj = {
+        '1': { nodeId: '1', color: 'red' },
+        '2': { nodeId: '2', color: 'blue' },
+      };
 
-  xit('should handle empty hierarchyName gracefully', () => {
-    component.colorObj = {
-      '1': { nodeId: '1', color: 'red' }
-    };
+      // Mock trendData
+      component.trendData = [
+        {
+          hierarchyName: 'Project A',
+          hierarchyId: '1',
+          value: '50',
+          trend: 'up',
+        },
+        {
+          hierarchyName: 'Project B',
+          hierarchyId: '2',
+          value: '30',
+          trend: 'down',
+        },
+      ];
 
-    component.trendData = [
-      { hierarchyId: '1', value: '50', trend: 'up' },
-      { hierarchyName: 'Project B', hierarchyId: '2', value: '30', trend: 'down' }
-    ];
+      // Spy on methods
+      spyOn(component, 'getMaturityValue').and.returnValue('High');
+      spyOn(component, 'generateFlatArray').and.callFake((data) => data);
 
-    spyOn(component, 'getMaturityValue').and.returnValue('Medium');
-    spyOn(component, 'generateFlatArray').and.callFake((data) => data);
+      const changes: SimpleChanges = {
+        trendData: new SimpleChange(null, component.trendData, true),
+      };
 
-    const changes: SimpleChanges = {
-      trendData: new SimpleChange(null, component.trendData, true)
-    };
+      component.ngOnChanges(changes);
 
-    component.ngOnChanges(changes);
+      expect(component.dataObj.length).toBe(2);
+      expect(component.headerObj).toEqual([
+        'Project',
+        'Latest Trend',
+        'KPI Maturity',
+      ]);
 
-    expect(component.dataObj.length).toBe(2);
-    expect(component.dataObj[0]).toEqual({});
-    expect(component.dataObj[1]).toEqual({
-      'Project': undefined,
-      'Latest Trend': '30 (down)',
-      'KPI Maturity': 'Medium'
+      expect(component.dataObj[0]).toEqual({
+        Project: 'red',
+        'Latest Trend': '50 (up)',
+        'KPI Maturity': 'High',
+      });
+
+      expect(component.dataObj[1]).toEqual({
+        Project: 'blue',
+        'Latest Trend': '30 (down)',
+        'KPI Maturity': 'High',
+      });
+
+      expect(component.getMaturityValue).toHaveBeenCalledTimes(2);
+      expect(component.generateFlatArray).toHaveBeenCalled();
     });
 
-    expect(component.generateFlatArray).toHaveBeenCalled();
+    xit('should handle empty hierarchyName gracefully', () => {
+      component.colorObj = {
+        '1': { nodeId: '1', color: 'red' },
+      };
+
+      component.trendData = [
+        { hierarchyId: '1', value: '50', trend: 'up' },
+        {
+          hierarchyName: 'Project B',
+          hierarchyId: '2',
+          value: '30',
+          trend: 'down',
+        },
+      ];
+
+      spyOn(component, 'getMaturityValue').and.returnValue('Medium');
+      spyOn(component, 'generateFlatArray').and.callFake((data) => data);
+
+      const changes: SimpleChanges = {
+        trendData: new SimpleChange(null, component.trendData, true),
+      };
+
+      component.ngOnChanges(changes);
+
+      expect(component.dataObj.length).toBe(2);
+      expect(component.dataObj[0]).toEqual({});
+      expect(component.dataObj[1]).toEqual({
+        Project: undefined,
+        'Latest Trend': '30 (down)',
+        'KPI Maturity': 'Medium',
+      });
+
+      expect(component.generateFlatArray).toHaveBeenCalled();
+    });
+
+    it('should push an empty object to dataObj when hierarchyName is missing', () => {
+      component.trendData = [
+        { hierarchyId: '123', value: '50', trend: 'Up' }, // No hierarchyName
+      ];
+      component.colorObj = [{ nodeId: '123', color: 'red' }]; // Mocking colorObj to avoid errors
+
+      spyOn(component, 'generateFlatArray').and.callFake((data) => data); // Mock generateFlatArray
+      const changes: SimpleChanges = {
+        trendData: new SimpleChange(null, component.trendData, true),
+      };
+
+      component.ngOnChanges(changes); // Simulate initialization
+
+      expect(component.dataObj.length).toBe(1);
+      expect(component.dataObj[0]).toEqual({}); // Ensuring empty object is pushed
+    });
   });
-
-  it('should push an empty object to dataObj when hierarchyName is missing', () => {
-    component.trendData = [
-      { hierarchyId: '123', value: '50', trend: 'Up' }, // No hierarchyName
-    ];
-    component.colorObj = [{ nodeId: '123', color: 'red' }]; // Mocking colorObj to avoid errors
-
-    spyOn(component, 'generateFlatArray').and.callFake((data) => data); // Mock generateFlatArray
-    const changes: SimpleChanges = {
-      trendData: new SimpleChange(null, component.trendData, true)
-    };
-
-    component.ngOnChanges(changes); // Simulate initialization
-
-    expect(component.dataObj.length).toBe(1);
-    expect(component.dataObj[0]).toEqual({}); // Ensuring empty object is pushed
-  });
-});
-
 });

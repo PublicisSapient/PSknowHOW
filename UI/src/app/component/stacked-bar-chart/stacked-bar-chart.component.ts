@@ -11,7 +11,7 @@ import * as d3 from 'd3';
 
 @Component({
   selector: 'app-stacked-bar-chart',
-  templateUrl: './stacked-bar-chart.component.html'
+  templateUrl: './stacked-bar-chart.component.html',
 })
 export class StackedBarChartComponent implements OnInit, OnChanges {
   @Input() data: any[] = []; // Data to be passed from parent component
@@ -21,7 +21,10 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
   private tooltip: any;
   elem;
 
-  constructor(private elRef: ElementRef, private viewContainerRef: ViewContainerRef) {
+  constructor(
+    private elRef: ElementRef,
+    private viewContainerRef: ViewContainerRef,
+  ) {
     this.elem = this.viewContainerRef.element.nativeElement;
   }
 
@@ -40,14 +43,17 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
   private createChart(): void {
     const chartHeight = 30; // Height of the bar
     const margin = { top: 20, right: 20, bottom: 20, left: 20 };
-    const chartWidth = (d3.select(this.elem).select('.chart-container').node().offsetWidth - margin.left - margin.right) || window.innerWidth; // Adjusted width to fit within the card
+    const chartWidth =
+      d3.select(this.elem).select('.chart-container').node().offsetWidth -
+        margin.left -
+        margin.right || window.innerWidth; // Adjusted width to fit within the card
     const radius = 12.5;
     // Calculate total value for scaling
     const totalNegative = Math.abs(
-      this.data.filter(d => d.value < 0).reduce((sum, d) => sum + d.value, 0)
+      this.data.filter((d) => d.value < 0).reduce((sum, d) => sum + d.value, 0),
     );
     const totalPositive = this.data
-      .filter(d => d.value > 0)
+      .filter((d) => d.value > 0)
       .reduce((sum, d) => sum + d.value, 0);
     const total = totalNegative + totalPositive;
 
@@ -75,11 +81,10 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
       .attr('class', 'xAxisG')
       .call(xAxis)
       .selectAll('text')
-      .style('font-size', '12px')
+      .style('font-size', '12px');
 
     // Create vertical gridlines
-    const gridlines = svg.append("g")
-      .attr("class", "gridlines");
+    const gridlines = svg.append('g').attr('class', 'gridlines');
 
     // // Add vertical gridlines
     // gridlines.selectAll(".gridline")
@@ -99,29 +104,40 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
     // Draw the stacked bar chart
     let cumulativeOffset = 0;
     let minWidth = 35;
-    let nonZeroBars = this.data.filter(d => parseInt(d.value) > 0);
-    const g = svg.selectAll('.slice')
-      .data(this.data.filter(x=>x.value !==0))
+    let nonZeroBars = this.data.filter((d) => parseInt(d.value) > 0);
+    const g = svg
+      .selectAll('.slice')
+      .data(this.data.filter((x) => x.value !== 0))
       .enter()
       .append('g')
       .attr('transform', (d, index) => {
         const offset = cumulativeOffset;
-        cumulativeOffset += Math.abs(xScale(d.value) - xScale(0)) >= minWidth ? Math.abs(xScale(d.value) - xScale(0)) : minWidth;
+        cumulativeOffset +=
+          Math.abs(xScale(d.value) - xScale(0)) >= minWidth
+            ? Math.abs(xScale(d.value) - xScale(0))
+            : minWidth;
         const isNegative = d.value < 0;
         if (isNegative) {
-          return `translate(${Math.abs(offset) + margin.left}, ${margin.top})`
+          return `translate(${Math.abs(offset) + margin.left}, ${margin.top})`;
         } else {
           if (index === 1 || index === 0) {
-            return `translate(${Math.abs(offset) + margin.left}, ${margin.top})`
+            return `translate(${Math.abs(offset) + margin.left}, ${
+              margin.top
+            })`;
           } else {
-            return `translate(${Math.abs(offset) + margin.left - radius}, ${margin.top})`
+            return `translate(${Math.abs(offset) + margin.left - radius}, ${
+              margin.top
+            })`;
           }
         }
       })
       .attr('class', 'slice')
       .append('path')
-      .attr("d", (d, index) => {
-        const width = Math.abs(xScale(d.value) - xScale(0)) >= minWidth ? Math.abs(xScale(d.value) - xScale(0)) : minWidth;
+      .attr('d', (d, index) => {
+        const width =
+          Math.abs(xScale(d.value) - xScale(0)) >= minWidth
+            ? Math.abs(xScale(d.value) - xScale(0))
+            : minWidth;
         const isNegative = Math.abs(d.value) && d.value < 0;
         if (isNegative) {
           // Rounded corners on the left side
@@ -155,24 +171,29 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
                 Z`;
           } else {
             return `M${0},0
-            C${radius},${chartHeight / 4} ${radius},${(3 * chartHeight) / 4} 0,${chartHeight}
+            C${radius},${chartHeight / 4} ${radius},${
+              (3 * chartHeight) / 4
+            } 0,${chartHeight}
             L${width - radius},${chartHeight} 
-            C${width},${(3 * chartHeight) / 4} ${width},${chartHeight / 4} ${width - radius},0
+            C${width},${(3 * chartHeight) / 4} ${width},${chartHeight / 4} ${
+              width - radius
+            },0
             Z`;
           }
         } else if (d.value === 0) {
           return ``;
         }
       })
-      .attr('fill', d => d.color);
+      .attr('fill', (d) => d.color);
 
     // Reset cumulative offset for labels
     cumulativeOffset = 0;
 
     // Add labels inside each section
-    svg.selectAll('.slice')
+    svg
+      .selectAll('.slice')
       .append('text')
-      .attr('x', d => {
+      .attr('x', (d) => {
         const width = Math.abs(xScale(d.value) - xScale(0));
         return width / 2;
       })
@@ -181,11 +202,9 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
       .style('font-size', '12px')
       .style('font-weight', 'bold')
       .attr('dominant-baseline', 'middle')
-      .text(d => d.value);
+      .text((d) => d.value);
 
-
-    svg.selectAll('.xAxisG *')
-      .style('display', 'none');
+    svg.selectAll('.xAxisG *').style('display', 'none');
   }
 
   private updateChart(): void {

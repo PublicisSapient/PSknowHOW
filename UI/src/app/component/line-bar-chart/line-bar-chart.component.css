@@ -31,7 +31,7 @@
 }
 ::ng-deep .axis.axis--y line {
   stroke: #dedede;
-  z-index: -10
+  z-index: -10;
 }
 
 ::ng-deep .axis.axis--y .domain {

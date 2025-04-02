@@ -7,57 +7,51 @@ describe('IssueBodyComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ IssueBodyComponent ]
-    })
-    .compileComponents();
+      declarations: [IssueBodyComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(IssueBodyComponent);
     component = fixture.componentInstance;
-    component.issueData =  {
-        "statusLogGroup": {},
-        "workLogGroup": {},
-        "assigneeLogGroup": {
-          "2023-12-20": [
-            "Pawan Kandpal"
-          ]
-        },
-        "timeWithUser": "1d 2h",
-        "timeWithStatus": " 23h",
-        "loggedWorkInSeconds": 0,
-        "epicName": "KnowHOW | Client enhancements and rollout support in Q1 2024",
-        "spill": false,
-        "preClosed": false,
-        "Issue Id": "DTS-30162",
-        "Issue URL": "https://publicissapient.atlassian.net/browse/DTS-30162",
-        "Issue Description": "Security fixed for onboarding of Marriott International",
-        "Issue Status": "Open",
-        "Issue Type": "Story",
-        "Size(story point/hours)": "20.0",
-        "Logged Work": "0d",
-        "Original Estimate": "0d",
-        "Priority": "P2 - Critical",
-        "Due Date": "-",
-        "Remaining Estimate": "-",
-        "Predicted Completion Date": "-",
-        "Overall Delay": "-",
-        "Dev Due Date": "-",
-        "Assignee": "Pawan Kandpal",
-        "Change Date": "2023-12-20",
-        "Labels": [],
-        "Created Date": "2023-12-04",
-        "Root Cause List": [
-          "None"
-        ],
-        "Owner Full Name": [
-          "Pawan Kandpal"
-        ],
-        "Sprint Name": "KnowHOW | PI_16| ITR_1",
-        "Release Name": "KnowHOW PI-16",
-        "Updated Date": "2023-12-20",
-        "Dev-Completion-Date": "-"
-      };
+    component.issueData = {
+      statusLogGroup: {},
+      workLogGroup: {},
+      assigneeLogGroup: {
+        '2023-12-20': ['Pawan Kandpal'],
+      },
+      timeWithUser: '1d 2h',
+      timeWithStatus: ' 23h',
+      loggedWorkInSeconds: 0,
+      epicName: 'KnowHOW | Client enhancements and rollout support in Q1 2024',
+      spill: false,
+      preClosed: false,
+      'Issue Id': 'DTS-30162',
+      'Issue URL': 'https://publicissapient.atlassian.net/browse/DTS-30162',
+      'Issue Description':
+        'Security fixed for onboarding of Marriott International',
+      'Issue Status': 'Open',
+      'Issue Type': 'Story',
+      'Size(story point/hours)': '20.0',
+      'Logged Work': '0d',
+      'Original Estimate': '0d',
+      Priority: 'P2 - Critical',
+      'Due Date': '-',
+      'Remaining Estimate': '-',
+      'Predicted Completion Date': '-',
+      'Overall Delay': '-',
+      'Dev Due Date': '-',
+      Assignee: 'Pawan Kandpal',
+      'Change Date': '2023-12-20',
+      Labels: [],
+      'Created Date': '2023-12-04',
+      'Root Cause List': ['None'],
+      'Owner Full Name': ['Pawan Kandpal'],
+      'Sprint Name': 'KnowHOW | PI_16| ITR_1',
+      'Release Name': 'KnowHOW PI-16',
+      'Updated Date': '2023-12-20',
+      'Dev-Completion-Date': '-',
+    };
     fixture.detectChanges();
   });
 

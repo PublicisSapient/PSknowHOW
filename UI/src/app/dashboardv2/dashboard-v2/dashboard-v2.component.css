@@ -1,10 +1,10 @@
 :host .main-container {
-    max-width: 100vw;
+  max-width: 100vw;
 }
 
 :host .main-container,
 :host ::ng-deep .main-container label {
-    background-color: #F5F9FF;
+  background-color: #f5f9ff;
 }
 
 :host ::ng-deep .main-container .p-tabview-title,
@@ -13,34 +13,33 @@
 :host ::ng-deep .main-container .col-head,
 :host ::ng-deep .main-container .p-tabmenu-nav a,
 :host ::ng-deep .main-container .p-datatable .p-datatable-thead > tr > th {
-    font-family: 'Poppins_Medium', sans-serif;
+  font-family: 'Poppins_Medium', sans-serif;
 }
 
-
 .nav-filter-container {
-    position: sticky;
-    top: 0;
-    z-index: 900;
+  position: sticky;
+  top: 0;
+  z-index: 900;
 }
 
 .header {
-    transition: height 0.3s; /* add a smooth transition effect */
-    height: 80px; /* initial height of the header */
-    display: none;
-  }
-  
-  .header.scrolled {
-    height: 40px; /* shrunk height of the header */
-    display: block;
-  }
+  transition: height 0.3s; /* add a smooth transition effect */
+  height: 80px; /* initial height of the header */
+  display: none;
+}
+
+.header.scrolled {
+  height: 40px; /* shrunk height of the header */
+  display: block;
+}
 
 :host ::ng-deep .main-container .kpi-summary,
 :host ::ng-deep .main-container .kpi-card-container {
-    box-shadow: none;
-    border: 1px solid #D5DBE1;
-    border-radius: 10px;
+  box-shadow: none;
+  border: 1px solid #d5dbe1;
+  border-radius: 10px;
 }
 
 :host ::ng-deep .p-scrolltop.p-link {
-  background: #0b4bc8 !important;;
+  background: #0b4bc8 !important;
 }

@@ -8,9 +8,8 @@ describe('HorizontalPercentBarChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ HorizontalPercentBarChartComponent ]
-    })
-    .compileComponents();
+      declarations: [HorizontalPercentBarChartComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(HorizontalPercentBarChartComponent);
     component = fixture.componentInstance;

@@ -11,7 +11,7 @@
                 <p class="tabularKPI-column-value p-mt-0">{{  item.value }}</p>
             </div>
         </div>
-        <div *ngIf="i === 2" class="p-d-flex p-flex-column p-col-4" style="margin-top: -15%;">
+        <div *ngIf="i === 2" class="donut-container p-d-flex p-flex-column p-col-4">
             <app-semi-circle-donut-chart [value]="item.value" [max]="item.totalIssues"></app-semi-circle-donut-chart>
         </div>
     </ng-container>

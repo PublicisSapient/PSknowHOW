@@ -8,9 +8,8 @@ describe('TabularKpiV2Component', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TabularKpiV2Component ]
-    })
-    .compileComponents();
+      declarations: [TabularKpiV2Component],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(TabularKpiV2Component);
     component = fixture.componentInstance;

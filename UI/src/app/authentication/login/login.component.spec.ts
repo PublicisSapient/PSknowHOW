@@ -55,7 +55,9 @@ describe('LoginComponent', () => {
     raiseError: jasmine.createSpy('raiseError'),
   };
 
-  const mockHelperService = jasmine.createSpyObj('HelperService', ['urlShorteningRedirection']);
+  const mockHelperService = jasmine.createSpyObj('HelperService', [
+    'urlShorteningRedirection',
+  ]);
 
   const mockGoogleAnalyticsService = {
     setLoginMethod: jasmine.createSpy('setLoginMethod'),
@@ -72,7 +74,10 @@ describe('LoginComponent', () => {
         HttpService,
         { provide: SharedService, useValue: mockSharedService },
         { provide: HelperService, useValue: mockHelperService },
-        { provide: GoogleAnalyticsService, useValue: mockGoogleAnalyticsService },
+        {
+          provide: GoogleAnalyticsService,
+          useValue: mockGoogleAnalyticsService,
+        },
       ],
     }).compileComponents();
 
@@ -80,8 +85,12 @@ describe('LoginComponent', () => {
     component = fixture.componentInstance;
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     httpService = TestBed.inject(HttpService);
-    sharedService = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
-    ga = TestBed.inject(GoogleAnalyticsService) as jasmine.SpyObj<GoogleAnalyticsService>;
+    sharedService = TestBed.inject(
+      SharedService,
+    ) as jasmine.SpyObj<SharedService>;
+    ga = TestBed.inject(
+      GoogleAnalyticsService,
+    ) as jasmine.SpyObj<GoogleAnalyticsService>;
 
     fixture.detectChanges();
   });
@@ -105,7 +114,7 @@ describe('LoginComponent', () => {
 
   xit('should call login service on valid form submission', () => {
     component.loginForm.setValue({ username: 'test', password: 'password' });
-    spyOn(httpService,'login');
+    spyOn(httpService, 'login');
     component.onSubmit();
 
     expect(httpService.login).toHaveBeenCalledWith('', 'test', 'password');
@@ -113,7 +122,9 @@ describe('LoginComponent', () => {
 
   it('should handle 401 error on login', () => {
     component.loginForm.setValue({ username: 'test', password: 'password' });
-    spyOn(httpService,'login').and.returnValue(of({ status: 401, error: { message: 'Unauthorized' } }));
+    spyOn(httpService, 'login').and.returnValue(
+      of({ status: 401, error: { message: 'Unauthorized' } }),
+    );
 
     component.onSubmit();
 
@@ -123,13 +134,15 @@ describe('LoginComponent', () => {
 
   xit('should redirect to profile if conditions are met', () => {
     component.loginForm.setValue({ username: 'test', password: 'password' });
-    spyOn(httpService,'login').and.returnValue(of({ status: 200, body: {} }));
+    spyOn(httpService, 'login').and.returnValue(of({ status: 200, body: {} }));
 
     mockSharedService.getCurrentUserDetails.and.returnValue('');
 
     component.onSubmit();
 
-    expect(router.navigate).toHaveBeenCalledWith(['./dashboard/Config/Profile']);
+    expect(router.navigate).toHaveBeenCalledWith([
+      './dashboard/Config/Profile',
+    ]);
   });
 
   it('should handle 401 status code', () => {
@@ -150,52 +163,79 @@ describe('LoginComponent', () => {
     spyOn(component, 'redirectToProfile').and.returnValue(true);
     const data = { status: 200, body: {} };
     component.performLogin(data, 'username', 'password');
-    expect(router.navigate).toHaveBeenCalledWith(['./dashboard/Config/Profile']);
+    expect(router.navigate).toHaveBeenCalledWith([
+      './dashboard/Config/Profile',
+    ]);
   });
 
   it('should return true when user email is missing', () => {
-    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue(null);
+    mockSharedService.getCurrentUserDetails
+      .withArgs('user_email')
+      .and.returnValue(null);
 
     expect(component.redirectToProfile()).toBeTrue();
   });
 
   it('should return true when user email is an empty string', () => {
-    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue('');
+    mockSharedService.getCurrentUserDetails
+      .withArgs('user_email')
+      .and.returnValue('');
 
     expect(component.redirectToProfile()).toBeTrue();
   });
 
   it('should return false when user has ROLE_SUPERADMIN', () => {
-    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue('test@example.com');
-    mockSharedService.getCurrentUserDetails.withArgs('authorities').and.returnValue(['ROLE_SUPERADMIN']);
+    mockSharedService.getCurrentUserDetails
+      .withArgs('user_email')
+      .and.returnValue('test@example.com');
+    mockSharedService.getCurrentUserDetails
+      .withArgs('authorities')
+      .and.returnValue(['ROLE_SUPERADMIN']);
 
     expect(component.redirectToProfile()).toBeFalse();
   });
 
   it('should return true when projectsAccess is undefined', () => {
-    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue('test@example.com');
-    mockSharedService.getCurrentUserDetails.withArgs('authorities').and.returnValue(['ROLE_USER']);
-    mockSharedService.getCurrentUserDetails.withArgs('projectsAccess').and.returnValue(undefined);
+    mockSharedService.getCurrentUserDetails
+      .withArgs('user_email')
+      .and.returnValue('test@example.com');
+    mockSharedService.getCurrentUserDetails
+      .withArgs('authorities')
+      .and.returnValue(['ROLE_USER']);
+    mockSharedService.getCurrentUserDetails
+      .withArgs('projectsAccess')
+      .and.returnValue(undefined);
 
     expect(component.redirectToProfile()).toBeTrue();
   });
 
   it('should return true when projectsAccess is an empty array', () => {
-    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue('test@example.com');
-    mockSharedService.getCurrentUserDetails.withArgs('authorities').and.returnValue(['ROLE_USER']);
-    mockSharedService.getCurrentUserDetails.withArgs('projectsAccess').and.returnValue([]);
+    mockSharedService.getCurrentUserDetails
+      .withArgs('user_email')
+      .and.returnValue('test@example.com');
+    mockSharedService.getCurrentUserDetails
+      .withArgs('authorities')
+      .and.returnValue(['ROLE_USER']);
+    mockSharedService.getCurrentUserDetails
+      .withArgs('projectsAccess')
+      .and.returnValue([]);
 
     expect(component.redirectToProfile()).toBeTrue();
   });
 
   it('should return undefined when projectsAccess has data (valid case)', () => {
-    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue('test@example.com');
-    mockSharedService.getCurrentUserDetails.withArgs('authorities').and.returnValue(['ROLE_USER']);
-    mockSharedService.getCurrentUserDetails.withArgs('projectsAccess').and.returnValue(['Project1']);
+    mockSharedService.getCurrentUserDetails
+      .withArgs('user_email')
+      .and.returnValue('test@example.com');
+    mockSharedService.getCurrentUserDetails
+      .withArgs('authorities')
+      .and.returnValue(['ROLE_USER']);
+    mockSharedService.getCurrentUserDetails
+      .withArgs('projectsAccess')
+      .and.returnValue(['Project1']);
 
     expect(component.redirectToProfile()).toBeUndefined();
   });
-
 
   // afterEach(() => {
   //   localStorage.removeItem('shared_link');

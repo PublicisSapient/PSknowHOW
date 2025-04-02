@@ -6,107 +6,110 @@ import { MessageService } from 'primeng/api';
 import { Router, Routes } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
 import { HelperService } from 'src/app/services/helper.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DashboardV2Component } from '../dashboard-v2/dashboard-v2.component';
 
 const mockHierarchyData = {
-  "kanban": [
+  kanban: [
     {
-      "id": "6442815917ed167d8157f0f5",
-      "level": 1,
-      "hierarchyLevelId": "bu",
-      "hierarchyLevelName": "BU",
-      "hierarchyInfo": "Business Unit"
+      id: '6442815917ed167d8157f0f5',
+      level: 1,
+      hierarchyLevelId: 'bu',
+      hierarchyLevelName: 'BU',
+      hierarchyInfo: 'Business Unit',
     },
     {
-      "id": "6442815917ed167d8157f0f6",
-      "level": 2,
-      "hierarchyLevelId": "ver",
-      "hierarchyLevelName": "Vertical",
-      "hierarchyInfo": "Industry"
+      id: '6442815917ed167d8157f0f6',
+      level: 2,
+      hierarchyLevelId: 'ver',
+      hierarchyLevelName: 'Vertical',
+      hierarchyInfo: 'Industry',
     },
     {
-      "id": "6442815917ed167d8157f0f7",
-      "level": 3,
-      "hierarchyLevelId": "acc",
-      "hierarchyLevelName": "Account",
-      "hierarchyInfo": "Account"
+      id: '6442815917ed167d8157f0f7',
+      level: 3,
+      hierarchyLevelId: 'acc',
+      hierarchyLevelName: 'Account',
+      hierarchyInfo: 'Account',
     },
     {
-      "id": "6442815917ed167d8157f0f8",
-      "level": 4,
-      "hierarchyLevelId": "port",
-      "hierarchyLevelName": "Engagement",
-      "hierarchyInfo": "Engagement"
+      id: '6442815917ed167d8157f0f8',
+      level: 4,
+      hierarchyLevelId: 'port',
+      hierarchyLevelName: 'Engagement',
+      hierarchyInfo: 'Engagement',
     },
     {
-      "level": 5,
-      "hierarchyLevelId": "project",
-      "hierarchyLevelName": "Project"
+      level: 5,
+      hierarchyLevelId: 'project',
+      hierarchyLevelName: 'Project',
     },
     {
-      "level": 6,
-      "hierarchyLevelId": "release",
-      "hierarchyLevelName": "Release"
+      level: 6,
+      hierarchyLevelId: 'release',
+      hierarchyLevelName: 'Release',
     },
     {
-      "level": 7,
-      "hierarchyLevelId": "sqd",
-      "hierarchyLevelName": "Squad"
-    }
+      level: 7,
+      hierarchyLevelId: 'sqd',
+      hierarchyLevelName: 'Squad',
+    },
   ],
-  "scrum": [
+  scrum: [
     {
-      "id": "6442815917ed167d8157f0f5",
-      "level": 1,
-      "hierarchyLevelId": "bu",
-      "hierarchyLevelName": "BU",
-      "hierarchyInfo": "Business Unit"
+      id: '6442815917ed167d8157f0f5',
+      level: 1,
+      hierarchyLevelId: 'bu',
+      hierarchyLevelName: 'BU',
+      hierarchyInfo: 'Business Unit',
     },
     {
-      "id": "6442815917ed167d8157f0f6",
-      "level": 2,
-      "hierarchyLevelId": "ver",
-      "hierarchyLevelName": "Vertical",
-      "hierarchyInfo": "Industry"
+      id: '6442815917ed167d8157f0f6',
+      level: 2,
+      hierarchyLevelId: 'ver',
+      hierarchyLevelName: 'Vertical',
+      hierarchyInfo: 'Industry',
     },
     {
-      "id": "6442815917ed167d8157f0f7",
-      "level": 3,
-      "hierarchyLevelId": "acc",
-      "hierarchyLevelName": "Account",
-      "hierarchyInfo": "Account"
+      id: '6442815917ed167d8157f0f7',
+      level: 3,
+      hierarchyLevelId: 'acc',
+      hierarchyLevelName: 'Account',
+      hierarchyInfo: 'Account',
     },
     {
-      "id": "6442815917ed167d8157f0f8",
-      "level": 4,
-      "hierarchyLevelId": "port",
-      "hierarchyLevelName": "Engagement",
-      "hierarchyInfo": "Engagement"
+      id: '6442815917ed167d8157f0f8',
+      level: 4,
+      hierarchyLevelId: 'port',
+      hierarchyLevelName: 'Engagement',
+      hierarchyInfo: 'Engagement',
     },
     {
-      "level": 5,
-      "hierarchyLevelId": "project",
-      "hierarchyLevelName": "Project"
+      level: 5,
+      hierarchyLevelId: 'project',
+      hierarchyLevelName: 'Project',
     },
     {
-      "level": 6,
-      "hierarchyLevelId": "sprint",
-      "hierarchyLevelName": "Sprint"
+      level: 6,
+      hierarchyLevelId: 'sprint',
+      hierarchyLevelName: 'Sprint',
     },
     {
-      "level": 6,
-      "hierarchyLevelId": "release",
-      "hierarchyLevelName": "Release"
+      level: 6,
+      hierarchyLevelId: 'release',
+      hierarchyLevelName: 'Release',
     },
     {
-      "level": 7,
-      "hierarchyLevelId": "sqd",
-      "hierarchyLevelName": "Squad"
-    }
-  ]
+      level: 7,
+      hierarchyLevelId: 'sqd',
+      hierarchyLevelName: 'Squad',
+    },
+  ],
 };
 describe('NavNewComponent', () => {
   let component: NavNewComponent;
@@ -131,13 +134,38 @@ describe('NavNewComponent', () => {
     // const httpSpy = jasmine.createSpyObj('HttpService', ['getShowHideOnDashboardNewUI', 'getAllHierarchyLevels']);
 
     const messageSpy = jasmine.createSpyObj('MessageService', ['add']);
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate', 'navigateByUrl', 'createUrlTree', 'serializeUrl', 'parseUrl', 'isActive', 'events', 'routerState', 'url', 'urlHandlingStrategy', 'config', 'resetConfig', 'ngOnDestroy', 'dispose', 'initialNavigation', 'setUpLocationChangeListener', 'getCurrentNavigation', 'triggerEvent']);
-    const helperSpy = jasmine.createSpyObj('HelperService', ['setBackupOfFilterSelectionState', 'deepEqual']);
+    const routerSpy = jasmine.createSpyObj('Router', [
+      'navigate',
+      'navigateByUrl',
+      'createUrlTree',
+      'serializeUrl',
+      'parseUrl',
+      'isActive',
+      'events',
+      'routerState',
+      'url',
+      'urlHandlingStrategy',
+      'config',
+      'resetConfig',
+      'ngOnDestroy',
+      'dispose',
+      'initialNavigation',
+      'setUpLocationChangeListener',
+      'getCurrentNavigation',
+      'triggerEvent',
+    ]);
+    const helperSpy = jasmine.createSpyObj('HelperService', [
+      'setBackupOfFilterSelectionState',
+      'deepEqual',
+    ]);
     const routes: Routes = [
-      { path: 'dashboard', component: DashboardV2Component }
+      { path: 'dashboard', component: DashboardV2Component },
     ];
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes(routes)],
+      imports: [
+        HttpClientTestingModule,
+        RouterTestingModule.withRoutes(routes),
+      ],
       declarations: [NavNewComponent],
       providers: [
         HttpService,
@@ -152,10 +180,16 @@ describe('NavNewComponent', () => {
     fixture = TestBed.createComponent(NavNewComponent);
     component = fixture.componentInstance;
     httpService = TestBed.inject(HttpService) as jasmine.SpyObj<HttpService>;
-    sharedService = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
-    messageService = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
+    sharedService = TestBed.inject(
+      SharedService,
+    ) as jasmine.SpyObj<SharedService>;
+    messageService = TestBed.inject(
+      MessageService,
+    ) as jasmine.SpyObj<MessageService>;
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    helperService = TestBed.inject(HelperService) as jasmine.SpyObj<HelperService>;
+    helperService = TestBed.inject(
+      HelperService,
+    ) as jasmine.SpyObj<HelperService>;
 
     // Set default mocks
     // spyOn(sharedService, 'getSelectedType').and.returnValue('scrum');
@@ -171,7 +205,10 @@ describe('NavNewComponent', () => {
             primaryFilter: { defaultLevel: { labelName: 'Project' } },
             parentFilter: { labelName: 'Engagement' },
           },
-          kpis: [{ kpiId: 'kpi1', shown: true }, { kpiId: 'kpi2', shown: true }]
+          kpis: [
+            { kpiId: 'kpi1', shown: true },
+            { kpiId: 'kpi2', shown: true },
+          ],
         },
       ],
       others: [
@@ -182,10 +219,13 @@ describe('NavNewComponent', () => {
             primaryFilter: { defaultLevel: { labelName: 'Project' } },
             parentFilter: { labelName: 'Engagement' },
           },
-          kpis: [{ kpiId: 'kpi3', shown: true }, { kpiId: 'kpi4', shown: true }]
+          kpis: [
+            { kpiId: 'kpi3', shown: true },
+            { kpiId: 'kpi4', shown: true },
+          ],
         },
       ],
-      configDetails: undefined
+      configDetails: undefined,
     };
   });
 
@@ -216,7 +256,9 @@ describe('NavNewComponent', () => {
     component.handleMenuTabFunctionality(obj);
 
     expect(sharedService.setSelectedBoard).not.toHaveBeenCalled();
-    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/unauthorized access']);
+    expect(router.navigate).toHaveBeenCalledWith([
+      '/dashboard/unauthorized access',
+    ]);
   });
 
   it('should call setBackupOfFilterSelectionState for specific tabs', () => {
@@ -224,7 +266,9 @@ describe('NavNewComponent', () => {
     spyOn(sharedService, 'setBackupOfFilterSelectionState');
     component.handleMenuTabFunctionality(obj);
 
-    expect(sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'additional_level': null });
+    expect(sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({
+      additional_level: null,
+    });
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard/iteration']);
   });
 
@@ -233,7 +277,9 @@ describe('NavNewComponent', () => {
     spyOn(sharedService, 'setBackupOfFilterSelectionState');
     component.handleMenuTabFunctionality(obj);
 
-    expect(sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'additional_level': null });
+    expect(sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({
+      additional_level: null,
+    });
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard/release']);
   });
 
@@ -242,13 +288,17 @@ describe('NavNewComponent', () => {
     spyOn(sharedService, 'setBackupOfFilterSelectionState');
     component.handleMenuTabFunctionality(obj);
 
-    expect(sharedService.setBackupOfFilterSelectionState).not.toHaveBeenCalled();
+    expect(
+      sharedService.setBackupOfFilterSelectionState,
+    ).not.toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard/some-other-tab']);
   });
 
   describe('ngOnDestroy', () => {
     it('should unsubscribe all subscriptions', () => {
-      const subscriptionMock = jasmine.createSpyObj('Subscription', ['unsubscribe']);
+      const subscriptionMock = jasmine.createSpyObj('Subscription', [
+        'unsubscribe',
+      ]);
       component.subscriptions = [subscriptionMock, subscriptionMock];
 
       component.ngOnDestroy();
@@ -261,17 +311,23 @@ describe('NavNewComponent', () => {
     it('should call httpService and handle success response', () => {
       const responseMock = { success: true, data: { userBoardConfigDTO: {} } };
       spyOn(component, 'setBoards');
-      spyOn(httpService,'getShowHideOnDashboardNewUI').and.returnValue(of(responseMock));
+      spyOn(httpService, 'getShowHideOnDashboardNewUI').and.returnValue(
+        of(responseMock),
+      );
 
       component.getBoardConfig(['proj1']);
 
-      expect(httpService.getShowHideOnDashboardNewUI).toHaveBeenCalledWith({ basicProjectConfigIds: ['proj1'] });
+      expect(httpService.getShowHideOnDashboardNewUI).toHaveBeenCalledWith({
+        basicProjectConfigIds: ['proj1'],
+      });
       expect(component.setBoards).toHaveBeenCalledWith(responseMock);
     });
 
     it('should handle error and call MessageService.add when getShowHideOnDashboardNewUI fails', () => {
       // Simulate an error in the HTTP call
-      spyOn(httpService,'getShowHideOnDashboardNewUI').and.returnValue(throwError({ message: 'Error' }));
+      spyOn(httpService, 'getShowHideOnDashboardNewUI').and.returnValue(
+        throwError({ message: 'Error' }),
+      );
 
       // Call the function that triggers the HTTP call
       component.getBoardConfig([]);
@@ -286,11 +342,14 @@ describe('NavNewComponent', () => {
 
   describe('setBoards', () => {
     beforeEach(() => {
-      localStorage.setItem('completeHierarchyData', JSON.stringify({
-        scrum: [
-          { hierarchyLevelId: 'level1', hierarchyLevelName: 'Level 1' }
-        ]
-      }));
+      localStorage.setItem(
+        'completeHierarchyData',
+        JSON.stringify({
+          scrum: [
+            { hierarchyLevelId: 'level1', hierarchyLevelName: 'Level 1' },
+          ],
+        }),
+      );
       component.selectedType = 'scrum';
     });
 
@@ -302,13 +361,20 @@ describe('NavNewComponent', () => {
           userBoardConfigDTO: {
             scrum: [
               {
-                boardName: 'Scrum Board', boardSlug: 'scrum-board', filters: { primaryFilter: { defaultLevel: { labelName: 'level1' } } },
-                kpis: [{ kpiId: 'kpi1', shown: true }, { kpiId: 'kpi2', shown: true }]
-              }
+                boardName: 'Scrum Board',
+                boardSlug: 'scrum-board',
+                filters: {
+                  primaryFilter: { defaultLevel: { labelName: 'level1' } },
+                },
+                kpis: [
+                  { kpiId: 'kpi1', shown: true },
+                  { kpiId: 'kpi2', shown: true },
+                ],
+              },
             ],
-            others: []
-          }
-        }
+            others: [],
+          },
+        },
       };
 
       component.setBoards(responseMock);
@@ -319,8 +385,14 @@ describe('NavNewComponent', () => {
 
     it('should call getAllHierarchyLevels when localStorage is empty', () => {
       localStorage.removeItem('completeHierarchyData');
-      const responseMock = { success: true, data: { userBoardConfigDTO: { scrum: [], others: [] } } };
-      let getAllHierarchyLevelsSpy = spyOn(httpService, 'getAllHierarchyLevels').and.returnValue(of({ data: 'mockHierarchyData' }));
+      const responseMock = {
+        success: true,
+        data: { userBoardConfigDTO: { scrum: [], others: [] } },
+      };
+      let getAllHierarchyLevelsSpy = spyOn(
+        httpService,
+        'getAllHierarchyLevels',
+      ).and.returnValue(of({ data: 'mockHierarchyData' }));
 
       component.setBoards(responseMock);
 
@@ -342,12 +414,17 @@ describe('NavNewComponent', () => {
       spyOn(sharedService, 'setBackupOfFilterSelectionState');
       component.handleMenuTabFunctionality(mockObj);
 
-      expect(component.sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'additional_level': null });
+      expect(
+        component.sharedService.setBackupOfFilterSelectionState,
+      ).toHaveBeenCalledWith({ additional_level: null });
     });
   });
 
   it('should set boards and items when response is successful', () => {
-    localStorage.setItem('completeHierarchyData', JSON.stringify(mockHierarchyData));
+    localStorage.setItem(
+      'completeHierarchyData',
+      JSON.stringify(mockHierarchyData),
+    );
     component.selectedType = 'scrum';
     const response = {
       success: true,
@@ -361,7 +438,10 @@ describe('NavNewComponent', () => {
                 primaryFilter: { defaultLevel: { labelName: 'project' } },
                 parentFilter: { labelName: 'port' },
               },
-              kpis: [{ kpiId: 'kpi1', shown: true }, { kpiId: 'kpi2', shown: true }]
+              kpis: [
+                { kpiId: 'kpi1', shown: true },
+                { kpiId: 'kpi2', shown: true },
+              ],
             },
           ],
           others: [
@@ -372,7 +452,10 @@ describe('NavNewComponent', () => {
                 primaryFilter: { defaultLevel: { labelName: 'project' } },
                 parentFilter: { labelName: 'port' },
               },
-              kpis: [{ kpiId: 'kpi3', shown: true }, { kpiId: 'kpi4', shown: true }]
+              kpis: [
+                { kpiId: 'kpi3', shown: true },
+                { kpiId: 'kpi4', shown: true },
+              ],
             },
           ],
           configDetails: {},
@@ -392,7 +475,10 @@ describe('NavNewComponent', () => {
             primaryFilter: { defaultLevel: { labelName: 'Project' } },
             parentFilter: { labelName: 'Engagement' },
           },
-          kpis: [{ kpiId: 'kpi1', shown: true }, { kpiId: 'kpi2', shown: true }]
+          kpis: [
+            { kpiId: 'kpi1', shown: true },
+            { kpiId: 'kpi2', shown: true },
+          ],
         },
       ],
       others: [
@@ -403,10 +489,13 @@ describe('NavNewComponent', () => {
             primaryFilter: { defaultLevel: { labelName: 'Project' } },
             parentFilter: { labelName: 'Engagement' },
           },
-          kpis: [{ kpiId: 'kpi3', shown: true }, { kpiId: 'kpi4', shown: true }]
+          kpis: [
+            { kpiId: 'kpi3', shown: true },
+            { kpiId: 'kpi4', shown: true },
+          ],
         },
       ],
-      configDetails: undefined
+      configDetails: undefined,
     });
     expect(component.items).toEqual([
       {
@@ -424,20 +513,25 @@ describe('NavNewComponent', () => {
 
   it('should call getAllHierarchyLevels when completeHierarchyData is not available', () => {
     // localStorage.setItem('completeHierarchyData', JSON.stringify(mockHierarchyData));
-    const response = { success: true, data: { userBoardConfigDTO: {}, configDetails: {} } };
-    let getAllHierarchyLevelsSpy = spyOn(httpService, 'getAllHierarchyLevels').and.returnValue(of({ data: [] }));
+    const response = {
+      success: true,
+      data: { userBoardConfigDTO: {}, configDetails: {} },
+    };
+    let getAllHierarchyLevelsSpy = spyOn(
+      httpService,
+      'getAllHierarchyLevels',
+    ).and.returnValue(of({ data: [] }));
 
     component.setBoards(response);
 
     expect(getAllHierarchyLevelsSpy).toHaveBeenCalled();
   });
 
-
   describe('NavNewComponent.ngOnInit() ngOnInit method', () => {
     describe('Happy paths', () => {
       it('should initialize selectedType and set it in sharedService', () => {
         spyOn(sharedService, 'getSelectedType').and.returnValue('kanban');
-        spyOn(sharedService, 'setScrumKanban').and.callFake(() => { });
+        spyOn(sharedService, 'setScrumKanban').and.callFake(() => {});
 
         component.ngOnInit();
 
@@ -448,7 +542,7 @@ describe('NavNewComponent', () => {
       it('should call getBoardConfig with selected trends', () => {
         const trends = [{ basicProjectConfigId: '123' }];
         spyOn(sharedService, 'getSelectedTrends').and.returnValue(trends);
-        spyOn<any>(component, 'getBoardConfig').and.callFake(() => { });
+        spyOn<any>(component, 'getBoardConfig').and.callFake(() => {});
 
         component.ngOnInit();
 
@@ -472,7 +566,7 @@ describe('NavNewComponent', () => {
       describe('Edge cases', () => {
         it('should handle empty selected trends gracefully', () => {
           spyOn(sharedService, 'getSelectedTrends').and.returnValue([]);
-          spyOn<any>(component, 'getBoardConfig').and.callFake(() => { });
+          spyOn<any>(component, 'getBoardConfig').and.callFake(() => {});
 
           component.ngOnInit();
 
@@ -481,7 +575,7 @@ describe('NavNewComponent', () => {
 
         it('should handle null selectedType and default to scrum', () => {
           spyOn(sharedService, 'getSelectedType').and.returnValue(null);
-          spyOn(sharedService, 'setScrumKanban').and.callFake(() => { });
+          spyOn(sharedService, 'setScrumKanban').and.callFake(() => {});
 
           component.ngOnInit();
 
@@ -505,4 +599,3 @@ describe('NavNewComponent', () => {
     });
   });
 });
-

@@ -31,7 +31,7 @@ import { SharedService } from 'src/app/services/shared.service';
 @Component({
   selector: 'app-multiline-style-v2',
   templateUrl: './multiline-style-v2.component.html',
-  styleUrls: ['./multiline-style-v2.component.css']
+  styleUrls: ['./multiline-style-v2.component.css'],
 })
 export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
   @Input() data: any; // json data
@@ -47,8 +47,8 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
   elem;
   sprintList: Array<any> = [];
   height: number = 0;
-  @Input() viewType: string = 'chart'
-  resizeObserver = new ResizeObserver(entries => {
+  @Input() viewType: string = 'chart';
+  resizeObserver = new ResizeObserver((entries) => {
     this.draw();
   });
 
@@ -61,7 +61,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    this.service.showTableViewObs.subscribe(view => {
+    this.service.showTableViewObs.subscribe((view) => {
       this.viewType = view;
     });
   }
@@ -84,16 +84,17 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
     const transformedData = [];
     for (let i = 0; i < data.length; i++) {
       const { value, ...projectInfo } = data[i];
-      const newData = value.map(dataPoint => {
+      const newData = value.map((dataPoint) => {
         const { dataValue, ...rest } = dataPoint;
-        return dataValue.map(d => ({ ...d, ...rest }));
+        return dataValue.map((d) => ({ ...d, ...rest }));
       });
 
-      const newLineData = lineTypes.map(lineType => ({
+      const newLineData = lineTypes.map((lineType) => ({
         ...projectInfo,
-        value: newData.map(d => d.find(lineData => lineData.lineType === lineType))
-      })
-      );
+        value: newData.map((d) =>
+          d.find((lineData) => lineData.lineType === lineType),
+        ),
+      }));
       transformedData.push(...newLineData);
     }
     return transformedData;
@@ -102,24 +103,34 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
   draw() {
     const viewType = this.viewType;
     const selectedProjectCount = this.service.getSelectedTrends().length;
-    const sprintList = this.data[0]?.value.map(details => details.sSprintName);
-    const dataCategory = this.data.map(d => d.data);
-    const lineTypes = this.data[0]?.value[0].dataValue.map(lineData => lineData.lineType);
-    const lineDetails = this.data[0]?.value[0].dataValue.map(lineData => lineData.name);
+    const sprintList = this.data[0]?.value.map(
+      (details) => details.sSprintName,
+    );
+    const dataCategory = this.data.map((d) => d.data);
+    const lineTypes = this.data[0]?.value[0].dataValue.map(
+      (lineData) => lineData.lineType,
+    );
+    const lineDetails = this.data[0]?.value[0].dataValue.map(
+      (lineData) => lineData.name,
+    );
     const formattedData = this.transformData(this.data, lineTypes);
 
     // this is used for removing svg already made when value is updated
     d3.select(this.elem).select('#verticalSVG').select('svg').remove();
     d3.select(this.elem).select('#horizontalSVG').select('svg').remove();
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
-    d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+    d3.select(this.elem)
+      .select('#horizontalSVG')
+      .select('tooltip-container')
+      .remove();
     d3.select(this.elem).select('#xCaptionContainer').select('div').remove();
 
     const data = formattedData;
     const thresholdValue = this.thresholdValue;
     const elem = this.elem;
     let width = 450;
-    const height = (viewType === 'large' && selectedProjectCount === 1) ? 280 : 230;
+    const height =
+      viewType === 'large' && selectedProjectCount === 1 ? 280 : 230;
     this.height = height;
     const margin = 60;
     const duration = 250;
@@ -137,8 +148,13 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
     const color = this.color;
     const kpiId = this.kpiId;
     const showUnit = this.unit;
-    const containerWidth = d3.select(this.elem).select('#graphContainer').node().offsetWidth || window.innerWidth;
-    const resizeWidth = (containerWidth > (data[0]?.value.length * 20 * 8) ? containerWidth : (data[0]?.value.length * 20 * 8))
+    const containerWidth =
+      d3.select(this.elem).select('#graphContainer').node().offsetWidth ||
+      window.innerWidth;
+    const resizeWidth =
+      containerWidth > data[0]?.value.length * 20 * 8
+        ? containerWidth
+        : data[0]?.value.length * 20 * 8;
     width = data.length <= 5 ? containerWidth - 70 : resizeWidth;
     let maxXValueCount = 0;
     let maxObjectNo = 0;
@@ -181,9 +197,8 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       });
     });
 
-    const colorCategory = color && d3.scaleOrdinal()
-      .domain(dataCategory)
-      .range(color);
+    const colorCategory =
+      color && d3.scaleOrdinal().domain(dataCategory).range(color);
 
     let xScale;
     if (viewType === 'large' && selectedProjectCount === 1) {
@@ -192,7 +207,6 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
         .rangeRound([0, width - margin])
         .padding(0)
         .domain(sprintList);
-
     } else {
       xScale = d3
         .scaleBand()
@@ -238,13 +252,18 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
 
     if (selectedProjectCount === 1) {
       d3.select(this.elem).select('#horizontalSVG').select('div').remove();
-      d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+      d3.select(this.elem)
+        .select('#horizontalSVG')
+        .select('tooltip-container')
+        .remove();
       /** Adding tooltip container */
-      const tooltipContainer = d3.select(this.elem).select('#horizontalSVG').
-        append('div')
+      const tooltipContainer = d3
+        .select(this.elem)
+        .select('#horizontalSVG')
+        .append('div')
         .attr('class', 'tooltip-container')
         .attr('height', height + 35 + 'px')
-        .attr('width', width + 'px')
+        .attr('width', width + 'px');
 
       tooltipContainer
         .selectAll('div')
@@ -254,22 +273,25 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
         .style('left', (d, i) => {
           let left = d.date || d.sSprintName;
           if (viewType === 'large') {
-            return (xScale(left) + xScale.bandwidth() / 2 - 5) + 'px';
+            return xScale(left) + xScale.bandwidth() / 2 - 5 + 'px';
           } else {
-            return (xScale(i + 1) + xScale.bandwidth() / 2 - 5) + 'px';
+            return xScale(i + 1) + xScale.bandwidth() / 2 - 5 + 'px';
           }
         })
-        .style('top', d => {
-          return (yScale(d.value) + 7) + 'px'
+        .style('top', (d) => {
+          return yScale(d.value) + 7 + 'px';
         })
-        .text(d => Math.round(d.value * 100) / 100 + ' ' + showUnit)
+        .text((d) => Math.round(d.value * 100) / 100 + ' ' + showUnit)
         .transition()
         .duration(500)
         .style('display', 'block')
         .style('opacity', 1);
     } else {
       d3.select(this.elem).select('#horizontalSVG').select('div').remove();
-      d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+      d3.select(this.elem)
+        .select('#horizontalSVG')
+        .select('tooltip-container')
+        .remove();
     }
 
     /* Add SVG */
@@ -398,47 +420,56 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       .style('fill', 'none')
       .attr('class', 'gridline');
 
-      const xAxisGrid = d3.axisBottom(xScale).tickSize(-(height - 60)).tickFormat('').ticks(5);
-      svgX.append('g')
-        .attr('class', 'y-axis-grid')
-        .call(xAxisGrid)
-        .attr('transform', `translate(${0}, ${height - 60})`);
+    const xAxisGrid = d3
+      .axisBottom(xScale)
+      .tickSize(-(height - 60))
+      .tickFormat('')
+      .ticks(5);
+    svgX
+      .append('g')
+      .attr('class', 'y-axis-grid')
+      .call(xAxisGrid)
+      .attr('transform', `translate(${0}, ${height - 60})`);
 
+    d3.select(this.elem)
+      .select('.y-axis-grid')
+      .selectAll('line')
+      .style('stroke', '#EAEDF0')
+      .style('fill', 'none');
 
-      d3.select(this.elem).select('.y-axis-grid')
-        .selectAll('line')
-        .style('stroke', '#EAEDF0')
-        .style('fill', 'none');
+    d3.select(this.elem)
+      .select('#horizontalSVG')
+      .select('.x-axis')
+      .selectAll('.tick line')
+      .style('display', 'none');
 
-      d3.select(this.elem).select('#horizontalSVG')
-        .select('.x-axis')
-        .selectAll('.tick line')
-        .style('display', 'none');
+    d3.select(this.elem)
+      .select('#verticalSVG')
+      .select('.y.axis')
+      .selectAll('.tick line')
+      .style('display', 'none');
 
-        d3.select(this.elem).select('#verticalSVG')
-        .select('.y.axis')
-        .selectAll('.tick line')
-        .style('display', 'none');
-
-      d3.select(this.elem).select('#horizontalSVG')
-        .select('.x-axis')
-        .select('.domain')
-        .style('display', 'none');
-
+    d3.select(this.elem)
+      .select('#horizontalSVG')
+      .select('.x-axis')
+      .select('.domain')
+      .style('display', 'none');
 
     /* Add line into SVG acoording to data */
     const line = d3
       .line()
       .x((d, i) => {
         if (viewType === 'large' && selectedProjectCount === 1) {
-          return xScale(d.date || d.sSprintName)
+          return xScale(d.date || d.sSprintName);
         } else {
-          return xScale(i + 1)
+          return xScale(i + 1);
         }
       })
       .y((d) => yScale(d.value));
 
-    const lines = svgX.append('g').attr('class', 'lines')
+    const lines = svgX
+      .append('g')
+      .attr('class', 'lines')
       .attr('transform', `translate(${xScale.bandwidth() / 2}, ${0})`);
 
     function tweenDash() {
@@ -484,7 +515,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       })
       .attr('d', (d) => line(d.value))
       .call(transition)
-      .style('stroke', (d, i) => (colorCategory && colorCategory(d.data)))
+      .style('stroke', (d, i) => colorCategory && colorCategory(d.data))
       .style('stroke-dasharray', (d) => {
         if (d.value[0].lineType === 'dotted') {
           return '4,4';
@@ -522,8 +553,8 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       .attr('class', function (d, i) {
         return 'circlegroup' + i;
       })
-      .style('fill', (d, i) => (colorCategory && colorCategory(d.data)))
-      .style('stroke', (d, i) => (colorCategory && colorCategory(d.data)))
+      .style('fill', (d, i) => colorCategory && colorCategory(d.data))
+      .style('stroke', (d, i) => colorCategory && colorCategory(d.data))
       .selectAll('circle')
       .data((d) => d.value)
       .enter()
@@ -546,12 +577,12 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
           div
             .html(
               `${d.date || d.sSprintName}` +
-              ' : ' +
-              "<span class='toolTipValue'> " +
-              `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
-              '</span>',
+                ' : ' +
+                "<span class='toolTipValue'> " +
+                `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
+                '</span>',
             )
-            .style('left', (xPosition - 50) + 'px')
+            .style('left', xPosition - 50 + 'px')
             // .style('top', yScale(d.value) - topValue + 'px');
             .style('top', yPosition + 20 + 'px');
           for (const hoverData in d.hoverValue) {
@@ -559,10 +590,10 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
               .append('p')
               .html(
                 `${hoverData}` +
-                ' : ' +
-                "<span class='toolTipValue'> " +
-                `${d.hoverValue[hoverData]}` +
-                ' </span>',
+                  ' : ' +
+                  "<span class='toolTipValue'> " +
+                  `${d.hoverValue[hoverData]}` +
+                  ' </span>',
               );
           }
         }
@@ -577,9 +608,9 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       .append('circle')
       .attr('cx', function (d, i) {
         if (viewType === 'large' && selectedProjectCount === 1) {
-          return xScale(d.date || d.sSprintName)
+          return xScale(d.date || d.sSprintName);
         } else {
-          return xScale(i + 1)
+          return xScale(i + 1);
         }
       })
       .attr('cy', (d) => yScale(d.value))
@@ -641,14 +672,16 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       .append('g')
       .attr('class', 'd3-legend');
 
-    legend.append('rect')
+    legend
+      .append('rect')
       .attr('width', 12)
       .attr('height', 12)
       .attr('x', 32)
       .attr('y', 7)
       .style('fill', (d, i) => '#DF9292');
 
-    legend.append('text')
+    legend
+      .append('text')
       .attr('x', 52)
       .attr('y', 8)
       .attr('dy', '.85em')
@@ -656,12 +689,15 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       .style('font-size', 10)
       .text((d) => 'Legend');
 
-    const legendTooltip = legendContainer.append('div').style('position', 'absolute').attr('class', 'legend-tooltip');
+    const legendTooltip = legendContainer
+      .append('div')
+      .style('position', 'absolute')
+      .attr('class', 'legend-tooltip');
 
     legend
       .on('mouseover', () => {
-
-        legendTooltip.transition()
+        legendTooltip
+          .transition()
           .duration(200)
           .style('display', 'flex')
           .style('opacity', 1)
@@ -673,25 +709,31 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
         for (let d of dataCategory) {
           htmlString += `<div>`;
           lineTypes.forEach((lineType, i) => {
-            htmlString += `<div class="legend-item"><span>${lineDetails[i]}: &nbsp &nbsp</span><div class="legend_color_indicator_dashed" style="border-top:  ${lineType === 'solid' ? '3px solid ' : '3px dashed '}${colorCategory(d)}"></div> <span class="p-m-1">&nbsp${d} </span></div>`;
+            htmlString += `<div class="legend-item"><span>${
+              lineDetails[i]
+            }: &nbsp &nbsp</span><div class="legend_color_indicator_dashed" style="border-top:  ${
+              lineType === 'solid' ? '3px solid ' : '3px dashed '
+            }${colorCategory(
+              d,
+            )}"></div> <span class="p-m-1">&nbsp${d} </span></div>`;
           });
           htmlString += `</div>`;
         }
 
-
-        legendTooltip.html(htmlString)
+        legendTooltip
+          .html(htmlString)
           .style('left', 80 + 'px')
           .style('top', -60 + 'px');
       })
       .on('mouseout', () => {
-        legendTooltip.transition()
+        legendTooltip
+          .transition()
           .duration(500)
           .style('display', 'none')
           .style('opacity', 0)
           .style('padding', '5px')
           .style('max-width', '220px')
           .style('width', 'auto');
-
       });
 
     const content = this.elem.querySelector('#horizontalSVG');
@@ -699,7 +741,9 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
   }
 
   ngAfterViewInit() {
-    this.resizeObserver.observe(d3.select(this.elem).select('#graphContainer').node());
+    this.resizeObserver.observe(
+      d3.select(this.elem).select('#graphContainer').node(),
+    );
   }
 
   ngOnDestroy() {
@@ -711,6 +755,4 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
     this.data = [];
     this.resizeObserver.unobserve(this.elem);
   }
-
 }
-

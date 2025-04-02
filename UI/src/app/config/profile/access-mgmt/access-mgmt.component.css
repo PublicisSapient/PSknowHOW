@@ -17,132 +17,137 @@
  ******************************************************************************/
 
 .nested-td {
-    border: 1px solid #e4e4e4;
-    width: 50%;
-    padding: 10px;
+  border: 1px solid #e4e4e4;
+  width: 50%;
+  padding: 10px;
 }
 
 .project-access-container .nested-td {
-    border: 1px solid #ccc;
+  border: 1px solid #ccc;
 }
 
-::ng-deep body .p-datatable .p-datatable-thead>tr>th.parent-td,
-::ng-deep body .p-datatable .p-datatable-tbody>tr>td.parent-td {
-    padding: 0;
+::ng-deep body .p-datatable .p-datatable-thead > tr > th.parent-td,
+::ng-deep body .p-datatable .p-datatable-tbody > tr > td.parent-td {
+  padding: 0;
 }
 
 ::ng-deep .role-box .p-dropdown {
-    width: 218px;
+  width: 218px;
 }
 
 .info-block.cross {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .crossbtn {
-    display: inline-block;
-  }
+  display: inline-block;
+}
 
 .selected-data {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    vertical-align: bottom;
-    margin-left: 4px;
-    display: inline-block;
-    max-width: 90%;
-  }
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  vertical-align: bottom;
+  margin-left: 4px;
+  display: inline-block;
+  max-width: 90%;
+}
 
 .info-block:hover .selected-data {
-    text-decoration: line-through;
+  text-decoration: line-through;
 }
 
 .dialog-panel {
-    width: 100%;
+  width: 100%;
 }
 
 ::ng-deep body .ui-button.mar-tb-5 {
-    margin-top: 5px;
-    margin-bottom: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 #action {
-    width: 100px;
+  width: 100px;
 }
 
-.role-box, ::ng-deep body .content .ui-widget, ::ng-deep body .content .ui-inputtext {
-    font-size: 12px;
+.role-box,
+::ng-deep body .content .ui-widget,
+::ng-deep body .content .ui-inputtext {
+  font-size: 12px;
 }
 
 .row-toggler {
-    font-size: 14px;
+  font-size: 14px;
 }
 
-#username, #email {
-    width: 200px;
+#username,
+#email {
+  width: 200px;
 }
 
 #searchProject {
-    border-right: 1px solid #f4f4f4;
-    width: calc(100% - 200px);
+  border-right: 1px solid #f4f4f4;
+  width: calc(100% - 200px);
 }
 
 #searchRole {
-    border-left: 1px solid #f4f4f4;
-    width: 200px;
+  border-left: 1px solid #f4f4f4;
+  width: 200px;
 }
 
 ::ng-deep .p-datatable .p-datatable-tbody > tr > td.pad-0 {
-    padding: 0;
+  padding: 0;
 }
 
 ::ng-deep .p-datatable .p-datatable-tbody > tr > td.pad-16 {
-    padding: 16px;
+  padding: 16px;
 }
 
 ::ng-deep .p-datatable .p-datatable-tbody > tr > td .nested-td {
-    height: 67px;
-    width: 232px;
+  height: 67px;
+  width: 232px;
 }
 
 ::ng-deep .p-datatable .p-datatable-thead > tr > th {
-	position: relative;
-	top: unset;
-  }
+  position: relative;
+  top: unset;
+}
 
 /*-=-=-=-=-=-=-=-=-=-=-Border-less table CSS starts-=-=-=-=-=-=-=-=-==-=-=-*/
-::ng-deep .bordered, ::ng-deep .n-bordered{
-    border: 1px solid  #e4e4e4;
-    border-collapse: collapse;
+::ng-deep .bordered,
+::ng-deep .n-bordered {
+  border: 1px solid #e4e4e4;
+  border-collapse: collapse;
 }
 
-::ng-deep .n-bordered{
-    border: none;
+::ng-deep .n-bordered {
+  border: none;
 }
 
-::ng-deep .bordered td, ::ng-deep .n-bordered td{
-    border: 1px solid  #e4e4e4;
+::ng-deep .bordered td,
+::ng-deep .n-bordered td {
+  border: 1px solid #e4e4e4;
 }
 
-::ng-deep .n-bordered tr:first-child td{
-    border-top: none;
+::ng-deep .n-bordered tr:first-child td {
+  border-top: none;
 }
 
-::ng-deep .n-bordered tr:last-child td{
-    border-bottom: none;
+::ng-deep .n-bordered tr:last-child td {
+  border-bottom: none;
 }
 
-::ng-deep .n-bordered tr td:first-child{
-    border-left: none;
+::ng-deep .n-bordered tr td:first-child {
+  border-left: none;
 }
 
-::ng-deep .n-bordered tr td:last-child{
-    border-right: none;
+::ng-deep .n-bordered tr td:last-child {
+  border-right: none;
 }
 /*-=-=-=-=-=-=-=-=-=-=-Border-less table CSS ends-=-=-=-=-=-=-=-=-==-=-=-*/
 
 .p-inputtext {
-    width: 100%;
+  width: 100%;
 }
 
 .tool-tip {
@@ -159,27 +164,27 @@
   padding: 0.5rem;
   border-radius: 4px;
 }
-.p-button.p-button-text.btn-toggle{
+.p-button.p-button-text.btn-toggle {
   width: auto;
   border: 1px solid rgba(0, 0, 0, 0.6);
   padding: 0 3px;
   border-radius: 2px;
   background: transparent;
 }
-.p-button.p-button-text.btn-toggle:hover{
-    border: 1px solid rgba(0, 0, 0, 0.6);
-    background: transparent;
+.p-button.p-button-text.btn-toggle:hover {
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  background: transparent;
 }
-.p-input-custom{
-    height: 46px;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+.p-input-custom {
+  height: 46px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
-.add-btn-custom{
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+.add-btn-custom {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
-:host::ng-deep button:disabled{
-    border: 1px solid rgba(0, 0, 0, 0.38) !important;
+:host::ng-deep button:disabled {
+  border: 1px solid rgba(0, 0, 0, 0.38) !important;
 }

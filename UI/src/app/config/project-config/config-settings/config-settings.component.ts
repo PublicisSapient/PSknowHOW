@@ -24,11 +24,10 @@ import { SharedService } from 'src/app/services/shared.service';
 @Component({
   selector: 'app-config-settings',
   templateUrl: './config-settings.component.html',
-  styleUrls: ['./config-settings.component.css']
+  styleUrls: ['./config-settings.component.css'],
 })
 export class ConfigSettingsComponent implements OnInit {
-
-  configOptions: { tab: string; tabValue: string; }[];
+  configOptions: { tab: string; tabValue: string }[];
   selectedTab: string = 'projectSettings';
   tab: any;
   selectedToolName: string = null;
@@ -41,20 +40,20 @@ export class ConfigSettingsComponent implements OnInit {
   ) {
     this.configOptions = [
       {
-        'tab': 'Project Settings',
-        'tabValue': 'projectSettings'
+        tab: 'Project Settings',
+        tabValue: 'projectSettings',
       },
       {
-        'tab': 'Available Connections',
-        'tabValue': 'availableConnections'
+        tab: 'Available Connections',
+        tabValue: 'availableConnections',
       },
       {
-        'tab': 'Project Configuration',
-        'tabValue': 'projectConfig'
-      }
-    ]
+        tab: 'Project Configuration',
+        tabValue: 'projectConfig',
+      },
+    ];
 
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       this.selectedToolName = params['toolName'];
       this.tab = Number(params['tab']);
       switch (this.tab) {
@@ -69,7 +68,6 @@ export class ConfigSettingsComponent implements OnInit {
           break;
       }
     });
-
   }
 
   ngOnInit(): void {
@@ -78,12 +76,25 @@ export class ConfigSettingsComponent implements OnInit {
 
   onTabChange() {
     if (this.selectedTab === 'projectConfig') {
-      this.router.navigate(['.'], { queryParams: { 'type': (this.selectedProject?.type?.toLowerCase() || this.selectedProject?.Type?.toLowerCase()), 'tab': 2 }, relativeTo: this.route });
+      this.router.navigate(['.'], {
+        queryParams: {
+          type:
+            this.selectedProject?.type?.toLowerCase() ||
+            this.selectedProject?.Type?.toLowerCase(),
+          tab: 2,
+        },
+        relativeTo: this.route,
+      });
     } else if (this.selectedTab === 'availableConnections') {
-      this.router.navigate(['.'], { queryParams: { 'tab': 1 }, relativeTo: this.route });
+      this.router.navigate(['.'], {
+        queryParams: { tab: 1 },
+        relativeTo: this.route,
+      });
     } else {
-      this.router.navigate(['.'], { queryParams: { 'type': this.selectedProject?.type.toLowerCase(), 'tab': 0 }, relativeTo: this.route });
+      this.router.navigate(['.'], {
+        queryParams: { type: this.selectedProject?.type.toLowerCase(), tab: 0 },
+        relativeTo: this.route,
+      });
     }
   }
-
 }
