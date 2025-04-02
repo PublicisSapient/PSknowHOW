@@ -246,6 +246,12 @@ public class ProjectAccessManager {
 			return;
 		}
 
+		UserInfo userInfo = getUserInfo(accessRequest.getUsername());
+		if (hasAccess(userInfo, accessRequest)) {
+			listenAccessRequestFailure(listener, "Already has access of requested level");
+			return;
+		}
+
 		// Filter out already approved access items before proceeding
 		AccessRequest newAccessRequest = filterAlreadyApprovedAccessRequest(accessRequest, approvedRequests);
 
@@ -254,6 +260,19 @@ public class ProjectAccessManager {
 		requestList.forEach(this::autoApproveOrNotify);
 		setRequestStatus(requestList, newAccessRequest);
 		listenAccessRequestSuccess(listener, newAccessRequest);
+	}
+
+	private static boolean hasAccess(UserInfo userInfo, AccessRequest accessRequest) {
+		if (userInfo == null || accessRequest == null || userInfo.getProjectsAccess() == null) {
+			return false;
+		}
+
+		List<String> requestedItemIds = accessRequest.getAccessNode().getAccessItems().stream()
+				.map(AccessItem::getItemId).collect(Collectors.toList());
+
+		return userInfo.getProjectsAccess().stream().flatMap(projectAccess -> projectAccess.getAccessNodes().stream())
+				.flatMap(accessNode -> accessNode.getAccessItems().stream()).map(AccessItem::getItemId)
+				.anyMatch(requestedItemIds::contains);
 	}
 
 	private AccessRequest filterAlreadyApprovedAccessRequest(AccessRequest accessRequest,
@@ -1090,16 +1109,7 @@ public class ProjectAccessManager {
 			});
 			cleanUserInfo(resultUserInfo);
 		}
-		if (requestedUserInfo != null) {
-			AccessRequest newAccessRequest = new AccessRequest();
-			newAccessRequest.setUsername(requestedUserInfo.getUsername());
-			newAccessRequest.setStatus("Approved");
-			newAccessRequest.setRole(requestedUserInfo.getProjectsAccess().stream().map(ProjectsAccess::getRole)
-					.findFirst().orElse(null));
-			newAccessRequest.setAccessNode(requestedUserInfo.getProjectsAccess().stream()
-					.flatMap(access -> access.getAccessNodes().stream()).findFirst().orElse(null));
-			accessRequestsRepository.save(newAccessRequest);
-		}
+
 		return saveUserInfo(resultUserInfo);
 	}
 
