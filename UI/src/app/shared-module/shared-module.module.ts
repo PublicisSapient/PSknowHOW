@@ -83,6 +83,7 @@ import { HeaderComponent } from '../dashboardv2/header-v2/header.component';
 import { RecentCommentsComponent } from '../component/recent-comments/recent-comments.component';
 import { CumulativeLineChartComponent } from '../component/cumulative-line-chart/cumulative-line-chart.component';
 import { ReportKpiCardComponent } from '../dashboardv2/reports-module/report-kpi-card/report-kpi-card.component';
+import { CollapsiblePanelComponent } from '../component/collapsible-panel/collapsible-panel.component';
 
 @NgModule({
   imports: [
@@ -153,6 +154,7 @@ import { ReportKpiCardComponent } from '../dashboardv2/reports-module/report-kpi
     CumulativeLineChartComponent,
     ReportKpiCardComponent,
     BarWithYAxisGroupComponent,
+    CollapsiblePanelComponent
   ],
   declarations: [
     ProjectFilterComponent,
@@ -194,6 +196,7 @@ import { ReportKpiCardComponent } from '../dashboardv2/reports-module/report-kpi
     CumulativeLineChartComponent,
     ReportKpiCardComponent,
     BarWithYAxisGroupComponent,
+    CollapsiblePanelComponent
   ],
   providers: [ConfirmationService, KpiHelperService],
 })
