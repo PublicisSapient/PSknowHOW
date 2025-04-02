@@ -2361,7 +2361,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   isSprintGoalsHidden(): boolean {
     if (
       !this.kanban &&
-      ['my-knowhow', 'speed', 'quality'].includes(
+      ['my-knowhow', 'speed', 'quality','value'].includes(
         this.selectedTab?.toLocaleLowerCase(),
       )
     ) {
