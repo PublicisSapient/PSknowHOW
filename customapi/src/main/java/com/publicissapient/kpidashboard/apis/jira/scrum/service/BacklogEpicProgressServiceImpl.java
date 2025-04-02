@@ -138,7 +138,8 @@ public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Intege
 		Map<String, Object> resultListMap = new HashMap<>();
 		if (null != leafNode) {
 			log.info("Backlog Epic Progress -> Requested sprint : {}", leafNode.getName());
-			List<JiraIssue> totalJiraIssue = getBackLogJiraIssuesFromBaseClass();
+			List<JiraIssue> totalJiraIssue = jiraIssueRepository
+					.findByBasicProjectConfigId(leafNode.getProjectFilter().getBasicProjectConfigId().toString());
 			resultListMap.put(TOTAL_ISSUES, totalJiraIssue);
 			// get Epics Linked to backlogStories stories
 			final List<String> epicKeyList = totalJiraIssue.stream().map(JiraIssue::getEpicLinked).toList();
