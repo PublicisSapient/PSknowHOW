@@ -17,14 +17,14 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.util;
 
-import java.util.Arrays;
-import java.util.Optional;
-
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.NoArgsConstructor;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 @NoArgsConstructor
 public class CookieUtil {
@@ -37,6 +37,8 @@ public class CookieUtil {
 	public static final String EXPIRY_COOKIE_NAME = COOKIE_NAME + "_EXPIRY";
 
 	public static final String USERNAME_COOKIE_NAME = "samlUsernameCookie";
+
+	public static final String GUEST_DISPLAY_NAME_COOKIE_NAME = "guestDisplayName";
 
 	private static final String SAME_SITE_ATTRIBUTE = "SameSite";
 
