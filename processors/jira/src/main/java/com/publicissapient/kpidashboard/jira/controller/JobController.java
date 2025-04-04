@@ -24,6 +24,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.publicissapient.kpidashboard.common.model.jira.ConfigurationTemplateDocument;
+import com.publicissapient.kpidashboard.common.service.TemplateConfigurationService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.Job;
@@ -109,6 +111,9 @@ public class JobController {
 	private OngoingExecutionsService ongoingExecutionsService;
 	@Autowired
 	private JiraProcessorRepository jiraProcessorRepository;
+
+	@Autowired
+	private TemplateConfigurationService templateConfigurationService;
 
 	/**
 	 * This method is used to start job for the Scrum projects with board setup
@@ -355,24 +360,41 @@ public class JobController {
 			ProjectBasicConfig projectBasicConfig = projBasicConfOpt.get();
 			List<ProjectToolConfig> projectToolConfigs = toolRepository
 					.findByToolNameAndBasicProjectConfigId(JiraConstants.JIRA, projectBasicConfig.getId());
-
+			boolean useJql = useJqlOrBoard(projectToolConfigs);
 			if (projectBasicConfig.isKanban()) {
 				// Project is kanban
-				launchJobBasedOnQueryEnabledForKanban(basicProjectConfigId, params, projectToolConfigs);
+				launchJobBasedOnQueryEnabledForKanban(basicProjectConfigId, params, projectToolConfigs,useJql);
 			} else {
 				// Project is Scrum
-				launchJobBasedOnQueryEnabledForScrum(basicProjectConfigId, params, projectToolConfigs);
+				launchJobBasedOnQueryEnabledForScrum(basicProjectConfigId, params, projectToolConfigs,useJql);
 			}
 		}
 	}
 
-	private void launchJobBasedOnQueryEnabledForScrum(String basicProjectConfigId, JobParameters params,
-			List<ProjectToolConfig> projectToolConfigs) throws JobExecutionAlreadyRunningException, JobRestartException,
-			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+	private boolean useJqlOrBoard(List<ProjectToolConfig> projectToolConfigs) {
+		boolean useJql = false;
 		if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
 			ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
+			String jiraConfigurationType = projectToolConfig.getJiraConfigurationType();
+			Optional<ConfigurationTemplateDocument> matchingTemplate = templateConfigurationService.getConfigurationTemplate().stream()
+					.filter(template -> template != null
+							&& template.getTemplateCode() != null
+							&& template.getTemplateCode().equals(jiraConfigurationType))
+					.findFirst();
+			if (matchingTemplate.isPresent() && (matchingTemplate.get().getTemplateCode().equals("2") || matchingTemplate.get().getTemplateCode().equals("3"))) {
+				useJql = true;
+			} else {
+				useJql = false;
+			}
+		}
+		return useJql;
+	}
 
-			if (projectToolConfig.isQueryEnabled()) {
+	private void launchJobBasedOnQueryEnabledForScrum(String basicProjectConfigId, JobParameters params,
+			List<ProjectToolConfig> projectToolConfigs,boolean useJql) throws JobExecutionAlreadyRunningException, JobRestartException,
+			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+		if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
+			if (useJql) {
 				// JQL is setup for the project
 				jobLauncher.run(fetchIssueScrumJqlJob, params);
 			} else {
@@ -387,12 +409,10 @@ public class JobController {
 	}
 
 	private void launchJobBasedOnQueryEnabledForKanban(String basicProjectConfigId, JobParameters params,
-			List<ProjectToolConfig> projectToolConfigs) throws JobExecutionAlreadyRunningException, JobRestartException,
+			List<ProjectToolConfig> projectToolConfigs,boolean useJql) throws JobExecutionAlreadyRunningException, JobRestartException,
 			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
-			ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
-
-			if (projectToolConfig.isQueryEnabled()) {
+			if (useJql) {
 				// JQL is setup for the project
 				jobLauncher.run(fetchIssueKanbanJqlJob, params);
 			} else {

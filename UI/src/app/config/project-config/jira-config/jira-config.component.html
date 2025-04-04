@@ -257,8 +257,8 @@
                                     <div *ngSwitchCase="'basicDropdown'" class="p-mb-3">
                                         <ng-container>
                                             <label for="{{form_elem.id}}">{{form_elem.label}}</label>
-                                            <p-dropdown [options]="jiraTemplate" optionLabel="templateName" optionValue="templateCode"
-                                                id="{{form_elem.id}}" formControlName="{{form_elem.id}}"></p-dropdown>
+                                            <p-dropdown [options]="this[form_elem.options]" optionLabel="templateName" optionValue="templateCode"
+                                                id="{{form_elem.id}}" formControlName="{{form_elem.id}}" (onChange)="form_elem.onChangeEventHandler($event,this)"></p-dropdown>
                                         </ng-container>
                                     </div>
                                     <div *ngSwitchCase="'button'" class="p-mb-3">
@@ -364,7 +364,7 @@
                 </form>
                 <div class="save-container p-mt-5">
                     <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised" icon="pi pi-save"
-                        iconPos="left" label="Save" (click)="save()" [disabled]="disableSave"></button>
+                        iconPos="left" label="Save" (click)="save()" [disabled]="disableSave || toolForm.invalid || !selectedConnection"></button>
                     <button pButton pRipple type="button" class="p-d-none p-button-lg p-button-success p-button-raised"
                         icon="pi pi-plus-circle" iconPos="left" label="Reset" (click)="addNewTool()"
                         title="Click to add new tool config"
