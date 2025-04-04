@@ -35,8 +35,8 @@ public class ConfigurationTemplateInsertion {
 
     private final MongoTemplate mongoTemplate;
     List<ConfigurationTemplateDocument> configurationTemplates;
-    private final static String TEMPLATE_CODE = "templateCode";
-    private final static String CONFIGURATION_TEMPLATE = "configuration_template";
+    private static final String TEMPLATE_CODE = "templateCode";
+    private static final String CONFIGURATION_TEMPLATE = "configuration_template";
     public ConfigurationTemplateInsertion(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
         ConfigurationTemplateDataFactory configurationTemplateDataFactory = ConfigurationTemplateDataFactory.newInstance();
