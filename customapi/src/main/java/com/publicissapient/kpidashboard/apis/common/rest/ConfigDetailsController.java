@@ -23,6 +23,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.common.service.TemplateConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,10 +46,12 @@ import lombok.extern.slf4j.Slf4j;
 public class ConfigDetailsController {
 
 	private final ConfigDetailService configDetailService;
+	private final TemplateConfigurationService	templateConfigurationService;
 
 	@Autowired
-	public ConfigDetailsController(ConfigDetailService configDetailService) {
+	public ConfigDetailsController(ConfigDetailService configDetailService,TemplateConfigurationService	templateConfigurationService) {
 		this.configDetailService = configDetailService;
+		this.templateConfigurationService = templateConfigurationService;
 	}
 
 	/**
@@ -76,6 +79,6 @@ public class ConfigDetailsController {
 	@GetMapping("/configuration")
 	@ResponseStatus(HttpStatus.OK)
 	public ServiceResponse getConfigurationTemplate() {
-		return configDetailService.getConfigurationTemplate();
+		return new ServiceResponse(true, "Configuration template fetched successfully.", templateConfigurationService.getConfigurationTemplate());
 	}
 }

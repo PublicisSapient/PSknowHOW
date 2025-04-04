@@ -16,21 +16,24 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.common.service;
+package com.publicissapient.kpidashboard.common.service;
 
-import com.publicissapient.kpidashboard.apis.model.ConfigDetails;
+import com.publicissapient.kpidashboard.common.model.jira.ConfigurationTemplateDocument;
+import com.publicissapient.kpidashboard.common.repository.jira.ConfigurationTemplateRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-/**
- * Contract to get kpi wise aggregation type
- *
- * @author pkum34
- */
-public interface ConfigDetailService {
+import java.util.List;
+import java.util.stream.StreamSupport;
 
-	/**
-	 * Gets kpi wise aggregation type.
-	 *
-	 * @return kpi wise aggregation type
-	 */
-	ConfigDetails getConfigDetails();
+@Service
+public class TemplateConfigurationServiceImpl implements TemplateConfigurationService {
+
+    @Autowired
+    private ConfigurationTemplateRepository configurationTemplateRepository;
+
+    @Override
+    public List<ConfigurationTemplateDocument> getConfigurationTemplate() {
+        return StreamSupport.stream(configurationTemplateRepository.findAll().spliterator(), false).toList();
+    }
 }

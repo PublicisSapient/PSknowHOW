@@ -18,9 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
-import java.util.List;
-import java.util.stream.StreamSupport;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,9 +26,6 @@ import com.publicissapient.kpidashboard.apis.common.service.ConfigDetailService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ConfigDetails;
 import com.publicissapient.kpidashboard.apis.model.DateRangeFilter;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.jira.ConfigurationTemplateDocument;
-import com.publicissapient.kpidashboard.common.repository.jira.ConfigurationTemplateRepository;
 
 /**
  * Implementation of {@link ConfigDetailService}
@@ -46,9 +40,6 @@ public class ConfigDetailsServiceImpl implements ConfigDetailService {
 	@Autowired
 	private ConfigHelperService configHelperService;
 
-	@Autowired
-	private ConfigurationTemplateRepository configurationTemplateRepository;
-
 	@Override
 	public ConfigDetails getConfigDetails() {
 		ConfigDetails configDetails = new ConfigDetails();
@@ -62,11 +53,5 @@ public class ConfigDetailsServiceImpl implements ConfigDetailService {
 		configDetails.setGitlabToolFieldFlag(customApiConfig.getIsGitlabFieldEnable());
 		configDetails.setSprintCountForKpiCalculation(customApiConfig.getSprintCountForKpiCalculation());
 		return configDetails;
-	}
-
-	@Override
-	public ServiceResponse getConfigurationTemplate() {
-		List<ConfigurationTemplateDocument> templateDocumentStream = StreamSupport.stream(configurationTemplateRepository.findAll().spliterator(), false).toList();
-		return new ServiceResponse(true, "Configuration template fetched successfully.", templateDocumentStream);
 	}
 }

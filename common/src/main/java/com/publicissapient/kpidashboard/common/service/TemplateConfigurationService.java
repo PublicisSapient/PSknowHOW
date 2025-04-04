@@ -16,21 +16,12 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.common.service;
+package com.publicissapient.kpidashboard.common.service;
 
-import com.publicissapient.kpidashboard.apis.model.ConfigDetails;
+import com.publicissapient.kpidashboard.common.model.jira.ConfigurationTemplateDocument;
 
-/**
- * Contract to get kpi wise aggregation type
- *
- * @author pkum34
- */
-public interface ConfigDetailService {
+import java.util.List;
 
-	/**
-	 * Gets kpi wise aggregation type.
-	 *
-	 * @return kpi wise aggregation type
-	 */
-	ConfigDetails getConfigDetails();
+public interface TemplateConfigurationService {
+    List<ConfigurationTemplateDocument> getConfigurationTemplate();
 }
