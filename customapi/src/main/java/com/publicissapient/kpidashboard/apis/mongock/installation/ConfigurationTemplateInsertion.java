@@ -23,8 +23,11 @@ import com.publicissapient.kpidashboard.common.model.jira.ConfigurationTemplateD
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
+import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @ChangeUnit(id = "configuration_template", order = "13103", author = "girpatha", systemVersion = "13.1.0")
@@ -47,6 +50,16 @@ public class ConfigurationTemplateInsertion {
 
     @RollbackExecution
     public void rollback() {
-        // We are inserting the documents through DDL, no rollback to any collections.
+        // Get all configuration templates that were inserted by this change unit
+        List<Document> insertedTemplates = mongoTemplate.getCollection("configuration_template")
+                .find(new Document("templateCode",
+                        new Document("$in", Arrays.asList("1", "2", "3"))))
+                .into(new ArrayList<>());
+
+        // Delete each inserted template
+        for (Document template : insertedTemplates) {
+            mongoTemplate.getCollection("configuration_template")
+                    .deleteOne(new Document("_id", template.get("_id")));
+        }
     }
 }

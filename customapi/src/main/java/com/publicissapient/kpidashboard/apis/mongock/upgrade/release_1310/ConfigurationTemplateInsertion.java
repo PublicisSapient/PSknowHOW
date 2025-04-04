@@ -18,6 +18,7 @@
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1310;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -28,6 +29,8 @@ import com.publicissapient.kpidashboard.common.model.jira.ConfigurationTemplateD
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 @ChangeUnit(id = "configuration_template", order = "13103", author = "girpatha", systemVersion = "13.1.0")
 public class ConfigurationTemplateInsertion {
@@ -49,5 +52,11 @@ public class ConfigurationTemplateInsertion {
 
     @RollbackExecution
     public void rollback() {
+        List<Object> ids = configurationTemplates.stream()
+                .map(ConfigurationTemplateDocument::getId)
+                .collect(Collectors.toList());
+
+        Query query = new Query(Criteria.where("_id").in(ids));
+        mongoTemplate.remove(query, ConfigurationTemplateDocument.class);
     }
 }
