@@ -34,6 +34,8 @@ public class JiraConfigurationTypeChangeUnit {
     private static final String TOOL_NAME = "toolName";
     private static final String QUERY_ENABLED = "queryEnabled";
 
+
+
     public JiraConfigurationTypeChangeUnit(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
@@ -50,11 +52,11 @@ public class JiraConfigurationTypeChangeUnit {
     public void rollback() {
         // Recreate the original state by setting jiraConfigurationType based on conditions
         List<Document> jiraConfigs = mongoTemplate.getCollection(PROJECT_TOOL_CONFIGS)
-                .find(new Document("toolName", "Jira"))
+                .find(new Document(TOOL_NAME, "Jira"))
                 .into(new java.util.ArrayList<>());
 
         for (Document config : jiraConfigs) {
-            boolean queryEnabled = config.getBoolean("queryEnabled", false);
+            boolean queryEnabled = config.getBoolean(QUERY_ENABLED, false);
             List<Document> boards = config.get("boards", List.class);
             
             int jiraConfigurationType = determineConfigurationType(queryEnabled, boards);
