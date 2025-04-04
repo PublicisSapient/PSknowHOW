@@ -2606,6 +2606,7 @@ export class JiraConfigComponent implements OnInit {
           self.toolForm.controls['boardQuery'].updateValueAndValidity();
           self.toolForm.controls['boards'].clearValidators();
           self.toolForm.controls['boards'].updateValueAndValidity();
+          self.toolForm.controls['boards'].setValue([]);
           break;
         case '1':
           self.hideFormElements(['boardQuery']);
@@ -2627,6 +2628,7 @@ export class JiraConfigComponent implements OnInit {
           self.toolForm.controls['boardQuery'].updateValueAndValidity();
           self.toolForm.controls['boards'].clearValidators();
           self.toolForm.controls['boards'].updateValueAndValidity();
+          self.toolForm.controls['boards'].setValue([]);
           break;
         default:
           self.hideFormElements(['boardQuery']);
