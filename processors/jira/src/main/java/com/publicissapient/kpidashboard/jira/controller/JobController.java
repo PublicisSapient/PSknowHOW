@@ -391,7 +391,7 @@ public class JobController {
 			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
 			ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
-
+			// TODO Girish fetch templateID
 			if (projectToolConfig.isQueryEnabled()) {
 				// JQL is setup for the project
 				jobLauncher.run(fetchIssueKanbanJqlJob, params);

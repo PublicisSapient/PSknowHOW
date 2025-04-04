@@ -1099,12 +1099,13 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Configuration Type*',
                 label2: '',
                 id: 'jiraConfigurationType',
-                onChangeEventHandler: (event) => this.jiraMethodChange(this, event),
+                onChangeEventHandler: (event) =>
+                  this.jiraMethodChange(this, event),
                 validators: [],
                 containerClass: 'p-sm-6',
                 tooltip: ``,
                 disabled: 'false',
-                options : 'jiraConfigurationTypeOptions',
+                options: 'jiraConfigurationTypeOptions',
                 show: true,
               },
               {
@@ -1144,7 +1145,7 @@ export class JiraConfigComponent implements OnInit {
                 containerClass: 'p-sm-6',
                 tooltip: ``,
                 disabled: 'false',
-                options : 'jiraTemplate',
+                options: 'jiraTemplate',
                 show: true,
               },
             ],
@@ -2537,7 +2538,7 @@ export class JiraConfigComponent implements OnInit {
             if (this.urlParam === 'Jira' || this.urlParam === 'Azure') {
               this.queryEnabled = this.selectedToolConfig[0]['queryEnabled'];
               const fakeEvent = {
-                value: this.selectedToolConfig[0]['jiraConfigurationType']
+                value: this.selectedToolConfig[0]['jiraConfigurationType'],
               };
               this.jiraMethodChange(self, fakeEvent);
             }
@@ -2595,16 +2596,18 @@ export class JiraConfigComponent implements OnInit {
     if (self.urlParam === 'Jira') {
       self.toolForm.controls['jiraConfigurationType'].setValue(event.value);
       switch (event.value) {
-        case "2":
+        case '2':
           self.showFormElements(['boardQuery']);
           self.hideFormElements(['boards']);
           self.toolForm.controls['boardQuery'].enable();
-          self.toolForm.controls['boardQuery'].setValidators([Validators.required]);
+          self.toolForm.controls['boardQuery'].setValidators([
+            Validators.required,
+          ]);
           self.toolForm.controls['boardQuery'].updateValueAndValidity();
           self.toolForm.controls['boards'].clearValidators();
           self.toolForm.controls['boards'].updateValueAndValidity();
           break;
-        case "1":
+        case '1':
           self.hideFormElements(['boardQuery']);
           self.showFormElements(['boards']);
           self.toolForm.controls['boards'].setValidators([Validators.required]);
@@ -2612,12 +2615,12 @@ export class JiraConfigComponent implements OnInit {
           self.toolForm.controls['boardQuery'].clearValidators();
           self.toolForm.controls['boardQuery'].updateValueAndValidity();
           if (self.checkBoards()) {
-            self.toolForm.controls['boards'].disable()
-          }else{
-            self.toolForm.controls['boards'].enable()
+            self.toolForm.controls['boards'].disable();
+          } else {
+            self.toolForm.controls['boards'].enable();
           }
           break;
-        case "3":
+        case '3':
           self.hideFormElements(['boardQuery']);
           self.hideFormElements(['boards']);
           self.toolForm.controls['boardQuery'].clearValidators();
@@ -2751,11 +2754,10 @@ export class JiraConfigComponent implements OnInit {
         'If Jira processor is run after adding or removing board/s, then all data prior to this change will be deleted and fresh data will be fetched based on the updated list of boards';
     }
     if (!this.isEdit) {
-
       if (submitData['jiraConfigurationType'] === '3') {
         submitData['boardQuery'] = `project = "${submitData['projectKey']}"`;
       }
-      
+
       for (const obj in submitData) {
         if (
           submitData[obj]?.hasOwnProperty('name') &&
@@ -3081,13 +3083,18 @@ export class JiraConfigComponent implements OnInit {
   getJiraConfigurationType() {
     let isKanban;
     if (this.selectedProject?.type) {
-      isKanban = this.selectedProject?.type?.toLowerCase() === 'kanban' ? true : false;
-    } else if(this.selectedProject?.Type) {
-      isKanban = this.selectedProject?.Type?.toLowerCase() === 'kanban' ? true : false;
+      isKanban =
+        this.selectedProject?.type?.toLowerCase() === 'kanban' ? true : false;
+    } else if (this.selectedProject?.Type) {
+      isKanban =
+        this.selectedProject?.Type?.toLowerCase() === 'kanban' ? true : false;
     }
-    this.http.getJiraConfigurationTypeOptions(this.selectedProject?.id).subscribe(resp => {
-      this.jiraConfigurationTypeOptions = resp.filter(temp => temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban);
-    })
+    this.http.getJiraConfigurationTypeOptions().subscribe((resp) => {
+      this.jiraConfigurationTypeOptions = resp.data.filter(
+        (temp) =>
+          temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban,
+      );
+    });
   }
 
   getGitActionWorkflowName(event, self) {

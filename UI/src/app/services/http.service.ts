@@ -1146,8 +1146,8 @@ export class HttpService {
     return this.http.get<any>(`${this.jiraTemplateUrl}/${projectId}`);
   }
 
-  getJiraConfigurationTypeOptions(projectId){
-    return this.http.get<any>(`${this.jiraConfigurationUrl}/${projectId}`);
+  getJiraConfigurationTypeOptions() {
+    return this.http.get<any>(`${this.jiraConfigurationUrl}`);
   }
 
   getMappingTemplateFlag(toolID, data) {

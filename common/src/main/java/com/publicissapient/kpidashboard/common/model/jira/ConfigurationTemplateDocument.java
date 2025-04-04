@@ -16,23 +16,27 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.common.service;
+package com.publicissapient.kpidashboard.common.model.jira; // NOPMD
 
-import com.publicissapient.kpidashboard.apis.model.ConfigDetails;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-/**
- * Contract to get kpi wise aggregation type
- *
- * @author pkum34
- */
-public interface ConfigDetailService {
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Document(collection = "configuration_template")
+public class ConfigurationTemplateDocument extends BasicModel {
 
-	/**
-	 * Gets kpi wise aggregation type.
-	 *
-	 * @return kpi wise aggregation type
-	 */
-	ConfigDetails getConfigDetails();
-	ServiceResponse getConfigurationTemplate();
+	private String tool;
+	private String templateName;
+	private String templateCode;
+	private boolean isKanban;
+	private boolean disabled;
 }

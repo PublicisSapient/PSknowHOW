@@ -16,23 +16,16 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.common.service;
+package com.publicissapient.kpidashboard.common.repository.jira;
 
-import com.publicissapient.kpidashboard.apis.model.ConfigDetails;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.model.jira.ConfigurationTemplateDocument;
+import org.bson.types.ObjectId;
+import org.springframework.data.repository.CrudRepository;
 
 /**
- * Contract to get kpi wise aggregation type
+ * The interface Configuration Template Repository.
  *
- * @author pkum34
+ * @author girpatha
  */
-public interface ConfigDetailService {
-
-	/**
-	 * Gets kpi wise aggregation type.
-	 *
-	 * @return kpi wise aggregation type
-	 */
-	ConfigDetails getConfigDetails();
-	ServiceResponse getConfigurationTemplate();
+public interface ConfigurationTemplateRepository extends CrudRepository<ConfigurationTemplateDocument, ObjectId> {
 }

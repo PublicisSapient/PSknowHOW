@@ -21,10 +21,16 @@ package com.publicissapient.kpidashboard.apis.common.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.common.service.ConfigDetailService;
@@ -59,5 +65,17 @@ public class ConfigDetailsController {
 		ConfigDetails configDetails = configDetailService.getConfigDetails();
 		log.info("ConfigDetailsController::getConfigDetails end");
 		return ResponseEntity.status(HttpStatus.OK).body(configDetails);
+	}
+
+
+	/**
+	 * Fetches the configuration template.
+	 *
+	 * @return a ServiceResponse containing the configuration template documents
+	 */
+	@GetMapping("/configuration")
+	@ResponseStatus(HttpStatus.OK)
+	public ServiceResponse getConfigurationTemplate() {
+		return configDetailService.getConfigurationTemplate();
 	}
 }
