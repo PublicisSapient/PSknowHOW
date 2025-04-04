@@ -467,6 +467,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setIsNew(e.getIsNew());
 			projectConfToolDto.setConnectionName(getConnection(e.getConnectionId()).getConnectionName());
 			projectConfToolDto.setProjectComponent(e.getProjectComponent());
+			projectConfToolDto.setJiraConfigurationType(e.getJiraConfigurationType());
 		});
 
 		return projectConfToolDtoList;

@@ -122,6 +122,7 @@ public class ProjectToolConfig extends BasicModel implements Cloneable {
 	private Boolean azureRefreshActiveSprintReport = false;
 	private String azureRefreshActiveSprintReportUpdatedBy;
 	private long azureRefreshActiveSprintReportUpdatedOn;
+	private String jiraConfigurationType;
 
 	@Override
 	public ProjectToolConfig clone() throws CloneNotSupportedException {
