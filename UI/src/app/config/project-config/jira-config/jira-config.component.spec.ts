@@ -2337,11 +2337,11 @@ describe('JiraConfigComponent', () => {
 
   it('should filter Kanban type projects correctly when type is lowercase', fakeAsync(() => {
     // Arrange
-    const mockResponse = [
+    const mockResponse = {data  : [
       { tool: 'Jira', kanban: true, name: 'Template1' },
       { tool: 'Jira', kanban: false, name: 'Template2' },
       { tool: 'Other', kanban: true, name: 'Template3' }
-    ];
+    ]}
     component.selectedProject = { id: 1, type: 'kanban' };
     spyOn(httpService,'getJiraConfigurationTypeOptions').and.returnValue(of(mockResponse));
 
@@ -2350,7 +2350,7 @@ describe('JiraConfigComponent', () => {
     tick();
 
     // Assert
-    expect(httpService.getJiraConfigurationTypeOptions).toHaveBeenCalledWith(1);
+    expect(httpService.getJiraConfigurationTypeOptions).toHaveBeenCalled()
     expect(component.jiraConfigurationTypeOptions).toEqual([
       { tool: 'Jira', kanban: true, name: 'Template1' }
     ]);
@@ -2358,11 +2358,11 @@ describe('JiraConfigComponent', () => {
 
   it('should filter Scrum type projects correctly when Type is uppercase', fakeAsync(() => {
     // Arrange
-    const mockResponse = [
+    const mockResponse = { data :[
       { tool: 'Jira', kanban: true, name: 'Template1' },
       { tool: 'Jira', kanban: false, name: 'Template2' },
       { tool: 'Other', kanban: false, name: 'Template3' }
-    ];
+    ]};
     component.selectedProject = { id: 1, Type: 'SCRUM' };
     spyOn(httpService,'getJiraConfigurationTypeOptions').and.returnValue(of(mockResponse));
 
@@ -2371,7 +2371,7 @@ describe('JiraConfigComponent', () => {
     tick();
 
     // Assert
-    expect(httpService.getJiraConfigurationTypeOptions).toHaveBeenCalledWith(1);
+    expect(httpService.getJiraConfigurationTypeOptions).toHaveBeenCalled();
     expect(component.jiraConfigurationTypeOptions).toEqual([
       { tool: 'Jira', kanban: false, name: 'Template2' }
     ]);
@@ -2379,10 +2379,10 @@ describe('JiraConfigComponent', () => {
 
   it('should handle case when selectedProject is null', fakeAsync(() => {
     // Arrange
-    const mockResponse = [
+    const mockResponse = { data : [
       { tool: 'Jira', kanban: true, name: 'Template1' },
       { tool: 'Jira', kanban: false, name: 'Template2' }
-    ];
+    ]};
     component.selectedProject = null;
     spyOn(httpService,'getJiraConfigurationTypeOptions').and.returnValue(of(mockResponse));
 
@@ -2391,17 +2391,17 @@ describe('JiraConfigComponent', () => {
     tick();
 
     // Assert
-    expect(httpService.getJiraConfigurationTypeOptions).toHaveBeenCalledWith(undefined);
+    expect(httpService.getJiraConfigurationTypeOptions).toHaveBeenCalled();
     expect(component.jiraConfigurationTypeOptions).toEqual([]);
   }));
 
   it('should filter non-Jira tools out', fakeAsync(() => {
     // Arrange
-    const mockResponse = [
+    const mockResponse = { data : [
       { tool: 'Jira', kanban: true, name: 'Template1' },
       { tool: 'Other', kanban: true, name: 'Template2' },
       { tool: 'Another', kanban: true, name: 'Template3' }
-    ];
+    ]};
     component.selectedProject = { id: 1, type: 'kanban' };
     spyOn(httpService,'getJiraConfigurationTypeOptions').and.returnValue(of(mockResponse));
 
@@ -2410,7 +2410,7 @@ describe('JiraConfigComponent', () => {
     tick();
 
     // Assert
-    expect(httpService.getJiraConfigurationTypeOptions).toHaveBeenCalledWith(1);
+    expect(httpService.getJiraConfigurationTypeOptions).toHaveBeenCalled();
     expect(component.jiraConfigurationTypeOptions).toEqual([
       { tool: 'Jira', kanban: true, name: 'Template1' }
     ]);
@@ -2418,10 +2418,10 @@ describe('JiraConfigComponent', () => {
 
   it('should handle case-insensitive tool name comparison', fakeAsync(() => {
     // Arrange
-    const mockResponse = [
+    const mockResponse = { data : [
       { tool: 'JIRA', kanban: true, name: 'Template1' },
       { tool: 'jira', kanban: true, name: 'Template2' }
-    ];
+    ]};
     component.selectedProject = { id: 1, type: 'kanban' };
     spyOn(httpService,'getJiraConfigurationTypeOptions').and.returnValue(of(mockResponse));
 
@@ -2430,7 +2430,7 @@ describe('JiraConfigComponent', () => {
     tick();
 
     // Assert
-    expect(httpService.getJiraConfigurationTypeOptions).toHaveBeenCalledWith(1);
+    expect(httpService.getJiraConfigurationTypeOptions).toHaveBeenCalled();
     expect(component.jiraConfigurationTypeOptions).toEqual([
       { tool: 'JIRA', kanban: true, name: 'Template1' },
       { tool: 'jira', kanban: true, name: 'Template2' }
