@@ -29,6 +29,10 @@ import java.util.List;
 public class JiraConfigurationTypeChangeUnit {
 
     private final MongoTemplate mongoTemplate;
+    private static final String JIRA_CONFIGURATION_TYPE = "jiraConfigurationType";
+    private static final String PROJECT_TOOL_CONFIGS = "project_tool_configs";
+    private static final String TOOL_NAME = "toolName";
+    private static final String QUERY_ENABLED = "queryEnabled";
 
     public JiraConfigurationTypeChangeUnit(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
@@ -37,15 +41,15 @@ public class JiraConfigurationTypeChangeUnit {
     @Execution
     public void execution() {
         // Rollback action: Remove the jiraConfigurationType field from all Jira configs
-        Document query = new Document("toolName", "Jira");
-        Document update = new Document("$unset", new Document("jiraConfigurationType", ""));
-        mongoTemplate.getCollection("project_tool_configs").updateMany(query, update);
+        Document query = new Document(TOOL_NAME, "Jira");
+        Document update = new Document("$unset", new Document(JIRA_CONFIGURATION_TYPE, ""));
+        mongoTemplate.getCollection(PROJECT_TOOL_CONFIGS).updateMany(query, update);
     }
 
     @RollbackExecution
     public void rollback() {
         // Recreate the original state by setting jiraConfigurationType based on conditions
-        List<Document> jiraConfigs = mongoTemplate.getCollection("project_tool_configs")
+        List<Document> jiraConfigs = mongoTemplate.getCollection(PROJECT_TOOL_CONFIGS)
                 .find(new Document("toolName", "Jira"))
                 .into(new java.util.ArrayList<>());
 
@@ -56,8 +60,8 @@ public class JiraConfigurationTypeChangeUnit {
             int jiraConfigurationType = determineConfigurationType(queryEnabled, boards);
             
             Document query = new Document("_id", config.get("_id"));
-            Document update = new Document("$set", new Document("jiraConfigurationType", jiraConfigurationType));
-            mongoTemplate.getCollection("project_tool_configs").updateOne(query, update);
+            Document update = new Document("$set", new Document(JIRA_CONFIGURATION_TYPE, jiraConfigurationType));
+            mongoTemplate.getCollection(PROJECT_TOOL_CONFIGS).updateOne(query, update);
         }
     }
 

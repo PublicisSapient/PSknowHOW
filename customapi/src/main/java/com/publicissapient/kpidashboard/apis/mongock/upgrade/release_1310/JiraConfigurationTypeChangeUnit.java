@@ -29,6 +29,10 @@ import java.util.List;
 public class JiraConfigurationTypeChangeUnit {
 
     private final MongoTemplate mongoTemplate;
+    private final static String JIRA_CONFIGURATION_TYPE = "jiraConfigurationType";
+    private final static String PROJECT_TOOL_CONFIGS = "project_tool_configs";
+    private final static String TOOL_NAME = "toolName";
+
 
     public JiraConfigurationTypeChangeUnit(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
@@ -37,8 +41,8 @@ public class JiraConfigurationTypeChangeUnit {
     @Execution
     public void execution() {
         // Find all Jira configurations
-        List<Document> jiraConfigs = mongoTemplate.getCollection("project_tool_configs")
-                .find(new Document("toolName", "Jira"))
+        List<Document> jiraConfigs = mongoTemplate.getCollection(PROJECT_TOOL_CONFIGS)
+                .find(new Document(TOOL_NAME, "Jira"))
                 .into(new java.util.ArrayList<>());
 
         for (Document config : jiraConfigs) {
@@ -49,8 +53,8 @@ public class JiraConfigurationTypeChangeUnit {
             
             // Update the document with the new field
             Document query = new Document("_id", config.get("_id"));
-            Document update = new Document("$set", new Document("jiraConfigurationType", jiraConfigurationType));
-            mongoTemplate.getCollection("project_tool_configs").updateOne(query, update);
+            Document update = new Document("$set", new Document(JIRA_CONFIGURATION_TYPE, jiraConfigurationType));
+            mongoTemplate.getCollection(PROJECT_TOOL_CONFIGS).updateOne(query, update);
         }
     }
 
@@ -58,8 +62,8 @@ public class JiraConfigurationTypeChangeUnit {
     public void rollback() {
         // Remove the jiraConfigurationType field from all Jira configurations
         Document query = new Document("toolName", "Jira");
-        Document update = new Document("$unset", new Document("jiraConfigurationType", ""));
-        mongoTemplate.getCollection("project_tool_configs").updateMany(query, update);
+        Document update = new Document("$unset", new Document(JIRA_CONFIGURATION_TYPE, ""));
+        mongoTemplate.getCollection(PROJECT_TOOL_CONFIGS).updateMany(query, update);
     }
 
     private int determineConfigurationType(boolean queryEnabled, List<Document> boards) {

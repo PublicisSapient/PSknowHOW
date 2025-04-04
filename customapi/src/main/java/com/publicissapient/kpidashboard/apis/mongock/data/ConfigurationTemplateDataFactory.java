@@ -51,7 +51,6 @@ public class ConfigurationTemplateDataFactory {
             );
         } catch (IOException e) {
             log.error("Error in reading configuration templates from: " + filePath, e);
-            throw new RuntimeException("Failed to load configuration templates", e);
         }
     }
 
