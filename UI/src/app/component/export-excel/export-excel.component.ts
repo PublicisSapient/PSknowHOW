@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ExcelService } from 'src/app/services/excel.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { Table } from 'primeng/table';
@@ -13,6 +13,7 @@ import { MessageService } from 'primeng/api';
 })
 export class ExportExcelComponent implements OnInit {
   @ViewChild('table') tableComponent: Table;
+  @ViewChild('templateOfReference') templateOfReference: ElementRef;
   displayModal = false;
   modalDetails = {
     header: '',
@@ -62,6 +63,10 @@ export class ExportExcelComponent implements OnInit {
         }
       }
     });
+  }
+
+  ngAfterViewInit(): void {
+    this.templateOfReference.nativeElement.focus();
   }
 
   // download excel functionality commetting out condition for additionalFilterSupport & iSAdditionalFilterSelected can be revisit
@@ -118,6 +123,7 @@ export class ExportExcelComponent implements OnInit {
         } else {
           this.modalDetails['header'] = kpiName;
           this.displayModal = true;
+          this.templateOfReference.nativeElement.click();
         }
       });
     // } else {
@@ -194,6 +200,7 @@ export class ExportExcelComponent implements OnInit {
     this.generateColumnFilterData();
     this.modalDetails['header'] = kpiName;
     this.displayModal = true;
+    this.templateOfReference.nativeElement.click();
   }
 
   dataTransformForStackedAreaChart(getData) {

@@ -123,8 +123,8 @@
       </ng-template>
       <ng-template pTemplate="body" let-assignee>
         <tr>
-          <td> <span class="user-name">{{assignee.assigneeName}}</span></td>
-          <td *ngFor="let col of columns">
+          <td tabindex="0"> <span class="user-name">{{assignee.assigneeName}}</span></td>
+          <td *ngFor="let col of columns" tabindex="0">
             {{convertToHoursIfTime(assignee.cardDetails[col]['value'],assignee.cardDetails[col]['unit'])}}
             {{(assignee.cardDetails[col]['unit'] !== 'day' && assignee.cardDetails[col]['value'] !== '-') ?
             assignee.cardDetails[col]['unit'] : ''}}
