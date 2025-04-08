@@ -274,8 +274,7 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 		return historyMap;
 	}
 
-	private DataCount getDataCountObject(Double value, String projectName, String date,
-String keyName) {
+	private DataCount getDataCountObject(Double value, String projectName, String date, String keyName) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSSprintID(date);
