@@ -23,14 +23,17 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.hierarchy.dto.CreateHierarchyRequest;
+import com.publicissapient.kpidashboard.apis.hierarchy.dto.UpdateHierarchyRequest;
 import com.publicissapient.kpidashboard.apis.hierarchy.service.HierarchyOptionService;
 import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
@@ -62,9 +65,17 @@ public class OrganizationHierarchyController {
 		}
 	}
 
-	@PostMapping({ "/", "/{parentId}" })
+	@PostMapping({ "", "/{parentid}" })
+	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
 	public ServiceResponse addHierarchyOption(@PathVariable(required = false) String parentId,
 			@RequestBody @Valid CreateHierarchyRequest createHierarchyRequest) {
 		return hierarchyOptionService.addHierarchyOption(createHierarchyRequest, parentId);
+	}
+
+	@PutMapping("/{id}")
+	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
+	public ServiceResponse updateHierarchy(@PathVariable String id,
+			@Valid @RequestBody UpdateHierarchyRequest request) {
+		return organizationHierarchyService.updateName(request.getDisplayName(), id);
 	}
 }

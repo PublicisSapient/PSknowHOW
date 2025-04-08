@@ -19,8 +19,12 @@ package com.publicissapient.kpidashboard.apis.hierarchy.service;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -38,6 +42,9 @@ public class OrganizationHierarchyServiceImpl implements OrganizationHierarchySe
 	private OrganizationHierarchyRepository organizationHierarchyRepository;
 
 	@Autowired
+	private CacheService cacheService;
+
+	@Autowired
 	private ConfigHelperService configHelperService;
 
 	@Override
@@ -53,7 +60,11 @@ public class OrganizationHierarchyServiceImpl implements OrganizationHierarchySe
 	 */
 	@Override
 	public OrganizationHierarchy findByNodeId(String nodeId) {
-		return findAll().stream().filter(node -> node.getNodeId().equals(nodeId)).findFirst().orElse(null);
+		List<OrganizationHierarchy> all = findAll();
+		if(CollectionUtils.isNotEmpty(all)){
+			return all.stream().filter(node -> node.getNodeId().equals(nodeId)).findFirst().orElse(null);
+		}
+		return null;
 	}
 
 	@Override
@@ -69,6 +80,22 @@ public class OrganizationHierarchyServiceImpl implements OrganizationHierarchySe
 	@CacheEvict(CommonConstant.CACHE_ORGANIZATION_HIERARCHY)
 	@Override
 	public void clearCache() {
+		cacheService.clearCache(CommonConstant.CACHE_ACCOUNT_HIERARCHY);
+		cacheService.clearCache(CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN);
+		cacheService.clearCache(CommonConstant.CACHE_ORGANIZATION_HIERARCHY);
+		configHelperService.loadConfigData();
 		log.debug("clear cache organization Hierarchies");
+	}
+
+	@Override
+	public ServiceResponse updateName(String name, String nodeId) {
+		OrganizationHierarchy original = findByNodeId(nodeId);
+		if (original == null) {
+			return new ServiceResponse(false, "No hierarchy node found for nodeId: " + nodeId, null);
+		}
+		original.setNodeDisplayName(name);
+		save(original);
+		clearCache();
+		return new ServiceResponse(true, "Hierarchy Updated", original);
 	}
 }

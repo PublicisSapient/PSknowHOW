@@ -19,6 +19,7 @@ package com.publicissapient.kpidashboard.apis.hierarchy.service;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 
 public interface OrganizationHierarchyService {
@@ -32,4 +33,6 @@ public interface OrganizationHierarchyService {
 	void deleteByNodeId(String nodeId);
 
 	void clearCache();
+
+	ServiceResponse updateName(String name, String nodeId);
 }

@@ -516,10 +516,24 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				list.addAll(projectList);
 			}
 		}
+		updateHierarchyDetails(list);
 		list.sort(Comparator.comparing(ProjectBasicConfig::getCreatedAt));
 		log.info("Returning getProjectBasicConfig response: {}", list);
 		return list;
 	}
+
+	private void updateHierarchyDetails(List<ProjectBasicConfig> list) {
+		// Fetch and map all OrganizationHierarchy node IDs to their display names
+		Map<String, String> nodeIdWiseName = organizationHierarchyService.findAll().stream()
+				.collect(Collectors.toMap(OrganizationHierarchy::getNodeId, OrganizationHierarchy::getNodeDisplayName));
+
+		// Iterate through project list and update hierarchy values where applicable
+		list.forEach(project -> project.getHierarchy().stream()
+				.filter(hierarchy -> nodeIdWiseName.containsKey(hierarchy.getOrgHierarchyNodeId()))
+				.forEach(hierarchy -> hierarchy.setValue(nodeIdWiseName.get(hierarchy.getOrgHierarchyNodeId())))
+		);
+	}
+
 
 	@SuppressWarnings("unchecked")
 	@Override

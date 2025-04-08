@@ -32,7 +32,6 @@ import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.hierarchy.dto.CreateHierarchyRequest;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 
@@ -119,7 +118,7 @@ public class HierarchyOptionServiceImpl implements HierarchyOptionService {
 		save.setNodeDisplayName(hierarchyName);
 		save.setParentId(parentId);
 		organizationHierarchyService.save(save);
-		cacheService.clearCache(CommonConstant.CACHE_ORGANIZATION_HIERARCHY);
+		organizationHierarchyService.clearCache();
 		log.debug("Hierarchy Node create successfully: {}", CommonUtils.sanitize(save.getNodeId()));
 	}
 

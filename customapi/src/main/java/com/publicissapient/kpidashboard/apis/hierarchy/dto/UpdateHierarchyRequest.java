@@ -21,18 +21,14 @@ import javax.validation.constraints.NotBlank;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode
-public class CreateHierarchyRequest {
-	@NotBlank(message = "name cannot be empty")
-	@NotNull(message = "name cannot be null")
-	@NotEmpty(message = "name cannot be empty")
-	private String name;
+public class UpdateHierarchyRequest {
+	@NotBlank(message = "displayName cannot be empty")
+	@NotNull(message = "displayName cannot be null")
+	@NotEmpty(message = "displayName cannot be empty")
+	private String displayName;
 }
