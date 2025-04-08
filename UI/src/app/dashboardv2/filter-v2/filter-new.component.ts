@@ -170,6 +170,15 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }),
     );
 
+    this.subscriptions.push(
+      this.service.switchBoard.subscribe((data) => {
+       if(data) {
+       this.selectedType = this.service.getSelectedType();
+        this.service.setScrumKanban(this.service.getSelectedType());
+       }
+      }),
+    );
+
     this.firstLoadFilterCheck(true);
     this.firstLoadFilterCheck(false);
 
