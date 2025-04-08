@@ -190,7 +190,9 @@ export class HttpService {
   currentUserDetails = null;
   private saveMetaDataStepURL = this.baseUrl + '/api/processor/metadata/step/';
 
-  private organizationHierarchy = this.baseUrl + '/api/organizationHierarchy';
+  private organizationHierarchy = this.baseUrl + '/api/hierarchy';
+  private updateHierarchyOptionsUrl = this.baseUrl + '/api/hierarchy';
+
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -1252,5 +1254,13 @@ export class HttpService {
 
   deleteReport(id: string): Observable<any> {
     return this.http.delete<any>(this.createReportUrl + '/' + id);
+  }
+
+  addHierarchyOptions(parentID, hierarchyOptions) {
+    return this.http.post<any>(`${this.updateHierarchyOptionsUrl}/${parentID}`, hierarchyOptions);
+  }
+
+  renameHierarchyOptions(parentID, dispalyName) {
+    return this.http.put<any>(`${this.updateHierarchyOptionsUrl}/${parentID}`, dispalyName);
   }
 }
