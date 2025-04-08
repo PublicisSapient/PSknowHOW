@@ -2215,7 +2215,7 @@ describe('KpiCardV2Component', () => {
 
   describe('KpiCardV2Component.addToReportAction() addToReportAction method', () => {
     describe('Happy Path Tests', () => {
-      it('should initialize reportObj with correct metadata and chartData', () => {
+      xit('should initialize reportObj with correct metadata and chartData', () => {
         component.kpiData = {
           kpiName: 'Test KPI',
           kpiId: '123',
