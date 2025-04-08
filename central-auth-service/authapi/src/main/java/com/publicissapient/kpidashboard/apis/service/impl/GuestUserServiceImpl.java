@@ -25,7 +25,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,7 +32,7 @@ import java.util.UUID;
 @Service
 @Slf4j
 @AllArgsConstructor
-@Validated
+//@Validated
 public class GuestUserServiceImpl implements GuestUserService {
 
     private static final String ROLE_GUEST = "GUEST";
