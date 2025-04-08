@@ -2242,6 +2242,7 @@ describe('KpiCardV2Component', () => {
         component.kpiThresholdObj = {};
         component.releaseEndDate = '2023-10-10';
         component.hieararchy = {};
+        component.copyCardData = {};
 
         component.addToReportAction();
 
@@ -2278,6 +2279,7 @@ describe('KpiCardV2Component', () => {
             iterationKPIFilterValues: [],
             additional_filters: {},
           },
+          copyCardData: {}
         });
       });
 
