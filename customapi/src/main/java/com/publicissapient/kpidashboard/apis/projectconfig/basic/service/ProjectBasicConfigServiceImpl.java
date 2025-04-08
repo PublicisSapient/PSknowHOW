@@ -184,7 +184,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	 * method to save basic configuration
 	 *
 	 * @param projectBasicConfigDTO
-	 *          object to be saved
+	 *            object to be saved
 	 * @return ServiceResponse object
 	 */
 	@Override
@@ -199,7 +199,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			response = new ServiceResponse(false, "Try with different Project name.", null);
 		} else {
 			tokenAuthenticationService.updateExpiryDate(username, LocalDateTime.now().toString());
-			String accessRoleOfParent = projectAccessManager.getAccessRoleOfNearestParent(projectBasicConfigDTO, username);
+			String accessRoleOfParent = projectAccessManager.getAccessRoleOfNearestParent(projectBasicConfigDTO,
+					username);
 			ModelMapper mapper = new ModelMapper();
 			basicConfig = mapper.map(projectBasicConfigDTO, ProjectBasicConfig.class);
 			basicConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
@@ -218,8 +219,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				addProjectNodeToOrganizationHierarchy(projectBasicConfigDTO, basicConfig.getProjectNodeId());
 				response = new ServiceResponse(true, "Added Successfully.", savedProjectBasicConfig);
 
-			} else if (Constant.ROLE_SUPERADMIN.equals(accessRoleOfParent) ||
-					Constant.ROLE_PROJECT_ADMIN.equals(accessRoleOfParent)) {
+			} else if (Constant.ROLE_SUPERADMIN.equals(accessRoleOfParent)
+					|| Constant.ROLE_PROJECT_ADMIN.equals(accessRoleOfParent)) {
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
 				configHelperService.updateCacheProjectBasicConfig(basicConfig);
 				cloneProjectToolConfigAndDependencies(savedProjectBasicConfig);
@@ -227,8 +228,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				response = new ServiceResponse(true, "Added Successfully.", savedProjectBasicConfig);
 
 			} else {
-				response = new ServiceResponse(false, "You do not have admin access to any of selected hierarchy levels",
-						basicConfig);
+				response = new ServiceResponse(false,
+						"You do not have admin access to any of selected hierarchy levels", basicConfig);
 			}
 		}
 		return response;
@@ -238,9 +239,9 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	 * add new ProjectNode if not already present in OrganizationHierarchy
 	 *
 	 * @param projectBasicConfigDTO
-	 *          ProjectBasicConfigDTO
+	 *            ProjectBasicConfigDTO
 	 * @param projectNodeId
-	 *          String
+	 *            String
 	 */
 	private void addProjectNodeToOrganizationHierarchy(ProjectBasicConfigDTO projectBasicConfigDTO,
 			String projectNodeId) {
@@ -253,8 +254,6 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			newOrganizationHierarchy.setHierarchyLevelId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 			newOrganizationHierarchy.setNodeName(projectBasicConfigDTO.getProjectName());
 			newOrganizationHierarchy.setNodeDisplayName(projectBasicConfigDTO.getProjectDisplayName());
-			newOrganizationHierarchy.setCreatedDate(LocalDateTime.now());
-			newOrganizationHierarchy.setModifiedDate(LocalDateTime.now());
 			organizationHierarchyService.save(newOrganizationHierarchy);
 			clearOrgHierarchyCache();
 		}
@@ -272,7 +271,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	 * Project
 	 *
 	 * @param savedProjectBasicConfig
-	 *          savedProjectBasicConfig
+	 *            savedProjectBasicConfig
 	 */
 	private void cloneProjectToolConfigAndDependencies(ProjectBasicConfig savedProjectBasicConfig) {
 		if (savedProjectBasicConfig.getClonedFrom() == null) {
@@ -302,9 +301,11 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				ProjectToolConfig clonedToolConfig = toolConfig.clone();
 				clonedToolConfig.setId(null);
 				clonedToolConfig.setBasicProjectConfigId(savedProjectBasicConfig.getId());
-				clonedToolConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
+				clonedToolConfig
+						.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
 				clonedToolConfig.setCreatedBy(authenticationService.getLoggedInUser());
-				clonedToolConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
+				clonedToolConfig
+						.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
 				clonedToolConfig.setProjectId(savedProjectBasicConfig.getId().toString());
 				clonedToolConfigs.add(clonedToolConfig);
 			} catch (CloneNotSupportedException e) {
@@ -319,8 +320,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			List<ProjectToolConfig> clonedToolConfigs) {
 		FieldMapping originalFieldMapping = fieldMappingService
 				.getFieldMappingByBasicconfigId(savedProjectBasicConfig.getClonedFrom().toString());
-		Optional<ProjectToolConfig> toolConfigOptional = clonedToolConfigs.stream()
-				.filter(tool -> Constant.TOOL_JIRA.equals(tool.getToolName()) || Constant.TOOL_AZURE.equals(tool.getToolName()))
+		Optional<ProjectToolConfig> toolConfigOptional = clonedToolConfigs.stream().filter(
+				tool -> Constant.TOOL_JIRA.equals(tool.getToolName()) || Constant.TOOL_AZURE.equals(tool.getToolName()))
 				.findFirst();
 
 		if (originalFieldMapping != null && toolConfigOptional.isPresent()) {
@@ -329,7 +330,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				clonedFieldMapping.setId(null);
 				clonedFieldMapping.setProjectToolConfigId(toolConfigOptional.get().getId());
 				clonedFieldMapping.setBasicProjectConfigId(savedProjectBasicConfig.getId());
-				clonedFieldMapping.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
+				clonedFieldMapping
+						.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
 				clonedFieldMapping.setUpdatedBy(authenticationService.getLoggedInUser());
 				clonedFieldMapping.setProjectId(savedProjectBasicConfig.getId().toString());
 				fieldMappingService.saveFieldMapping(clonedFieldMapping);
@@ -343,8 +345,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			List<ProjectToolConfig> clonedToolConfigs) {
 		BoardMetadata originalBoardMetadata = boardMetadataRepository
 				.findByProjectBasicConfigId(savedProjectBasicConfig.getClonedFrom());
-		Optional<ProjectToolConfig> toolConfigOptional = clonedToolConfigs.stream()
-				.filter(tool -> Constant.TOOL_JIRA.equals(tool.getToolName()) || Constant.TOOL_AZURE.equals(tool.getToolName()))
+		Optional<ProjectToolConfig> toolConfigOptional = clonedToolConfigs.stream().filter(
+				tool -> Constant.TOOL_JIRA.equals(tool.getToolName()) || Constant.TOOL_AZURE.equals(tool.getToolName()))
 				.findFirst();
 
 		if (originalBoardMetadata != null && toolConfigOptional.isPresent()) {
@@ -372,7 +374,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	 * method to update basic configuration
 	 *
 	 * @param projectBasicConfigDTO
-	 *          for updation
+	 *            for updation
 	 * @return ServiceResponse object
 	 */
 	@Override
@@ -410,7 +412,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 						}
 						processorExecutionTraceLogRepository.saveAll(traceLogs);
 					}
-					AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(basicConfigId);
+					AssigneeDetails assigneeDetails = assigneeDetailsRepository
+							.findByBasicProjectConfigId(basicConfigId);
 					if (assigneeDetails != null) {
 						assigneeDetailsRepository.delete(assigneeDetails);
 					}
@@ -421,7 +424,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				basicConfig.setUpdatedBy(authenticationService.getLoggedInUser());
 				ProjectBasicConfig updatedBasicConfig = basicConfigRepository.save(basicConfig);
 
-				OrganizationHierarchy orgHierarchy = organizationHierarchyService.findByNodeId(basicConfig.getProjectNodeId());
+				OrganizationHierarchy orgHierarchy = organizationHierarchyService
+						.findByNodeId(basicConfig.getProjectNodeId());
 
 				configHelperService.updateCacheProjectBasicConfig(basicConfig);
 				updateProjectNameInOrgHierarchy(basicConfig, orgHierarchy);
@@ -473,8 +477,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				config = Optional.of(getProjectBasicConfig(basicProjectConfigId));
 			} else {
 				Set<String> basicProjectConfigIds = tokenAuthenticationService.getUserProjects();
-				if (Optional.ofNullable(basicProjectConfigIds).isPresent() &&
-						basicProjectConfigIds.contains(basicProjectConfigId)) {
+				if (Optional.ofNullable(basicProjectConfigIds).isPresent()
+						&& basicProjectConfigIds.contains(basicProjectConfigId)) {
 					config = Optional.of(getProjectBasicConfig(basicProjectConfigId));
 				}
 			}
@@ -504,7 +508,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				}
 
 				List<ProjectBasicConfig> projectList = Optional.ofNullable(basicConfigMap).filter(MapUtils::isNotEmpty)
-						.map(map -> map.entrySet().stream().filter(entry -> basicProjectConfigIds.contains(entry.getKey()))
+						.map(map -> map.entrySet().stream()
+								.filter(entry -> basicProjectConfigIds.contains(entry.getKey()))
 								.map(Map.Entry::getValue) // Extract the value (ProjectBasicConfig)
 								.collect(Collectors.toList())) // Collect to a list
 						.orElseGet(ArrayList::new);
@@ -528,8 +533,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService.cacheProjectConfigMapData();
 		}
 
-		return Optional.ofNullable(basicConfigMap).filter(MapUtils::isNotEmpty).map(map -> new ArrayList<>(map.values()))
-				.orElseGet(ArrayList::new);
+		return Optional.ofNullable(basicConfigMap).filter(MapUtils::isNotEmpty)
+				.map(map -> new ArrayList<>(map.values())).orElseGet(ArrayList::new);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -539,8 +544,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
 				.cacheProjectConfigMapData();
 
-		return Optional.ofNullable(basicConfigMap).filter(MapUtils::isNotEmpty).map(map -> map.get(projectBasicConfigId))
-				.orElse(null);
+		return Optional.ofNullable(basicConfigMap).filter(MapUtils::isNotEmpty)
+				.map(map -> map.get(projectBasicConfigId)).orElse(null);
 	}
 
 	@Override
@@ -618,8 +623,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		List<String> scmToolList = Arrays.asList(ProcessorConstants.BITBUCKET, ProcessorConstants.GITLAB,
 				ProcessorConstants.GITHUB, ProcessorConstants.AZUREREPO);
 		List<ProjectToolConfig> tools = toolRepository.findByBasicProjectConfigId(projectBasicConfig.getId());
-		Boolean isRepoTool = tools.stream().anyMatch(
-				toolConfig -> scmToolList.contains(toolConfig.getToolName()) && projectBasicConfig.isDeveloperKpiEnabled());
+		Boolean isRepoTool = tools.stream().anyMatch(toolConfig -> scmToolList.contains(toolConfig.getToolName())
+				&& projectBasicConfig.isDeveloperKpiEnabled());
 		deleteRepoToolProject(projectBasicConfig, isRepoTool);
 		CollectionUtils.emptyIfNull(tools).forEach(tool -> {
 			ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory.getService(tool.getToolName());
@@ -726,13 +731,15 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 					for (HierarchyValue hierarchyValue : projectBasicConfig.getHierarchy()) {
 						HierarchyLevel hierarchyLevel = hierarchyValue.getHierarchyLevel();
 						ProjectBasicConfigNode projectBasicHierarchyNode = createProjectBasicNode(
-								hierarchyValue.getOrgHierarchyNodeId(), new ArrayList<>(Arrays.asList(projectBasicConfigLevelWiseNode)),
+								hierarchyValue.getOrgHierarchyNodeId(),
+								new ArrayList<>(Arrays.asList(projectBasicConfigLevelWiseNode)),
 								hierarchyLevel.getHierarchyLevelId());
 						projectBasicConfigNodes.add(projectBasicHierarchyNode);
 						projectBasicConfigLevelWiseNode = projectBasicHierarchyNode;
 					}
 				}
-				ProjectBasicConfigNode projectBasicProjNode = createProjectBasicNode(projectBasicConfig.getProjectNodeId(),
+				ProjectBasicConfigNode projectBasicProjNode = createProjectBasicNode(
+						projectBasicConfig.getProjectNodeId(),
 						new ArrayList<>(Arrays.asList(projectBasicConfigLevelWiseNode)), Filters.PROJECT.name());
 				projectBasicConfigNodes.add(projectBasicProjNode);
 			}
@@ -852,10 +859,10 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				int level = hirarchy.getHierarchyLevel().getLevel();
 				String value = hirarchy.getValue();
 				switch (level) {
-					case 1 -> dto.setHierarchyLevelOne(value);
-					case 2 -> dto.setHierarchyLevelTwo(value);
-					case 3 -> dto.setHierarchyLevelThree(value);
-					default -> dto.setHierarchyLevelFour(value);
+				case 1 -> dto.setHierarchyLevelOne(value);
+				case 2 -> dto.setHierarchyLevelTwo(value);
+				case 3 -> dto.setHierarchyLevelThree(value);
+				default -> dto.setHierarchyLevelFour(value);
 				}
 			});
 			dto.setSprintDetailsList(groupedByProject.getOrDefault(projectBasicConfig.getId(), new ArrayList<>()));
@@ -865,7 +872,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				.collect(Collectors.toList());
 	}
 
-	public Map<ObjectId, List<SprintDetails>> getTop5SprintDetailsGroupedByProject(List<ObjectId> basicProjectConfigIds) {
+	public Map<ObjectId, List<SprintDetails>> getTop5SprintDetailsGroupedByProject(
+			List<ObjectId> basicProjectConfigIds) {
 		List<String> sprintStatusList = new ArrayList<>();
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
@@ -876,8 +884,9 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 		sprintDetailsList.sort((s1, s2) -> s2.getStartDate().compareTo(s1.getStartDate()));
 		// Group by basicProjectConfigId and limit to top 5
-		return sprintDetailsList.stream().collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId, Collectors
-				.collectingAndThen(Collectors.toList(), list -> list.stream().limit(5).collect(Collectors.toList()))));
+		return sprintDetailsList.stream()
+				.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId, Collectors.collectingAndThen(
+						Collectors.toList(), list -> list.stream().limit(5).collect(Collectors.toList()))));
 	}
 
 	public List<HierarchyValue> getHierarchy(List<HierarchyLevel> hierarchyLevels, String nodeId) {
@@ -946,15 +955,15 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	 * Filters out HierarchyResponseDTOs where none of the tools are connected.
 	 *
 	 * @param hierarchyResponseDTOS
-	 *          the list of HierarchyResponseDTOs to filter
+	 *            the list of HierarchyResponseDTOs to filter
 	 * @return a list of HierarchyResponseDTOs with at least one connected tool
 	 */
 	public List<HierarchyResponseDTO> filterHierarchyDTOsWithConnectedTools(
 			List<HierarchyResponseDTO> hierarchyResponseDTOS) {
 		Map<ObjectId, Map<String, List<ProjectToolConfig>>> projectToolConfigMapData = getProjectToolConfigMapData();
 		return hierarchyResponseDTOS.stream()
-				.filter(hierarchyResponsedto -> MapUtils
-						.isNotEmpty(projectToolConfigMapData.get(new ObjectId(hierarchyResponsedto.getProjectBasicId()))))
+				.filter(hierarchyResponsedto -> MapUtils.isNotEmpty(
+						projectToolConfigMapData.get(new ObjectId(hierarchyResponsedto.getProjectBasicId()))))
 				.collect(Collectors.toList());
 	}
 
