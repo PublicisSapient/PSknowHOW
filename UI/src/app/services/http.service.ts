@@ -1257,7 +1257,7 @@ export class HttpService {
   }
 
   addHierarchyOptions(parentID, hierarchyOptions) {
-    return this.http.post<any>(`${this.updateHierarchyOptionsUrl}/${parentID}`, hierarchyOptions);
+    return this.http.post<any>( parentID ? `${this.updateHierarchyOptionsUrl}/${parentID}` : this.updateHierarchyOptionsUrl , hierarchyOptions);
   }
 
   renameHierarchyOptions(parentID, dispalyName) {
