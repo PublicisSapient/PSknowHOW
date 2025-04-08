@@ -46,6 +46,7 @@ export class HeaderComponent implements OnInit {
     public router: Router,
     private helperService: HelperService,
     private featureFlagService: FeatureFlagsService,
+    // private messageService: MessageService
   ) {}
 
   ngOnInit() {
@@ -215,7 +216,15 @@ export class HeaderComponent implements OnInit {
   }
 
   goToReports() {
-    this.lastVisitedFromUrl = window.location.hash.substring(1);
-    this.router.navigate(['/dashboard/Report/default-report']);
+    // if(this.sharedService.getNoReports()){
+    //   this.messageService.add({
+    //     severity: 'info',
+    //     summary: 'No reports available',
+    //     detail: '',
+    //   })
+    // }else{
+      this.lastVisitedFromUrl = window.location.hash.substring(1);
+      this.router.navigate(['/dashboard/Report/default-report']);
+    // }
   }
 }

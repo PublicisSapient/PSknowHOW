@@ -1172,6 +1172,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         ? this.currentChartData?.chartData
         : this.kpiChartData,
       metadata: metaDataObj,
+      copyCardData:this.copyCardData
     };
 
     this.displayAddToReportsModal = true;

@@ -9,6 +9,7 @@ import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 export class ReportKpiCardComponent {
   @Input() kpiData: any;
   @Input() currentChartData: any;
+  @Input() copyCardData: any;
   @Input() chartType: string;
   @Input() kpiDataStatusCode: string;
   @Input() kpiTrendsObj: any;
