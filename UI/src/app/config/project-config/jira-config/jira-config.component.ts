@@ -117,6 +117,8 @@ export class JiraConfigComponent implements OnInit {
   isGitlabToolFieldEnabled: boolean;
   isConfigureTool: boolean = false;
   showAddNewBtn: boolean = true;
+  jiraConfigurationTypeOptions;
+  jiraQueryEnabled = true;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -177,7 +179,7 @@ export class JiraConfigComponent implements OnInit {
         } else {
           this.hideFormElements(['gitLabID']);
         }
-
+        this.getJiraConfigurationType();
         this.getJiraTemplate();
       } else {
         this.router.navigate(['./dashboard/Config/ProjectList']);
@@ -1093,22 +1095,22 @@ export class JiraConfigComponent implements OnInit {
                 onFocusOut: this.projectKeyChanged,
               },
               {
-                type: 'boolean',
-                label: 'Use Boards',
-                label2: 'Use JQL Query',
-                id: 'queryEnabled',
-                model: 'queryEnabled',
+                type: 'basicDropdown',
+                label: 'Configuration Type*',
+                label2: '',
+                id: 'jiraConfigurationType',
                 onChangeEventHandler: (event) =>
                   this.jiraMethodChange(this, event),
                 validators: [],
-                containerClass: 'p-sm-12',
+                containerClass: 'p-sm-6',
                 tooltip: ``,
                 disabled: 'false',
+                options: 'jiraConfigurationTypeOptions',
                 show: true,
               },
               {
                 type: 'autoComplete',
-                label: 'JIRA Boards',
+                label: 'JIRA Boards*',
                 id: 'boards',
                 suggestions: 'filteredBoards',
                 validators: ['required'],
@@ -1125,12 +1127,12 @@ export class JiraConfigComponent implements OnInit {
               },
               {
                 type: 'textarea',
-                label: 'JQL Query',
+                label: 'JQL Query*',
                 id: 'boardQuery',
                 validators: [],
                 containerClass: 'p-sm-12',
-                disabled: 'queryEnabled',
-                show: true,
+                disabled: 'jiraQueryEnabled',
+                show: false,
               },
               {
                 type: 'basicDropdown',
@@ -1143,6 +1145,7 @@ export class JiraConfigComponent implements OnInit {
                 containerClass: 'p-sm-6',
                 tooltip: ``,
                 disabled: 'false',
+                options: 'jiraTemplate',
                 show: true,
               },
             ],
@@ -2535,7 +2538,7 @@ export class JiraConfigComponent implements OnInit {
             if (this.urlParam === 'Jira' || this.urlParam === 'Azure') {
               this.queryEnabled = this.selectedToolConfig[0]['queryEnabled'];
               const fakeEvent = {
-                checked: this.queryEnabled,
+                value: this.selectedToolConfig[0]['jiraConfigurationType'],
               };
               this.jiraMethodChange(self, fakeEvent);
             }
@@ -2578,7 +2581,7 @@ export class JiraConfigComponent implements OnInit {
 
       if (self.urlParam === 'Jira') {
         if (this.isEdit) {
-          this.toolForm.controls['queryEnabled'].disable();
+          this.toolForm.controls['jiraConfigurationType']?.disable();
         }
       }
     }
@@ -2591,19 +2594,50 @@ export class JiraConfigComponent implements OnInit {
   jiraMethodChange(self, event = null) {
     this.submitted = false;
     if (self.urlParam === 'Jira') {
-      if (event && event.checked) {
-        self.toolForm.controls['boards'].setValue([]);
-        self.toolForm.controls['boards'].clearValidators();
-        self.toolForm.controls['boards'].updateValueAndValidity();
-        self.toolForm.controls['boardQuery'].setValidators([
-          Validators.required,
-        ]);
-        self.toolForm.controls['boardQuery'].updateValueAndValidity();
-      } else {
-        self.toolForm.controls['boards'].setValidators([Validators.required]);
-        self.toolForm.controls['boards'].updateValueAndValidity();
-        self.toolForm.controls['boardQuery'].clearValidators();
-        self.toolForm.controls['boardQuery'].updateValueAndValidity();
+      self.toolForm.controls['jiraConfigurationType'].setValue(event.value);
+      switch (event.value) {
+        case '2':
+          self.showFormElements(['boardQuery']);
+          self.hideFormElements(['boards']);
+          self.toolForm.controls['boardQuery'].enable();
+          self.toolForm.controls['boardQuery'].setValidators([
+            Validators.required,
+          ]);
+          self.toolForm.controls['boardQuery'].updateValueAndValidity();
+          self.toolForm.controls['boards'].clearValidators();
+          self.toolForm.controls['boards'].updateValueAndValidity();
+          self.toolForm.controls['boards'].setValue([]);
+          break;
+        case '1':
+          self.hideFormElements(['boardQuery']);
+          self.showFormElements(['boards']);
+          self.toolForm.controls['boards'].setValidators([Validators.required]);
+          self.toolForm.controls['boards'].updateValueAndValidity();
+          self.toolForm.controls['boardQuery'].clearValidators();
+          self.toolForm.controls['boardQuery'].updateValueAndValidity();
+          if (self.checkBoards()) {
+            self.toolForm.controls['boards'].disable();
+          } else {
+            self.toolForm.controls['boards'].enable();
+          }
+          break;
+        case '3':
+          self.hideFormElements(['boardQuery']);
+          self.hideFormElements(['boards']);
+          self.toolForm.controls['boardQuery'].clearValidators();
+          self.toolForm.controls['boardQuery'].updateValueAndValidity();
+          self.toolForm.controls['boards'].clearValidators();
+          self.toolForm.controls['boards'].updateValueAndValidity();
+          self.toolForm.controls['boards'].setValue([]);
+          break;
+        default:
+          self.hideFormElements(['boardQuery']);
+          self.showFormElements(['boards']);
+          self.toolForm.controls['boards'].setValidators([Validators.required]);
+          self.toolForm.controls['boards'].updateValueAndValidity();
+          self.toolForm.controls['boardQuery'].clearValidators();
+          self.toolForm.controls['boardQuery'].updateValueAndValidity();
+          break;
       }
     }
 
@@ -2722,6 +2756,10 @@ export class JiraConfigComponent implements OnInit {
         'If Jira processor is run after adding or removing board/s, then all data prior to this change will be deleted and fresh data will be fetched based on the updated list of boards';
     }
     if (!this.isEdit) {
+      if (submitData['jiraConfigurationType'] === '3') {
+        submitData['boardQuery'] = `project = "${submitData['projectKey']}"`;
+      }
+
       for (const obj in submitData) {
         if (
           submitData[obj]?.hasOwnProperty('name') &&
@@ -3041,6 +3079,23 @@ export class JiraConfigComponent implements OnInit {
           .get('originalTemplateCode')
           ?.setValue(this.jiraTemplate[0]?.templateCode);
       }
+    });
+  }
+
+  getJiraConfigurationType() {
+    let isKanban;
+    if (this.selectedProject?.type) {
+      isKanban =
+        this.selectedProject?.type?.toLowerCase() === 'kanban' ? true : false;
+    } else if (this.selectedProject?.Type) {
+      isKanban =
+        this.selectedProject?.Type?.toLowerCase() === 'kanban' ? true : false;
+    }
+    this.http.getJiraConfigurationTypeOptions().subscribe((resp) => {
+      this.jiraConfigurationTypeOptions = resp.data.filter(
+        (temp) =>
+          temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban,
+      );
     });
   }
 
