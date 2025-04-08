@@ -57,6 +57,7 @@ export class SharedService {
   public dateFilterSelectedDateType = new BehaviorSubject<String>('Weeks');
   primaryFilterChangeSubject = new BehaviorSubject(false);
   public kpiExcelSubject = new BehaviorSubject<{}>({});
+  public switchBoard = new BehaviorSubject<boolean>(false);
 
   // make filterdata and masterdata persistent across dashboards
   private filterData = {};
