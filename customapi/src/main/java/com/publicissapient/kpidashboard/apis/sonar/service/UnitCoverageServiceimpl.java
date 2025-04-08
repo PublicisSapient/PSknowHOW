@@ -66,6 +66,8 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 	private static final String TEST_UNIT_COVERAGE = "coverage";
 
 	private static final String AVERAGE_COVERAGE = "Average Coverage";
+	
+	private static final String DATE_TIME_FORMAT_REGEX = "Z|\\.\\d+";
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
@@ -139,9 +141,8 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 			List<Node> sprintLeafNodeList) {
 		List<KPIExcelData> excelData = new ArrayList<>();
 		LocalDate dateToFetch = CollectionUtils.isNotEmpty(sprintLeafNodeList)
-				? DateUtil.stringToLocalDate(
-				sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getStartDate().replaceAll("Z|\\.\\d+", ""),
-				DateUtil.TIME_FORMAT)
+				? DateUtil.stringToLocalDate(sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter()
+						.getStartDate().replaceAll(DATE_TIME_FORMAT_REGEX, ""), DateUtil.TIME_FORMAT)
 				: getScrumCurrentDateToFetchFromDb(CommonConstant.WEEK, (long) customApiConfig.getSonarWeekCount());
 
 		getSonarHistoryForAllProjects(pList, dateToFetch).forEach((projectNodePair, projectData) -> {
@@ -175,8 +176,8 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 			List<String> versionDate) {
 		sprintLeafNodeList.forEach(sprintDetail -> {
 
-			Long startDate = DateUtil.convertStringToLong(sprintDetail.getSprintFilter().getStartDate().replaceAll("Z|\\.\\d+", ""));
-			Long endDate = DateUtil.convertStringToLong(sprintDetail.getSprintFilter().getEndDate().replaceAll("Z|\\.\\d+", ""));
+			Long startDate = DateUtil.convertStringToLong(sprintDetail.getSprintFilter().getStartDate().replaceAll(DATE_TIME_FORMAT_REGEX, ""));
+			Long endDate = DateUtil.convertStringToLong(sprintDetail.getSprintFilter().getEndDate().replaceAll(DATE_TIME_FORMAT_REGEX, ""));
 
 			Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startDate, endDate);
 			if (MapUtils.isEmpty(history)) {
