@@ -18,7 +18,6 @@ package com.publicissapient.kpidashboard.apis.controller;
 
 import com.publicissapient.kpidashboard.apis.service.GuestUserService;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +36,7 @@ public class GuestUserController {
     public RedirectView guestLogin(
             @RequestParam String displayName,
             @RequestParam String redirectUri,
-            @NotNull HttpServletResponse response
+            HttpServletResponse response
     ) {
         guestUserService.loginUserAsGuest(displayName, response);
 

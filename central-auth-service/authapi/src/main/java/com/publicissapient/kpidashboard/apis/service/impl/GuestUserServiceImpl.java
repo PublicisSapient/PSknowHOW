@@ -20,8 +20,6 @@ import com.publicissapient.kpidashboard.apis.enums.AuthType;
 import com.publicissapient.kpidashboard.apis.service.GuestUserService;
 import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,7 +30,6 @@ import java.util.UUID;
 @Service
 @Slf4j
 @AllArgsConstructor
-//@Validated
 public class GuestUserServiceImpl implements GuestUserService {
 
     private static final String ROLE_GUEST = "GUEST";
@@ -41,8 +38,8 @@ public class GuestUserServiceImpl implements GuestUserService {
 
     @Override
     public void loginUserAsGuest(
-            @NotEmpty String guestDisplayName,
-            @NotNull HttpServletResponse response
+            String guestDisplayName,
+            HttpServletResponse response
     ) {
         String jwt = tokenAuthenticationService.createJWT(
                 UUID.randomUUID().toString(),
