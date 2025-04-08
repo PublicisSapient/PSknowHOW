@@ -154,11 +154,13 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 			List<String> coverage = new ArrayList<>();
 			List<String> versionDate = new ArrayList<>();
 			Map<String, List<DataCount>> projectWiseDataMap = new HashMap<>();
-
-			if (CollectionUtils.isNotEmpty(sprintLeafNodeList)) {
-				processSprintData(sprintLeafNodeList.stream()
-						.filter(node -> node.getProjectFilter().getId().equalsIgnoreCase(projectNodePair.getLeft()))
-						.toList(), projectData, projectList, coverage, projectWiseDataMap, versionDate);
+			
+			List<Node> projectWiseSprintNodeList = sprintLeafNodeList.stream()
+					.filter(node -> node.getProjectFilter().getId().equalsIgnoreCase(projectNodePair.getLeft()))
+					.toList();
+			if (CollectionUtils.isNotEmpty(projectWiseSprintNodeList)) {
+				processSprintData(projectWiseSprintNodeList, projectData, projectList, coverage, projectWiseDataMap,
+						versionDate);
 			} else {
 				processWeeklyData(projectData, projectNodePair, projectList, coverage, projectWiseDataMap, versionDate);
 			}
