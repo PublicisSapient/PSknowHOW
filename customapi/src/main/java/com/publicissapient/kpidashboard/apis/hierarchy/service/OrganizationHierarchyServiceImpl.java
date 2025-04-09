@@ -83,7 +83,8 @@ public class OrganizationHierarchyServiceImpl implements OrganizationHierarchySe
 		cacheService.clearCache(CommonConstant.CACHE_ACCOUNT_HIERARCHY);
 		cacheService.clearCache(CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN);
 		cacheService.clearCache(CommonConstant.CACHE_ORGANIZATION_HIERARCHY);
-		configHelperService.loadConfigData();
+		cacheService.clearCache(CommonConstant.CACHE_ALL_PROJECT_CONFIG_MAP);
+		cacheService.clearCache(CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 		log.debug("clear cache organization Hierarchies");
 	}
 
