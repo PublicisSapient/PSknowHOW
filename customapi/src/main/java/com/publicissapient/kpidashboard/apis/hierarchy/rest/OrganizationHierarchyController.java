@@ -23,7 +23,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,14 +65,12 @@ public class OrganizationHierarchyController {
 	}
 
 	@PostMapping({ "", "/{parentid}" })
-	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
 	public ServiceResponse addHierarchyOption(@PathVariable(required = false) String parentid,
 			@RequestBody @Valid CreateHierarchyRequest createHierarchyRequest) {
 		return hierarchyOptionService.addHierarchyOption(createHierarchyRequest, parentid);
 	}
 
 	@PutMapping("/{id}")
-	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
 	public ServiceResponse updateHierarchy(@PathVariable String id,
 			@Valid @RequestBody UpdateHierarchyRequest request) {
 		return organizationHierarchyService.updateName(request.getDisplayName(), id);

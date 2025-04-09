@@ -22,10 +22,8 @@ import javax.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode
 public class UpdateHierarchyRequest {
 	@NotBlank(message = "displayName cannot be empty")
 	@NotNull(message = "displayName cannot be null")

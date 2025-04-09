@@ -29,7 +29,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 public class CreateHierarchyRequest {
 	@NotBlank(message = "name cannot be empty")
 	@NotNull(message = "name cannot be null")
