@@ -486,10 +486,6 @@ public class ProjectBasicConfigServiceImplTest {
 		Mockito.when(userAuthorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
 		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 		projectBasicConfig.setId(new ObjectId("5f855dec29cf840345f2d111"));
-		projectBasicConfig.setHierarchy(List.of(new HierarchyValue(new HierarchyLevel(1,"bu","bu","bu"),"hierarchyLevelOne_unique_001","bu")));
-		OrganizationHierarchyDataFactory organizationHierarchyDataFactory = OrganizationHierarchyDataFactory.newInstance();
-		List<OrganizationHierarchy> organizationHierarchies = organizationHierarchyDataFactory.getOrganizationHierarchies();
-		when(organizationHierarchyService.findAll()).thenReturn(organizationHierarchies);
 		listOfProjectDetails.add(projectBasicConfig);
 		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
 		mapOfProjectDetails.put(UUID.randomUUID().toString(), projectBasicConfig);
