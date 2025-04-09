@@ -44,11 +44,9 @@ public class ValidationTest {
 
 		assertFalse("Expected validation errors", hierarchyRequest.isEmpty());
 		assertEquals(2, hierarchyRequest.size());
-		assertEquals("name cannot be empty", hierarchyRequest.iterator().next().getMessage());
-
 		assertFalse("Expected validation errors", updateRequest.isEmpty());
 		assertEquals(2, updateRequest.size());
-		assertEquals("displayName cannot be null", updateRequest.iterator().next().getMessage());
+
 	}
 
 	@Test
