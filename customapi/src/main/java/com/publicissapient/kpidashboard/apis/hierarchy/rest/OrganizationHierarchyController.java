@@ -67,9 +67,9 @@ public class OrganizationHierarchyController {
 
 	@PostMapping({ "", "/{parentid}" })
 	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
-	public ServiceResponse addHierarchyOption(@PathVariable(required = false) String parentId,
+	public ServiceResponse addHierarchyOption(@PathVariable(required = false) String parentid,
 			@RequestBody @Valid CreateHierarchyRequest createHierarchyRequest) {
-		return hierarchyOptionService.addHierarchyOption(createHierarchyRequest, parentId);
+		return hierarchyOptionService.addHierarchyOption(createHierarchyRequest, parentid);
 	}
 
 	@PutMapping("/{id}")
