@@ -588,9 +588,15 @@ export class BasicConfigComponent implements OnInit {
         if (res && res.success) {
           this.messenger.add({
             severity: 'success',
-            summary: 'Hierarchy item added successfully',
+            summary: 'New hierarchy level created.',
           });
           this.getHierarchy();
+
+          Object.keys(this.selectedItems).map((key) => {
+            if (this.selectedItems[key]?.level > currentLevelID) {
+              this.selectedItems[key] = undefined;
+            }
+          });
         } else {
           this.messenger.add({
             severity: 'error',
