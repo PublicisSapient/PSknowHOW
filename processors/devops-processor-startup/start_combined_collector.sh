@@ -35,11 +35,6 @@ done
 
 # Conditionally run the JAR files based on environment variables
 
-if [ "$RUN_ZEPHYR" == "true" ]; then
-    java -jar zephyr.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/zephyr.properties &
-    echo "Running Zephyr processor..."
-fi
-
 if [ "$RUN_JENKINS" == "true" ]; then
     java -jar jenkins.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/jenkins.properties &
     echo "Running Jenkins processor..."
@@ -78,11 +73,6 @@ fi
 if [ "$RUN_GITHUBACTION" == "true" ]; then
     java -jar githubaction.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/githubaction.properties &
     echo "Running GitHub Action processor..."
-fi
-
-if [ "$RUN_JIRATEST" == "true" ]; then
-    java -jar jiratest.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/jiratest.properties &
-    echo "Running Jira Test processor..."
 fi
 
 if [ "$RUN_ARGOCD" == "true" ]; then
