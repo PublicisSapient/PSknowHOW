@@ -234,6 +234,7 @@ describe('BasicConfigComponent', () => {
       'setSelectedFieldMapping',
       'getCurrentUserDetails',
       'setProjectList',
+      'getGlobalConfigData',
     ]);
     const authServiceSpy = jasmine.createSpyObj('GetAuthorizationService', [
       'checkIfSuperUser',
@@ -334,6 +335,9 @@ describe('BasicConfigComponent', () => {
     sharedService.getSelectedProject.and.returnValue({
       id: 1,
       name: 'Test Project',
+    });
+    sharedService.getGlobalConfigData.and.returnValue({
+      openSource: true,
     });
     component.ngOnInit();
     expect(component.isProjectSetupPopup).toBeTrue();

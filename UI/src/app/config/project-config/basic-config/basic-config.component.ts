@@ -30,7 +30,6 @@ import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { environment } from 'src/environments/environment';
 declare const require: any;
 
 @Component({
@@ -67,9 +66,7 @@ export class BasicConfigComponent implements OnInit {
   isProjectCOmpletionPopup: boolean = false;
   allProjectList: any[];
   selectedItems: { [key: string]: any } = {};
-  isSpeedSuite = environment?.['SPEED_SUITE']
-    ? environment?.['SPEED_SUITE']
-    : false;
+  isOpenSource: boolean = false;
   clone: string = '';
   completeHierarchyData: any;
   hierarchyItem: string = '';
@@ -120,6 +117,7 @@ export class BasicConfigComponent implements OnInit {
     this.selectedProject = this.sharedService.getSelectedProject();
     this.sharedService.setSelectedFieldMapping(null);
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
+    this.isOpenSource = this.sharedService.getGlobalConfigData().openSource;
 
     this.allProjectList = this.sharedService.getProjectList();
   }
@@ -488,7 +486,7 @@ export class BasicConfigComponent implements OnInit {
       hierarchyMap['project'] = 'Project';
     }
     this.http.getOrganizationHierarchy()?.subscribe((formFieldData) => {
-      if (formFieldData?.success === false && this.isSpeedSuite === true) {
+      if (formFieldData?.success === false && this.isOpenSource === false) {
         this.messenger.add({
           severity: 'error',
           summary: formFieldData.message,

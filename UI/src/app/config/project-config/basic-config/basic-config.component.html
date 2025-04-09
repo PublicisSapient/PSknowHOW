@@ -158,11 +158,11 @@
                     </p-autoComplete>
                     <label for="{{ field.hierarchyLevelId }}">Select {{ field.hierarchyLevelIdName }}</label>
                   </span>
-                  <div class="p-ml-1 p-d-flex p-jc-center p-align-center color-blue cursor-pointer " *ngIf="isSpeedSuite === false && !clone"
+                  <div class="p-ml-1 p-d-flex p-jc-center p-align-center color-blue cursor-pointer " *ngIf="isOpenSource === true && !clone && ifSuperUser === true"
                     [ngClass]="{'disabled': checkIfHaveValueForAssociatedHierarchy(field)}">
                     <i class="fas fa-plus-circle" style="font-size: x-large;" (click)="updateHierarchy(field,'add')"></i>
                   </div>
-                  <!-- <div class="p-ml-1 p-d-flex p-jc-center p-align-center color-blue cursor-pointer " *ngIf="isSpeedSuite === false && !clone"
+                  <!-- <div class="p-ml-1 p-d-flex p-jc-center p-align-center color-blue cursor-pointer " *ngIf="isOpenSource === true && !clone && ifSuperUser === true"
                     [ngClass]="{'disabled': checkIfHaveValueForAssociatedHierarchy(field)}">
                     <i class="fas fa-edit" (click)="updateHierarchy(field,'rename')"></i>
                   </div> -->
