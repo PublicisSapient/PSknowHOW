@@ -72,6 +72,10 @@ export class BasicConfigComponent implements OnInit {
     : false;
   clone: string = '';
   completeHierarchyData: any;
+  hierarchyItem: string = '';
+  addRenameHierarchyPopup: boolean = false;
+  isAddHierarchyOption: boolean;
+  selectedHierarchyItemToUpdate: any;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -297,13 +301,14 @@ export class BasicConfigComponent implements OnInit {
     for (let i = currentIndex + 1; i < this.formData.length; i++) {
       if (this.formData[i].list) {
         if (selectParentId.length) {
-          this.formData[i].filteredSuggestions = this.formData[i].list.filter(
-            (item) => selectParentId.includes(item.parentId),
-          );
+          this.formData[i].filteredSuggestions =
+            this.formData[i].list.filter((item) =>
+              selectParentId.includes(item.parentId),
+            ) || [];
         }
-        selectParentId = this.formData[i]?.filteredSuggestions.map(
-          (item) => item.nodeId,
-        );
+        selectParentId =
+          this.formData[i]?.filteredSuggestions?.map((item) => item.nodeId) ||
+          [];
 
         if (
           this.formData[i].filteredSuggestions &&
@@ -483,7 +488,7 @@ export class BasicConfigComponent implements OnInit {
       hierarchyMap['project'] = 'Project';
     }
     this.http.getOrganizationHierarchy()?.subscribe((formFieldData) => {
-      if (formFieldData?.success === false) {
+      if (formFieldData?.success === false && this.isSpeedSuite === true) {
         this.messenger.add({
           severity: 'error',
           summary: formFieldData.message,
@@ -501,7 +506,7 @@ export class BasicConfigComponent implements OnInit {
                     hierarchyLevelIdName,
                     level: index + 1,
                     list: flatData
-                      .filter(
+                      ?.filter(
                         (item) => item.hierarchyLevelId === hierarchyLevelId,
                       )
                       .map(
@@ -556,5 +561,78 @@ export class BasicConfigComponent implements OnInit {
 
   getConeStatusFlag(): boolean {
     return this.clone === 'true';
+  }
+
+  updateHierarchy(field, type) {
+    this.selectedHierarchyItemToUpdate = field;
+    this.addRenameHierarchyPopup = true;
+    if (type === 'add') {
+      this.hierarchyItem = '';
+    } else {
+    }
+  }
+
+  saveHierarchyDetails(form) {
+    const currentLevelID = this.selectedHierarchyItemToUpdate.level;
+    const parentLevelDetails = this.formData.find(
+      (hDetails) => hDetails.level === currentLevelID - 1,
+    );
+    const parentLevelFormDetails =
+      this.form.controls[parentLevelDetails.hierarchyLevelId].value;
+    this.http
+      .addHierarchyOptions(
+        currentLevelID === 1 ? '' : parentLevelFormDetails?.nodeId,
+        { name: this.hierarchyItem },
+      )
+      .subscribe((res) => {
+        if (res && res.success) {
+          this.messenger.add({
+            severity: 'success',
+            summary: 'Hierarchy item added successfully',
+          });
+          this.getHierarchy();
+        } else {
+          this.messenger.add({
+            severity: 'error',
+            summary: res.message,
+          });
+        }
+      });
+
+    this.addRenameHierarchyPopup = false;
+  }
+
+  checkForDuplicacy() {
+    const selectedItem = this.selectedHierarchyItemToUpdate?.list?.find(
+      (hDetails) =>
+        hDetails.nodeDisplayName.toLowerCase() ===
+        this.hierarchyItem.toLowerCase(),
+    );
+    if (selectedItem && Object.keys(selectedItem).length) {
+      return true;
+    }
+    return false;
+  }
+
+  checkIfHaveValueForAssociatedHierarchy(field) {
+    let result = true;
+    const associatedValue = this.form.controls[field.hierarchyLevelId].value;
+    if (
+      (associatedValue && Object.keys(associatedValue).length) ||
+      field.level === 1
+    ) {
+      result = false;
+    }
+    // Check if the parent level has any value
+    const lowerNodeDetails = this.formData.find(
+      (hDetails) => hDetails.level === field.level - 1,
+    );
+    const lowerNodeFormDetails =
+      this.form.controls[lowerNodeDetails.hierarchyLevelId].value;
+    if (lowerNodeFormDetails && Object.keys(lowerNodeFormDetails).length) {
+      result = false;
+    }
+
+    return result;
   }
 }

@@ -122,3 +122,8 @@ button {
 .parent_span {
   color: green;
 }
+
+.disabled {
+  color: #b4b4b4;
+  pointer-events: none;
+}

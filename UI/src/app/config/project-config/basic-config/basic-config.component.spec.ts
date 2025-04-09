@@ -27,6 +27,7 @@ import {
   UntypedFormBuilder,
   UntypedFormGroup,
   UntypedFormControl,
+  FormsModule,
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
@@ -253,6 +254,7 @@ describe('BasicConfigComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [BasicConfigComponent],
+      imports: [FormsModule],
       providers: [
         UntypedFormBuilder,
         { provide: HttpService, useValue: httpServiceSpy },
