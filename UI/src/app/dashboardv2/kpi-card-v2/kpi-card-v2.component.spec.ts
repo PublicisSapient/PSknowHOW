@@ -2279,7 +2279,7 @@ describe('KpiCardV2Component', () => {
             iterationKPIFilterValues: [],
             additional_filters: {},
           },
-          copyCardData: {}
+          copyCardData: {},
         });
       });
 
