@@ -592,7 +592,7 @@ export class BasicConfigComponent implements OnInit {
           });
           this.getHierarchy();
 
-          Object.keys(this.selectedItems).map((key) => {
+          Object.keys(this.selectedItems).forEach((key) => {
             if (this.selectedItems[key]?.level > currentLevelID) {
               this.selectedItems[key] = undefined;
             }
