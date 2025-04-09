@@ -549,7 +549,8 @@ export class PrimaryFilterComponent implements OnChanges {
     if (
       selectedTrend &&
       selectedTrend[0]?.labelName?.toLowerCase() === defaultLabelName &&
-      selectedTrend[0]?.labelName?.toLowerCase() === backupState?.parent_level?.toLowerCase()
+      selectedTrend[0]?.labelName?.toLowerCase() ===
+        backupState?.parent_level?.toLowerCase()
     ) {
       retValue = selectedTrend[0];
     }

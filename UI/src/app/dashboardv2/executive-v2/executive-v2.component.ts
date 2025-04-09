@@ -260,11 +260,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }),
     );
     this.subscriptions.push(
-      this.service.isSprintGoal.subscribe(
-        (flag) => {this.showSprintGoalsPanel = flag
-          this.getSprintGoalData();
-        },
-      ),
+      this.service.isSprintGoal.subscribe((flag) => {
+        this.showSprintGoalsPanel = flag;
+        this.getSprintGoalData();
+      }),
     );
 
     this.subscriptions.push(
@@ -4351,41 +4350,41 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       ['kpi187'],
       25,
       '',
-    )
+    );
     kpiJiraTest.kpiList = [
       {
-          "kpiId": "kpi187",
-          "kpiName": "Sprint Goals",
-          "isDeleted": "False",
-          "defaultOrder": 31,
-          "kpiUnit": "",
-          "showTrend": false,
-          "calculateMaturity": false,
-          "hideOverallFilter": false,
-          "kpiSource": "Jira",
-          "combinedKpiSource": "Jira/Azure",
-          "kanban": false,
-          "groupId": 32,
-          "kpiInfo": {
-              "details": [
-                  {
-                      "type": "paragraph",
-                      "value": "KPI for tracking Goals of project."
-                  },
-                  {
-                      "type": "link",
-                      "kpiLinkDetail": {
-                          "text": "Detailed Information at",
-                          "link": "https://knowhow.tools.publicis.sapient.com/wiki/kpi187-Sprint+Goals"
-                      }
-                  }
-              ]
-          },
-          "trendCalculative": false,
-          "isAdditionalFilterSupport": false,
-          "chartType": ""
-      }
-  ]
+        kpiId: 'kpi187',
+        kpiName: 'Sprint Goals',
+        isDeleted: 'False',
+        defaultOrder: 31,
+        kpiUnit: '',
+        showTrend: false,
+        calculateMaturity: false,
+        hideOverallFilter: false,
+        kpiSource: 'Jira',
+        combinedKpiSource: 'Jira/Azure',
+        kanban: false,
+        groupId: 32,
+        kpiInfo: {
+          details: [
+            {
+              type: 'paragraph',
+              value: 'KPI for tracking Goals of project.',
+            },
+            {
+              type: 'link',
+              kpiLinkDetail: {
+                text: 'Detailed Information at',
+                link: 'https://knowhow.tools.publicis.sapient.com/wiki/kpi187-Sprint+Goals',
+              },
+            },
+          ],
+        },
+        trendCalculative: false,
+        isAdditionalFilterSupport: false,
+        chartType: '',
+      },
+    ];
     this.postJiraKpi(kpiJiraTest, 'jira');
   }
 }
