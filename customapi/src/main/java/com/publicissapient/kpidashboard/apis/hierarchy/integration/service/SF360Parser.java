@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.hierarchy.integration.service;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,32 +26,16 @@ import com.publicissapient.kpidashboard.apis.hierarchy.integration.dto.Hierarchy
 
 public class SF360Parser implements HierarchyDetailParser {
 
-	@Override
-	public HierarchyDetails convertToHierachyDetail(String jsonResponse) {
-		return convertToHierachyDetal(jsonResponse);
-		/*
-		 * ObjectMapper objectMapper = new
-		 * ObjectMapper().enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-		 * 
-		 * try { return objectMapper.readValue(objectMapper.readTree(jsonResponse) //
-		 * Extracts "hierarchyDetails" directly
-		 * .get("data").get(0).get("hierarchyDetails").toString(),
-		 * HierarchyDetails.class);
-		 * 
-		 * } catch (JsonMappingException e) { throw new RuntimeException(e); } catch
-		 * (JsonProcessingException e) { throw new RuntimeException(e); }
-		 */
-	}
-
-	private HierarchyDetails convertToHierachyDetal(String jsonResponse) {
-		ObjectMapper objectMapper = new ObjectMapper().enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-		try (JsonParser parser = objectMapper.createParser(jsonResponse)) {
-			JsonNode rootNode = objectMapper.readTree(parser);
-			JsonNode hierarchyDetailsNode = rootNode.path("data").get(0).path("hierarchyDetails");
-			return objectMapper.treeToValue(hierarchyDetailsNode, HierarchyDetails.class);
-		} catch (Exception e) {
-			throw new RuntimeException("Failed to parse hierarchy details due to "+ e.getMessage(), e);
-		}
-	}
+    @Override
+    public HierarchyDetails convertToHierachyDetail(String jsonResponse) {
+        ObjectMapper objectMapper = new ObjectMapper().enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        try (JsonParser parser = objectMapper.createParser(jsonResponse)) {
+            JsonNode rootNode = objectMapper.readTree(parser);
+            JsonNode hierarchyDetailsNode = rootNode.path("data").get(0).path("hierarchyDetails");
+            return objectMapper.treeToValue(hierarchyDetailsNode, HierarchyDetails.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse hierarchy details due to " + e.getMessage(), e);
+        }
+    }
 
 }
