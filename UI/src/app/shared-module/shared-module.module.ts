@@ -84,6 +84,7 @@ import { RecentCommentsComponent } from '../component/recent-comments/recent-com
 import { CumulativeLineChartComponent } from '../component/cumulative-line-chart/cumulative-line-chart.component';
 import { ReportKpiCardComponent } from '../dashboardv2/reports-module/report-kpi-card/report-kpi-card.component';
 import { CollapsiblePanelComponent } from '../component/collapsible-panel/collapsible-panel.component';
+import { GroupedStackedChartv3Component } from '../component/grouped-stacked-chartv3/grouped-stacked-chartv3.component';
 
 @NgModule({
   imports: [
@@ -155,6 +156,7 @@ import { CollapsiblePanelComponent } from '../component/collapsible-panel/collap
     ReportKpiCardComponent,
     BarWithYAxisGroupComponent,
     CollapsiblePanelComponent,
+    GroupedStackedChartv3Component,
   ],
   declarations: [
     ProjectFilterComponent,
@@ -197,6 +199,7 @@ import { CollapsiblePanelComponent } from '../component/collapsible-panel/collap
     ReportKpiCardComponent,
     BarWithYAxisGroupComponent,
     CollapsiblePanelComponent,
+    GroupedStackedChartv3Component,
   ],
   providers: [ConfirmationService, KpiHelperService],
 })
