@@ -17,14 +17,14 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
-<h3 class="form_title p-pl-3">Change Password</h3>
+<h3 class="form_title p-pl-3" tabindex="0">Change Password</h3>
 
 <form [formGroup]="changePasswordForm">
   <div class="group p-xl-6" data-validate="Old Password is required">
     <span class="p-float-label">
       <input pInputText class="p-inputtext-lg" type="password" name="oldpassword" id="oldpassword"
         formControlName="oldpassword" [ngClass]="{ 'is-invalid': submitted && f.oldpassword.errors }"
-        required="required" [style]="{'width':'100%'}" />
+        required="required" [style]="{'width':'100%'}" aria-label="Current Password" tabindex="0" />
       <label for="oldpassword">Current Password </label>
     </span>
     <!-- Password validation-->
