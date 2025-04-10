@@ -62,7 +62,8 @@ export class PsKpiCardHeaderComponent implements OnInit {
         this.currentChartData?.chartData?.chartData?.length)
     ) {
       this.menuItems =
-        this.menuItems?.filter((item) => item.label !== 'Include in Report') || [];
+        this.menuItems?.filter((item) => item.label !== 'Include in Report') ||
+        [];
       this.menuItems.push({
         label: 'Include in Report',
         icon: 'pi pi-briefcase',
@@ -73,7 +74,8 @@ export class PsKpiCardHeaderComponent implements OnInit {
       });
     } else {
       this.menuItems =
-        this.menuItems?.filter((item) => item.label !== 'Include in Report') || [];
+        this.menuItems?.filter((item) => item.label !== 'Include in Report') ||
+        [];
       this.menuItems.push({
         label: 'Include in Report',
         icon: 'pi pi-briefcase',

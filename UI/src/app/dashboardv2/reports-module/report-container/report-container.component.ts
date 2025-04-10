@@ -127,7 +127,8 @@ export class ReportContainerComponent implements OnInit {
         selectedReport.kpis = data['data']['kpis'];
         this.messageService.add({
           severity: 'success',
-          summary: 'Metrics added successfully. View the report in the report section.',
+          summary:
+            'Metrics added successfully. View the report in the report section.',
         });
       } else {
         this.messageService.add({
