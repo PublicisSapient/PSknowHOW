@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
