@@ -128,7 +128,12 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 				getScrumCurrentDateToFetchFromDb(CommonConstant.WEEK, (long) customApiConfig.getSonarWeekCount()))
 				.forEach((projectNodePair, projectData) -> {
 					if (CollectionUtils.isNotEmpty(projectData)) {
-						processProjectData(projectNodePair, projectData, sprintLeafNodeList, tempMap, excelData);
+						processProjectData(projectNodePair, projectData,
+								sprintLeafNodeList.stream()
+										.filter(node -> node.getProjectFilter().getId()
+												.equalsIgnoreCase(projectNodePair.getLeft()))
+										.toList(),
+								tempMap, excelData);
 					}
 				});
 
