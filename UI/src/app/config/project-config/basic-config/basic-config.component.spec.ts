@@ -27,6 +27,7 @@ import {
   UntypedFormBuilder,
   UntypedFormGroup,
   UntypedFormControl,
+  FormsModule,
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
@@ -233,6 +234,7 @@ describe('BasicConfigComponent', () => {
       'setSelectedFieldMapping',
       'getCurrentUserDetails',
       'setProjectList',
+      'getGlobalConfigData',
     ]);
     const authServiceSpy = jasmine.createSpyObj('GetAuthorizationService', [
       'checkIfSuperUser',
@@ -253,6 +255,7 @@ describe('BasicConfigComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [BasicConfigComponent],
+      imports: [FormsModule],
       providers: [
         UntypedFormBuilder,
         { provide: HttpService, useValue: httpServiceSpy },
@@ -332,6 +335,9 @@ describe('BasicConfigComponent', () => {
     sharedService.getSelectedProject.and.returnValue({
       id: 1,
       name: 'Test Project',
+    });
+    sharedService.getGlobalConfigData.and.returnValue({
+      openSource: true,
     });
     component.ngOnInit();
     expect(component.isProjectSetupPopup).toBeTrue();

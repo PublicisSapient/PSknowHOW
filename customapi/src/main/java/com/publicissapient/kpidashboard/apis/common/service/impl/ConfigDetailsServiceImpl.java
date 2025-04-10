@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +53,7 @@ public class ConfigDetailsServiceImpl implements ConfigDetailService {
 		configDetails.setNoOfDataPoints(customApiConfig.getSprintCountForFilters());
 		configDetails.setGitlabToolFieldFlag(customApiConfig.getIsGitlabFieldEnable());
 		configDetails.setSprintCountForKpiCalculation(customApiConfig.getSprintCountForKpiCalculation());
+		configDetails.setOpenSource(StringUtils.isEmpty(customApiConfig.getCentralHierarchyUrl()));
 		return configDetails;
 	}
 }
