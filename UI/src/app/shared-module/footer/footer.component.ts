@@ -22,24 +22,31 @@ import { HttpService } from 'src/app/services/http.service';
 @Component({
   selector: 'app-footer',
   templateUrl: './footer.component.html',
-  styleUrls: ['./footer.component.css']
+  styleUrls: ['./footer.component.css'],
 })
 export class FooterComponent implements OnInit {
   currentYear: number;
   currentversion: string;
   isSide: boolean;
 
-  constructor(private httpService: HttpService, private elementRef: ElementRef) { }
+  constructor(
+    private httpService: HttpService,
+    private elementRef: ElementRef,
+  ) {}
 
   ngOnInit() {
-    this.currentYear = (new Date()).getFullYear();
+    this.currentYear = new Date().getFullYear();
     this.getMatchVersions();
   }
 
   ngAfterViewInit() {
-    const footerElement = this.elementRef.nativeElement.querySelector('.footer');
-    if(footerElement){
-      footerElement.setAttribute('aria-description', `Application footer with version ${this.currentversion} and copyright information for Publicis Sapient`);
+    const footerElement =
+      this.elementRef.nativeElement.querySelector('.footer');
+    if (footerElement) {
+      footerElement.setAttribute(
+        'aria-description',
+        `Application footer with version ${this.currentversion} and copyright information for Publicis Sapient`,
+      );
     }
   }
 
@@ -49,9 +56,13 @@ export class FooterComponent implements OnInit {
       if (filterData && filterData.versionDetailsMap) {
         this.currentversion = filterData.versionDetailsMap.currentVersion;
 
-        const footerElement = this.elementRef.nativeElement.querySelector('footer');
+        const footerElement =
+          this.elementRef.nativeElement.querySelector('footer');
         if (footerElement) {
-          footerElement.setAttribute('aria-label', `Page Footer - Version ${this.currentversion}`);
+          footerElement.setAttribute(
+            'aria-label',
+            `Page Footer - Version ${this.currentversion}`,
+          );
         }
       }
     });

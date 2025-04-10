@@ -20,19 +20,17 @@ import { Injectable } from '@angular/core';
 import { JSEncrypt } from 'jsencrypt';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class RsaEncryptionService {
+  PUBLIC_KEY =
+    'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvyqn4b2FDrDIcRrP0yBA1Ffu9FjJPfvNIym5zIQQeu9oA0RH+ILUSPysYkrbmWrEvH05L07F6wddiW/pTRl5AanheBQxX0xq87QgBTJ8EJUTvjBP2LcHXjvxzFsGLymb2PoK3G6/9O5LNEtQUOvTRyvrwxTlio35gvkvevFndItVfRuCVC1jX3WqLWlJ9C1Tiemp6Wk2roZ74RKEtnbZwHTu1MGrE8ijD64P53yM0qvGYjTbthQ/GnHuMgONXuGiIRijY888TcV6KyzVCxzmCVHlcvPSz2RuPiU6rL4J7MsBMF1xwo/oTp9bhBabe2v9DpzRjdbrYOjFDFywxUgvDwIDAQAB';
 
-    PUBLIC_KEY = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvyqn4b2FDrDIcRrP0yBA1Ffu9FjJPfvNIym5zIQQeu9oA0RH+ILUSPysYkrbmWrEvH05L07F6wddiW/pTRl5AanheBQxX0xq87QgBTJ8EJUTvjBP2LcHXjvxzFsGLymb2PoK3G6/9O5LNEtQUOvTRyvrwxTlio35gvkvevFndItVfRuCVC1jX3WqLWlJ9C1Tiemp6Wk2roZ74RKEtnbZwHTu1MGrE8ijD64P53yM0qvGYjTbthQ/GnHuMgONXuGiIRijY888TcV6KyzVCxzmCVHlcvPSz2RuPiU6rL4J7MsBMF1xwo/oTp9bhBabe2v9DpzRjdbrYOjFDFywxUgvDwIDAQAB';
+  encrypt(plainText) {
+    const jsencrypt = new JSEncrypt({ default_key_size: '2048' });
+    jsencrypt.setPublicKey(this.PUBLIC_KEY);
+    const encryptedText = jsencrypt.encrypt(plainText);
 
-    encrypt(plainText) {
-        const jsencrypt = new JSEncrypt({ default_key_size: '2048' });
-        jsencrypt.setPublicKey(this.PUBLIC_KEY);
-        const encryptedText = jsencrypt.encrypt(plainText);
-
-        return encryptedText;
-    }
-
+    return encryptedText;
+  }
 }

@@ -17,24 +17,26 @@
  ******************************************************************************/
 
 :host ::ng-deep .ui-tabmenu {
-    padding-left: 10px;
-    padding-top: 5px;
+  padding-left: 10px;
+  padding-top: 5px;
 }
 
 ::ng-deep .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-disabled a {
-    pointer-events: none;
+  pointer-events: none;
 }
 
- ::ng-deep .p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link-active {
-    background: #ffffff;
-    border-color: #3F51B5;
-    color: #3F51B5;
-    border-bottom: 2px solid #3F51B5;
-} 
+::ng-deep
+  .p-tabmenu
+  .p-tabmenu-nav
+  .p-tabmenuitem.p-highlight
+  .p-menuitem-link-active {
+  background: #ffffff;
+  border-color: #3f51b5;
+  color: #3f51b5;
+  border-bottom: 2px solid #3f51b5;
+}
 
- ::ng-deep .p-tabmenu .p-tabmenu-nav .p-tabmenu-ink-bar {
-    background-color: transparent;
-    left: 0;
-} 
-
-
+::ng-deep .p-tabmenu .p-tabmenu-nav .p-tabmenu-ink-bar {
+  background-color: transparent;
+  left: 0;
+}

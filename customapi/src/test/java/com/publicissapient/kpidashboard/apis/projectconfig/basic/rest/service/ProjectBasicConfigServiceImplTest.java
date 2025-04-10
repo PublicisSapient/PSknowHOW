@@ -41,6 +41,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import com.publicissapient.kpidashboard.apis.data.OrganizationHierarchyDataFactory;
+import com.publicissapient.kpidashboard.apis.data.ProjectHierarchyDataFactory;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -230,6 +234,7 @@ public class ProjectBasicConfigServiceImplTest {
 		boardMetadata.setProjectToolConfigId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
 		boardMetadata.setMetadataTemplateCode("10");
 		basicConfig.setId(new ObjectId("5f855dec29cf840345f2d111"));
+		basicConfig.setHierarchy(List.of(new HierarchyValue(new HierarchyLevel(1,"bu","bu","bu"),"bu","bu")));
 		basicConfigDTO = modelMapper.map(basicConfig, ProjectBasicConfigDTO.class);
 		listProjectTool.setId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
 		listProjectTool.setToolName("Jira");
@@ -479,9 +484,11 @@ public class ProjectBasicConfigServiceImplTest {
 	public void listAllProjectConfigsTestSuperAdminRole() {
 		List<ProjectBasicConfig> listOfProjectDetails = new ArrayList<>();
 		Mockito.when(userAuthorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
-		listOfProjectDetails.add(new ProjectBasicConfig());
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("5f855dec29cf840345f2d111"));
+		listOfProjectDetails.add(projectBasicConfig);
 		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
-		mapOfProjectDetails.put(UUID.randomUUID().toString(), new ProjectBasicConfig());
+		mapOfProjectDetails.put(UUID.randomUUID().toString(), projectBasicConfig);
 		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 		List<ProjectBasicConfig> list = projectBasicConfigServiceImpl.getFilteredProjectsBasicConfigs(Boolean.FALSE);
 		assertThat("response list size: ", list.size(), equalTo(1));
@@ -791,9 +798,9 @@ public class ProjectBasicConfigServiceImplTest {
 
 		// Create sample HierarchyResponseDTOs
 		HierarchyResponseDTO dto1 = new HierarchyResponseDTO();
-		dto1.setProjectId(projectId1.toString());
+		dto1.setProjectBasicId(projectId1.toString());
 		HierarchyResponseDTO dto2 = new HierarchyResponseDTO();
-		dto2.setProjectId(projectId2.toString());
+		dto2.setProjectBasicId(projectId2.toString());
 
 		List<HierarchyResponseDTO> hierarchyResponseDTOS = Arrays.asList(dto1, dto2);
 
@@ -803,6 +810,6 @@ public class ProjectBasicConfigServiceImplTest {
 
 		// Assert the result
 		assertEquals(2, result.size());
-		assertEquals(dto1.getProjectId(), result.get(0).getProjectId());
+		assertEquals(dto1.getProjectNodeId(), result.get(0).getProjectNodeId());
 	}
 }

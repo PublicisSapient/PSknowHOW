@@ -43,28 +43,30 @@ describe('DashboardV2Component', () => {
       imports: [RouterTestingModule, HttpClientModule, BrowserAnimationsModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        SharedService, 
-        GetAuthService, 
-        { provide: HttpService, useValue: mockHttpService }, 
-        CommonModule, 
+        SharedService,
+        GetAuthService,
+        { provide: HttpService, useValue: mockHttpService },
+        CommonModule,
         DatePipe,
-        { provide: APP_CONFIG, useValue: AppConfig }
-      ]
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
     }).compileComponents();
   });
 
   beforeEach(() => {
-    mockHttpService.getAllProjects.and.returnValue(of({
-      message: "Fetched successfully",
-      success: true,
-      data: [
-        {
-          id: "66b5c0401bfcdd465298bff9",
-          projectName: "Digital Pharmacy",
-          hierarchy: [{ hierarchyLevelName: "BU", value: "North America" }]
-        }
-      ]
-    }));
+    mockHttpService.getAllProjects.and.returnValue(
+      of({
+        message: 'Fetched successfully',
+        success: true,
+        data: [
+          {
+            id: '66b5c0401bfcdd465298bff9',
+            projectName: 'Digital Pharmacy',
+            hierarchy: [{ hierarchyLevelName: 'BU', value: 'North America' }],
+          },
+        ],
+      }),
+    );
 
     fixture = TestBed.createComponent(DashboardV2Component);
     component = fixture.componentInstance;
@@ -78,16 +80,15 @@ describe('DashboardV2Component', () => {
   });
 
   it('should update selectedTab when onTabSwitch emits data with selectedBoard', () => {
+    sharedService.onTabSwitch.next({ selectedBoard: 'iteration' });
 
-     sharedService.onTabSwitch.next({ selectedBoard: 'iteration' });
-
-     expect(component.selectedTab).toBe('iteration');
-
-
+    expect(component.selectedTab).toBe('iteration');
   });
 
   it('should not store data in localStorage when API returns an error', () => {
-    mockHttpService.getAllProjects.and.returnValue(of({ message: "Error", success: false, error: true }));
+    mockHttpService.getAllProjects.and.returnValue(
+      of({ message: 'Error', success: false, error: true }),
+    );
     spyOn(localStorage, 'setItem');
 
     fixture = TestBed.createComponent(DashboardV2Component);
@@ -96,5 +97,4 @@ describe('DashboardV2Component', () => {
 
     expect(localStorage.setItem).not.toHaveBeenCalled();
   });
-
 });

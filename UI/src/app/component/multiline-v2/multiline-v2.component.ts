@@ -37,7 +37,7 @@ using d3.js in v4.
 @Component({
   selector: 'app-multiline-v2',
   templateUrl: './multiline-v2.component.html',
-  styleUrls: ['./multiline-v2.component.css']
+  styleUrls: ['./multiline-v2.component.css'],
 })
 export class MultilineV2Component implements OnChanges {
   @Input() data: any; // json data
@@ -54,11 +54,13 @@ export class MultilineV2Component implements OnChanges {
   elem;
   sliderLimit = <any>'750';
   sprintList: Array<any> = [];
-  @Input() viewType: string = 'chart'
+  @Input() viewType: string = 'chart';
   @Input() lowerThresholdBG: string;
   @Input() upperThresholdBG: string;
   @Input() activeTab?: number = 0;
-  elemObserver = new ResizeObserver(() => { this.draw() });
+  elemObserver = new ResizeObserver(() => {
+    this.draw();
+  });
   height: number = 0;
   width: number = 400;
 
@@ -71,18 +73,23 @@ export class MultilineV2Component implements OnChanges {
   }
 
   ngOnInit(): void {
-    this.service.showTableViewObs.subscribe(view => {
+    this.service.showTableViewObs.subscribe((view) => {
       this.viewType = view;
     });
   }
 
   ngAfterViewInit(): void {
-    this.elemObserver.observe(d3.select(this.elem).select('#graphContainer').node());
+    this.elemObserver.observe(
+      d3.select(this.elem).select('#graphContainer').node(),
+    );
   }
 
   // Runs when property "data" changed
   ngOnChanges(changes: SimpleChanges) {
-    if (this.selectedtype?.toLowerCase() === 'kanban' || this.service.getSelectedTab().toLowerCase() === 'developer') {
+    if (
+      this.selectedtype?.toLowerCase() === 'kanban' ||
+      this.service.getSelectedTab()?.toLowerCase() === 'developer'
+    ) {
       this.xCaption = this.service.getSelectedDateFilter();
     }
     if (Object.keys(changes)?.length > 0) {
@@ -104,20 +111,24 @@ export class MultilineV2Component implements OnChanges {
 
   draw() {
     if (this.data?.length > 0) {
-
       // this is used for removing svg already made when value is updated
       d3.select(this.elem).select('#verticalSVG').select('svg').remove();
       d3.select(this.elem).select('#horizontalSVG').select('svg').remove();
       d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
-      d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+      d3.select(this.elem)
+        .select('#horizontalSVG')
+        .select('tooltip-container')
+        .remove();
       let formatedData;
       // if (this.board !== 'backlog') {
-        formatedData = this.data[0]?.value?.map(details => {
-          const XValue = details.date || details.sSprintName;
-          const projectName = '_' + this.service.getSelectedTrends()[0]?.nodeName;
-          const removeProject = XValue?.includes(projectName) ? XValue?.replace(projectName, '') : XValue;
-          return { ...details, sortSprint: removeProject };
-        })
+      formatedData = this.data[0]?.value?.map((details) => {
+        const XValue = details.date || details.sSprintName;
+        const projectName = '_' + this.service.getSelectedTrends()[0]?.nodeName;
+        const removeProject = XValue?.includes(projectName)
+          ? XValue?.replace(projectName, '')
+          : XValue;
+        return { ...details, sortSprint: removeProject };
+      });
       // } else {
       //   formatedData = this?.data.map((project, i) => {
       //     const index = this.service.getSelectedTrends().findIndex(seleceProject => seleceProject.nodeName.toLowerCase() === project.data.toLowerCase())
@@ -130,7 +141,10 @@ export class MultilineV2Component implements OnChanges {
       //     return project;
       //   })
       // }
-      const isAllBelowFromThreshold = this.data[0]?.value?.every(details => ((Math.round(details.value * 100) / 100) < this.thresholdValue))
+      const isAllBelowFromThreshold = this.data[0]?.value?.every(
+        (details) =>
+          Math.round(details.value * 100) / 100 < this.thresholdValue,
+      );
       if (this.data[0]) {
         this.data[0].value = formatedData;
       }
@@ -140,7 +154,8 @@ export class MultilineV2Component implements OnChanges {
       const thresholdValue = this.thresholdValue;
       const elem = this.elem;
       let width = 450;
-      const height = (viewType === 'large' && selectedProjectCount === 1) ? 280 : 230;
+      const height =
+        viewType === 'large' && selectedProjectCount === 1 ? 280 : 230;
       this.height = height;
       const margin = 60;
       const duration = 250;
@@ -163,20 +178,24 @@ export class MultilineV2Component implements OnChanges {
       const showWeek = false;
       const showUnit = this.unit?.toLowerCase() !== 'number' ? this.unit : '';
       const board = this.board;
-      const sprintList = data[0]?.value?.map(details => details.date || details?.sortSprint);
+      const sprintList = data[0]?.value?.map(
+        (details) => details.date || details?.sortSprint,
+      );
       const unitAbbs = {
-        'hours': 'Hrs',
-        'sp': 'SP',
-        'days': 'Day',
-        'mrs': 'MRs',
-        'min': 'Min',
+        hours: 'Hrs',
+        sp: 'SP',
+        days: 'Day',
+        mrs: 'MRs',
+        min: 'Min',
         '%': '%',
         'check-ins': 'CI',
-        'tickets': 'T',
-        'lines': 'lines',
-        'unit': ''
-      }
-      const tempwidth = (d3.select(this.elem).select('#graphContainer').node().offsetWidth) || window.innerWidth;
+        tickets: 'T',
+        lines: 'lines',
+        unit: '',
+      };
+      const tempwidth =
+        d3.select(this.elem).select('#graphContainer').node().offsetWidth ||
+        window.innerWidth;
       width = tempwidth - 40;
       let maxXValueCount = 0;
       let maxObjectNo = 0;
@@ -191,7 +210,9 @@ export class MultilineV2Component implements OnChanges {
       // used to find maxvalue of y axis
       for (const i in data) {
         for (let j = 0; j < data[i].value?.length; j++) {
-          data[i].value[j].xName = data[i]?.value[j]?.hasOwnProperty('xAxisTick')
+          data[i].value[j].xName = data[i]?.value[j]?.hasOwnProperty(
+            'xAxisTick',
+          )
             ? data[i]?.value[j]?.xAxisTick
             : j + 1;
           if (maxYValue < parseInt(data[i].value[j]?.value, 10)) {
@@ -223,8 +244,7 @@ export class MultilineV2Component implements OnChanges {
           .scaleBand()
           .domain([...sprintList])
           .range([0, width])
-          .padding(0)
-
+          .padding(0);
       } else {
         xScale = d3
           .scaleBand()
@@ -265,7 +285,13 @@ export class MultilineV2Component implements OnChanges {
         maxYValue += divisor;
       }
 
-      if (this.thresholdValue && this.thresholdValue !== 0 && isAllBelowFromThreshold && viewType === 'large' && selectedProjectCount === 1) {
+      if (
+        this.thresholdValue &&
+        this.thresholdValue !== 0 &&
+        isAllBelowFromThreshold &&
+        viewType === 'large' &&
+        selectedProjectCount === 1
+      ) {
         maxYValue = this.thresholdValue + 5;
       }
 
@@ -278,50 +304,77 @@ export class MultilineV2Component implements OnChanges {
         .domain([0, maxYValue])
         .range([height - margin, 0]);
 
-      if (selectedProjectCount === 1 && (board !== 'release' && board !== 'iteration')) {
+      if (
+        selectedProjectCount === 1 &&
+        board !== 'release' &&
+        board !== 'iteration'
+      ) {
         d3.select(this.elem).select('#horizontalSVG').select('div').remove();
-        d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+        d3.select(this.elem)
+          .select('#horizontalSVG')
+          .select('tooltip-container')
+          .remove();
         /** Adding tooltip container */
-        const tooltipContainer = d3.select(this.elem).select('#horizontalSVG').
-          append('div')
+        const tooltipContainer = d3
+          .select(this.elem)
+          .select('#horizontalSVG')
+          .append('div')
           .attr('class', 'tooltip-container')
           .attr('height', height + 35 + 'px')
-          .attr('width', width + 'px')
+          .attr('width', width + 'px');
 
         tooltipContainer
           .selectAll('div')
           .data(data[0].value)
           .join('div')
-          .attr('class', d => {
+          .attr('class', (d) => {
             let cssClass = 'tooltip2';
             let value = Math.round(d.value * 100) / 100;
-            if (thresholdValue && thresholdValue !== 0 && value < this.thresholdValue) {
-              cssClass += this.lowerThresholdBG === 'red' ? ' red-bg' : ' white-bg';
+            if (
+              thresholdValue &&
+              thresholdValue !== 0 &&
+              value < this.thresholdValue
+            ) {
+              cssClass +=
+                this.lowerThresholdBG === 'red' ? ' red-bg' : ' white-bg';
             } else {
-              cssClass += (this.upperThresholdBG === 'red' && thresholdValue) ? ' red-bg' : ' white-bg';
+              cssClass +=
+                this.upperThresholdBG === 'red' && thresholdValue
+                  ? ' red-bg'
+                  : ' white-bg';
             }
             return cssClass;
           })
           .style('left', (d, i) => {
             let left = d.date || d.sortSprint;
-            if (viewType === 'large' || (board === 'dora' && viewType === 'chart') || this.kpiId === 'kpi997') {
+            if (
+              viewType === 'large' ||
+              (board === 'dora' && viewType === 'chart') ||
+              this.kpiId === 'kpi997'
+            ) {
               return xScale(left) + xScale.bandwidth() / 2 + 'px';
             } else {
               return xScale(i + 1) + xScale.bandwidth() / 2 + 'px';
             }
-
           })
-          .style('top', d => {
-            return yScale(Math.round(d.value * 100) / 100) + 10 + 'px'
+          .style('top', (d) => {
+            return yScale(Math.round(d.value * 100) / 100) + 10 + 'px';
           })
-          .text(d => Math.round(d.value * 100) / 100 + ` ${showUnit ? unitAbbs[showUnit?.toLowerCase()] : ''}`)
+          .text(
+            (d) =>
+              Math.round(d.value * 100) / 100 +
+              ` ${showUnit ? unitAbbs[showUnit?.toLowerCase()] : ''}`,
+          )
           .transition()
           .duration(500)
           .style('display', 'block')
           .style('opacity', 1);
       } else {
         d3.select(this.elem).select('#horizontalSVG').select('div').remove();
-        d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+        d3.select(this.elem)
+          .select('#horizontalSVG')
+          .select('tooltip-container')
+          .remove();
       }
 
       /* Add SVG */
@@ -361,9 +414,12 @@ export class MultilineV2Component implements OnChanges {
       const xAxis = d3.axisBottom(xScale);
       /*var xAxis = d3.axisBottom(xScale).ticks(7);
        */
-      const yAxis = d3.axisLeft(yScale).ticks(5).tickFormat(function (tickval) {
-        return tickval >= 1000 ? tickval / 1000 + "k" : tickval;
-      });
+      const yAxis = d3
+        .axisLeft(yScale)
+        .ticks(5)
+        .tickFormat(function (tickval) {
+          return tickval >= 1000 ? tickval / 1000 + 'k' : tickval;
+        });
 
       const XCaptionSVG = d3
         .select(this.elem)
@@ -375,7 +431,7 @@ export class MultilineV2Component implements OnChanges {
         .attr('class', 'x-axis')
         .attr('transform', `translate(0, ${height - margin})`)
         .call(xAxis)
-        .selectAll(".tick text")
+        .selectAll('.tick text')
         .call(this.wrap, xScale.bandwidth());
 
       const XCaption = XCaptionSVG.append('text')
@@ -405,7 +461,7 @@ export class MultilineV2Component implements OnChanges {
         .attr('transform', 'rotate(-90)')
         .attr('fill', '#49535E')
         .attr('font-size', '12px')
-        .style('margin-left', '-25px')
+        .style('margin-left', '-25px');
 
       // adding yaxis caption
 
@@ -455,49 +511,58 @@ export class MultilineV2Component implements OnChanges {
         .style('fill', 'none')
         .attr('class', 'gridline');
 
-      const xAxisGrid = d3.axisBottom(xScale).tickSize(-(height - 60)).tickFormat('').ticks(5);
-      svgX.append('g')
+      const xAxisGrid = d3
+        .axisBottom(xScale)
+        .tickSize(-(height - 60))
+        .tickFormat('')
+        .ticks(5);
+      svgX
+        .append('g')
         .attr('class', 'y-axis-grid')
         .call(xAxisGrid)
         .attr('transform', `translate(${0}, ${height - 60})`);
 
-
-      d3.select(this.elem).select('.y-axis-grid')
+      d3.select(this.elem)
+        .select('.y-axis-grid')
         .selectAll('line')
         .style('stroke', '#EAEDF0')
         .style('fill', 'none');
 
-      d3.select(this.elem).select('#horizontalSVG')
+      d3.select(this.elem)
+        .select('#horizontalSVG')
         .select('.x-axis')
         .selectAll('.tick line')
         .style('display', 'none');
 
-      d3.select(this.elem).select('#verticalSVG')
+      d3.select(this.elem)
+        .select('#verticalSVG')
         .select('.y.axis')
         .selectAll('.tick line')
         .style('display', 'none');
 
-      d3.select(this.elem).select('#horizontalSVG')
+      d3.select(this.elem)
+        .select('#horizontalSVG')
         .select('.x-axis')
         .select('.domain')
         .style('display', 'none');
-
 
       /* Add line into SVG acoording to data */
       const line = d3
         .line()
         .x((d, i) => {
           if (board == 'dora') {
-            return xScale(d.date)
+            return xScale(d.date);
           } else if (kpiId === 'kpi997') {
-            return xScale(d.date || d.sortSprint)
+            return xScale(d.date || d.sortSprint);
           } else {
-            return xScale(i + 1)
+            return xScale(i + 1);
           }
         })
         .y((d) => yScale(d.value));
 
-      const lines = svgX.append('g').attr('class', 'lines')
+      const lines = svgX
+        .append('g')
+        .attr('class', 'lines')
         .attr('transform', `translate(${xScale.bandwidth() / 2}, ${0})`);
 
       function tweenDash() {
@@ -528,7 +593,7 @@ export class MultilineV2Component implements OnChanges {
           svgX
             .append('text')
             .attr('class', 'title-text')
-            .style('fill', (color && color[i]))
+            .style('fill', color && color[i])
             .text(d.data)
             .attr('text-anchor', 'middle')
             .attr('x', (width - margin) / 2)
@@ -544,10 +609,13 @@ export class MultilineV2Component implements OnChanges {
         })
         .attr('d', (d) => line(d.value))
         .call(transition)
-        .style('stroke', (d, i) => (color && color[i]))
+        .style('stroke', (d, i) => color && color[i])
         .style('opacity', lineOpacity)
         .style('stroke-dasharray', function (d, i) {
-          if (d['filter']?.toLowerCase() == 'average coverage' || d['data']?.toLowerCase() == 'average coverage') {
+          if (
+            d['filter']?.toLowerCase() == 'average coverage' ||
+            d['data']?.toLowerCase() == 'average coverage'
+          ) {
             return '4,4';
           }
         })
@@ -582,8 +650,8 @@ export class MultilineV2Component implements OnChanges {
         .attr('class', function (d, i) {
           return 'circlegroup' + i;
         })
-        .style('fill', (d, i) => (color && color[i]))
-        .style('stroke', (d, i) => (color && color[i]))
+        .style('fill', (d, i) => color && color[i])
+        .style('stroke', (d, i) => color && color[i])
         .selectAll('circle')
         .data((d) => d.value)
         .enter()
@@ -606,12 +674,12 @@ export class MultilineV2Component implements OnChanges {
             div
               .html(
                 `${d.date || d.sSprintName}` +
-                ' : ' +
-                "<span class='toolTipValue'> " +
-                `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
-                '</span>',
+                  ' : ' +
+                  "<span class='toolTipValue'> " +
+                  `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
+                  '</span>',
               )
-              .style('left', (xPosition - 80) + 'px')
+              .style('left', xPosition - 80 + 'px')
               // .style('top', yScale(d.value) - topValue + 'px');
               .style('top', yPosition + 20 + 'px');
             for (const hoverData in d.hoverValue) {
@@ -619,10 +687,10 @@ export class MultilineV2Component implements OnChanges {
                 .append('p')
                 .html(
                   `${hoverData}` +
-                  ' : ' +
-                  "<span class='toolTipValue'> " +
-                  `${d.hoverValue[hoverData]}` +
-                  ' </span>',
+                    ' : ' +
+                    "<span class='toolTipValue'> " +
+                    `${d.hoverValue[hoverData]}` +
+                    ' </span>',
                 );
             }
           }
@@ -636,13 +704,12 @@ export class MultilineV2Component implements OnChanges {
         })
         .append('circle')
         .attr('cx', function (d, i) {
-
           if (board == 'dora') {
             return xScale(d.date);
           } else if (kpiId === 'kpi997') {
-            return xScale(d.date || d.sortSprint)
+            return xScale(d.date || d.sortSprint);
           } else {
-            return xScale(i + 1)
+            return xScale(i + 1);
           }
         })
         .attr('cy', (d) => yScale(d.value))
@@ -656,7 +723,10 @@ export class MultilineV2Component implements OnChanges {
             .attr('r', circleRadiusHover);
         })
         .on('mouseout', function (d) {
-          d3.select(this).transition().duration(duration).attr('r', circleRadius);
+          d3.select(this)
+            .transition()
+            .duration(duration)
+            .attr('r', circleRadius);
         });
 
       // used to allign data on x axis ticks
@@ -665,7 +735,11 @@ export class MultilineV2Component implements OnChanges {
         .selectAll('.tick')
         .each(function (dataObj, index) {
           const tick = d3.select(this);
-          if (data[0]?.value[0] && data[0]?.value[0]?.xAxisTick && !(viewType === 'large' && selectedProjectCount === 1)) {
+          if (
+            data[0]?.value[0] &&
+            data[0]?.value[0]?.xAxisTick &&
+            !(viewType === 'large' && selectedProjectCount === 1)
+          ) {
             const textElement = this.getElementsByTagName('text');
             textElement[0].textContent = data[0].value[dataObj - 1]?.xAxisTick;
           }
@@ -701,12 +775,16 @@ export class MultilineV2Component implements OnChanges {
 
       if (this.kpiId == 'kpi17') {
         d3.select(this.elem).select('#legendContainer').remove();
-        const legendDiv = d3.select(this.elem).select('#multiLineChart').append('div')
+        const legendDiv = d3
+          .select(this.elem)
+          .select('#multiLineChart')
+          .append('div')
           .attr('id', 'legendContainer')
           .style('margin-left', 60 + 'px')
           .append('div');
 
-        legendDiv.transition()
+        legendDiv
+          .transition()
           .duration(200)
           .style('display', 'block')
           .style('opacity', 1)
@@ -720,8 +798,8 @@ export class MultilineV2Component implements OnChanges {
         }
 
         if (colorArr?.length > 0) {
-          let htmlString = '<div class="legend_item" style="display:flex; align-items:center;"><div>';
-
+          let htmlString =
+            '<div class="legend_item" style="display:flex; align-items:center;"><div>';
 
           // colorArr.forEach((d, i) => {
           //   htmlString += `<div class="legend_color_indicator" style="margin:0 5px 2px 0;width:15px; border-width:2px; border-style:dashed; border-color: ${color[i]}"></div>`;
@@ -737,7 +815,6 @@ export class MultilineV2Component implements OnChanges {
     }
   }
 
-
   wrap(text, width) {
     text.each(function () {
       var text = d3.select(this),
@@ -746,20 +823,30 @@ export class MultilineV2Component implements OnChanges {
         line = [],
         lineNumber = 0,
         lineHeight = 1.1, // ems
-        y = text.attr("y"),
-        dy = parseFloat(text.attr("dy")),
-        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em")
-      while (word = words.pop()) {
-        line.push(word)
-        tspan.text(line.join(" "))
-        if (tspan.node().getComputedTextLength() > (width - 5)) {
-          line.pop()
-          tspan.text(line.join(" "))
-          line = [word]
-          tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
+        y = text.attr('y'),
+        dy = parseFloat(text.attr('dy')),
+        tspan = text
+          .text(null)
+          .append('tspan')
+          .attr('x', 0)
+          .attr('y', y)
+          .attr('dy', dy + 'em');
+      while ((word = words.pop())) {
+        line.push(word);
+        tspan.text(line.join(' '));
+        if (tspan.node().getComputedTextLength() > width - 5) {
+          line.pop();
+          tspan.text(line.join(' '));
+          line = [word];
+          tspan = text
+            .append('tspan')
+            .attr('x', 0)
+            .attr('y', y)
+            .attr('dy', `${++lineNumber * lineHeight + dy}em`)
+            .text(word);
         }
       }
-    })
+    });
   }
 
   ngOnDestroy() {
@@ -772,4 +859,3 @@ export class MultilineV2Component implements OnChanges {
     this.elemObserver.unobserve(this.elem);
   }
 }
-

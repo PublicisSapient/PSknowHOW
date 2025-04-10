@@ -17,13 +17,21 @@
  ******************************************************************************/
 
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { Component, Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
+import {
+  Component,
+  Directive,
+  Input,
+  TemplateRef,
+  ViewContainerRef,
+} from '@angular/core';
 import { FeatureFlagDirective } from './feature-flag.directive';
 import { FeatureFlagsService } from '../../services/feature-toggle.service';
 import { of } from 'rxjs';
 
 @Component({
-  template: `<ng-template [featureFlag]="'testFeature'">Feature Content</ng-template>`
+  template: `<ng-template [featureFlag]="'testFeature'"
+    >Feature Content</ng-template
+  >`,
 })
 class TestComponent {}
 
@@ -32,15 +40,19 @@ describe('FeatureFlagDirective', () => {
   let featureFlagsService: jasmine.SpyObj<FeatureFlagsService>;
 
   beforeEach(() => {
-    const featureFlagsSpy = jasmine.createSpyObj('FeatureFlagsService', ['isFeatureEnabled']);
+    const featureFlagsSpy = jasmine.createSpyObj('FeatureFlagsService', [
+      'isFeatureEnabled',
+    ]);
 
     TestBed.configureTestingModule({
       declarations: [FeatureFlagDirective, TestComponent],
-      providers: [{ provide: FeatureFlagsService, useValue: featureFlagsSpy }]
+      providers: [{ provide: FeatureFlagsService, useValue: featureFlagsSpy }],
     });
 
     fixture = TestBed.createComponent(TestComponent);
-    featureFlagsService = TestBed.inject(FeatureFlagsService) as jasmine.SpyObj<FeatureFlagsService>;
+    featureFlagsService = TestBed.inject(
+      FeatureFlagsService,
+    ) as jasmine.SpyObj<FeatureFlagsService>;
   });
 
   it('should display content when feature is enabled', async () => {
@@ -54,7 +66,9 @@ describe('FeatureFlagDirective', () => {
   });
 
   it('should not display content when feature is disabled', async () => {
-    featureFlagsService.isFeatureEnabled.and.returnValue(Promise.resolve(false));
+    featureFlagsService.isFeatureEnabled.and.returnValue(
+      Promise.resolve(false),
+    );
 
     fixture.detectChanges();
     await fixture.whenStable();

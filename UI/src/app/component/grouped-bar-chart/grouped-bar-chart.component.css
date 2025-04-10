@@ -1,37 +1,37 @@
 .bar {
-    fill: steelblue;
-  }
-  .bar2 {
-    fill: orange;
-  }
-  .axis text {
-    font-size: 12px;
-  }
+  fill: steelblue;
+}
+.bar2 {
+  fill: orange;
+}
+.axis text {
+  font-size: 12px;
+}
 
-  #summary {
-    text-align: center;
-    align-content: center;
-  }
+#summary {
+  text-align: center;
+  align-content: center;
+}
 
-  .summary-value {
-    font-size: 14px;
-    font-weight: bold;
-    color: #F2861D;
-  }
+.summary-value {
+  font-size: 14px;
+  font-weight: bold;
+  color: #f2861d;
+}
 
-  :host ::ng-deep div.tooltip {
-    position: absolute;
-    background: rgba(0, 0, 0, 0.7);
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 5px;
-    pointer-events: none;
-    display: none;
-    font-size: 12px;
-    top: 40px;
-    left: 60px;
-  }
-  
-  ::ng-deep .toolTipValue {
-    font-weight: bold;
-  }
+:host ::ng-deep div.tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  pointer-events: none;
+  display: none;
+  font-size: 12px;
+  top: 40px;
+  left: 60px;
+}
+
+::ng-deep .toolTipValue {
+  font-weight: bold;
+}

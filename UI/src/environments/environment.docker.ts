@@ -25,6 +25,6 @@ export const environment = {
   RESOURCE: 'PSKnowHOW',
   AUTHENTICATION_SERVICE: false,
   SPEED_SUITE: false,
-  MAP_URL:'',
-  RETROS_URL: ''
+  MAP_URL: '',
+  RETROS_URL: '',
 };

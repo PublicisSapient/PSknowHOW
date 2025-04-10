@@ -15,7 +15,6 @@ export class PsKpiCardFilterComponent implements OnInit {
   selectedKeyObj;
   selectedKey: any = {};
 
-
   form: FormGroup;
   constructor(private fb: FormBuilder, private service: SharedService) {
     this.form = this.fb.group({
@@ -24,16 +23,22 @@ export class PsKpiCardFilterComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.kpiCardFilter?.filterGroup?.filterGroup1?.forEach((filter: { filterKey: any; }) => {
-      this.form.addControl(filter.filterKey, this.fb.control(''));
-    });
+    this.kpiCardFilter?.filterGroup?.filterGroup1?.forEach(
+      (filter: { filterKey: any }) => {
+        this.form.addControl(filter.filterKey, this.fb.control(''));
+      },
+    );
     this.setDefaultForm();
     this.setDefaultFilter(this.kpiCardFilter);
   }
 
   getOptions(filterKey: string) {
     const uniqueValues = [
-      ...new Set(this.kpiCardFilter.issueData.map((issue: { [x: string]: any; }) => issue[filterKey])),
+      ...new Set(
+        this.kpiCardFilter.issueData.map(
+          (issue: { [x: string]: any }) => issue[filterKey],
+        ),
+      ),
     ];
     return uniqueValues.map((value) => ({ label: value, value: value }));
   }
@@ -49,7 +54,10 @@ export class PsKpiCardFilterComponent implements OnInit {
       }
     }
     this.service.setKpiSubFilterObj({ [this.kpiId]: { ...transformedObject } });
-    this.filterChange.emit({ ...transformedObject, selectedKeyObj: this.selectedKeyObj });
+    this.filterChange.emit({
+      ...transformedObject,
+      selectedKeyObj: this.selectedKeyObj,
+    });
   }
 
   clearFilters() {
@@ -59,17 +67,15 @@ export class PsKpiCardFilterComponent implements OnInit {
   onSelectButtonChange(event) {
     // this.form.get('selectedKey')?.setValue(event.value); // Update selectedKey in the form
     const tempObject = {
-      [this.kpiCardFilter.categoryData.categoryKey]: event.value
-    }
+      [this.kpiCardFilter.categoryData.categoryKey]: event.value,
+    };
     this.selectedKeyObj = tempObject;
     let label = this.getOptionValue();
     let options = this.getSelectButtonOptions();
-    let selectedOption = options.find(f => f[label] === event.value);
+    let selectedOption = options.find((f) => f[label] === event.value);
     this.service.setKpiSubFilterObj({ [this.kpiId]: { ...selectedOption } });
     this.handleChange();
-
   }
-
 
   setDefaultFilter(filter: any) {
     if (this.service.getKpiSubFilterObj()[this.kpiId]) {
@@ -80,25 +86,61 @@ export class PsKpiCardFilterComponent implements OnInit {
 
       if (this.kpiCardFilter.categoryData?.categoryKey) {
         const tempObject = {
-          [this.kpiCardFilter.categoryData.categoryKey]: filter.kpiFilters.selectedKey
-        }
+          [this.kpiCardFilter.categoryData.categoryKey]:
+            filter.kpiFilters.selectedKey,
+        };
         this.selectedKeyObj = tempObject;
         let label = this.getOptionValue();
         let options = this.getSelectButtonOptions();
-        let selectedOption = options.find(f => f[label] === filter.kpiFilters.selectedKey);
+        let selectedOption = options.find(
+          (f) => f[label] === filter.kpiFilters.selectedKey,
+        );
 
-        this.selectedKey = selectedOption ? selectedOption[this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName'] :
-          this.getSelectButtonOptions()[0][this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName'];
+        this.selectedKey = selectedOption
+          ? selectedOption[
+              this.kpiCardFilter?.chartType === 'stacked-bar-chart'
+                ? 'key'
+                : 'categoryName'
+            ]
+          : this.getSelectButtonOptions()[0][
+              this.kpiCardFilter?.chartType === 'stacked-bar-chart'
+                ? 'key'
+                : 'categoryName'
+            ];
       } else {
         let options = this.getSelectButtonOptions();
-        if (options.length && options[0][this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName']) {
-          this.selectedKey = options[0][this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName'];
+        if (
+          options.length &&
+          options[0][
+            this.kpiCardFilter?.chartType === 'stacked-bar-chart'
+              ? 'key'
+              : 'categoryName'
+          ]
+        ) {
+          this.selectedKey =
+            options[0][
+              this.kpiCardFilter?.chartType === 'stacked-bar-chart'
+                ? 'key'
+                : 'categoryName'
+            ];
         }
       }
     } else {
       let options = this.getSelectButtonOptions();
-      if (options.length && options[0][this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName']) {
-        this.selectedKey = options[0][this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName'];
+      if (
+        options.length &&
+        options[0][
+          this.kpiCardFilter?.chartType === 'stacked-bar-chart'
+            ? 'key'
+            : 'categoryName'
+        ]
+      ) {
+        this.selectedKey =
+          options[0][
+            this.kpiCardFilter?.chartType === 'stacked-bar-chart'
+              ? 'key'
+              : 'categoryName'
+          ];
       }
     }
     if (filter.kpiFilters) {
@@ -107,7 +149,6 @@ export class PsKpiCardFilterComponent implements OnInit {
       });
       this.handleChange();
     }
-
   }
 
   clearMultiSelect(controlName: string) {
@@ -125,20 +166,24 @@ export class PsKpiCardFilterComponent implements OnInit {
   }
 
   getOptionLabel(): string {
-    return this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'name' : 'categoryName';
+    return this.kpiCardFilter?.chartType === 'stacked-bar-chart'
+      ? 'name'
+      : 'categoryName';
   }
 
   getOptionValue(): string {
-    return this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName';
+    return this.kpiCardFilter?.chartType === 'stacked-bar-chart'
+      ? 'key'
+      : 'categoryName';
   }
 
   setDefaultForm() {
     let returnVal = '';
     if (this.kpiCardFilter?.chartType === 'stacked-bar-chart') {
-      returnVal = this.kpiCardFilter?.dataGroup?.dataGroup1?.[0]?.key
-
+      returnVal = this.kpiCardFilter?.dataGroup?.dataGroup1?.[0]?.key;
     } else if (this.kpiCardFilter?.chartType === 'grouped-bar-chart') {
-      returnVal = this.kpiCardFilter?.categoryData?.categoryGroup[0].categoryName
+      returnVal =
+        this.kpiCardFilter?.categoryData?.categoryGroup[0].categoryName;
     }
     this.form.get('selectedKey')?.setValue(returnVal);
   }

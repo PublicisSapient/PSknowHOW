@@ -279,6 +279,8 @@ public class CustomApiConfig { // NOPMD
 	private int sprintCountForKpiCalculation;
 	private String rnrRecommendationApiKey;
 	private String rnrRecommendationUrl;
+	private String centralHierarchyUrl;
+	private String centralHierarchyApiKey;
 
 	public String getRnrRecommendationUrl() {
 		return rnrRecommendationUrl;
@@ -1348,4 +1350,21 @@ public class CustomApiConfig { // NOPMD
 	public void setRepoToolPRDeclineRateUrl(String repoToolPRDeclineRateUrl) {
 		this.repoToolPRDeclineRateUrl = repoToolPRDeclineRateUrl;
 	}
+
+	public String getCentralHierarchyUrl() {
+		return centralHierarchyUrl;
+	}
+
+	public String getCentralHierarchyApiKey() {
+		return centralHierarchyApiKey;
+	}
+
+	public void setCentralHierarchyApiKey(String centralHierarchyApiKey) {
+		this.centralHierarchyApiKey = centralHierarchyApiKey;
+	}
+
+	public void setCentralHierarchyUrl(String centralHierarchyUrl) {
+		this.centralHierarchyUrl = centralHierarchyUrl;
+	}
+
 }

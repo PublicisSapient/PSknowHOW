@@ -280,22 +280,26 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 			Map<String, Set<String>> projectWiseRCA = new HashMap<>();
 			Map<String, Map<String, List<String>>> droppedDefects = new HashMap<>();
 
-			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, latestSprint,
+			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority,
+					latestSprint.getProjectFilter().getBasicProjectConfigId().toString(),
 					fieldMapping.getDefectPriorityKPI133());
-			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping.getIncludeRCAForKPI133());
+			KpiHelperService.addRCAProjectWise(projectWiseRCA,
+					latestSprint.getProjectFilter().getBasicProjectConfigId().toString(),
+					fieldMapping.getIncludeRCAForKPI133());
 			KpiHelperService.getDroppedDefectsFilters(droppedDefects,
-					latestSprint.getProjectFilter().getBasicProjectConfigId(), fieldMapping.getResolutionTypeForRejectionKPI133(),
+					latestSprint.getProjectFilter().getBasicProjectConfigId(),
+					fieldMapping.getResolutionTypeForRejectionKPI133(),
 					fieldMapping.getJiraDefectRejectionStatusKPI133());
 			KpiHelperService.getDefectsWithoutDrop(droppedDefects, jiraIssueList, totalJiraIssues);
 
 			List<String> defectTypes = new ArrayList<>(
 					Optional.ofNullable(fieldMapping.getJiradefecttype()).orElse(Collections.emptyList()));
 			defectTypes.add(NormalizedJira.DEFECT_TYPE.getValue());
-			List<JiraIssue> allDefects = totalJiraIssues.stream().filter(issue -> defectTypes.contains(issue.getTypeName()))
-					.collect(Collectors.toList());
+			List<JiraIssue> allDefects = totalJiraIssues.stream()
+					.filter(issue -> defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
 			allDefects = KpiHelperService.excludePriorityAndIncludeRCA(allDefects, projectWisePriority, projectWiseRCA);
-			List<JiraIssue> allStory = totalJiraIssues.stream().filter(issue -> !defectTypes.contains(issue.getTypeName()))
-					.toList();
+			List<JiraIssue> allStory = totalJiraIssues.stream()
+					.filter(issue -> !defectTypes.contains(issue.getTypeName())).toList();
 			List<JiraIssue> allClosedStory = completedIssueList.stream()
 					.filter(issue -> !defectTypes.contains(issue.getTypeName())).toList();
 			// adding all closed stories
@@ -308,22 +312,24 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 						.collect(Collectors.toMap(JiraIssue::getNumber, Function.identity()));
 
 				// Creating map of modal Objects
-				Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper.createMapOfIssueModal(totalJiraIssues);
+				Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper
+						.createMapOfIssueModal(totalJiraIssues);
 				Set<IssueKpiModalValue> issueData = new HashSet<>();
 
 				for (JiraIssue jiraIssue : allDefects) {
-					createLinkDefectListAndUnlinkDefectModal(issueKpiModalObject, linkedDefectList, unlinkedDefectList, jiraIssue,
-							totalJiraIssues, fieldMapping, completedIssueList, linkedIssueMap, issueData);
+					createLinkDefectListAndUnlinkDefectModal(issueKpiModalObject, linkedDefectList, unlinkedDefectList,
+							jiraIssue, totalJiraIssues, fieldMapping, completedIssueList, linkedIssueMap, issueData);
 				}
-				Set<String> linkedStoriesSet = linkedDefectList.stream().map(JiraIssue::getDefectStoryID).flatMap(Set::stream)
-						.collect(Collectors.toSet());
+				Set<String> linkedStoriesSet = linkedDefectList.stream().map(JiraIssue::getDefectStoryID)
+						.flatMap(Set::stream).collect(Collectors.toSet());
 				List<JiraIssue> linkedStoriesJiraIssueList = allStory.stream()
 						.filter(jiraIssue -> linkedStoriesSet.contains(jiraIssue.getNumber())).toList();
 
 				// adding all LinkedStories
 				closedPlusOpenLinkedStories.addAll(linkedStoriesJiraIssueList);
 				// Removing duplicates if any
-				closedPlusOpenLinkedStories = closedPlusOpenLinkedStories.stream().distinct().collect(Collectors.toList());
+				closedPlusOpenLinkedStories = closedPlusOpenLinkedStories.stream().distinct()
+						.collect(Collectors.toList());
 
 				double overAllDefectDensity = calculateDefectDensity(closedPlusOpenLinkedStories, linkedDefectList,
 						fieldMapping);

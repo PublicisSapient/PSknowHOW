@@ -169,8 +169,9 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
-			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityKPI34());
-			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getIncludeRCAForKPI34());
+			addPriorityProjectWise(projectWisePriority, configPriority, basicProjectConfigId.toString(),
+					fieldMapping.getDefectPriorityKPI34());
+			addRCAProjectWise(projectWiseRCA, basicProjectConfigId.toString(), fieldMapping.getIncludeRCAForKPI34());
 
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
@@ -181,7 +182,8 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(), defectType);
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			getDroppedDefectsFilters(droppedDefects, basicProjectConfigId, fieldMapping.getResolutionTypeForRejectionKPI34(),
+			getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
+					fieldMapping.getResolutionTypeForRejectionKPI34(),
 					fieldMapping.getJiraDefectRejectionStatusKPI34());
 		});
 

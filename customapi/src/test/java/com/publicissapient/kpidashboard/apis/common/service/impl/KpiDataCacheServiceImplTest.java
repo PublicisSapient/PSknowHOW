@@ -205,4 +205,16 @@ public class KpiDataCacheServiceImplTest {
 						new ArrayList<>(),
 						KPICode.DEFECT_REJECTION_RATE.getKpiId()));
 	}
+
+	@Test
+	public void testFetchDSRData() {
+		when(kpiDataProvider.fetchDSRData(any(), any(), any()))
+				.thenReturn(new HashMap<>());
+		assertNotNull(
+				kpiDataCacheService.fetchDSRData(
+						new KpiRequest(),
+						new ObjectId(),
+						new ArrayList<>(),
+						KPICode.DEFECT_SEEPAGE_RATE.getKpiId()));
+	}
 }

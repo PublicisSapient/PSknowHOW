@@ -48,6 +48,7 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.TestCaseDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -62,7 +63,8 @@ import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetails
 
 @RunWith(MockitoJUnitRunner.class)
 public class UnlinkedWorkItemsServiceImplTest {
-
+	@Mock
+	JiraBacklogServiceR jiraBacklogServiceR;
 	List<TestCaseDetails> totalTestCaseList = new ArrayList<>();
 	@Mock
 	private ConfigHelperService configHelperService;

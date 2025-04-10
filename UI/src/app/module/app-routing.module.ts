@@ -32,17 +32,14 @@ import { FeatureGuard } from '../services/feature.guard';
  */
 
 @NgModule({
-  imports: [RouterModule.forRoot([], { useHash: true, relativeLinkResolution: 'legacy' })],
+  imports: [
+    RouterModule.forRoot([], {
+      useHash: true,
+      relativeLinkResolution: 'legacy',
+    }),
+  ],
 
   exports: [RouterModule],
-  providers: [
-    AuthGuard,
-    Logged,
-    AccessGuard,
-    GuestGuard,
-    FeatureGuard
-  ]
+  providers: [AuthGuard, Logged, AccessGuard, GuestGuard, FeatureGuard],
 })
-export class AppRoutingModule { }
-
-
+export class AppRoutingModule {}

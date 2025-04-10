@@ -15,15 +15,30 @@
  * limitations under the License.
  *
  ******************************************************************************/
-import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+  waitForAsync,
+} from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { InputSwitchModule } from 'primeng/inputswitch';
-import { FormControl, ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, FormsModule } from '@angular/forms';
+import {
+  FormControl,
+  ReactiveFormsModule,
+  UntypedFormControl,
+  UntypedFormGroup,
+  FormsModule,
+} from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Routes } from '@angular/router';
 import { DashboardComponent } from '../../dashboard/dashboard.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { HttpService } from '../../services/http.service';
 import { environment } from 'src/environments/environment';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
@@ -46,7 +61,7 @@ describe('CapacityPlanningComponent', () => {
   let httpMock;
   let httpService;
   let messageService;
-  let helperService
+  let helperService;
   const fakeSuccessResponseCapacity = {
     message: 'Capacity Data',
     success: true,
@@ -60,7 +75,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'FUTURE',
         capacity: 3,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -70,7 +85,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'FUTURE',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -80,7 +95,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'FUTURE',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -90,7 +105,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'FUTURE',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -100,7 +115,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'FUTURE',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -110,7 +125,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'FUTURE',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         id: '633eaf5f17c562439124a872',
@@ -121,7 +136,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'ACTIVE',
         capacity: 500,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -131,7 +146,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'ACTIVE',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         id: '63327450dc7db01e674a5379',
@@ -142,7 +157,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'CLOSED',
         capacity: 520,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         id: '63327449dc7db01e674a5378',
@@ -153,7 +168,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'CLOSED',
         capacity: 500,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -163,7 +178,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'CLOSED',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -173,7 +188,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'CLOSED',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -183,9 +198,9 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'CLOSED',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
-      }
-    ]
+        kanban: false,
+      },
+    ],
   };
 
   const fakeCapacityData = {
@@ -201,7 +216,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'FUTURE',
         capacity: 3,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -211,7 +226,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'FUTURE',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -221,7 +236,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'FUTURE',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -231,7 +246,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'FUTURE',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -241,7 +256,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'FUTURE',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -251,7 +266,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'FUTURE',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         id: '633eaf5f17c562439124a872',
@@ -262,7 +277,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'ACTIVE',
         capacity: 500,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -272,7 +287,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'ACTIVE',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         id: '63327450dc7db01e674a5379',
@@ -283,7 +298,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'CLOSED',
         capacity: 520,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         id: '63327449dc7db01e674a5378',
@@ -294,7 +309,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'CLOSED',
         capacity: 500,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -304,7 +319,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'CLOSED',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -314,7 +329,7 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'CLOSED',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -324,1001 +339,819 @@ describe('CapacityPlanningComponent', () => {
         sprintState: 'CLOSED',
         capacity: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
-      }
-    ]
+        kanban: false,
+      },
+    ],
   };
 
   const fakeCapacityKanbanData = require('../../../test/resource/fakeCapacityData.json');
   const trendValueList = [
     {
-      "nodeId": " Buy & Deliver_651af337d18501286c28a464",
-      "nodeName": " Buy & Deliver",
-      "path": [
-        "Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu"
+      nodeId: ' Buy & Deliver_651af337d18501286c28a464',
+      nodeName: ' Buy & Deliver',
+      path: [
+        'Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sonepar SAS_port"
+      labelName: 'project',
+      parentId: ['Sonepar SAS_port'],
+      level: 5,
+      basicProjectConfigId: '651af337d18501286c28a464',
+    },
+    {
+      nodeId: 'AA Data and Reporting_649c00cd1734471c30843d2d',
+      nodeName: 'AA Data and Reporting',
+      path: [
+        'Anglo American Marketing Limited_port###Anglo American Marketing Limited_acc###Energy & Commodities_ver###EU_bu',
       ],
-      "level": 5,
-      "basicProjectConfigId": "651af337d18501286c28a464"
+      labelName: 'project',
+      parentId: ['Anglo American Marketing Limited_port'],
+      level: 5,
+      basicProjectConfigId: '649c00cd1734471c30843d2d',
     },
-    {
-      "nodeId": "AA Data and Reporting_649c00cd1734471c30843d2d",
-      "nodeName": "AA Data and Reporting",
-      "path": [
-        "Anglo American Marketing Limited_port###Anglo American Marketing Limited_acc###Energy & Commodities_ver###EU_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Anglo American Marketing Limited_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "649c00cd1734471c30843d2d"
+    {
+      nodeId: 'ASO Mobile App_64a4fab01734471c30843fda',
+      nodeName: 'ASO Mobile App',
+      path: ['ASO_port###Academy Sports_acc###Retail_ver###North America_bu'],
+      labelName: 'project',
+      parentId: ['ASO_port'],
+      level: 5,
+      basicProjectConfigId: '64a4fab01734471c30843fda',
     },
     {
-      "nodeId": "ASO Mobile App_64a4fab01734471c30843fda",
-      "nodeName": "ASO Mobile App",
-      "path": [
-        "ASO_port###Academy Sports_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "ASO_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "64a4fab01734471c30843fda"
+      nodeId: 'Azure Project_656d830b9f546b19742cb55b',
+      nodeName: 'Azure Project',
+      path: ['3PP CRM_port###ADEO_acc###B_ver###Europe_bu'],
+      labelName: 'project',
+      parentId: ['3PP CRM_port'],
+      level: 5,
+      basicProjectConfigId: '656d830b9f546b19742cb55b',
     },
     {
-      "nodeId": "Azure Project_656d830b9f546b19742cb55b",
-      "nodeName": "Azure Project",
-      "path": [
-        "3PP CRM_port###ADEO_acc###B_ver###Europe_bu"
+      nodeId: 'Canada ELD_64f1d426d8d45b13a8de56cb',
+      nodeName: 'Canada ELD',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "3PP CRM_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "656d830b9f546b19742cb55b"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '64f1d426d8d45b13a8de56cb',
     },
     {
-      "nodeId": "Canada ELD_64f1d426d8d45b13a8de56cb",
-      "nodeName": "Canada ELD",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "64f1d426d8d45b13a8de56cb"
+      nodeId: 'Cart & checkout_6441078b72a7c53c78f70590',
+      nodeName: 'Cart & checkout',
+      path: ['API_port###Academy Sports_acc###Retail_ver###North America_bu'],
+      labelName: 'project',
+      parentId: ['API_port'],
+      level: 5,
+      basicProjectConfigId: '6441078b72a7c53c78f70590',
     },
     {
-      "nodeId": "Cart & checkout_6441078b72a7c53c78f70590",
-      "nodeName": "Cart & checkout",
-      "path": [
-        "API_port###Academy Sports_acc###Retail_ver###North America_bu"
+      nodeId: 'CCSF Project_64e90e10dd4f0b7e8ed0a5fe',
+      nodeName: 'CCSF Project',
+      path: [
+        'C&C San Francisco - PAS_port###City and County of San Francisco_acc###Financial Services_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "API_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "6441078b72a7c53c78f70590"
+      labelName: 'project',
+      parentId: ['C&C San Francisco - PAS_port'],
+      level: 5,
+      basicProjectConfigId: '64e90e10dd4f0b7e8ed0a5fe',
     },
     {
-      "nodeId": "CCSF Project_64e90e10dd4f0b7e8ed0a5fe",
-      "nodeName": "CCSF Project",
-      "path": [
-        "C&C San Francisco - PAS_port###City and County of San Francisco_acc###Financial Services_ver###North America_bu"
+      nodeId: 'ChangeDateIssue_655e019308f31814845120b3',
+      nodeName: 'ChangeDateIssue',
+      path: [
+        'DTS_port###Methods and Tools_acc###PS Internal_ver###Internal_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "C&C San Francisco - PAS_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "64e90e10dd4f0b7e8ed0a5fe"
+      labelName: 'project',
+      parentId: ['DTS_port'],
+      level: 5,
+      basicProjectConfigId: '655e019308f31814845120b3',
     },
     {
-      "nodeId": "ChangeDateIssue_655e019308f31814845120b3",
-      "nodeName": "ChangeDateIssue",
-      "path": [
-        "DTS_port###Methods and Tools_acc###PS Internal_ver###Internal_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "DTS_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "655e019308f31814845120b3"
+      nodeId: 'CMS_644103e772a7c53c78f70582',
+      nodeName: 'CMS',
+      path: ['ASO_port###Academy Sports_acc###Retail_ver###North America_bu'],
+      labelName: 'project',
+      parentId: ['ASO_port'],
+      level: 5,
+      basicProjectConfigId: '644103e772a7c53c78f70582',
     },
     {
-      "nodeId": "CMS_644103e772a7c53c78f70582",
-      "nodeName": "CMS",
-      "path": [
-        "ASO_port###Academy Sports_acc###Retail_ver###North America_bu"
+      nodeId: 'Data Engineering_644258b830d86a7f539c7fd7',
+      nodeName: 'Data Engineering',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "ASO_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "644103e772a7c53c78f70582"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '644258b830d86a7f539c7fd7',
     },
     {
-      "nodeId": "Data Engineering_644258b830d86a7f539c7fd7",
-      "nodeName": "Data Engineering",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
+      nodeId: 'Data Visualization_64425a0a30d86a7f539c7fdc',
+      nodeName: 'Data Visualization',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "level": 5,
-      "basicProjectConfigId": "644258b830d86a7f539c7fd7"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '64425a0a30d86a7f539c7fdc',
     },
     {
-      "nodeId": "Data Visualization_64425a0a30d86a7f539c7fdc",
-      "nodeName": "Data Visualization",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
+      nodeId: 'Design System_64ad9e667d51263c17602c67',
+      nodeName: 'Design System',
+      path: [
+        'Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "64425a0a30d86a7f539c7fdc"
+      labelName: 'project',
+      parentId: ['Sonepar SAS_port'],
+      level: 5,
+      basicProjectConfigId: '64ad9e667d51263c17602c67',
     },
     {
-      "nodeId": "Design System_64ad9e667d51263c17602c67",
-      "nodeName": "Design System",
-      "path": [
-        "Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu"
+      nodeId: 'DHL Logistics Scrumban_6549029708f3181484511bbb',
+      nodeName: 'DHL Logistics Scrumban',
+      path: [
+        'DPDHL - CSI DCI - Logistics and CJ_port###Deutsche Post AG_acc###Automotive_ver###EU_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sonepar SAS_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "64ad9e667d51263c17602c67"
+      labelName: 'project',
+      parentId: ['DPDHL - CSI DCI - Logistics and CJ_port'],
+      level: 5,
+      basicProjectConfigId: '6549029708f3181484511bbb',
     },
     {
-      "nodeId": "DHL Logistics Scrumban_6549029708f3181484511bbb",
-      "nodeName": "DHL Logistics Scrumban",
-      "path": [
-        "DPDHL - CSI DCI - Logistics and CJ_port###Deutsche Post AG_acc###Automotive_ver###EU_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "DPDHL - CSI DCI - Logistics and CJ_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "6549029708f3181484511bbb"
+      nodeId: 'Do it Best_657049b505ce0569d5612ec7',
+      nodeName: 'Do it Best',
+      path: ['3PP CRM_port###ADEO_acc###Automotive_ver###North America_bu'],
+      labelName: 'project',
+      parentId: ['3PP CRM_port'],
+      level: 5,
+      basicProjectConfigId: '657049b505ce0569d5612ec7',
     },
     {
-      "nodeId": "Do it Best_657049b505ce0569d5612ec7",
-      "nodeName": "Do it Best",
-      "path": [
-        "3PP CRM_port###ADEO_acc###Automotive_ver###North America_bu"
+      nodeId: 'Dotcom + Mobile App_64be65cceb7015715615c4ba',
+      nodeName: 'Dotcom + Mobile App',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "3PP CRM_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "657049b505ce0569d5612ec7"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '64be65cceb7015715615c4ba',
     },
     {
-      "nodeId": "Dotcom + Mobile App_64be65cceb7015715615c4ba",
-      "nodeName": "Dotcom + Mobile App",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
+      nodeId: 'DRP - Discovery POD_63dc01e47228be4c30553ce1',
+      nodeName: 'DRP - Discovery POD',
+      path: [
+        'Retail_port###The Childrens Place, Inc._acc###Retail_ver###North America_bu',
       ],
-      "level": 5,
-      "basicProjectConfigId": "64be65cceb7015715615c4ba"
+      labelName: 'project',
+      parentId: ['Retail_port'],
+      level: 5,
+      basicProjectConfigId: '63dc01e47228be4c30553ce1',
     },
     {
-      "nodeId": "DRP - Discovery POD_63dc01e47228be4c30553ce1",
-      "nodeName": "DRP - Discovery POD",
-      "path": [
-        "Retail_port###The Childrens Place, Inc._acc###Retail_ver###North America_bu"
+      nodeId: 'DRP - HomePage POD_64b3f315c4e72b57c94035e2',
+      nodeName: 'DRP - HomePage POD',
+      path: [
+        'Retail_port###The Childrens Place, Inc._acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Retail_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "63dc01e47228be4c30553ce1"
+      labelName: 'project',
+      parentId: ['Retail_port'],
+      level: 5,
+      basicProjectConfigId: '64b3f315c4e72b57c94035e2',
     },
     {
-      "nodeId": "DRP - HomePage POD_64b3f315c4e72b57c94035e2",
-      "nodeName": "DRP - HomePage POD",
-      "path": [
-        "Retail_port###The Childrens Place, Inc._acc###Retail_ver###North America_bu"
+      nodeId: 'Ecom Post-Purchase Squad_64be67caeb7015715615c4c5',
+      nodeName: 'Ecom Post-Purchase Squad',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Retail_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "64b3f315c4e72b57c94035e2"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '64be67caeb7015715615c4c5',
     },
     {
-      "nodeId": "Ecom Post-Purchase Squad_64be67caeb7015715615c4c5",
-      "nodeName": "Ecom Post-Purchase Squad",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
+      nodeId: 'Ecom Pre-Purchase Squad_64be66e3eb7015715615c4bd',
+      nodeName: 'Ecom Pre-Purchase Squad',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "level": 5,
-      "basicProjectConfigId": "64be67caeb7015715615c4c5"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '64be66e3eb7015715615c4bd',
     },
     {
-      "nodeId": "Ecom Pre-Purchase Squad_64be66e3eb7015715615c4bd",
-      "nodeName": "Ecom Pre-Purchase Squad",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
+      nodeId: 'Ecom Purchase Squad_64be677aeb7015715615c4c1',
+      nodeName: 'Ecom Purchase Squad',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "64be66e3eb7015715615c4bd"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '64be677aeb7015715615c4c1',
     },
     {
-      "nodeId": "Ecom Purchase Squad_64be677aeb7015715615c4c1",
-      "nodeName": "Ecom Purchase Squad",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "64be677aeb7015715615c4c1"
+      nodeId: 'FDFH_656f0b8d275aa91d24a6e568',
+      nodeName: 'FDFH',
+      path: ['3PP CRM_port###AAA Auto Club Group_acc###Automotive_ver###A_bu'],
+      labelName: 'project',
+      parentId: ['3PP CRM_port'],
+      level: 5,
+      basicProjectConfigId: '656f0b8d275aa91d24a6e568',
     },
     {
-      "nodeId": "FDFH_656f0b8d275aa91d24a6e568",
-      "nodeName": "FDFH",
-      "path": [
-        "3PP CRM_port###AAA Auto Club Group_acc###Automotive_ver###A_bu"
+      nodeId: 'GearBox_63a02b61bbc09e116d744d9d',
+      nodeName: 'GearBox',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "3PP CRM_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "656f0b8d275aa91d24a6e568"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '63a02b61bbc09e116d744d9d',
     },
     {
-      "nodeId": "GearBox_63a02b61bbc09e116d744d9d",
-      "nodeName": "GearBox",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
+      nodeId: 'GearBox Squad 1_6449103b3be37902a3f1ba70',
+      nodeName: 'GearBox Squad 1',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "level": 5,
-      "basicProjectConfigId": "63a02b61bbc09e116d744d9d"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '6449103b3be37902a3f1ba70',
     },
     {
-      "nodeId": "GearBox Squad 1_6449103b3be37902a3f1ba70",
-      "nodeName": "GearBox Squad 1",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
+      nodeId: 'GearBox Squad 2_64770ec45286e83998a56141',
+      nodeName: 'GearBox Squad 2',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "6449103b3be37902a3f1ba70"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '64770ec45286e83998a56141',
     },
     {
-      "nodeId": "GearBox Squad 2_64770ec45286e83998a56141",
-      "nodeName": "GearBox Squad 2",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
+      nodeId: 'GearBox Squad 3_64770ef45286e83998a56143',
+      nodeName: 'GearBox Squad 3',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "64770ec45286e83998a56141"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '64770ef45286e83998a56143',
     },
     {
-      "nodeId": "GearBox Squad 3_64770ef45286e83998a56143",
-      "nodeName": "GearBox Squad 3",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
+      nodeId: 'Import_656edecc053eaf4d3a2b06da',
+      nodeName: 'Import',
+      path: [
+        '3PP Social - Chrysler_port###ADNOC Global Trading Limited_acc###Consumer Products_ver###Internal_bu',
       ],
-      "level": 5,
-      "basicProjectConfigId": "64770ef45286e83998a56143"
+      labelName: 'project',
+      parentId: ['3PP Social - Chrysler_port'],
+      level: 5,
+      basicProjectConfigId: '656edecc053eaf4d3a2b06da',
     },
     {
-      "nodeId": "Import_656edecc053eaf4d3a2b06da",
-      "nodeName": "Import",
-      "path": [
-        "3PP Social - Chrysler_port###ADNOC Global Trading Limited_acc###Consumer Products_ver###Internal_bu"
+      nodeId: 'Integration Services_6377306a175a953a0a49d322',
+      nodeName: 'Integration Services',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "3PP Social - Chrysler_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "656edecc053eaf4d3a2b06da"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '6377306a175a953a0a49d322',
     },
     {
-      "nodeId": "Integration Services_6377306a175a953a0a49d322",
-      "nodeName": "Integration Services",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
+      nodeId: 'KN Server_656969922d6d5f774de2e686',
+      nodeName: 'KN Server',
+      path: [
+        '2021 WLP Brand Retainer_port###ADNOC Global Trading Limited_acc###Consumer Products_ver###Government Services_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "6377306a175a953a0a49d322"
+      labelName: 'project',
+      parentId: ['2021 WLP Brand Retainer_port'],
+      level: 5,
+      basicProjectConfigId: '656969922d6d5f774de2e686',
     },
     {
-      "nodeId": "KN Server_656969922d6d5f774de2e686",
-      "nodeName": "KN Server",
-      "path": [
-        "2021 WLP Brand Retainer_port###ADNOC Global Trading Limited_acc###Consumer Products_ver###Government Services_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "2021 WLP Brand Retainer_port"
+      nodeId: 'KYC _63e5fea5ae1aeb593f3395aa',
+      nodeName: 'KYC ',
+      path: [
+        'ENI-Evolutions_port###ENI S.p.A_acc###Energy & Commodities_ver###EU_bu',
       ],
-      "level": 5,
-      "basicProjectConfigId": "656969922d6d5f774de2e686"
+      labelName: 'project',
+      parentId: ['ENI-Evolutions_port'],
+      level: 5,
+      basicProjectConfigId: '63e5fea5ae1aeb593f3395aa',
     },
     {
-      "nodeId": "KYC _63e5fea5ae1aeb593f3395aa",
-      "nodeName": "KYC ",
-      "path": [
-        "ENI-Evolutions_port###ENI S.p.A_acc###Energy & Commodities_ver###EU_bu"
+      nodeId: 'MAP_63a304a909378702f4eab1d0',
+      nodeName: 'MAP',
+      path: [
+        'DTS_port###Methods and Tools_acc###PS Internal_ver###Internal_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "ENI-Evolutions_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "63e5fea5ae1aeb593f3395aa"
+      labelName: 'project',
+      parentId: ['DTS_port'],
+      level: 5,
+      basicProjectConfigId: '63a304a909378702f4eab1d0',
     },
     {
-      "nodeId": "MAP_63a304a909378702f4eab1d0",
-      "nodeName": "MAP",
-      "path": [
-        "DTS_port###Methods and Tools_acc###PS Internal_ver###Internal_bu"
+      nodeId: 'Mobile App_637b17b9175a953a0a49d3c2',
+      nodeName: 'Mobile App',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "DTS_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "63a304a909378702f4eab1d0"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '637b17b9175a953a0a49d3c2',
     },
     {
-      "nodeId": "Mobile App_637b17b9175a953a0a49d3c2",
-      "nodeName": "Mobile App",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "637b17b9175a953a0a49d3c2"
+      nodeId: 'My Account_6441081a72a7c53c78f70595',
+      nodeName: 'My Account',
+      path: ['API_port###Academy Sports_acc###Retail_ver###North America_bu'],
+      labelName: 'project',
+      parentId: ['API_port'],
+      level: 5,
+      basicProjectConfigId: '6441081a72a7c53c78f70595',
     },
     {
-      "nodeId": "My Account_6441081a72a7c53c78f70595",
-      "nodeName": "My Account",
-      "path": [
-        "API_port###Academy Sports_acc###Retail_ver###North America_bu"
+      nodeId: 'new test_65714b7752bfa01f6cff043d',
+      nodeName: 'new test',
+      path: [
+        '2021 WLP Brand Retainer_port###AAA Auto Club Group_acc###Consumer Products_ver###Europe_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "API_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "6441081a72a7c53c78f70595"
+      labelName: 'project',
+      parentId: ['2021 WLP Brand Retainer_port'],
+      level: 5,
+      basicProjectConfigId: '65714b7752bfa01f6cff043d',
     },
     {
-      "nodeId": "new test_65714b7752bfa01f6cff043d",
-      "nodeName": "new test",
-      "path": [
-        "2021 WLP Brand Retainer_port###AAA Auto Club Group_acc###Consumer Products_ver###Europe_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "2021 WLP Brand Retainer_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "65714b7752bfa01f6cff043d"
+      nodeId: 'Onsite search_644131b98b61fa2477214bf3',
+      nodeName: 'Onsite search',
+      path: ['ASO_port###Academy Sports_acc###Retail_ver###North America_bu'],
+      labelName: 'project',
+      parentId: ['ASO_port'],
+      level: 5,
+      basicProjectConfigId: '644131b98b61fa2477214bf3',
     },
     {
-      "nodeId": "Onsite search_644131b98b61fa2477214bf3",
-      "nodeName": "Onsite search",
-      "path": [
-        "ASO_port###Academy Sports_acc###Retail_ver###North America_bu"
+      nodeId: 'P2P_64ca0b8f5fec906dbc18f3c5',
+      nodeName: 'P2P',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "ASO_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "644131b98b61fa2477214bf3"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '64ca0b8f5fec906dbc18f3c5',
     },
     {
-      "nodeId": "P2P_64ca0b8f5fec906dbc18f3c5",
-      "nodeName": "P2P",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "64ca0b8f5fec906dbc18f3c5"
+      nodeId: 'PIM_64a4e09e1734471c30843fc2',
+      nodeName: 'PIM',
+      path: ['ASO_port###Academy Sports_acc###Retail_ver###North America_bu'],
+      labelName: 'project',
+      parentId: ['ASO_port'],
+      level: 5,
+      basicProjectConfigId: '64a4e09e1734471c30843fc2',
     },
     {
-      "nodeId": "PIM_64a4e09e1734471c30843fc2",
-      "nodeName": "PIM",
-      "path": [
-        "ASO_port###Academy Sports_acc###Retail_ver###North America_bu"
+      nodeId: 'POD 16_657065700615235d92401735',
+      nodeName: 'POD 16',
+      path: [
+        'Nissan Core Team - PS_port###Nissan Motor Co. Ltd._acc###Automotive_ver###International_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "ASO_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "64a4e09e1734471c30843fc2"
+      labelName: 'project',
+      parentId: ['Nissan Core Team - PS_port'],
+      level: 5,
+      basicProjectConfigId: '657065700615235d92401735',
     },
     {
-      "nodeId": "POD 16_657065700615235d92401735",
-      "nodeName": "POD 16",
-      "path": [
-        "Nissan Core Team - PS_port###Nissan Motor Co. Ltd._acc###Automotive_ver###International_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Nissan Core Team - PS_port"
+      nodeId: 'pod16 2_657219fd78247c3cd726d630',
+      nodeName: 'pod16 2',
+      path: [
+        '2021 WLP Brand Retainer_port###AAA Auto Club Group_acc###Automative1_ver###A_bu',
       ],
-      "level": 5,
-      "basicProjectConfigId": "657065700615235d92401735"
+      labelName: 'project',
+      parentId: ['2021 WLP Brand Retainer_port'],
+      level: 5,
+      basicProjectConfigId: '657219fd78247c3cd726d630',
     },
     {
-      "nodeId": "pod16 2_657219fd78247c3cd726d630",
-      "nodeName": "pod16 2",
-      "path": [
-        "2021 WLP Brand Retainer_port###AAA Auto Club Group_acc###Automative1_ver###A_bu"
+      nodeId: 'PORIO_656ee0e5053eaf4d3a2b06eb',
+      nodeName: 'PORIO',
+      path: [
+        '3PP Social - Chrysler_port###AAA Auto Club Group_acc###Consumer Products_ver###EU_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "2021 WLP Brand Retainer_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "657219fd78247c3cd726d630"
+      labelName: 'project',
+      parentId: ['3PP Social - Chrysler_port'],
+      level: 5,
+      basicProjectConfigId: '656ee0e5053eaf4d3a2b06eb',
     },
     {
-      "nodeId": "PORIO_656ee0e5053eaf4d3a2b06eb",
-      "nodeName": "PORIO",
-      "path": [
-        "3PP Social - Chrysler_port###AAA Auto Club Group_acc###Consumer Products_ver###EU_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "3PP Social - Chrysler_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "656ee0e5053eaf4d3a2b06eb"
+      nodeId: 'Promotion Engine BOF_64c178d7eb7015715615c5a6',
+      nodeName: 'Promotion Engine BOF',
+      path: ['ASO_port###Academy Sports_acc###Retail_ver###North America_bu'],
+      labelName: 'project',
+      parentId: ['ASO_port'],
+      level: 5,
+      basicProjectConfigId: '64c178d7eb7015715615c5a6',
     },
     {
-      "nodeId": "Promotion Engine BOF_64c178d7eb7015715615c5a6",
-      "nodeName": "Promotion Engine BOF",
-      "path": [
-        "ASO_port###Academy Sports_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "ASO_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "64c178d7eb7015715615c5a6"
+      nodeId: 'Promotion Engine TOF_644105f972a7c53c78f7058c',
+      nodeName: 'Promotion Engine TOF',
+      path: ['ASO_port###Academy Sports_acc###Retail_ver###North America_bu'],
+      labelName: 'project',
+      parentId: ['ASO_port'],
+      level: 5,
+      basicProjectConfigId: '644105f972a7c53c78f7058c',
     },
     {
-      "nodeId": "Promotion Engine TOF_644105f972a7c53c78f7058c",
-      "nodeName": "Promotion Engine TOF",
-      "path": [
-        "ASO_port###Academy Sports_acc###Retail_ver###North America_bu"
+      nodeId: 'PSknowHOW _6527af981704342160f43748',
+      nodeName: 'PSknowHOW ',
+      path: [
+        'DTS_port###Methods and Tools_acc###PS Internal_ver###Internal_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "ASO_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "644105f972a7c53c78f7058c"
+      labelName: 'project',
+      parentId: ['DTS_port'],
+      level: 5,
+      basicProjectConfigId: '6527af981704342160f43748',
     },
     {
-      "nodeId": "PSknowHOW _6527af981704342160f43748",
-      "nodeName": "PSknowHOW ",
-      "path": [
-        "DTS_port###Methods and Tools_acc###PS Internal_ver###Internal_bu"
+      nodeId: 'R1+ Frontline_647588bc5286e83998a5609c',
+      nodeName: 'R1+ Frontline',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "DTS_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "6527af981704342160f43748"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '647588bc5286e83998a5609c',
     },
     {
-      "nodeId": "R1+ Frontline_647588bc5286e83998a5609c",
-      "nodeName": "R1+ Frontline",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
+      nodeId: 'R1+ Logistics_648ab6186803f300a9fd2e0e',
+      nodeName: 'R1+ Logistics',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "level": 5,
-      "basicProjectConfigId": "647588bc5286e83998a5609c"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '648ab6186803f300a9fd2e0e',
     },
     {
-      "nodeId": "R1+ Logistics_648ab6186803f300a9fd2e0e",
-      "nodeName": "R1+ Logistics",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
+      nodeId: 'R1+ Sales_648ab46f6803f300a9fd2e09',
+      nodeName: 'R1+ Sales',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "648ab6186803f300a9fd2e0e"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '648ab46f6803f300a9fd2e09',
     },
     {
-      "nodeId": "R1+ Sales_648ab46f6803f300a9fd2e09",
-      "nodeName": "R1+ Sales",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
+      nodeId: 'R1F_65253d241704342160f4364a',
+      nodeName: 'R1F',
+      path: [
+        '3PP - Cross Regional_port###ADNOC Global Trading Limited_acc###Consumer Products_ver###Government Services_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "648ab46f6803f300a9fd2e09"
+      labelName: 'project',
+      parentId: ['3PP - Cross Regional_port'],
+      level: 5,
+      basicProjectConfigId: '65253d241704342160f4364a',
     },
     {
-      "nodeId": "R1F_65253d241704342160f4364a",
-      "nodeName": "R1F",
-      "path": [
-        "3PP - Cross Regional_port###ADNOC Global Trading Limited_acc###Consumer Products_ver###Government Services_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "3PP - Cross Regional_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "65253d241704342160f4364a"
+      nodeId: 'RABO Scrum (New)_64a5dac31734471c30844068',
+      nodeName: 'RABO Scrum (New)',
+      path: ['AA_port###ADEO_acc###Financial Services_ver###EU_bu'],
+      labelName: 'project',
+      parentId: ['AA_port'],
+      level: 5,
+      basicProjectConfigId: '64a5dac31734471c30844068',
     },
     {
-      "nodeId": "RABO Scrum (New)_64a5dac31734471c30844068",
-      "nodeName": "RABO Scrum (New)",
-      "path": [
-        "AA_port###ADEO_acc###Financial Services_ver###EU_bu"
+      nodeId: 'Retrol_657152fe52bfa01f6cff044f',
+      nodeName: 'Retrol',
+      path: [
+        '2021 WLP Brand Retainer_port###AB Tetra Pak_acc###B_ver###Government Services_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "AA_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "64a5dac31734471c30844068"
+      labelName: 'project',
+      parentId: ['2021 WLP Brand Retainer_port'],
+      level: 5,
+      basicProjectConfigId: '657152fe52bfa01f6cff044f',
     },
     {
-      "nodeId": "Retrol_657152fe52bfa01f6cff044f",
-      "nodeName": "Retrol",
-      "path": [
-        "2021 WLP Brand Retainer_port###AB Tetra Pak_acc###B_ver###Government Services_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "2021 WLP Brand Retainer_port"
+      nodeId: 'RMMO_6392c9225a7c6d3e49b53f19',
+      nodeName: 'RMMO',
+      path: [
+        'Regina Maria Portofolio_port###Regina Maria_acc###Health_ver###EU_bu',
       ],
-      "level": 5,
-      "basicProjectConfigId": "657152fe52bfa01f6cff044f"
+      labelName: 'project',
+      parentId: ['Regina Maria Portofolio_port'],
+      level: 5,
+      basicProjectConfigId: '6392c9225a7c6d3e49b53f19',
     },
     {
-      "nodeId": "RMMO_6392c9225a7c6d3e49b53f19",
-      "nodeName": "RMMO",
-      "path": [
-        "Regina Maria Portofolio_port###Regina Maria_acc###Health_ver###EU_bu"
+      nodeId: 'SAME_63a4810c09378702f4eab210',
+      nodeName: 'SAME',
+      path: [
+        'ACE20001_port###Abu Dhabi Investment Authority_acc###PS Internal_ver###EU_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Regina Maria Portofolio_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "6392c9225a7c6d3e49b53f19"
+      labelName: 'project',
+      parentId: ['ACE20001_port'],
+      level: 5,
+      basicProjectConfigId: '63a4810c09378702f4eab210',
     },
     {
-      "nodeId": "SAME_63a4810c09378702f4eab210",
-      "nodeName": "SAME",
-      "path": [
-        "ACE20001_port###Abu Dhabi Investment Authority_acc###PS Internal_ver###EU_bu"
+      nodeId: 'SBR Mulesoft Tribe_645e15429c05c375596bf94b',
+      nodeName: 'SBR Mulesoft Tribe',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "ACE20001_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "63a4810c09378702f4eab210"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '645e15429c05c375596bf94b',
     },
     {
-      "nodeId": "SBR Mulesoft Tribe_645e15429c05c375596bf94b",
-      "nodeName": "SBR Mulesoft Tribe",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "645e15429c05c375596bf94b"
+      nodeId: 'SEO_64a4e0591734471c30843fc0',
+      nodeName: 'SEO',
+      path: ['ASO_port###Academy Sports_acc###Retail_ver###North America_bu'],
+      labelName: 'project',
+      parentId: ['ASO_port'],
+      level: 5,
+      basicProjectConfigId: '64a4e0591734471c30843fc0',
     },
     {
-      "nodeId": "SEO_64a4e0591734471c30843fc0",
-      "nodeName": "SEO",
-      "path": [
-        "ASO_port###Academy Sports_acc###Retail_ver###North America_bu"
+      nodeId: 'Service & Assets_6494298bca84920b10dddd3b',
+      nodeName: 'Service & Assets',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "ASO_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "64a4e0591734471c30843fc0"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '6494298bca84920b10dddd3b',
     },
     {
-      "nodeId": "Service & Assets_6494298bca84920b10dddd3b",
-      "nodeName": "Service & Assets",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
+      nodeId: 'Sonepar AFS_654135db88c4b8114af77dba',
+      nodeName: 'Sonepar AFS',
+      path: [
+        'Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu',
       ],
-      "level": 5,
-      "basicProjectConfigId": "6494298bca84920b10dddd3b"
+      labelName: 'project',
+      parentId: ['Sonepar SAS_port'],
+      level: 5,
+      basicProjectConfigId: '654135db88c4b8114af77dba',
     },
     {
-      "nodeId": "Sonepar AFS_654135db88c4b8114af77dba",
-      "nodeName": "Sonepar AFS",
-      "path": [
-        "Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu"
+      nodeId: 'Sonepar BUY_6542b42308f31814845119a8',
+      nodeName: 'Sonepar BUY',
+      path: [
+        'Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sonepar SAS_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "654135db88c4b8114af77dba"
+      labelName: 'project',
+      parentId: ['Sonepar SAS_port'],
+      level: 5,
+      basicProjectConfigId: '6542b42308f31814845119a8',
     },
     {
-      "nodeId": "Sonepar BUY_6542b42308f31814845119a8",
-      "nodeName": "Sonepar BUY",
-      "path": [
-        "Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu"
+      nodeId: 'Sonepar Cloud_6542b82208f31814845119bb',
+      nodeName: 'Sonepar Cloud',
+      path: [
+        'Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sonepar SAS_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "6542b42308f31814845119a8"
+      labelName: 'project',
+      parentId: ['Sonepar SAS_port'],
+      level: 5,
+      basicProjectConfigId: '6542b82208f31814845119bb',
     },
     {
-      "nodeId": "Sonepar Cloud_6542b82208f31814845119bb",
-      "nodeName": "Sonepar Cloud",
-      "path": [
-        "Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sonepar SAS_port"
+      nodeId: 'Sonepar EAC_6542b3b008f31814845119a0',
+      nodeName: 'Sonepar EAC',
+      path: [
+        'Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu',
       ],
-      "level": 5,
-      "basicProjectConfigId": "6542b82208f31814845119bb"
+      labelName: 'project',
+      parentId: ['Sonepar SAS_port'],
+      level: 5,
+      basicProjectConfigId: '6542b3b008f31814845119a0',
     },
     {
-      "nodeId": "Sonepar EAC_6542b3b008f31814845119a0",
-      "nodeName": "Sonepar EAC",
-      "path": [
-        "Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu"
+      nodeId: 'Sonepar eProcurement_6542947f08f3181484511988',
+      nodeName: 'Sonepar eProcurement',
+      path: [
+        'Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sonepar SAS_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "6542b3b008f31814845119a0"
+      labelName: 'project',
+      parentId: ['Sonepar SAS_port'],
+      level: 5,
+      basicProjectConfigId: '6542947f08f3181484511988',
     },
     {
-      "nodeId": "Sonepar eProcurement_6542947f08f3181484511988",
-      "nodeName": "Sonepar eProcurement",
-      "path": [
-        "Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu"
+      nodeId: 'Sonepar Global_6448a8213be37902a3f1ba45',
+      nodeName: 'Sonepar Global',
+      path: [
+        'Sonepar Client Cost - MC_port###Sonepar SAS_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sonepar SAS_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "6542947f08f3181484511988"
+      labelName: 'project',
+      parentId: ['Sonepar Client Cost - MC_port'],
+      level: 5,
+      basicProjectConfigId: '6448a8213be37902a3f1ba45',
     },
     {
-      "nodeId": "Sonepar Global_6448a8213be37902a3f1ba45",
-      "nodeName": "Sonepar Global",
-      "path": [
-        "Sonepar Client Cost - MC_port###Sonepar SAS_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sonepar Client Cost - MC_port"
+      nodeId: 'Sonepar INT_6542b4bb08f31814845119b2',
+      nodeName: 'Sonepar INT',
+      path: [
+        'Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu',
       ],
-      "level": 5,
-      "basicProjectConfigId": "6448a8213be37902a3f1ba45"
+      labelName: 'project',
+      parentId: ['Sonepar SAS_port'],
+      level: 5,
+      basicProjectConfigId: '6542b4bb08f31814845119b2',
     },
     {
-      "nodeId": "Sonepar INT_6542b4bb08f31814845119b2",
-      "nodeName": "Sonepar INT",
-      "path": [
-        "Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu"
+      nodeId: 'Sonepar Int Test_6557c0f708f3181484511ee1',
+      nodeName: 'Sonepar Int Test',
+      path: [
+        'Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sonepar SAS_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "6542b4bb08f31814845119b2"
+      labelName: 'project',
+      parentId: ['Sonepar SAS_port'],
+      level: 5,
+      basicProjectConfigId: '6557c0f708f3181484511ee1',
     },
     {
-      "nodeId": "Sonepar Int Test_6557c0f708f3181484511ee1",
-      "nodeName": "Sonepar Int Test",
-      "path": [
-        "Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu"
+      nodeId: 'Sonepar MAP_6542b43f08f31814845119ab',
+      nodeName: 'Sonepar MAP',
+      path: [
+        'Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sonepar SAS_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "6557c0f708f3181484511ee1"
+      labelName: 'project',
+      parentId: ['Sonepar SAS_port'],
+      level: 5,
+      basicProjectConfigId: '6542b43f08f31814845119ab',
     },
     {
-      "nodeId": "Sonepar MAP_6542b43f08f31814845119ab",
-      "nodeName": "Sonepar MAP",
-      "path": [
-        "Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sonepar SAS_port"
+      nodeId: 'Sonepar Mobile App_6448a96c3be37902a3f1ba48',
+      nodeName: 'Sonepar Mobile App',
+      path: [
+        'Sonepar Client Cost - MC_port###Sonepar SAS_acc###Retail_ver###North America_bu',
       ],
-      "level": 5,
-      "basicProjectConfigId": "6542b43f08f31814845119ab"
+      labelName: 'project',
+      parentId: ['Sonepar Client Cost - MC_port'],
+      level: 5,
+      basicProjectConfigId: '6448a96c3be37902a3f1ba48',
     },
     {
-      "nodeId": "Sonepar Mobile App_6448a96c3be37902a3f1ba48",
-      "nodeName": "Sonepar Mobile App",
-      "path": [
-        "Sonepar Client Cost - MC_port###Sonepar SAS_acc###Retail_ver###North America_bu"
+      nodeId: 'Sonepar SAF_6542b3da08f31814845119a2',
+      nodeName: 'Sonepar SAF',
+      path: [
+        'Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sonepar Client Cost - MC_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "6448a96c3be37902a3f1ba48"
+      labelName: 'project',
+      parentId: ['Sonepar SAS_port'],
+      level: 5,
+      basicProjectConfigId: '6542b3da08f31814845119a2',
     },
     {
-      "nodeId": "Sonepar SAF_6542b3da08f31814845119a2",
-      "nodeName": "Sonepar SAF",
-      "path": [
-        "Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu"
+      nodeId: 'Sonepar SRE_6542b86f08f31814845119be',
+      nodeName: 'Sonepar SRE',
+      path: [
+        'Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sonepar SAS_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "6542b3da08f31814845119a2"
+      labelName: 'project',
+      parentId: ['Sonepar SAS_port'],
+      level: 5,
+      basicProjectConfigId: '6542b86f08f31814845119be',
     },
     {
-      "nodeId": "Sonepar SRE_6542b86f08f31814845119be",
-      "nodeName": "Sonepar SRE",
-      "path": [
-        "Sonepar SAS_port###Sonepar SAS_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sonepar SAS_port"
+      nodeId: 'TAP_65696f2b2d6d5f774de2e68a',
+      nodeName: 'TAP',
+      path: [
+        '2021 WLP Brand Retainer_port###ADNOC Global Trading Limited_acc###Consumer Products_ver###Government Services_bu',
       ],
-      "level": 5,
-      "basicProjectConfigId": "6542b86f08f31814845119be"
+      labelName: 'project',
+      parentId: ['2021 WLP Brand Retainer_port'],
+      level: 5,
+      basicProjectConfigId: '65696f2b2d6d5f774de2e68a',
     },
     {
-      "nodeId": "TAP_65696f2b2d6d5f774de2e68a",
-      "nodeName": "TAP",
-      "path": [
-        "2021 WLP Brand Retainer_port###ADNOC Global Trading Limited_acc###Consumer Products_ver###Government Services_bu"
+      nodeId: 'Test rc_657056c668a1225c0126c843',
+      nodeName: 'Test rc',
+      path: [
+        '2021 WLP Brand Retainer_port###AB Tetra Pak_acc###Consumer Products_ver###Europe_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "2021 WLP Brand Retainer_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "65696f2b2d6d5f774de2e68a"
+      labelName: 'project',
+      parentId: ['2021 WLP Brand Retainer_port'],
+      level: 5,
+      basicProjectConfigId: '657056c668a1225c0126c843',
     },
     {
-      "nodeId": "Test rc_657056c668a1225c0126c843",
-      "nodeName": "Test rc",
-      "path": [
-        "2021 WLP Brand Retainer_port###AB Tetra Pak_acc###Consumer Products_ver###Europe_bu"
+      nodeId: 'Test Serv Asset_647582005286e83998a56096',
+      nodeName: 'Test Serv Asset',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "2021 WLP Brand Retainer_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "657056c668a1225c0126c843"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '647582005286e83998a56096',
     },
     {
-      "nodeId": "Test Serv Asset_647582005286e83998a56096",
-      "nodeName": "Test Serv Asset",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
+      nodeId: 'TestConn_6571528eeed1d93352754ba4',
+      nodeName: 'TestConn',
+      path: [
+        '3PP CRM_port###AAA Auto Club Group_acc###Automative1_ver###EU_bu',
       ],
-      "level": 5,
-      "basicProjectConfigId": "647582005286e83998a56096"
+      labelName: 'project',
+      parentId: ['3PP CRM_port'],
+      level: 5,
+      basicProjectConfigId: '6571528eeed1d93352754ba4',
     },
     {
-      "nodeId": "TestConn_6571528eeed1d93352754ba4",
-      "nodeName": "TestConn",
-      "path": [
-        "3PP CRM_port###AAA Auto Club Group_acc###Automative1_ver###EU_bu"
+      nodeId: 'testkkk_65684655ae2c8767903e75c2',
+      nodeName: 'testkkk',
+      path: [
+        '3PP - Cross Regional_port###AB Tetra Pak_acc###Consumer Products_ver###A_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "3PP CRM_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "6571528eeed1d93352754ba4"
+      labelName: 'project',
+      parentId: ['3PP - Cross Regional_port'],
+      level: 5,
+      basicProjectConfigId: '65684655ae2c8767903e75c2',
     },
     {
-      "nodeId": "testkkk_65684655ae2c8767903e75c2",
-      "nodeName": "testkkk",
-      "path": [
-        "3PP - Cross Regional_port###AB Tetra Pak_acc###Consumer Products_ver###A_bu"
+      nodeId: "Unified Commerce - Dan's MVP_64ab97327d51263c17602b58",
+      nodeName: "Unified Commerce - Dan's MVP",
+      path: [
+        'Endeavour Group Pty Ltd_port###Endeavour Group Limited_acc###Retail_ver###International_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "3PP - Cross Regional_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "65684655ae2c8767903e75c2"
+      labelName: 'project',
+      parentId: ['Endeavour Group Pty Ltd_port'],
+      level: 5,
+      basicProjectConfigId: '64ab97327d51263c17602b58',
     },
     {
-      "nodeId": "Unified Commerce - Dan's MVP_64ab97327d51263c17602b58",
-      "nodeName": "Unified Commerce - Dan's MVP",
-      "path": [
-        "Endeavour Group Pty Ltd_port###Endeavour Group Limited_acc###Retail_ver###International_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Endeavour Group Pty Ltd_port"
+      nodeId: 'VDOS_63777558175a953a0a49d363',
+      nodeName: 'VDOS',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "level": 5,
-      "basicProjectConfigId": "64ab97327d51263c17602b58"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '63777558175a953a0a49d363',
     },
     {
-      "nodeId": "VDOS_63777558175a953a0a49d363",
-      "nodeName": "VDOS",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
+      nodeId: 'VDOS Outside Hauler_647702b25286e83998a56138',
+      nodeName: 'VDOS Outside Hauler',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "63777558175a953a0a49d363"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '647702b25286e83998a56138',
     },
     {
-      "nodeId": "VDOS Outside Hauler_647702b25286e83998a56138",
-      "nodeName": "VDOS Outside Hauler",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
+      nodeId: 'VDOS Translations_651fe6bb1704342160f43511',
+      nodeName: 'VDOS Translations',
+      path: [
+        'Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu',
       ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "647702b25286e83998a56138"
+      labelName: 'project',
+      parentId: ['Sunbelt Rentals_port'],
+      level: 5,
+      basicProjectConfigId: '651fe6bb1704342160f43511',
     },
     {
-      "nodeId": "VDOS Translations_651fe6bb1704342160f43511",
-      "nodeName": "VDOS Translations",
-      "path": [
-        "Sunbelt Rentals_port###Sunbelt Rentals_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "Sunbelt Rentals_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "651fe6bb1704342160f43511"
+      nodeId: 'Website BOF_644108c072a7c53c78f7059a',
+      nodeName: 'Website BOF',
+      path: ['API_port###Academy Sports_acc###Retail_ver###North America_bu'],
+      labelName: 'project',
+      parentId: ['API_port'],
+      level: 5,
+      basicProjectConfigId: '644108c072a7c53c78f7059a',
     },
     {
-      "nodeId": "Website BOF_644108c072a7c53c78f7059a",
-      "nodeName": "Website BOF",
-      "path": [
-        "API_port###Academy Sports_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "API_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "644108c072a7c53c78f7059a"
+      nodeId: 'Website TOF_6441052372a7c53c78f70588',
+      nodeName: 'Website TOF',
+      path: ['ASO_port###Academy Sports_acc###Retail_ver###North America_bu'],
+      labelName: 'project',
+      parentId: ['ASO_port'],
+      level: 5,
+      basicProjectConfigId: '6441052372a7c53c78f70588',
     },
-    {
-      "nodeId": "Website TOF_6441052372a7c53c78f70588",
-      "nodeName": "Website TOF",
-      "path": [
-        "ASO_port###Academy Sports_acc###Retail_ver###North America_bu"
-      ],
-      "labelName": "project",
-      "parentId": [
-        "ASO_port"
-      ],
-      "level": 5,
-      "basicProjectConfigId": "6441052372a7c53c78f70588"
-    }
   ];
   let component: CapacityPlanningComponent;
 
@@ -1335,16 +1168,25 @@ describe('CapacityPlanningComponent', () => {
         CommonModule,
         RouterTestingModule.withRoutes(routes),
         HttpClientTestingModule,
-        NgSelectModule
+        NgSelectModule,
       ],
-      declarations: [CapacityPlanningComponent, DashboardComponent, IsoDateFormatPipe],
-      providers: [HttpService, SharedService, MessageService, GetAuthService,DatePipe,HelperService,ExcelService
-        , { provide: APP_CONFIG, useValue: AppConfig }
-
+      declarations: [
+        CapacityPlanningComponent,
+        DashboardComponent,
+        IsoDateFormatPipe,
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-      .compileComponents();
+      providers: [
+        HttpService,
+        SharedService,
+        MessageService,
+        GetAuthService,
+        DatePipe,
+        HelperService,
+        ExcelService,
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(CapacityPlanningComponent);
     component = fixture.componentInstance;
@@ -1363,41 +1205,42 @@ describe('CapacityPlanningComponent', () => {
     const projectId = '63284960fdd20276d60e4df5';
     component.getCapacityData(projectId);
     fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/capacity/' + projectId)[0].flush(fakeCapacityData);
+    httpMock
+      .match(baseUrl + '/api/capacity/' + projectId)[0]
+      .flush(fakeCapacityData);
     expect(component.capacityScrumData).toEqual(fakeCapacityData['data']);
   });
 
   it("enableDisableSubmitButton() when selectedView === 'upload_Sprint_Capacity'", () => {
     component.selectedView = 'upload_Sprint_Capacity';
     component.setFormControlValues();
-    component.popupForm.get('capacity').setValue('Enter Value')
-    spyOn(component, 'enableDisableCapacitySubmitButton')
+    component.popupForm.get('capacity').setValue('Enter Value');
+    spyOn(component, 'enableDisableCapacitySubmitButton');
     component.enableDisableSubmitButton();
     fixture.detectChanges();
-    expect(component.enableDisableCapacitySubmitButton).toHaveBeenCalled()
-
+    expect(component.enableDisableCapacitySubmitButton).toHaveBeenCalled();
   });
 
-  it("enableDisableCapacitySubmitButton() for capacity", () => {
+  it('enableDisableCapacitySubmitButton() for capacity', () => {
     component.selectedView = 'upload_Sprint_Capacity';
     component.setFormControlValues();
-    component.popupForm.get('capacity').setValue('Enter Value')
+    component.popupForm.get('capacity').setValue('Enter Value');
     component.enableDisableCapacitySubmitButton();
     fixture.detectChanges();
     expect(component.isCapacitySaveDisabled).toBeTrue();
     expect(component.capacityErrorMessage).toBe('Please enter Capacity');
   });
 
-  it("enableDisableCapacitySubmitButton()", () => {
+  it('enableDisableCapacitySubmitButton()', () => {
     component.enableDisableCapacitySubmitButton();
     fixture.detectChanges();
-    expect(component.isCapacitySaveDisabled).toBeTrue()
+    expect(component.isCapacitySaveDisabled).toBeTrue();
   });
 
-  it("should disable save capacity btn", () => {
+  it('should disable save capacity btn', () => {
     component.enableDisableCapacitySubmitButton();
     fixture.detectChanges();
-    expect(component.isCapacitySaveDisabled).toBeTrue()
+    expect(component.isCapacitySaveDisabled).toBeTrue();
   });
 
   it('should submit capacity', () => {
@@ -1406,26 +1249,30 @@ describe('CapacityPlanningComponent', () => {
       projectName: 'DEMO_SONAR',
       kanban: false,
       sprintNodeId: '40248_DEMO_SONAR_63284960fdd20276d60e4df5',
-      capacity: '500'
+      capacity: '500',
     };
     component.submitCapacity();
     fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/capacity')[0].flush(fakeSuccessResponseCapacity);
+    httpMock
+      .match(baseUrl + '/api/capacity')[0]
+      .flush(fakeSuccessResponseCapacity);
   });
 
   it('should get project Assignees for selected project on capacity', () => {
     component.projectJiraAssignees = {};
     let response = {
-      "message": "Successfully fetched assignee list",
-      "success": true,
-      "data": {
-        "projectName": "RS MAP",
-        "basicProjectConfigId": "63db6583e1b2765622921512",
-        "assigneeDetailsList": [{
-          "name": "testName1",
-          "displayName": "testDisplayName"
-        }]
-      }
+      message: 'Successfully fetched assignee list',
+      success: true,
+      data: {
+        projectName: 'RS MAP',
+        basicProjectConfigId: '63db6583e1b2765622921512',
+        assigneeDetailsList: [
+          {
+            name: 'testName1',
+            displayName: 'testDisplayName',
+          },
+        ],
+      },
     };
     spyOn(httpService, 'getJiraProjectAssignee').and.returnValue(of(response));
     component.getCapacityJiraAssignee('63db6583e1b2765622921512');
@@ -1436,88 +1283,88 @@ describe('CapacityPlanningComponent', () => {
   it('should add or remove users from managelist', () => {
     component.manageAssigneeList = [
       {
-        "name": "testDisplayName1",
-        "displayName": "testDisplayName1",
-        "checked": true
+        name: 'testDisplayName1',
+        displayName: 'testDisplayName1',
+        checked: true,
       },
       {
-        "name": "testDisplayName2",
-        "displayName": "testDisplayName2",
-        "checked": true
+        name: 'testDisplayName2',
+        displayName: 'testDisplayName2',
+        checked: true,
       },
       {
-        "name": "testDisplayName3",
-        "displayName": "testDisplayName3",
-        "checked": false
-      }
+        name: 'testDisplayName3',
+        displayName: 'testDisplayName3',
+        checked: false,
+      },
     ];
 
     component.selectedSprintDetails = {
-      "id": "63e1d151fba71c2bff281502",
-      "projectNodeId": "RS MAP_63db6583e1b2765622921512",
-      "projectName": "RS MAP",
-      "sprintNodeId": "41937_RS MAP_63db6583e1b2765622921512",
-      "sprintName": "MAP|PI_12|ITR_5",
-      "sprintState": "FUTURE",
-      "capacity": -1,
-      "basicProjectConfigId": "63db6583e1b2765622921512",
-      "assigneeCapacity": [
+      id: '63e1d151fba71c2bff281502',
+      projectNodeId: 'RS MAP_63db6583e1b2765622921512',
+      projectName: 'RS MAP',
+      sprintNodeId: '41937_RS MAP_63db6583e1b2765622921512',
+      sprintName: 'MAP|PI_12|ITR_5',
+      sprintState: 'FUTURE',
+      capacity: -1,
+      basicProjectConfigId: '63db6583e1b2765622921512',
+      assigneeCapacity: [
         {
-          "userId": "testUserId1",
-          "userName": "testUser",
-          "role": "BACKEND_DEVELOPER",
-          "plannedCapacity": 55.5,
-          "leaves": 0
+          userId: 'testUserId1',
+          userName: 'testUser',
+          role: 'BACKEND_DEVELOPER',
+          plannedCapacity: 55.5,
+          leaves: 0,
         },
         {
-          "userId": "testUserId2",
-          "userName": "testUser",
-          "role": "BACKEND_DEVELOPER",
-          "plannedCapacity": 15,
-          "leaves": 0
+          userId: 'testUserId2',
+          userName: 'testUser',
+          role: 'BACKEND_DEVELOPER',
+          plannedCapacity: 15,
+          leaves: 0,
         },
         {
-          "userId": "testUserId3",
-          "userName": "testUser",
-          "role": "BACKEND_DEVELOPER",
-          "plannedCapacity": 20,
-          "leaves": 0
-        }
+          userId: 'testUserId3',
+          userName: 'testUser',
+          role: 'BACKEND_DEVELOPER',
+          plannedCapacity: 20,
+          leaves: 0,
+        },
       ],
-      "kanban": false,
-      "assigneeDetails": true
+      kanban: false,
+      assigneeDetails: true,
     };
 
     const response = {
-      "message": "Successfully added Capacity Data",
-      "success": true,
-      "data": {
-        "id": "63e1d151fba71c2bff281502",
-        "projectNodeId": "RS MAP_63db6583e1b2765622921512",
-        "projectName": "RS MAP",
-        "sprintNodeId": "41937_RS MAP_63db6583e1b2765622921512",
-        "sprintName": "MAP|PI_12|ITR_5",
-        "capacity": -1,
-        "basicProjectConfigId": "63db6583e1b2765622921512",
-        "assigneeCapacity": [
+      message: 'Successfully added Capacity Data',
+      success: true,
+      data: {
+        id: '63e1d151fba71c2bff281502',
+        projectNodeId: 'RS MAP_63db6583e1b2765622921512',
+        projectName: 'RS MAP',
+        sprintNodeId: '41937_RS MAP_63db6583e1b2765622921512',
+        sprintName: 'MAP|PI_12|ITR_5',
+        capacity: -1,
+        basicProjectConfigId: '63db6583e1b2765622921512',
+        assigneeCapacity: [
           {
-            "userId": "testUserId4",
-            "userName": "testUser",
-            "role": "BACKEND_DEVELOPER",
-            "plannedCapacity": 55.5,
-            "leaves": 0
+            userId: 'testUserId4',
+            userName: 'testUser',
+            role: 'BACKEND_DEVELOPER',
+            plannedCapacity: 55.5,
+            leaves: 0,
           },
           {
-            "userId": "testUserId5",
-            "userName": "testUser",
-            "role": "BACKEND_DEVELOPER",
-            "plannedCapacity": 15,
-            "leaves": 0
-          }
+            userId: 'testUserId5',
+            userName: 'testUser',
+            role: 'BACKEND_DEVELOPER',
+            plannedCapacity: 15,
+            leaves: 0,
+          },
         ],
-        "kanban": false,
-        "assigneeDetails": true
-      }
+        kanban: false,
+        assigneeDetails: true,
+      },
     };
 
     spyOn(httpService, 'saveOrUpdateAssignee').and.returnValue(of(response));
@@ -1532,13 +1379,13 @@ describe('CapacityPlanningComponent', () => {
   it('should get assignee roles if already not available', () => {
     component.projectAssigneeRoles = [];
     const response = {
-      "message": "All Roles",
-      "success": true,
-      "data": {
-        "TESTER": "Tester",
-        "FRONTEND_DEVELOPER": "Frontend Developer",
-        "BACKEND_DEVELOPER": "Backend Developer"
-      }
+      message: 'All Roles',
+      success: true,
+      data: {
+        TESTER: 'Tester',
+        FRONTEND_DEVELOPER: 'Frontend Developer',
+        BACKEND_DEVELOPER: 'Backend Developer',
+      },
     };
     spyOn(httpService, 'getAssigneeRoles').and.returnValue(of(response));
     component.getAssigneeRoles();
@@ -1546,65 +1393,90 @@ describe('CapacityPlanningComponent', () => {
     expect(component.projectAssigneeRoles.length).toEqual(3);
   });
 
-
   it('should check if assignee toggle enabled', () => {
-    const capacityData = [{
-      "projectNodeId": "Testproject124_63e4b169fba71c2bff2815ba",
-      "projectName": "Testproject124",
-      "sprintNodeId": "41411_Testproject124_63e4b169fba71c2bff2815ba",
-      "sprintName": "KnowHOW | PI_12| ITR_5",
-      "sprintState": "FUTURE",
-      "capacity": 0,
-      "basicProjectConfigId": "63e4b169fba71c2bff2815ba",
-      "kanban": false,
-      "assigneeDetails": true
-    }];
+    const capacityData = [
+      {
+        projectNodeId: 'Testproject124_63e4b169fba71c2bff2815ba',
+        projectName: 'Testproject124',
+        sprintNodeId: '41411_Testproject124_63e4b169fba71c2bff2815ba',
+        sprintName: 'KnowHOW | PI_12| ITR_5',
+        sprintState: 'FUTURE',
+        capacity: 0,
+        basicProjectConfigId: '63e4b169fba71c2bff2815ba',
+        kanban: false,
+        assigneeDetails: true,
+      },
+    ];
     const getAssigneeRolesSpy = spyOn(component, 'getAssigneeRoles');
     const getCapacityJiraAssignee = spyOn(component, 'getCapacityJiraAssignee');
     component.checkifAssigneeToggleEnabled(capacityData);
     expect(component.isToggleEnableForSelectedProject).toBeTruthy();
     expect(getAssigneeRolesSpy).toHaveBeenCalled();
-    expect(getCapacityJiraAssignee).toHaveBeenCalledWith("63e4b169fba71c2bff2815ba");
+    expect(getCapacityJiraAssignee).toHaveBeenCalledWith(
+      '63e4b169fba71c2bff2815ba',
+    );
   });
 
   it('should validate plannedCapacity and leaves field value and calculate available capacity', () => {
     const assignee = {
-      "userId": "testUserId6",
-      "userName": "testUser",
-      "leaves": 0
+      userId: 'testUserId6',
+      userName: 'testUser',
+      leaves: 0,
     };
     const assigneeFormControls = {
-      "role": new FormControl('TESTER'),
-      "plannedCapacity": new FormControl({ value: '', disabled: true }),
-      "leaves": new FormControl({ value: 0, disabled: true })
-
+      role: new FormControl('TESTER'),
+      plannedCapacity: new FormControl({ value: '', disabled: true }),
+      leaves: new FormControl({ value: 0, disabled: true }),
     };
 
-    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'role');
+    component.calculateAvaliableCapacity(
+      assignee,
+      assigneeFormControls,
+      'role',
+    );
     fixture.detectChanges();
     expect(assigneeFormControls.plannedCapacity.status).toEqual('VALID');
 
     assigneeFormControls.plannedCapacity.setValue('40');
-    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'plannedCapacity');
+    component.calculateAvaliableCapacity(
+      assignee,
+      assigneeFormControls,
+      'plannedCapacity',
+    );
     expect(assignee['availableCapacity']).toEqual(40);
 
     assigneeFormControls.plannedCapacity.setValue('0');
-    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'plannedCapacity');
+    component.calculateAvaliableCapacity(
+      assignee,
+      assigneeFormControls,
+      'plannedCapacity',
+    );
     expect(assignee['availableCapacity']).toEqual(0);
 
     assigneeFormControls.plannedCapacity.setValue('40');
-    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'plannedCapacity');
+    component.calculateAvaliableCapacity(
+      assignee,
+      assigneeFormControls,
+      'plannedCapacity',
+    );
     expect(assignee['availableCapacity']).toEqual(40);
 
     component.selectedSprintAssigneValidator = [];
     assigneeFormControls.plannedCapacity.setValue('40');
     assigneeFormControls.leaves.setValue(41);
-    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'leaves');
+    component.calculateAvaliableCapacity(
+      assignee,
+      assigneeFormControls,
+      'leaves',
+    );
     expect(component.selectedSprintAssigneValidator.length).toEqual(1);
 
-
     assigneeFormControls.leaves.setValue(40);
-    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'leaves');
+    component.calculateAvaliableCapacity(
+      assignee,
+      assigneeFormControls,
+      'leaves',
+    );
     expect(component.selectedSprintAssigneValidator.length).toEqual(0);
   });
 
@@ -1617,79 +1489,80 @@ describe('CapacityPlanningComponent', () => {
 
   it('should calculate total capacity for sprint', () => {
     const selectedSprint = {
-      "id": "63e092edfba71c2bff2814b4",
-      "projectNodeId": "RS MAP_63db6583e1b2765622921512",
-      "projectName": "RS MAP",
-      "sprintNodeId": "41935_RS MAP_63db6583e1b2765622921512",
-      "sprintName": "MAP|PI_12|ITR_3",
-      "sprintState": "CLOSED",
-      "capacity": 71,
-      "basicProjectConfigId": "63db6583e1b2765622921512",
-      "assigneeCapacity": [
+      id: '63e092edfba71c2bff2814b4',
+      projectNodeId: 'RS MAP_63db6583e1b2765622921512',
+      projectName: 'RS MAP',
+      sprintNodeId: '41935_RS MAP_63db6583e1b2765622921512',
+      sprintName: 'MAP|PI_12|ITR_3',
+      sprintState: 'CLOSED',
+      capacity: 71,
+      basicProjectConfigId: '63db6583e1b2765622921512',
+      assigneeCapacity: [
         {
-          "userId": "testUserId7",
-          "userName": "testUser",
-          "role": "TESTER",
-          "plannedCapacity": 40,
-          "leaves": 0,
-          "availableCapacity": 40
+          userId: 'testUserId7',
+          userName: 'testUser',
+          role: 'TESTER',
+          plannedCapacity: 40,
+          leaves: 0,
+          availableCapacity: 40,
         },
         {
-          "userId": "testUserId8",
-          "userName": "testUser",
-          "role": "FRONTEND_DEVELOPER",
-          "plannedCapacity": 34,
-          "leaves": 3,
-          "availableCapacity": 31
+          userId: 'testUserId8',
+          userName: 'testUser',
+          role: 'FRONTEND_DEVELOPER',
+          plannedCapacity: 34,
+          leaves: 3,
+          availableCapacity: 31,
         },
         {
-          "userId": "testUserId9",
-          "userName": "testUser",
-          "leaves": 0
-        }
+          userId: 'testUserId9',
+          userName: 'testUser',
+          leaves: 0,
+        },
       ],
-      "kanban": false,
-      "assigneeDetails": true
+      kanban: false,
+      assigneeDetails: true,
     };
-    expect(component.calculateTotalCapacityForSprint(selectedSprint)).toEqual(71);
-
+    expect(component.calculateTotalCapacityForSprint(selectedSprint)).toEqual(
+      71,
+    );
   });
 
   it('should initialize selectedSprintAssigneFormArray when edit is clicked on sprint', () => {
     const selectedSprint = {
-      "id": "63e092edfba71c2bff2814b4",
-      "projectNodeId": "RS MAP_63db6583e1b2765622921512",
-      "projectName": "RS MAP",
-      "sprintNodeId": "41935_RS MAP_63db6583e1b2765622921512",
-      "sprintName": "MAP|PI_12|ITR_3",
-      "sprintState": "CLOSED",
-      "capacity": 71,
-      "basicProjectConfigId": "63db6583e1b2765622921512",
-      "assigneeCapacity": [
+      id: '63e092edfba71c2bff2814b4',
+      projectNodeId: 'RS MAP_63db6583e1b2765622921512',
+      projectName: 'RS MAP',
+      sprintNodeId: '41935_RS MAP_63db6583e1b2765622921512',
+      sprintName: 'MAP|PI_12|ITR_3',
+      sprintState: 'CLOSED',
+      capacity: 71,
+      basicProjectConfigId: '63db6583e1b2765622921512',
+      assigneeCapacity: [
         {
-          "userId": "testUserId10",
-          "userName": "testUser",
-          "role": "TESTER",
-          "plannedCapacity": 40,
-          "leaves": 0,
-          "availableCapacity": 40
+          userId: 'testUserId10',
+          userName: 'testUser',
+          role: 'TESTER',
+          plannedCapacity: 40,
+          leaves: 0,
+          availableCapacity: 40,
         },
         {
-          "userId": "testUserId11",
-          "userName": "testUser",
-          "role": "FRONTEND_DEVELOPER",
-          "plannedCapacity": 34,
-          "leaves": 3,
-          "availableCapacity": 31
+          userId: 'testUserId11',
+          userName: 'testUser',
+          role: 'FRONTEND_DEVELOPER',
+          plannedCapacity: 34,
+          leaves: 3,
+          availableCapacity: 31,
         },
         {
-          "userId": "testUserId12",
-          "userName": "testUser",
-          "leaves": 0
-        }
+          userId: 'testUserId12',
+          userName: 'testUser',
+          leaves: 0,
+        },
       ],
-      "kanban": false,
-      "assigneeDetails": true
+      kanban: false,
+      assigneeDetails: true,
     };
     component.onSprintCapacityEdit(selectedSprint);
     expect(component.selectedSprintAssigneFormArray.length).toEqual(3);
@@ -1697,51 +1570,51 @@ describe('CapacityPlanningComponent', () => {
 
   it('should save the sprint capacity details on click of save', () => {
     const selectedSprint = {
-      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-      "projectName": "TestProject123",
-      "sprintNodeId": "40699_TestProject123_63d8bca4af279c1d507cb8b0",
-      "sprintName": "PS HOW |PI_11|ITR_6|07_Dec",
-      "sprintState": "CLOSED",
-      "capacity": 0,
-      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-      "assigneeCapacity": [
+      projectNodeId: 'TestProject123_63d8bca4af279c1d507cb8b0',
+      projectName: 'TestProject123',
+      sprintNodeId: '40699_TestProject123_63d8bca4af279c1d507cb8b0',
+      sprintName: 'PS HOW |PI_11|ITR_6|07_Dec',
+      sprintState: 'CLOSED',
+      capacity: 0,
+      basicProjectConfigId: '63d8bca4af279c1d507cb8b0',
+      assigneeCapacity: [
         {
-          "userId": "testUserId13",
-          "userName": "testUser",
-          "role": "TESTER",
-          "plannedCapacity": 40,
-          "leaves": 0
-        }
+          userId: 'testUserId13',
+          userName: 'testUser',
+          role: 'TESTER',
+          plannedCapacity: 40,
+          leaves: 0,
+        },
       ],
-      "kanban": false,
-      "assigneeDetails": true
+      kanban: false,
+      assigneeDetails: true,
     };
 
     const response = {
-      "message": "Successfully added Capacity Data",
-      "success": true,
-      "data": {
-        "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-        "sprintNodeId": "40699_TestProject123_63d8bca4af279c1d507cb8b0",
-        "sprintName": "PS HOW |PI_11|ITR_6|07_Dec",
-        "capacity": 0,
-        "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-        "assigneeCapacity": [
+      message: 'Successfully added Capacity Data',
+      success: true,
+      data: {
+        projectNodeId: 'TestProject123_63d8bca4af279c1d507cb8b0',
+        sprintNodeId: '40699_TestProject123_63d8bca4af279c1d507cb8b0',
+        sprintName: 'PS HOW |PI_11|ITR_6|07_Dec',
+        capacity: 0,
+        basicProjectConfigId: '63d8bca4af279c1d507cb8b0',
+        assigneeCapacity: [
           {
-            "userId": "testUserId14",
-            "userName": "testUser",
-            "role": "TESTER",
-            "plannedCapacity": 40,
-            "leaves": 0
-          }
+            userId: 'testUserId14',
+            userName: 'testUser',
+            role: 'TESTER',
+            plannedCapacity: 40,
+            leaves: 0,
+          },
         ],
-        "kanban": false,
-        "assigneeDetails": true
-      }
+        kanban: false,
+        assigneeDetails: true,
+      },
     };
     component.kanban = true;
 
-    spyOn(httpService, "saveOrUpdateAssignee").and.returnValue(of(response));
+    spyOn(httpService, 'saveOrUpdateAssignee').and.returnValue(of(response));
     let getCapacityDataSpy = spyOn(component, 'getCapacityData');
     component.onSprintCapacitySave(selectedSprint);
 
@@ -1751,52 +1624,54 @@ describe('CapacityPlanningComponent', () => {
 
   it('should send sprint happiness index', () => {
     const selectedSprint = {
-      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-      "projectName": "TestProject123",
-      "sprintNodeId": "40699_TestProject123_63d8bca4af279c1d507cb8b0",
-      "sprintName": "PS HOW |PI_11|ITR_6|07_Dec",
-      "sprintState": "CLOSED",
-      "capacity": 0,
-      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-      "assigneeCapacity": [
+      projectNodeId: 'TestProject123_63d8bca4af279c1d507cb8b0',
+      projectName: 'TestProject123',
+      sprintNodeId: '40699_TestProject123_63d8bca4af279c1d507cb8b0',
+      sprintName: 'PS HOW |PI_11|ITR_6|07_Dec',
+      sprintState: 'CLOSED',
+      capacity: 0,
+      basicProjectConfigId: '63d8bca4af279c1d507cb8b0',
+      assigneeCapacity: [
         {
-          "userId": "testUserId13",
-          "happinessRating": 2,
-          "userName": "testUser",
-          "role": "TESTER",
-          "plannedCapacity": 40,
-          "leaves": 0
-        }
+          userId: 'testUserId13',
+          happinessRating: 2,
+          userName: 'testUser',
+          role: 'TESTER',
+          plannedCapacity: 40,
+          leaves: 0,
+        },
       ],
-      "kanban": false,
-      "assigneeDetails": true
+      kanban: false,
+      assigneeDetails: true,
     };
 
     const response = {
-      "message": "Successfully added Capacity Data",
-      "success": true,
-      "data": {
-        "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-        "sprintNodeId": "40699_TestProject123_63d8bca4af279c1d507cb8b0",
-        "sprintName": "PS HOW |PI_11|ITR_6|07_Dec",
-        "capacity": 0,
-        "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-        "assigneeCapacity": [
+      message: 'Successfully added Capacity Data',
+      success: true,
+      data: {
+        projectNodeId: 'TestProject123_63d8bca4af279c1d507cb8b0',
+        sprintNodeId: '40699_TestProject123_63d8bca4af279c1d507cb8b0',
+        sprintName: 'PS HOW |PI_11|ITR_6|07_Dec',
+        capacity: 0,
+        basicProjectConfigId: '63d8bca4af279c1d507cb8b0',
+        assigneeCapacity: [
           {
-            "userId": "testUserId14",
-            "happinessRating": 2,
-            "userName": "testUser",
-            "role": "TESTER",
-            "plannedCapacity": 40,
-            "leaves": 0
-          }
+            userId: 'testUserId14',
+            happinessRating: 2,
+            userName: 'testUser',
+            role: 'TESTER',
+            plannedCapacity: 40,
+            leaves: 0,
+          },
         ],
-        "kanban": false,
-        "assigneeDetails": true
-      }
+        kanban: false,
+        assigneeDetails: true,
+      },
     };
 
-    spyOn(httpService, "saveOrUpdateSprintHappinessIndex").and.returnValue(of(response));
+    spyOn(httpService, 'saveOrUpdateSprintHappinessIndex').and.returnValue(
+      of(response),
+    );
     let getCapacityDataSpy = spyOn(component, 'getCapacityData');
     component.sendSprintHappinessIndex(selectedSprint);
 
@@ -1806,106 +1681,110 @@ describe('CapacityPlanningComponent', () => {
 
   it('should reset  to old values when clicked on cancel btn on selected sprint', () => {
     const selectedSprint = {
-      "id": "63e4c5b4fba71c2bff2815d8",
-      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-      "projectName": "TestProject123",
-      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
-      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
-      "sprintState": "CLOSED",
-      "capacity": 28,
-      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-      "assigneeCapacity": [
+      id: '63e4c5b4fba71c2bff2815d8',
+      projectNodeId: 'TestProject123_63d8bca4af279c1d507cb8b0',
+      projectName: 'TestProject123',
+      sprintNodeId: '41963_TestProject123_63d8bca4af279c1d507cb8b0',
+      sprintName: 'PS HOW |PI_12|ITR_3|25_Jan',
+      sprintState: 'CLOSED',
+      capacity: 28,
+      basicProjectConfigId: '63d8bca4af279c1d507cb8b0',
+      assigneeCapacity: [
         {
-          "userId": "testUserId15",
-          "userName": "testUser",
-          "role": "TESTER",
-          "plannedCapacity": 40,
-          "leaves": 12,
-          "availableCapacity": 28
-        }
+          userId: 'testUserId15',
+          userName: 'testUser',
+          role: 'TESTER',
+          plannedCapacity: 40,
+          leaves: 12,
+          availableCapacity: 28,
+        },
       ],
-      "kanban": false,
-      "assigneeDetails": true
+      kanban: false,
+      assigneeDetails: true,
     };
 
-    component.capacityScrumData = [{
-      "id": "63e4c5b4fba71c2bff2815d8",
-      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-      "projectName": "TestProject123",
-      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
-      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
-      "sprintState": "CLOSED",
-      "capacity": 28,
-      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-      "assigneeCapacity": [
-        {
-          "userId": "testUserId16",
-          "userName": "testUser",
-          "role": "TESTER",
-          "plannedCapacity": 40,
-          "leaves": 12,
-          "availableCapacity": 28
-        }
-      ],
-      "kanban": false,
-      "assigneeDetails": true
-    }];
+    component.capacityScrumData = [
+      {
+        id: '63e4c5b4fba71c2bff2815d8',
+        projectNodeId: 'TestProject123_63d8bca4af279c1d507cb8b0',
+        projectName: 'TestProject123',
+        sprintNodeId: '41963_TestProject123_63d8bca4af279c1d507cb8b0',
+        sprintName: 'PS HOW |PI_12|ITR_3|25_Jan',
+        sprintState: 'CLOSED',
+        capacity: 28,
+        basicProjectConfigId: '63d8bca4af279c1d507cb8b0',
+        assigneeCapacity: [
+          {
+            userId: 'testUserId16',
+            userName: 'testUser',
+            role: 'TESTER',
+            plannedCapacity: 40,
+            leaves: 12,
+            availableCapacity: 28,
+          },
+        ],
+        kanban: false,
+        assigneeDetails: true,
+      },
+    ];
 
     component.selectedSprint = {
-      "id": "63e4c5b4fba71c2bff2815d8",
-      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-      "projectName": "TestProject123",
-      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
-      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
-      "sprintState": "CLOSED",
-      "capacity": 28,
-      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-      "assigneeCapacity": [
+      id: '63e4c5b4fba71c2bff2815d8',
+      projectNodeId: 'TestProject123_63d8bca4af279c1d507cb8b0',
+      projectName: 'TestProject123',
+      sprintNodeId: '41963_TestProject123_63d8bca4af279c1d507cb8b0',
+      sprintName: 'PS HOW |PI_12|ITR_3|25_Jan',
+      sprintState: 'CLOSED',
+      capacity: 28,
+      basicProjectConfigId: '63d8bca4af279c1d507cb8b0',
+      assigneeCapacity: [
         {
-          "userId": "testUserId17",
-          "userName": "testUser",
-          "role": "FRONTEND_DEVELOPER",
-          "plannedCapacity": 40,
-          "leaves": 12,
-          "availableCapacity": 28
-        }
+          userId: 'testUserId17',
+          userName: 'testUser',
+          role: 'FRONTEND_DEVELOPER',
+          plannedCapacity: 40,
+          leaves: 12,
+          availableCapacity: 28,
+        },
       ],
-      "kanban": false,
-      "assigneeDetails": true
+      kanban: false,
+      assigneeDetails: true,
     };
 
     component.kanban = false;
     component.onSprintCapacityCancel(selectedSprint);
     expect(component.capacityScrumData[0]).toEqual(component.selectedSprint);
-
   });
 
   it('should set edit mode to false on sprint row selection', () => {
     component.projectCapacityEditMode = true;
     component.selectedSprint = {
-      "id": "63e4c5b4fba71c2bff2815d8",
-      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-      "projectName": "TestProject123",
-      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
-      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
-      "sprintState": "CLOSED",
-      "capacity": 28,
-      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-      "assigneeCapacity": [
+      id: '63e4c5b4fba71c2bff2815d8',
+      projectNodeId: 'TestProject123_63d8bca4af279c1d507cb8b0',
+      projectName: 'TestProject123',
+      sprintNodeId: '41963_TestProject123_63d8bca4af279c1d507cb8b0',
+      sprintName: 'PS HOW |PI_12|ITR_3|25_Jan',
+      sprintState: 'CLOSED',
+      capacity: 28,
+      basicProjectConfigId: '63d8bca4af279c1d507cb8b0',
+      assigneeCapacity: [
         {
-          "userId": "testUserId18",
-          "userName": "testUser",
-          "role": "FRONTEND_DEVELOPER",
-          "plannedCapacity": 40,
-          "leaves": 12,
-          "availableCapacity": 28
-        }
+          userId: 'testUserId18',
+          userName: 'testUser',
+          role: 'FRONTEND_DEVELOPER',
+          plannedCapacity: 40,
+          leaves: 12,
+          availableCapacity: 28,
+        },
       ],
-      "kanban": false,
-      "assigneeDetails": true
+      kanban: false,
+      assigneeDetails: true,
     };
 
-    const onSprintCapacityCancelSpy = spyOn(component, 'onSprintCapacityCancel');
+    const onSprintCapacityCancelSpy = spyOn(
+      component,
+      'onSprintCapacityCancel',
+    );
     component.onCapacitySprintRowSelection();
     expect(component.projectCapacityEditMode).toBeFalse();
     expect(onSprintCapacityCancelSpy).toHaveBeenCalled();
@@ -1920,24 +1799,24 @@ describe('CapacityPlanningComponent', () => {
   });
 
   it('should set capactiy Data for Kanban', () => {
-    const projectId = "testproj2_63d912d2af279c1d507cb93a";
+    const projectId = 'testproj2_63d912d2af279c1d507cb93a';
     component.kanban = true;
     const response = {
-      "message": "Capacity Data",
-      "success": true,
-      "data": [
+      message: 'Capacity Data',
+      success: true,
+      data: [
         {
-          "projectNodeId": "testproj2_63d912d2af279c1d507cb93a",
-          "projectName": "testproj2",
-          "capacity": 0,
-          "startDate": "2023-01-09",
-          "endDate": "2023-01-15",
-          "basicProjectConfigId": "63d912d2af279c1d507cb93a",
-          "kanban": true,
-          "assigneeDetails": true
+          projectNodeId: 'testproj2_63d912d2af279c1d507cb93a',
+          projectName: 'testproj2',
+          capacity: 0,
+          startDate: '2023-01-09',
+          endDate: '2023-01-15',
+          basicProjectConfigId: '63d912d2af279c1d507cb93a',
+          kanban: true,
+          assigneeDetails: true,
         },
-      ]
-    }
+      ],
+    };
     spyOn(component, 'checkifAssigneeToggleEnabled');
     spyOn(httpService, 'getCapacityData').and.returnValue(of(response));
     component.getCapacityData(projectId);
@@ -1947,16 +1826,16 @@ describe('CapacityPlanningComponent', () => {
 
   it('should show assignee modal on manage User btn click', () => {
     const selectedSprint = {
-      "projectNodeId": "RS MAP_63db6583e1b2765622921512",
-      "projectName": "RS MAP",
-      "sprintNodeId": "41937_RS MAP_63db6583e1b2765622921512",
-      "sprintName": "MAP|PI_12|ITR_5",
-      "sprintState": "FUTURE",
-      "capacity": 0,
-      "basicProjectConfigId": "63db6583e1b2765622921512",
-      "assigneeCapacity": [],
-      "kanban": false,
-      "assigneeDetails": true
+      projectNodeId: 'RS MAP_63db6583e1b2765622921512',
+      projectName: 'RS MAP',
+      sprintNodeId: '41937_RS MAP_63db6583e1b2765622921512',
+      sprintName: 'MAP|PI_12|ITR_5',
+      sprintState: 'FUTURE',
+      capacity: 0,
+      basicProjectConfigId: '63db6583e1b2765622921512',
+      assigneeCapacity: [],
+      kanban: false,
+      assigneeDetails: true,
     };
     spyOn(component, 'generateManageAssigneeData');
     component.manageAssignees(selectedSprint);
@@ -1975,40 +1854,40 @@ describe('CapacityPlanningComponent', () => {
 
   it('should generate manage Assignee list data with Selected user on top', () => {
     const selectedSprint = {
-      "id": "63e0a78bfba71c2bff2814bf",
-      "projectNodeId": "RS MAP_63db6583e1b2765622921512",
-      "projectName": "RS MAP",
-      "sprintNodeId": "41938_RS MAP_63db6583e1b2765622921512",
-      "sprintName": "MAP|PI_12|ITR_6",
-      "sprintState": "FUTURE",
-      "capacity": 41,
-      "basicProjectConfigId": "63db6583e1b2765622921512",
-      "assigneeCapacity": [
+      id: '63e0a78bfba71c2bff2814bf',
+      projectNodeId: 'RS MAP_63db6583e1b2765622921512',
+      projectName: 'RS MAP',
+      sprintNodeId: '41938_RS MAP_63db6583e1b2765622921512',
+      sprintName: 'MAP|PI_12|ITR_6',
+      sprintState: 'FUTURE',
+      capacity: 41,
+      basicProjectConfigId: '63db6583e1b2765622921512',
+      assigneeCapacity: [
         {
-          "userId": "userId",
-          "userName": "testUser",
-          "role": "BACKEND_DEVELOPER",
-          "plannedCapacity": 55.5,
-          "leaves": 0
-        }
+          userId: 'userId',
+          userName: 'testUser',
+          role: 'BACKEND_DEVELOPER',
+          plannedCapacity: 55.5,
+          leaves: 0,
+        },
       ],
-      "kanban": false,
-      "assigneeDetails": true
+      kanban: false,
+      assigneeDetails: true,
     };
 
     component.projectJiraAssignees = {
-      basicProjectConfigId: "63db6583e1b2765622921512",
-      projectName: "RS MAP",
+      basicProjectConfigId: '63db6583e1b2765622921512',
+      projectName: 'RS MAP',
       assigneeDetailsList: [
         {
-          "name": "testDisplayName1",
-          "displayName": "testDisplayName"
+          name: 'testDisplayName1',
+          displayName: 'testDisplayName',
         },
         {
-          "name": "userId",
-          "displayName": "testDisplayName"
-        }
-      ]
+          name: 'userId',
+          displayName: 'testDisplayName',
+        },
+      ],
     };
     component.generateManageAssigneeData(selectedSprint);
     expect(component.manageAssigneeList[0].name).toEqual('userId');
@@ -2030,7 +1909,9 @@ describe('CapacityPlanningComponent', () => {
     it('should reset selectedProjectValue in filterForm', () => {
       component.filterForm.get('selectedProjectValue').setValue('test');
       component.resetProjectSelection();
-      expect(component.filterForm.get('selectedProjectValue').value).toEqual('');
+      expect(component.filterForm.get('selectedProjectValue').value).toEqual(
+        '',
+      );
     });
   });
 
@@ -2090,10 +1971,8 @@ describe('CapacityPlanningComponent', () => {
     });
   });
 
-
   describe('AddOrUpdateData', () => {
     beforeEach(() => {
-
       component.showPopuup = false;
       component.executionDate = '';
       component.selectedSprintName = '';
@@ -2114,8 +1993,8 @@ describe('CapacityPlanningComponent', () => {
         sprintName: '',
         executionDate: '',
         kanban: false,
-        basicProjectConfigId: ''
-      }
+        basicProjectConfigId: '',
+      };
       component.kanban = false;
       component.selectedView = '';
       component.popupForm = null;
@@ -2204,7 +2083,7 @@ describe('CapacityPlanningComponent', () => {
         projectNodeId: 'proj1',
         projectName: 'Project 1',
         basicProjectConfigId: 'config1',
-        capacity: '10'
+        capacity: '10',
       };
       component.selectedView = 'upload_Sprint_Capacity';
       component.AddOrUpdateData(data);
@@ -2224,7 +2103,7 @@ describe('CapacityPlanningComponent', () => {
         projectNodeId: 'proj1',
         projectName: 'Project 1',
         basicProjectConfigId: 'config1',
-        capacity: '10'
+        capacity: '10',
       };
       component.kanban = true;
       component.selectedView = 'upload_Sprint_Capacity';
@@ -2237,7 +2116,7 @@ describe('CapacityPlanningComponent', () => {
         sprintNodeId: '',
         startDate: '2021-07-01',
         endDate: '2021-07-14',
-        capacity: '10'
+        capacity: '10',
       });
       expect(component.enableDisableSubmitButton).toHaveBeenCalled();
     });
@@ -2321,7 +2200,10 @@ describe('CapacityPlanningComponent', () => {
     it('should set selectedFilterData and selectedFilterCount', () => {
       component.filter_kpiRequest = '';
       component.getFilterDataOnLoad();
-      expect(component.selectedFilterData).toEqual({ kanban: false, sprintIncluded: ['CLOSED', 'ACTIVE', 'FUTURE'] });
+      expect(component.selectedFilterData).toEqual({
+        kanban: false,
+        sprintIncluded: ['CLOSED', 'ACTIVE', 'FUTURE'],
+      });
       expect(component.selectedFilterCount).toBe(0);
     });
 
@@ -2330,20 +2212,28 @@ describe('CapacityPlanningComponent', () => {
       const filterData = {
         data: [
           { labelName: 'Project', value: 'Project 1' },
-          { labelName: 'Project', value: 'Project 2' }
+          { labelName: 'Project', value: 'Project 2' },
         ],
       };
       spyOn(httpService, 'getFilterData').and.returnValue(of(filterData));
       spyOn(component, 'sortAlphabetically').and.returnValue(filterData.data);
-      spyOn(helperService, 'makeUniqueArrayList').and.returnValue(filterData.data);
+      spyOn(helperService, 'makeUniqueArrayList').and.returnValue(
+        filterData.data,
+      );
       spyOn(component, 'checkDefaultFilterSelection');
       spyOn(component, 'resetProjectSelection');
       spyOn(messageService, 'add');
       component.getFilterDataOnLoad();
-      expect(httpService.getFilterData).toHaveBeenCalledWith(component.selectedFilterData);
+      expect(httpService.getFilterData).toHaveBeenCalledWith(
+        component.selectedFilterData,
+      );
       expect(component.filterData).toEqual(filterData.data);
-      expect(component.sortAlphabetically).toHaveBeenCalledWith(filterData.data);
-      expect(helperService.makeUniqueArrayList).toHaveBeenCalledWith(filterData.data);
+      expect(component.sortAlphabetically).toHaveBeenCalledWith(
+        filterData.data,
+      );
+      expect(helperService.makeUniqueArrayList).toHaveBeenCalledWith(
+        filterData.data,
+      );
       expect(component.checkDefaultFilterSelection).toHaveBeenCalledWith(true);
       expect(component.resetProjectSelection).not.toHaveBeenCalled();
       expect(messageService.add).not.toHaveBeenCalled();
@@ -2358,7 +2248,9 @@ describe('CapacityPlanningComponent', () => {
       // spyOn(messageService, 'add');
       component.getFilterDataOnLoad();
       fixture.detectChanges();
-      expect(httpService.getFilterData).toHaveBeenCalledWith(component.selectedFilterData);
+      expect(httpService.getFilterData).toHaveBeenCalledWith(
+        component.selectedFilterData,
+      );
       expect(component.filterData).toBeNull();
       expect(component.resetProjectSelection).toHaveBeenCalled();
       // expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', summary: 'Projects not found.' });
@@ -2372,10 +2264,15 @@ describe('CapacityPlanningComponent', () => {
       spyOn(component, 'resetProjectSelection');
       spyOn(messageService, 'add');
       component.getFilterDataOnLoad();
-      expect(httpService.getFilterData).toHaveBeenCalledWith(component.selectedFilterData);
+      expect(httpService.getFilterData).toHaveBeenCalledWith(
+        component.selectedFilterData,
+      );
       expect(component.filterData).toBeNull();
       expect(component.resetProjectSelection).toHaveBeenCalled();
-      expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', summary: 'Error in fetching filter data. Please try after some time.' });
+      expect(messageService.add).toHaveBeenCalledWith({
+        severity: 'error',
+        summary: 'Error in fetching filter data. Please try after some time.',
+      });
       expect(component.loader).toBe(false);
     });
   });
@@ -2387,19 +2284,19 @@ describe('CapacityPlanningComponent', () => {
       { nodeId: 'node3', name: 'Project 3' },
     ];
     component.filterForm = new UntypedFormGroup({
-      selectedProjectValue : new UntypedFormControl()
-    })
+      selectedProjectValue: new UntypedFormControl(),
+    });
     const flag = true;
     component.checkDefaultFilterSelection(flag);
     expect(component.trendLineValueList).toEqual(component.projectListArr);
   });
 
-  it("should call getCapacityData if selectedProjectBaseConfigId is truthy",()=>{
-    const spyObj = spyOn(component,'getCapacityData')
-    component.selectedProjectBaseConfigId = "testID";
+  it('should call getCapacityData if selectedProjectBaseConfigId is truthy', () => {
+    const spyObj = spyOn(component, 'getCapacityData');
+    component.selectedProjectBaseConfigId = 'testID';
     component.getProjectBasedData();
     expect(spyObj).toHaveBeenCalled();
-  })
+  });
 
   it('should call saveOrUpdateSprintHappinessIndex with the correct postData, call getCapacityData with the correct basicProjectConfigId, set the expandedRows, and show a success message if the response is successful', () => {
     component.selectedSprintDetails = {
@@ -2417,7 +2314,9 @@ describe('CapacityPlanningComponent', () => {
       ],
     };
     const response = { success: true, data: {} };
-    spyOn(httpService,'saveOrUpdateSprintHappinessIndex').and.returnValue(of(response));
+    spyOn(httpService, 'saveOrUpdateSprintHappinessIndex').and.returnValue(
+      of(response),
+    );
     component.sendSprintHappinessIndexForAddOrRemove(capacitySaveData);
     expect(httpService.saveOrUpdateSprintHappinessIndex).toHaveBeenCalledWith({
       basicProjectConfigId: capacitySaveData['basicProjectConfigId'],
@@ -2446,7 +2345,9 @@ describe('CapacityPlanningComponent', () => {
       ],
     };
     const response = { success: false, data: {} };
-    spyOn(httpService,'saveOrUpdateSprintHappinessIndex').and.returnValue(of(response));
+    spyOn(httpService, 'saveOrUpdateSprintHappinessIndex').and.returnValue(
+      of(response),
+    );
 
     // Act
     component.sendSprintHappinessIndexForAddOrRemove(capacitySaveData);
@@ -2465,72 +2366,74 @@ describe('CapacityPlanningComponent', () => {
 
   it('should reset  to old values when clicked on cancel btn on selected sprint when kanban is true ', () => {
     const selectedSprint = {
-      "id": "63e4c5b4fba71c2bff2815d8",
-      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-      "projectName": "TestProject123",
-      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
-      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
-      "sprintState": "CLOSED",
-      "capacity": 28,
-      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-      "assigneeCapacity": [
+      id: '63e4c5b4fba71c2bff2815d8',
+      projectNodeId: 'TestProject123_63d8bca4af279c1d507cb8b0',
+      projectName: 'TestProject123',
+      sprintNodeId: '41963_TestProject123_63d8bca4af279c1d507cb8b0',
+      sprintName: 'PS HOW |PI_12|ITR_3|25_Jan',
+      sprintState: 'CLOSED',
+      capacity: 28,
+      basicProjectConfigId: '63d8bca4af279c1d507cb8b0',
+      assigneeCapacity: [
         {
-          "userId": "testUserId15",
-          "userName": "testUser",
-          "role": "TESTER",
-          "plannedCapacity": 40,
-          "leaves": 12,
-          "availableCapacity": 28
-        }
+          userId: 'testUserId15',
+          userName: 'testUser',
+          role: 'TESTER',
+          plannedCapacity: 40,
+          leaves: 12,
+          availableCapacity: 28,
+        },
       ],
-      "kanban": false,
-      "assigneeDetails": true
+      kanban: false,
+      assigneeDetails: true,
     };
 
-    component.capacityKanbanData = [{
-      "id": "63e4c5b4fba71c2bff2815d8",
-      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-      "projectName": "TestProject123",
-      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
-      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
-      "sprintState": "CLOSED",
-      "capacity": 28,
-      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-      "assigneeCapacity": [
-        {
-          "userId": "testUserId16",
-          "userName": "testUser",
-          "role": "TESTER",
-          "plannedCapacity": 40,
-          "leaves": 12,
-          "availableCapacity": 28
-        }
-      ],
-      "kanban": true,
-      "assigneeDetails": true
-    }];
+    component.capacityKanbanData = [
+      {
+        id: '63e4c5b4fba71c2bff2815d8',
+        projectNodeId: 'TestProject123_63d8bca4af279c1d507cb8b0',
+        projectName: 'TestProject123',
+        sprintNodeId: '41963_TestProject123_63d8bca4af279c1d507cb8b0',
+        sprintName: 'PS HOW |PI_12|ITR_3|25_Jan',
+        sprintState: 'CLOSED',
+        capacity: 28,
+        basicProjectConfigId: '63d8bca4af279c1d507cb8b0',
+        assigneeCapacity: [
+          {
+            userId: 'testUserId16',
+            userName: 'testUser',
+            role: 'TESTER',
+            plannedCapacity: 40,
+            leaves: 12,
+            availableCapacity: 28,
+          },
+        ],
+        kanban: true,
+        assigneeDetails: true,
+      },
+    ];
 
     component.selectedSprint = {
-      "id": "63e4c5b4fba71c2bff2815d8",
-      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-      "projectName": "TestProject123",
-      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
-      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
-      "sprintState": "CLOSED",
-      "capacity": 28,
-      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-      "assigneeCapacity": [
+      id: '63e4c5b4fba71c2bff2815d8',
+      projectNodeId: 'TestProject123_63d8bca4af279c1d507cb8b0',
+      projectName: 'TestProject123',
+      sprintNodeId: '41963_TestProject123_63d8bca4af279c1d507cb8b0',
+      sprintName: 'PS HOW |PI_12|ITR_3|25_Jan',
+      sprintState: 'CLOSED',
+      capacity: 28,
+      basicProjectConfigId: '63d8bca4af279c1d507cb8b0',
+      assigneeCapacity: [
         {
-          "userId": "testUserId17",
-          "userName": "testUser",
-          "role": "FRONTEND_DEVELOPER",
-          "plannedCapacity": 40,
-          "leaves": 12,
-          "availableCapacity": 28
-        }
+          userId: 'testUserId17',
+          userName: 'testUser',
+          role: 'FRONTEND_DEVELOPER',
+          plannedCapacity: 40,
+          leaves: 12,
+          availableCapacity: 28,
+        },
       ],
-      "kanban": false,
-      "assigneeDetails": true
+      kanban: false,
+      assigneeDetails: true,
     };
 
     component.kanban = true;
@@ -2538,16 +2441,20 @@ describe('CapacityPlanningComponent', () => {
     expect(component.capacityKanbanData).toBeDefined();
   });
 
-
   it('should prevent default behavior if the key is "e"', () => {
-    const event = { key: 'e', preventDefault: jasmine.createSpy('preventDefault') };
+    const event = {
+      key: 'e',
+      preventDefault: jasmine.createSpy('preventDefault'),
+    };
     component.validateInput(event);
     expect(event.preventDefault).toHaveBeenCalled();
   });
 
-
   it('should prevent default behavior if the key is "-"', () => {
-    const event = { key: '-', preventDefault: jasmine.createSpy('preventDefault') };
+    const event = {
+      key: '-',
+      preventDefault: jasmine.createSpy('preventDefault'),
+    };
     component.validateInput(event);
     expect(event.preventDefault).toHaveBeenCalled();
   });
@@ -2604,16 +2511,19 @@ describe('CapacityPlanningComponent', () => {
   it('should toggle off generate additional filter capacity list', () => {
     // Arrange
     const capacityObject = {
-      'squad1_node1': 10,
-      'squad1_node2': 5,
-      'squad2_node1': 8,
-      'squad2_node2': 3
+      squad1_node1: 10,
+      squad1_node2: 5,
+      squad2_node1: 8,
+      squad2_node2: 3,
     };
     component.selectedSquad = [
       { nodeId: 'squad1_node1', labelName: 'Squad 1' },
-      { nodeId: 'squad2_node1', labelName: 'Squad 2' }
+      { nodeId: 'squad2_node1', labelName: 'Squad 2' },
     ];
-    const spy = spyOn(component, 'createAdditionalFilterCapacityList').and.callThrough();
+    const spy = spyOn(
+      component,
+      'createAdditionalFilterCapacityList',
+    ).and.callThrough();
     // Act
     component.toggleOffGenerateAdditionalFilterCapacityList(capacityObject);
 
@@ -2625,11 +2535,11 @@ describe('CapacityPlanningComponent', () => {
     // Arrange
     component.selectedSquad = [
       { nodeId: 'squad1_node1', labelName: 'Squad 1' },
-      { nodeId: 'squad2_node1', labelName: 'Squad 2' }
+      { nodeId: 'squad2_node1', labelName: 'Squad 2' },
     ];
     component.squadForm = new UntypedFormGroup({
       squad1_node1: new FormControl(10),
-      squad2_node1: new FormControl(8)
+      squad2_node1: new FormControl(8),
     });
     component.isCapacitySaveDisabled = false;
     component.capacityErrorMessage = '';
@@ -2638,13 +2548,13 @@ describe('CapacityPlanningComponent', () => {
 
     // Assert
     expect(component.isCapacitySaveDisabled).toBeFalse();
-  })
+  });
 
   it('should edisable submit button for squads', () => {
     // Arrange
     component.selectedSquad = [
       { nodeId: 'squad1_node1', labelName: 'Squad 1' },
-      { nodeId: 'squad2_node1', labelName: 'Squad 2' }
+      { nodeId: 'squad2_node1', labelName: 'Squad 2' },
     ];
     component.squadForm = new UntypedFormGroup({
       squad1_node1: new FormControl(10),
@@ -2657,67 +2567,73 @@ describe('CapacityPlanningComponent', () => {
 
     // Assert
     expect(component.isCapacitySaveDisabled).toBeTrue();
-  })
-
-  it('should generate additional filter capacity list correctly', () => {
-    component.selectedSquad = [
-      { nodeId: 'squad1_node1', labelName: 'Squad 1' },
-      { nodeId: 'squad2_node1', labelName: 'Squad 2' }
-    ];
-    const selectedSprint = {
-      assigneeCapacity: [{
-        userId: 'userId1',
-        userName: 'User 1',
-        role: 'FRONTEND_DEVELOPER',
-        plannedCapacity: 40,
-        leaves: 12,
-        availableCapacity: 28,
-        squad:'UI'
-      }, {
-        userId: 'userId2',
-        userName: 'User 3',
-        role: 'BACKEND_DEVELOPER',
-        plannedCapacity: 20,
-        leaves: 2,
-        availableCapacity: 18,
-        squad:'JAVA'
-      }]
-    }
-    
-    const spy = spyOn(component, 'createAdditionalFilterCapacityList');
-    component.generateAdditionalFilterCapacityList(selectedSprint);
-
-    expect(spy).toHaveBeenCalled()
   });
 
   it('should generate additional filter capacity list correctly', () => {
     component.selectedSquad = [
       { nodeId: 'squad1_node1', labelName: 'Squad 1' },
-      { nodeId: 'squad2_node1', labelName: 'Squad 2' }
+      { nodeId: 'squad2_node1', labelName: 'Squad 2' },
     ];
     const selectedSprint = {
-      assigneeCapacity: [{
-        userId: 'userId1',
-        userName: 'User 1',
-        role: 'FRONTEND_DEVELOPER',
-        plannedCapacity: 40,
-        leaves: 12,
-        availableCapacity: 28,
-        squad:'squad1_node1'
-      }, {
-        userId: 'userId2',
-        userName: 'User 3',
-        role: 'BACKEND_DEVELOPER',
-        plannedCapacity: 20,
-        leaves: 2,
-        availableCapacity: 18,
-        squad:'squad2_node1'
-      }]
-    }
+      assigneeCapacity: [
+        {
+          userId: 'userId1',
+          userName: 'User 1',
+          role: 'FRONTEND_DEVELOPER',
+          plannedCapacity: 40,
+          leaves: 12,
+          availableCapacity: 28,
+          squad: 'UI',
+        },
+        {
+          userId: 'userId2',
+          userName: 'User 3',
+          role: 'BACKEND_DEVELOPER',
+          plannedCapacity: 20,
+          leaves: 2,
+          availableCapacity: 18,
+          squad: 'JAVA',
+        },
+      ],
+    };
+
     const spy = spyOn(component, 'createAdditionalFilterCapacityList');
     component.generateAdditionalFilterCapacityList(selectedSprint);
 
-    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should generate additional filter capacity list correctly', () => {
+    component.selectedSquad = [
+      { nodeId: 'squad1_node1', labelName: 'Squad 1' },
+      { nodeId: 'squad2_node1', labelName: 'Squad 2' },
+    ];
+    const selectedSprint = {
+      assigneeCapacity: [
+        {
+          userId: 'userId1',
+          userName: 'User 1',
+          role: 'FRONTEND_DEVELOPER',
+          plannedCapacity: 40,
+          leaves: 12,
+          availableCapacity: 28,
+          squad: 'squad1_node1',
+        },
+        {
+          userId: 'userId2',
+          userName: 'User 3',
+          role: 'BACKEND_DEVELOPER',
+          plannedCapacity: 20,
+          leaves: 2,
+          availableCapacity: 18,
+          squad: 'squad2_node1',
+        },
+      ],
+    };
+    const spy = spyOn(component, 'createAdditionalFilterCapacityList');
+    component.generateAdditionalFilterCapacityList(selectedSprint);
+
+    expect(spy).toHaveBeenCalled();
   });
 
   it('should add controls for squad when additional Filter id matches with squad node id', () => {
@@ -2733,12 +2649,12 @@ describe('CapacityPlanningComponent', () => {
       projectName: '',
       kanban: component.kanban,
       basicProjectConfigId: '',
-      sprintNodeId: ''
+      sprintNodeId: '',
     };
     component.selectedView = 'upload_Sprint_Capacity';
     component.selectedSquad = [
       { nodeId: 'squad1_node1', labelName: 'Squad 1' },
-      { nodeId: 'squad2_node1', labelName: 'Squad 2' }
+      { nodeId: 'squad2_node1', labelName: 'Squad 2' },
     ];
     const data = {
       executionDate: '2021-08-01',
@@ -2750,18 +2666,24 @@ describe('CapacityPlanningComponent', () => {
       projectName: 'Project 1',
       basicProjectConfigId: 'config1',
       capacity: '10',
-      additionalFilterCapacityList: [{
-        "nodeCapacityList": [{
-          additionalFilterId:"squad1_node1",
-          additionalFilterCapacity: '100'
-        }]
-      },
-      {
-        "nodeCapacityList": [{
-          additionalFilterId:"squad2_node1",
-          additionalFilterCapacity: '200'
-        }]
-      }]
+      additionalFilterCapacityList: [
+        {
+          nodeCapacityList: [
+            {
+              additionalFilterId: 'squad1_node1',
+              additionalFilterCapacity: '100',
+            },
+          ],
+        },
+        {
+          nodeCapacityList: [
+            {
+              additionalFilterId: 'squad2_node1',
+              additionalFilterCapacity: '200',
+            },
+          ],
+        },
+      ],
     };
     component.squadForm = new UntypedFormGroup({});
     component.popupForm = new UntypedFormGroup({});
@@ -2787,12 +2709,12 @@ describe('CapacityPlanningComponent', () => {
       projectName: '',
       kanban: component.kanban,
       basicProjectConfigId: '',
-      sprintNodeId: ''
+      sprintNodeId: '',
     };
     component.selectedView = 'upload_Sprint_Capacity';
     component.selectedSquad = [
       { nodeId: 'squad1_node1', labelName: 'Squad 1' },
-      { nodeId: 'squad2_node1', labelName: 'Squad 2' }
+      { nodeId: 'squad2_node1', labelName: 'Squad 2' },
     ];
     const data = {
       executionDate: '2021-08-01',
@@ -2804,18 +2726,24 @@ describe('CapacityPlanningComponent', () => {
       projectName: 'Project 1',
       basicProjectConfigId: 'config1',
       capacity: '10',
-      additionalFilterCapacityList: [{
-        "nodeCapacityList": [{
-          additionalFilterId:"1",
-          additionalFilterCapacity: '100'
-        }]
-      },
-      {
-        "nodeCapacityList": [{
-          additionalFilterId:"2",
-          additionalFilterCapacity: '200'
-        }]
-      }]
+      additionalFilterCapacityList: [
+        {
+          nodeCapacityList: [
+            {
+              additionalFilterId: '1',
+              additionalFilterCapacity: '100',
+            },
+          ],
+        },
+        {
+          nodeCapacityList: [
+            {
+              additionalFilterId: '2',
+              additionalFilterCapacity: '200',
+            },
+          ],
+        },
+      ],
     };
     component.squadForm = new UntypedFormGroup({});
     component.popupForm = new UntypedFormGroup({});
@@ -2841,12 +2769,12 @@ describe('CapacityPlanningComponent', () => {
       projectName: '',
       kanban: component.kanban,
       basicProjectConfigId: '',
-      sprintNodeId: ''
+      sprintNodeId: '',
     };
     component.selectedView = 'upload_Sprint_Capacity';
     component.selectedSquad = [
       { nodeId: 'squad1_node1', labelName: 'Squad 1' },
-      { nodeId: 'squad2_node1', labelName: 'Squad 2' }
+      { nodeId: 'squad2_node1', labelName: 'Squad 2' },
     ];
     const data = {
       executionDate: '2021-08-01',
@@ -2857,7 +2785,7 @@ describe('CapacityPlanningComponent', () => {
       projectNodeId: 'proj1',
       projectName: 'Project 1',
       basicProjectConfigId: 'config1',
-      capacity: '10'
+      capacity: '10',
     };
     component.squadForm = new UntypedFormGroup({});
     component.popupForm = new UntypedFormGroup({});
@@ -2872,19 +2800,19 @@ describe('CapacityPlanningComponent', () => {
 
   it('should give unauthorised error on submit capacity', fakeAsync(() => {
     component.squadForm = new UntypedFormGroup({
-      'squad1_node1': new UntypedFormControl('10'),
-      'squad2_node1': new UntypedFormControl('8'),
+      squad1_node1: new UntypedFormControl('10'),
+      squad2_node1: new UntypedFormControl('8'),
     });
     const res = {
       success: false,
-      message: 'Unauthorized'
-    }
+      message: 'Unauthorized',
+    };
     component.reqObj = {
       projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
       projectName: 'DEMO_SONAR',
       kanban: false,
       sprintNodeId: '40248_DEMO_SONAR_63284960fdd20276d60e4df5',
-      capacity: '500'
+      capacity: '500',
     };
     spyOn(component, 'toggleOffGenerateAdditionalFilterCapacityList');
     const spy = spyOn(messageService, 'add');
@@ -2892,21 +2820,20 @@ describe('CapacityPlanningComponent', () => {
     component.submitCapacity();
     tick();
     expect(spy).toHaveBeenCalled();
-  }))
+  }));
 
   it('should give error in saving scenario on submit capacity', fakeAsync(() => {
     component.squadForm = new UntypedFormGroup({
-      'squad1_node1': new UntypedFormControl('10'),
-      'squad2_node1': new UntypedFormControl('8'),
+      squad1_node1: new UntypedFormControl('10'),
+      squad2_node1: new UntypedFormControl('8'),
     });
-    const res = {
-    }
+    const res = {};
     component.reqObj = {
       projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
       projectName: 'DEMO_SONAR',
       kanban: false,
       sprintNodeId: '40248_DEMO_SONAR_63284960fdd20276d60e4df5',
-      capacity: '500'
+      capacity: '500',
     };
     spyOn(component, 'toggleOffGenerateAdditionalFilterCapacityList');
     const spy = spyOn(messageService, 'add');
@@ -2914,50 +2841,59 @@ describe('CapacityPlanningComponent', () => {
     component.submitCapacity();
     tick();
     expect(spy).toHaveBeenCalled();
-  }))
+  }));
 
   xit('should create additional filter capacity list', () => {
     const squadCapacityMap = {
-      'Squad1': {
-        'squad1_node1': 10,
+      Squad1: {
+        squad1_node1: 10,
       },
-      'Squad2': {
-        'squad2_node1': 8,
-      }
-    }
+      Squad2: {
+        squad2_node1: 8,
+      },
+    };
     const additionalFilterCapacityList = [
       {
-        "filterId": 'Squad1',
-        "nodeCapacityList": [{
-          additionalFilterId: 'squad1_node1',
-          additionalFilterCapacity: '10'
-        }]
+        filterId: 'Squad1',
+        nodeCapacityList: [
+          {
+            additionalFilterId: 'squad1_node1',
+            additionalFilterCapacity: '10',
+          },
+        ],
       },
       {
-        "filterId": 'Squad2',
-        "nodeCapacityList": [{
-          additionalFilterId: 'squad2_node1',
-          additionalFilterCapacity: '8'
-        }]
-      }
-    ]
-    const spy = spyOn(component, 'createAdditionalFilterCapacityList')
-    component.createAdditionalFilterCapacityList(squadCapacityMap)
+        filterId: 'Squad2',
+        nodeCapacityList: [
+          {
+            additionalFilterId: 'squad2_node1',
+            additionalFilterCapacity: '8',
+          },
+        ],
+      },
+    ];
+    const spy = spyOn(component, 'createAdditionalFilterCapacityList');
+    component.createAdditionalFilterCapacityList(squadCapacityMap);
     expect(spy).toEqual(additionalFilterCapacityList);
-  })
-
+  });
 
   it('should return kanban columns when kanban is true', () => {
     component.kanban = true;
-    component.cols = { capacityKanbanKeys: ['col1', 'col2'], capacityScrumKeys: ['scrum1', 'scrum2'] };
-    
+    component.cols = {
+      capacityKanbanKeys: ['col1', 'col2'],
+      capacityScrumKeys: ['scrum1', 'scrum2'],
+    };
+
     expect(component.getGridColumns()).toEqual(['col1', 'col2']);
   });
 
   it('should return scrum columns when kanban is false', () => {
     component.kanban = false;
-    component.cols = { capacityKanbanKeys: ['col1', 'col2'], capacityScrumKeys: ['scrum1', 'scrum2'] };
-    
+    component.cols = {
+      capacityKanbanKeys: ['col1', 'col2'],
+      capacityScrumKeys: ['scrum1', 'scrum2'],
+    };
+
     expect(component.getGridColumns()).toEqual(['scrum1', 'scrum2']);
   });
 
@@ -2965,28 +2901,28 @@ describe('CapacityPlanningComponent', () => {
   it('should return true when capacityKanbanData has data and kanban is true', () => {
     component.kanban = true;
     component.capacityKanbanData = [{ id: 1 }, { id: 2 }];
-    
+
     expect(component.checkIfGridDataIdEmpty()).toBeTrue();
   });
 
   it('should return false when capacityKanbanData is empty and kanban is true', () => {
     component.kanban = true;
     component.capacityKanbanData = [];
-    
+
     expect(component.checkIfGridDataIdEmpty()).toBeFalse();
   });
 
   it('should return true when capacityScrumData has data and kanban is false', () => {
     component.kanban = false;
     component.capacityScrumData = [{ id: 1 }, { id: 2 }];
-    
+
     expect(component.checkIfGridDataIdEmpty()).toBeTrue();
   });
 
   it('should return false when capacityScrumData is empty and kanban is false', () => {
     component.kanban = false;
     component.capacityScrumData = [];
-    
+
     expect(component.checkIfGridDataIdEmpty()).toBeFalse();
   });
 
@@ -2994,14 +2930,14 @@ describe('CapacityPlanningComponent', () => {
   it('should return kanban data when kanban is true', () => {
     component.kanban = true;
     component.capacityKanbanData = [{ id: 1 }];
-    
+
     expect(component.getGridData()).toEqual([{ id: 1 }]);
   });
 
   it('should return scrum data when kanban is false', () => {
     component.kanban = false;
     component.capacityScrumData = [{ id: 2 }];
-    
+
     expect(component.getGridData()).toEqual([{ id: 2 }]);
   });
 
@@ -3019,25 +2955,25 @@ describe('CapacityPlanningComponent', () => {
   // Test Case 5: getExpandedClass()
   it('should return correct classes when kanban is true', () => {
     component.kanban = true;
-    
+
     const result = component.getExpandedClass(true, true);
-    
+
     expect(result).toEqual({ 'tr-active': true, 'row-expanded': true });
   });
 
   it('should return correct classes when kanban is false and sprintState is active', () => {
     component.kanban = false;
-    
+
     const result = component.getExpandedClass({ sprintState: 'active' }, true);
-    
+
     expect(result).toEqual({ 'tr-active': true, 'row-expanded': true });
   });
 
   it('should return correct classes when kanban is false and sprintState is not active', () => {
     component.kanban = false;
-    
+
     const result = component.getExpandedClass({ sprintState: 'closed' }, true);
-    
+
     expect(result).toEqual({ 'tr-active': false, 'row-expanded': true });
   });
 });

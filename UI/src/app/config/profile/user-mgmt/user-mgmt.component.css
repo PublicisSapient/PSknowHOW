@@ -18,7 +18,7 @@
 
 .invalid-text {
   width: 100%;
-  margin-top: .01rem;
+  margin-top: 0.01rem;
   font-size: 80%;
   color: var(--color-red);
 }

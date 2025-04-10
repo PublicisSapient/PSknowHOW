@@ -20,8 +20,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -53,7 +51,13 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
-import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
+import com.publicissapient.kpidashboard.apis.model.EpicMetaData;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -148,18 +152,15 @@ public class BacklogEpicProgressServiceImplTest {
 		});
 		Set<JiraIssue> epic = jiraIssueArrayList.stream()
 				.filter(jiraIssue -> jiraIssue.getTypeName().equalsIgnoreCase("Epic")).collect(Collectors.toSet());
-		when(jiraIssueRepository.findNumberInAndBasicProjectConfigIdAndTypeName(anyList(), anyString(), anyString()))
-				.thenReturn(epic);
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatusList.get(0));
-		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssueArrayList);
 		Map<String, Object> resultListMap = epicProgressService.fetchKPIDataFromDb(
 				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0), "", "", kpiRequest);
 
 		Assertions.assertThat(resultListMap).isNotEmpty();
 		Assertions.assertThat(resultListMap.containsKey(TOTAL_ISSUES)).isTrue();
-		Assertions.assertThat(((List<JiraIssue>) resultListMap.get(TOTAL_ISSUES)).size()).isGreaterThan(0);
+		Assertions.assertThat(((List<JiraIssue>) resultListMap.get(TOTAL_ISSUES)).size()).isEqualTo(0);
 		Assertions.assertThat(resultListMap.containsKey(EPIC_LINKED)).isTrue();
-		Assertions.assertThat(((Set<JiraIssue>) resultListMap.get(EPIC_LINKED)).size()).isGreaterThan(0);
+		Assertions.assertThat(((Set<JiraIssue>) resultListMap.get(EPIC_LINKED)).size()).isEqualTo(0);
 		Assertions.assertThat(resultListMap.containsKey(RELEASE_JIRA_ISSUE_STATUS)).isTrue();
 	}
 
@@ -185,8 +186,8 @@ public class BacklogEpicProgressServiceImplTest {
 		assertThat(dataCount.getData()).isEqualTo("48");
 		assertThat(dataCount.getSize()).isEqualTo("63.0");
 		DataCount toDoCount = ((List<DataCount>) dataCount.getValue()).get(0);
-		assertThat(toDoCount.getValue()).isEqualTo(5L);
-		assertThat(toDoCount.getSize()).isEqualTo(4.0);
+		assertThat(toDoCount.getValue()).isEqualTo(6L);
+		assertThat(toDoCount.getSize()).isEqualTo(6.0);
 		assertThat(toDoCount.getSubFilter()).isEqualTo(TO_DO);
 		DataCount inProgressCount = ((List<DataCount>) dataCount.getValue()).get(1);
 		assertThat(inProgressCount.getValue()).isEqualTo(0L);
@@ -194,8 +195,8 @@ public class BacklogEpicProgressServiceImplTest {
 		assertThat(inProgressCount.getSubFilter()).isEqualTo(IN_PROGRESS);
 
 		DataCount doneCount = ((List<DataCount>) dataCount.getValue()).get(2);
-		assertThat(doneCount.getValue()).isEqualTo(43L);
-		assertThat(doneCount.getSize()).isEqualTo(59.0);
+		assertThat(doneCount.getValue()).isEqualTo(42L);
+		assertThat(doneCount.getSize()).isEqualTo(57.0);
 		assertThat(doneCount.getSubFilter()).isEqualTo(DONE);
 	}
 
@@ -245,11 +246,8 @@ public class BacklogEpicProgressServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Set<JiraIssue> epic = jiraIssueArrayList.stream()
 				.filter(jiraIssue -> jiraIssue.getTypeName().equalsIgnoreCase("Epic")).collect(Collectors.toSet());
-		when(jiraIssueRepository.findNumberInAndBasicProjectConfigIdAndTypeName(anyList(), anyString(), anyString()))
-				.thenReturn(epic);
 		jiraIssueArrayList.stream().filter(jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase("Epic"))
 				.forEach(jiraIssue -> jiraIssue.setEpicLinked("EPIC-1"));
-		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssueArrayList);
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatusList.get(0));
 		KpiElement kpiElement = epicProgressService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));

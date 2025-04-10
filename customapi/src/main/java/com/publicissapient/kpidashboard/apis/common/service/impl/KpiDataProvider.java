@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.apis.common.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,6 +61,7 @@ import lombok.extern.slf4j.Slf4j;
 public class KpiDataProvider {
 
 	private static final String DEV = "DeveloperKpi";
+	private static final String QA = "QaKpi";
 	private static final String STORIES = "stories";
 	private static final String SPRINTSDETAILS = "sprints";
 	private static final String FIRST_TIME_PASS_STORIES = "ftpStories";
@@ -87,6 +89,9 @@ public class KpiDataProvider {
 	private static final String REJECTED_DEFECT_DATA = "rejectedBugKey";
 	private static final String TOTAL_DEFECT_LIST = "totalDefectList";
 	private static final String TOTAL_SPRINT_SUBTASK_DEFECTS = "totalSprintSubtaskDefects";
+	private static final String TOTALBUGKEY = "totalBugData";
+	private static final String SPRINTSTORIES = "storyData";
+	private static final String PROJFMAPPING = "projectFieldMapping";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -1096,5 +1101,129 @@ public class KpiDataProvider {
 		List<String> storyIds = new ArrayList<>();
 		CollectionUtils.emptyIfNull(issuesBySprintAndType).forEach(story -> storyIds.add(story.getNumber()));
 		return storyIds;
+	}
+
+	/**
+	 * Fetches data from DB for the given project and sprints combination.
+	 *
+	 * @param kpiRequest
+	 *            The KPI request object.
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @param sprintList
+	 *            The list of sprint IDs.
+	 * @return A map containing story list, sprint details, and JiraIssue history.
+	 */
+	public Map<String, Object> fetchDSRData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+														 List<String> sprintList) {
+
+		Map<String, Object> resultListMap = new HashMap<>();
+		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+		Map<String, FieldMapping> projFieldMapping = new HashMap<>();
+		Map<String, Map<String, List<String>>> droppedDefects = new HashMap<>();
+		Map<String, List<String>> projectWisePriority = new HashMap<>();
+		Map<String, List<String>> configPriority = customApiConfig.getPriority();
+		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
+
+		List<String> basicProjectConfigIds = List.of(basicProjectConfigId.toString());
+
+		Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+		projFieldMapping.put(basicProjectConfigId.toString(), fieldMapping);
+
+		KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, basicProjectConfigId.toString(),
+				fieldMapping.getDefectPriorityKPI35());
+		KpiHelperService.addRCAProjectWise(projectWiseRCA, basicProjectConfigId.toString(), fieldMapping.getIncludeRCAForKPI35());
+
+		mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
+				CommonUtils.convertToPatternList(fieldMapping.getJiraIssueTypeKPI35()));
+		uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+		KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
+				fieldMapping.getResolutionTypeForRejectionKPI35(), fieldMapping.getJiraDefectRejectionStatusKPI35());
+
+		// additional filter * */
+		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, QA, filterHelperService);
+
+		mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
+				sprintList.stream().distinct().collect(Collectors.toList()));
+		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+
+		List<SprintWiseStory> sprintWiseStoryList = jiraIssueRepository.findIssuesGroupBySprint(mapOfFilters,
+				uniqueProjectMap, kpiRequest.getFilterToShowOnTrend(), QA);
+
+		List<JiraIssue> issuesBySprintAndType = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
+				uniqueProjectMap);
+		List<JiraIssue> storyListWoDrop = new ArrayList<>();
+		KpiHelperService.getDefectsWithoutDrop(droppedDefects, issuesBySprintAndType, storyListWoDrop);
+		KpiHelperService.removeRejectedStoriesFromSprint(sprintWiseStoryList, storyListWoDrop);
+		List<String> storyNumberList = new ArrayList<>();
+		sprintWiseStoryList.forEach(s -> storyNumberList.addAll(s.getStoryList()));
+
+		Map<String, List<String>> mapOfFiltersWithStoryIds = new LinkedHashMap<>();
+		mapOfFiltersWithStoryIds.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+		mapOfFiltersWithStoryIds.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
+				List.of(NormalizedJira.DEFECT_TYPE.getValue()));
+
+		List<JiraIssue> totalDefectList = jiraIssueRepository.findIssuesByType(mapOfFiltersWithStoryIds);
+
+		List<JiraIssue> defectListWoDrop = new ArrayList<>();
+		List<JiraIssue> remainingDefect = new ArrayList<>();
+
+		KpiHelperService.getDefectsWithoutDrop(droppedDefects, totalDefectList, defectListWoDrop);
+		exludePriorityDefect(projectWisePriority, projectWiseRCA, new HashSet<>(defectListWoDrop), remainingDefect);
+
+		resultListMap.put(SPRINTSTORIES, sprintWiseStoryList);
+		resultListMap.put(TOTALBUGKEY, remainingDefect);
+		resultListMap.put(PROJFMAPPING, projFieldMapping);
+		resultListMap.put(STORY_LIST, storyListWoDrop);
+		return resultListMap;
+	}
+
+	private static void exludePriorityDefect(Map<String, List<String>> projectWisePriority,
+											 Map<String, Set<String>> projectWiseRCA, Set<JiraIssue> defects, List<JiraIssue> remainingDefect) {
+		List<JiraIssue> remainingDefects = new ArrayList<>();
+		List<JiraIssue> rcaDefects = new ArrayList<>();
+
+		for (JiraIssue jiraIssue : defects) {
+			excludeSelectedPriorities(projectWisePriority, remainingDefects, jiraIssue);
+
+			// Filter priorityRemaining based on configured Root Causes (RCA) for the
+			// project, or include if no RCA is configured.
+			excludeSelectRCAJiraIssue(projectWiseRCA, rcaDefects, jiraIssue);
+		}
+
+		remainingDefects.stream().forEach(pi -> rcaDefects.stream().forEach(ri -> {
+			if (pi.getNumber().equalsIgnoreCase(ri.getNumber())) {
+				remainingDefect.add(pi);
+			}
+		}));
+	}
+
+	private static void excludeSelectedPriorities(Map<String, List<String>> projectWisePriority,
+												  List<JiraIssue> remainingDefects, JiraIssue jiraIssue) {
+		if (CollectionUtils.isNotEmpty(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()))) {
+			if (!(projectWisePriority.get(jiraIssue.getBasicProjectConfigId())
+					.contains(jiraIssue.getPriority().toLowerCase()))) {
+				remainingDefects.add(jiraIssue);
+			}
+		} else {
+			remainingDefects.add(jiraIssue);
+		}
+	}
+
+	private static void excludeSelectRCAJiraIssue(Map<String, Set<String>> projectWiseRCA, List<JiraIssue> rcaDefects,
+												  JiraIssue jiraIssue) {
+		if (CollectionUtils.isNotEmpty(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()))) {
+			for (String toFindRca : jiraIssue.getRootCauseList()) {
+				if ((projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()).contains(toFindRca.toLowerCase()))) {
+					rcaDefects.add(jiraIssue);
+				}
+			}
+		} else {
+			rcaDefects.add(jiraIssue);
+		}
 	}
 }

@@ -80,7 +80,6 @@
   stroke: #dedede;
 }
 ::ng-deep .bstimeslider {
-
   width: 435px;
   height: 30px;
   position: relative;
@@ -105,7 +104,7 @@
   height: 30px;
   position: absolute;
   left: 0;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
   background-color: var(--color-black);
   margin-left: 15px;
   z-index: 5;
@@ -136,7 +135,7 @@
   height: 30px;
   position: absolute;
   right: 0;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
   background-color: var(--color-black);
   z-index: 5;
   opacity: 0.3;
@@ -159,14 +158,16 @@
   margin-left: -180px;
   overflow: hidden;
 }
-:host::ng-deep .x.axis .domain { display: none; }
+:host::ng-deep .x.axis .domain {
+  display: none;
+}
 
 #xCaptionContainer {
   text-align: center;
   color: #437495;
 }
 
-:host ::ng-deep.tooltip2{
+:host ::ng-deep.tooltip2 {
   display: none;
   font-size: 0.7rem;
   padding: 2px;
@@ -178,18 +179,18 @@
   width: max-content;
 }
 
-:host ::ng-deep.red-bg{
+:host ::ng-deep.red-bg {
   color: white;
-  background: rgb(210, 22, 22)
+  background: rgb(210, 22, 22);
 }
 
-:host ::ng-deep.white-bg{
+:host ::ng-deep.white-bg {
   color: var(--color-gray-34);
   background: rgba(255, 255, 255, 0.95);
 }
 
-:host ::ng-deep.tooltip-container{
-  position: relative
+:host ::ng-deep.tooltip-container {
+  position: relative;
 }
 
 :host ::ng-deep .thresholdlinetext {

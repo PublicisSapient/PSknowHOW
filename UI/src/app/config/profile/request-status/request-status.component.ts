@@ -19,44 +19,58 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
-import { MessageService,ConfirmationService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-request-status',
   templateUrl: './request-status.component.html',
-  styleUrls: ['./request-status.component.css', '../profile.component.css', '../view-requests/view-requests.component.css']
+  styleUrls: [
+    './request-status.component.css',
+    '../profile.component.css',
+    '../view-requests/view-requests.component.css',
+  ],
 })
 export class RequestStatusComponent implements OnInit, OnDestroy {
   requestStatusRequest = <any>'';
   requestStatusData = {};
   requestStatusList = [];
   dataLoading = <boolean>false;
-  userName : string;
+  userName: string;
   subscriptions = [];
-  constructor(private httpService: HttpService, private messageService: MessageService, private confirmationService: ConfirmationService, private sharedService: SharedService) { }
+  constructor(
+    private httpService: HttpService,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService,
+    private sharedService: SharedService,
+  ) {}
 
   ngOnInit() {
-   
     // this.subscriptions.push(this.sharedService.currentUserDetailsObs.subscribe(details=>{
-      if(this.sharedService.getCurrentUserDetails('user_name')){
-        this.userName = this.sharedService.getCurrentUserDetails('user_name');
-        this.getRequests();
-      }
+    if (this.sharedService.getCurrentUserDetails('user_name')) {
+      this.userName = this.sharedService.getCurrentUserDetails('user_name');
+      this.getRequests();
+    }
     // }))
   }
 
   getRequests() {
     this.dataLoading = true;
-    this.requestStatusRequest = this.httpService.getUserAccessRequests(this.userName)
-      .subscribe(requests => {
+    this.requestStatusRequest = this.httpService
+      .getUserAccessRequests(this.userName)
+      .subscribe((requests) => {
         this.dataLoading = false;
         this.requestStatusData = requests;
         if (this.requestStatusData['success']) {
-          this.requestStatusList = this.requestStatusData['data'].sort(function(a, b) {
-            return +(new Date(b.createdDate)) - +(new Date(a.createdDate));
-          });
+          this.requestStatusList = this.requestStatusData['data'].sort(
+            function (a, b) {
+              return +new Date(b.createdDate) - +new Date(a.createdDate);
+            },
+          );
         } else {
-          this.messageService.add({ severity: 'error', summary: 'Error in fetching requests. Please try after some time.' });
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error in fetching requests. Please try after some time.',
+          });
         }
       });
   }
@@ -68,23 +82,31 @@ export class RequestStatusComponent implements OnInit, OnDestroy {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.dataLoading = true;
-        this.httpService.deleteAccessRequest(requestId).subscribe((response) => {
-          if (response && response['success']) {
-            this.requestStatusList = this.requestStatusList.filter(request => request.id !== requestId);
-            this.dataLoading = false;
-            this.sharedService.notificationUpdate();
-          } else {
-            this.messageService.add({ severity: 'error', summary: 'Error in recalling request. Please try after some time.' });
-          }
-        });
+        this.httpService
+          .deleteAccessRequest(requestId)
+          .subscribe((response) => {
+            if (response && response['success']) {
+              this.requestStatusList = this.requestStatusList.filter(
+                (request) => request.id !== requestId,
+              );
+              this.dataLoading = false;
+              this.sharedService.notificationUpdate();
+            } else {
+              this.messageService.add({
+                severity: 'error',
+                summary:
+                  'Error in recalling request. Please try after some time.',
+              });
+            }
+          });
       },
       reject: () => {
-        console.log('reject')
-       }
+        console.log('reject');
+      },
     });
   }
 
-  ngOnDestroy(){
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  ngOnDestroy() {
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 }

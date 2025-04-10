@@ -36,10 +36,10 @@ public class OpenApiConfig {
 
 	@Bean
 	public OpenAPI customOpenAPI() {
-		return new OpenAPI().info(new Info().title("PSKnowHOW API Documentation").version("1.0.0").description(
-				"PSKnowHOW is a measurement framework that delivers an intuitive, visual dashboard to track key performance indicators (KPIs) across entire organizations transformation programs. It empowers teams with the knowledge of HOW work is progressing, areas of health, as well as achievement gaps and areas for improvement.")
+		return new OpenAPI().info(new Info().title("KnowHOW API Documentation").version("1.0.0").description(
+				"KnowHOW is a measurement framework that delivers an intuitive, visual dashboard to track key performance indicators (KPIs) across entire organizations transformation programs. It empowers teams with the knowledge of HOW work is progressing, areas of health, as well as achievement gaps and areas for improvement.")
 				.license(new License().name("Apache 2.0").url("https://www.apache.org/licenses/LICENSE-2.0"))
-				.summary("PSKnowHOW API Documentation Summary"))
+				.summary("KnowHOW API Documentation Summary"))
 				.components(
 						new Components()
 								.addSecuritySchemes("cookieAuth",
@@ -50,7 +50,7 @@ public class OpenApiConfig {
 												.name("x-api-key")))
 				.addSecurityItem(new SecurityRequirement().addList("cookieAuth"))
 				.addSecurityItem(new SecurityRequirement().addList("apiKeyAuth"))
-				.externalDocs(new ExternalDocumentation().description("Find out more about PSKnowHOW")
+				.externalDocs(new ExternalDocumentation().description("Find out more about KnowHOW")
 						.url("https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/1212417/About+PSknowHOW"));
 	}
 }

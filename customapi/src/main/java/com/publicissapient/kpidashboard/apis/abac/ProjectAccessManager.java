@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -173,7 +174,7 @@ public class ProjectAccessManager {
 	 * This method check access Request
 	 *
 	 * @param accessRequest
-	 *          accessRequest
+	 *            accessRequest
 	 * @return boolean value
 	 */
 	public boolean handleAccessRequest(AccessRequest accessRequest) {
@@ -191,7 +192,9 @@ public class ProjectAccessManager {
 		Map<String, Set<String>> existingAccessMap = new HashMap<>();
 
 		// creating userInfoMap
-		creatingExistingAccessesMap(userInfo.getProjectsAccess(), existingAccessMap);
+		if (userInfo != null) {
+			creatingExistingAccessesMap(userInfo.getProjectsAccess(), existingAccessMap);
+		}
 
 		// creating parentMap
 		creatingGlobalParentMap(accessLevel, requestIds, projectBasicConfigNode, globalParentMap);
@@ -213,17 +216,11 @@ public class ProjectAccessManager {
 	 * This method creates access request
 	 *
 	 * @param accessRequest
-	 *          accessRequest
+	 *            accessRequest
 	 * @param listener
-	 *          listener
+	 *            listener
 	 */
 	public void createAccessRequest(AccessRequest accessRequest, AccessRequestListener listener) {
-
-		// Use guard clauses to return early for certain conditions
-		if (hasPendingAccessRequest(accessRequest)) {
-			listenAccessRequestFailure(listener, "Already has a pending request");
-			return;
-		}
 
 		if (handelSuperAdminProjectLevelAccessRequest(accessRequest)) {
 			listenAccessRequestFailure(listener,
@@ -231,16 +228,78 @@ public class ProjectAccessManager {
 			return;
 		}
 
-		List<AccessRequest> approvedRequests = accessRequestsRepository.findByUsernameAndStatus(accessRequest.getUsername(),
-				Constant.ACCESS_REQUEST_STATUS_APPROVED);
+		// Get all access requests for the user
+		List<AccessRequest> allRequests = accessRequestsRepository.findByUsername(accessRequest.getUsername());
 
-		if (CollectionUtils.isNotEmpty(approvedRequests) && checkIfAlreadyHasAccess(accessRequest, approvedRequests)) {
-			listenAccessRequestFailure(listener, "Already has access of requested level");
+		List<AccessRequest> approvedRequests = allRequests.stream()
+				.filter(req -> Constant.ACCESS_REQUEST_STATUS_APPROVED.equals(req.getStatus()))
+				.collect(Collectors.toList());
+		List<AccessRequest> pendingRequests = allRequests.stream()
+				.filter(req -> Constant.ACCESS_REQUEST_STATUS_PENDING.equals(req.getStatus()))
+				.collect(Collectors.toList());
+
+		// Check if there's a pending request for any other access
+		boolean hasPendingRequestForDifferentAccess = pendingRequests.stream()
+				.anyMatch(pr -> pr.getAccessNode().getAccessItems().stream().map(AccessItem::getItemId)
+						.noneMatch(id -> accessRequest.getAccessNode().getAccessItems().stream()
+								.map(AccessItem::getItemId).anyMatch(reqId -> reqId.equals(id))));
+
+		if (hasPendingRequestForDifferentAccess) {
+			listenAccessRequestFailure(listener, "Already has a pending request for different access");
+			return;
+		}
+
+		// Check for existing pending request for same project
+		Optional<AccessRequest> existingPendingRequest = pendingRequests.stream().filter(pr -> pr.getAccessNode()
+				.getAccessItems().stream().map(AccessItem::getItemId).anyMatch(id -> accessRequest.getAccessNode()
+						.getAccessItems().stream().map(AccessItem::getItemId).anyMatch(reqId -> reqId.equals(id))))
+				.findFirst();
+
+		// If there's a pending request for same project with different role, update it
+		if (existingPendingRequest.isPresent()) {
+			AccessRequest pendingRequest = existingPendingRequest.get();
+			if (!pendingRequest.getRole().equals(accessRequest.getRole())) {
+				pendingRequest.setRole(accessRequest.getRole());
+				pendingRequest.setLastModifiedDate(new Date());
+				accessRequestsRepository.save(pendingRequest);
+				listenAccessRequestSuccess(listener, pendingRequest);
+			} else {
+				listenAccessRequestFailure(listener, "Already has a pending request with same role");
+			}
+			return;
+		}
+
+		// Check if user has approved access for same project but requesting different
+		// role
+		Optional<AccessRequest> existingApprovedRequest = approvedRequests.stream().filter(ar -> ar.getAccessNode()
+				.getAccessItems().stream().map(AccessItem::getItemId).anyMatch(id -> accessRequest.getAccessNode()
+						.getAccessItems().stream().map(AccessItem::getItemId).anyMatch(reqId -> reqId.equals(id))))
+				.findFirst();
+
+		if (existingApprovedRequest.isPresent()
+				&& !existingApprovedRequest.get().getRole().equals(accessRequest.getRole())) {
+			// Create new pending request for different role
+			accessRequest.setStatus(Constant.ACCESS_REQUEST_STATUS_PENDING);
+			accessRequest.setLastModifiedDate(new Date());
+			AccessRequest savedRequest = accessRequestsRepository.save(accessRequest);
+			listenAccessRequestSuccess(listener, savedRequest);
 			return;
 		}
 
 		if (!handleAccessRequest(accessRequest)) {
 			listenAccessRequestFailure(listener, "Already has access to parent level");
+			return;
+		}
+
+		UserInfo userInfo = getUserInfo(accessRequest.getUsername());
+
+		// Check if user already has access with same role
+		if (hasAccess(userInfo, accessRequest) && userInfo.getProjectsAccess().stream()
+				.anyMatch(pa -> pa.getRole().equals(accessRequest.getRole()) && pa.getAccessNodes().stream()
+						.flatMap(an -> an.getAccessItems().stream()).map(AccessItem::getItemId)
+						.anyMatch(id -> accessRequest.getAccessNode().getAccessItems().stream()
+								.map(AccessItem::getItemId).anyMatch(reqId -> reqId.equals(id))))) {
+			listenAccessRequestFailure(listener, "Already has access with requested role");
 			return;
 		}
 
@@ -254,24 +313,27 @@ public class ProjectAccessManager {
 		listenAccessRequestSuccess(listener, newAccessRequest);
 	}
 
+	private static boolean hasAccess(UserInfo userInfo, AccessRequest accessRequest) {
+		if (userInfo == null || accessRequest == null || userInfo.getProjectsAccess() == null) {
+			return false;
+		}
+
+		List<String> requestedItemIds = accessRequest.getAccessNode().getAccessItems().stream()
+				.map(AccessItem::getItemId).collect(Collectors.toList());
+
+		return userInfo.getProjectsAccess().stream().flatMap(projectAccess -> projectAccess.getAccessNodes().stream())
+				.flatMap(accessNode -> accessNode.getAccessItems().stream()).map(AccessItem::getItemId)
+				.anyMatch(requestedItemIds::contains);
+	}
+
 	private AccessRequest filterAlreadyApprovedAccessRequest(AccessRequest accessRequest,
 			List<AccessRequest> approvedRequests) {
 		List<AccessItem> filteredAccessItems = accessRequest.getAccessNode().getAccessItems().stream()
-				.filter(accessItem -> !checkIfAlreadyHasAccess(accessItem, approvedRequests)).collect(Collectors.toList());
+				.filter(accessItem -> !checkIfAlreadyHasAccess(accessItem, approvedRequests))
+				.collect(Collectors.toList());
 
 		accessRequest.getAccessNode().setAccessItems(filteredAccessItems);
 		return accessRequest;
-	}
-
-	private boolean checkIfAlreadyHasAccess(AccessRequest accessRequest, List<AccessRequest> approvedRequests) {
-		Set<String> approvedIds = approvedRequests.stream()
-				.flatMap(ar -> ar.getAccessNode().getAccessItems().stream().map(AccessItem::getItemId))
-				.collect(Collectors.toSet());
-
-		Set<String> requestIds = accessRequest.getAccessNode().getAccessItems().stream().map(AccessItem::getItemId)
-				.collect(Collectors.toSet());
-
-		return approvedIds.containsAll(requestIds);
 	}
 
 	private boolean checkIfAlreadyHasAccess(AccessItem accessItem, List<AccessRequest> approvedRequests) {
@@ -291,17 +353,17 @@ public class ProjectAccessManager {
 		String accessLevel = accessRequest.getAccessNode().getAccessLevel();
 		Set<String> requestIds = accessRequest.getAccessNode().getAccessItems().stream().map(AccessItem::getItemId)
 				.collect(Collectors.toSet());
-		return accessRequest.getRole().equals(Constant.ROLE_SUPERADMIN) &&
-				(StringUtils.isNotEmpty(accessLevel) || CollectionUtils.isNotEmpty(requestIds));
+		return accessRequest.getRole().equals(Constant.ROLE_SUPERADMIN)
+				&& (StringUtils.isNotEmpty(accessLevel) || CollectionUtils.isNotEmpty(requestIds));
 	}
 
 	/**
 	 * Set status in case of auto approval.
 	 *
 	 * @param requests
-	 *          requests
+	 *            requests
 	 * @param accessRequest
-	 *          accessRequest
+	 *            accessRequest
 	 */
 	private void setRequestStatus(List<AccessRequest> requests, AccessRequest accessRequest) {
 		if (CollectionUtils.isNotEmpty(requests) && null != accessRequest) {
@@ -314,12 +376,13 @@ public class ProjectAccessManager {
 	 * project
 	 *
 	 * @param accessRequest
-	 *          accessRequest
+	 *            accessRequest
 	 * @return list of access request
 	 */
 	private List<AccessRequest> getRequestList(AccessRequest accessRequest) {
 		List<AccessRequest> list = new ArrayList<>();
-		if (accessRequest.getAccessNode().getAccessLevel().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
+		if (accessRequest.getAccessNode().getAccessLevel()
+				.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
 			list.addAll(getSeperateAccessRequest(accessRequest));
 		} else {
 			list.add(accessRequest);
@@ -331,7 +394,7 @@ public class ProjectAccessManager {
 	 * This method create seperate request if accessLevel is project
 	 *
 	 * @param accessRequest
-	 *          accessRequest
+	 *            accessRequest
 	 * @return list of access Request
 	 */
 	private List<AccessRequest> getSeperateAccessRequest(AccessRequest accessRequest) {
@@ -352,7 +415,7 @@ public class ProjectAccessManager {
 	 * create access request
 	 *
 	 * @param accessRequest
-	 *          accessRequest
+	 *            accessRequest
 	 * @return new access Request object
 	 */
 	private AccessRequest createAccessRequest(AccessRequest accessRequest) {
@@ -374,7 +437,8 @@ public class ProjectAccessManager {
 	}
 
 	private void sendAccessRequestEmailToAdmin(AccessRequest accessRequest) {
-		List<String> emailAddresses = commonService.getEmailAddressBasedOnRoles(Arrays.asList(Constant.ROLE_SUPERADMIN));
+		List<String> emailAddresses = commonService
+				.getEmailAddressBasedOnRoles(Arrays.asList(Constant.ROLE_SUPERADMIN));
 
 		if (accessRequest.getAccessNode().getAccessLevel().equals(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
 			emailAddresses.addAll(commonService.getProjectAdminEmailAddressBasedProjectId(
@@ -394,11 +458,11 @@ public class ProjectAccessManager {
 			log.info("Notification message sent to kafka with key : {}", NOTIFICATION_KEY);
 			String templateKey = customApiConfig.getMailTemplate().getOrDefault(NOTIFICATION_KEY, "");
 			notificationService.sendNotificationEvent(emailAddresses, customData, subject, NOTIFICATION_KEY,
-					customApiConfig.getKafkaMailTopic(), customApiConfig.isNotificationSwitch(), kafkaTemplate, templateKey,
-					customApiConfig.isMailWithoutKafka());
+					customApiConfig.getKafkaMailTopic(), customApiConfig.isNotificationSwitch(), kafkaTemplate,
+					templateKey, customApiConfig.isMailWithoutKafka());
 		} else {
-			log.error("Notification Event not sent : No email address found associated with Superadmin role " +
-					"or Property - notificationSubject.accessRequest not set in property file ");
+			log.error("Notification Event not sent : No email address found associated with Superadmin role "
+					+ "or Property - notificationSubject.accessRequest not set in property file ");
 		}
 	}
 
@@ -414,7 +478,8 @@ public class ProjectAccessManager {
 			List<AccessItem> accessItems = accessNode.getAccessItems();
 			Map<String, String> organizationHierarchyMap = createOrganizationHierarchyMap();
 
-			accessItemsAsString = accessItems.stream().map(accessItem -> organizationHierarchyMap.get(accessItem.getItemId()))
+			accessItemsAsString = accessItems.stream()
+					.map(accessItem -> organizationHierarchyMap.get(accessItem.getItemId()))
 					.collect(Collectors.joining(STRING_LIST_JOINER));
 		}
 		RoleData roleData = rolesRepository.findByRoleName(accessRequestsData.getRole());
@@ -433,7 +498,7 @@ public class ProjectAccessManager {
 	 * getEmailAddress for email data
 	 *
 	 * @param accessRequestsData
-	 *          accessRequestsData
+	 *            accessRequestsData
 	 * @return mail
 	 */
 	private String getEmailAddress(AccessRequest accessRequestsData) {
@@ -478,6 +543,20 @@ public class ProjectAccessManager {
 			accessRequest.setRole(accessRequestDecision.getRole());
 		}
 
+		// Fetch and delete any existing approved requests for the same project
+		List<AccessRequest> existingApprovedRequests = accessRequestsRepository
+				.findByUsernameAndStatus(accessRequest.getUsername(), Constant.ACCESS_REQUEST_STATUS_APPROVED);
+
+		if (CollectionUtils.isNotEmpty(existingApprovedRequests)) {
+			existingApprovedRequests.stream()
+					.filter(ar -> ar.getAccessNode() != null
+							&& CollectionUtils.isNotEmpty(ar.getAccessNode().getAccessItems())
+							&& ar.getAccessNode().getAccessItems().stream().map(AccessItem::getItemId)
+									.anyMatch(id -> accessRequest.getAccessNode().getAccessItems().stream()
+											.map(AccessItem::getItemId).anyMatch(reqId -> reqId.equals(id))))
+					.forEach(ar -> accessRequestsRepository.delete(ar));
+		}
+
 		UserInfo existingUserInfo = getUserInfo(accessRequest.getUsername());
 		UserInfo resultUserInfo = copyUserInfo(existingUserInfo);
 
@@ -504,9 +583,9 @@ public class ProjectAccessManager {
 			// creating global children map
 			createGlobalChildrenMap(accessLevel, accessRequest.getAccessNode().getAccessItems(), projectBasicConfigNode,
 					globalChildrenMap);
-			boolean isUserExists = existingUserInfo != null && existingUserInfo.getAuthorities().size() == 1 &&
-					existingUserInfo.getAuthorities().contains(Constant.ROLE_VIEWER) &&
-					existingUserInfo.getProjectsAccess().isEmpty();
+			boolean isUserExists = existingUserInfo != null && existingUserInfo.getAuthorities().size() == 1
+					&& existingUserInfo.getAuthorities().contains(Constant.ROLE_VIEWER)
+					&& existingUserInfo.getProjectsAccess().isEmpty();
 
 			if (isUserExists) {
 				updateAuthorities(resultUserInfo, accessRequest.getRole());
@@ -548,8 +627,9 @@ public class ProjectAccessManager {
 		return accessRequestsRepository.save(accessRequest);
 	}
 
-	private void modifyUserInfoForAccess(AccessRequest accessRequest, UserInfo existingUserInfo, UserInfo resultUserInfo,
-			String accessLevel, String accessRole, Map<String, Set<String>> globalChildrenMap) {
+	private void modifyUserInfoForAccess(AccessRequest accessRequest, UserInfo existingUserInfo,
+			UserInfo resultUserInfo, String accessLevel, String accessRole,
+			Map<String, Set<String>> globalChildrenMap) {
 		Map<String, String> organizationHierarchyMap = createOrganizationHierarchyMap();
 
 		accessRequest.getAccessNode().getAccessItems().forEach(item -> {
@@ -575,8 +655,8 @@ public class ProjectAccessManager {
 		if (CollectionUtils.isEmpty(organizationHierarchyList)) {
 			log.error("No organization hierarchy found");
 		}
-		return organizationHierarchyList.stream().collect(
-				Collectors.toMap(OrganizationHierarchy::getNodeId, OrganizationHierarchy::getNodeDisplayName, (e1, e2) -> e1));
+		return organizationHierarchyList.stream().collect(Collectors.toMap(OrganizationHierarchy::getNodeId,
+				OrganizationHierarchy::getNodeDisplayName, (e1, e2) -> e1));
 	}
 
 	private void cleanUserInfo(UserInfo userInfo) {
@@ -586,7 +666,8 @@ public class ProjectAccessManager {
 			userInfo.getProjectsAccess().forEach(projectsAccess -> projectsAccess.getAccessNodes()
 					.removeIf(accessNode -> CollectionUtils.isEmpty(accessNode.getAccessItems())));
 			// remove role if no accessNodes
-			userInfo.getProjectsAccess().removeIf(projectsAccess -> CollectionUtils.isEmpty(projectsAccess.getAccessNodes()));
+			userInfo.getProjectsAccess()
+					.removeIf(projectsAccess -> CollectionUtils.isEmpty(projectsAccess.getAccessNodes()));
 			// update authorities
 			List<String> roles = userInfo.getProjectsAccess().stream().map(ProjectsAccess::getRole)
 					.collect(Collectors.toList());
@@ -595,7 +676,8 @@ public class ProjectAccessManager {
 				roles.add(Constant.ROLE_VIEWER);
 				userInfo.setAuthorities(roles);
 			} else if (roles.contains(Constant.ROLE_GUEST)) {
-				userInfo.getProjectsAccess().removeIf(projectsAccess -> !projectsAccess.getRole().equals(Constant.ROLE_GUEST));
+				userInfo.getProjectsAccess()
+						.removeIf(projectsAccess -> !projectsAccess.getRole().equals(Constant.ROLE_GUEST));
 				userInfo.setAuthorities(new ArrayList<>(Arrays.asList(Constant.ROLE_GUEST)));
 			} else {
 				userInfo.setAuthorities(roles);
@@ -613,8 +695,8 @@ public class ProjectAccessManager {
 	private boolean isChildOf(String accessLevel, AccessItem accessItem, Map<String, Set<String>> globalChildrenMap) {
 
 		Set<String> childrenIds = globalChildrenMap.get(accessLevel.toUpperCase());
-		return childrenIds != null &&
-				childrenIds.stream().anyMatch(childId -> childId.equalsIgnoreCase(accessItem.getItemId()));
+		return childrenIds != null
+				&& childrenIds.stream().anyMatch(childId -> childId.equalsIgnoreCase(accessItem.getItemId()));
 	}
 
 	private void moveItemIntoNewRole(String accessLevel, AccessItem targetAccessItem, String existingRoleForItem,
@@ -623,8 +705,8 @@ public class ProjectAccessManager {
 		addAccessItemToProjectAccess(accessLevel, targetAccessItem, requestedAccessRole, resultUserInfo);
 	}
 
-	private void addAccessItemToProjectAccess(String accessLevel, AccessItem targetAccessItem, String requestedAccessRole,
-			UserInfo resultUserInfo) {
+	private void addAccessItemToProjectAccess(String accessLevel, AccessItem targetAccessItem,
+			String requestedAccessRole, UserInfo resultUserInfo) {
 		if (resultUserInfo.getProjectsAccess().stream()
 				.noneMatch(projectsAccess -> projectsAccess.getRole().equals(requestedAccessRole))) {
 			ProjectsAccess pa = createNewProjectsAccess(accessLevel, targetAccessItem, requestedAccessRole);
@@ -633,7 +715,8 @@ public class ProjectAccessManager {
 		} else {
 			resultUserInfo.getProjectsAccess().stream()
 					.filter(projectsAccess -> projectsAccess.getRole().equals(requestedAccessRole))
-					.forEach(projectsAccess -> addAccessNode(projectsAccess.getAccessNodes(), accessLevel, targetAccessItem));
+					.forEach(projectsAccess -> addAccessNode(projectsAccess.getAccessNodes(), accessLevel,
+							targetAccessItem));
 		}
 	}
 
@@ -643,7 +726,8 @@ public class ProjectAccessManager {
 				.filter(projectsAccess -> projectsAccess.getRole().equals(existingRoleForItem))
 				.forEach(projectsAccess -> projectsAccess.getAccessNodes().stream()
 						.filter(accessNode -> accessNode.getAccessLevel().equals(accessLevel))
-						.forEach(accessNode -> accessNode.getAccessItems().removeIf(item -> item.equals(targetAccessItem))));
+						.forEach(accessNode -> accessNode.getAccessItems()
+								.removeIf(item -> item.equals(targetAccessItem))));
 	}
 
 	private void addAccessNode(List<AccessNode> accessNodes, String accessLevel, AccessItem accessItem) {
@@ -707,7 +791,8 @@ public class ProjectAccessManager {
 		return copyOfUserInfo;
 	}
 
-	private void creatingExistingAccessesMap(List<ProjectsAccess> projectsAccess, Map<String, Set<String>> userInfoMap) {
+	private void creatingExistingAccessesMap(List<ProjectsAccess> projectsAccess,
+			Map<String, Set<String>> userInfoMap) {
 		projectsAccess.forEach(pa -> {
 			Map<String, List<AccessNode>> accessNodeMap = pa.getAccessNodes().stream()
 					.collect(Collectors.groupingBy(AccessNode::getAccessLevel));
@@ -734,7 +819,8 @@ public class ProjectAccessManager {
 			parentMap.forEach((k, v) -> {
 				Set<String> items = globalParentMap.get(k);
 				if (CollectionUtils.isEmpty(items)) {
-					globalParentMap.put(k, v.stream().map(ProjectBasicConfigNode::getValue).collect(Collectors.toSet()));
+					globalParentMap.put(k,
+							v.stream().map(ProjectBasicConfigNode::getValue).collect(Collectors.toSet()));
 				} else {
 					items.addAll(v.stream().map(ProjectBasicConfigNode::getValue).collect(Collectors.toSet()));
 					globalParentMap.put(k, items);
@@ -757,7 +843,8 @@ public class ProjectAccessManager {
 			accessLevelWiseChildren.forEach((k, v) -> {
 				Set<String> items = globalChildrenMap.get(k);
 				if (CollectionUtils.isEmpty(items)) {
-					globalChildrenMap.put(k, v.stream().map(ProjectBasicConfigNode::getValue).collect(Collectors.toSet()));
+					globalChildrenMap.put(k,
+							v.stream().map(ProjectBasicConfigNode::getValue).collect(Collectors.toSet()));
 				} else {
 					items.addAll(v.stream().map(ProjectBasicConfigNode::getValue).collect(Collectors.toSet()));
 					globalChildrenMap.put(k, items);
@@ -797,20 +884,13 @@ public class ProjectAccessManager {
 		}
 	}
 
-	private boolean hasPendingAccessRequest(AccessRequest accessRequest) {
-		List<AccessRequest> pendingRequest = accessRequestsRepository.findByUsernameAndStatus(accessRequest.getUsername(),
-				Constant.ACCESS_REQUEST_STATUS_PENDING);
-
-		return CollectionUtils.isNotEmpty(pendingRequest);
-	}
-
 	private boolean isNewUser(UserInfo userInfo) {
 		if (userInfo == null) {
 			return false;
 		}
 		List<String> authorities = userInfo.getAuthorities();
-		return authorities.size() == 1 && authorities.contains(Constant.ROLE_VIEWER) &&
-				CollectionUtils.isEmpty(userInfo.getProjectsAccess());
+		return authorities.size() == 1 && authorities.contains(Constant.ROLE_VIEWER)
+				&& CollectionUtils.isEmpty(userInfo.getProjectsAccess());
 	}
 
 	public List<RoleWiseProjects> getProjectAccessesWithRole(String username) {
@@ -873,16 +953,17 @@ public class ProjectAccessManager {
 
 	private List<ProjectBasicConfig> findByIdIn(Set<String> projectBasicConfigNodeIds) {
 		return projectBasicConfigService.getAllProjectBasicConfigs(Boolean.TRUE).stream()
-				.filter(project -> projectBasicConfigNodeIds.contains(project.getProjectNodeId())).collect(Collectors.toList());
+				.filter(project -> projectBasicConfigNodeIds.contains(project.getProjectNodeId()))
+				.collect(Collectors.toList());
 	}
 
 	private List<ProjectBasicConfig> filterProjectsByHierarchyLevelAndValue(String hierarchyLevelId,
 			List<String> orgHierarchyNodeIds) {
 
-		return projectBasicConfigService.getAllProjectBasicConfigs(Boolean.TRUE).stream()
-				.filter(project -> project.getHierarchy().stream()
-						.anyMatch(hierarchy -> hierarchy.getHierarchyLevel().getHierarchyLevelId().equals(hierarchyLevelId) &&
-								orgHierarchyNodeIds.contains(hierarchy.getOrgHierarchyNodeId())))
+		return projectBasicConfigService.getAllProjectBasicConfigs(Boolean.TRUE).stream().filter(project -> project
+				.getHierarchy().stream()
+				.anyMatch(hierarchy -> hierarchy.getHierarchyLevel().getHierarchyLevelId().equals(hierarchyLevelId)
+						&& orgHierarchyNodeIds.contains(hierarchy.getOrgHierarchyNodeId())))
 				.collect(Collectors.toList());
 	}
 
@@ -927,9 +1008,9 @@ public class ProjectAccessManager {
 		if (null != requestData) {
 			String username = authenticationService.getLoggedInUser();
 			UserInfo userInfo = getUserInfo(username);
-			if ((username.equals(requestData.getUsername()) ||
-					userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN)) &&
-					requestData.getStatus().equals(Constant.ACCESS_REQUEST_STATUS_PENDING)) {
+			if ((username.equals(requestData.getUsername())
+					|| userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN))
+					&& requestData.getStatus().equals(Constant.ACCESS_REQUEST_STATUS_PENDING)) {
 				isDeletePermitted = true;
 			} else {
 				log.info("Unauthorized to perform deletion of id " + id);
@@ -955,7 +1036,8 @@ public class ProjectAccessManager {
 		List<HierarchyValueDTO> hierarchyLevelValues = projectBasicConfigDTO.getHierarchy();
 		CollectionUtils.emptyIfNull(hierarchyLevelValues).stream()
 				.sorted(Comparator
-						.comparing((HierarchyValueDTO hierarchyValue) -> hierarchyValue.getHierarchyLevel().getLevel()).reversed())
+						.comparing((HierarchyValueDTO hierarchyValue) -> hierarchyValue.getHierarchyLevel().getLevel())
+						.reversed())
 				.forEach(hierarchyValue -> parents.put(hierarchyValue.getHierarchyLevel().getHierarchyLevelId(),
 						hierarchyValue.getValue()));
 
@@ -974,10 +1056,10 @@ public class ProjectAccessManager {
 						.collect(Collectors.toMap(ProjectsAccess::getRole,
 								projectsAccess -> projectsAccess.getAccessNodes().stream()
 										.filter(accessNode -> accessNode.getAccessLevel().equalsIgnoreCase(k))
-										.flatMap(accessNode -> accessNode.getAccessItems().stream()).map(AccessItem::getItemId)
-										.collect(Collectors.toList())));
-				String role = roleWiseAccessIds.entrySet().stream().filter(e -> e.getValue().contains(v)).map(Entry::getKey)
-						.findFirst().orElse(null);
+										.flatMap(accessNode -> accessNode.getAccessItems().stream())
+										.map(AccessItem::getItemId).collect(Collectors.toList())));
+				String role = roleWiseAccessIds.entrySet().stream().filter(e -> e.getValue().contains(v))
+						.map(Entry::getKey).findFirst().orElse(null);
 
 				if (role != null) {
 					result = role;
@@ -998,8 +1080,8 @@ public class ProjectAccessManager {
 		if (userInfo.getAuthorities().contains(Constant.ROLE_PROJECT_ADMIN)) {
 			Optional<AccessNode> projectNode = userInfo.getProjectsAccess().stream()
 					.filter(projectAccess -> Constant.ROLE_PROJECT_ADMIN.equals(projectAccess.getRole()))
-					.flatMap(projectsAccess -> projectsAccess.getAccessNodes().stream())
-					.filter(accessNode -> accessNode.getAccessLevel().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT))
+					.flatMap(projectsAccess -> projectsAccess.getAccessNodes().stream()).filter(accessNode -> accessNode
+							.getAccessLevel().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT))
 					.findFirst();
 
 			if (projectNode.isPresent()) {
@@ -1012,8 +1094,8 @@ public class ProjectAccessManager {
 				accessNode.setAccessItems(accessItems);
 
 				userInfo.getProjectsAccess().stream()
-						.filter(projectAccess -> Constant.ROLE_PROJECT_ADMIN.equals(projectAccess.getRole())).findFirst()
-						.ifPresent(projectsAccess -> projectsAccess.getAccessNodes().add(accessNode));
+						.filter(projectAccess -> Constant.ROLE_PROJECT_ADMIN.equals(projectAccess.getRole()))
+						.findFirst().ifPresent(projectsAccess -> projectsAccess.getAccessNodes().add(accessNode));
 			}
 
 		} else {
@@ -1074,7 +1156,49 @@ public class ProjectAccessManager {
 			});
 			cleanUserInfo(resultUserInfo);
 		}
+
+		if (requestedUserInfo != null) {
+			List<AccessRequest> accessRequests = accessRequestsRepository
+					.findByUsernameAndStatus(requestedUserInfo.getUsername(), Constant.ACCESS_REQUEST_STATUS_APPROVED);
+
+			List<ObjectId> obsoleteAccessRequests = getObsoleteAccessRequests(requestedUserInfo, accessRequests);
+			accessRequestsRepository.deleteById(obsoleteAccessRequests);
+		}
+
 		return saveUserInfo(resultUserInfo);
+	}
+
+	public List<ObjectId> getObsoleteAccessRequests(UserInfo userInfo, List<AccessRequest> accessRequests) {
+		List<ObjectId> toBeDeleted = new ArrayList<>();
+
+		Set<String> validAccessKeys = new HashSet<>();
+		for (ProjectsAccess pa : userInfo.getProjectsAccess()) {
+			String role = pa.getRole();
+			for (AccessNode node : pa.getAccessNodes()) {
+				String level = node.getAccessLevel();
+				for (AccessItem item : node.getAccessItems()) {
+					validAccessKeys.add(role + "::" + level + "::" + item.getItemId());
+				}
+			}
+		}
+
+		for (AccessRequest ar : accessRequests) {
+
+			String role = ar.getRole();
+			String level = ar.getAccessNode().getAccessLevel();
+			List<AccessItem> items = ar.getAccessNode().getAccessItems();
+
+			boolean hasInvalidItem = items.stream().anyMatch(item -> {
+				String key = role + "::" + level + "::" + item.getItemId();
+				return !validAccessKeys.contains(key);
+			});
+
+			if (hasInvalidItem) {
+				toBeDeleted.add(ar.getId());
+			}
+		}
+
+		return toBeDeleted;
 	}
 
 	private void checkOnNewUser(UserInfo resultUserInfo, ProjectsAccess projectAccess, AccessNode an,
@@ -1093,15 +1217,19 @@ public class ProjectAccessManager {
 			for (AccessItem accessItem : accessItems) {
 				Map<String, Set<String>> globalParentMap = new HashMap<>();
 				Map<String, Set<String>> existingAccessMap = new HashMap<>();
-				creatingExistingAccessesMap(resultUserInfo.getProjectsAccess(), existingAccessMap);
+				if (resultUserInfo != null) {
+					creatingExistingAccessesMap(resultUserInfo.getProjectsAccess(), existingAccessMap);
+				}
 				creatingGlobalParentMap(accessLevel, Stream.of(accessItem.getItemId()).collect(Collectors.toSet()),
 						projectBasicConfigNode, globalParentMap);
 				if (hasAccessToParentLevel(globalParentMap, existingAccessMap)) {
 					log.debug("parent already added");
 					continue;
 				}
-				modifyUserInfoForAccessManagement(an, projectAccess.getRole(), resultUserInfo, accessLevel, globalChildrenMap,
-						organizationHierarchyMap);
+				if (resultUserInfo != null) {
+					modifyUserInfoForAccessManagement(an, projectAccess.getRole(), resultUserInfo, accessLevel,
+							globalChildrenMap, organizationHierarchyMap);
+				}
 			}
 		}
 	}
@@ -1125,6 +1253,7 @@ public class ProjectAccessManager {
 		List<AccessItem> aiList = new CopyOnWriteArrayList<>(an.getAccessItems());
 		for (AccessItem ai : aiList) {
 			String existingRoleForItem = findRoleOfAccessItem(accessLevel, ai, userInfo.getProjectsAccess());
+
 			if (existingRoleForItem != null) {
 				if (role.equals(existingRoleForItem)) {
 					log.info("already has same access for {}", organizationHierarchyMap.get(ai.getItemId()));
@@ -1161,9 +1290,9 @@ public class ProjectAccessManager {
 	 * This method get project id based on user and role
 	 *
 	 * @param user
-	 *          user
+	 *            user
 	 * @param roleList
-	 *          roleList
+	 *            roleList
 	 * @return list of projectId
 	 */
 	public List<String> getProjectBasicOnRoleList(UserInfo user, List<String> roleList) {
@@ -1171,8 +1300,8 @@ public class ProjectAccessManager {
 				.filter(access -> roleList.contains(access.getRole())).findAny().orElse(null);
 		List<String> projectIdList = new ArrayList<>();
 		if (null != projectAccess) {
-			projectIdList = getProjects(projectAccess.getAccessNodes()).stream().map(ProjectsForAccessRequest::getProjectId)
-					.collect(Collectors.toList());
+			projectIdList = getProjects(projectAccess.getAccessNodes()).stream()
+					.map(ProjectsForAccessRequest::getProjectId).collect(Collectors.toList());
 		}
 		return projectIdList;
 	}

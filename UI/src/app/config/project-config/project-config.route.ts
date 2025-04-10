@@ -38,65 +38,64 @@ export const ProjectConfigRoutes: Routes = [
         redirectTo: 'ProjectList',
         pathMatch: 'full',
         data: {
-          feature: "ProjectList"
-        }
+          feature: 'ProjectList',
+        },
       },
       {
         path: 'BasicConfig',
         component: BasicConfigComponent,
         data: {
-          feature: "BasicConfig"
-        }
+          feature: 'BasicConfig',
+        },
       },
       {
         path: 'ProjectList',
         component: ProjectListComponent,
         data: {
-          feature: "ProjectList"
-        }
+          feature: 'ProjectList',
+        },
       },
       {
         path: 'ConfigSettings',
         component: ConfigSettingsComponent,
         data: {
-          feature: "ConfigSettings"
-        }
+          feature: 'ConfigSettings',
+        },
       },
       {
         path: 'ConfigSettings/:id',
         component: ConfigSettingsComponent,
         data: {
-          feature: "ConfigSettings"
-        }
+          feature: 'ConfigSettings',
+        },
       },
       {
         path: 'MappingMenu',
         component: ToolMenuComponent,
         data: {
-          feature: "MappingMenu"
-        }
+          feature: 'MappingMenu',
+        },
       },
       {
         path: 'ConfigSettings/:id/FieldMapping',
         component: FieldMappingComponent,
         data: {
-          feature: "FieldMapping"
-        }
+          feature: 'FieldMapping',
+        },
       },
       {
         path: 'ConfigSettings/:id/JiraConfig',
         component: JiraConfigComponent,
         data: {
-          feature: "JiraConfig"
-        }
-      }
-    ]
-  }
+          feature: 'JiraConfig',
+        },
+      },
+    ],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(ProjectConfigRoutes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-
-export class ProjectConfigRoutingModule { }
+export class ProjectConfigRoutingModule {}

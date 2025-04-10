@@ -19,8 +19,10 @@
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -120,11 +122,7 @@ public class ConfigHelperService {
 		List<HierarchyLevel> hierarchyLevels = hierarchyLevelRepository.findAllByOrderByLevel();
 
 		projectList.forEach(projectConfig -> {
-			// AN: This is to make sure UI doesn't break, to be removed after migration
-			if (CollectionUtils.isEmpty(projectConfig.getHierarchy())) {
-				projectConfig
-						.setHierarchy(projectBasicConfigService.getHierarchy(hierarchyLevels, projectConfig.getProjectNodeId()));
-			}
+			projectConfig.setHierarchy(projectBasicConfigService.getHierarchy(hierarchyLevels, projectConfig.getProjectNodeId()));
 			projectConfigMap.put(projectConfig.getId().toString(), projectConfig);
 			FieldMapping mapping = fieldMappingList.stream()
 					.filter(x -> null != x.getBasicProjectConfigId() && x.getBasicProjectConfigId().equals(projectConfig.getId()))
@@ -397,5 +395,12 @@ public class ConfigHelperService {
 		return cacheService.getAllProjectHierarchy().stream()
 				.filter(projectHierarchy -> uniqueId.contains(projectHierarchy.getNodeId()))
 				.map(ProjectHierarchy::getBasicProjectConfigId).toList();
+	}
+
+	public Set<String> getParentIdByNodeIdAndLabelName(List<String> uniqueId, String labelName) {
+		return new HashSet<>(cacheService.getAllProjectHierarchy().stream()
+				.filter(projectHierarchy -> uniqueId.contains(projectHierarchy.getNodeId())
+						&& projectHierarchy.getHierarchyLevelId().equalsIgnoreCase(labelName))
+				.map(ProjectHierarchy::getParentId).toList());
 	}
 }

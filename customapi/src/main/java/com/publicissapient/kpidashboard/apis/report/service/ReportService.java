@@ -25,8 +25,7 @@ import java.util.Set;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +45,11 @@ import com.publicissapient.kpidashboard.apis.report.repository.ReportRepository;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 
 import lombok.extern.slf4j.Slf4j;
+
+
+import java.util.*;
+import java.util.stream.Collectors;
+
 
 /**
  * Service class for managing reports.
@@ -67,78 +71,82 @@ public class ReportService {
 		this.authenticationService = authenticationService;
 	}
 
-	/**
-	 * Creates a new report.
-	 *
-	 * @param reportRequest
-	 *          the report data transfer object
-	 * @return the created report data transfer object
-	 * @throws DuplicateReportException
-	 *           if a report with the same attributes already exists
-	 */
-	@CacheEvict(value = REPORTS_CREATED_BY, allEntries = true)
-	public ServiceResponse create(ReportRequest reportRequest) {
-		log.info("Creating a new report with name: {}", CommonUtils.sanitize(reportRequest.getName()));
-		// Get the current user
-		String createdBy = authenticationService.getLoggedInUser();
-		// Check if a report with the same name already exists for the current user
-		Optional<Report> existingByNameAndCreatedBy = reportRepository.findByNameAndCreatedBy(reportRequest.getName(),
-				createdBy);
-		if (existingByNameAndCreatedBy.isPresent()) {
-			log.warn("Report with the same name already exists for user: {}", CommonUtils.sanitize(createdBy));
-			throw new DuplicateReportException("Report with the same name already exists for user: " + createdBy);
-		}
-		// Checking for duplicate KPI IDs
-		validateKpiIds(reportRequest.getKpis());
-		// Checking if a report with the same attributes already exists
-		Optional<Report> existingReport = findExistingReport(reportRequest);
-		if (existingReport.isPresent()) {
-			log.warn("Report already exists with ID: {}", CommonUtils.sanitize(String.valueOf(existingReport.get().getId())));
-			throw new DuplicateReportException("Report already exists with ID: " + existingReport.get().getId());
-		}
-		final ModelMapper modelMapper = new ModelMapper();
-		Report report = modelMapper.map(reportRequest, Report.class);
-		report = reportRepository.save(report);
-		log.debug("Report created successfully with ID: {}", CommonUtils.sanitize(String.valueOf(report.getId())));
-		ReportRequest reportReq = modelMapper.map(report, ReportRequest.class);
-		return new ServiceResponse(true, "Report created successfully", reportReq);
-	}
+    /**
+     * Creates a new report.
+     *
+     * @param reportRequest the report data transfer object
+     * @return the created report data transfer object
+     * @throws DuplicateReportException if a report with the same attributes already exists
+     */
+//    @CacheEvict(value = REPORTS_CREATED_BY, allEntries = true)
+    public ServiceResponse create(ReportRequest reportRequest) {
+        log.info("Creating a new report with name: {}", CommonUtils.sanitize(reportRequest.getName()));
+        // Get the current user
+        String createdBy = authenticationService.getLoggedInUser();
+        // Check if a report with the same name already exists for the current user
+        Optional<Report> existingByNameAndCreatedBy = reportRepository.findByNameAndCreatedBy(reportRequest.getName(), createdBy);
+        if (existingByNameAndCreatedBy.isPresent()) {
+            log.warn("Report with the same name already exists for user: {}", CommonUtils.sanitize(createdBy));
+            throw new DuplicateReportException("Report with the same name already exists for user: " + createdBy);
+        }
+        // Checking for duplicate KPI IDs
+        validateKpiIds(reportRequest.getKpis());
+        // Checking if a report with the same attributes already exists
+        Optional<Report> existingReport = findExistingReport(reportRequest);
+        if (existingReport.isPresent()) {
+            log.warn("Report already exists with ID: {}", CommonUtils.sanitize(String.valueOf(existingReport.get().getId())));
+            throw new DuplicateReportException("Report already exists with ID: "+ existingReport.get().getId());
+        }
+        final ModelMapper modelMapper = new ModelMapper();
+        Report report = modelMapper.map(reportRequest, Report.class);
+        report = reportRepository.save(report);
+        log.debug("Report created successfully with ID: {}", CommonUtils.sanitize(String.valueOf(report.getId())));
+        ReportRequest reportReq = modelMapper.map(report, ReportRequest.class);
+        return new ServiceResponse(true, "Report created successfully", reportReq);
+    }
 
-	/**
-	 * Updates an existing report.
-	 *
-	 * @param id
-	 *          the report ID
-	 * @param reportRequest
-	 *          the report data transfer object
-	 * @return the updated report data transfer object
-	 * @throws ReportNotFoundException
-	 *           if the report is not found
-	 */
-	@CacheEvict(value = {REPORTS_CREATED_BY, REPORTS_BY_ID}, key = "#id")
-	public ServiceResponse update(String id, ReportRequest reportRequest) throws EntityNotFoundException {
-		log.info("Updating report with ID: {}", CommonUtils.sanitize(id));
-		validateKpiIds(reportRequest.getKpis());
-		final ModelMapper modelMapper = new ModelMapper();
-		Report existingReport = reportRepository.findById(id).orElseThrow(() -> {
-			log.error("Report not found with ID: {}", CommonUtils.sanitize(id));
-			return new EntityNotFoundException(Report.class, "id", id);
-		});
+    /**
+     * Updates an existing report.
+     *
+     * @param id        the report ID
+     * @param reportRequest the report data transfer object
+     * @return the updated report data transfer object
+     * @throws ReportNotFoundException if the report is not found
+     */
+//    @CacheEvict(value = {REPORTS_CREATED_BY}, key = "#id")
+    public ServiceResponse update(String id, ReportRequest reportRequest) throws EntityNotFoundException {
+        log.info("Updating report with ID: {}", CommonUtils.sanitize(id));
+        validateKpiIds(reportRequest.getKpis());
+        final ModelMapper modelMapper = new ModelMapper();
+        Report existingReport = reportRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Report not found with ID: {}", CommonUtils.sanitize(id));
+                    return new EntityNotFoundException(Report.class, "id", id);
+                });
 
-		existingReport.setName(reportRequest.getName());
-		// Update existing KPIs or add new ones
-		for (KpiRequest kpiRequest : reportRequest.getKpis()) {
-			Optional<KPI> existingKpiOpt = existingReport.getKpis().stream()
-					.filter(kpi -> kpi.getId().equals(kpiRequest.getId())).findFirst();
-			if (existingKpiOpt.isPresent()) {
-				KPI existingKpi = existingKpiOpt.get();
-				existingKpi.setChartData(kpiRequest.getChartData());
-				existingKpi.setMetadata(kpiRequest.getMetadata());
-			} else {
-				KPI newKpi = modelMapper.map(kpiRequest, KPI.class);
-				existingReport.getKpis().add(newKpi);
-			}
-		}
+        existingReport.setName(reportRequest.getName());
+
+        // Ensure existing KPIs list is mutable
+        existingReport.setKpis(new ArrayList<>(existingReport.getKpis()));
+
+        // Convert incoming KPI list to a map for quick lookup
+        Map<String, KpiRequest> incomingKpisMap = reportRequest.getKpis().stream().collect(Collectors.toMap(KpiRequest::getId, kpi -> kpi));// Remove KPIs that are in existingReport but missing in incoming request
+        existingReport.getKpis().removeIf(existingKpi -> !incomingKpisMap.containsKey(existingKpi.getId()));
+
+        // Update existing KPIs or add new ones
+        for (KpiRequest kpiRequest : reportRequest.getKpis()) {
+            Optional<KPI> existingKpiOpt = existingReport.getKpis().stream()
+                    .filter(kpi -> kpi.getId().equals(kpiRequest.getId()))
+                    .findFirst();
+            if (existingKpiOpt.isPresent()) {
+                KPI existingKpi = existingKpiOpt.get();
+                existingKpi.setChartData(kpiRequest.getChartData());
+                existingKpi.setMetadata(kpiRequest.getMetadata());
+            } else {
+                KPI newKpi = modelMapper.map(kpiRequest, KPI.class);
+                existingReport.getKpis().add(newKpi);
+            }
+        }
 
 		existingReport = reportRepository.save(existingReport);
 		log.debug("Report updated successfully with ID: {}", CommonUtils.sanitize(String.valueOf(existingReport.getId())));
@@ -146,18 +154,18 @@ public class ReportService {
 		return new ServiceResponse(true, "Report updated successfully", reportReq);
 	}
 
-	/**
-	 * Deletes a report by ID.
-	 *
-	 * @param id
-	 *          the report ID
-	 */
-	@CacheEvict(value = {REPORTS_CREATED_BY, REPORTS_BY_ID}, key = "#id")
-	public void delete(String id) {
-		log.info("Deleting report with ID: {}", CommonUtils.sanitize(id));
-		reportRepository.deleteById(id);
-		log.debug("Report deleted successfully with ID: {}", CommonUtils.sanitize(id));
-	}
+    /**
+     * Deletes a report by ID.
+     *
+     * @param id the report ID
+     */
+//    @CacheEvict(value = {REPORTS_BY_ID}, key = "#id")
+    public void delete(String id) {
+        log.info("Deleting report with ID: {}", CommonUtils.sanitize(id));
+        reportRepository.deleteById(id);
+        log.debug("Report deleted successfully with ID: {}", CommonUtils.sanitize(id));
+    }
+
 
 	/**
 	 * Validates the KPI IDs to ensure there are no duplicates.
@@ -195,55 +203,49 @@ public class ReportService {
 				authenticationService.getLoggedInUser());
 	}
 
-	/**
-	 * Fetches a report by ID.
-	 *
-	 * @param id
-	 *          the report ID
-	 * @return the report data transfer object
-	 * @throws ReportNotFoundException
-	 *           if the report is not found
-	 */
-	@Cacheable(value = REPORTS_BY_ID, key = "#id")
-	public ServiceResponse getReportById(String id) {
-		log.info("Fetching report by ID: {}", CommonUtils.sanitize(id));
-		Optional<Report> reportOptional = reportRepository.findById(id);
-		if (reportOptional.isPresent()) {
-			final ModelMapper modelMapper = new ModelMapper();
-			Report report = reportOptional.get();
-			ReportRequest reportRequest = modelMapper.map(report, ReportRequest.class);
-			return new ServiceResponse(true, "Reports fetched successfully", reportRequest);
-		} else {
-			log.warn("Report not found with ID: {}", CommonUtils.sanitize(id));
-			throw new ReportNotFoundException("Report not found with ID: " + id);
-		}
-	}
+    /**
+     * Fetches a report by ID.
+     *
+     * @param id the report ID
+     * @return the report data transfer object
+     * @throws ReportNotFoundException if the report is not found
+     */
+//    @Cacheable(value = REPORTS_BY_ID, key = "#id")
+    public ServiceResponse getReportById(String id) {
+        log.info("Fetching report by ID: {}", CommonUtils.sanitize(id));
+        Optional<Report> reportOptional = reportRepository.findById(id);
+        if (reportOptional.isPresent()) {
+            final ModelMapper modelMapper = new ModelMapper();
+            Report report = reportOptional.get();
+            ReportRequest reportRequest = modelMapper.map(report, ReportRequest.class);
+            return new ServiceResponse(true, "Reports fetched successfully", reportRequest);
+        } else {
+            log.warn("Report not found with ID: {}", CommonUtils.sanitize(id));
+            throw new ReportNotFoundException("Report not found with ID: " + id);
+        }
+    }
 
-	/**
-	 * Fetches reports by createdBy with pagination.
-	 *
-	 * @param createdBy
-	 *          the report createdBy
-	 * @param page
-	 *          the page number
-	 * @param size
-	 *          the page size
-	 * @return a page of report data transfer objects
-	 * @throws ReportNotFoundException
-	 *           if no reports are found with the given createdBy
-	 */
-	@Cacheable(value = REPORTS_CREATED_BY, key = "{#createdBy, #page, #size}")
-	public ServiceResponse getReportsByCreatedBy(String createdBy, int page, int size) {
-		log.info("Fetching reports by createdBy: {}, page: {}, size: {}", CommonUtils.sanitize(createdBy), page, size);
-		final ModelMapper modelMapper = new ModelMapper();
-		Pageable pageable = PageRequest.of(page, size);
-		Page<Report> reportsPage = reportRepository.findByCreatedBy(createdBy, pageable);
-		if (reportsPage.hasContent()) {
-			Page<ReportRequest> reportRequestPage = reportsPage.map(report -> modelMapper.map(report, ReportRequest.class));
-			return new ServiceResponse(true, "Reports fetched successfully", reportRequestPage);
-		} else {
-			log.warn("No reports found with createdBy: {}", CommonUtils.sanitize(createdBy));
-			throw new ReportNotFoundException("No reports found with createdBy: " + createdBy);
-		}
-	}
+    /**
+     * Fetches reports by createdBy with pagination.
+     *
+     * @param createdBy the report createdBy
+     * @param page the page number
+     * @param size the page size
+     * @return a page of report data transfer objects
+     * @throws ReportNotFoundException if no reports are found with the given createdBy
+     */
+//    @Cacheable(value = REPORTS_CREATED_BY, key = "{#createdBy, #page, #size}")
+    public ServiceResponse getReportsByCreatedBy(String createdBy, int page, int size) {
+        log.info("Fetching reports by createdBy: {}, page: {}, size: {}", CommonUtils.sanitize(createdBy), page, size);
+        final ModelMapper modelMapper = new ModelMapper();
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Report> reportsPage = reportRepository.findByCreatedBy(createdBy, pageable);
+        if (reportsPage.hasContent()) {
+            Page<ReportRequest> reportRequestPage = reportsPage.map(report -> modelMapper.map(report, ReportRequest.class));
+            return new ServiceResponse(true, "Reports fetched successfully", reportRequestPage);
+        } else {
+            log.warn("No reports found with createdBy: {}", CommonUtils.sanitize(createdBy));
+            throw new ReportNotFoundException("No reports found with createdBy: " + createdBy);
+        }
+    }
 }

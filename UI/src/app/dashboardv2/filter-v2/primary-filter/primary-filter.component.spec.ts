@@ -1,5 +1,10 @@
 import { PrimaryFilterComponent } from './primary-filter.component';
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
@@ -32,15 +37,20 @@ describe('PrimaryFilterComponent', () => {
   let mockMultiSelect: MockMultiSelect;
 
   beforeEach(async () => {
-
     await TestBed.configureTestingModule({
       declarations: [PrimaryFilterComponent],
       imports: [RouterTestingModule, HttpClientModule, BrowserAnimationsModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
-      providers: [SharedService, HelperService, MockMultiSelect, CommonModule, DatePipe, { provide: APP_CONFIG, useValue: AppConfig }]
-    })
-      .compileComponents();
+      providers: [
+        SharedService,
+        HelperService,
+        MockMultiSelect,
+        CommonModule,
+        DatePipe,
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(PrimaryFilterComponent);
     component = fixture.componentInstance;
@@ -51,19 +61,20 @@ describe('PrimaryFilterComponent', () => {
 
     // spyOn(sharedService, 'getBackupOfUrlFilters').and.returnValue(null);
     spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue({
-      primary_level: [{ labelName: 'Label 1', nodeId: 'node-1' }]
+      primary_level: [{ labelName: 'Label 1', nodeId: 'node-1' }],
     });
     spyOn(sharedService, 'setBackupOfFilterSelectionState').and.callThrough();
 
     component.primaryFilterConfig = {
       defaultLevel: {
-        "labelName": "Project"
-      }, type: 'multiSelect'
+        labelName: 'Project',
+      },
+      type: 'multiSelect',
     };
 
     component.filters = [
       { nodeId: '1', labelName: 'Project' },
-      { nodeId: '2', labelName: 'Sprint' }
+      { nodeId: '2', labelName: 'Sprint' },
     ];
 
     const mockHierarchyData = {
@@ -203,11 +214,10 @@ describe('PrimaryFilterComponent', () => {
         ],
       };
 
-      spyOn(helperService, 'sortAlphabetically' as any).and.returnValue(
-        [{ nodeId: 1, labelName: 'Project A', nodeName: 'Project A' },
-        { nodeId: 2, labelName: 'Project B', nodeName: 'Project B' }
-        ]
-      );
+      spyOn(helperService, 'sortAlphabetically' as any).and.returnValue([
+        { nodeId: 1, labelName: 'Project A', nodeName: 'Project A' },
+        { nodeId: 2, labelName: 'Project B', nodeName: 'Project B' },
+      ]);
       component.populateFilters();
       fixture.detectChanges();
       expect(component.filters).toEqual(component.filterData.Project);
@@ -225,11 +235,10 @@ describe('PrimaryFilterComponent', () => {
         ],
       };
       component.primaryFilterConfig = { defaultLevel: { sortBy: 'labelName' } };
-      spyOn(helperService, 'sortByField' as any).and.returnValue(
-        [{ nodeId: 1, labelName: 'Project A', nodeName: 'Project A' },
-        { nodeId: 2, labelName: 'Project B', nodeName: 'Project B' }
-        ]
-      );
+      spyOn(helperService, 'sortByField' as any).and.returnValue([
+        { nodeId: 1, labelName: 'Project A', nodeName: 'Project A' },
+        { nodeId: 2, labelName: 'Project B', nodeName: 'Project B' },
+      ]);
       component.populateFilters();
 
       expect(component.filters).toEqual(component.filterData.Project);
@@ -249,15 +258,15 @@ describe('PrimaryFilterComponent', () => {
           { nodeId: 1, labelName: 'Project A', nodeName: 'Project A' },
         ],
       };
-      spyOn(helperService, 'sortAlphabetically' as any).and.returnValue(
-        [{ nodeId: 1, labelName: 'Project A', nodeName: 'Project A' },
-        { nodeId: 2, labelName: 'Project B', nodeName: 'Project B' }
-        ]
-      );
+      spyOn(helperService, 'sortAlphabetically' as any).and.returnValue([
+        { nodeId: 1, labelName: 'Project A', nodeName: 'Project A' },
+        { nodeId: 2, labelName: 'Project B', nodeName: 'Project B' },
+      ]);
       component.populateFilters();
 
-      expect(component.filters).toEqual([{ nodeId: 1, labelName: 'Project A', nodeName: 'Project A' },
-      { nodeId: 2, labelName: 'Project B', nodeName: 'Project B' }
+      expect(component.filters).toEqual([
+        { nodeId: 1, labelName: 'Project A', nodeName: 'Project A' },
+        { nodeId: 2, labelName: 'Project B', nodeName: 'Project B' },
       ]);
     });
 
@@ -270,11 +279,10 @@ describe('PrimaryFilterComponent', () => {
         ],
       };
 
-      spyOn(helperService, 'sortAlphabetically' as any).and.returnValue(
-        [{ nodeId: 1, labelName: 'Project A', parentId: 1 },
+      spyOn(helperService, 'sortAlphabetically' as any).and.returnValue([
+        { nodeId: 1, labelName: 'Project A', parentId: 1 },
         { nodeId: 2, labelName: 'Project B', parentId: 1 },
-        ]
-      );
+      ]);
 
       component.populateFilters();
 
@@ -293,7 +301,6 @@ describe('PrimaryFilterComponent', () => {
       expect(component.filters).toBe(undefined);
     });
   });
-
 
   describe('arraysEqual', () => {
     it('should return false when arrays have different lengths', () => {
@@ -324,7 +331,6 @@ describe('PrimaryFilterComponent', () => {
     });
   });
 
-
   // describe('Component', () => {
   // let component;
   // let helperService;
@@ -344,7 +350,6 @@ describe('PrimaryFilterComponent', () => {
   // });
 
   describe('applyDefaultFilters', () => {
-
     it('should handle multiSelect type, set selectedFilters correctly, and call setBackupOfFilterSelectionState if no valid filters are selected', () => {
       // Mock primaryFilterConfig with type 'multiSelect'
       component.primaryFilterConfig = { type: 'multiSelect' };
@@ -368,30 +373,40 @@ describe('PrimaryFilterComponent', () => {
       component.selectedFilters = [];
 
       if (component.primaryFilterConfig['type'] === 'multiSelect') {
-        component.stateFilters['primary_level'].forEach(element => {
+        component.stateFilters['primary_level'].forEach((element) => {
           // Safely find a match and push it into selectedFilters
-          const matchedFilter = component.filters?.find(project => project.nodeId === element.nodeId);
+          const matchedFilter = component.filters?.find(
+            (project) => project.nodeId === element.nodeId,
+          );
           if (matchedFilter) {
             component.selectedFilters.push(matchedFilter);
           }
         });
 
         // Handle case where no valid selected filters are found
-        if (!component.selectedFilters?.length || !component.selectedFilters[0]) {
+        if (
+          !component.selectedFilters?.length ||
+          !component.selectedFilters[0]
+        ) {
           component.selectedFilters = [component.filters[0]]; // Default to the first filter
-          sharedService.setBackupOfFilterSelectionState({ primary_level: null });
+          sharedService.setBackupOfFilterSelectionState({
+            primary_level: null,
+          });
         }
       }
 
       // Expectations
       expect(component.selectedFilters.length).toBe(1);
-      expect(component.selectedFilters[0]).toEqual({ nodeId: '1', labelName: 'Project 1' });
-      expect(sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({
+      expect(component.selectedFilters[0]).toEqual({
+        nodeId: '1',
+        labelName: 'Project 1',
+      });
+      expect(
+        sharedService.setBackupOfFilterSelectionState,
+      ).toHaveBeenCalledWith({
         primary_level: null,
       });
     });
-
-
 
     it('should call reset directly', () => {
       spyOn(component, 'reset');
@@ -406,7 +421,6 @@ describe('PrimaryFilterComponent', () => {
 
       expect(component.populateFilters).toHaveBeenCalled();
     });
-
   });
 
   describe('moveSelectedOptionToTop', () => {
@@ -416,7 +430,12 @@ describe('PrimaryFilterComponent', () => {
 
       component.moveSelectedOptionToTop();
 
-      expect(component.filters).toEqual(['option2', 'option4', 'option1', 'option3']);
+      expect(component.filters).toEqual([
+        'option2',
+        'option4',
+        'option1',
+        'option3',
+      ]);
     });
 
     it('should not change the order of filters if no selected options', () => {
@@ -425,7 +444,12 @@ describe('PrimaryFilterComponent', () => {
 
       component.moveSelectedOptionToTop();
 
-      expect(component.filters).toEqual(['option1', 'option2', 'option3', 'option4']);
+      expect(component.filters).toEqual([
+        'option1',
+        'option2',
+        'option3',
+        'option4',
+      ]);
     });
 
     it('should not change the order of filters if no filters or selected options', () => {
@@ -564,11 +588,10 @@ describe('PrimaryFilterComponent', () => {
         ],
       };
 
-      spyOn(helperService, 'sortAlphabetically' as any).and.returnValue(
-        [{ nodeId: 1, labelName: 'Project A', nodeName: 'Project A' },
-        { nodeId: 2, labelName: 'Project B', nodeName: 'Project B' }
-        ]
-      );
+      spyOn(helperService, 'sortAlphabetically' as any).and.returnValue([
+        { nodeId: 1, labelName: 'Project A', nodeName: 'Project A' },
+        { nodeId: 2, labelName: 'Project B', nodeName: 'Project B' },
+      ]);
       component.populateFilters();
       fixture.detectChanges();
       expect(component.filters).toEqual(component.filterData.sprint);
@@ -587,17 +610,16 @@ describe('PrimaryFilterComponent', () => {
         ],
       };
       component.primaryFilterConfig = { defaultLevel: { sortBy: 'labelName' } };
-      spyOn(helperService, 'sortByField' as any).and.returnValue(
-        [{ nodeId: 1, labelName: 'Project A', nodeName: 'Project A' },
-        { nodeId: 2, labelName: 'Project B', nodeName: 'Project B' }
-        ]
-      );
+      spyOn(helperService, 'sortByField' as any).and.returnValue([
+        { nodeId: 1, labelName: 'Project A', nodeName: 'Project A' },
+        { nodeId: 2, labelName: 'Project B', nodeName: 'Project B' },
+      ]);
       component.populateFilters();
 
       expect(component.filters).toEqual(component.filterData.sprint);
       expect(helperService.sortByField).toHaveBeenCalledWith(
         component.filterData.sprint,
-        ['labelName', 'sprintStartDate']
+        ['labelName', 'sprintStartDate'],
       );
     });
   });
@@ -613,16 +635,15 @@ describe('PrimaryFilterComponent', () => {
         ],
       };
       component.primaryFilterConfig = { defaultLevel: { sortBy: 'labelName' } };
-      spyOn(helperService, 'releaseSorting' as any).and.returnValue(
-        [{ nodeId: 1, labelName: 'Project A', nodeName: 'Project A' },
-        { nodeId: 2, labelName: 'Project B', nodeName: 'Project B' }
-        ]
-      );
+      spyOn(helperService, 'releaseSorting' as any).and.returnValue([
+        { nodeId: 1, labelName: 'Project A', nodeName: 'Project A' },
+        { nodeId: 2, labelName: 'Project B', nodeName: 'Project B' },
+      ]);
       component.populateFilters();
 
       expect(component.filters).toEqual(component.filterData.release);
       expect(helperService.releaseSorting).toHaveBeenCalledWith(
-        component.filterData.release
+        component.filterData.release,
       );
     });
   });
@@ -631,7 +652,7 @@ describe('PrimaryFilterComponent', () => {
     it('should sort filters on release by specified field when primaryFilterConfig has sortBy and selectedLevel is object', () => {
       component.selectedLevel = {
         nodeId: 1,
-        emittedLevel: 'release'
+        emittedLevel: 'release',
       };
       component.selectedTab = 'release';
       component.filterData = {
@@ -641,17 +662,16 @@ describe('PrimaryFilterComponent', () => {
         ],
       };
       component.primaryFilterConfig = { defaultLevel: { sortBy: 'nodeId' } };
-      spyOn(helperService, 'releaseSorting' as any).and.returnValue(
-        [{ parentId: 1, labelName: 'Project A', nodeName: 'Project A' },
-        { parentId: 2, labelName: 'Project B', nodeName: 'Project B' }
-        ]
-      );
+      spyOn(helperService, 'releaseSorting' as any).and.returnValue([
+        { parentId: 1, labelName: 'Project A', nodeName: 'Project A' },
+        { parentId: 2, labelName: 'Project B', nodeName: 'Project B' },
+      ]);
       component.populateFilters();
 
       expect(component.filters).toEqual(component.filterData.Release);
-      expect(helperService.releaseSorting).toHaveBeenCalledWith(
-        [component.filterData.Release[0]]
-      );
+      expect(helperService.releaseSorting).toHaveBeenCalledWith([
+        component.filterData.Release[0],
+      ]);
     });
   });
 
@@ -659,7 +679,7 @@ describe('PrimaryFilterComponent', () => {
     it('should sort filters on release by specified field when primaryFilterConfig has sortBy and selectedLevel is object', () => {
       component.selectedLevel = {
         nodeId: 1,
-        emittedLevel: 'sprint'
+        emittedLevel: 'sprint',
       };
       component.selectedTab = 'iteration';
       component.filterData = {
@@ -669,16 +689,16 @@ describe('PrimaryFilterComponent', () => {
         ],
       };
       component.primaryFilterConfig = { defaultLevel: { sortBy: 'nodeId' } };
-      spyOn(helperService, 'sortByField' as any).and.returnValue(
-        [{ nodeId: 1, labelName: 'Project A', nodeName: 'Project A' },
-        { nodeId: 2, labelName: 'Project B', nodeName: 'Project B' }
-        ]
-      );
+      spyOn(helperService, 'sortByField' as any).and.returnValue([
+        { nodeId: 1, labelName: 'Project A', nodeName: 'Project A' },
+        { nodeId: 2, labelName: 'Project B', nodeName: 'Project B' },
+      ]);
       component.populateFilters();
 
       expect(component.filters).toEqual(component.filterData.Sprint);
       expect(helperService.sortByField).toHaveBeenCalledWith(
-        [], ['nodeId', 'sprintStartDate']
+        [],
+        ['nodeId', 'sprintStartDate'],
       );
     });
   });
@@ -687,7 +707,9 @@ describe('PrimaryFilterComponent', () => {
     it('should set selectedFilters based on stateFilters primary_level when conditions are met', (done) => {
       component.hierarchyLevels = ['Level 1', 'Level 2'];
       component.selectedLevel = 'Level 1';
-      component.filterData = { 'Level 1': [{ nodeId: 1, labelName: 'Level 1' }] }
+      component.filterData = {
+        'Level 1': [{ nodeId: 1, labelName: 'Level 1' }],
+      };
       component.selectedTab = 'iteration';
 
       component.primaryFilterConfig = {
@@ -696,7 +718,7 @@ describe('PrimaryFilterComponent', () => {
       };
       component.stateFilters = {
         primary_level: [{ labelName: 'Level 1', nodeId: 1 }],
-        parent_level: null
+        parent_level: null,
       };
 
       component.applyDefaultFilters();
@@ -704,8 +726,8 @@ describe('PrimaryFilterComponent', () => {
       setTimeout(() => {
         expect(component.selectedFilters).toEqual(
           jasmine.arrayContaining([
-            jasmine.objectContaining({ labelName: 'Level 1', nodeId: 1 })
-          ])
+            jasmine.objectContaining({ labelName: 'Level 1', nodeId: 1 }),
+          ]),
         );
         done();
       }, 200);
@@ -714,7 +736,9 @@ describe('PrimaryFilterComponent', () => {
     it('should reset selectedFilters and call applyPrimaryFilters when conditions are met', (done) => {
       component.hierarchyLevels = ['Level 1', 'Level 2'];
       component.selectedLevel = 'Level 1';
-      component.filterData = { 'Level 1': [{ nodeId: 1, labelName: 'Level 1' }] }
+      component.filterData = {
+        'Level 1': [{ nodeId: 1, labelName: 'Level 1' }],
+      };
       component.primaryFilterConfig = {
         defaultLevel: { labelName: 'Level 1' },
         type: 'singleSelect',
@@ -727,7 +751,9 @@ describe('PrimaryFilterComponent', () => {
       component.applyDefaultFilters();
 
       setTimeout(() => {
-        expect(component.selectedFilters).toEqual([{ labelName: 'Level 1', nodeId: 1 }]);
+        expect(component.selectedFilters).toEqual([
+          { labelName: 'Level 1', nodeId: 1 },
+        ]);
         expect(component.applyPrimaryFilters).toHaveBeenCalled();
         done();
       }, 200);
@@ -736,7 +762,9 @@ describe('PrimaryFilterComponent', () => {
     it('should set selectedFilters based on stateFilters parent_level when conditions are met', (done) => {
       component.hierarchyLevels = ['Level 1', 'Level 2'];
       component.selectedLevel = 'Level 1';
-      component.filterData = { 'Level 1': [{ nodeId: 1, labelName: 'Level 1' }] }
+      component.filterData = {
+        'Level 1': [{ nodeId: 1, labelName: 'Level 1' }],
+      };
       component.primaryFilterConfig = {
         defaultLevel: { labelName: 'Level 1' },
         type: 'singleSelect',
@@ -750,8 +778,8 @@ describe('PrimaryFilterComponent', () => {
       setTimeout(() => {
         expect(component.selectedFilters).toEqual(
           jasmine.arrayContaining([
-            jasmine.objectContaining({ labelName: 'Level 1', nodeId: 1 })
-          ])
+            jasmine.objectContaining({ labelName: 'Level 1', nodeId: 1 }),
+          ]),
         );
         done();
       }, 200);
@@ -760,7 +788,9 @@ describe('PrimaryFilterComponent', () => {
     it('should emit the correct nested object when conditions are met', (done) => {
       component.hierarchyLevels = ['Level 1', 'Level 2'];
       component.selectedLevel = 'Level 1';
-      component.filterData = { 'Level 1': [{ nodeId: 1, labelName: 'Level 1' }] };
+      component.filterData = {
+        'Level 1': [{ nodeId: 1, labelName: 'Level 1' }],
+      };
       component.primaryFilterConfig = {
         defaultLevel: { labelName: 'Level 1' },
         type: 'singleSelect',
@@ -772,23 +802,26 @@ describe('PrimaryFilterComponent', () => {
       component.applyDefaultFilters();
 
       setTimeout(() => {
-        expect(component.selectedFilters).toEqual([{ nodeId: 1, labelName: 'Level 1' }]);
+        expect(component.selectedFilters).toEqual([
+          { nodeId: 1, labelName: 'Level 1' },
+        ]);
         expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith({
           additional_level: {
-            primary_level: [{ labelName: 'Label 1', nodeId: 'node-1' }]
+            primary_level: [{ labelName: 'Label 1', nodeId: 'node-1' }],
           },
-          primary_level: [{ nodeId: 1, labelName: 'Level 1' }]
+          primary_level: [{ nodeId: 1, labelName: 'Level 1' }],
         });
         done();
       }, 200);
     });
 
-
-
     it('should set selectedFilters based on stateFilters parent_level for sprint/release when conditions are met', fakeAsync(() => {
       component.hierarchyLevels = ['sprint'];
       component.selectedLevel = 'sprint';
-      component.filterData = { 'sprint': [{ nodeId: 2, labelName: 'Level 2' }],'Project':[{ nodeId: 1, labelName: 'Level 1' }] }
+      component.filterData = {
+        sprint: [{ nodeId: 2, labelName: 'Level 2' }],
+        Project: [{ nodeId: 1, labelName: 'Level 1' }],
+      };
       component.primaryFilterConfig = {
         defaultLevel: { labelName: 'sprint' },
         type: 'singleSelect',
@@ -801,14 +834,14 @@ describe('PrimaryFilterComponent', () => {
       component.applyDefaultFilters();
 
       tick(200);
-      expect(component.selectedFilters).toBe(undefined);
+      expect(component.selectedFilters).toEqual([]);
       expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([]);
     }));
 
     it('should reset selectedFilters and call applyPrimaryFilters for sprint/release  when conditions are met', (done) => {
       component.hierarchyLevels = ['sprint', 'Level 2'];
       component.selectedLevel = 'sprint';
-      component.filterData = { 'sprint': [{ nodeId: 1, labelName: 'sprint' }] }
+      component.filterData = { sprint: [{ nodeId: 1, labelName: 'sprint' }] };
       component.primaryFilterConfig = {
         defaultLevel: { labelName: 'sprint' },
         type: 'singleSelect',
@@ -821,16 +854,23 @@ describe('PrimaryFilterComponent', () => {
       component.applyDefaultFilters();
 
       setTimeout(() => {
-        expect(component.selectedFilters).toEqual([{ labelName: 'sprint', nodeId: 1 }]);
+        expect(component.selectedFilters).toEqual([
+          { labelName: 'sprint', nodeId: 1 },
+        ]);
         expect(component.applyPrimaryFilters).toHaveBeenCalled();
         done();
       }, 200);
     });
 
-    it('should set selectedFilters based on stateFilters parent_level for sprint/release when conditions are met', fakeAsync((done) => {
+    it('should set selectedFilters based on stateFilters parent_level for sprint/release when conditions are met', fakeAsync((
+      done,
+    ) => {
       component.hierarchyLevels = ['sprint', 'Level 2'];
       component.selectedLevel = 'sprint';
-      component.filterData = { 'sprint': [{ nodeId: 1, labelName: 'sprint' }],'Project':[{ nodeId: 2, labelName: 'Level 1' }] }
+      component.filterData = {
+        sprint: [{ nodeId: 1, labelName: 'sprint' }],
+        Project: [{ nodeId: 2, labelName: 'Level 1' }],
+      };
       component.primaryFilterConfig = {
         defaultLevel: { labelName: 'sprint' },
         type: 'singleSelect',
@@ -844,15 +884,18 @@ describe('PrimaryFilterComponent', () => {
       tick(100);
       expect(component.selectedFilters).toEqual(
         jasmine.arrayContaining([
-          jasmine.objectContaining({ labelName: 'sprint', nodeId: 1 })
-        ])
+          jasmine.objectContaining({ labelName: 'sprint', nodeId: 1 }),
+        ]),
       );
     }));
 
     it('should set selectedFilters to empty array and call onPrimaryFilterChange for sprint/release when conditions are met', fakeAsync(() => {
       component.hierarchyLevels = ['sprint', 'Level 2'];
       component.selectedLevel = 'sprint';
-      component.filterData = { 'sprint': [{ nodeId: 1, labelName: 'sprint' }],'Project':[{ nodeId: 2, labelName: 'Level 1' }] }
+      component.filterData = {
+        sprint: [{ nodeId: 1, labelName: 'sprint' }],
+        Project: [{ nodeId: 2, labelName: 'Level 1' }],
+      };
       component.primaryFilterConfig = {
         defaultLevel: { labelName: 'sprint' },
         type: 'singleSelect',
@@ -863,7 +906,6 @@ describe('PrimaryFilterComponent', () => {
       component.applyDefaultFilters();
       tick(100);
       expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([]);
-
     }));
   });
 
@@ -876,7 +918,10 @@ describe('PrimaryFilterComponent', () => {
     component.reset();
 
     expect(component.selectedFilters).toEqual(['filter1']);
-    expect(sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': null, 'primary_level': null });
+    expect(sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({
+      parent_level: null,
+      primary_level: null,
+    });
     expect(component.applyPrimaryFilters).toHaveBeenCalledWith({});
   });
 
@@ -886,8 +931,7 @@ describe('PrimaryFilterComponent', () => {
         // Arrange
         const event = { value: 'someValue' };
         const index = 1;
-        spyOn(helperService, 'isDropdownElementSelected')
-          .and.returnValue(true);
+        spyOn(helperService, 'isDropdownElementSelected').and.returnValue(true);
 
         // Act
         component.onDropdownChange(event);
@@ -905,8 +949,9 @@ describe('PrimaryFilterComponent', () => {
         // Arrange
         const event = { value: 'someValue' };
         const index = 1;
-        spyOn(helperService, 'isDropdownElementSelected')
-          .and.returnValue(false);
+        spyOn(helperService, 'isDropdownElementSelected').and.returnValue(
+          false,
+        );
 
         // Act
         component.onDropdownChange(event);
@@ -922,8 +967,9 @@ describe('PrimaryFilterComponent', () => {
         // Arrange
         const event = undefined;
         const index = 1;
-        spyOn(helperService, 'isDropdownElementSelected')
-          .and.returnValue(false);
+        spyOn(helperService, 'isDropdownElementSelected').and.returnValue(
+          false,
+        );
 
         // Act
         component.onDropdownChange(event);
@@ -938,10 +984,12 @@ describe('PrimaryFilterComponent', () => {
   });
 
   describe('PrimaryFilterComponent: isFilterHidden', () => {
-
     it('should return true for isFilterHidden when selectedTab is iteration and there are active filters', () => {
       component.selectedTab = 'iteration';
-      const filterDataSet = [{ sprintState: 'active' }, { sprintState: 'inactive' }];
+      const filterDataSet = [
+        { sprintState: 'active' },
+        { sprintState: 'inactive' },
+      ];
       const result = component.isFilterHidden(filterDataSet);
       expect(result).toBe(true);
     });
@@ -956,7 +1004,6 @@ describe('PrimaryFilterComponent', () => {
       const result = component.isFilterHidden(component.filters);
       expect(result).toBe(false);
     });
-
   });
 
   describe('PrimaryFilterComponent.applyDefaultFilters() applyDefaultFilters method', () => {
@@ -966,23 +1013,31 @@ describe('PrimaryFilterComponent', () => {
         component.hierarchyLevels = ['Project', 'Level 2'];
         component.primaryFilterConfig = {
           defaultLevel: { labelName: 'Project' },
-          type: 'multiSelect'
+          type: 'multiSelect',
         };
         component.filterData = {
-          Project: [
-            { labelName: 'Project', nodeId: 1 }
-          ],
+          Project: [{ labelName: 'Project', nodeId: 1 }],
         };
         component.filters = [{ labelName: 'Project', nodeId: 1 }];
-        spyOn(sharedService, 'getBackupOfUrlFilters').and.returnValue(JSON.stringify({ primary_level: [{ labelName: 'Project', nodeId: 1 }] }) as any);
+        spyOn(sharedService, 'getBackupOfUrlFilters').and.returnValue(
+          JSON.stringify({
+            primary_level: [{ labelName: 'Project', nodeId: 1 }],
+          }) as any,
+        );
 
         // Act
         component.applyDefaultFilters();
 
         // Assert
         tick(100);
-        expect(component.selectedFilters).toEqual([{ labelName: 'Project', nodeId: 1 }]);
-        expect(sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ primary_level: [{ labelName: 'Project', nodeId: 1 }] });
+        expect(component.selectedFilters).toEqual([
+          { labelName: 'Project', nodeId: 1 },
+        ]);
+        expect(
+          sharedService.setBackupOfFilterSelectionState,
+        ).toHaveBeenCalledWith({
+          primary_level: [{ labelName: 'Project', nodeId: 1 }],
+        });
       }));
 
       it('should reset filters when no state filters are available', fakeAsync(() => {
@@ -990,23 +1045,25 @@ describe('PrimaryFilterComponent', () => {
         component.hierarchyLevels = ['Project', 'Level 2'];
         component.primaryFilterConfig = {
           defaultLevel: { labelName: 'Project' },
-          type: 'multiSelect'
+          type: 'multiSelect',
         };
         component.selectedLevel = 'Project';
         component.filterData = {
-          Project: [
-            { labelName: 'Project', nodeId: 1 }
-          ],
+          Project: [{ labelName: 'Project', nodeId: 1 }],
         };
         component.filters = [{ labelName: 'Project', nodeId: 1 }];
-        spyOn(sharedService, 'getBackupOfUrlFilters').and.returnValue(null as any);
+        spyOn(sharedService, 'getBackupOfUrlFilters').and.returnValue(
+          null as any,
+        );
 
         // Act
         component.applyDefaultFilters();
 
         // Assert
         tick(100);
-        expect(component.selectedFilters).toEqual([{ labelName: 'Project', nodeId: 1 }]);
+        expect(component.selectedFilters).toEqual([
+          { labelName: 'Project', nodeId: 1 },
+        ]);
       }));
     });
     describe('Edge cases', () => {
@@ -1015,10 +1072,12 @@ describe('PrimaryFilterComponent', () => {
         component.hierarchyLevels = ['Project', 'Level 2'];
         component.primaryFilterConfig = {
           defaultLevel: { labelName: 'Project' },
-          type: 'multiSelect'
+          type: 'multiSelect',
         };
         component.filters = [];
-        spyOn(sharedService, 'getBackupOfUrlFilters').and.returnValue(JSON.stringify({ primary_level: [] }));
+        spyOn(sharedService, 'getBackupOfUrlFilters').and.returnValue(
+          JSON.stringify({ primary_level: [] }),
+        );
         spyOn(sharedService, 'setNoSprints');
 
         // Act
@@ -1026,83 +1085,88 @@ describe('PrimaryFilterComponent', () => {
 
         // Assert
         tick(100);
-        expect(component.selectedFilters).toBe(undefined);
+        expect(component.selectedFilters).toEqual([]);
         expect(sharedService.setNoSprints).toHaveBeenCalledWith(true);
-
-
       }));
     });
   });
 
   describe('PrimaryFilterComponent - Function Tests', () => {
-
-      it('should return immediate parent display name if level > 1', () => {
-        spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify({
+    it('should return immediate parent display name if level > 1', () => {
+      spyOn(localStorage, 'getItem').and.returnValue(
+        JSON.stringify({
           hierarchy: [
             { hierarchyLevelName: 'Level1', level: 1 },
             { hierarchyLevelName: 'Level2', level: 2 },
-          ]
-        }));
-    
-        component.selectedType = 'Hierarchy';
-        component.selectedLevel = 'Level2';
-        component.filterData = {
-          Level1: [{ nodeId: 'parent123', nodeDisplayName: 'Parent Name' }]
-        };
-    
-        const result = component.getImmediateParentDisplayName({ parentId: 'parent123' });
-        expect(result).toBe('Parent Name');
+          ],
+        }),
+      );
+
+      component.selectedType = 'Hierarchy';
+      component.selectedLevel = 'Level2';
+      component.filterData = {
+        Level1: [{ nodeId: 'parent123', nodeDisplayName: 'Parent Name' }],
+      };
+
+      const result = component.getImmediateParentDisplayName({
+        parentId: 'parent123',
       });
-    
-      it('should return undefined if level is 1 or lower', () => {
-        spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify({
-          hierarchy: [{ hierarchyLevelName: 'Level1', level: 1 }]
-        }));
-    
-        component.selectedType = 'Hierarchy';
-        component.selectedLevel = 'Level1';
-        component.filterData = {};
-    
-        const result = component.getImmediateParentDisplayName({ parentId: 'parent123' });
-        expect(result).toBeUndefined();
+      expect(result).toBe('Parent Name');
+    });
+
+    it('should return undefined if level is 1 or lower', () => {
+      spyOn(localStorage, 'getItem').and.returnValue(
+        JSON.stringify({
+          hierarchy: [{ hierarchyLevelName: 'Level1', level: 1 }],
+        }),
+      );
+
+      component.selectedType = 'Hierarchy';
+      component.selectedLevel = 'Level1';
+      component.filterData = {};
+
+      const result = component.getImmediateParentDisplayName({
+        parentId: 'parent123',
       });
-    
-      it('should set preventClose to true when preventDropdownClose() is called', () => {
-        const event = new Event('click');
-        component.preventDropdownClose(event);
-        expect(component.preventClose).toBeTrue();
-      });
-    
-      it('should reset preventClose to false on blur', () => {
-        component.preventClose = true;
-        component.handleBlur();
-        expect(component.preventClose).toBeFalse();
-      });
-    
-      it('should return false and reset preventClose if preventClose is true', () => {
-        component.preventClose = true;
-        const result = component.handlePanelHide();
-        expect(result).toBeFalse();
-        expect(component.preventClose).toBeFalse();
-      });
-    
-      it('should return true if preventClose is false', () => {
-        component.preventClose = false;
-        const result = component.handlePanelHide();
-        expect(result).toBeTrue();
-      });
-    
-      it('should set preventClose to true when "Tab" key is pressed', () => {
-        const event = new KeyboardEvent('keydown', { key: 'Tab' });
-        component.handleFooterKeydown(event);
-        expect(component.preventClose).toBeTrue();
-      });
-    
-      it('should not change preventClose for other keys', () => {
-        const event = new KeyboardEvent('keydown', { key: 'Enter' });
-        component.preventClose = false;
-        component.handleFooterKeydown(event);
-        expect(component.preventClose).toBeFalse();
-      });
+      expect(result).toBeUndefined();
+    });
+
+    it('should set preventClose to true when preventDropdownClose() is called', () => {
+      const event = new Event('click');
+      component.preventDropdownClose(event);
+      expect(component.preventClose).toBeTrue();
+    });
+
+    it('should reset preventClose to false on blur', () => {
+      component.preventClose = true;
+      component.handleBlur();
+      expect(component.preventClose).toBeFalse();
+    });
+
+    it('should return false and reset preventClose if preventClose is true', () => {
+      component.preventClose = true;
+      const result = component.handlePanelHide();
+      expect(result).toBeFalse();
+      expect(component.preventClose).toBeFalse();
+    });
+
+    it('should return true if preventClose is false', () => {
+      component.preventClose = false;
+      const result = component.handlePanelHide();
+      expect(result).toBeTrue();
+    });
+
+    it('should set preventClose to true when "Tab" key is pressed', () => {
+      const event = new KeyboardEvent('keydown', { key: 'Tab' });
+      component.handleFooterKeydown(event);
+      expect(component.preventClose).toBeTrue();
+    });
+
+    it('should not change preventClose for other keys', () => {
+      const event = new KeyboardEvent('keydown', { key: 'Enter' });
+      component.preventClose = false;
+      component.handleFooterKeydown(event);
+      expect(component.preventClose).toBeFalse();
+    });
   });
 });

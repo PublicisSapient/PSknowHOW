@@ -3,6 +3,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -47,6 +49,7 @@ import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -99,8 +102,9 @@ public class ProductionDefectAgingServiceImpl extends JiraBacklogKPIService<Long
 
 			mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 					basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-			resultListMap.put(RANGE_TICKET_LIST, jiraIssueRepository.findIssuesByDateAndTypeAndStatus(mapOfFilters,
-					uniqueProjectMap, startDate, endDate, RANGE, IN, true));
+            List<JiraIssue> filterProjectJiraIssues = filterProjectJiraIssues(getBackLogJiraIssuesFromBaseClass(), mapOfFilters, uniqueProjectMap, startDate, endDate);
+			resultListMap.put(RANGE_TICKET_LIST, filterProjectJiraIssues);
+
 		}
 
 		return resultListMap;
@@ -360,5 +364,47 @@ public class ProductionDefectAgingServiceImpl extends JiraBacklogKPIService<Long
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI127(),
 				KPICode.PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING.getKpiId());
+	}
+
+	/**
+	 * Filter project issues.
+	 * 
+	 * @param projectJiraIssue
+	 *            getJiraIssuesCustomHistoryFromBaseClass()
+	 * @param mapOfFilters
+	 *            map of filters
+	 * @param uniqueProjectMap
+	 *            unique project map
+	 * @param startDate
+	 *            start date
+	 * @param endDate
+	 *            end date
+	 * @return filtered jira issue
+	 */
+	public List<JiraIssue> filterProjectJiraIssues(List<JiraIssue> projectJiraIssue,
+			Map<String, List<String>> mapOfFilters, Map<String, Map<String, Object>> uniqueProjectMap, String startDate,
+			String endDate) {
+		LocalDateTime startDateTime = DateUtil.stringToLocalDate(startDate, DateUtil.DATE_FORMAT).atStartOfDay();
+		LocalDateTime endDateTime = DateUtil.stringToLocalDate(endDate, DateUtil.DATE_FORMAT).atStartOfDay();
+
+		return projectJiraIssue.stream().filter(issue -> {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
+			LocalDateTime createdDate = LocalDateTime.parse(issue.getCreatedDate(), formatter);
+			return DateUtil.isWithinDateTimeRange(createdDate, startDateTime, endDateTime);
+		}).filter(JiraIssue::isProductionDefect)
+				.filter(issue -> mapOfFilters.getOrDefault("basicProjectConfigId", List.of())
+						.contains(issue.getBasicProjectConfigId()))
+				.filter(issue -> uniqueProjectMap.entrySet().stream()
+						.anyMatch(entry -> entry.getValue().entrySet().stream().allMatch(subEntry -> {
+							if (subEntry.getKey().equals("jiraStatus")) {
+								return ((List<Pattern>) subEntry.getValue()).stream()
+										.anyMatch(pattern -> pattern.matcher(issue.getJiraStatus()).matches());
+							} else if (subEntry.getKey().equals("typeName")) {
+								return ((List<Pattern>) subEntry.getValue()).stream()
+										.anyMatch(pattern -> pattern.matcher(issue.getTypeName()).matches());
+							}
+							return false;
+						})))
+				.collect(Collectors.toList());
 	}
 }

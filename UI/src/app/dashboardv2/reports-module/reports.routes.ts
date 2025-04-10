@@ -3,21 +3,19 @@ import { ReportContainerComponent } from './report-container/report-container.co
 import { NgModule } from '@angular/core';
 
 export const reportsRoutes: Routes = [
-    {
-        path: 'Report',
-        component: ReportContainerComponent
-    },
-    {
-        path: 'default-report',
-        component: ReportContainerComponent
-    }
+  {
+    path: 'Report',
+    component: ReportContainerComponent,
+  },
+  {
+    path: 'default-report',
+    component: ReportContainerComponent,
+  },
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(reportsRoutes)],
-    exports: [],
-    providers: [
-    ]
+  imports: [RouterModule.forChild(reportsRoutes)],
+  exports: [],
+  providers: [],
 })
-
-export class ReportsRoutingModule { }
+export class ReportsRoutingModule {}

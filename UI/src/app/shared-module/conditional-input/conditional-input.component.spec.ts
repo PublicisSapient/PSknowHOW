@@ -1,4 +1,4 @@
-import { SimpleChange  } from '@angular/core';
+import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ConditionalInputComponent } from './conditional-input.component';
@@ -9,50 +9,49 @@ describe('ConditionalInputComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ConditionalInputComponent]
-    })
-      .compileComponents();
+      declarations: [ConditionalInputComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ConditionalInputComponent);
     component = fixture.componentInstance;
     component.fieldConfig = {
       options: [
         {
-          "labelValue": "p1",
-          "operator": "<",
-          "countValue": 3,
-          "maxValue": 10,
-          "minValue": 1
+          labelValue: 'p1',
+          operator: '<',
+          countValue: 3,
+          maxValue: 10,
+          minValue: 1,
         },
         {
-          "labelValue": "p2",
-          "operator": "<",
-          "countValue": 2,
-          "maxValue": 10,
-          "minValue": 1
+          labelValue: 'p2',
+          operator: '<',
+          countValue: 2,
+          maxValue: 10,
+          minValue: 1,
         },
         {
-          "labelValue": "p3",
-          "operator": "<",
-          "countValue": 2,
-          "maxValue": 10,
-          "minValue": 1
+          labelValue: 'p3',
+          operator: '<',
+          countValue: 2,
+          maxValue: 10,
+          minValue: 1,
         },
         {
-          "labelValue": "p4",
-          "operator": "<",
-          "countValue": 2,
-          "maxValue": 10,
-          "minValue": 1
+          labelValue: 'p4',
+          operator: '<',
+          countValue: 2,
+          maxValue: 10,
+          minValue: 1,
         },
         {
-          "labelValue": "p5",
-          "operator": "<",
-          "countValue": 2,
-          "maxValue": 10,
-          "minValue": 1
-        }
-      ]
+          labelValue: 'p5',
+          operator: '<',
+          countValue: 2,
+          maxValue: 10,
+          minValue: 1,
+        },
+      ],
     };
     fixture.detectChanges();
   });
@@ -68,40 +67,40 @@ describe('ConditionalInputComponent', () => {
     ];
 
     component.ngOnChanges({
-      valueObj: new SimpleChange(null, component.valueObj, true)
+      valueObj: new SimpleChange(null, component.valueObj, true),
     });
 
     expect(component.templateLabels).toEqual(['p1', 'p2']);
     expect(component.templateData).toEqual([
       {
-        "labelValue": "p1",
-        "operator": "<",
-        "countValue": 10,
-        "maxValue": 10,
-        "minValue": 1
+        labelValue: 'p1',
+        operator: '<',
+        countValue: 10,
+        maxValue: 10,
+        minValue: 1,
       },
       {
-        "labelValue": "p2",
-        "operator": "<",
-        "countValue": 5,
-        "maxValue": 10,
-        "minValue": 1
+        labelValue: 'p2',
+        operator: '<',
+        countValue: 5,
+        maxValue: 10,
+        minValue: 1,
       },
     ]);
     expect(component.finalValue).toEqual([
       {
-        "labelValue": "p1",
-        "operator": "<",
-        "countValue": 10,
-        "maxValue": 10,
-        "minValue": 1
+        labelValue: 'p1',
+        operator: '<',
+        countValue: 10,
+        maxValue: 10,
+        minValue: 1,
       },
       {
-        "labelValue": "p2",
-        "operator": "<",
-        "countValue": 5,
-        "maxValue": 10,
-        "minValue": 1
+        labelValue: 'p2',
+        operator: '<',
+        countValue: 5,
+        maxValue: 10,
+        minValue: 1,
       },
     ]);
     expect(component.fieldConfig.options[0].countValue).toEqual(10);
@@ -117,29 +116,28 @@ describe('ConditionalInputComponent', () => {
   });
 
   it('should update templateLabels, templateData, and set countValue to minValue for selected option', () => {
-
     component.templateLabels = ['p1', 'p2'];
     component.templateData = [
       {
-        "labelValue": "p1",
-        "operator": "<",
-        "countValue": 3,
-        "maxValue": 10,
-        "minValue": 1
+        labelValue: 'p1',
+        operator: '<',
+        countValue: 3,
+        maxValue: 10,
+        minValue: 1,
       },
       {
-        "labelValue": "p2",
-        "operator": "<",
-        "countValue": 2,
-        "maxValue": 10,
-        "minValue": 1
+        labelValue: 'p2',
+        operator: '<',
+        countValue: 2,
+        maxValue: 10,
+        minValue: 1,
       },
     ];
     const event = {
       value: [
         { labelValue: 'p1', countValue: 3, minValue: 1 },
         { labelValue: 'p2', countValue: 2, minValue: 1 },
-        { labelValue: 'p3', countValue: 5, minValue: 1 }
+        { labelValue: 'p3', countValue: 5, minValue: 1 },
       ],
       itemValue: { labelValue: 'p3', countValue: 5, minValue: 1 },
     };
@@ -149,25 +147,25 @@ describe('ConditionalInputComponent', () => {
     expect(component.templateLabels).toEqual(['p1', 'p2', 'p3']);
     expect(component.templateData).toEqual([
       {
-        "labelValue": "p1",
-        "operator": "<",
-        "countValue": 3,
-        "maxValue": 10,
-        "minValue": 1
+        labelValue: 'p1',
+        operator: '<',
+        countValue: 3,
+        maxValue: 10,
+        minValue: 1,
       },
       {
-        "labelValue": "p2",
-        "operator": "<",
-        "countValue": 2,
-        "maxValue": 10,
-        "minValue": 1
+        labelValue: 'p2',
+        operator: '<',
+        countValue: 2,
+        maxValue: 10,
+        minValue: 1,
       },
       {
-        "labelValue": "p3",
-        "operator": "<",
-        "countValue": 1,
-        "maxValue": 10,
-        "minValue": 1
+        labelValue: 'p3',
+        operator: '<',
+        countValue: 1,
+        maxValue: 10,
+        minValue: 1,
       },
     ]);
   });
@@ -238,7 +236,7 @@ describe('ConditionalInputComponent', () => {
 
   it('should call blur() on the event target', () => {
     const mockEvent = {
-      target: jasmine.createSpyObj('HTMLElement', ['blur'])
+      target: jasmine.createSpyObj('HTMLElement', ['blur']),
     };
 
     component.removeFocus(mockEvent);

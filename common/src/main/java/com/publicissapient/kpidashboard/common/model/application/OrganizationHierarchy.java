@@ -21,6 +21,10 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -40,8 +44,8 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Document(collection = "organization_hierarchy")
 @CompoundIndexes({ @CompoundIndex(name = "nodeName_idx", def = "{'nodeName': 1}") })
 public class OrganizationHierarchy extends BasicModel implements Serializable {
@@ -56,17 +60,24 @@ public class OrganizationHierarchy extends BasicModel implements Serializable {
 
 	private String nodeDisplayName;
 
-	// Todo same as labelName in Account Hierarchy
 	private String hierarchyLevelId;
 
 	@Indexed(unique = true)
 	private String parentId;
 
+	@CreatedDate
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime createdDate;
 
+	@LastModifiedDate
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime modifiedDate;
+
+	@CreatedBy
+	private String createdBy;
+
+	@LastModifiedBy
+	private String updatedBy;
 
 	@Indexed(unique = true)
 	private String externalId;
