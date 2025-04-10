@@ -1257,10 +1257,18 @@ export class HttpService {
   }
 
   addHierarchyOptions(parentID, hierarchyOptions) {
-    return this.http.post<any>( parentID ? `${this.updateHierarchyOptionsUrl}/${parentID}` : this.updateHierarchyOptionsUrl , hierarchyOptions);
+    return this.http.post<any>(
+      parentID
+        ? `${this.updateHierarchyOptionsUrl}/${parentID}`
+        : this.updateHierarchyOptionsUrl,
+      hierarchyOptions,
+    );
   }
 
   renameHierarchyOptions(parentID, dispalyName) {
-    return this.http.put<any>(`${this.updateHierarchyOptionsUrl}/${parentID}`, dispalyName);
+    return this.http.put<any>(
+      `${this.updateHierarchyOptionsUrl}/${parentID}`,
+      dispalyName,
+    );
   }
 }
