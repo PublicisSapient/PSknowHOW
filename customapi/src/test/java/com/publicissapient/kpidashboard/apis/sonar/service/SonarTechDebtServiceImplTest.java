@@ -386,7 +386,7 @@ public class SonarTechDebtServiceImplTest {
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put(KPICode.SONAR_TECH_DEBT.name(), Arrays.asList("-80", "80-60", "60-40", "40-20", "20-"));
 		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
-		// when(configHelperService.calculateMaturity()).thenReturn(toolMap);
+		kpiRequest.setLabel("PORT");
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);

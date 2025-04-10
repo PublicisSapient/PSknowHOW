@@ -163,6 +163,7 @@ export class HttpService {
   private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
   private commentsSummaryUrl = this.baseUrl + '/api/comments/commentsSummary';
   private jiraTemplateUrl = this.baseUrl + '/api/templates';
+  private jiraConfigurationUrl = this.baseUrl + '/api/configuration';
   private currentUserDetailsURL = this.baseUrl + '/api/userinfo/userData';
   private getKpiColumnsUrl = this.baseUrl + '/api/kpi-column-config';
   private postKpiColumnsConfigUrl =
@@ -189,7 +190,9 @@ export class HttpService {
   currentUserDetails = null;
   private saveMetaDataStepURL = this.baseUrl + '/api/processor/metadata/step/';
 
-  private organizationHierarchy = this.baseUrl + '/api/organizationHierarchy';
+  private organizationHierarchy = this.baseUrl + '/api/hierarchy';
+  private updateHierarchyOptionsUrl = this.baseUrl + '/api/hierarchy';
+
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -1145,6 +1148,10 @@ export class HttpService {
     return this.http.get<any>(`${this.jiraTemplateUrl}/${projectId}`);
   }
 
+  getJiraConfigurationTypeOptions() {
+    return this.http.get<any>(`${this.jiraConfigurationUrl}`);
+  }
+
   getMappingTemplateFlag(toolID, data) {
     return this.http.post(
       `${this.fieldMappingsUrl}/${toolID}/saveMapping`,
@@ -1247,5 +1254,21 @@ export class HttpService {
 
   deleteReport(id: string): Observable<any> {
     return this.http.delete<any>(this.createReportUrl + '/' + id);
+  }
+
+  addHierarchyOptions(parentID, hierarchyOptions) {
+    return this.http.post<any>(
+      parentID
+        ? `${this.updateHierarchyOptionsUrl}/${parentID}`
+        : this.updateHierarchyOptionsUrl,
+      hierarchyOptions,
+    );
+  }
+
+  renameHierarchyOptions(parentID, dispalyName) {
+    return this.http.put<any>(
+      `${this.updateHierarchyOptionsUrl}/${parentID}`,
+      dispalyName,
+    );
   }
 }

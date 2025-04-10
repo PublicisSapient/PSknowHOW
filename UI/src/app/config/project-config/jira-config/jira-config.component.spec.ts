@@ -262,6 +262,8 @@ describe('JiraConfigComponent', () => {
     });
 
     component.queryEnabled = true;
+    component.toolForm.controls['boards'].setValue('DTS');
+    component.toolForm.controls['jiraConfigurationType'].setValue('2');
     component.toolForm.controls['boardQuery'].setValue(
       `Project = DTS AND component = Panthers AND issuetype in (Story, Defect, "Enabler Story", "Change request", Dependency, Epic, Task, "Studio Job", "Studio Task") and  created > '2022/03/01 00:00'`,
     );
@@ -286,6 +288,7 @@ describe('JiraConfigComponent', () => {
     component.toolForm.controls['boardQuery'].setValue(
       `Project = DTS AND component = Panthers AND issuetype in (Story, Defect, "Enabler Story", "Change request", Dependency, Epic, Task, "Studio Job", "Studio Task") and  created > '2022/03/01 00:00'`,
     );
+    component.toolForm.controls['boards'].setValue('DTS');
     component.isEdit = true;
     component.selectedConnection = selectedConnection;
 
@@ -1752,12 +1755,36 @@ describe('JiraConfigComponent', () => {
   });
 
   it('should jirachange method', () => {
+    component.ngOnInit();
     component.toolForm = new UntypedFormGroup({
       boards: new UntypedFormControl(),
       boardQuery: new UntypedFormControl(),
+      jiraConfigurationType: new UntypedFormControl(),
     });
     component.urlParam = 'Jira';
-    component.jiraMethodChange(component, null);
+    component.jiraMethodChange(component, { value: '2' });
+  });
+
+  it('should jirachange works for board configuration type', () => {
+    component.ngOnInit();
+    component.toolForm = new UntypedFormGroup({
+      boards: new UntypedFormControl(),
+      boardQuery: new UntypedFormControl(),
+      jiraConfigurationType: new UntypedFormControl(),
+    });
+    component.urlParam = 'Jira';
+    component.jiraMethodChange(component, { value: '1' });
+  });
+
+  it('should jirachange works for none configuration type', () => {
+    component.ngOnInit();
+    component.toolForm = new UntypedFormGroup({
+      boards: new UntypedFormControl(),
+      boardQuery: new UntypedFormControl(),
+      jiraConfigurationType: new UntypedFormControl(),
+    });
+    component.urlParam = 'Jira';
+    component.jiraMethodChange(component, { value: '3' });
   });
 
   it('should move the selected item to the beginning of the array', () => {
@@ -2305,5 +2332,127 @@ describe('JiraConfigComponent', () => {
     component.fetchBoards(component);
     tick();
     expect(spy).toHaveBeenCalled();
+  }));
+
+  it('should filter Kanban type projects correctly when type is lowercase', fakeAsync(() => {
+    // Arrange
+    const mockResponse = {
+      data: [
+        { tool: 'Jira', kanban: true, name: 'Template1' },
+        { tool: 'Jira', kanban: false, name: 'Template2' },
+        { tool: 'Other', kanban: true, name: 'Template3' },
+      ],
+    };
+    component.selectedProject = { id: 1, type: 'kanban' };
+    spyOn(httpService, 'getJiraConfigurationTypeOptions').and.returnValue(
+      of(mockResponse),
+    );
+
+    // Act
+    component.getJiraConfigurationType();
+    tick();
+
+    // Assert
+    expect(httpService.getJiraConfigurationTypeOptions).toHaveBeenCalled();
+    expect(component.jiraConfigurationTypeOptions).toEqual([
+      { tool: 'Jira', kanban: true, name: 'Template1' },
+    ]);
+  }));
+
+  it('should filter Scrum type projects correctly when Type is uppercase', fakeAsync(() => {
+    // Arrange
+    const mockResponse = {
+      data: [
+        { tool: 'Jira', kanban: true, name: 'Template1' },
+        { tool: 'Jira', kanban: false, name: 'Template2' },
+        { tool: 'Other', kanban: false, name: 'Template3' },
+      ],
+    };
+    component.selectedProject = { id: 1, Type: 'SCRUM' };
+    spyOn(httpService, 'getJiraConfigurationTypeOptions').and.returnValue(
+      of(mockResponse),
+    );
+
+    // Act
+    component.getJiraConfigurationType();
+    tick();
+
+    // Assert
+    expect(httpService.getJiraConfigurationTypeOptions).toHaveBeenCalled();
+    expect(component.jiraConfigurationTypeOptions).toEqual([
+      { tool: 'Jira', kanban: false, name: 'Template2' },
+    ]);
+  }));
+
+  it('should handle case when selectedProject is null', fakeAsync(() => {
+    // Arrange
+    const mockResponse = {
+      data: [
+        { tool: 'Jira', kanban: true, name: 'Template1' },
+        { tool: 'Jira', kanban: false, name: 'Template2' },
+      ],
+    };
+    component.selectedProject = null;
+    spyOn(httpService, 'getJiraConfigurationTypeOptions').and.returnValue(
+      of(mockResponse),
+    );
+
+    // Act
+    component.getJiraConfigurationType();
+    tick();
+
+    // Assert
+    expect(httpService.getJiraConfigurationTypeOptions).toHaveBeenCalled();
+    expect(component.jiraConfigurationTypeOptions).toEqual([]);
+  }));
+
+  it('should filter non-Jira tools out', fakeAsync(() => {
+    // Arrange
+    const mockResponse = {
+      data: [
+        { tool: 'Jira', kanban: true, name: 'Template1' },
+        { tool: 'Other', kanban: true, name: 'Template2' },
+        { tool: 'Another', kanban: true, name: 'Template3' },
+      ],
+    };
+    component.selectedProject = { id: 1, type: 'kanban' };
+    spyOn(httpService, 'getJiraConfigurationTypeOptions').and.returnValue(
+      of(mockResponse),
+    );
+
+    // Act
+    component.getJiraConfigurationType();
+    tick();
+
+    // Assert
+    expect(httpService.getJiraConfigurationTypeOptions).toHaveBeenCalled();
+    expect(component.jiraConfigurationTypeOptions).toEqual([
+      { tool: 'Jira', kanban: true, name: 'Template1' },
+    ]);
+  }));
+
+  it('should handle case-insensitive tool name comparison', fakeAsync(() => {
+    // Arrange
+    const mockResponse = {
+      data: [
+        { tool: 'JIRA', kanban: true, name: 'Template1' },
+        { tool: 'jira', kanban: true, name: 'Template2' },
+      ],
+    };
+    component.selectedProject = { id: 1, type: 'kanban' };
+    spyOn(httpService, 'getJiraConfigurationTypeOptions').and.returnValue(
+      of(mockResponse),
+    );
+
+    // Act
+    component.getJiraConfigurationType();
+    tick();
+
+    // Assert
+    expect(httpService.getJiraConfigurationTypeOptions).toHaveBeenCalled();
+    expect(component.jiraConfigurationTypeOptions).toEqual([
+      { tool: 'JIRA', kanban: true, name: 'Template1' },
+      { tool: 'jira', kanban: true, name: 'Template2' },
+    ]);
   }));
 });

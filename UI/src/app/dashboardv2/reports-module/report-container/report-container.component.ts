@@ -113,7 +113,6 @@ export class ReportContainerComponent implements OnInit {
    */
   deleteKPIFromReport(selectedReport, kpi) {
     selectedReport.kpis = selectedReport.kpis.filter((x) => x.id !== kpi.id);
-    // this.messageService.add({ severity: 'success', summary: 'Report updated successfully' });
     let data = { ...selectedReport };
     data.kpis.forEach((element) => {
       element.chartData = JSON.stringify(element.chartData);
@@ -128,8 +127,7 @@ export class ReportContainerComponent implements OnInit {
         selectedReport.kpis = data['data']['kpis'];
         this.messageService.add({
           severity: 'success',
-          summary:
-            'Metrics added successfully. View the report in the report section.',
+          summary: 'Metrics added successfully. View the report in the report section.',
         });
       } else {
         this.messageService.add({
@@ -174,11 +172,22 @@ export class ReportContainerComponent implements OnInit {
   removeReport(report: any, event: MouseEvent) {
     event.stopPropagation(); // Prevent triggering the button's onClick
     let deletedReportId = report?.id;
-    this.http.deleteReport(deletedReportId).subscribe((res) => {
-      if (res.success) {
+    this.http.deleteReport(deletedReportId).subscribe(
+      (res) => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Report deleted successfully',
+        });
         this.reportsData = this.reportsData.filter((r) => r !== report);
         //this.getReportsData();
-      }
-    });
+      },
+      (error) => {
+        console.error('Error deleting report:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Failed to delete report',
+        });
+      },
+    );
   }
 }

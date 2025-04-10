@@ -311,6 +311,7 @@ export class ProjectFilterComponent implements OnInit {
         'id',
         'projectDisplayName',
         'hierarchy',
+        'projectNodeId',
       ]);
       this.filteredData = newFilteredData;
       if (Object.keys(this.selectedVal).length) {
