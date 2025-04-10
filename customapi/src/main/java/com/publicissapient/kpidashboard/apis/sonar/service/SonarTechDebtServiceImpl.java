@@ -20,14 +20,17 @@ package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.Filters;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -65,6 +68,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>, Map<ObjectId, List<SonarDetails>>> {
 
 	private static final String SQALE_INDEX = "sqale_index";
+	private static final String DATE_TIME_FORMAT_REGEX = "Z|\\.\\d+";
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
@@ -87,7 +91,16 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 			throws ApplicationException {
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
 
-		getSonarKpiData(projectList, treeAggregatorDetail.getMapTmp(), kpiElement);
+		Filters filter = Filters.getFilter(kpiRequest.getLabel());
+		if (filter == Filters.SPRINT || filter == Filters.PROJECT) {
+			List<Node> leafNodes = treeAggregatorDetail.getMapOfListOfLeafNodes().entrySet().stream()
+					.filter(k -> Filters.getFilter(k.getKey()) == Filters.SPRINT).map(Map.Entry::getValue).findFirst()
+					.orElse(Collections.emptyList());
+			getSonarKpiData(projectList, treeAggregatorDetail.getMapTmp(), kpiElement, leafNodes);
+
+		} else {
+			getSonarKpiData(projectList, treeAggregatorDetail.getMapTmp(), kpiElement, Collections.emptyList());
+		}
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(treeAggregatorDetail.getRoot(), nodeWiseKPIValue, KPICode.SONAR_TECH_DEBT);
@@ -108,7 +121,8 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 		return kpiElement;
 	}
 
-	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement) {
+	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement,
+			List<Node> sprintLeafNodeList) {
 		List<KPIExcelData> excelData = new ArrayList<>();
 
 		getSonarHistoryForAllProjects(pList,
@@ -119,15 +133,25 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 					List<String> versionDate = new ArrayList<>();
 					Map<String, List<DataCount>> projectWiseDataMap = new HashMap<>();
 					if (CollectionUtils.isNotEmpty(projectData)) {
-						LocalDate endDateTime = LocalDate.now().minusWeeks(1);
+						boolean isBacklogProject = CollectionUtils.isNotEmpty(sprintLeafNodeList) && sprintLeafNodeList
+								.get(0).getProjectFilter().getName().equalsIgnoreCase(projectNodePair.getValue());
+						LocalDate endDateTime = isBacklogProject
+								? DateUtil.stringToLocalDate(sprintLeafNodeList.get(0).getSprintFilter().getEndDate()
+										.replaceAll(DATE_TIME_FORMAT_REGEX, ""), DateUtil.TIME_FORMAT)
+								: LocalDate.now().minusWeeks(1);
 						for (int i = 0; i < customApiConfig.getSonarWeekCount(); i++) {
 							LocalDate[] weeks = getWeeks(endDateTime);
 							LocalDate monday = weeks[0];
 							LocalDate sunday = weeks[1];
+							if (isBacklogProject) {
+								monday = endDateTime.minusDays(6);
+								sunday = endDateTime;
+							}
 
 							String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,
-									DateUtil.DISPLAY_DATE_FORMAT) + " to " +
-									DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+									DateUtil.DISPLAY_DATE_FORMAT) + " to "
+									+ DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT,
+											DateUtil.DISPLAY_DATE_FORMAT);
 							Long startms = monday.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 							Long endms = sunday.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 							Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms);
@@ -135,8 +159,8 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 							if (MapUtils.isEmpty(history)) {
 								history = prepareEmptyJobWiseHistoryMap(projectData, endms);
 							}
-							prepareSqualeList(history, date, projectNodePair.getValue(), projectList, debtList, projectWiseDataMap,
-									versionDate);
+							prepareSqualeList(history, date, projectNodePair.getValue(), projectList, debtList,
+									projectWiseDataMap, versionDate);
 
 							endDateTime = endDateTime.minusWeeks(1);
 						}

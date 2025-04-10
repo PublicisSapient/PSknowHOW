@@ -393,8 +393,6 @@ public class SonarViolationsServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
-
-		svServiceImpl.getSonarKpiData(projectList, treeAggregatorDetail.getMapTmp(), kpiElement);
+		svServiceImpl.getKpiData(kpiRequest, kpiElement, treeAggregatorDetail);
 	}
 }
