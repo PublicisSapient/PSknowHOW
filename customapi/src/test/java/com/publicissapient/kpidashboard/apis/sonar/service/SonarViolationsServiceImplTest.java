@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -79,6 +80,8 @@ public class SonarViolationsServiceImplTest {
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
 	ConfigHelperService configHelperService;
+	@Mock
+	private CommonService commonService;
 	@InjectMocks
 	CodeViolationsServiceImpl svServiceImpl;
 	@Mock
@@ -393,8 +396,6 @@ public class SonarViolationsServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
-
-		svServiceImpl.getSonarKpiData(projectList, treeAggregatorDetail.getMapTmp(), kpiElement);
+		svServiceImpl.getKpiData(kpiRequest, kpiElement, treeAggregatorDetail);
 	}
 }

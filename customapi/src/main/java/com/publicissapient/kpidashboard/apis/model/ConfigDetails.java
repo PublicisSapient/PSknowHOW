@@ -28,6 +28,7 @@ public class ConfigDetails {
 	private DateRangeFilter dateRangeFilter;
 	private boolean gitlabToolFieldFlag;
 	private int sprintCountForKpiCalculation;
+	private boolean isOpenSource;
 
 	public boolean isGitlabToolFieldFlag() {
 		return gitlabToolFieldFlag;
@@ -101,4 +102,12 @@ public class ConfigDetails {
 	public int getSprintCountForKpiCalculation() {
 		return sprintCountForKpiCalculation;
 	}
+
+    public boolean isOpenSource() {
+        return isOpenSource;
+    }
+
+    public void setOpenSource(boolean openSource) {
+        isOpenSource = openSource;
+    }
 }

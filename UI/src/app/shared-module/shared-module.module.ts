@@ -154,7 +154,7 @@ import { CollapsiblePanelComponent } from '../component/collapsible-panel/collap
     CumulativeLineChartComponent,
     ReportKpiCardComponent,
     BarWithYAxisGroupComponent,
-    CollapsiblePanelComponent
+    CollapsiblePanelComponent,
   ],
   declarations: [
     ProjectFilterComponent,
@@ -196,7 +196,7 @@ import { CollapsiblePanelComponent } from '../component/collapsible-panel/collap
     CumulativeLineChartComponent,
     ReportKpiCardComponent,
     BarWithYAxisGroupComponent,
-    CollapsiblePanelComponent
+    CollapsiblePanelComponent,
   ],
   providers: [ConfirmationService, KpiHelperService],
 })

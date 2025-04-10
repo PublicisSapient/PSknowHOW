@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.hierarchy.service;
+package com.publicissapient.kpidashboard.apis.hierarchy.dto;
 
-import java.util.List;
+import javax.validation.constraints.NotBlank;
 
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public interface OrganizationHierarchyService {
-
-	List<OrganizationHierarchy> findAll();
-
-	OrganizationHierarchy findByNodeId(String nodeId);
-
-	OrganizationHierarchy save(OrganizationHierarchy organizationHierarchy);
-
-	void deleteByNodeId(String nodeId);
-
-	void clearCache();
-
-	ServiceResponse updateName(String name, String nodeId);
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class CreateHierarchyRequest {
+	@NotBlank(message = "name cannot be empty")
+	@NotNull(message = "name cannot be null")
+	@NotEmpty(message = "name cannot be empty")
+	private String name;
 }

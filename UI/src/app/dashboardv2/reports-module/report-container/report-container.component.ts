@@ -172,13 +172,22 @@ export class ReportContainerComponent implements OnInit {
   removeReport(report: any, event: MouseEvent) {
     event.stopPropagation(); // Prevent triggering the button's onClick
     let deletedReportId = report?.id;
-    this.http.deleteReport(deletedReportId).subscribe((res) => {
-        this.messageService.add({ severity: 'success', summary: 'Report deleted successfully' });
+    this.http.deleteReport(deletedReportId).subscribe(
+      (res) => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Report deleted successfully',
+        });
         this.reportsData = this.reportsData.filter((r) => r !== report);
         //this.getReportsData();
-    }, (error) => {
-      console.error('Error deleting report:', error);
-      this.messageService.add({ severity: 'error', summary: 'Failed to delete report' });
-    });
+      },
+      (error) => {
+        console.error('Error deleting report:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Failed to delete report',
+        });
+      },
+    );
   }
 }
