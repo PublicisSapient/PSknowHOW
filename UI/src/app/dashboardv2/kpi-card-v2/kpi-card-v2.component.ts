@@ -667,8 +667,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   exportToExcel(KpiId?: any) {
     if (!!this.cardData) {
       let exportData = this.cardData['issueData'];
-      // const uniqueCategory = [[...new Set(exportData.map(item => item.Category))]];
-      // console.log(uniqueCategory)
       if (KpiId === 'kpi176') {
         exportData = exportData.filter(
           (x) =>
@@ -862,8 +860,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       obj['value'] = updatedEvent[element.filterKey];
       this.iterationKPIFilterValues.push(obj);
     });
-
-    console.log(this.iterationKPIFilterValues);
 
     // Dynamically determine the exclusion value
     const exclusionValue = selectedKeyObj?.Category;
@@ -1093,7 +1089,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     let additional_filters =
       this.service.getBackupOfFilterSelectionState('additional_level') || {};
     additional_filters = this.setAdditionalFilterLevels(additional_filters);
-    console.log(additional_filters);
 
     this.getExistingReports();
     let metaDataObj = {
