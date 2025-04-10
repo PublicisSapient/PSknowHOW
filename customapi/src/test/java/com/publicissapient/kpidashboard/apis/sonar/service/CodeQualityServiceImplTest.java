@@ -172,7 +172,6 @@ public class CodeQualityServiceImplTest {
 		setToolMap();
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-		List<Node> pList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
@@ -180,7 +179,7 @@ public class CodeQualityServiceImplTest {
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONAR.name()))
 				.thenReturn(kpiRequestTrackerId);
-		codeQualityService.getSonarKpiData(pList, treeAggregatorDetail.getMapTmp(), kpiElement);
+		codeQualityService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetail);
 		assertFalse(kpiElement.getExcelData().isEmpty());
 		assertFalse(kpiElement.getExcelColumns().isEmpty());
 	}
@@ -191,7 +190,7 @@ public class CodeQualityServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> pList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
-		codeQualityService.getSonarKpiData(pList, treeAggregatorDetail.getMapTmp(), kpiElement);
+		codeQualityService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetail);
 		assertFalse(kpiElement.getExcelColumns().isEmpty());
 	}
 
@@ -229,7 +228,25 @@ public class CodeQualityServiceImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		Map<String, List<DataCount>> trendMap = createTrendValue();
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendMap);
-		List<Node> pList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
+		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
+				.thenReturn(sonarHistoryData);
+		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
+		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONAR.name()))
+				.thenReturn(kpiRequestTrackerId);
+
+		KpiElement result = codeQualityService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetail);
+		assertTrue(((List<DataCount>) result.getTrendValueList()).size() > 0);
+	}
+
+	@Test
+	public void testGetKpiData_AggregatedValuesWithDataByMonth() throws ApplicationException {
+		setToolMap();
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		Map<String, List<DataCount>> trendMap = createTrendValue();
+		kpiRequest.setLabel("PORT");
+		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendMap);
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);

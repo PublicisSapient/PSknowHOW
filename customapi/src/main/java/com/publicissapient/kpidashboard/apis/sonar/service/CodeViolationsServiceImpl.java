@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -33,6 +34,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.Filters;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -89,6 +91,7 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 
 	@Autowired
 	protected CustomApiConfig customApiConfig;
+	private static final String DATE_TIME_FORMAT_REGEX = "Z|\\.\\d+";
 
 	/**
 	 * Gets KPI Data
@@ -106,8 +109,19 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
 			throws ApplicationException {
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
+		
+		Filters filter = Filters.getFilter(kpiRequest.getLabel());
+		
+//      in case if only projects or sprint filters are applied
+		if (filter == Filters.SPRINT || filter == Filters.PROJECT) {
+			List<Node> leafNodes = treeAggregatorDetail.getMapOfListOfLeafNodes().entrySet().stream()
+					.filter(k -> Filters.getFilter(k.getKey()) == Filters.SPRINT).map(Map.Entry::getValue).findFirst()
+					.orElse(Collections.emptyList());
+			getSonarKpiData(projectList, treeAggregatorDetail.getMapTmp(), kpiElement, leafNodes);
 
-		getSonarKpiData(projectList, treeAggregatorDetail.getMapTmp(), kpiElement);
+		} else {
+			getSonarKpiData(projectList, treeAggregatorDetail.getMapTmp(), kpiElement, Collections.emptyList());
+		}
 
 		log.debug("[UNIT-TEST-COVERAGE-LEAF-NODE-VALUE][{}]. Values of project size for KPI calculation {}",
 				kpiRequest.getRequestTrackerId(),
@@ -143,42 +157,21 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 		return kpiElement;
 	}
 
-	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement) {
+	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement,
+			List<Node> sprintLeafNodeList) {
 		List<KPIExcelData> excelData = new ArrayList<>();
 		Set<String> overAllJoblist = new HashSet<>();
+
 		getSonarHistoryForAllProjects(pList,
 				getScrumCurrentDateToFetchFromDb(CommonConstant.WEEK, (long) customApiConfig.getSonarWeekCount()))
 				.forEach((projectNodePair, projectData) -> {
-					List<String> projectList = new ArrayList<>();
-					List<List<String>> violations = new ArrayList<>();
-					List<String> versionDate = new ArrayList<>();
-					Map<String, List<DataCount>> projectWiseDataMap = new HashMap<>();
 					if (CollectionUtils.isNotEmpty(projectData)) {
-						LocalDate endDateTime = LocalDate.now().minusWeeks(1);
-						for (int i = 0; i < customApiConfig.getSonarWeekCount(); i++) {
-							LocalDate[] weeks = getWeeks(endDateTime);
-							LocalDate monday = weeks[0];
-							LocalDate sunday = weeks[1];
-
-							String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,
-									DateUtil.DISPLAY_DATE_FORMAT) + " to " +
-									DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
-							Long startms = monday.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
-							Long endms = sunday.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-							Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms,
-									projectNodePair.getValue());
-							prepareViolationsList(history, date, projectNodePair.getValue(), projectList, violations,
-									projectWiseDataMap, versionDate);
-
-							endDateTime = endDateTime.minusWeeks(1);
-						}
-						overAllJoblist.addAll(projectList);
-						tempMap.get(projectNodePair.getKey()).setValue(projectWiseDataMap);
-						if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-							KPIExcelUtility.populateSonarViolationsExcelData(
-									tempMap.get(projectNodePair.getKey()).getProjectFilter().getName(), projectList, violations,
-									versionDate, excelData, KPICode.CODE_VIOLATIONS.getKpiId());
-						}
+						processProjectData(projectNodePair, projectData,
+								sprintLeafNodeList.stream()
+										.filter(node -> node.getProjectFilter().getId()
+												.equalsIgnoreCase(projectNodePair.getLeft()))
+										.toList(),
+								tempMap, overAllJoblist, excelData);
 					}
 				});
 		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(JOB_FILTER, overAllJoblist);
@@ -188,6 +181,49 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 		kpiElement.setFilters(iterationKpiFilters);
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.SONAR_VIOLATIONS.getColumns());
+	}
+
+	private void processProjectData(Pair<String, String> projectNodePair, List<SonarHistory> projectData,
+			List<Node> sprintLeafNodeList, Map<String, Node> tempMap, Set<String> overAllJoblist,
+			List<KPIExcelData> excelData) {
+		List<String> projectList = new ArrayList<>();
+		List<List<String>> violations = new ArrayList<>();
+		List<String> versionDate = new ArrayList<>();
+		Map<String, List<DataCount>> projectWiseDataMap = new HashMap<>();
+			boolean isBacklogProject = CollectionUtils.isNotEmpty(sprintLeafNodeList) && sprintLeafNodeList.get(0)
+					.getProjectFilter().getName().equalsIgnoreCase(projectNodePair.getValue());
+			LocalDate endDateTime = isBacklogProject
+					? DateUtil.stringToLocalDate(sprintLeafNodeList.get(0).getSprintFilter().getEndDate()
+							.replaceAll(DATE_TIME_FORMAT_REGEX, ""), DateUtil.TIME_FORMAT)
+					: LocalDate.now().minusWeeks(1);
+			for (int i = 0; i < customApiConfig.getSonarWeekCount(); i++) {
+				LocalDate[] weeks = getWeeks(endDateTime);
+				LocalDate monday = weeks[0];
+				LocalDate sunday = weeks[1];
+				if (isBacklogProject) {
+					monday = endDateTime.minusDays(6);
+					sunday = endDateTime;
+				}
+				String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,
+						DateUtil.DISPLAY_DATE_FORMAT) + " to "
+						+ DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT,
+								DateUtil.DISPLAY_DATE_FORMAT);
+				Long startms = monday.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+				Long endms = sunday.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+				Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms,
+						projectNodePair.getValue());
+				prepareViolationsList(history, date, projectNodePair.getValue(), projectList, violations,
+						projectWiseDataMap, versionDate);
+
+				endDateTime = endDateTime.minusWeeks(1);
+			}
+			overAllJoblist.addAll(projectList);
+			tempMap.get(projectNodePair.getKey()).setValue(projectWiseDataMap);
+			if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+				KPIExcelUtility.populateSonarViolationsExcelData(
+						tempMap.get(projectNodePair.getKey()).getProjectFilter().getName(), projectList, violations,
+						versionDate, excelData, KPICode.CODE_VIOLATIONS.getKpiId());
+			}
 	}
 
 	/**
