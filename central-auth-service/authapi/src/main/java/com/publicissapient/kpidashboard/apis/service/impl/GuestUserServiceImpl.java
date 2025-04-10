@@ -19,6 +19,7 @@ package com.publicissapient.kpidashboard.apis.service.impl;
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
 import com.publicissapient.kpidashboard.apis.service.GuestUserService;
 import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,5 +48,10 @@ public class GuestUserServiceImpl implements GuestUserService {
                 tokenAuthenticationService.createAuthorities(List.of(ROLE_GUEST))
         );
         tokenAuthenticationService.addGuestCookies(guestDisplayName, jwt, response);
+    }
+
+    @Override
+    public void logoutGuestUser(HttpServletRequest request, HttpServletResponse response) {
+        tokenAuthenticationService.deleteGuestCookies(request, response);
     }
 }

@@ -18,20 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.config;
 
-import java.io.ByteArrayInputStream;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
+import com.publicissapient.kpidashboard.apis.filters.CorsFilter;
+import com.publicissapient.kpidashboard.apis.filters.JwtAuthenticationFilter;
+import com.publicissapient.kpidashboard.apis.filters.standard.StandardLoginRequestFilter;
+import com.publicissapient.kpidashboard.apis.filters.standard.handlers.CustomAuthenticationFailureHandler;
+import com.publicissapient.kpidashboard.apis.filters.standard.handlers.CustomAuthenticationSuccessHandler;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties;
 import org.springframework.context.annotation.Bean;
@@ -52,13 +44,19 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.publicissapient.kpidashboard.apis.filters.CorsFilter;
-import com.publicissapient.kpidashboard.apis.filters.JwtAuthenticationFilter;
-import com.publicissapient.kpidashboard.apis.filters.standard.StandardLoginRequestFilter;
-import com.publicissapient.kpidashboard.apis.filters.standard.handlers.CustomAuthenticationFailureHandler;
-import com.publicissapient.kpidashboard.apis.filters.standard.handlers.CustomAuthenticationSuccessHandler;
-
-import lombok.AllArgsConstructor;
+import java.io.ByteArrayInputStream;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Configuration
 @AllArgsConstructor
@@ -86,13 +84,25 @@ public class WebSecurityConfig {
 			httpSecurityHeadersConfigurer.contentSecurityPolicy(contentSecurityPolicyConfig -> contentSecurityPolicyConfig
 					.policyDirectives(authConfig.getContentSecurityPolicy()));
 		});
-		http.authorizeHttpRequests(authz -> authz.requestMatchers(HttpMethod.OPTIONS).permitAll().requestMatchers("/login")
-				.permitAll().requestMatchers("/register-user").permitAll().requestMatchers("/forgot-password").permitAll()
-				.requestMatchers("/reset-password").permitAll().requestMatchers("/change-password").permitAll()
-				.requestMatchers("/validateEmailToken").permitAll().requestMatchers("/verifyUser").permitAll()
-				.requestMatchers("/user-info").permitAll().requestMatchers("/users/**").permitAll()
-				.requestMatchers("/sso-logout").permitAll().requestMatchers("/user-approvals/pending").permitAll()
-				.requestMatchers("/approve").permitAll().requestMatchers("/reject").permitAll().anyRequest().authenticated())
+		http.authorizeHttpRequests(
+				authz -> authz.requestMatchers(HttpMethod.OPTIONS).permitAll()
+						.requestMatchers("/login").permitAll()
+						.requestMatchers("/register-user").permitAll()
+						.requestMatchers("/forgot-password").permitAll()
+						.requestMatchers("/reset-password").permitAll()
+						.requestMatchers("/change-password").permitAll()
+						.requestMatchers("/validateEmailToken").permitAll()
+						.requestMatchers("/verifyUser").permitAll()
+						.requestMatchers("/user-info").permitAll()
+						.requestMatchers("/users/**").permitAll()
+						.requestMatchers("/sso-logout").permitAll()
+						.requestMatchers("/user-approvals/pending").permitAll()
+						.requestMatchers("/approve").permitAll()
+						.requestMatchers("/reject").permitAll()
+						.requestMatchers("/guest-login").permitAll()
+						.requestMatchers("/guest-logout").permitAll()
+						.anyRequest()
+						.authenticated())
 				.saml2Login((saml2) -> saml2.loginProcessingUrl("/saml/SSO"))
 				.saml2Logout((saml2) -> saml2.logoutRequest((request) -> request.logoutUrl("/saml/logout")))
 				.saml2Logout((saml2) -> saml2.logoutResponse((response) -> response.logoutUrl("/saml/SingleLogout")))

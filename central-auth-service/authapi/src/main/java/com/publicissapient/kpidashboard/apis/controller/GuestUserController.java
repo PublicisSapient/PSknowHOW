@@ -17,6 +17,7 @@
 package com.publicissapient.kpidashboard.apis.controller;
 
 import com.publicissapient.kpidashboard.apis.service.GuestUserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,17 @@ public class GuestUserController {
     ) {
         guestUserService.loginUserAsGuest(displayName, response);
 
+        return new RedirectView(redirectUri);
+    }
+
+    @GetMapping("/guest-logout")
+    public RedirectView guestLogout(
+            @RequestParam String redirectUri,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        guestUserService.logoutGuestUser(request, response);
+        
         return new RedirectView(redirectUri);
     }
 }

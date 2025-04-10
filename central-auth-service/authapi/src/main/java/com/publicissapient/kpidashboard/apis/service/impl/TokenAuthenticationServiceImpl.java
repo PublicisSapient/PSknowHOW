@@ -29,6 +29,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -133,4 +134,14 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		CookieUtil.addCookie(response, CookieUtil.GUEST_DISPLAY_NAME_COOKIE_NAME, guestDisplayName,
 				cookieConfig.getDuration(), cookieConfig.getDomain(), cookieConfig.getIsSameSite(), cookieConfig.getIsSecure());
 	}
+
+    @Override
+    public void deleteGuestCookies(HttpServletRequest request, HttpServletResponse response) {
+        CookieUtil.deleteCookie(request, response, cookieConfig.getDomain(), CookieUtil.COOKIE_NAME,
+                CookieUtil.API_COOKIE_PATH);
+        CookieUtil.deleteCookie(request, response, cookieConfig.getDomain(), CookieUtil.EXPIRY_COOKIE_NAME,
+                CookieUtil.API_COOKIE_PATH);
+        CookieUtil.deleteCookie(request, response, cookieConfig.getDomain(), CookieUtil.GUEST_DISPLAY_NAME_COOKIE_NAME,
+                CookieUtil.API_COOKIE_PATH);
+    }
 }

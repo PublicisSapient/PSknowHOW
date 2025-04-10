@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.service;
 
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.Authentication;
@@ -46,4 +47,7 @@ public interface TokenAuthenticationService {
 
 	// will create the following cookies: authCookie, authCookie_EXPIRY and guestDisplayName
 	void addGuestCookies(String guestDisplayName, String jwt, HttpServletResponse response);
+
+	// will delete the following cookies: authCookie, authCookie_EXPIRY and guestDisplayName
+	void deleteGuestCookies(HttpServletRequest request, HttpServletResponse response);
 }
