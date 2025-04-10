@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -79,6 +80,8 @@ public class SonarViolationsServiceImplTest {
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
 	ConfigHelperService configHelperService;
+	@Mock
+	private CommonService commonService;
 	@InjectMocks
 	CodeViolationsServiceImpl svServiceImpl;
 	@Mock
