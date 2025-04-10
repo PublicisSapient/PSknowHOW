@@ -62,9 +62,9 @@ export class PsKpiCardHeaderComponent implements OnInit {
         this.currentChartData?.chartData?.chartData?.length)
     ) {
       this.menuItems =
-        this.menuItems?.filter((item) => item.label !== 'Add to Report') || [];
+        this.menuItems?.filter((item) => item.label !== 'Include in Report') || [];
       this.menuItems.push({
-        label: 'Add to Report',
+        label: 'Include in Report',
         icon: 'pi pi-briefcase',
         command: ($event) => {
           this.addToReport();
@@ -73,9 +73,9 @@ export class PsKpiCardHeaderComponent implements OnInit {
       });
     } else {
       this.menuItems =
-        this.menuItems?.filter((item) => item.label !== 'Add to Report') || [];
+        this.menuItems?.filter((item) => item.label !== 'Include in Report') || [];
       this.menuItems.push({
-        label: 'Add to Report',
+        label: 'Include in Report',
         icon: 'pi pi-briefcase',
         command: ($event) => {
           this.addToReport();

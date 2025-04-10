@@ -2242,7 +2242,6 @@ describe('KpiCardV2Component', () => {
         component.kpiThresholdObj = {};
         component.releaseEndDate = '2023-10-10';
         component.hieararchy = {};
-        component.copyCardData = {};
 
         component.addToReportAction();
 
@@ -2278,8 +2277,8 @@ describe('KpiCardV2Component', () => {
             cardData: undefined,
             iterationKPIFilterValues: [],
             additional_filters: {},
+            copyCardData: undefined
           },
-          copyCardData: {},
         });
       });
 
@@ -2520,7 +2519,7 @@ describe('KpiCardV2Component', () => {
         });
         expect(messageService.add).toHaveBeenCalledWith({
           severity: 'success',
-          summary: 'Report updated successfully',
+          summary: 'Metrics added successfully. View the report in the report section.',
         });
         expect(component.success).toBe(true);
       });
@@ -2542,7 +2541,7 @@ describe('KpiCardV2Component', () => {
         });
         expect(messageService.add).toHaveBeenCalledWith({
           severity: 'success',
-          summary: 'Report updated successfully',
+          summary: 'Metrics added successfully. View the report in the report section.',
         });
         expect(component.success).toBe(true);
       });

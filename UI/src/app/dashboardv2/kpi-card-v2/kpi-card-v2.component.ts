@@ -344,10 +344,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           this.iSAdditionalFilterSelected)
       ) {
         this.menuItems = this.menuItems.filter(
-          (item) => item.label !== 'Add to Report',
+          (item) => item.label !== 'Include in Report',
         );
         this.menuItems.push({
-          label: 'Add to Report',
+          label: 'Include in Report',
           icon: 'pi pi-briefcase',
           command: ($event) => {
             this.addToReportAction();
@@ -356,10 +356,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         });
       } else if (!this.loader) {
         this.menuItems = this.menuItems.filter(
-          (item) => item.label !== 'Add to Report',
+          (item) => item.label !== 'Include in Report',
         );
         this.menuItems.push({
-          label: 'Add to Report',
+          label: 'Include in Report',
           icon: 'pi pi-briefcase',
           command: ($event) => {
             this.addToReportAction();
@@ -1165,14 +1165,14 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
 
     metaDataObj['releaseEndDate'] = this.releaseEndDate;
+    metaDataObj['copyCardData'] = this.copyCardData;
 
     this.reportObj = {
       id: this.kpiData.kpiId,
       chartData: this.currentChartData?.chartData
         ? this.currentChartData?.chartData
         : this.kpiChartData,
-      metadata: metaDataObj,
-      copyCardData: this.copyCardData,
+      metadata: metaDataObj
     };
 
     this.displayAddToReportsModal = true;
@@ -1329,7 +1329,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       if (data['success']) {
         this.messageService.add({
           severity: 'success',
-          summary: 'Report updated successfully',
+          summary: 'Metrics added successfully. View the report in the report section.',
         });
         this.existingReportData = this.replaceObjectByName(
           this.existingReportData,
