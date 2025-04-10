@@ -20,6 +20,10 @@ package com.publicissapient.kpidashboard.common.model.application;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -52,17 +56,24 @@ public class OrganizationHierarchy extends BasicModel implements Serializable {
 
 	private String nodeDisplayName;
 
-	// Todo same as labelName in Account Hierarchy
 	private String hierarchyLevelId;
 
 	@Indexed(unique = true)
 	private String parentId;
 
+	@CreatedDate
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime createdDate;
 
+	@LastModifiedDate
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime modifiedDate;
+
+	@CreatedBy
+	private String createdBy;
+
+	@LastModifiedBy
+	private String updatedBy;
 
 	@Override
 	public boolean equals(Object o) {

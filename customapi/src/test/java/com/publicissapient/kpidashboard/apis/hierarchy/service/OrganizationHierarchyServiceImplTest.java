@@ -17,6 +17,8 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.hierarchy.service;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -24,6 +26,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +45,9 @@ public class OrganizationHierarchyServiceImplTest {
 
 	@Mock
 	ConfigHelperService configHelperService;
+
+	@Mock
+	CacheService cacheService;
 
 	@Mock
 	OrganizationHierarchyRepository organizationHierarchyRepository;
@@ -98,5 +105,41 @@ public class OrganizationHierarchyServiceImplTest {
 
 		assertEquals(orgHierarchy, result);
 		verify(organizationHierarchyRepository, times(1)).save(orgHierarchy);
+	}
+
+	@Test
+	public void testUpdateName_NodeNotFound() {
+		// Arrange
+		String nodeId = "nonExistentNodeId";
+		String newName = "New Name";
+		when(organizationHierarchyService.findByNodeId(nodeId)).thenReturn(null);
+
+		// Act
+		ServiceResponse response = organizationHierarchyService.updateName(newName, nodeId);
+
+		// Assert
+		assertFalse(response.getSuccess());
+		assertEquals("No hierarchy node found for nodeId: " + nodeId, response.getMessage());
+	}
+
+	@Test
+	public void testUpdateName_SuccessfulUpdate() {
+		// Arrange
+		String nodeId = "existingNodeId";
+		String newName = "Updated Name";
+		OrganizationHierarchy existingNode = new OrganizationHierarchy();
+		existingNode.setNodeId(nodeId);
+		existingNode.setNodeDisplayName("Old Name");
+
+		when(configHelperService.loadAllOrganizationHierarchy()).thenReturn(List.of(existingNode));
+		//when(organizationHierarchyService.findByNodeId(nodeId)).thenReturn(existingNode);
+
+		// Act
+		ServiceResponse response = organizationHierarchyService.updateName(newName, nodeId);
+
+		// Assert
+		assertTrue(response.getSuccess());
+		assertEquals("Hierarchy Updated", response.getMessage());
+		assertEquals(newName, existingNode.getNodeDisplayName());
 	}
 }

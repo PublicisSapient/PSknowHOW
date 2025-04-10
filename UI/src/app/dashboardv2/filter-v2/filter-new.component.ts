@@ -170,6 +170,15 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }),
     );
 
+    this.subscriptions.push(
+      this.service.switchBoard.subscribe((data) => {
+        if (data) {
+          this.selectedType = this.service.getSelectedType();
+          this.service.setScrumKanban(this.service.getSelectedType());
+        }
+      }),
+    );
+
     this.firstLoadFilterCheck(true);
     this.firstLoadFilterCheck(false);
 
@@ -348,7 +357,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       );
 
       this.masterDataCopy['kpiList'] = JSON.parse(
-        JSON.stringify(this.masterData['kpiList'].filter(x=>x.kpiId != 'kpi187')),
+        JSON.stringify(
+          this.masterData['kpiList'].filter((x) => x.kpiId != 'kpi187'),
+        ),
       );
 
       this.setSelectAll();
@@ -2361,7 +2372,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   isSprintGoalsHidden(): boolean {
     if (
       !this.kanban &&
-      ['my-knowhow', 'speed', 'quality','value'].includes(
+      ['my-knowhow', 'speed', 'quality'].includes(
         this.selectedTab?.toLocaleLowerCase(),
       )
     ) {

@@ -344,10 +344,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           this.iSAdditionalFilterSelected)
       ) {
         this.menuItems = this.menuItems.filter(
-          (item) => item.label !== 'Add to Report',
+          (item) => item.label !== 'Include in Report',
         );
         this.menuItems.push({
-          label: 'Add to Report',
+          label: 'Include in Report',
           icon: 'pi pi-briefcase',
           command: ($event) => {
             this.addToReportAction();
@@ -356,10 +356,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         });
       } else if (!this.loader) {
         this.menuItems = this.menuItems.filter(
-          (item) => item.label !== 'Add to Report',
+          (item) => item.label !== 'Include in Report',
         );
         this.menuItems.push({
-          label: 'Add to Report',
+          label: 'Include in Report',
           icon: 'pi pi-briefcase',
           command: ($event) => {
             this.addToReportAction();
@@ -667,8 +667,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   exportToExcel(KpiId?: any) {
     if (!!this.cardData) {
       let exportData = this.cardData['issueData'];
-      // const uniqueCategory = [[...new Set(exportData.map(item => item.Category))]];
-      // console.log(uniqueCategory)
       if (KpiId === 'kpi176') {
         exportData = exportData.filter(
           (x) =>
@@ -862,8 +860,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       obj['value'] = updatedEvent[element.filterKey];
       this.iterationKPIFilterValues.push(obj);
     });
-
-    console.log(this.iterationKPIFilterValues);
 
     // Dynamically determine the exclusion value
     const exclusionValue = selectedKeyObj?.Category;
@@ -1093,7 +1089,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     let additional_filters =
       this.service.getBackupOfFilterSelectionState('additional_level') || {};
     additional_filters = this.setAdditionalFilterLevels(additional_filters);
-    console.log(additional_filters);
 
     this.getExistingReports();
     let metaDataObj = {
@@ -1165,13 +1160,14 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
 
     metaDataObj['releaseEndDate'] = this.releaseEndDate;
+    metaDataObj['copyCardData'] = this.copyCardData;
 
     this.reportObj = {
       id: this.kpiData.kpiId,
       chartData: this.currentChartData?.chartData
         ? this.currentChartData?.chartData
         : this.kpiChartData,
-      metadata: metaDataObj,
+      metadata: metaDataObj
     };
 
     this.displayAddToReportsModal = true;
@@ -1328,7 +1324,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       if (data['success']) {
         this.messageService.add({
           severity: 'success',
-          summary: 'Report updated successfully',
+          summary: 'Metrics added successfully. View the report in the report section.',
         });
         this.existingReportData = this.replaceObjectByName(
           this.existingReportData,

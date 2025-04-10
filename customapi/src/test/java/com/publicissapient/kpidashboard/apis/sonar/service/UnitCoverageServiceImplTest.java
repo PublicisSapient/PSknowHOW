@@ -336,10 +336,11 @@ public class UnitCoverageServiceImplTest {
 	}
 
 	@Test
-	public void testGetUnitCoverage6() throws Exception {
+	public void testGetUnitCoverageDateWise() throws Exception {
 		setToolMap();
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		kpiRequest.setLabel("PORT");
 		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))

@@ -19,6 +19,7 @@ import { GetAuthorizationService } from 'src/app/services/get-authorization.serv
 import { ViewNewUserAuthRequestComponent } from 'src/app/config/profile/view-new-user-auth-request/view-new-user-auth-request.component';
 import { ViewRequestsComponent } from 'src/app/config/profile/view-requests/view-requests.component';
 import { ExecutiveV2Component } from '../executive-v2/executive-v2.component';
+import { MessageService } from 'primeng/api';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -30,6 +31,7 @@ describe('HeaderComponent', () => {
   let helperService: HelperService;
   let mockGetAuthorizationService;
   let mockRouter;
+  let messageService: jasmine.SpyObj<MessageService>;
 
   const routes: Routes = [
     { path: 'authentication/login', component: LoginComponent },
@@ -67,6 +69,7 @@ describe('HeaderComponent', () => {
         CommonModule,
         DatePipe,
         GetAuthorizationService,
+        MessageService,
         { provide: APP_CONFIG, useValue: AppConfig },
       ],
     }).compileComponents();

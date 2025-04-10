@@ -395,8 +395,8 @@
   <ng-template pTemplate="footer">
     <div class="p-d-flex p-jc-center p-align-center p-col-12 p-p-0" role="group" aria-label="Add to Report Section">
       <p-button label="{{ createNewReportTemplate ? 'Cancel' :  'Close' }}" styleClass="add-to-reports-btn" aria-label="Cancel"
-        (onClick)="closeAddToReportsModal()" role="button" tabindex="0"></p-button>
-      <p-button label="Add to Report" styleClass="add-to-reports-btn" aria-label="Add to Report"
+        (onClick)="closeAddToReportsModal()"  role="button" tabindex="0"></p-button>
+      <p-button label="Include in Report" styleClass="add-to-reports-btn" aria-label="Include in Report"
         (onClick)="addToReportPut()" [disabled]="createNewReportTemplate || success" role="button" tabindex="0"></p-button>
     </div>
   </ng-template>
