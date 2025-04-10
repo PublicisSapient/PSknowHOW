@@ -86,7 +86,7 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
-
+//      in case if only projects or sprint filters are applied
 		Filters filter = Filters.getFilter(kpiRequest.getLabel());
 		if (filter == Filters.SPRINT || filter == Filters.PROJECT) {
 			List<Node> leafNodes = treeAggregatorDetail.getMapOfListOfLeafNodes().entrySet().stream()

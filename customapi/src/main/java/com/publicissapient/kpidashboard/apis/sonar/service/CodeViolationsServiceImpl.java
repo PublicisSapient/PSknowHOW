@@ -111,6 +111,8 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
 		
 		Filters filter = Filters.getFilter(kpiRequest.getLabel());
+		
+//      in case if only projects or sprint filters are applied
 		if (filter == Filters.SPRINT || filter == Filters.PROJECT) {
 			List<Node> leafNodes = treeAggregatorDetail.getMapOfListOfLeafNodes().entrySet().stream()
 					.filter(k -> Filters.getFilter(k.getKey()) == Filters.SPRINT).map(Map.Entry::getValue).findFirst()
@@ -184,7 +186,6 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 		List<List<String>> violations = new ArrayList<>();
 		List<String> versionDate = new ArrayList<>();
 		Map<String, List<DataCount>> projectWiseDataMap = new HashMap<>();
-		if (CollectionUtils.isNotEmpty(projectData)) {
 			boolean isBacklogProject = CollectionUtils.isNotEmpty(sprintLeafNodeList) && sprintLeafNodeList.get(0)
 					.getProjectFilter().getName().equalsIgnoreCase(projectNodePair.getValue());
 			LocalDate endDateTime = isBacklogProject
@@ -219,7 +220,6 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 						tempMap.get(projectNodePair.getKey()).getProjectFilter().getName(), projectList, violations,
 						versionDate, excelData, KPICode.CODE_VIOLATIONS.getKpiId());
 			}
-		}
 	}
 
 	/**

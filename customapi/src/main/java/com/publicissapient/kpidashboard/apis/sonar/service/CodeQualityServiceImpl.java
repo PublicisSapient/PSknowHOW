@@ -82,7 +82,7 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
 			throws ApplicationException {
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
-
+//      in case if only projects or sprint filters are applied
 		Filters filter = Filters.getFilter(kpiRequest.getLabel());
 		if (filter == Filters.SPRINT || filter == Filters.PROJECT) {
 			List<Node> leafNodes = treeAggregatorDetail.getMapOfListOfLeafNodes().entrySet().stream()
@@ -145,51 +145,47 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 		List<String> debtList = new ArrayList<>();
 		List<String> versionDate = new ArrayList<>();
 		Map<String, List<DataCount>> projectWiseDataMap = new HashMap<>();
-		if (CollectionUtils.isNotEmpty(projectData)) {
-			// get previous month details as the start date
-			boolean isBacklogProject = CollectionUtils.isNotEmpty(sprintLeafNodeList) && sprintLeafNodeList.get(0)
-					.getProjectFilter().getName().equalsIgnoreCase(projectNodePair.getValue());
-			LocalDate endDateTime = isBacklogProject
-					? DateUtil.stringToLocalDate(sprintLeafNodeList.get(0).getSprintFilter().getEndDate()
-							.replaceAll(DATE_TIME_FORMAT_REGEX, ""), DateUtil.TIME_FORMAT)
-					: LocalDate.now().minusMonths(1);
+		// get previous month details as the start date
+		boolean isBacklogProject = CollectionUtils.isNotEmpty(sprintLeafNodeList)
+				&& sprintLeafNodeList.get(0).getProjectFilter().getName().equalsIgnoreCase(projectNodePair.getValue());
+		LocalDate endDateTime = isBacklogProject ? DateUtil.stringToLocalDate(
+				sprintLeafNodeList.get(0).getSprintFilter().getEndDate().replaceAll(DATE_TIME_FORMAT_REGEX, ""),
+				DateUtil.TIME_FORMAT) : LocalDate.now().minusMonths(1);
 
-			for (int i = 0; i < customApiConfig.getSonarMonthCount(); i++) {
-				CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(endDateTime,
-						CommonConstant.MONTH);
-				LocalDate monthStartDate = dateRange.getStartDate();
-				LocalDate monthEndDate = dateRange.getEndDate();
-				if (isBacklogProject) {
-					monthStartDate = endDateTime.minusDays(
-							YearMonth.of(endDateTime.getYear(), endDateTime.getMonth()).lengthOfMonth() - 1L);
-					monthEndDate = endDateTime;
-				}
-
-				String date = DateUtil.dateTimeConverter(monthStartDate.toString(), DateUtil.DATE_FORMAT,
-						DateUtil.DISPLAY_DATE_FORMAT) + " to "
-						+ DateUtil.dateTimeConverter(monthEndDate.toString(), DateUtil.DATE_FORMAT,
-								DateUtil.DISPLAY_DATE_FORMAT);
-
-				Long startms = monthStartDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
-				Long endms = monthEndDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
-
-				// create sonarhistory map for all the x-axis points
-				Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms);
-				if (MapUtils.isEmpty(history)) {
-					history = prepareEmptyJobWiseHistoryMap(projectData, endms);
-				}
-
-				prepareSqualeList(history, date, projectNodePair, projectList, debtList, projectWiseDataMap,
-						versionDate);
-
-				endDateTime = endDateTime.minusMonths(1);
+		for (int i = 0; i < customApiConfig.getSonarMonthCount(); i++) {
+			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(endDateTime,
+					CommonConstant.MONTH);
+			LocalDate monthStartDate = dateRange.getStartDate();
+			LocalDate monthEndDate = dateRange.getEndDate();
+			if (isBacklogProject) {
+				monthStartDate = endDateTime
+						.minusDays(YearMonth.of(endDateTime.getYear(), endDateTime.getMonth()).lengthOfMonth() - 1L);
+				monthEndDate = endDateTime;
 			}
-			tempMap.get(projectNodePair.getKey()).setValue(projectWiseDataMap);
-			if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-				KPIExcelUtility.populateSonarKpisExcelData(
-						tempMap.get(projectNodePair.getKey()).getProjectFilter().getName(), projectList, debtList,
-						versionDate, excelData, KPICode.SONAR_CODE_QUALITY.getKpiId());
+
+			String date = DateUtil.dateTimeConverter(monthStartDate.toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to "
+					+ DateUtil.dateTimeConverter(monthEndDate.toString(), DateUtil.DATE_FORMAT,
+							DateUtil.DISPLAY_DATE_FORMAT);
+
+			Long startms = monthStartDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+			Long endms = monthEndDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+
+			// create sonarhistory map for all the x-axis points
+			Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms);
+			if (MapUtils.isEmpty(history)) {
+				history = prepareEmptyJobWiseHistoryMap(projectData, endms);
 			}
+
+			prepareSqualeList(history, date, projectNodePair, projectList, debtList, projectWiseDataMap, versionDate);
+
+			endDateTime = endDateTime.minusMonths(1);
+		}
+		tempMap.get(projectNodePair.getKey()).setValue(projectWiseDataMap);
+		if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+			KPIExcelUtility.populateSonarKpisExcelData(
+					tempMap.get(projectNodePair.getKey()).getProjectFilter().getName(), projectList, debtList,
+					versionDate, excelData, KPICode.SONAR_CODE_QUALITY.getKpiId());
 		}
 	}
 
