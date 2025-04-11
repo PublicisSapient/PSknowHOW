@@ -16,234 +16,217 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<p-toast [style]="{ marginTop: '80px' }"></p-toast>
-<div class="main p-pl-6 p-pr-6 p-pb-1">
-  <div class="p-d-flex p-p-0 p-flex-column">
-    <div class="nav-container" *ngIf="clone === 'false'">
-      <nav>
-        <ng-container *ngFor="let breadcrumb of breadcrumbs; let last = last">
-          <ng-container *ngIf="!last">
-            <a [routerLink]="breadcrumb.url" (click)="breadcrumb?.handleEvent()"
-              class="cursor-pointer blue-hover-link">{{ breadcrumb.label }}</a> &gt;
+  <p-toast [style]="{ marginTop: '80px' }" aria-live="polite" aria-atomic="true"></p-toast>
+  <div class="main p-pl-6 p-pr-6 p-pb-1">
+    <div class="p-d-flex p-p-0 p-flex-column">
+      <div class="nav-container" *ngIf="clone === 'false'">
+        <nav aria-label="Breadcrumb">
+          <ng-container *ngFor="let breadcrumb of breadcrumbs; let last = last">
+            <ng-container *ngIf="!last">
+              <a [routerLink]="breadcrumb.url" (click)="breadcrumb?.handleEvent()"
+                class="cursor-pointer blue-hover-link" role="link">{{ breadcrumb.label }}</a> &gt;
+            </ng-container>
+            <ng-container *ngIf="last">
+              <span class="cursor-pointer" aria-current="page">{{ breadcrumb.label }}</span>
+            </ng-container>
           </ng-container>
-          <ng-container *ngIf="last">
-            <span class="cursor-pointer">{{ breadcrumb.label }}</span>
-          </ng-container>
+        </nav>
+      </div>
+      <div class="p-d-flex p-jc-center">
+        <ng-container *ngIf="isProjectSetupPopup">
+          <div class="p-col-6 p-p-0">
+            <div class="p-grid">
+              <div class="p-col-12">
+                <div class="p-d-flex p-align-center p-jc-center position-relative p-pb-3">
+                  <h5 class="card__primary__title__text p-mb-0" id="project-details-heading" tabindex="0">
+                    Set Project Details
+                  </h5>
+                </div>
+                <p-messages severity="info" aria-live="polite" role="status">
+                  <ng-template pTemplate>
+                    <em class="pi pi-info-circle" style="font-size: 2rem"></em>
+                    <div class="p-ml-2" tabindex="0">
+                      In case you do not see the preferred selection for any level
+                      in the dropdowns, please contact your organization system
+                      admin.
+                    </div>
+                  </ng-template>
+                </p-messages>
+                <p-messages *ngIf="getConeStatusFlag() && form.get('developerKpiEnabled')?.value" severity="warn" aria-live="polite" role="alert">
+                  <ng-template pTemplate>
+                    <em class="pi pi-exclamation-triangle" style="font-size: 2rem; color: #f39c12;"></em>
+                    <div class="p-ml-2" tabindex="0">
+                      Tools config required for Developer dashboard are not supported for cloning.
+                      Please configure your SCM tools after completing the cloning step
+                    </div>
+                  </ng-template>
+                </p-messages>
+              </div>
+            </div>
+  
+            <form (ngSubmit)="onSubmit()" [formGroup]="form" aria-labelledby="project-details-heading">
+              <div class="p-mb-3 p-mt-3 p-pl-1 form-container" *ngFor="let field of formData; let index=index">
+                <div [ngSwitch]="field.inputType">
+                  <div *ngSwitchCase="'switch'">
+                    <div class="p-mb-3 p-mt-3 p-pl-1">
+                      <label for="{{ field.hierarchyLevelId }}" class="is-kanban-label" tabindex="0">
+                        Select {{ field.hierarchyLevelName }} :&nbsp;&nbsp;
+                      </label>
+                      <p-selectButton
+                        styleClass="p-d-inline"
+                        [options]="projectTypeOptions"
+                        optionLabel="name"
+                        optionValue="value"
+                        [multiple]="false"
+                        required
+                        [disabled]="field.disabled"
+                        id="{{ field.hierarchyLevelId }}"
+                        [formControlName]="field.hierarchyLevelId"
+                        aria-label="Select {{ field.hierarchyLevelName }}"
+                        tabindex="0"
+                      >
+                      </p-selectButton>
+                    </div>
+                  </div>
+                  <div *ngSwitchCase="'text'">
+                    <div class="p-mb-3 p-mt-3">
+                      <span class="p-float-label" pTooltip="{{ field.hierarchyLevelTooltip }}" tooltipPosition="bottom"
+                        tooltipEvent="hover">
+                        <input required id="{{ field.hierarchyLevelId }}" [formControlName]="field.hierarchyLevelId"
+                          [style]="{'width':'500px'}" type="text" pInputText
+                          aria-label="Enter {{ field.hierarchyLevelName }}">
+                        <label for="{{ field.hierarchyLevelId }}">Enter {{ field.hierarchyLevelName }}</label>
+                      </span>
+                      <span class="p-invalid"
+                        *ngIf="form.controls[field.hierarchyLevelId].errors?.stringValidator">Special
+                        Characters are not allowed.</span>
+                    </div>
+                  </div>
+                  <div *ngSwitchCase="'boolean'" class="p-mb-3">
+                    <ng-container *ngIf="ifSuperUser === true || isProjectAdmin === true">
+                      <p-inputSwitch
+                        name="{{ field.hierarchyLevelId }}"
+                        id="{{ field.hierarchyLevelId }}"
+                        [formControlName]="field.hierarchyLevelId"
+                        aria-label="{{ field.label1 }}"
+                      ></p-inputSwitch>
+                      <label for="{{ field.hierarchyLevelId }}">
+                        {{ field.label1 }}
+                      </label>
+                      <br />
+                      <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true"></span>
+                      <span style="font-size: small; color: #333">
+                        {{ field.label2 }}
+                      </span>
+                    </ng-container>
+                  </div>
+                  <div *ngSwitchDefault class="p-d-flex">
+                    <span class="p-float-label w-50 p-mr-3">
+                      <p-autoComplete
+                        id="{{ field.hierarchyLevelId }}"
+                        [formControlName]="field.hierarchyLevelId"
+                        [style]="{ width: '500px' }"
+                        [suggestions]="(field.filteredSuggestions && field.filteredSuggestions.length) ? field.filteredSuggestions : field.list"
+                        (completeMethod)="search({ query: $event.query }, field, index)"
+                        required="required"
+                        [dropdown]="true"
+                        field="nodeDisplayName"
+                        [forceSelection]="true"
+                        (onSelect)="onSelectOfDropdown($event, field)"
+                        [(ngModel)]="selectedItems[field.hierarchyLevelId]"
+                        aria-label="Select {{ field.hierarchyLevelIdName }}"
+                      >
+                        <ng-template let-listItem pTemplate="item">
+                          <div class="listItem-item">
+                            <div>{{ listItem.nodeDisplayName }} <span class="parent_span">{{getNodeDisplayNameById(listItem.parentId, field)}}</span></div>
+                          </div>
+                        </ng-template>
+                      </p-autoComplete>
+                      <label for="{{ field.hierarchyLevelId }}">Select {{ field.hierarchyLevelIdName }}</label>
+                    </span>
+                    <div class="p-ml-1 p-d-flex p-jc-center p-align-center color-blue cursor-pointer"
+                      *ngIf="isOpenSource === true && !clone && ifSuperUser === true"
+                      [ngClass]="{'disabled': checkIfHaveValueForAssociatedHierarchy(field)}"
+                      role="button" tabindex="0" aria-label="Add {{ field.hierarchyLevelIdName }}">
+                      <i class="fas fa-plus-circle" style="font-size: x-large;" (click)="updateHierarchy(field,'add')"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="p-text-right p-col-12">
+                <button pButton pRipple class="p-button-lg p-button-success p-button-raised p-mr-3" label="Back"
+                  icon="pi pi-angle-double-left" iconPos="left" (click)="backToProjectList()"
+                  aria-label="Back to Project List"></button>
+                <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised"
+                  icon="pi pi-save" iconPos="left" [label]="getButtonLabel()" [disabled]="!form.valid"
+                  aria-label="Save Project Details"></button>
+              </div>
+            </form>
+          </div>
         </ng-container>
-      </nav>
-    </div>
-    <div class="p-d-flex p-jc-center">
-      <ng-container *ngIf="isProjectSetupPopup">
-        <div class="p-col-6 p-p-0">
-          <div class="p-grid">
-            <div class="p-col-12">
-              <div
-                class="p-d-flex p-align-center p-jc-center position-relative p-pb-3"
-              >
-                <h5 class="card__primary__title__text p-mb-0">
-                  Set Project Details
-                </h5>
-              </div>
-              <p-messages severity="info">
-                <ng-template pTemplate>
-                  <em class="pi pi-info-circle" style="font-size: 2rem"></em>
-                  <div class="p-ml-2">
-                    In case you do not see the preferred selection for any level
-                    in the dropdowns, please contact your organization system
-                    admin.
-                  </div>
-                </ng-template>
-              </p-messages>
-              <p-messages *ngIf="getConeStatusFlag() && form.get('developerKpiEnabled')?.value" severity="warn">
-                <ng-template pTemplate>
-                  <em class="pi pi-exclamation-triangle" style="font-size: 2rem; color: #f39c12;"></em>
-                  <div class="p-ml-2">
-                    Tools config required for Developer dashboard are not supported for cloning.
-                    Please configure your SCM tools after completing the cloning step
-                  </div>
-                </ng-template>
-              </p-messages>
+  
+        <!-- Completion message -->
+        <ng-container *ngIf="isProjectCOmpletionPopup">
+          <div class="p-p-0" aria-live="polite" tabindex="0">
+            <div class="p-d-flex p-jc-center p-pb-3">
+              <h5 *ngIf="!getConeStatusFlag()" class="card__primary__title__text p-mb-0">
+                Project “{{selectedProject?.['name']}}” successfully added. Connect Tools to sync KPI’s.
+              </h5>
+              <h5 *ngIf="getConeStatusFlag()" class="card__primary__title__text p-mb-0">
+                Cloned project “{{selectedProject?.['name']}}” successfully added.
+                Proceed to Project Configuration to review and make any necessary changes.
+              </h5>
+            </div>
+            <div class="p-d-flex p-jc-center p-pb-3">
+              <label>Here is what to do next in order to sync data for this project:</label>
+            </div>
+            <div class="p-pb-3">
+              <p-steps [model]="steps" [readonly]="false"></p-steps>
+            </div>
+            <div *ngIf="!getConeStatusFlag()" class="p-d-flex p-jc-center p-pb-3">
+              <label><a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject?.id]" [queryParams]="{tab: 1}">
+                Continue to Tool Connections</a></label>
+            </div>
+            <div *ngIf="getConeStatusFlag()" class="p-d-flex p-jc-center p-pb-3">
+              <label><a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject?.id]"
+                        [queryParams]="{ type: selectedProject?.Type, tab: 2 }">
+                Continue to Project Configuration</a></label>
+            </div>
+            <div class="p-d-flex p-jc-center p-pb-3">
+              <label><a routerLink="/dashboard/Config/ProjectList" (click)="closeProjectSetupPopup.emit()">Skip (continue
+                  to Projects dashboard)</a></label>
             </div>
           </div>
-
-          <form (ngSubmit)="onSubmit()" [formGroup]="form">
-            <div
-              class="p-mb-3 p-mt-3 p-pl-1 form-container"
-              *ngFor="let field of formData; let index=index"
-            >
-              <div [ngSwitch]="field.inputType">
-                <div *ngSwitchCase="'switch'">
-                  <div class="p-mb-3 p-mt-3 p-pl-1">
-                    <label
-                      for="{{ field.hierarchyLevelId }}"
-                      class="is-kanban-label"
-                      >Select
-                      {{ field.hierarchyLevelName }} :&nbsp;&nbsp;</label
-                    >
-                    <p-selectButton
-                      styleClass="p-d-inline"
-                      [options]="projectTypeOptions"
-                      optionLabel="name"
-                      optionValue="value"
-                      [multiple]="false"
-                      required
-                      [disabled] = 'field.disabled'
-                      id="{{ field.hierarchyLevelId }}"
-                      [formControlName]="field.hierarchyLevelId"
-                    >
-                    </p-selectButton>
-                  </div>
-                </div>
-                <div *ngSwitchCase="'text'">
-                  <div class="p-mb-3 p-mt-3">
-                    <span class="p-float-label" pTooltip='{{ field.hierarchyLevelTooltip }}' tooltipPosition="bottom"
-                      tooltipEvent="hover">
-                      <input required id="{{ field.hierarchyLevelId }}" [formControlName]="field.hierarchyLevelId"
-                        [style]="{'width':'500px'}" type="text" pInputText>
-                      <label for="{{ field.hierarchyLevelId }}">Enter {{ field.hierarchyLevelName
-                        }}</label>
-                    </span>
-                    <span class="p-invalid"
-                      *ngIf="form.controls[field.hierarchyLevelId].errors?.stringValidator">Special
-                      Characters are not allowed.</span>
-                  </div>
-                </div>
-                <div *ngSwitchCase="'boolean'" class="p-mb-3">
-                  <ng-container
-                    *ngIf="ifSuperUser === true || isProjectAdmin === true"
-                  >
-                    <p-inputSwitch
-                      name="{{ field.hierarchyLevelId }}"
-                      id="{{ field.hierarchyLevelId }}"
-                      [formControlName]="field.hierarchyLevelId"
-                    >
-                    </p-inputSwitch>
-                    <label for="{{ field.hierarchyLevelId }}">
-                      {{ field.label1 }}
-                    </label>
-                    <br />
-                    <span
-                      class="fa fa-info-circle kpi-info-icon"
-                      aria-hidden="true"
-                      for="{{ field.hierarchyLevelId }}"
-                    ></span>
-                    <span
-                      for="{{ field.hierarchyLevelId }}"
-                      style="font-size: small; color: #333"
-                    >
-                      {{ field.label2 }}
-                    </span>
-                  </ng-container>
-                </div>
-                <div *ngSwitchDefault class="p-d-flex">
-                  <span class="p-float-label w-50 p-mr-3">
-                    <p-autoComplete
-                      id="{{ field.hierarchyLevelId }}"
-                      [formControlName]="field.hierarchyLevelId"
-                      [style]="{ width: '500px' }"
-                      [suggestions]="(field.filteredSuggestions && field.filteredSuggestions.length) ? field.filteredSuggestions : field.list"
-                      (completeMethod)="search({ query: $event.query }, field, index)"
-                      required="required"
-                      [dropdown]="true"
-                      field="nodeDisplayName"
-                      [forceSelection]="true"
-                      (onSelect)="onSelectOfDropdown($event, field)"
-                      [(ngModel)]="selectedItems[field.hierarchyLevelId]"
-                    >
-                      <ng-template let-listItem pTemplate="item">
-                        <div class="listItem-item">
-                          <div>{{ listItem.nodeDisplayName }} <span class="parent_span">{{getNodeDisplayNameById(listItem.parentId, field)}}</span></div>
-                        </div>
-                      </ng-template>
-                    </p-autoComplete>
-                    <label for="{{ field.hierarchyLevelId }}">Select {{ field.hierarchyLevelIdName }}</label>
-                  </span>
-                  <div class="p-ml-1 p-d-flex p-jc-center p-align-center color-blue cursor-pointer " *ngIf="isOpenSource === true && !clone && ifSuperUser === true"
-                    [ngClass]="{'disabled': checkIfHaveValueForAssociatedHierarchy(field)}">
-                    <i class="fas fa-plus-circle" style="font-size: x-large;" (click)="updateHierarchy(field,'add')"></i>
-                  </div>
-                  <!-- <div class="p-ml-1 p-d-flex p-jc-center p-align-center color-blue cursor-pointer " *ngIf="isOpenSource === true && !clone && ifSuperUser === true"
-                    [ngClass]="{'disabled': checkIfHaveValueForAssociatedHierarchy(field)}">
-                    <i class="fas fa-edit" (click)="updateHierarchy(field,'rename')"></i>
-                  </div> -->
-                </div>
-              </div>
-            </div>
-            <div class="p-text-right p-col-12">
-              <button pButton pRipple class="p-button-lg p-button-success p-button-raised p-mr-3" label="Back"
-                icon="pi pi-angle-double-left" iconPos="left" (click)="backToProjectList()"></button>
-              <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised"
-                icon="pi pi-save" iconPos="left" [label]="getButtonLabel()" [disabled]="!form.valid"></button>
-            </div>
-          </form>
-        </div>
-      </ng-container>
-      <ng-container *ngIf="isProjectCOmpletionPopup">
-        <div class="p-p-0">
-          <div class="p-d-flex p-jc-center p-pb-3">
-            <h5 *ngIf = "!getConeStatusFlag()" class="card__primary__title__text p-mb-0">
-              Project “{{selectedProject?.['name']}}” successfully added. Connect Tools to sync KPI’s.</h5>
-            <h5 *ngIf = "getConeStatusFlag()" class="card__primary__title__text p-mb-0">
-              Cloned project “{{selectedProject?.['name']}}” successfully added.
-              Proceed to Project Configuration to review and make any necessary changes.
-            </h5>
-          </div>
-          <div class="p-d-flex p-jc-center p-pb-3">
-            <label>Here is what to do next in order to sync data for this project:</label>
-          </div>
-          <div class="p-pb-3">
-            <p-steps [model]="steps" [readonly]="false"></p-steps>
-          </div>
-          <div *ngIf = "!getConeStatusFlag()" class="p-d-flex p-jc-center p-pb-3">
-            <label><a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject?.id]"
-                [queryParams]="{tab: 1}">Continue to Tool Connections</a></label>
-          </div>
-          <div *ngIf = "getConeStatusFlag()" class="p-d-flex p-jc-center p-pb-3">
-            <label><a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject?.id]"
-                      [queryParams]="{ type: selectedProject?.Type, tab: 2 }">
-                      Continue to Project Configuration</a></label>
-          </div>
-
-          <div class="p-d-flex p-jc-center p-pb-3">
-            <label><a routerLink="/dashboard/Config/ProjectList" (click)="closeProjectSetupPopup.emit()">Skip (continue
-                to Projects dashboard)</a></label>
-          </div>
-        </div>
-      </ng-container>
-    </div>
-    <div>
-
-    </div>
-  </div>
-</div>
-
-<p-dialog [(visible)]="addRenameHierarchyPopup" [modal]="true" (onHide)="addRenameHierarchyPopup = false;" [style]="{width:'600px'}">
-  <ng-template pTemplate="header">
-    <h1 class="p-my-0">Create Hierarchy</h1>
-  </ng-template>
-  <form #newProjectNameForm="ngForm" (ngSubmit)="saveHierarchyDetails(newProjectNameForm)">
-    <div class="p-mb-3 p-mt-3 p-pl-1 form-container">
-      <div class="p-mb-3 p-mt-3">
-        <span class="p-float-label" tooltipPosition="bottom" tooltipEvent="hover">
-          <input required id="hierarchyItem" name="hierarchyItem" #hierarchyItemText="ngModel" required 
-                 [style]="{'width':'500px'}" type="text" pInputText [(ngModel)]="hierarchyItem" onblur="checkForDuplicacy()">
-          <label for="hierarchyItem">Enter {{selectedHierarchyItemToUpdate?.hierarchyLevelIdName}}</label>
-        </span>
-        <!-- <span class="p-invalid" *ngIf="hierarchyItemText.errors?.pattern">
-          Special Characters are not allowed.
-        </span> -->
-        <span class="p-invalid p-mt-2" *ngIf="checkForDuplicacy()">
-          Hierarchy level name already exists. 
-        </span>
+        </ng-container>
       </div>
     </div>
-    <div class="p-text-right p-col-12">
-      <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised" icon="pi pi-save"
-        iconPos="left" [label]="'Save'" [disabled]="hierarchyItemText.errors || checkForDuplicacy()"></button>
-    
-      <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised p-ml-3" icon="pi pi-angle-double-left"
-        (click)="addRenameHierarchyPopup = false;" iconPos="left" [label]="'Cancel'"></button>
-    </div>
-  </form>
-</p-dialog>
+  </div>
+  
+  <p-dialog [(visible)]="addRenameHierarchyPopup" [modal]="true" (onHide)="addRenameHierarchyPopup = false;" [style]="{width:'600px'}"
+    role="dialog" aria-labelledby="create-hierarchy-heading">
+    <ng-template pTemplate="header">
+      <h1 class="p-my-0" id="create-hierarchy-heading">Create Hierarchy</h1>
+    </ng-template>
+    <form #newProjectNameForm="ngForm" (ngSubmit)="saveHierarchyDetails(newProjectNameForm)">
+      <div class="p-mb-3 p-mt-3 p-pl-1 form-container">
+        <div class="p-mb-3 p-mt-3">
+          <span class="p-float-label" tooltipPosition="bottom" tooltipEvent="hover">
+            <input required id="hierarchyItem" name="hierarchyItem" #hierarchyItemText="ngModel"
+              [style]="{'width':'500px'}" type="text" pInputText [(ngModel)]="hierarchyItem"
+              onblur="checkForDuplicacy()" aria-labelledby="hierarchyItem-label">
+            <label for="hierarchyItem" id="hierarchyItem-label">Enter {{selectedHierarchyItemToUpdate?.hierarchyLevelIdName}}</label>
+          </span>
+          <span class="p-invalid p-mt-2" *ngIf="checkForDuplicacy()">Hierarchy level name already exists.</span>
+        </div>
+      </div>
+      <div class="p-text-right p-col-12">
+        <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised" icon="pi pi-save"
+          iconPos="left" [label]="'Save'" [disabled]="hierarchyItemText.errors || checkForDuplicacy()" aria-label="Save Hierarchy Name"></button>
+  
+        <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised p-ml-3" icon="pi pi-angle-double-left"
+          (click)="addRenameHierarchyPopup = false;" iconPos="left" [label]="'Cancel'" aria-label="Cancel"></button>
+      </div>
+    </form>
+  </p-dialog>
+  
 <p-blockUI [blocked]="blocked"></p-blockUI>

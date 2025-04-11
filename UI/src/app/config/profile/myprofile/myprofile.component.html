@@ -19,99 +19,99 @@
 <div class="content">
   <div class="form-title-container p-mb-3 p-mt-3 p-ml-3 p-mr-3 clearfix bg-cyan p-d-flex">
     <div class="p-md-4 long-text float-left pad-r-0 pad-l-0 ">
-      <h4 class="form_title">User Name:</h4>
-      <span class="sub-text">{{userName}}</span>
+      <h4 class="form_title" tabindex="0">User Name:</h4>
+      <span class="sub-text" tabindex="0">{{userName}}</span>
     </div>
     <div class="p-md-4 long-text float-left pad-r-0 pad-l-0" *ngIf="!ssoLogin">
-      <h4 class="form_title">Configured email:</h4>
-      <span class="sub-text">{{userEmail}}</span>
+      <h4 class="form_title" tabindex="0">Configured email:</h4>
+      <span class="sub-text" tabindex="0">{{userEmail}}</span>
     </div>
   </div>
 
 
   <form class="notification-toggle" [formGroup]="notificationEmailForm" *ngIf="isSuperAdmin || isProjectAdmin">
     <div>
-    <span class="switch-label">Notification preferences:</span>
-    <p class="switch-desc">*Applicable to PROJECT ADMIN and SUPERADMIN roles only</p>
+    <span class="switch-label" tabindex="0">Notification preferences:</span>
+    <p class="switch-desc" tabindex="0">*Applicable to PROJECT ADMIN and SUPERADMIN roles only</p>
   </div>
     <div class="p-d-flex p-ml-2">
       <p-inputSwitch formControlName="accessAlertNotification" id="accessManageToggle"
         styleClass="custom-switch"
-        (onChange)="toggleNotificationEmail($event, 'accessAlertNotification')"></p-inputSwitch>
+        (onChange)="toggleNotificationEmail($event, 'accessAlertNotification')" aria-labelledby="accessManageToggle-label" aria-describedby="accessManageToggle-desc" tabindex="0"></p-inputSwitch>
       <div>
-        <label class="switch-label" for="accessManageToggle">Access alerts</label>
+        <label class="switch-label" for="accessManageToggle" id="accessManageToggle-label">Access alerts</label>
 
-        <p class="switch-desc">Email notifications about access permission requests/grants</p>
+        <p class="switch-desc" id="accessManageToggle-desc">Email notifications about access permission requests/grants</p>
       </div>
     </div>
 
     <div class="p-d-flex p-ml-2">
       <p-inputSwitch formControlName="errorAlertNotification" id="errorAlertToggle"
-        styleClass="custom-switch" (onChange)="toggleNotificationEmail($event, 'errorAlertNotification')"></p-inputSwitch>
+        styleClass="custom-switch" (onChange)="toggleNotificationEmail($event, 'errorAlertNotification')" aria-labelledby="errorAlertToggle-label" aria-describedby="errorAlertToggle-desc" tabindex="0"></p-inputSwitch>
       <div>
-        <label class="switch-label" for="errorAlertToggle">Error alerts</label>
-        <p class="switch-desc">Email notifications about tool processor failures or other errors</p>
+        <label class="switch-label" for="errorAlertToggle" id="errorAlertToggle-label">Error alerts</label>
+        <p class="switch-desc" id="errorAlertToggle-desc">Email notifications about tool processor failures or other errors</p>
       </div>
     </div>
   </form>
 
   <div class="card p-text-center border-warning p-mb-3" *ngIf="userEmail === '--' && !ssoLogin">
-    <div class="card-header bg-warning border-warning">
+    <div class="card-header bg-warning border-warning" tabindex="0">
       Configure Email
     </div>
     <div class="card-body">
-      <h3 class="card-title text-warning">You don't have an email configured!!</h3>
-      <p class="card-text">As such, you will not be able to change your password. Configure a proper email address for
+      <h3 class="card-title text-warning" tabindex="0">You don't have an email configured!!</h3>
+      <p class="card-text" tabindex="0">As such, you will not be able to change your password. Configure a proper email address for
         use when you want to change the password.</p>
       <form [formGroup]="userEmailForm" class="p-grid p-jc-center">
-        <label class="p-md-6">
+        <label class="p-md-6" tabindex="0">
           Enter email:
           <input class="form-control w-100" name="email" id="email" pInputText formControlName="email"
             [ngClass]="{ 'is-invalid': emailSubmitted && getEmailForm.email.errors }">
         </label>
 
-        <label class="p-md-6">
+        <label class="p-md-6" tabindex="0">
           Confirm email:
           <input class="form-control w-100" name="confirmEmail" id="confirmEmail" pInputText formControlName="confirmEmail"
             [ngClass]="{ 'is-invalid': emailSubmitted && (getEmailForm.confirmEmail.errors || (userEmailForm.errors && userEmailForm.errors['notSame'])) }">
         </label>
-        <button  pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised" [disabled]="!userEmailForm.valid" (click)="setEmail()">
+        <button  pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised" [disabled]="!userEmailForm.valid" (click)="setEmail()" (keydown.enter)="setEmail()" tabindex="0">
           Set Email
         </button>
       </form>
       <!--Mismatched email with not required                     -->
       <div *ngIf="userEmailForm.errors && userEmailForm.errors['notSame'] && !getEmailForm.confirmEmail.errors"
-        class="invalid-text">Email mismatch</div>
+        class="invalid-text" role="alert" tabindex="0">Email mismatch</div>
 
       <!-- Email Validation -->
       <div *ngIf="(getEmailForm.email.hasError('pattern') || getEmailForm.confirmEmail.hasError('pattern'))"
-        class="invalid-text">
+        class="invalid-text" role="alert" tabindex="0">
         Please enter a valid
         email
       </div>
 
-      <div *ngIf="message && message.length" class="invalid-text">{{ message }}</div>
+      <div *ngIf="message && message.length" class="invalid-text" role="alert" tabindex="0">{{ message }}</div>
 
       <!--Loading div-->
-      <div class='loader' *ngIf="dataLoading"></div>
+      <div class='loader' *ngIf="dataLoading" aria-label="Loading"></div>
     </div>
   </div>
 
   <div class="card p-text-center border-success p-mb-3" *ngIf="userEmailConfigured">
-    <div class="card-header bg-success border-success">
+    <div class="card-header bg-success border-success" tabindex="0" role="alert">
       Email Configured
     </div>
-    <div class="card-body">
+    <div class="card-body" role="message" tabindex="0">
       <h5 class="card-title p-p-2 alert-success">You have configured an email!!</h5>
       <p class="card-text">Now you can go ahead and change the password.</p>
     </div>
   </div>
 
   <div class="card p-text-center border-danger p-mb-3" *ngIf="noAccess">
-    <div class="card-header bg-danger  border-danger">
+    <div class="card-header bg-danger  border-danger" role="alert" tabindex="0">
       You don't have the required access
     </div>
-    <div class="card-body">
+    <div class="card-body" role="message" tabindex="0">
       <h3 class="card-title text-danger">You don't have the required access!!</h3>
       <div class="card-text">As such, you will not be able to access the dashboards and configuration options. <br />
         <div class="p-text-left options-div">Right now you can only do the following:
@@ -143,7 +143,7 @@
       routerLink="/dashboard/Config/Profile/GrantRequests">
       <div class="action-box clearfix bg-role">
         <div class="action-icon">
-          <i class="fas fa-user-plus"></i>
+          <i class="fas fa-user-plus" aria-hidden="true"></i>
         </div>
         <div class="action-text">
           Grant Project Access<br />
@@ -155,7 +155,7 @@
       routerLink="/dashboard/Config/Profile/GrantNewUserAuthRequests">
       <div class="action-box clearfix bg-role">
         <div class="action-icon">
-          <i class="fas fa-user-plus"></i>
+          <i class="fas fa-user-plus" aria-hidden="true"></i>
         </div>
         <div class="action-text">
           Grant User Access<br />
@@ -222,21 +222,21 @@
             sortField="role" sortMode="single">
               <ng-template pTemplate="header">
                 <tr>
-                  <th scope="col">Role</th>
-                  <th *ngFor="let col of dynamicCols" id="col.id">
+                  <th scope="col" tabindex="0" role="columnheader">Role</th>
+                  <th *ngFor="let col of dynamicCols" id="col.id" tabindex="0" role="columnheader">
                     {{col?.name}}
                   </th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-project let-rowIndex="rowIndex" let-rowgroup="rowgroup" let-rowspan="rowspan">
                 <tr>
-                  <td *ngIf="rowgroup" [attr.rowspan]="rowspan" class='border-bottom border-right'>
+                  <td *ngIf="rowgroup" [attr.rowspan]="rowspan" class='border-bottom border-right' role="row" tabindex="0" aria-label="Role">
                     <div class="p-text-uppercase" *ngIf="project['role'] === 'ROLE_PROJECT_ADMIN'">Project Admin</div>
                     <div class="p-text-uppercase" *ngIf="project['role'] === 'ROLE_PROJECT_VIEWER'">Project Viewer</div>
                     <div class="p-text-uppercase" *ngIf="project['role'] === 'ROLE_SUPERADMIN'">Superadmin</div>
                     <div class="p-text-uppercase" *ngIf="project['role'] === 'ROLE_GUEST'">Guest</div>
                   </td>
-                  <td class="p-p-3 border-bottom border-right" *ngFor="let col of dynamicCols">
+                  <td class="p-p-3 border-bottom border-right" *ngFor="let col of dynamicCols" role="cell" tabindex="0" aria-label="{{col?.name}}">
                     <span [ngClass]="{'info-block':col.id === 'projectName'}">{{project[col.id]}}</span>
                   </td>
                 </tr>

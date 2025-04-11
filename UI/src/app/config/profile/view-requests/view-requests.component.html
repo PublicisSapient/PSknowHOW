@@ -21,26 +21,26 @@
   <div class="p-md-12 container1">
     <div class="tabs tabs-content p-xl-12">
       <div class="content">
-        <h3 class="form_title">Grant Project Access</h3>
+        <h3 class="form_title" tabindex="0">Grant Project Access</h3>
 
-        <div class="request-table-container">
+        <div class="request-table-container" role="region" aria-label="Access Requests">
           <p-table dataKey="id" [value]="accessRequestList" [paginator]="true" [rows]="5"
             [loading]="!dataLoading.includes('allRequests') || !dataLoading.includes('allRoles')"
-            styleClass="p-datatable-striped" loadingIcon="loading-img">
+            styleClass="p-datatable-striped" loadingIcon="loading-img" role="table">
             <ng-template pTemplate="header">
-              <tr>
-                <th id="userName" style="width: 125px;">User Name</th>
-                <th id="projects" style="width: 250px;">Access Level</th>
-                <th id="role" style="width: 250px;">Role</th>
-                <th id="comment">Comment <br /> (click to edit)</th>
-                <th id="acceptReject">Actions</th>
+              <tr role="row">
+                <th id="userName" style="width: 125px;" role="columnheader" tabindex="0">User Name</th>
+                <th id="projects" style="width: 250px;" role="columnheader" tabindex="0">Access Level</th>
+                <th id="role" style="width: 250px;" role="columnheader" tabindex="0">Role</th>
+                <th id="comment" role="columnheader" tabindex="0">Comment <br /> (click to edit)</th>
+                <th id="acceptReject" role="columnheader" tabindex="0">Actions</th>
 
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-request let-expanded="expanded">
-              <tr>
-                <td class='custom-table-cell  text-truncate'>{{request.username}}</td>
-                <td class='custom-table-cell'>
+              <tr role="row" [attr.rowspan]="expanded ? 2 : 1">
+                <td class='custom-table-cell  text-truncate' role="cell" tabindex="0">{{request.username}}</td>
+                <td class='custom-table-cell' role="cell" tabindex="0">
                   <div class="info-block-container">
                     <div class="info-block" *ngFor="let item of request.accessNode.accessItems"
                       title="{{ item.itemName }}">
@@ -48,12 +48,12 @@
                     </div>
                   </div>
                 </td>
-                <td class='custom-table-cell'>
+                <td class='custom-table-cell' role="cell" tabindex="0">
                   <p-dropdown id="roleList" class="mb-2 mr-sm-2" [options]="roleList" [(ngModel)]="request.role"
-                    [style]="{'width':'200px'}">
+                    [style]="{'width':'200px'}" tabindex="0">
                   </p-dropdown>
                 </td>
-                <td pEditableColumn class='custom-table-cell'>
+                <td pEditableColumn class='custom-table-cell' role="cell" tabindex="0">
                   <p-cellEditor>
                     <ng-template pTemplate="input">
                       <textarea style="width: 75%;" [(ngModel)]="request.reviewComments"
@@ -64,12 +64,12 @@
                     </ng-template>
                   </p-cellEditor>
                 </td>
-                <td class='custom-table-cell'>
+                <td class='custom-table-cell' role="cell" tabindex="0">
                   <div class="accept-reject-container p-d-flex">
-                    <div class="action-btns p-mr-5" (click)="approveRejectRequest(request, true)">
+                    <div class="action-btns p-mr-5" (click)="approveRejectRequest(request, true)" (keydown.enter)="approveRejectRequest(request, true)" tabindex="0">
                       <i class="fas fa-check"></i>
                     </div>
-                    <div class="action-btns" (click)="approveRejectRequest(request, false)"><i
+                    <div class="action-btns" (click)="approveRejectRequest(request, false)" (keydown.enter)="approveRejectRequest(request, false)" tabindex="0"><i
                         class="far fa-trash-alt"></i></div>
                   </div>
                 </td>
@@ -77,8 +77,8 @@
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
-              <tr>
-                <td [attr.colspan]="5">
+              <tr role="row">
+                <td [attr.colspan]="5" role="cell" tabindex="0">
                   {{ !dataLoading.includes('allRequests') || !dataLoading.includes('allRoles') ? 'Loading...' : 'No
                   pending access requests' }}
                 </td>

@@ -72,6 +72,10 @@ div.main {
   position: relative;
 }
 
+::ng-deep .p-button:focus {
+  outline: auto;
+}
+
 input[type='text']:disabled,
 input[type='password']:disabled {
   background-color: #dee2e6;

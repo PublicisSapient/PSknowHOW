@@ -2,21 +2,21 @@
     <div *ngFor="let item of data;" class="p-d-flex data-item p-col-6">
         <div class="icon-container">
             <div class="icon">
-                <img src="../../../assets/img/{{ item.icon }}" alt="KPI Icon" class="kpi-logo" />
+                <img src="../../../assets/img/{{ item.icon }}" alt="KPI Icon" class="kpi-logo" aria-hidden="true" />
             </div>
         </div>
         <div class="data">
-            <p class="tabularKPI-column-header p-mb-0">{{ item.category }}</p>
-            <p class="tabularKPI-column-value p-mt-0">{{ item.value}} {{item.category==='DIR'?'%':''}}</p>
+            <p class="tabularKPI-column-header p-mb-0" tabindex="0">{{ item.category }}</p>
+            <p class="tabularKPI-column-value p-mt-0" tabindex="0">{{ item.value}} {{item.category==='DIR'?'%':''}}</p>
         </div>
     </div>
 </div>
 <div class="p-grid- p-mt-3" *ngIf="kpiId === 'kpi124'">
     <div *ngFor="let item of data;" class="p-d-flex data-item p-col-12">
         <div class="data p-col-4 p-text-right">
-            <p class="tabularKPI-column-header p-my-0">{{ item.category }}</p>
+            <p class="tabularKPI-column-header p-my-0" tabindex="0">{{ item.category }}</p>
         </div>
-        <div class="p-col-8 donut-container">
+        <div class="p-col-8 donut-container" aria-label="{{item.value.split('/')[0]}}" tabindex="0">
             <app-semi-circle-donut-chart [value]="item.value.split('/')[0]" [kpiId]="kpiId" [totalIssues]="item.value.split('/')[1]"  [color]="item.color"></app-semi-circle-donut-chart>
         </div>
     </div>

@@ -28,7 +28,7 @@
                     <div class="right-container col">
                         <div class="tabs-container" *ngIf="tabsArr.size > 1">
                             <div class="tab" *ngFor="let tab of tabsArr"
-                                [ngClass]="{ 'is-selected': selectedKPITab == tab }" (click)="selectKPITab(tab)">
+                                [ngClass]="{ 'is-selected': selectedKPITab == tab }" (click)="selectKPITab(tab)" tabindex="0" role="tab" [attr.aria-selected]="selectedKPITab === tab" (keydown.enter)="selectKPITab(tab)">
                                 {{ tab }}
                             </div>
                         </div>
@@ -303,44 +303,54 @@
                                                 <ng-container>
                                                     <ng-template #showTable>
                                                         <div class="p-d-flex p-justify-around p-align-center w-100 p-h-100"
-                                                            *ngIf="checkIfZeroData(kpi);else noDataAccess">
+                                                            *ngIf="checkIfZeroData(kpi);else noDataAccess"
+                                                            role="region" 
+                                                            aria-label="KPI Details"
+                                                            tabindex="0">
                                                             <ng-container
                                                                 *ngFor="let item of kpiChartData[kpi.kpiId]; let index=index">
                                                                 <ng-container
                                                                     *ngFor="let x of item?.data; let i = index">
                                                                     <div class="p-3 p-text-center"
-                                                                        [ngClass]="{'wrapper-w-50' : true ,'kpi-content-container': item?.data?.length ==2 && i!==1 }">
+                                                                        [ngClass]="{'wrapper-w-50' : true ,'kpi-content-container': item?.data?.length ==2 && i!==1 }"
+                                                                        role="article"
+                [attr.aria-label]="x?.label + ' Details'">
                                                                         <h3 class="text-label">{{x?.label}}
                                                                             <img *ngIf="x?.hasOwnProperty('modalValues') && x?.modalValues?.length > 0"
                                                                                 src="../../../assets/img/arrow-down.svg"
                                                                                 alt="arrow-down" class="btn-arrow-down"
-                                                                                (click)="handleArrowClick(kpi, x?.label, x?.modalValues)" />
+                                                                                (click)="handleArrowClick(kpi, x?.label, x?.modalValues)"
+                                                                                (keydown.enter)="handleArrowClick(kpi, x?.label, x?.modalValues)"
+                        tabindex="0"
+                        role="button"
+                        aria-label="Expand details for {{x?.label}}" />
                                                                         </h3>
                                                                         <p *ngIf="x?.labelInfo" class="p-m-0">
                                                                             {{x?.labelInfo}}</p>
                                                                         <p class="text-data">
                                                                             <span
-                                                                                *ngIf="x?.label?.toLowerCase() === 'backlog strength'; else otherFields">
+                                                                                *ngIf="x?.label?.toLowerCase() === 'backlog strength'; else otherFields" tabindex="0">
                                                                                 {{checkSprint(x?.value, x?.unit,
                                                                                 kpi?.kpiId)}}
                                                                             </span>
                                                                             <ng-template #otherFields>
                                                                                 <span
-                                                                                    [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value
+                                                                                    [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}" tabindex="0">{{x?.value
                                                                                     != -99 ?
                                                                                     convertToHoursIfTime(x?.value,x?.unit)
                                                                                     : '-'}}</span>
                                                                                 <span
-                                                                                    *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours'">
+                                                                                    *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours'" aria-hidden="true">
                                                                                     {{ x?.value != -99 ? x?.unit :
                                                                                     ''}}</span>
                                                                                 <span
                                                                                     *ngIf="x?.value1 && x?.value1 != -99 && x?.value1 != undefined"
-                                                                                    [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/'
+                                                                                    [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}" tabindex="0" aria-label="{{x?.label}} {{ x?.value1 != -99 ? x?.unit1 :
+                                                                                    ''}}">{{'/'
                                                                                     +
                                                                                     x?.value1}}</span>
                                                                                 <span
-                                                                                    *ngIf="x?.value1 && x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours'">
+                                                                                    *ngIf="x?.value1 && x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours'" aria-hidden="true">
                                                                                     {{ x?.value1 != -99 ? x?.unit1 :
                                                                                     ''}}
                                                                                 </span>

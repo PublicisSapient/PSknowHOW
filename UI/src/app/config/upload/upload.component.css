@@ -193,6 +193,10 @@ div.main {
   word-break: break-all;
 }
 
+::ng-deep .p-button:focus {
+  outline: auto;
+}
+
 /*-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Filter css-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 .dropdown-menu {

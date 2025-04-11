@@ -21,22 +21,22 @@
     <div class="main">
       <!-- Upload  -->
       <div id="file-upload-form" class="uploader">
-        <label class="float-none" for="file-upload" id="file-drag">
+        <label class="float-none" for="file-upload" id="file-drag" aria-label="Upload logo">
           <img class="file-image" src={{logoImage}} alt="Preview" *ngIf="logoImage">
           <div class="start">
             <span class="fa fa-download" aria-hidden="true" *ngIf="!logoImage"></span>
-            <div *ngIf="!logoImage">Select a logo image to upload</div>
-            <div class="upload-ins">File should be *.pg/png/jpg/jpeg in format, max 100 KB in size and 250 x 100 pixels
+            <div *ngIf="!logoImage" id="upload-instruction">Select a logo image to upload</div>
+            <div class="upload-ins" id="upload-guidelines">File should be *.pg/png/jpg/jpeg in format, max 100 KB in size and 250 x 100 pixels
               in dimension</div>
 
-            <span id="file-upload-btn" *ngIf="!logoImage" class="btn btn-primary">Select a file
+            <label id="file-upload-btn" *ngIf="!logoImage" class="btn btn-primary" for="file-upload">Select a file
               <input *ngIf="isUploadFile" id="file-upload" type="file" name="fileUpload" accept="image/*"
-                (change)="onUpload($event)" />
-            </span>
-            <span id="file-upload-btn" *ngIf="logoImage" class="btn btn-primary" (click)="onDelete()">Delete</span>
-            <div *ngIf="error" class="invalid-text p-pt-3">{{error}}</div>
-            <div *ngIf="warning" class="warning-text p-pt-3">{{warning}}</div>
-            <div *ngIf="message" class="success p-pt-3">{{message}}</div>
+                (change)="onUpload($event)" aria-describedby="upload-instruction upload-guidelines" aria-label="Choose logo file to upload" />
+            </label>
+            <span id="file-upload-btn" *ngIf="logoImage" class="btn btn-primary" (click)="onDelete()" role="button" aria-label="Delete uploaded logo">Delete</span>
+            <div *ngIf="error" class="invalid-text p-pt-3" role="alert" aria-live="assertive">{{ error }}</div>
+          <div *ngIf="warning" class="warning-text p-pt-3" role="alert" aria-live="polite">{{ warning }}</div>
+          <div *ngIf="message" class="success p-pt-3" role="status" aria-live="polite">{{ message }}</div>
           </div>
         </label>
       </div>
@@ -48,7 +48,7 @@
       <div class="tabs-container">
         <p-button *ngFor='let item of tabHeaders' label="{{item?.toUpperCase()}}" icon="pi pi-{{item?.toLowerCase()}}"
         class="btn-tab pi-{{item?.toLowerCase()}}-button" [ngClass]="{'btn-active':item?.toLowerCase() === 'scrum'}"
-        (click)="kanbanActivation(item?.toLowerCase())"></p-button>
+        (click)="kanbanActivation(item?.toLowerCase())" (keydown.enter)="kanbanActivation(item?.toLowerCase())" role="button"></p-button>
       </div>
       <div class="tabs-content test-execution-content" *ngIf="trendLineValueList && trendLineValueList?.length > 0 else noDataTemp">
         <div class="p-xl-12 p-pl-0 p-p-r-0 p-pb-2"
@@ -59,14 +59,14 @@
                 <div class="form-check filter-box p-xl-4 p-md-10 trend-line-container p-pl-0">
                   <ng-select formControlName="selectedProjectValue"
                     (change)="handleIterationFilters('project', false)" placeholder="Project" [clearable]="false"
-                    class="p-pb-0">
+                    class="p-pb-0" aria-label="Project" tabindex="0">
                     <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeDisplayName}}
                     </ng-option>
                   </ng-select>
                 </div>
               </div>
             </form>
-          </div>
+          </div>          
           <div class="p-xl-12 p-pl-0 p-p-r-0" *ngIf="selectedView === 'upload_tep' else capacityTemp">
             <div class="p-xl-12 p-pl-0 p-p-r-0" *ngIf="kanban else testExecutionScrumDataTable">
               <div class="p-xl-12 p-pl-0 p-p-r-0" *ngIf="testExecutionKanbanData?.length > 0 else noDataTemp">
@@ -81,8 +81,9 @@
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body"  let-item let-columns="columns">
-                    <tr class="sprint" [ngClass]="{'tr-active': ((currentDate  | date: 'dd/MMM/yyyy') === (item?.executionDate | date: 'dd/MMM/yyyy'))}">
-                      <td *ngFor="let col of columns" [ngClass]="{'text-blue':(item[col.field] | typeof) === 'number','upload_tep_width_kanban': !isAddtionalTestField,'upload_tep_width_kanban_9column' : isAddtionalTestField}">
+                    <tr class="sprint" [ngClass]="{'tr-active': ((currentDate  | date: 'dd/MMM/yyyy') === (item?.executionDate | date: 'dd/MMM/yyyy'))}" tabindex="0" role="row" aria-label="Test execution row for date {{item.executionDate | date: 'dd MMM yyyy'}}">
+                      <td *ngFor="let col of columns" [ngClass]="{'text-blue':(item[col.field] | typeof) === 'number','upload_tep_width_kanban': !isAddtionalTestField,'upload_tep_width_kanban_9column' : isAddtionalTestField}"
+                      role="cell" tabindex="0" [attr.aria-label]="col.header + ': ' + (item[col.field] || item[col.field] === 0 ? item[col.field] : 'Not available')">
                         <span *ngIf="col.field === 'executionDate' else otherFieldsTemp">
                           {{item[col.field] | date: 'dd/MMM/yyyy'}}
                         </span>
@@ -90,8 +91,9 @@
                           {{(item[col.field] || item[col.field] === 0 ) ? item[col.field] : '- -'}}
                         </ng-template>
                   </td>
-                  <td [ngClass]="{'upload_tep_width_kanban': !isAddtionalTestField,'upload_tep_width_kanban_9column' : isAddtionalTestField}"><button pButton type="button" class="p-button-sm btn-active edit-btn"  label="{{(item?.totalTestCases && item?.executedTestCase && item?.passedTestCase) ? 'Edit' : 'Add'}}"
-                      (click)="AddOrUpdateData(item)"></button></td>
+                  <td [ngClass]="{'upload_tep_width_kanban': !isAddtionalTestField,'upload_tep_width_kanban_9column' : isAddtionalTestField}" role="cell" tabindex="0">
+                    <button pButton type="button" class="p-button-sm btn-active edit-btn"  label="{{(item?.totalTestCases && item?.executedTestCase && item?.passedTestCase) ? 'Edit' : 'Add'}}"
+                      (click)="AddOrUpdateData(item)" [attr.aria-label]="(item?.totalTestCases && item?.executedTestCase && item?.passedTestCase) ? 'Edit test entry' : 'Add test entry'" tabindex="0" role="button" (keydown.enter)="AddOrUpdateData(item)"></button></td>
                     </tr>
                   </ng-template>
                 </p-table>
@@ -102,7 +104,7 @@
                 </div>
                 <div class="p-xl-12 p-pl-0 p-p-r-0 no-data-available" *ngIf="tableLoader && !loader">
                   <div class="min-ht">
-                      <div class="loading-img"></div>
+                    <div class="loading-img" role="img" aria-label="Loading data"></div>
                   </div>
                 </div>
               </ng-template>
@@ -120,12 +122,15 @@
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body"  let-item let-columns="columns">
-                    <tr class="sprint" [ngClass]="{'tr-active': item?.sprintState?.toLowerCase() === 'active'}">
-                      <td *ngFor="let col of columns"  [ngClass]="{'text-blue':(item[col.field] | typeof) === 'number','upload_tep_width': !isAddtionalTestField,'upload_tep_width_10column' : isAddtionalTestField}">
+                    <tr class="sprint" [ngClass]="{'tr-active': item?.sprintState?.toLowerCase() === 'active'}" tabindex="0"
+                    role="row" aria-label="Scrum sprint entry for sprint state {{item.sprintState}}">
+                      <td *ngFor="let col of columns"  [ngClass]="{'text-blue':(item[col.field] | typeof) === 'number','upload_tep_width': !isAddtionalTestField,'upload_tep_width_10column' : isAddtionalTestField}"
+                      role="cell" tabindex="0" [attr.aria-label]="col.header + ': ' + (item[col.field] || item[col.field] === 0 ? item[col.field] : 'Not available')">
                           <span>{{(item[col.field] || item[col.field] === 0 ) ? item[col.field] : '- -'}}</span>
                       </td>
-                  <td [ngClass]="{'upload_tep_width': !isAddtionalTestField,'upload_tep_width_10column' : isAddtionalTestField}"><button pButton type="button" class="p-button-sm btn-active edit-btn" label="{{(item?.totalTestCases && item?.executedTestCase && item?.passedTestCase) ? 'Edit' : 'Add'}}"
-                      (click)="AddOrUpdateData(item)"></button></td>
+                  <td [ngClass]="{'upload_tep_width': !isAddtionalTestField,'upload_tep_width_10column' : isAddtionalTestField}" role="cell" tabindex="0">
+                    <button pButton type="button" class="p-button-sm btn-active edit-btn" label="{{(item?.totalTestCases && item?.executedTestCase && item?.passedTestCase) ? 'Edit' : 'Add'}}"
+                      (click)="AddOrUpdateData(item)" [attr.aria-label]="(item?.totalTestCases && item?.executedTestCase && item?.passedTestCase) ? 'Edit test entry' : 'Add test entry'" tabindex="0"></button></td>
                     </tr>
                   </ng-template>
                 </p-table>
@@ -136,7 +141,7 @@
                 </div>
                 <div class="p-xl-12 p-pl-0 p-p-r-0 no-data-available"*ngIf="tableLoader && !loader">
                   <div class="min-ht">
-                      <div class="loading-img"></div>
+                    <div class="loading-img" role="img" aria-label="Loading data"></div>
                   </div>
                 </div>
               </ng-template>
@@ -451,7 +456,7 @@
         </label>
         <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2" [placeholder]="'Enter total test cases'"
           formControlName="totalTestCases" (input)="numericInputUpDown($event)"
-          (keydown)="enterNumericValue($event)">
+          (keydown)="enterNumericValue($event)" aria-label="Enter total test cases">
       </div>
      <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
         <label for="executedTestCase" class="mr-sm-2 float-left">
@@ -459,7 +464,7 @@
         </label>
         <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2" [placeholder]="'Enter executed test cases'"
           formControlName="executedTestCase" (input)="numericInputUpDown($event)"
-          (keydown)="enterNumericValue($event)">
+          (keydown)="enterNumericValue($event)" aria-label="Enter executed test cases">
       </div>
 
       <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
@@ -468,7 +473,7 @@
         </label>
         <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2" [placeholder]="'Enter passed test cases'"
         formControlName="passedTestCase" (input)="numericInputUpDown($event)"
-          (keydown)="enterNumericValue($event)">
+          (keydown)="enterNumericValue($event)" aria-label="Enter passed test cases">
       </div>
      <ng-container *ngIf="isAddtionalTestField">
       <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
@@ -477,7 +482,7 @@
         </label>
         <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2" [placeholder]="'Enter Automated test cases'"
         formControlName="automatedTestCases" (input)="numericInputUpDown($event)"
-          (keydown)="enterNumericValue($event)">
+          (keydown)="enterNumericValue($event)" aria-label="Enter Automated test cases">
       </div>
       <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
         <label for="automatableTestCases" class="mr-sm-2 float-left">
@@ -485,7 +490,7 @@
         </label>
         <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2" [placeholder]="'Enter Automatable test cases'"
         formControlName="automatableTestCases" (input)="numericInputUpDown($event)"
-          (keydown)="enterNumericValue($event)">
+          (keydown)="enterNumericValue($event)" aria-label="Enter Automatable test cases">
       </div>
       <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
         <label for="automatedRegressionTestCases" class="mr-sm-2 float-left">
@@ -493,7 +498,7 @@
         </label>
         <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2" [placeholder]="'Enter Automated regression test cases'"
         formControlName="automatedRegressionTestCases" (input)="numericInputUpDown($event)"
-          (keydown)="enterNumericValue($event)">
+          (keydown)="enterNumericValue($event)" aria-label="Enter Automated regression test cases">
       </div>
       <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
         <label for="totalRegressionTestCases" class="mr-sm-2 float-left">
@@ -501,14 +506,14 @@
         </label>
         <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2" [placeholder]="'Enter Total regression test cases'"
         formControlName="totalRegressionTestCases" (input)="numericInputUpDown($event)"
-          (keydown)="enterNumericValue($event)">
+          (keydown)="enterNumericValue($event)" aria-label="Enter Total regression test cases">
       </div>
     </ng-container>
     </form>
     <ng-template #sprintCapacityPopupFormTemp>
       <form [formGroup]="popupForm" class="p-xl-12 p-p-0" *ngIf="selectedView === 'upload_Sprint_Capacity'">
         <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
-          <label for="capacity" class="mr-sm-2 float-left">
+          <label for="capacity" class="mr-sm-2 float-left" id="capacity-label">
             <span *ngIf="kanban">Enter 'Team capacity' for the days between {{this.startDate | date: 'dd/MMM/yyyy'}}
               to {{this.endDate | date: 'dd/MMM/yyyy'}} </span>
             <span *ngIf="!kanban">Enter "Team capacity for {{selectedSprintName}}"</span>
@@ -516,7 +521,7 @@
           <input type="number" pInputText class="form-control w-100 p-p-2 mb-2 mr-sm-2" (input)="numericInputUpDown($event)"
             (keydown)="enterNumericValue($event)"
             [placeholder]="'Enter value'"
-            formControlName="capacity">
+            formControlName="capacity" aria-labelledby="capacity-label">
         </div>
       </form>
     </ng-template>

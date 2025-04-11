@@ -175,6 +175,9 @@
   border: 1px solid rgba(0, 0, 0, 0.6);
   background: transparent;
 }
+.p-button.p-button-text.btn-toggle:focus {
+  outline: auto;
+}
 .p-input-custom {
   height: 46px;
   border-top-right-radius: 0;

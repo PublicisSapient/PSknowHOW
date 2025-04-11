@@ -1,32 +1,42 @@
-<p-toast [style]="{marginTop: '80px'}"></p-toast>
+<p-toast [style]="{marginTop: '80px'}" aria-live="polite" role="status"></p-toast>
 <!-- Existing Reports Slider-->
-<div class="slider-div" *ngIf="reportsData?.length">
+<div class="slider-div" *ngIf="reportsData?.length" role="region" aria-label="Report Selection">
     <!-- Center-aligned container for report selection -->
     <div class="center-container">
-        <div class="p-px-5 p-pt-4 p-pb-1">Select a report</div>
-        <div class="slider-wrapper">
+        <div class="p-px-5 p-pt-4 p-pb-1" id="report-selection-label" tabindex="0">Select a report: </div>
+        <div class="slider-wrapper" role="group" aria-labelledby="report-selection-label">
             <!-- Left Navigation Button -->
-            <button class="nav-button left" (click)="scrollLeft()">
-                <i class="pi pi-chevron-left"></i>
+            <button class="nav-button left" (click)="scrollLeft()"
+            (keydown.enter)="scrollLeft()" 
+                    aria-label="Scroll reports left" 
+                    tabindex="0">
+                <i class="pi pi-chevron-left" aria-hidden="true"></i>
             </button>
 
             <!-- Scrollable container for report buttons -->
-            <div class="slider-container" #sliderContainer>
+            <div class="slider-container" #sliderContainer role="list" aria-label="Available Reports">
                 <p-button *ngFor="let report of reportsData" class="slider-item"
-                [ngClass]="{active: selectedReport.name === report.name}" (onClick)="setSelectedReport(report)">
+                [ngClass]="{active: selectedReport.name === report.name}" (onClick)="setSelectedReport(report)"
+                (keydown.enter)="setSelectedReport(report)"
+                    role="listitem"
+                    [attr.aria-label]="'Select report: ' + report.name"
+                    [attr.aria-selected]="selectedReport.name === report.name"
+                    tabindex="0">
                 
                 <ng-template pTemplate="content">
                     <div class="button-content">
                         {{ report.name }}
-                        <span class="close-icon" (click)="removeReport(report, $event)">×</span>
+                        <span class="close-icon" (click)="removeReport(report, $event)" (keydown.enter)="removeReport(report, $event)"
+                        aria-label="Remove report" tabindex="0">×</span>
                     </div>
                 </ng-template>
                 </p-button>
             </div>
 
             <!-- Right Navigation Button -->
-            <button class="nav-button right" (click)="scrollRight()">
-                <i class="pi pi-chevron-right"></i>
+            <button class="nav-button right" (click)="scrollRight()"
+            (keydown.enter)="scrollRight()" aria-label="Scroll reports right" tabindex="0">
+                <i class="pi pi-chevron-right" aria-hidden="true"></i>
             </button>
         </div>
     </div>
@@ -34,35 +44,40 @@
     <!-- Right-aligned Print Report button -->
     <div class="print-button-container">
         <p-button label="Print Report" styleClass="" aria-label="Print Report"
-            (onClick)="printReport()"></p-button>
+            (onClick)="printReport()" (keydown.enter)="printReport()"
+            tabindex="0"></p-button>
     </div>
 </div>
 <!-- Existing Reports Slider End-->
 
 <div class="print-header">
-    <h1>{{selectedReport?.name}}</h1>
+    <h1 tabindex="0">{{selectedReport?.name}}</h1>
 </div>
 
 
-<div *ngIf="selectedReport" class="kpi-container p-grid justify-content-start p-pl-2 p-pr-2 p-m-0 p-w-100">
+<div *ngIf="selectedReport" class="kpi-container p-grid justify-content-start p-pl-2 p-pr-2 p-m-0 p-w-100"
+role="region" aria-label="KPI Container">
     <ng-container *ngFor="let kpi of selectedReport?.kpis; let i = index;">
         <div class="kpi-div p-p-3 p-m-2 p-w-100">
             <div class="p-d-flex p-jc-end">
                 <p-button label="Delete KPI" styleClass="delete-kpi-btn" aria-label="Delete KPI"
                     (onClick)="deleteKPIFromReport(selectedReport, kpi)"
-                    [disabled]="selectedReport?.kpis?.length === 1"></p-button>
+                    [disabled]="selectedReport?.kpis?.length === 1" (keydown.enter)="deleteKPIFromReport(selectedReport, kpi)"
+                    [disabled]="selectedReport?.kpis?.length === 1"
+                    tabindex="0"></p-button>
             </div>
 
             <div class="selected-filter-container p-d-flex p-jc-between p-p-3"
-                *ngIf="objectKeys(kpi.metadata.hieararchy)?.length">
-                <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
-                    <div class="p-col-4" *ngFor="let superKey of objectKeys(kpi.metadata.hieararchy)">
+                *ngIf="objectKeys(kpi.metadata.hieararchy)?.length" role="region"
+                aria-label="Selected Filters">
+                <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100" role="list">
+                    <div class="p-col-4" *ngFor="let superKey of objectKeys(kpi.metadata.hieararchy)" role="listitem" tabindex="0">
                         <strong>{{ superKey }}&nbsp;:&nbsp;</strong> <span>{{
                             kpi.metadata.hieararchy[superKey].nodeDisplayName }}</span>
                     </div>
-                    <div class="p-d-flex p-jc-between" *ngFor="let superKey of objectValues(kpi.metadata.trendColors)">
-                        <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
-                            <div *ngFor="let key of objectKeys(superKey['tooltip']); let i = index;" class="p-col-4">
+                    <div class="p-d-flex p-jc-between" *ngFor="let superKey of objectValues(kpi.metadata.trendColors)" role="group" [attr.aria-label]="'Trend Color Group: ' + superKey['labelName']">
+                        <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100" role="list" tabindex="0">
+                            <div *ngFor="let key of objectKeys(superKey['tooltip']); let i = index;" class="p-col-4" role="listitem" tabindex="0">
                                 <strong>{{ key }}&nbsp;:&nbsp;</strong> <span>{{ superKey['tooltip'][key] }}</span>
                             </div>
                             <div class="p-col-12">
@@ -84,11 +99,11 @@
             <ng-container *ngIf="!objectKeys(kpi.metadata.hieararchy)?.length">
                 <div class="selected-filter-container p-d-flex p-p-3"
                     *ngFor="let superKey of objectValues(kpi.metadata.trendColors)">
-                    <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
-                        <div *ngFor="let key of objectKeys(superKey['tooltip']); let i = index;" class="p-col-4">
+                    <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100" role="list" tabindex="0">
+                        <div *ngFor="let key of objectKeys(superKey['tooltip']); let i = index;" class="p-col-4" role="listitem" tabindex="0">
                             <strong>{{ key }}&nbsp;:&nbsp;</strong> <span>{{ superKey['tooltip'][key] }}</span>
                         </div>
-                        <div class="p-col-4">
+                        <div class="p-col-4" role="listitem" tabindex="0">
                             <strong>{{superKey['labelName'] | titlecase }}:&nbsp;</strong>
                             <div class="align-list-marker" [ngStyle]="{'background-color':superKey?.color}"></div>
                             <span>{{

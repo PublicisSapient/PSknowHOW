@@ -3,35 +3,35 @@
   <div class="p-md-12 container1">
     <div class="tabs tabs-content p-xl-12">
       <div class="content">
-        <h3 class="form_title">Grant User Access</h3>
+        <h3 class="form_title" tabindex="0">Grant User Access</h3>
 
         <div class="request-table-container">
           <p-table dataKey="id" [value]="newUserAccessRequestData" [paginator]="true" [rows]="5"
-            styleClass="p-datatable-striped"  loadingIcon="loading-img">
+            styleClass="p-datatable-striped"  loadingIcon="loading-img" role="table">
             <ng-template pTemplate="header">
-              <tr>
-                <th id="userName" style="width: 250px;">User Name</th>
-                <th id="email" style="width: 250px;">Email</th>
-                <th id="acceptReject" style="width: 250px;">Actions</th>
+              <tr role="row">
+                <th id="userName" style="width: 250px;" role="columnheader" tabindex="0">User Name</th>
+                <th id="email" style="width: 250px;" role="columnheader" tabindex="0">Email</th>
+                <th id="acceptReject" style="width: 250px;" role="columnheader" tabindex="0">Actions</th>
 
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-request let-expanded="expanded">
                 <tr [ngClass]="{'white-list-email-row': !request.whitelistDomainEmail}" tooltipPosition="top" [pTooltip]="request.whitelistDomainEmail ? null : 'Email domain not whitelisted. Please verify before approving the access request'">
-                  <td class='custom-table-cell  text-truncate'>{{request.username}}</td>
-                  <td class='custom-table-cell  text-truncate'>{{request.email}}</td>
-                  <td class='custom-table-cell'>
+                  <td class='custom-table-cell  text-truncate' role="cell" tabindex="0">{{request.username}}</td>
+                  <td class='custom-table-cell  text-truncate' role="cell" tabindex="0">{{request.email}}</td>
+                  <td class='custom-table-cell' role="cell" tabindex="0">
                     <div class="accept-reject-container p-d-flex">
-                      <div class="action-btns p-mr-5" (click)="updateRequestStatus(request, true)">
+                      <div class="action-btns p-mr-5" (click)="updateRequestStatus(request, true)" (keydown.enter)="updateRequestStatus(request, true)" tabindex="0">
                           <i class="fas fa-check"></i></div>
-                      <div class="action-btns" (click)="updateRequestStatus(request, false)"><i
+                      <div class="action-btns" (click)="updateRequestStatus(request, false)" (keydown.enter)="updateRequestStatus(request, false)" tabindex="0"><i
                           class="far fa-trash-alt"></i></div>
                     </div>
                 </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
-              <tr>
-                <td [attr.colspan]="5">
+              <tr role="row">
+                <td [attr.colspan]="5" role="cell" tabindex="0">
                   {{ showLoader ? 'Loading...' : 'No
                   pending access requests' }}
                 </td>

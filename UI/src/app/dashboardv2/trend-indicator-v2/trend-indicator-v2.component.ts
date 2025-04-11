@@ -81,4 +81,15 @@ export class TrendIndicatorV2Component implements OnChanges {
       return trend.maturity;
     }
   }
+
+  getAccessibleTrendLabel(value: string): string {
+    if (value.indexOf('--') !== -1) {
+      return 'No change in trend';
+    } else if (value.indexOf('+ve') >= 0) {
+      return `Positive trend: ${value}`;
+    } else if (value.indexOf('-ve') >= 0) {
+      return `Negative trend: ${value}`;
+    }
+    return value;
+  }
 }

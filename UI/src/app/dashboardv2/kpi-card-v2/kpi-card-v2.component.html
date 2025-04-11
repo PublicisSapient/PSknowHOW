@@ -14,8 +14,8 @@
         <div
           *ngIf="kpiData?.kpiDetail?.chartType === 'stacked-bar-chart' ||  kpiData?.kpiDetail?.chartType ===  'stacked-bar'"
           class="p-pr-5 p-pl-5 p-pt-5 p-col-6">
-          <div class="w-100">{{ cardData.dataGroup.summary.name }}</div>
-          <h3 class="p-my-0">{{showCummalative()}}</h3>
+          <div class="w-100" tabindex="0">{{ cardData.dataGroup.summary.name }}</div>
+          <h3 class="p-my-0" tabindex="0">{{showCummalative()}}</h3>
         </div>
         <div class="p-d-flex">
           <div class="{{ kpiData?.kpiDetail?.chartType === 'bar-chart' ? 'p-col-8' : 'p-col-12' }}">
@@ -26,8 +26,8 @@
           </div>
           <div class="p-pr-5 p-pl-5 p-text-center" *ngIf="kpiData?.kpiDetail?.chartType ===  'bar-chart'">
             <div class="p-col-12" *ngFor="let dataGroup of cardData.dataGroup.dataGroup2">
-              <p>{{dataGroup.name}}</p>
-              <h3>{{convertToHoursIfTime(calculateValue(copyCardData.issueData,dataGroup.key),dataGroup.unit)}}</h3>
+              <p tabindex="0">{{dataGroup.name}}</p>
+              <h3 tabindex="0">{{convertToHoursIfTime(calculateValue(copyCardData.issueData,dataGroup.key),dataGroup.unit)}}</h3>
             </div>
           </div>
         </div>
@@ -178,15 +178,15 @@
             <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
           </div>
           <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
-            <h4 *ngSwitchCase="'400'" class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
-            <h4 *ngSwitchCase="'202'" class="p-text-center">Please check the required tool configuration and run
+            <h4 *ngSwitchCase="'400'" class="p-text-center" tabindex="0">KPI Analysis failed. Contact your administrator.</h4>
+            <h4 *ngSwitchCase="'202'" class="p-text-center" tabindex="0">Please check the required tool configuration and run
               processor.</h4>
-            <h4 *ngSwitchCase="'201'" class="p-text-center">Mandatory Field Mapping not configured. Contact your
+            <h4 *ngSwitchCase="'201'" class="p-text-center" tabindex="0">Mandatory Field Mapping not configured. Contact your
               administrator.</h4>
-            <h4 *ngSwitchCase="'200'" class="p-text-center">No Data Available.</h4>
+            <h4 *ngSwitchCase="'200'" class="p-text-center" tabindex="0">No Data Available.</h4>
             <div *ngSwitchCase="'500'" class="p-text-center">
               <span>
-                <h4 class="p-text-center p-m-0">An error has occurred. Please retry or contact administrator.</h4>
+                <h4 class="p-text-center p-m-0" tabindex="0">An error has occurred. Please retry or contact administrator.</h4>
                 <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded  p-mt-3"
                   (click)="reloadKPI()"></button>
               </span>
@@ -199,15 +199,15 @@
             <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
           </div>
           <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
-            <h4 *ngSwitchCase="'400'" class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
-            <h4 *ngSwitchCase="'202'" class="p-text-center">Please check the required tool configuration and run
+            <h4 *ngSwitchCase="'400'" class="p-text-center" tabindex="0">KPI Analysis failed. Contact your administrator.</h4>
+            <h4 *ngSwitchCase="'202'" class="p-text-center" tabindex="0">Please check the required tool configuration and run
               processor.</h4>
-            <h4 *ngSwitchCase="'201'" class="p-text-center">Mandatory Field Mapping not configured. Contact your
+            <h4 *ngSwitchCase="'201'" class="p-text-center" tabindex="0">Mandatory Field Mapping not configured. Contact your
               administrator.</h4>
-            <h4 *ngSwitchCase="'200'" class="p-text-center">No Data Available.</h4>
+            <h4 *ngSwitchCase="'200'" class="p-text-center" tabindex="0">No Data Available.</h4>
             <div *ngSwitchCase="'500'" class="p-text-center">
               <span>
-                <h4 class="p-text-center p-m-0">An error has occurred. Please retry or contact administrator.</h4>
+                <h4 class="p-text-center p-m-0" tabindex="0">An error has occurred. Please retry or contact administrator.</h4>
                 <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded p-mt-3"
                   (click)="reloadKPI()"></button>
               </span>
@@ -282,11 +282,11 @@
         <div role="alert" aria-live="assertive">
           <img alt="no-data" src="../../../assets/img/setting-icon.svg" />
           <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
-            <h4 *ngSwitchCase="'400'" class="p-text-center" role="alert">KPI Analysis failed. Contact your administrator.</h4>
-            <h4 *ngSwitchCase="'202'" class="p-text-center" role="alert">Required Tool not configured. Contact your administrator.</h4>
-            <h4 *ngSwitchCase="'201'" class="p-text-center" role="alert">Mandatory Field Mapping not configured. Contact your
+            <h4 *ngSwitchCase="'400'" class="p-text-center" role="alert" tabindex="0">KPI Analysis failed. Contact your administrator.</h4>
+            <h4 *ngSwitchCase="'202'" class="p-text-center" role="alert" tabindex="0">Required Tool not configured. Contact your administrator.</h4>
+            <h4 *ngSwitchCase="'201'" class="p-text-center" role="alert" tabindex="0">Mandatory Field Mapping not configured. Contact your
               administrator.</h4>
-            <h4 *ngSwitchCase="'200'" class="p-text-center" role="alert">No Data Available.</h4>
+            <h4 *ngSwitchCase="'200'" class="p-text-center" role="alert" tabindex="0">No Data Available.</h4>
           </div>
         </div>
       </ng-template>
@@ -348,7 +348,7 @@
       <img alt="no-data" src="../../../assets/img/NoDataFound.svg"
         [ngStyle]="{'height': kpiData?.kpiDetail?.kpiHeight === 100 ? '100%' : '100px'}" />
     </div>
-    <h4 class="p-text-center">No Data Available.</h4>
+    <h4 class="p-text-center" tabindex="0">No Data Available.</h4>
   </div>
   <div class="overlay loader" *ngIf="loader">
     <div class="loading-img"></div>
@@ -356,41 +356,48 @@
 </ng-template>
 
 <p-dialog [(visible)]="displayAddToReportsModal" [dismissableMask]="true" [modal]="true" [autoZIndex]="true"
-  styleClass="add-to-reports-overlay">
+  styleClass="add-to-reports-overlay" role="dialog"
+  aria-labelledby="dialogTitle"
+  aria-describedby="dialogDescription">
   <ng-template pTemplate="header">
     <div class="p-d-flex p-jc-between p-align-center p-col-12">
-      <h2 class="white-space-nowrap p-m-0">Include in Report</h2>
+      <h2 class="white-space-nowrap p-m-0" id="dialogTitle" tabindex="0">Include in Report</h2>
       <p-button label="Create New Report" styleClass="add-to-reports-btn" aria-label="Create New Report"
-        (onClick)="toggleCreateNewReportTemplate($event)"></p-button>
+        (onClick)="toggleCreateNewReportTemplate($event)" (keydown.enter)="toggleCreateNewReportTemplate($event)"
+        role="button" tabindex="0"></p-button>
     </div>
   </ng-template>
 
   <ng-template pTemplate="content">
-    <div class="p-d-flex p-jc-between p-align-center p-col-12 p-p-0" *ngIf="createNewReportTemplate">
+    <div class="p-d-flex p-jc-between p-align-center p-col-12 p-p-0" *ngIf="createNewReportTemplate" role="group"
+    aria-label="Create New Report Section">
       <div class="p-col-8 p-mb-3 p-p-0">
-        <label for="reportName">Enter Report Name : &nbsp;</label>
+        <label for="reportName" id="reportNameLabel">Enter Report Name : &nbsp;</label>
         <input pInputText id="reportName" [(ngModel)]="reportName" [style]="{'width': '100%'}"
-          (keydown.enter)="createNewReport()" />
+          (keydown.enter)="createNewReport()" aria-labelledby="reportNameLabel"
+          aria-describedby="reportNameHint"
+          aria-required="true"
+          placeholder="Enter report name" />
 
       </div>
       <div class="p-col-4 p-ml-2 p-pt-3 p-align-center">
         <p-button label="Create & Add KPI" styleClass="add-to-reports-btn" aria-label="Create New Report"
-          [disabled]="!reportName || !reportName.length" (onClick)="addToReportPost()"></p-button>
+          [disabled]="!reportName || !reportName.length" (onClick)="addToReportPost()" role="button" tabindex="0" [attr.aria-disabled]="!reportName || !reportName.length"></p-button>
       </div>
     </div>
 
-    <div style="border: 1px solid #cecece; padding:10px; border-radius: 10px;">
+    <div style="border: 1px solid #cecece; padding:10px; border-radius: 10px;" role="region" aria-label="Add to Report Section">
       <app-add-to-report-pop-up [reportObj]="reportObj" 
       [createNewReportTemplate]="createNewReportTemplate" 
       [existingReportData]="existingReportData" [reportName]="reportName"></app-add-to-report-pop-up>
     </div>
   </ng-template>
   <ng-template pTemplate="footer">
-    <div class="p-d-flex p-jc-center p-align-center p-col-12 p-p-0">
+    <div class="p-d-flex p-jc-center p-align-center p-col-12 p-p-0" role="group" aria-label="Add to Report Section">
       <p-button label="{{ createNewReportTemplate ? 'Cancel' :  'Close' }}" styleClass="add-to-reports-btn" aria-label="Cancel"
-        (onClick)="closeAddToReportsModal()"></p-button>
+        (onClick)="closeAddToReportsModal()"  role="button" tabindex="0"></p-button>
       <p-button label="Include in Report" styleClass="add-to-reports-btn" aria-label="Include in Report"
-        (onClick)="addToReportPut()" [disabled]="createNewReportTemplate || success"></p-button>
+        (onClick)="addToReportPut()" [disabled]="createNewReportTemplate || success" role="button" tabindex="0"></p-button>
     </div>
   </ng-template>
 </p-dialog>
