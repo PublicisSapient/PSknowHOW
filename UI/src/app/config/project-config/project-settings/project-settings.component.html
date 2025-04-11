@@ -15,10 +15,10 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<p-toast [style]="{marginTop: '80px'}"></p-toast>
-<div class="main">
+<p-toast [style]="{marginTop: '80px'}" aria-live="polite"></p-toast>
+<div class="main" role="main">
   <div class="p-d-flex p-jc-between p-align-center p-mb-5">
-    <h1>Project Settings</h1>
+    <h1 id="page-title" role="heading" tabindex="0">Project Settings</h1>
     <div>
       <span class="p-text-capitalize" style="font-size: 1.2rem;">
         Select Project
@@ -27,7 +27,7 @@
         <p-dropdown [options]="userProjects" [(ngModel)]="selectedProject" optionLabel="name"
           [style]="{'min-width':'300px', 'max-width':'300px'}"
           [panelStyle]="{'min-width':'inherit', 'max-width':'inherit'}" [filter]="true" filterBy="name"
-          [showClear]="false" placeholder="Select a Project" (onChange)="updateProjectSelection()">
+          [showClear]="false" placeholder="Select a Project" (onChange)="updateProjectSelection()" aria-label="Select a Project" tabindex="0">
           <ng-template pTemplate="selectedItem">
             <div class="userProject-item userProject-item-value" *ngIf="selectedProject">
               <div>{{selectedProject.name}}</div>
@@ -42,59 +42,60 @@
       </span>
     </div>
   </div>
-  <div class="p-p-3 p-mb-4 p-grid bg-cyan" *ngIf="selectedProject">
+  <div class="p-p-3 p-mb-4 p-grid bg-cyan" *ngIf="selectedProject" aria-labelledby="page-title">
     <ng-container *ngFor="let project of selectedProject | keyvalue : originalOrder">
       <div class="p-md-2 long-text float-left pad-r-0 pad-l-0 inline-div"
         *ngIf="project?.key?.toLowerCase() !== 'id' && project?.key != 'saveAssigneeDetails' && project?.key != 'developerKpiEnabled' && project?.key != 'projectOnHold'">
-        <p class="form_title p-text-capitalize">{{project?.key}}</p>
-        <strong class="sub-text p-text-capitalize">{{project?.value}}</strong>
+        <p class="form_title p-text-capitalize" tabindex="0">{{project?.key}}</p>
+        <strong class="sub-text p-text-capitalize" tabindex="0">{{project?.value}}</strong>
       </div>
     </ng-container>
   </div>
 
   <p-tabView>
-    <p-tabPanel [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" header="General" tooltip="These settings allow you to manage your project">
-      <p>These settings allow you to manage your project’s lifecycle in knowHOW, including options to delete, pause, or
+    <p-tabPanel [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" header="General" tooltip="These settings allow you to manage your project" tabindex="0" aria-label="General Settings Tab">
+      <p tabindex="0">These settings allow you to manage your project’s lifecycle in knowHOW, including options to delete, pause, or
         resume your project.
       </p>
-      <p-table [value]="generalControls">
+      <p-table [value]="generalControls" aria-label="General Settings Table">
         <ng-template pTemplate="body" let-generalControl>
           <tr>
-            <td>
+            <td tabindex="0">
               <h3>{{generalControl.name}}</h3>
               <p>{{generalControl.description}}</p>
             </td>
-            <td>
+            <td tabindex="0">
               <ng-container *ngIf="generalControl.actionItem === 'cta'">
                 <button [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" pButton pRipple type="button" label="Delete Project" class="p-button-danger"
-                  (click)="deleteProject(selectedProject)"></button>
+                  (click)="deleteProject(selectedProject)" aria-label="Delete Project" tabindex="0"></button>
               </ng-container>
               <ng-container *ngIf="generalControl.actionItem === 'switch'">
-                <p-inputSwitch [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" [(ngModel)]="projectOnHold" (onChange)="onProjectActiveStatusChange($event)"></p-inputSwitch>
+                <p-inputSwitch [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" [(ngModel)]="projectOnHold" (onChange)="onProjectActiveStatusChange($event)" aria-label="Project on Hold" tabindex="0"></p-inputSwitch>
               </ng-container>
             </td>
           </tr>
         </ng-template>
       </p-table>
     </p-tabPanel>
-    <p-tabPanel [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" header="One-Time Settings" tooltip="These are permanent configurations that cannot be altered once enabled">
+    <p-tabPanel [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" header="One-Time Settings" tooltip="These are permanent configurations that cannot be altered once enabled" tabindex="0" aria-label="One-Time Settings Tab">
       <p>These are permanent configurations that cannot be altered once enabled. Please review your choices carefully,
         as these settings will directly impact how your project data is managed and cannot be modified later.</p>
-      <p-table [value]="oneTimeControls">
+      <p-table [value]="oneTimeControls" aria-label="One-Time Settings Table">
         <ng-template pTemplate="body" let-oneTimeControl>
           <tr>
-            <td>
+            <td tabindex="0">
               <h3>{{oneTimeControl.name}}</h3>
               <p>{{oneTimeControl.description}}</p>
             </td>
-            <td>.
+            <td tabindex="0">
               <ng-container *ngIf="!getAuthorizationService.checkIfViewer(selectedProject)">
                 <ng-container *ngIf="oneTimeControl.actionItem === 'switch-people-kpi'">
                   <div class="mar-t-10" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
                     <p-inputSwitch name="assigneeSwitch" id="assigneeSwitch"
                     [(ngModel)]="isAssigneeSwitchChecked"
                     [disabled]="isAssigneeSwitchChecked"
-                    (onChange)="onAssigneeSwitchChange($event)">
+                    (onChange)="onAssigneeSwitchChange($event)"
+                    aria-label="Enable People KPI" tabindex="0">
                     </p-inputSwitch>
                   </div>
                 </ng-container>
@@ -102,34 +103,35 @@
                   <p-inputSwitch
                   [(ngModel)]="developerKpiEnabled"
                   (onChange)="onProjectDevKpiStatusChange($event)"
-                  [disabled]="developerKpiEnabled">
+                  [disabled]="developerKpiEnabled"
+                  aria-label="Enable Developer KPI" tabindex="0">
                   </p-inputSwitch>
                 </ng-container>
               </ng-container>
               <ng-container *ngIf="getAuthorizationService.checkIfViewer(selectedProject)">
-                <p-inputSwitch [disabled]="true"></p-inputSwitch>
+                <p-inputSwitch [disabled]="true" aria-label="Disabled input" tabindex="0"></p-inputSwitch>
               </ng-container>
             </td>
           </tr>
         </ng-template>
       </p-table>
     </p-tabPanel>
-    <p-tabPanel [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" header="API" tooltip="...">
+    <p-tabPanel [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" header="API" tooltip="..." tabindex="0" aria-label="API Settings Tab">
       <p></p>
-      <p-table [value]="apiControls">
+      <p-table [value]="apiControls" aria-label="API Settings Table">
         <ng-template pTemplate="body" let-apiControl>
           <tr>
-            <td>
+            <td tabindex="0">
               <h3>{{apiControl.name}}</h3>
               <p>{{apiControl.description}}</p>
             </td>
-            <td>
+            <td tabindex="0">
               <div class="p-d-block" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
                 <button pButton type="button" label="Generate Token" iconPos="right"
                   (click)="generateTokenConfirmation()" [loading]="generateTokenLoader" class="p-button-primary"
                   [disabled]="getAuthorizationService.checkIfViewer(selectedProject)"
                   pTooltip="You can generate the token to submit tools data via knowHOW POST APIs."
-                  tooltipPosition="top"></button>
+                  tooltipPosition="top" aria-label="Generate API Token" tabindex="0"></button>
               </div>
             </td>
           </tr>
@@ -141,32 +143,32 @@
 
 <p-confirmDialog #cd>
   <p-footer>
-    <button *ngIf="projectConfirm" type="button" (click)="cd.accept()" pButton label="Yes"></button>
-    <button *ngIf="projectConfirm" type="button" (click)="cd.reject()" pButton label="No"></button>
-    <button *ngIf="!projectConfirm" type="button" (click)="cd.reject()" pButton label="OK"></button>
+    <button *ngIf="projectConfirm" type="button" (click)="cd.accept()" pButton label="Yes" tabindex="0"></button>
+    <button *ngIf="projectConfirm" type="button" (click)="cd.reject()" pButton label="No" tabindex="0"></button>
+    <button *ngIf="!projectConfirm" type="button" (click)="cd.reject()" pButton label="OK" tabindex="0"></button>
   </p-footer>
 </p-confirmDialog>
 
 <p-confirmDialog #confirmToEnableDialog key="confirmToEnableDialog" [style]="{width: '50vw'}">
   <p-footer>
     <button type="button" (click)="confirmToEnableDialog.reject()" pButton label="Cancel"
-      class="enable-dialog-btn"></button>
-    <button type="button" (click)="confirmToEnableDialog.accept()" pButton label="Accept"></button>
+      class="enable-dialog-btn" tabindex="0"></button>
+    <button type="button" (click)="confirmToEnableDialog.accept()" pButton label="Accept" tabindex="0"></button>
   </p-footer>
 </p-confirmDialog>
 
 <p-dialog header="Token Generated" [(visible)]="displayGeneratedToken" [responsive]="true" showEffect="fade"
-  [modal]="true" [style]="{width: '80vw'}" styleClass="p-fluid">
-  <p>Token has been generated successfully!</p>
+  [modal]="true" [style]="{width: '80vw'}" styleClass="p-fluid" aria-label="Token Generated Dialog" role="dialog">
+  <p tabindex="0">Token has been generated successfully!</p>
 
   <div class="p-inputgroup p-mb-2">
-    <input type="text" pInputText [(ngModel)]="generatedToken" readonly #inputGeneratedToken>
-    <span class="p-inputgroup-addon p-p-1" (click)="copyToken()" tooltipPosition="top" tooltipEvent="focus">
+    <input type="text" pInputText [(ngModel)]="generatedToken" readonly #inputGeneratedToken tabindex="0" aria-label="Generated Token">
+    <span class="p-inputgroup-addon p-p-1" (click)="copyToken()" tooltipPosition="top" tooltipEvent="focus" tabindex="0">
       <i class="pi pi-copy p-p-1" style="font-size: 1.5rem"
-        [ngClass]="{'pi-check': tokenCopied,'color-green':tokenCopied }"></i></span>
+        [ngClass]="{'pi-check': tokenCopied,'color-green':tokenCopied }" aria-hidden="true"></i></span>
   </div>
-  <i>Please copy the token to submit the data, you will not be able to view the token once the screen is closed.</i>
+  <i tabindex="0">Please copy the token to submit the data, you will not be able to view the token once the screen is closed.</i>
   <ng-template pTemplate="footer">
-    <button pButton type="button" label="Ok" (click)="displayGeneratedToken=false"></button>
+    <button pButton type="button" label="Ok" (click)="displayGeneratedToken=false" tabindex="0"></button>
   </ng-template>
 </p-dialog>
