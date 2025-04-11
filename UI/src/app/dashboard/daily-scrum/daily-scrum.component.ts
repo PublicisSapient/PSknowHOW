@@ -190,7 +190,6 @@ export class DailyScrumComponent implements OnInit, OnChanges {
       } else {
         this.totals[col].value1 = this.totals[col].value1?.toFixed(2);
       }
-      console.log(JSON.stringify(this.totals));
     });
   }
 

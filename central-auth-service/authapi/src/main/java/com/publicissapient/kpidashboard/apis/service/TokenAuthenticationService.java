@@ -26,6 +26,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 
@@ -45,4 +46,12 @@ public interface TokenAuthenticationService {
 	Collection<GrantedAuthority> createAuthorities(List<String> roles);
 
 	String extractUsernameFromAuthentication(Authentication authentication);
+
+	// will create the following cookies: authCookie, authCookie_EXPIRY and
+	// guestDisplayName
+	void addGuestCookies(String guestDisplayName, String jwt, HttpServletResponse response);
+
+	// will delete the following cookies: authCookie, authCookie_EXPIRY and
+	// guestDisplayName
+	void deleteGuestCookies(HttpServletRequest request, HttpServletResponse response);
 }
