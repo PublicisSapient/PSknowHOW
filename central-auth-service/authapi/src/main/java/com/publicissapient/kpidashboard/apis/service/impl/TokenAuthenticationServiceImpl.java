@@ -18,6 +18,15 @@
 
 package com.publicissapient.kpidashboard.apis.service.impl;
 
+import java.time.Instant;
+import java.util.*;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.publicissapient.kpidashboard.apis.config.AuthConfig;
 import com.publicissapient.kpidashboard.apis.config.CookieConfig;
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
@@ -25,6 +34,7 @@ import com.publicissapient.kpidashboard.apis.errors.GenericException;
 import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.service.dto.UserDTO;
 import com.publicissapient.kpidashboard.apis.util.CookieUtil;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -34,14 +44,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Instant;
-import java.util.*;
 
 @Service
 @Transactional
@@ -62,15 +64,12 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			Collection<? extends GrantedAuthority> authorities) {
 		Instant expirationInstant = Instant.now().plusSeconds(cookieConfig.getDuration());
 
-		return Jwts.builder()
-				.setSubject(subject)
-				.claim(DETAILS_CLAIM, authType)
+		return Jwts.builder().setSubject(subject).claim(DETAILS_CLAIM, authType)
 				.claim(ROLES_CLAIM,
 						Objects.nonNull(authorities)
 								? authorities.stream().map(GrantedAuthority::getAuthority).toList()
 								: new ArrayList<>())
-				.setExpiration(Date.from(expirationInstant))
-				.signWith(SignatureAlgorithm.HS512, authProperties.getSecret())
+				.setExpiration(Date.from(expirationInstant)).signWith(SignatureAlgorithm.HS512, authProperties.getSecret())
 				.compact();
 	}
 
@@ -135,13 +134,13 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 				cookieConfig.getDuration(), cookieConfig.getDomain(), cookieConfig.getIsSameSite(), cookieConfig.getIsSecure());
 	}
 
-    @Override
-    public void deleteGuestCookies(HttpServletRequest request, HttpServletResponse response) {
-        CookieUtil.deleteCookie(request, response, cookieConfig.getDomain(), CookieUtil.COOKIE_NAME,
-                CookieUtil.API_COOKIE_PATH);
-        CookieUtil.deleteCookie(request, response, cookieConfig.getDomain(), CookieUtil.EXPIRY_COOKIE_NAME,
-                CookieUtil.API_COOKIE_PATH);
-        CookieUtil.deleteCookie(request, response, cookieConfig.getDomain(), CookieUtil.GUEST_DISPLAY_NAME_COOKIE_NAME,
-                CookieUtil.API_COOKIE_PATH);
-    }
+	@Override
+	public void deleteGuestCookies(HttpServletRequest request, HttpServletResponse response) {
+		CookieUtil.deleteCookie(request, response, cookieConfig.getDomain(), CookieUtil.COOKIE_NAME,
+				CookieUtil.API_COOKIE_PATH);
+		CookieUtil.deleteCookie(request, response, cookieConfig.getDomain(), CookieUtil.EXPIRY_COOKIE_NAME,
+				CookieUtil.API_COOKIE_PATH);
+		CookieUtil.deleteCookie(request, response, cookieConfig.getDomain(), CookieUtil.GUEST_DISPLAY_NAME_COOKIE_NAME,
+				CookieUtil.API_COOKIE_PATH);
+	}
 }

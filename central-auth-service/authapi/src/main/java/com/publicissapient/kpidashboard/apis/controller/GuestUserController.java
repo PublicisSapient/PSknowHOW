@@ -16,42 +16,38 @@
 
 package com.publicissapient.kpidashboard.apis.controller;
 
-import com.publicissapient.kpidashboard.apis.service.GuestUserService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
+
+import com.publicissapient.kpidashboard.apis.service.GuestUserService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @AllArgsConstructor
 @Slf4j
 public class GuestUserController {
 
-    private final GuestUserService guestUserService;
+	private final GuestUserService guestUserService;
 
-    @GetMapping("/guest-login")
-    public RedirectView guestLogin(
-            @RequestParam String displayName,
-            @RequestParam String redirectUri,
-            HttpServletResponse response
-    ) {
-        guestUserService.loginUserAsGuest(displayName, response);
+	@GetMapping("/guest-login")
+	public RedirectView guestLogin(@RequestParam String displayName, @RequestParam String redirectUri,
+			HttpServletResponse response) {
+		guestUserService.loginUserAsGuest(displayName, response);
 
-        return new RedirectView(redirectUri);
-    }
+		return new RedirectView(redirectUri);
+	}
 
-    @GetMapping("/guest-logout")
-    public RedirectView guestLogout(
-            @RequestParam String redirectUri,
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-        guestUserService.logoutGuestUser(request, response);
-        
-        return new RedirectView(redirectUri);
-    }
+	@GetMapping("/guest-logout")
+	public RedirectView guestLogout(@RequestParam String redirectUri, HttpServletRequest request,
+			HttpServletResponse response) {
+		guestUserService.logoutGuestUser(request, response);
+
+		return new RedirectView(redirectUri);
+	}
 }

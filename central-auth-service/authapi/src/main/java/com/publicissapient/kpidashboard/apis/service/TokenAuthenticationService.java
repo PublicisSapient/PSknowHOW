@@ -18,15 +18,17 @@
 
 package com.publicissapient.kpidashboard.apis.service;
 
-import com.publicissapient.kpidashboard.apis.enums.AuthType;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotNull;
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.Collection;
-import java.util.List;
+import com.publicissapient.kpidashboard.apis.enums.AuthType;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
 
 public interface TokenAuthenticationService {
 
@@ -45,9 +47,11 @@ public interface TokenAuthenticationService {
 
 	String extractUsernameFromAuthentication(Authentication authentication);
 
-	// will create the following cookies: authCookie, authCookie_EXPIRY and guestDisplayName
+	// will create the following cookies: authCookie, authCookie_EXPIRY and
+	// guestDisplayName
 	void addGuestCookies(String guestDisplayName, String jwt, HttpServletResponse response);
 
-	// will delete the following cookies: authCookie, authCookie_EXPIRY and guestDisplayName
+	// will delete the following cookies: authCookie, authCookie_EXPIRY and
+	// guestDisplayName
 	void deleteGuestCookies(HttpServletRequest request, HttpServletResponse response);
 }

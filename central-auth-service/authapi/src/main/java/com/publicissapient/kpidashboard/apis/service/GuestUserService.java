@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public interface GuestUserService {
-    void loginUserAsGuest(String guestDisplayName, HttpServletResponse response);
+	void loginUserAsGuest(String guestDisplayName, HttpServletResponse response);
 
-    void logoutGuestUser(HttpServletRequest request, HttpServletResponse response);
+	void logoutGuestUser(HttpServletRequest request, HttpServletResponse response);
 }
