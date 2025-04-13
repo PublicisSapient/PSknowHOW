@@ -22,6 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
@@ -29,11 +30,14 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.jira.service.SprintDetailsServiceImpl;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -101,6 +105,8 @@ public class CodeBuildTimeServiceImplTest {
 	private List<Build> buildList = new ArrayList<>();
 	@Mock
 	private CommonService commonService;
+	@Mock
+	private SprintDetailsServiceImpl sprintDetailsService;
 
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;
@@ -143,6 +149,12 @@ public class CodeBuildTimeServiceImplTest {
 
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
+
+		SprintDetails sprintDetails = new SprintDetails();
+		sprintDetails.setCompleteDate("2025-04-01T13:44:44.421Z");
+		sprintDetails.setSprintID("40345_Scrum Project_6335363749794a18e8a4479b");
+		sprintDetails.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
+		when(sprintDetailsService.getSprintDetailsByIds(anyList())).thenReturn(Arrays.asList(sprintDetails));
 	}
 
 	private void setTreadValuesDataCount() {
@@ -216,8 +228,8 @@ public class CodeBuildTimeServiceImplTest {
 	@Test
 	public void testCalculateKPIMetrics() {
 		Map<ObjectId, List<Build>> buildList = new HashMap<ObjectId, List<Build>>();
-		Map<String, Object> subCategoryMap = new HashMap<>();
-		Long count = codeBuildTimeServiceImpl.calculateKPIMetrics(buildList);
+		Map<String, List<Object>> subCategoryMap = new HashMap<>();
+		Long count = codeBuildTimeServiceImpl.calculateKPIMetrics(subCategoryMap);
 	}
 
 	@Test

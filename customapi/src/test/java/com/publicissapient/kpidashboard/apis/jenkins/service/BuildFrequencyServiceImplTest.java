@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
@@ -33,6 +34,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.jira.service.SprintDetailsServiceImpl;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -76,6 +79,8 @@ public class BuildFrequencyServiceImplTest {
 	ConfigHelperService configHelperService;
 	@Mock
 	CustomApiConfig customApiConfig;
+	@Mock
+	private SprintDetailsServiceImpl sprintDetailsService;
 	@InjectMocks
 	BuildFrequencyServiceImpl buildFrequencyServiceImpl;
 	private Map<String, Object> filterLevelMap;
@@ -131,6 +136,11 @@ public class BuildFrequencyServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		build = new Build();
 		getBuildFrequencyInfo();
+		SprintDetails sprintDetails = new SprintDetails();
+		sprintDetails.setCompleteDate("2025-04-01T13:44:44.421Z");
+		sprintDetails.setSprintID("40345_Scrum Project_6335363749794a18e8a4479b");
+		sprintDetails.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
+		when(sprintDetailsService.getSprintDetailsByIds(anyList())).thenReturn(Arrays.asList(sprintDetails));
 	}
 
 	private void getBuildFrequencyInfo() {
@@ -238,8 +248,8 @@ public class BuildFrequencyServiceImplTest {
 	@Test
 	public void testCalculateKPIMetrics() {
 		Map<ObjectId, List<Build>> buildList = new HashMap<ObjectId, List<Build>>();
-		Map<String, Object> subCategoryMap = new HashMap<>();
-		Long count = buildFrequencyServiceImpl.calculateKPIMetrics(buildList);
+		Map<String, List<Object>> subCategoryMap = new HashMap<>();
+		Long count = buildFrequencyServiceImpl.calculateKPIMetrics(subCategoryMap);
 	}
 
 	@Test
