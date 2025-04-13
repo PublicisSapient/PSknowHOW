@@ -93,7 +93,6 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 
 	@Autowired
 	protected CustomApiConfig customApiConfig;
-	private static final String DATE_TIME_FORMAT_REGEX = "Z|\\.\\d+";
 
 	/**
 	 * Gets KPI Data
