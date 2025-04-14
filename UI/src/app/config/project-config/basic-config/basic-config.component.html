@@ -169,11 +169,19 @@
                 </div>
               </div>
             </div>
-            <div class="p-text-right p-col-12">
-              <button pButton pRipple class="p-button-lg p-button-success p-button-raised p-mr-3" label="Back"
+            <div class="p-col-12 p-d-flex p-jc-between">
+              <div>
+                <button pButton pRipple class="p-button-lg p-button-success p-button-raised p-mr-3" label="Back"
                 icon="pi pi-angle-double-left" iconPos="left" (click)="backToProjectList()"></button>
-              <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised"
+              </div>
+              <div>
+                <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised p-mr-3"
                 icon="pi pi-save" iconPos="left" [label]="getButtonLabel()" [disabled]="!form.valid"></button>
+                <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised"
+                icon="pi pi-refresh" iconPos="left" label="Reset" (click)="resetHierarchyDropdowns()"></button>
+              </div>
+              
+              
             </div>
           </form>
         </div>

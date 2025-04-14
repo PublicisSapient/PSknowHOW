@@ -596,7 +596,9 @@ export class BasicConfigComponent implements OnInit {
     this.http
       .addHierarchyOptions(
         currentLevelID === 1 ? '' : parentLevelFormDetails?.nodeId,
-        { name: this.hierarchyItem },
+        {
+          name: this.hierarchyItem,
+        },
       )
       .subscribe((res) => {
         if (res && res.success) {
@@ -718,5 +720,14 @@ export class BasicConfigComponent implements OnInit {
       result = false;
     }
     return result;
+  }
+
+  resetHierarchyDropdowns() {
+    Object.keys(this.selectedItems).forEach((key) => {
+      this.selectedItems[key] = undefined;
+    });
+    this.formData.forEach((control) => {
+      control.filteredSuggestions = [];
+    });
   }
 }
