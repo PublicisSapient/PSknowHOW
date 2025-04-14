@@ -336,6 +336,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
           this.iSAdditionalFilterSelected = sharedobject?.isAdditionalFilters;
           this.receiveSharedData(sharedobject);
+          this.getSprintGoalData();
           this.noTabAccess = false;
           this.handleMaturityTableLoader();
         }),
