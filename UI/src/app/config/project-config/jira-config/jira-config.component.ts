@@ -1082,7 +1082,7 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'text',
-                label: 'JIRA Project Key',
+                label: 'JIRA Project Key*',
                 id: 'projectKey',
                 validators: ['required'],
                 containerClass: 'p-sm-8',
@@ -3093,8 +3093,7 @@ export class JiraConfigComponent implements OnInit {
     }
     this.http.getJiraConfigurationTypeOptions().subscribe((resp) => {
       this.jiraConfigurationTypeOptions = resp.data.filter(
-        (temp) =>
-          temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban,
+        (temp) => temp.tool?.toLowerCase() === 'jira',
       );
     });
   }
