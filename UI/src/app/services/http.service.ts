@@ -1265,9 +1265,9 @@ export class HttpService {
     );
   }
 
-  renameHierarchyOptions(levelId, dispalyName) {
+  renameHierarchyOptions(parentID, dispalyName) {
     return this.http.put<any>(
-      `${this.updateHierarchyOptionsUrl}/${levelId}`,
+      `${this.updateHierarchyOptionsUrl}/${parentID}`,
       dispalyName,
     );
   }
