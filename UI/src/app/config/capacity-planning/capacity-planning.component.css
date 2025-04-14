@@ -28,6 +28,10 @@ div.main {
     margin: 8px; */
 }
 
+::ng-deep .p-button:focus {
+  outline: auto;
+}
+
 /* Hide the browser's default checkbox */
 
 .filter-nav .checkbox-modified input {
