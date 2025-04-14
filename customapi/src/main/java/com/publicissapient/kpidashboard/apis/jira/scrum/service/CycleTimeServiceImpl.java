@@ -135,10 +135,10 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 
 		basicProjectConfigIds.add(basicProjectConfigId.toString());
 
-		if (Optional.ofNullable(fieldMapping.getJiraIssueTypeKPI3()).isPresent()) {
+		if (Optional.ofNullable(fieldMapping.getJiraIssueTypeKPI171()).isPresent()) {
 
 			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(),
-					fieldMapping.getJiraIssueTypeKPI3(), JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
+					fieldMapping.getJiraIssueTypeKPI171(), JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		}
 		List<String> status = new ArrayList<>();
