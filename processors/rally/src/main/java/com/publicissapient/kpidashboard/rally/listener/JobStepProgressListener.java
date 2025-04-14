@@ -79,7 +79,7 @@ public class JobStepProgressListener implements StepExecutionListener {
 		progressStatus.setStatus(status.toString());
 		progressStatus.setEndTime(System.currentTimeMillis());
 		log.info("Step {} done with status {}", stepName, status);
-		saveProgressStatusInTraceLog(ProcessorConstants.JIRA, projectId, progressStatus);
+		saveProgressStatusInTraceLog(ProcessorConstants.RALLY, projectId, progressStatus);
 		return null;
 	}
 
