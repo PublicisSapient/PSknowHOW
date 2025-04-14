@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.enums.Filters;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -67,7 +68,6 @@ import lombok.extern.slf4j.Slf4j;
 public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>, Map<ObjectId, List<SonarDetails>>> {
 
 	private static final String SQALE_INDEX = "sqale_index";
-	private static final String DATE_TIME_FORMAT_REGEX = "Z|\\.\\d+";
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
@@ -123,17 +123,18 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement,
 			List<Node> sprintLeafNodeList) {
 		List<KPIExcelData> excelData = new ArrayList<>();
+		Map<String, SprintDetails> sprintDetailsList = getSprintDetailsByIds(sprintLeafNodeList);
 
 		getSonarHistoryForAllProjects(pList,
 				getScrumCurrentDateToFetchFromDb(CommonConstant.WEEK, (long) customApiConfig.getSonarWeekCount()))
 				.forEach((projectNodePair, projectData) -> {
 					if (CollectionUtils.isNotEmpty(projectData)) {
-						processProjectData(projectNodePair, projectData,
-								sprintLeafNodeList.stream()
-										.filter(node -> node.getProjectFilter().getId()
-												.equalsIgnoreCase(projectNodePair.getLeft()))
-										.toList(),
-								tempMap, excelData);
+						String projectId = projectNodePair.getKey();
+						SprintDetails sprintDetails = sprintDetailsList.get(projectId) != null
+								? sprintDetailsList.get(projectId)
+								: null;
+						processProjectData(projectNodePair, projectData, sprintDetails, tempMap,
+								excelData);
 					}
 				});
 
@@ -142,21 +143,16 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 	}
 
 	private void processProjectData(Pair<String, String> projectNodePair, List<SonarHistory> projectData,
-			List<Node> sprintLeafNodeList, Map<String, Node> tempMap, List<KPIExcelData> excelData) {
+			SprintDetails sprintDetails, Map<String, Node> tempMap, List<KPIExcelData> excelData) {
 		List<String> projectList = new ArrayList<>();
 		List<String> debtList = new ArrayList<>();
 		List<String> versionDate = new ArrayList<>();
 		Map<String, List<DataCount>> projectWiseDataMap = new HashMap<>();
-
-		boolean isBacklogProject = CollectionUtils.isNotEmpty(sprintLeafNodeList)
-				&& sprintLeafNodeList.get(0).getProjectFilter().getName().equalsIgnoreCase(projectNodePair.getValue());
-		LocalDate endDateTime = isBacklogProject ? DateUtil.stringToLocalDate(
-				sprintLeafNodeList.get(0).getSprintFilter().getEndDate().replaceAll(DATE_TIME_FORMAT_REGEX, ""),
-				DateUtil.TIME_FORMAT) : LocalDate.now().minusWeeks(1);
+		LocalDate endDateTime = getEndDate(sprintDetails);
 
 		for (int i = 0; i < customApiConfig.getSonarWeekCount(); i++) {
-			LocalDate monday = isBacklogProject ? endDateTime.minusDays(6) : getWeeks(endDateTime)[0];
-			LocalDate sunday = isBacklogProject ? endDateTime : getWeeks(endDateTime)[1];
+			LocalDate monday = sprintDetails != null ? endDateTime.minusDays(6) : getWeeks(endDateTime)[0];
+			LocalDate sunday = sprintDetails != null ? endDateTime : getWeeks(endDateTime)[1];
 			String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,
 					DateUtil.DISPLAY_DATE_FORMAT) + " to "
 					+ DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
