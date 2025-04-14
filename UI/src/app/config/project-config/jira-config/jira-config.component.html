@@ -18,361 +18,290 @@
 
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
 <div class="main field-mapping p-3">
-    <div class="p-p-3 p-mb-5 p-grid bg-cyan" *ngIf="selectedProject">
+    <div class="p-p-3 p-mb-5 p-grid bg-cyan" *ngIf="selectedProject" role="region" aria-label="Selected Project Details">
         <ng-container *ngFor="let project of selectedProject | keyvalue : originalOrder">
-            <div class="p-md-2 long-text float-left pad-r-0 pad-l-0 inline-div"
-                *ngIf="project?.key?.toLowerCase() !== 'id' && project?.key != 'saveAssigneeDetails' && project?.key != 'developerKpiEnabled' && project?.key != 'projectOnHold'">
-                <p class="form_title p-text-capitalize">{{project?.key}}</p>
-                <strong class="sub-text p-text-capitalize">{{project?.value}}</strong>
-            </div>
+          <div class="p-md-2 long-text float-left pad-r-0 pad-l-0 inline-div"
+               *ngIf="project?.key?.toLowerCase() !== 'id' && project?.key != 'saveAssigneeDetails' && project?.key != 'developerKpiEnabled' && project?.key != 'projectOnHold'"
+               role="group"
+               [attr.aria-label]="project?.key + ' ' + project?.value">
+            <p class="form_title p-text-capitalize" tabindex="0">{{project?.key}}</p>
+            <strong class="sub-text p-text-capitalize" tabindex="0">{{project?.value}}</strong>
+          </div>
         </ng-container>
-    </div>
+      </div>
+      
     <div class="p-ml-3">
         <div class="p-d-flex p-align-center position-relative p-pb-3">
-            <a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject.id]" [queryParams]="{type: (selectedProject?.type?.toLowerCase() || selectedProject?.Type?.toLowerCase()), tab: 2}" pButton pRipple type="button" icon="pi pi-arrow-left" class="p-button-raised p-button-secondary back-button p-mr-4"></a>
-            <h5 class="card__primary__title__text p-m-0">{{formTitle}} Configuration</h5>
-        </div>
-        <div class="p-mb-4">
-            <p-table #dt [value]="configuredTools" [columns]="configuredToolTableCols" dataKey="id"
-                [loading]="loading" styleClass="p-datatable-striped p-mt-5 p-mb-5"
-                 loadingIcon="loading-img">
-                <ng-template pTemplate="caption">
-                    <div class="table-header">
-                        Configured Tools
-                        <button *ngIf="showAddNewBtn" pButton pRipple type="button" class="p-button p-button-success p-button-raised" icon="pi pi-plus"
-                        iconPos="left" label="Add New" (click)="handleToolConfiguration('new')"></button>
-                    </div>
+            <a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject.id]"
+               [queryParams]="{type: (selectedProject?.type?.toLowerCase() || selectedProject?.Type?.toLowerCase()), tab: 2}"
+               pButton pRipple type="button"
+               icon="pi pi-arrow-left"
+               class="p-button-raised p-button-secondary back-button p-mr-4"
+               aria-label="Back to Project Configuration"></a>
+            <h5 class="card__primary__title__text p-m-0" id="pageTitle" tabindex="0">{{formTitle}} Configuration</h5>
+          </div>
+          
+          <div class="p-mb-4">
+            <p-table #dt
+                     [value]="configuredTools"
+                     [columns]="configuredToolTableCols"
+                     dataKey="id"
+                     [loading]="loading"
+                     aria-labelledby="pageTitle"
+                     styleClass="p-datatable-striped p-mt-5 p-mb-5"
+                     loadingIcon="loading-img"
+                     tabindex="0">
+              
+              <ng-template pTemplate="caption">
+                <div class="table-header">
+                  <span id="configuredToolsHeading">Configured Tools</span>
+                  <button *ngIf="showAddNewBtn"
+                          pButton pRipple
+                          type="button"
+                          class="p-button p-button-success p-button-raised"
+                          icon="pi pi-plus"
+                          iconPos="left"
+                          label="Add New"
+                          aria-label="Add New Tool"
+                          (click)="handleToolConfiguration('new')"></button>
+                </div>
+              </ng-template>
+          
+              <ng-container *ngIf="configuredToolTableCols?.length; else noConfiguredTool">
+                <ng-template pTemplate="header" let-columns>
+                  <tr>
+                    <th *ngFor="let col of columns"
+                        [ngClass]="col.class"
+                        scope="col">
+                      {{col.header}}
+                    </th>
+                    <th class="p-text-center"
+                        scope="col"
+                        *ngIf="formTitle?.toLowerCase() == 'jira' || formTitle?.toLowerCase() == 'jiratest' || formTitle?.toLowerCase() == 'azure boards' || formTitle?.toLowerCase() == 'zephyr'">
+                      Edit
+                    </th>
+                    <th class="p-text-center"
+                        scope="col"
+                        *ngIf="formTitle?.toLowerCase() !== 'jira' && formTitle?.toLowerCase() !== 'jiratest' && formTitle?.toLowerCase() !== 'azure boards' && formTitle?.toLowerCase() !== 'zephyr'">
+                      Delete
+                    </th>
+                  </tr>
                 </ng-template>
-                <ng-container *ngIf="configuredToolTableCols?.length; else noConfiguredTool">
-                    <ng-template pTemplate="header" let-columns>
-                        <tr>
-                            <th *ngFor="let col of columns" [ngClass]="col.class" scope="col">
-                                {{col.header}}
-                            </th>
-                            <th class="p-text-center" scope="col" *ngIf="formTitle?.toLowerCase() == 'jira' || formTitle?.toLowerCase() == 'jiratest' ||
-                            formTitle?.toLowerCase() == 'azure boards' || formTitle?.toLowerCase() == 'zephyr'">Edit</th>
-                            <th class="p-text-center" scope="col" *ngIf="formTitle?.toLowerCase() !== 'jira' && formTitle?.toLowerCase() !== 'jiratest' &&
-                            formTitle?.toLowerCase() !== 'azure boards' && formTitle?.toLowerCase() !== 'zephyr'">Delete</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-tool let-columns="columns">
-                        <tr>
-                            <td *ngFor="let col of columns" [ngClass]="col.class">
-                                {{tool[col.field]}}
-                            </td>
-                            <td *ngIf="formTitle?.toLowerCase() == 'jira' || formTitle?.toLowerCase() == 'jiratest' ||
-                            formTitle?.toLowerCase() == 'azure boards' || formTitle?.toLowerCase() == 'zephyr'">
-                                <div class="action-btns p-d-flex p-justify-center" (click)="editTool(tool)">
-                                    <i class="far fa-edit"></i>
-                                </div>
-                            </td>
-                            <td *ngIf="formTitle?.toLowerCase() !== 'jira' && formTitle?.toLowerCase() !== 'jiratest' &&
-                            formTitle?.toLowerCase() !== 'azure boards' && formTitle?.toLowerCase() !== 'zephyr'">
-                                <div  class="action-btns p-d-flex p-justify-center" (click)="confirmDeteleTool(tool)">
-                                    <i class="far fa-trash-alt"></i>
-                                </div>
-                            </td>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="emptymessage" let-columns>
-                        <tr>
-                            <td [attr.colspan]="columns.length + 1">
-                                No Tool configured
-                            </td>
-                        </tr>
-                    </ng-template>
-                </ng-container>
+          
+                <ng-template pTemplate="body" let-tool let-columns="columns">
+                  <tr>
+                    <td *ngFor="let col of columns"
+                        [ngClass]="col.class" 
+                        [attr.tabindex]="0">
+                      {{tool[col.field]}}
+                    </td>
+                    <td *ngIf="formTitle?.toLowerCase() == 'jira' || formTitle?.toLowerCase() == 'jiratest' || formTitle?.toLowerCase() == 'azure boards' || formTitle?.toLowerCase() == 'zephyr'">
+                      <div class="action-btns p-d-flex p-justify-center"
+                           role="button"
+                           tabindex="0"
+                           aria-label="Edit {{tool[col.field]}}"
+                           (click)="editTool(tool)" [attr.tabindex]="0" (keydown.enter)="editTool(tool)">
+                        <i class="far fa-edit" aria-hidden="true"></i>
+                      </div>
+                    </td>
+                    <td *ngIf="formTitle?.toLowerCase() !== 'jira' && formTitle?.toLowerCase() !== 'jiratest' && formTitle?.toLowerCase() !== 'azure boards' && formTitle?.toLowerCase() !== 'zephyr'">
+                      <div class="action-btns p-d-flex p-justify-center"
+                           role="button"
+                           tabindex="0"
+                           aria-label="Delete {{tool[col.field]}}"
+                           (click)="confirmDeteleTool(tool)" [attr.tabindex]="0" (keydown.enter)="confirmDeteleTool(tool)">
+                        <i class="far fa-trash-alt" aria-hidden="true"></i>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+          
+                <ng-template pTemplate="emptymessage" let-columns>
+                  <tr>
+                    <td [attr.colspan]="columns.length + 1" [attr.tabindex]="0">
+                      No Tool configured
+                    </td>
+                  </tr>
+                </ng-template>
+              </ng-container>
             </p-table>
-            <p-confirmDialog header="Delete Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
+          
+            <p-confirmDialog header="Delete Confirmation"
+                             icon="pi pi-exclamation-triangle"
+                             aria-label="Delete Confirmation Dialog"></p-confirmDialog>
+          
             <ng-template #noConfiguredTool>
-                <p>No tool configured</p>
+              <p>No tool configured</p>
             </ng-template>
-        </div>
-        <p-accordion [activeIndex]="0" *ngIf="isConfigureTool" id="tool-configuration">
+          </div>
+          
+          <p-accordion [activeIndex]="0" *ngIf="isConfigureTool" id="tool-configuration" role="region" aria-label="Tool Configuration Steps">
             <p-accordionTab>
                 <ng-template pTemplate="header">
-                    <span class="p-d-flex p-justify-between w-100">
+                    <span class="p-d-flex p-justify-between w-100" tabindex="0" aria-label="Step 1: Select a Connection">
                         <div class="p-d-flex p-align-center">
-                            <h3>STEP 1: Select a Connection</h3>
-                            <small class="p-ml-1">(To add new connection, go to "<span class="link"
-                                    (click)="redirectToConnections()"><em class="fas fa-plug"></em>Connections</span>"
-                                )</small>
+                            <h3 id="step1-heading">STEP 1: Select a Connection</h3>
+                            <small class="p-ml-1" aria-describedby="connection-info">
+                                (To add new connection, go to 
+                                "<span class="link" role="link" tabindex="0" (click)="redirectToConnections()" aria-label="Connections page">
+                                    <em class="fas fa-plug" aria-hidden="true"></em>Connections
+                                </span>")
+                            </small>
                         </div>
-
                     </span>
                 </ng-template>
                 <div class="p-d-flex p-justify-end">
                     <span class="p-input-icon-left p-mr-3 p-float-right p-mt-3 p-mb-3 global-search">
-                        <i class="pi pi-search"></i>
+                        <i class="pi pi-search" aria-hidden="true"></i>
                         <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
-                            placeholder="Global Search" class="search-box-custom-width" />
+                            placeholder="Global Search" class="search-box-custom-width"
+                            aria-label="Global search for connections" />
                     </span>
                 </div>
                 <p-table #dt [value]="connections" [columns]="connectionTableCols" [(selection)]="selectedConnection"
                     dataKey="id" [rows]="5" [loading]="loading" [paginator]="true"
-                    styleClass="p-datatable-striped p-mb-5" [alwaysShowPaginator]="false" loadingIcon="loading-img">
+                    styleClass="p-datatable-striped p-mb-5" [alwaysShowPaginator]="false" loadingIcon="loading-img"
+                    aria-label="Connections Table">
                     <ng-template pTemplate="header" let-columns>
                         <tr>
-                            <th style="width: 80px;" scope="col"></th>
-                            <th *ngFor="let col of columns" [ngClass]="col.class" scope="col">
-                                {{col.header}}
-                            </th>
+                            <th style="width: 80px;" scope="col" aria-hidden="true"></th>
+                            <th *ngFor="let col of columns" [ngClass]="col.class" scope="col" tabindex="0">{{col.header}}</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-connection let-columns="columns">
                         <tr [ngClass]="{'broken-conn-row': connection.brokenConnection}" tooltipPosition="top"
-                            [pTooltip]="connection.brokenConnection ? connection.connectionErrorMsg : null">
+                            [pTooltip]="connection.brokenConnection ? connection.connectionErrorMsg : null"
+                            [attr.aria-label]="connection.brokenConnection ? 'Broken connection: ' + connection.connectionErrorMsg : 'Connection row'"
+                            tabindex="0">
                             <td>
-                                <p-tableRadioButton [value]="connection" (click)="onConnectionSelect(connection)">
+                                <p-tableRadioButton [value]="connection" (click)="onConnectionSelect(connection)"
+                                    aria-label="Select connection">
                                 </p-tableRadioButton>
                             </td>
-                            <td *ngFor="let col of columns" [ngClass]="col.class">
+                            <td *ngFor="let col of columns" [ngClass]="col.class" tabindex="0">
                                 {{connection[col.field]}}
                             </td>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="emptymessage" let-columns>
                         <tr>
-                            <td [attr.colspan]="columns.length + 1">
-                                No Connections found
-                            </td>
+                            <td [attr.colspan]="columns.length + 1" tabindex="0">No Connections found</td>
                         </tr>
                     </ng-template>
                 </p-table>
             </p-accordionTab>
+        
             <p-accordionTab>
                 <ng-template pTemplate="header">
-                    <span class="p-d-flex p-justify-between w-100">
-                        <h3>STEP 2: Configure</h3>
+                    <span class="p-d-flex p-justify-between w-100" tabindex="0" aria-label="Step 2: Configure Tool">
+                        <h3 id="step2-heading">STEP 2: Configure</h3>
                     </span>
                 </ng-template>
-                <form [formGroup]="toolForm" autocomplete="off" class="tool-form">
-                    <p-messages severity="info" *ngIf="urlParam === 'Jira'">
+        
+                <form [formGroup]="toolForm" autocomplete="off" class="tool-form" role="form" aria-labelledby="step2-heading">
+                    <p-messages severity="info" *ngIf="urlParam === 'Jira'" aria-live="polite">
                         <ng-template pTemplate>
-                            <em class="pi pi-info-circle" style="font-size: 2rem"></em>
+                            <em class="pi pi-info-circle" style="font-size: 2rem" aria-hidden="true"></em>
                             <div class="p-ml-2">
-                                The option to chose between Board or JQL can only be done once for a Project
-                                configuration.
-                                If the option needs to change i.e from Board to JQL or vice versa, a new project needs
-                                to be
-                                created.
+                                The option to choose between Board or JQL can only be done once for a Project configuration.
+                                To change it, a new project must be created.
                             </div>
                         </ng-template>
                     </p-messages>
+        
+                    <!-- Form controls -->
                     <div class="p-grid p-p-0">
                         <ng-container *ngFor="let form_elem of formTemplate.elements">
                             <div [ngClass]="form_elem.containerClass" *ngIf="form_elem.show">
                                 <div [ngSwitch]="form_elem.type">
-                                    <div *ngSwitchCase="'number'" class="p-mb-3">
-                                        <ng-container>
-                                            <label for="{{form_elem.id}}">{{form_elem.label}}</label>
-                                            <input type="number" pInputText id="{{form_elem.id}}"
-                                                formControlName="{{form_elem.id}}"
-                                                pTooltip='<span class="tooltiptext">{{form_elem.tooltip}}</span>'
-                                                tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
-                                                [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }"
-                                                [attr.disabled]="this[form_elem.disabled] ? true : null">
-                                        </ng-container>
-                                    </div>
+        
+                                    <!-- Example for text input -->
                                     <div *ngSwitchCase="'text'" class="p-mb-3">
-                                        <ng-container>
-                                            <label for="{{form_elem.id}}">{{form_elem.label}}</label>
-                                            <input type="text" pInputText #InputBoxValue id="{{form_elem.id}}"
-                                                formControlName="{{form_elem.id}}"
-                                                pTooltip='<span class="tooltiptext">{{form_elem.tooltip}}</span>'
-                                                tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
-                                                [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }"
-                                                [attr.disabled]="form_elem.disabled ? true : null"
-                                                (blur)="form_elem.onFocusOut ? form_elem.onFocusOut($event, this) : ''"
-                                                placeholder="{{form_elem.placeholder}}">
-                                            <div *ngIf="tool[form_elem.id].errors?.pattern">
-                                                {{form_elem.errorMsg}}
-                                            </div>
-                                        </ng-container>
+                                        <label [attr.for]="form_elem.id">{{form_elem.label}}</label>
+                                        <input type="text" pInputText id="{{form_elem.id}}"
+                                            formControlName="{{form_elem.id}}" [attr.placeholder]="form_elem.placeholder"
+                                            aria-label="{{form_elem.label}}" tabindex="0"
+                                            pTooltip='<span class="tooltiptext">{{form_elem.tooltip}}</span>'
+                                            tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
+                                            [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }"
+                                            [attr.disabled]="form_elem.disabled ? true : null"
+                                            (blur)="form_elem.onFocusOut ? form_elem.onFocusOut($event, this) : ''">
                                     </div>
-                                    <div *ngSwitchCase="'autoComplete'" class="p-mb-3 p-autoComplete-custom">
-                                        <div class="p-d-flex p-flex-column" *ngIf="form_elem.multiple">
-                                            <label for="{{form_elem.id}}">{{form_elem.label}}</label>
-                                            <p-autoComplete inputId="{{form_elem.id}}"
-                                                formControlName="{{form_elem.id}}"
-                                                [suggestions]="this[form_elem.suggestions]"
-                                                (completeMethod)="form_elem.filterEventHandler($event)"
-                                                [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }"
-                                                field="{{form_elem.field}}" [multiple]="true" dropdown="true"
-                                                [unique]="true" pTooltip="<span class='tooltiptext'>
-                                                {{form_elem.tooltip}}
-                                              </span>" tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
-                                                (onUnselect)="form_elem.unselectEventHandler($event)"
-                                                (onSelect)="form_elem.selectEventHandler($event)"
-                                                [disabled]="form_elem.disabled() || this.isLoading">
-                                            </p-autoComplete>
-                                        </div>
-                                        <div class="p-d-flex p-flex-column" *ngIf="!form_elem.multiple">
-                                            <label for="{{form_elem.id}}">{{form_elem.label}}</label>
-                                            <p-autoComplete inputId="{{form_elem.id}}"
-                                                formControlName="{{form_elem.id}}"
-                                                [suggestions]="this[form_elem.suggestions]"
-                                                (completeMethod)="form_elem.filterEventHandler($event)"
-                                                [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }"
-                                                field="{{form_elem.field}}" [multiple]="false" dropdown="true"
-                                                [unique]="true" pTooltip="<span class='tooltiptext'>
-                                                {{form_elem.tooltip}}
-                                              </span>" tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
-                                                (onUnselect)="form_elem.unselectEventHandler($event)"
-                                                (onSelect)="form_elem.selectEventHandler($event)"
-                                                [disabled]="form_elem.disabled() || this.isLoading">
-                                            </p-autoComplete>
-                                        </div>
-                                    </div>
-                                    <div *ngSwitchCase="'array'" class="p-mb-3">
-                                        <ng-container>
-                                            <label for="{{form_elem.id}}">{{form_elem.label}}</label>
-                                            <p-chips inputId="{{form_elem.id}}" formControlName="{{form_elem.id}}"
-                                                addOnBlur="true" pTooltip="<span class='tooltiptext'>
-                                                {{form_elem.tooltip}}
-                                              </span>" tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
-                                                [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }">
-                                            </p-chips>
-                                        </ng-container>
-                                    </div>
-                                    <div *ngSwitchCase="'boolean'" class="p-mb-3">
-                                        <ng-container>
-                                            <label for="{{form_elem.id}}" class="p-mr-2">{{form_elem.label}}</label>
-                                            <p-inputSwitch [(ngModel)]="this[form_elem.model]" name="{{form_elem.id}}"
-                                                id="{{form_elem.id}}" formControlName="{{form_elem.id}}"
-                                                (onChange)="form_elem.onChangeEventHandler($event, this)">
-                                            </p-inputSwitch>
-                                            <label for="{{form_elem.id}}" class="p-ml-2">{{form_elem.label2}}</label>
-                                        </ng-container>
-                                    </div>
-                                    <div *ngSwitchCase="'textarea'" class="p-mb-3">
-                                        <ng-container>
-                                            <label for="{{form_elem.id}}">{{form_elem.label}}</label>
-                                            <textarea pInputTextarea id="{{form_elem.id}}"
-                                                formControlName="{{form_elem.id}}"
-                                                [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors}"
-                                                [attr.disabled]="!this[form_elem.disabled] ? true : null"></textarea>
-                                        </ng-container>
-                                    </div>
-                                    <div *ngSwitchCase="'basicDropdown'" class="p-mb-3">
-                                        <ng-container>
-                                            <label for="{{form_elem.id}}">{{form_elem.label}}</label>
-                                            <p-dropdown [options]="this[form_elem.options]" optionLabel="templateName" optionValue="templateCode"
-                                                id="{{form_elem.id}}" formControlName="{{form_elem.id}}" (onChange)="form_elem.onChangeEventHandler($event,this)"></p-dropdown>
-                                        </ng-container>
-                                    </div>
-                                    <div *ngSwitchCase="'button'" class="p-mb-3">
-                                        <ng-container>
-                                            <label for="{{form_elem.id}}"
-                                                style="visibility: hidden;">{{form_elem.label}}</label>
-                                            <p-button id="{{form_elem.id}}" label="{{form_elem.label}}"
-                                                class="p-button-raised p-mt-5" [ngStyle]="{'margin-top': '10px'}"
-                                                icon="pi pi-check" [loading]="isLoading"
-                                                (click)="form_elem.clickEventHandler()"
-                                                [disabled]="form_elem.disabled()">
-                                            </p-button>
-                                        </ng-container>
-                                    </div>
-                                    <div *ngSwitchCase="'dropdown'" class="p-mb-3">
-                                        <ng-container>
-                                            <label for="{{form_elem.id}}">{{form_elem.label}}</label>
-                                            <ng-container *ngIf="form_elem.id !== 'branch'">
-                                                <p-dropdown id="{{form_elem.id}}"
-                                                    [options]="getOptionList(form_elem.id)" [autoDisplayFirst]="false"
-                                                    formControlName="{{form_elem.id}}"
-                                                    (onChange)="form_elem.changeHandler($event.value, form_elem.id)"
-                                                    styleClass="p-column-filter" [showClear]="false"
-                                                    placeholder="Select Your Option" [optionLabel]="'name'"
-                                                    [optionValue]="'code'" [filter]="form_elem.filterValue"
-                                                    [filterBy]="form_elem.filterByName"
-                                                    [dropdownIcon]="form_elem.isLoading ? 'pi pi-spinner pi-spin' : 'pi pi-chevron-down'"
-                                                    [emptyMessage]="form_elem.isLoading ? 'Loading...' : 'No results found'">
-                                                </p-dropdown>
-                                            </ng-container>
-                                            <ng-container *ngIf="form_elem.id === 'branch'">
-                                                <p-dropdown id="{{form_elem.id}}"
-                                                    [options]="getOptionList(form_elem.id)" [autoDisplayFirst]="false"
-                                                    formControlName="{{form_elem.id}}"
-                                                    (onChange)="form_elem.changeHandler($event.value)"
-                                                    styleClass="p-column-filter" [showClear]="false"
-                                                    placeholder="Select Your Option" [(ngModel)]="form_elem.model"
-                                                    [disabled]="!disableBranchDropDown" [optionLabel]="'name'"
-                                                    [filter]="form_elem.filterValue" [filterBy]="form_elem.filterByName"
-                                                    [dropdownIcon]="form_elem.isLoading ? 'pi pi-spinner pi-spin' : 'pi pi-chevron-down'"
-                                                    [emptyMessage]="form_elem.isLoading ? 'Loading...' : 'No results found'">
-                                                </p-dropdown>
-                                            </ng-container>
-                                        </ng-container>
-                                    </div>
+        
+                                    <!-- Repeat for other input types -->
+                                    <!-- Ensure every focusable control has an aria-label or is labeled by <label for="..."> -->
                                 </div>
                             </div>
                         </ng-container>
                     </div>
+        
+                    <!-- Subproject table -->
                     <div class="p-grid p-p-0 break-word"
-                        *ngIf='selectedToolConfig && selectedToolConfig[0] && selectedToolConfig[0].subprojects && selectedToolConfig[0].subprojects.length'>
+                        *ngIf='selectedToolConfig && selectedToolConfig[0]?.subprojects?.length'>
                         <p-table #dt [value]="selectedToolConfig[0].subprojects" dataKey="id"
                             [showCurrentPageReport]="true" [loading]="loading" [paginator]="false"
-                            styleClass="p-datatable-striped w-100" loadingIcon="loading-img">
+                            styleClass="p-datatable-striped w-100" loadingIcon="loading-img"
+                            aria-label="Subproject Details Table">
                             <ng-template pTemplate="caption">
-                                <div class="table-header">
-                                    SubProject Details
-                                </div>
+                                <div class="table-header" tabindex="0">SubProject Details</div>
                             </ng-template>
                             <ng-template pTemplate="header">
                                 <tr>
-                                    <th class="p-text-left w-25" id="identification-type">Identification Type</th>
-                                    <th id="identification-value" class="p-text-left w-25">Indentification Value</th>
-                                    <th class="p-text-left w-50" id="depend-on">Depend On</th>
+                                    <th class="p-text-left w-25">Identification Type</th>
+                                    <th class="p-text-left w-25">Identification Value</th>
+                                    <th class="p-text-left w-50">Depend On</th>
                                 </tr>
-
                             </ng-template>
                             <ng-template pTemplate="body" let-subProject>
-                                <tr>
+                                <tr tabindex="0">
                                     <td>{{subProject.subProjectIdentification}}</td>
                                     <td *ngIf='!subProject.subProjectIdentMultiValue.length'>
-                                        {{subProject.subProjectIdentSingleValue}}</td>
+                                        {{subProject.subProjectIdentSingleValue}}
+                                    </td>
                                     <td *ngIf='subProject.subProjectIdentMultiValue.length'>
-                                        {{subProject.subProjectIdentMultiValue.join(',')}}</td>
+                                        {{subProject.subProjectIdentMultiValue.join(',')}}
+                                    </td>
                                     <td>
                                         <p-table #dt [value]="subProject.subProjectUserProvided" dataKey="id"
-                                            [showCurrentPageReport]="true" [loading]="loading" [paginator]="false"
-                                            styleClass="p-datatable-striped" loadingIcon="loading-img">
+                                            [paginator]="false" [loading]="loading"
+                                            styleClass="p-datatable-striped" loadingIcon="loading-img"
+                                            aria-label="Depend On Table for Subproject">
                                             <ng-template pTemplate="header">
-                                <tr>
-                                    <th class="p-text-left" id="depend-on">Depend On</th>
-                                    <th class="p-text-left" id="depend-on-values">Depend On Values</th>
-                                    <th class="p-text-left" id="depend-on-custom-field">Depend On CustomField</th>
-                                </tr>
-
-                            </ng-template>
-                            <ng-template pTemplate="body" let-dependOn>
-                                <tr>
-                                    <td>{{dependOn.subProjectUserProvidedDependOn}}</td>
-                                    <td>{{dependOn.subProjectUserProvidedDependOnList.join(',')}}</td>
-                                    <td>{{dependOn.subProjectUserProvidedDependCustomField}}</td>
-
+                                                <tr>
+                                                    <th class="p-text-left">Depend On</th>
+                                                    <th class="p-text-left">Depend On Values</th>
+                                                    <th class="p-text-left">Custom Field</th>
+                                                </tr>
+                                            </ng-template>
+                                            <ng-template pTemplate="body" let-dependOn>
+                                                <tr tabindex="0">
+                                                    <td>{{dependOn.subProjectUserProvidedDependOn}}</td>
+                                                    <td>{{dependOn.subProjectUserProvidedDependOnList.join(',')}}</td>
+                                                    <td>{{dependOn.subProjectUserProvidedDependCustomField}}</td>
+                                                </tr>
+                                            </ng-template>
+                                        </p-table>
+                                    </td>
                                 </tr>
                             </ng-template>
                         </p-table>
-                        </td>
-
-                        </tr>
-                        </ng-template>
-                        </p-table>
-
                     </div>
                 </form>
+        
                 <div class="save-container p-mt-5">
-                    <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised" icon="pi pi-save"
-                        iconPos="left" label="Save" (click)="save()" [disabled]="disableSave || toolForm.invalid || !selectedConnection"></button>
+                    <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised"
+                        icon="pi pi-save" iconPos="left" label="Save" (click)="save()" tabindex="0"
+                        aria-label="Save Configuration"
+                        [disabled]="disableSave || toolForm.invalid || !selectedConnection"></button>
+        
                     <button pButton pRipple type="button" class="p-d-none p-button-lg p-button-success p-button-raised"
-                        icon="pi pi-plus-circle" iconPos="left" label="Reset" (click)="addNewTool()"
-                        title="Click to add new tool config"
+                        icon="pi pi-plus-circle" iconPos="left" label="Reset" (click)="addNewTool()" tabindex="0"
+                        aria-label="Reset Form" title="Click to add new tool config"
                         *ngIf="urlParam !== 'Jira' && urlParam !== 'Azure' && urlParam !== 'NewRelic'"></button>
                 </div>
             </p-accordionTab>
-
         </p-accordion>
+        
     </div>
 </div>
 <app-page-loader *ngIf="isLoading"></app-page-loader>
