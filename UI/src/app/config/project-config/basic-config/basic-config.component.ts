@@ -731,4 +731,8 @@ export class BasicConfigComponent implements OnInit {
       control.filteredSuggestions = [];
     });
   }
+
+  backToProjectList() {
+    this.closeProjectSetupPopup.emit();
+  }
 }
