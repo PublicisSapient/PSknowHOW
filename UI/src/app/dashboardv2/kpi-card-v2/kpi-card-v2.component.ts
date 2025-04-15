@@ -1167,7 +1167,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       chartData: this.currentChartData?.chartData
         ? this.currentChartData?.chartData
         : this.kpiChartData,
-      metadata: metaDataObj
+      metadata: metaDataObj,
     };
 
     this.displayAddToReportsModal = true;
@@ -1324,7 +1324,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       if (data['success']) {
         this.messageService.add({
           severity: 'success',
-          summary: 'Metrics added successfully. View the report in the report section.',
+          summary:
+            'Metrics added successfully. View the report in the report section.',
         });
         this.existingReportData = this.replaceObjectByName(
           this.existingReportData,

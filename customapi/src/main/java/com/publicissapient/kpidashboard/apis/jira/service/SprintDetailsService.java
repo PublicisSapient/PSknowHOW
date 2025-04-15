@@ -7,4 +7,5 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 public interface SprintDetailsService {
 
 	public List<SprintDetails> getSprintDetails(String basicProjectConfigId);
+	public List<SprintDetails> getSprintDetailsByIds(List<String> sprintIds);
 }

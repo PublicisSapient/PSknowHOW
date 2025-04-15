@@ -19,4 +19,9 @@ public class SprintDetailsServiceImpl implements SprintDetailsService {
 	public List<SprintDetails> getSprintDetails(String basicProjectConfigId) {
 		return sprintRepository.findByBasicProjectConfigId(new ObjectId(basicProjectConfigId));
 	}
+
+	@Override
+	public List<SprintDetails> getSprintDetailsByIds(List<String> sprintIds) {
+		return sprintRepository.findBySprintIDIn(sprintIds);
+	}
 }

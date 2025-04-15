@@ -72,7 +72,6 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
 
     this.subscriptions.push(
       this.sharedService.onTabSwitch.subscribe((tab) => {
-        // console.log(tab)
         this.sharedService.updateSprintGoalFlag(false);
       }),
     );
@@ -80,7 +79,6 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.accordionData = this.rawData;
-    // console.log(this.accordionData,this.sharedService.getDataForSprintGoal())
     if (changes.rawData.firstChange === false) {
       this.setUpPanel();
     }
@@ -174,13 +172,11 @@ export class CollapsiblePanelComponent implements OnInit, OnChanges, OnDestroy {
           (x) => parentIds.includes(x.nodeId),
         );
         retValue.set(levelName, selectedData);
-        //    console.log(levelName,selectedData)
       } else {
         children = this.filterRawData.filterDataArr[levelName].filter((x) =>
           parentIds.includes(x.parentId),
         );
         retValue.set(levelName, children);
-        //   console.log(levelName,children)
 
         if (children.length > 0) {
           parentIds = children.map((child) => child.nodeId);

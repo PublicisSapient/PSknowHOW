@@ -105,7 +105,7 @@ export class AddToReportPopUpComponent implements AfterViewInit {
       return additional_filters[key]
         .filter((elem) => elem.parentId === superkey.nodeId)
         .map((elem) => elem.nodeDisplayName)
-        .join(',');
+        .join(', ');
     } else {
       return additional_filters[key]
         .map((elem) => elem.nodeDisplayName)

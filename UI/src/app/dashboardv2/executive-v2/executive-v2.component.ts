@@ -336,6 +336,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
           this.iSAdditionalFilterSelected = sharedobject?.isAdditionalFilters;
           this.receiveSharedData(sharedobject);
+          this.getSprintGoalData();
           this.noTabAccess = false;
           this.handleMaturityTableLoader();
         }),
@@ -4385,6 +4386,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         chartType: '',
       },
     ];
-    this.postJiraKpi(kpiJiraTest, 'jira');
+    if (
+      this.selectedtype === 'scrum' &&
+      ['my-knowhow', 'speed', 'quality'].includes(
+        this.selectedTab?.toLocaleLowerCase(),
+      )
+    ) {
+      this.postJiraKpi(kpiJiraTest, 'jira');
+    }
   }
 }

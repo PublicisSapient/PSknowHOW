@@ -18,19 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.service.impl;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.publicissapient.kpidashboard.apis.config.AuthConfig;
 import com.publicissapient.kpidashboard.apis.config.CookieConfig;
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
@@ -38,15 +25,27 @@ import com.publicissapient.kpidashboard.apis.errors.GenericException;
 import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.service.dto.UserDTO;
 import com.publicissapient.kpidashboard.apis.util.CookieUtil;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -128,5 +127,22 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			return null;
 		}
 		return null;
+	}
+
+	@Override
+	public void addGuestCookies(String guestDisplayName, String jwt, HttpServletResponse response) {
+		addStandardCookies(jwt, response);
+		CookieUtil.addCookie(response, CookieUtil.GUEST_DISPLAY_NAME_COOKIE_NAME, guestDisplayName,
+				cookieConfig.getDuration(), cookieConfig.getDomain(), cookieConfig.getIsSameSite(), cookieConfig.getIsSecure());
+	}
+
+	@Override
+	public void deleteGuestCookies(HttpServletRequest request, HttpServletResponse response) {
+		CookieUtil.deleteCookie(request, response, cookieConfig.getDomain(), CookieUtil.COOKIE_NAME,
+				CookieUtil.API_COOKIE_PATH);
+		CookieUtil.deleteCookie(request, response, cookieConfig.getDomain(), CookieUtil.EXPIRY_COOKIE_NAME,
+				CookieUtil.API_COOKIE_PATH);
+		CookieUtil.deleteCookie(request, response, cookieConfig.getDomain(), CookieUtil.GUEST_DISPLAY_NAME_COOKIE_NAME,
+				CookieUtil.API_COOKIE_PATH);
 	}
 }

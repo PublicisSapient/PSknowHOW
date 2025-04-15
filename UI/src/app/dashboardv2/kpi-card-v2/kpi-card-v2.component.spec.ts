@@ -2277,7 +2277,7 @@ describe('KpiCardV2Component', () => {
             cardData: undefined,
             iterationKPIFilterValues: [],
             additional_filters: {},
-            copyCardData: undefined
+            copyCardData: undefined,
           },
         });
       });
@@ -2519,7 +2519,8 @@ describe('KpiCardV2Component', () => {
         });
         expect(messageService.add).toHaveBeenCalledWith({
           severity: 'success',
-          summary: 'Metrics added successfully. View the report in the report section.',
+          summary:
+            'Metrics added successfully. View the report in the report section.',
         });
         expect(component.success).toBe(true);
       });
@@ -2541,7 +2542,8 @@ describe('KpiCardV2Component', () => {
         });
         expect(messageService.add).toHaveBeenCalledWith({
           severity: 'success',
-          summary: 'Metrics added successfully. View the report in the report section.',
+          summary:
+            'Metrics added successfully. View the report in the report section.',
         });
         expect(component.success).toBe(true);
       });
