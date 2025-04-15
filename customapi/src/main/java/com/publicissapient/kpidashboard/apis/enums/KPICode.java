@@ -532,6 +532,10 @@ public enum KPICode {
      * Defect Rate (Developer)
      */
     DEFECT_RATE("kpi186", KPISource.BITBUCKET.name()),
+    /**
+     * Late Refinement (Iteration)
+     */
+    LATE_REFINEMENT("kpi187", KPISource.JIRA.name()),
 
 
 

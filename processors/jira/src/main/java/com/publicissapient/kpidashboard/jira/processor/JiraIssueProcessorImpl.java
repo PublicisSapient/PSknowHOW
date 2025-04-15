@@ -204,6 +204,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			// ADD Production Incident field to feature
 			setProdIncidentIdentificationField(fieldMapping, issue, jiraIssue, fields);
 			setIssueTechStoryType(fieldMapping, issue, jiraIssue, fields);
+			setLateRefinement(fieldMapping,issue, jiraIssue, fields);
 			jiraIssue.setAffectedVersions(getAffectedVersions(issue));
 			setIssueEpics(issueEpics, epic, jiraIssue);
 			setJiraIssueValues(jiraIssue, issue, fieldMapping, fields);
@@ -217,6 +218,8 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		}
 		return jiraIssue;
 	}
+
+
 
 	private JiraIssue getJiraIssue(ProjectConfFieldMapping projectConfig, String issueId) {
 		String basicProjectConfigId = projectConfig.getBasicProjectConfigId().toString();
@@ -996,6 +999,10 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		} catch (Exception e) {
 			log.error("Error while parsing Production Incident field", e);
 		}
+
+	}
+
+	private void setLateRefinement(FieldMapping fieldMapping, Issue issue, JiraIssue jiraIssue, Map<String, IssueField> fields) {
 
 	}
 }

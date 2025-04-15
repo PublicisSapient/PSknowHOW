@@ -4939,5 +4939,41 @@
       }
     ],
     "combinedKpiSource" : "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"
+  },
+  {
+    "kpiId" : "kpi187" ,
+    "kpiName" : "Late Refinement" ,
+    "kpiUnit" : "Count" ,
+    "isDeleted" : "False" ,
+    "defaultOrder" : 10 ,
+    "kpiCategory" : "Iteration" ,
+    "kpiSubCategory" : "Iteration Progress" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
+    "groupId" : 20 ,
+    "thresholdValue" : "" ,
+    "kanban" : false ,
+    "chartType" : "CumulativeMultilineChart" ,
+    "kpiInfo" : {
+      "definition" : "Late Refinement metric flags backlog items that should be refined by now but aren't, either because they’re already in the current sprint and not meeting the Definition of Ready (DoR), or because they're slated for the next sprint but still lack necessary refinement details.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://speed.suite.publicissapient.com/wiki/spaces/PS/pages/159154188/Late+Refinement"
+          }
+        }
+      ]
+    } ,
+    "xaxisLabel" : "Days" ,
+    "yaxisLabel" : "Count" ,
+    "isPositiveTrend" : true ,
+    "showTrend" : false ,
+    "isAdditionalFilterSupport" : false ,
+    "kpiWidth" : 100 ,
+    "kpiFilter" : "radioButton" ,
+    "boxType" : "chart" ,
+    "calculateMaturity" : false
   }
 ]
