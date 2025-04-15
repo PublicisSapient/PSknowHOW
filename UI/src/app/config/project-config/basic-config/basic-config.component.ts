@@ -726,6 +726,7 @@ export class BasicConfigComponent implements OnInit {
     Object.keys(this.selectedItems).forEach((key) => {
       this.selectedItems[key] = undefined;
     });
+    this.form.controls['projectName'].setValue('');
     this.formData.forEach((control) => {
       control.filteredSuggestions = [];
     });
