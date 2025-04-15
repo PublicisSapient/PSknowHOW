@@ -104,7 +104,7 @@
                         <ng-container>
                             <app-multiline-style-v2 [unit]="kpiData?.kpiUnit" [data]="currentChartData"
                                 [xCaption]="kpiData?.xaxisLabel" [yCaption]="kpiData?.yaxisLabel" [kpiId]="kpi?.kpiId"
-                                [thresholdValue]="kpiData?.kpiThresholdObj">
+                                [thresholdValue]="kpiData?.kpiThresholdObj" [color]="colors">
                             </app-multiline-style-v2>
                         </ng-container>
                     </ng-container>
@@ -165,6 +165,14 @@
                                 [data]="currentChartData"></app-stacked-area-chart>
                         </ng-container>
                     </ng-container>
+
+                    <app-table *ngSwitchCase="'table'"
+                    [trendBoxColorObj]="kpiData?.trendColors"
+                    [data]="currentChartData?.data"
+                    [cols]="currentChartData?.columnHeaders"
+                    [showMarker]="'true'"
+                    [showMarkerColumnNumber]="0"></app-table>
+                    
                     <ng-container *ngSwitchCase="'old-table'">
                         <div class="p-d-flex p-justify-around p-align-center w-100 p-h-100">
                             <ng-container *ngFor="let item of currentChartData; let index=index">
