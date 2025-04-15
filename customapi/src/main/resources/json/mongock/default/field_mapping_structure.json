@@ -1634,7 +1634,7 @@
     "tooltip": {
       "definition": "All workflow statuses used to reject defects"
     },
-    "mandatory": true
+    "mandatory": false
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI135",
