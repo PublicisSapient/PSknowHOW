@@ -454,7 +454,8 @@ public class RefinementRejectionRateServiceImpl extends JiraBacklogKPIService<Do
 		projectList.add(basicProjectConfigId.toString());
 		mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				projectList.stream().distinct().collect(Collectors.toList()));
-        List<JiraIssue> filteredJiraIssue = filterProjectJiraIssues(getBackLogJiraIssuesFromBaseClass(), startDate, endDate);
+		List<JiraIssue> filteredJiraIssue = filterProjectJiraIssues(getBackLogJiraIssuesFromBaseClass(), startDate,
+				endDate);
 		List<String> finalDoneStatus = doneStatus;
 		List<JiraIssue> unAssignedJiraIssues = filteredJiraIssue.stream()
 				.filter(issue -> issue.getSprintAssetState() == null ||
@@ -477,18 +478,15 @@ public class RefinementRejectionRateServiceImpl extends JiraBacklogKPIService<Do
 	}
 
 	public List<JiraIssue> filterProjectJiraIssues(List<JiraIssue> projectJiraIssue, String startDate, String endDate) {
-        LocalDateTime startDateTime = DateUtil.stringToLocalDate(startDate, DateUtil.DATE_FORMAT).atStartOfDay();
+		LocalDateTime startDateTime = DateUtil.stringToLocalDate(startDate, DateUtil.DATE_FORMAT).atStartOfDay();
 
-        LocalDateTime endDateTime = DateUtil.stringToLocalDate(endDate, DateUtil.DATE_FORMAT).atStartOfDay();
-		return projectJiraIssue.stream()
-				.filter(issue -> {
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
-					LocalDateTime updateDate = LocalDateTime.parse(issue.getUpdateDate(), formatter);
-					return DateUtil.isWithinDateTimeRange(updateDate, startDateTime, endDateTime);
-				})
-				.filter(issue -> issue.getSprintAssetState() == null || issue.getSprintAssetState().isEmpty()
-						|| issue.getSprintAssetState().equalsIgnoreCase("FUTURE")
-						|| issue.getSprintAssetState().equalsIgnoreCase("CLOSED"))
-				.collect(Collectors.toList());
+		LocalDateTime endDateTime = DateUtil.stringToLocalDate(endDate, DateUtil.DATE_FORMAT).atStartOfDay();
+		return projectJiraIssue.stream().filter(issue -> {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
+			LocalDateTime updateDate = LocalDateTime.parse(issue.getUpdateDate(), formatter);
+			return DateUtil.isWithinDateTimeRange(updateDate, startDateTime, endDateTime);
+		}).filter(issue -> issue.getSprintAssetState() == null || issue.getSprintAssetState().isEmpty() ||
+				issue.getSprintAssetState().equalsIgnoreCase("FUTURE") ||
+				issue.getSprintAssetState().equalsIgnoreCase("CLOSED")).collect(Collectors.toList());
 	}
 }

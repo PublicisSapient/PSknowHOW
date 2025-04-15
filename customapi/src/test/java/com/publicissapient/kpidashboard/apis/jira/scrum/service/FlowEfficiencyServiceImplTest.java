@@ -149,7 +149,6 @@ public class FlowEfficiencyServiceImplTest {
 		issueBacklogHistoryDataList = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
 		issueBacklogHistoryDataList.get(0).getStatusUpdationLog().get(0).setUpdatedOn(LocalDateTime.now().minusMonths(1));
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(issueBacklogHistoryDataList);
-
 	}
 
 	@Test

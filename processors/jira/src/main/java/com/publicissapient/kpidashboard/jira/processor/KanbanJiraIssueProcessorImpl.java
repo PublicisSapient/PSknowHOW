@@ -279,9 +279,10 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 		return assigneeName;
 	}
 
-	private void setEpicLinked(FieldMapping fieldMapping, KanbanJiraIssue kanbanJiraIssue, Map<String, IssueField> fields) {
-		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink()) && fields.get(fieldMapping.getEpicLink()) != null
-				&& fields.get(fieldMapping.getEpicLink()).getValue() != null) {
+	private void setEpicLinked(FieldMapping fieldMapping, KanbanJiraIssue kanbanJiraIssue,
+			Map<String, IssueField> fields) {
+		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink()) && fields.get(fieldMapping.getEpicLink()) != null &&
+				fields.get(fieldMapping.getEpicLink()).getValue() != null) {
 			final Object epicLink = fields.get((fieldMapping.getEpicLink()).trim()).getValue();
 			if (epicLink instanceof String) {
 				kanbanJiraIssue.setEpicLinked(epicLink.toString());
@@ -297,12 +298,12 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 	private void setDueDates(KanbanJiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
 			FieldMapping fieldMapping) {
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
-			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
-					&& ObjectUtils.isNotEmpty(issue.getDueDate())) {
-				jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
-						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
-			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
-					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
+			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE) &&
+					ObjectUtils.isNotEmpty(issue.getDueDate())) {
+				jiraIssue.setDueDate(
+						JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0].concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField()) &&
+					ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
 				IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
 				if (issueField != null && ObjectUtils.isNotEmpty(issueField.getValue())) {
 					jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]

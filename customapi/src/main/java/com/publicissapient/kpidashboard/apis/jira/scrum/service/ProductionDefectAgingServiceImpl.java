@@ -102,9 +102,9 @@ public class ProductionDefectAgingServiceImpl extends JiraBacklogKPIService<Long
 
 			mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 					basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-            List<JiraIssue> filterProjectJiraIssues = filterProjectJiraIssues(getBackLogJiraIssuesFromBaseClass(), mapOfFilters, uniqueProjectMap, startDate, endDate);
+			List<JiraIssue> filterProjectJiraIssues = filterProjectJiraIssues(getBackLogJiraIssuesFromBaseClass(),
+					mapOfFilters, uniqueProjectMap, startDate, endDate);
 			resultListMap.put(RANGE_TICKET_LIST, filterProjectJiraIssues);
-
 		}
 
 		return resultListMap;
@@ -368,17 +368,17 @@ public class ProductionDefectAgingServiceImpl extends JiraBacklogKPIService<Long
 
 	/**
 	 * Filter project issues.
-	 * 
+	 *
 	 * @param projectJiraIssue
-	 *            getJiraIssuesCustomHistoryFromBaseClass()
+	 *          getJiraIssuesCustomHistoryFromBaseClass()
 	 * @param mapOfFilters
-	 *            map of filters
+	 *          map of filters
 	 * @param uniqueProjectMap
-	 *            unique project map
+	 *          unique project map
 	 * @param startDate
-	 *            start date
+	 *          start date
 	 * @param endDate
-	 *            end date
+	 *          end date
 	 * @return filtered jira issue
 	 */
 	public List<JiraIssue> filterProjectJiraIssues(List<JiraIssue> projectJiraIssue,
@@ -391,9 +391,8 @@ public class ProductionDefectAgingServiceImpl extends JiraBacklogKPIService<Long
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
 			LocalDateTime createdDate = LocalDateTime.parse(issue.getCreatedDate(), formatter);
 			return DateUtil.isWithinDateTimeRange(createdDate, startDateTime, endDateTime);
-		}).filter(JiraIssue::isProductionDefect)
-				.filter(issue -> mapOfFilters.getOrDefault("basicProjectConfigId", List.of())
-						.contains(issue.getBasicProjectConfigId()))
+		}).filter(JiraIssue::isProductionDefect).filter(
+				issue -> mapOfFilters.getOrDefault("basicProjectConfigId", List.of()).contains(issue.getBasicProjectConfigId()))
 				.filter(issue -> uniqueProjectMap.entrySet().stream()
 						.anyMatch(entry -> entry.getValue().entrySet().stream().allMatch(subEntry -> {
 							if (subEntry.getKey().equals("jiraStatus")) {

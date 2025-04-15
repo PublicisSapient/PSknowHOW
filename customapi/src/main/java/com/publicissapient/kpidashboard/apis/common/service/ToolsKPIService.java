@@ -1207,16 +1207,15 @@ public abstract class ToolsKPIService<R, S> {
 	 *          labelName
 	 */
 	public void calculateThresholdValue(Set<String> selectIds, KpiElement kpiElement, String labelName) {
-		if (selectIds.size() == 1 && (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
-				|| labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
-				|| labelName.equalsIgnoreCase("SQD"))) {
+		if (selectIds.size() == 1 && (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT) ||
+				labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT) || labelName.equalsIgnoreCase("SQD"))) {
 
 			Optional<String> projectId = selectIds.stream().findFirst();
 			Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
 					.cacheProjectConfigMapData();
 
-			basicConfigMap.values().stream().filter(
-					projectBasicConfig -> projectBasicConfig.getProjectNodeId().equalsIgnoreCase(projectId.orElse("")))
+			basicConfigMap.values().stream()
+					.filter(projectBasicConfig -> projectBasicConfig.getProjectNodeId().equalsIgnoreCase(projectId.orElse("")))
 					.findFirst().ifPresent(basicConfig -> {
 						FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicConfig.getId());
 						if (fieldMapping != null) {

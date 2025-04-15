@@ -18,11 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.repotools.model;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 public class MergeRequests {
@@ -44,7 +44,6 @@ public class MergeRequests {
 	@JsonProperty("mr_state")
 	private String mrState;
 
-    @JsonProperty("mr_comments")
-    private List<String> comments;
-
+	@JsonProperty("mr_comments")
+	private List<String> comments;
 }

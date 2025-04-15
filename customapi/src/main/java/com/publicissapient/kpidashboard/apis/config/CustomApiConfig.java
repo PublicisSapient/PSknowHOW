@@ -1366,5 +1366,4 @@ public class CustomApiConfig { // NOPMD
 	public void setCentralHierarchyUrl(String centralHierarchyUrl) {
 		this.centralHierarchyUrl = centralHierarchyUrl;
 	}
-
 }

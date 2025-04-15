@@ -184,8 +184,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 		clearSelectedBasicProjectConfigIds();
 		AtomicReference<Integer> count = new AtomicReference<>(0);
 
-		List<SonarProcessorItem> existingProcessorItems = sonarProcessorItemRepository
-				.findByProcessorId(processor.getId());
+		List<SonarProcessorItem> existingProcessorItems = sonarProcessorItemRepository.findByProcessorId(processor.getId());
 
 		cleanUnusedProcessorItem(existingProcessorItems);
 
@@ -197,8 +196,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 					.findByToolAndBasicProjectConfigId(ProcessorConstants.SONAR, proBasicConfig.getId());
 
 			for (ProcessorToolConnection sonar : sonarServerList) {
-				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-						proBasicConfig.getId().toHexString());
+				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(proBasicConfig.getId().toHexString());
 				try {
 					processorToolConnectionService.validateConnectionFlag(sonar);
 					MDC.put(SONAR_URL, sonar.getUrl());
@@ -218,8 +216,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 					addNewProjects(toBeEnabledJob, existingProcessorItems, processor);
 					List<SonarProcessorItem> enableProjectList = sonarProcessorItemRepository
 							.findEnabledProjectsForTool(processor.getId(), sonar.getId(), sonar.getUrl());
-					int updatedCount = saveSonarDetails(enableProjectList, sonar, sonarClient,
-							sonarConfig.getMetrics().get(0));
+					int updatedCount = saveSonarDetails(enableProjectList, sonar, sonarClient, sonarConfig.getMetrics().get(0));
 					count.updateAndGet(v -> v + updatedCount);
 					if (updatedCount > 0) {
 						projectIdForCacheClean.add(proBasicConfig.getId().toString());
@@ -233,9 +230,8 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 				} catch (Exception ex) {
 					isClientException(sonar, ex);
-					String errorMessage = "Exception in sonar project: url - " + sonar.getUrl() + ", user - "
-							+ sonar.getUsername() + ", toolId - " + sonar.getId() + ", Exception is - "
-							+ ex.getMessage();
+					String errorMessage = "Exception in sonar project: url - " + sonar.getUrl() + ", user - " +
+							sonar.getUsername() + ", toolId - " + sonar.getId() + ", Exception is - " + ex.getMessage();
 					executionStatus = false;
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(executionStatus);
@@ -534,9 +530,9 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 	 * @param cacheEndPoint
 	 *          the cache endpoint
 	 * @param param1
-	 * 	           parameter 1
-	 * 	  @param param2
-	 * 	           parameter 2
+	 *          parameter 1
+	 * @param param2
+	 *          parameter 2
 	 */
 	private void cacheRestClient(String cacheEndPoint, String param1, String param2) {
 		HttpHeaders headers = new HttpHeaders();

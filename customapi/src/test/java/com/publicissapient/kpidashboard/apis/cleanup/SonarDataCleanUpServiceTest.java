@@ -27,9 +27,6 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +36,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.constant.ProcessorType;
@@ -102,8 +102,8 @@ public class SonarDataCleanUpServiceTest {
 		doNothing().when(sonarHistoryRepository).deleteByProcessorItemIdIn(Mockito.anyList());
 		doNothing().when(processorItemRepository).deleteByToolConfigId(Mockito.any(ObjectId.class));
 		doNothing().when(cacheService).clearCache(CommonConstant.SONAR_KPI_CACHE);
-		doNothing().when(processorExecutionTraceLogRepository)
-				.deleteByBasicProjectConfigIdAndProcessorName(Mockito.any(), Mockito.anyString());
+		doNothing().when(processorExecutionTraceLogRepository).deleteByBasicProjectConfigIdAndProcessorName(Mockito.any(),
+				Mockito.anyString());
 		when(kpiDataCacheService.getKpiBasedOnSource(KPISource.SONAR.name()))
 				.thenReturn(List.of(KPICode.SONAR_CODE_QUALITY.getKpiId()));
 		sonarDataCleanUpService.clean("5e9e4593e4b0c8ece56710c3");

@@ -495,5 +495,4 @@ public class KPIExcelData {
 
 	@JsonProperty("MR Comments")
 	private List<String> mrComments;
-
 }

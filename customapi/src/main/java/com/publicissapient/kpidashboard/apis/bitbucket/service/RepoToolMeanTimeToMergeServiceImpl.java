@@ -251,8 +251,8 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 					repoToolValidationData.setDeveloperName(developerName);
 					repoToolValidationData.setDate(date);
 					repoToolValidationData.setMergeRequestComment(mr.getComments());
-					repoToolValidationData.setMeanTimeToMerge(
-							KpiHelperService.convertMilliSecondsToHours(mr.getTimeToMerge()*1000.0));
+					repoToolValidationData
+							.setMeanTimeToMerge(KpiHelperService.convertMilliSecondsToHours(mr.getTimeToMerge() * 1000.0));
 					repoToolValidationData.setMergeRequestUrl(mr.getLink());
 					repoToolValidationData.setRepoUrl(repo.getRepositoryName());
 					LocalDateTime dateTime = LocalDateTime.parse(mr.getCreatedAt(), formatter);

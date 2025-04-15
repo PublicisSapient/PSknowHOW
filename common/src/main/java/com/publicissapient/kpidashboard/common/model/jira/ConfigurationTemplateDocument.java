@@ -18,13 +18,15 @@
 
 package com.publicissapient.kpidashboard.common.model.jira; // NOPMD
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 @Builder
 @Getter

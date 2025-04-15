@@ -295,7 +295,8 @@ public class SonarServiceR {
 	 */
 	private void updateTreeAggregatorDetail(KpiRequest kpiRequest, TreeAggregatorDetail treeAggregatorDetail) {
 		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap()) &&
-				org.apache.commons.collections4.CollectionUtils.isEmpty(kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) &&
+				org.apache.commons.collections4.CollectionUtils
+						.isEmpty(kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) &&
 				MapUtils.isNotEmpty(treeAggregatorDetail.getMapOfListOfLeafNodes())) {
 			List<Node> sprintList = new ArrayList<>();
 			if (org.apache.commons.collections4.CollectionUtils

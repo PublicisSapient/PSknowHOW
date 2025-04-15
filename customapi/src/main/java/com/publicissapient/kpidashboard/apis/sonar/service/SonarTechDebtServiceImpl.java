@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -89,7 +90,7 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
 			throws ApplicationException {
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
-//      in case if only projects or sprint filters are applied
+		// in case if only projects or sprint filters are applied
 		Filters filter = Filters.getFilter(kpiRequest.getLabel());
 		if (filter == Filters.SPRINT || filter == Filters.PROJECT) {
 			List<Node> leafNodes = treeAggregatorDetail.getMapOfListOfLeafNodes().entrySet().stream()
@@ -173,12 +174,11 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 		tempMap.get(projectNodePair.getLeft()).setValue(projectWiseDataMap);
 
 		if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			KPIExcelUtility.populateSonarKpisExcelData(
-					tempMap.get(projectNodePair.getKey()).getProjectFilter().getName(), projectList, debtList,
-					versionDate, excelData, KPICode.SONAR_TECH_DEBT.getKpiId());
+			KPIExcelUtility.populateSonarKpisExcelData(tempMap.get(projectNodePair.getKey()).getProjectFilter().getName(),
+					projectList, debtList, versionDate, excelData, KPICode.SONAR_TECH_DEBT.getKpiId());
 		}
 	}
-	
+
 	private Map<String, Object> prepareSqualeList(Map<String, SonarHistory> history, String date, String projectName,
 			List<String> projectList, List<String> debtList, Map<String, List<DataCount>> projectWiseDataMap,
 			List<String> versionDate) {
@@ -218,8 +218,7 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 		sonarMetric.setMetricValue("0");
 		metricsList.add(sonarMetric);
 
-		List<String> uniqueKeys = sonarHistoryList.stream().map(SonarHistory::getKey).distinct()
-				.toList();
+		List<String> uniqueKeys = sonarHistoryList.stream().map(SonarHistory::getKey).distinct().toList();
 		uniqueKeys.forEach(keys -> {
 			SonarHistory sonarHistory = SonarHistory.builder().processorItemId(refHistory.getProcessorItemId()).date(end)
 					.timestamp(end).key(keys).name(keys).branch(refHistory.getBranch()).metrics(metricsList).build();

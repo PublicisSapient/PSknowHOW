@@ -37,7 +37,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.publicissapient.kpidashboard.apis.abac.ContextAwarePolicyEnforcement;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.testexecution.service.TestExecutionService;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecutionData;
 
 /**

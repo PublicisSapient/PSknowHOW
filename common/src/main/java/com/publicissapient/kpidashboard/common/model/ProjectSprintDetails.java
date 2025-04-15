@@ -26,7 +26,7 @@ import lombok.Data;
 
 /**
  * Represents the details of a project and its associated sprints.
- * 
+ *
  * @author shunaray
  */
 @Data
@@ -42,5 +42,4 @@ public class ProjectSprintDetails {
 		private String sprintId;
 		private String goal;
 	}
-
 }

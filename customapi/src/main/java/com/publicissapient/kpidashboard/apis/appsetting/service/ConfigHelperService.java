@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,7 +121,8 @@ public class ConfigHelperService {
 		List<HierarchyLevel> hierarchyLevels = hierarchyLevelRepository.findAllByOrderByLevel();
 
 		projectList.forEach(projectConfig -> {
-			projectConfig.setHierarchy(projectBasicConfigService.getHierarchy(hierarchyLevels, projectConfig.getProjectNodeId()));
+			projectConfig
+					.setHierarchy(projectBasicConfigService.getHierarchy(hierarchyLevels, projectConfig.getProjectNodeId()));
 			projectConfigMap.put(projectConfig.getId().toString(), projectConfig);
 			FieldMapping mapping = fieldMappingList.stream()
 					.filter(x -> null != x.getBasicProjectConfigId() && x.getBasicProjectConfigId().equals(projectConfig.getId()))
@@ -399,8 +399,8 @@ public class ConfigHelperService {
 
 	public Set<String> getParentIdByNodeIdAndLabelName(List<String> uniqueId, String labelName) {
 		return new HashSet<>(cacheService.getAllProjectHierarchy().stream()
-				.filter(projectHierarchy -> uniqueId.contains(projectHierarchy.getNodeId())
-						&& projectHierarchy.getHierarchyLevelId().equalsIgnoreCase(labelName))
+				.filter(projectHierarchy -> uniqueId.contains(projectHierarchy.getNodeId()) &&
+						projectHierarchy.getHierarchyLevelId().equalsIgnoreCase(labelName))
 				.map(ProjectHierarchy::getParentId).toList());
 	}
 }

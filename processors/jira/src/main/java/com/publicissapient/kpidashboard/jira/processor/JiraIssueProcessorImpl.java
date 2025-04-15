@@ -220,8 +220,8 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	}
 
 	private void setEpicLinked(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {
-		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink()) && fields.get(fieldMapping.getEpicLink()) != null
-				&& fields.get(fieldMapping.getEpicLink()).getValue() != null) {
+		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink()) && fields.get(fieldMapping.getEpicLink()) != null &&
+				fields.get(fieldMapping.getEpicLink()).getValue() != null) {
 			final Object epicLink = fields.get((fieldMapping.getEpicLink()).trim()).getValue();
 			if (epicLink instanceof String) {
 				jiraIssue.setEpicLinked(epicLink.toString());
@@ -233,6 +233,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			}
 		}
 	}
+
 	private void setSubTaskLinkage(JiraIssue jiraIssue, FieldMapping fieldMapping, Issue issue,
 			Map<String, IssueField> fields) {
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification()) &&

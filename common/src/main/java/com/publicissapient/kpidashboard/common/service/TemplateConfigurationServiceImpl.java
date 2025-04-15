@@ -18,22 +18,23 @@
 
 package com.publicissapient.kpidashboard.common.service;
 
-import com.publicissapient.kpidashboard.common.model.jira.ConfigurationTemplateDocument;
-import com.publicissapient.kpidashboard.common.repository.jira.ConfigurationTemplateRepository;
+import java.util.List;
+import java.util.stream.StreamSupport;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.StreamSupport;
+import com.publicissapient.kpidashboard.common.model.jira.ConfigurationTemplateDocument;
+import com.publicissapient.kpidashboard.common.repository.jira.ConfigurationTemplateRepository;
 
 @Service
 public class TemplateConfigurationServiceImpl implements TemplateConfigurationService {
 
-    @Autowired
-    private ConfigurationTemplateRepository configurationTemplateRepository;
+	@Autowired
+	private ConfigurationTemplateRepository configurationTemplateRepository;
 
-    @Override
-    public List<ConfigurationTemplateDocument> getConfigurationTemplate() {
-        return StreamSupport.stream(configurationTemplateRepository.findAll().spliterator(), false).toList();
-    }
+	@Override
+	public List<ConfigurationTemplateDocument> getConfigurationTemplate() {
+		return StreamSupport.stream(configurationTemplateRepository.findAll().spliterator(), false).toList();
+	}
 }

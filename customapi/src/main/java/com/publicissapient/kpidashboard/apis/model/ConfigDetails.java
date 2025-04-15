@@ -103,11 +103,11 @@ public class ConfigDetails {
 		return sprintCountForKpiCalculation;
 	}
 
-    public boolean isOpenSource() {
-        return isOpenSource;
-    }
+	public boolean isOpenSource() {
+		return isOpenSource;
+	}
 
-    public void setOpenSource(boolean openSource) {
-        isOpenSource = openSource;
-    }
+	public void setOpenSource(boolean openSource) {
+		isOpenSource = openSource;
+	}
 }

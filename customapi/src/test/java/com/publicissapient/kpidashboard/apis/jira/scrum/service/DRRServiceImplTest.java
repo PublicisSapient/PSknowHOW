@@ -172,7 +172,6 @@ public class DRRServiceImplTest {
 
 	@After
 	public void cleanup() {
-
 	}
 
 	@Test

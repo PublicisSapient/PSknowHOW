@@ -54,7 +54,6 @@ public class HierarchyOptionServiceImplTest {
 
 	@BeforeEach
 	public void setUp() {
-
 	}
 
 	@Test
@@ -140,5 +139,4 @@ public class HierarchyOptionServiceImplTest {
 		assertEquals("Node created successfully under parentId: parentId", response.getMessage());
 		verify(organizationHierarchyService).save(any(OrganizationHierarchy.class));
 	}
-
 }

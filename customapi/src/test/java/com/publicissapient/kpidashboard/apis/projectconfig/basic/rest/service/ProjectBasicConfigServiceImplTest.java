@@ -41,10 +41,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import com.publicissapient.kpidashboard.apis.data.OrganizationHierarchyDataFactory;
-import com.publicissapient.kpidashboard.apis.data.ProjectHierarchyDataFactory;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
-import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -93,6 +89,7 @@ import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
@@ -234,7 +231,7 @@ public class ProjectBasicConfigServiceImplTest {
 		boardMetadata.setProjectToolConfigId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
 		boardMetadata.setMetadataTemplateCode("10");
 		basicConfig.setId(new ObjectId("5f855dec29cf840345f2d111"));
-		basicConfig.setHierarchy(List.of(new HierarchyValue(new HierarchyLevel(1,"bu","bu","bu"),"bu","bu")));
+		basicConfig.setHierarchy(List.of(new HierarchyValue(new HierarchyLevel(1, "bu", "bu", "bu"), "bu", "bu")));
 		basicConfigDTO = modelMapper.map(basicConfig, ProjectBasicConfigDTO.class);
 		listProjectTool.setId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
 		listProjectTool.setToolName("Jira");

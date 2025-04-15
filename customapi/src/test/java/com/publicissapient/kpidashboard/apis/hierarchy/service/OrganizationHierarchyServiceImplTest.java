@@ -26,8 +26,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +34,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.data.OrganizationHierarchyDataFactory;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
 
@@ -132,7 +132,7 @@ public class OrganizationHierarchyServiceImplTest {
 		existingNode.setNodeDisplayName("Old Name");
 
 		when(configHelperService.loadAllOrganizationHierarchy()).thenReturn(List.of(existingNode));
-		//when(organizationHierarchyService.findByNodeId(nodeId)).thenReturn(existingNode);
+		// when(organizationHierarchyService.findByNodeId(nodeId)).thenReturn(existingNode);
 
 		// Act
 		ServiceResponse response = organizationHierarchyService.updateName(newName, nodeId);

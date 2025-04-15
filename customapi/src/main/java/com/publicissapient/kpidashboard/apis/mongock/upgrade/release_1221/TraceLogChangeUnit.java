@@ -26,7 +26,7 @@ import io.mongock.api.annotations.RollbackExecution;
 
 /**
  * Fix for DTS-44135: Clean and re-fetch Jira issue epicLinked field data
- * 
+ *
  * @author shunaray
  */
 @ChangeUnit(id = "jira_trace_clean", order = "12211", author = "shunaray", systemVersion = "12.2.1")
@@ -44,8 +44,8 @@ public class TraceLogChangeUnit {
 	}
 
 	public void deleteProcessorExecutionTraceLog() {
-		mongoTemplate.getCollection("processor_execution_trace_log").deleteMany(
-				new Document("basicProjectConfigId", "6762bc10ed9a4560dc380a67").append("processorName", "Jira"));
+		mongoTemplate.getCollection("processor_execution_trace_log")
+				.deleteMany(new Document("basicProjectConfigId", "6762bc10ed9a4560dc380a67").append("processorName", "Jira"));
 	}
 
 	@RollbackExecution

@@ -46,18 +46,17 @@ public class SprintGoalChangeUnit {
 	@RollbackExecution
 	public void rollback() {
 		Document kpiDocument = new Document().append("kpiId", "kpi187").append("kpiName", "Sprint Goals")
-				.append("isDeleted", "False").append("defaultOrder", 31).append("kpiUnit", "")
-				.append("showTrend", false).append("calculateMaturity", false).append("hideOverallFilter", false)
-				.append("kpiSource", "Jira").append("kanban", false).append("groupId", 32)
-				.append("kpiInfo", new Document("details",
-						List.of(new Document("type", "paragraph").append("value", "KPI for tracking Goals of project."),
-								new Document("type", "link").append("kpiLinkDetail",
-										new Document("text", "Detailed Information at").append("link", "")))))
+				.append("isDeleted", "False").append("defaultOrder", 31).append("kpiUnit", "").append("showTrend", false)
+				.append("calculateMaturity", false).append("hideOverallFilter", false).append("kpiSource", "Jira")
+				.append("kanban", false).append("groupId", 32)
+				.append("kpiInfo",
+						new Document("details",
+								List.of(new Document("type", "paragraph").append("value", "KPI for tracking Goals of project."),
+										new Document("type", "link").append("kpiLinkDetail",
+												new Document("text", "Detailed Information at").append("link", "")))))
 				.append("isTrendCalculative", false).append("isAdditionalFilterSupport", false)
 				.append("combinedKpiSource", "Jira/Azure");
 
 		mongoTemplate.getCollection("kpi_master").insertOne(kpiDocument);
-
 	}
-
 }

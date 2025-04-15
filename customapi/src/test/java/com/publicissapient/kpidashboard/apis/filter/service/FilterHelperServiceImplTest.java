@@ -30,9 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,6 +51,7 @@ import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactor
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -61,6 +59,7 @@ import com.publicissapient.kpidashboard.common.model.application.AccountHierarch
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyLevelDTO;
 import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyValueDTO;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
@@ -70,6 +69,7 @@ import com.publicissapient.kpidashboard.common.repository.application.HierarchyL
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelSuggestionsServiceImpl;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 
 /**
  * @author tauakram
@@ -246,7 +246,7 @@ public class FilterHelperServiceImplTest {
 	@Test
 	public void deleteAccountHierarchiesOfProject_Scrum() {
 		ObjectId projectBasicConfigId = new ObjectId("60b9f2ff5ce907343c3804ba");
-		ProjectBasicConfig projectBasicConfig= new ProjectBasicConfig();
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 		projectBasicConfig.setId(projectBasicConfigId);
 		projectBasicConfig.setIsKanban(false);
 		when(hierarchyLevelService.getFullHierarchyLevels(projectConfigScrum.isKanban())).thenReturn(hierarchyLevels2);
@@ -261,7 +261,7 @@ public class FilterHelperServiceImplTest {
 	@Test
 	public void deleteAccountHierarchiesOfProject_Kanban() {
 		ObjectId projectBasicConfigId = new ObjectId("63330b7068b5d05cf59c4386");
-		ProjectBasicConfig projectBasicConfig= new ProjectBasicConfig();
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 		projectBasicConfig.setId(projectBasicConfigId);
 		projectBasicConfig.setIsKanban(true);
 		AccountHierarchiesKanbanDataFactory ahdFactoryProjectLabel = AccountHierarchiesKanbanDataFactory.newInstance();

@@ -30,8 +30,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Feature;
 
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -41,6 +39,8 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -162,7 +162,8 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				result = kpiDataProvider.fetchDRRData(kpiRequest, basicProjectConfigId, sprintList);
 			}
 
-			totalSubTaskDefects.addAll((List<JiraIssue>) result.getOrDefault(TOTAL_SPRINT_SUBTASK_DEFECTS, new ArrayList<>()));
+			totalSubTaskDefects
+					.addAll((List<JiraIssue>) result.getOrDefault(TOTAL_SPRINT_SUBTASK_DEFECTS, new ArrayList<>()));
 			subTaskBugsCustomHistory
 					.addAll((List<JiraIssueCustomHistory>) result.getOrDefault(SUB_TASK_BUGS_HISTORY, new ArrayList<>()));
 			List<SprintDetails> sprintDetailsList = (List<SprintDetails>) result.getOrDefault(SPRINT_WISE_SPRINT_DETAILS,
@@ -410,7 +411,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	 * @param completed
 	 */
 	private void setHoverMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHoverMap,
-							 Pair<String, String> sprint, List<JiraIssue> rejected, List<JiraIssue> completed) {
+			Pair<String, String> sprint, List<JiraIssue> rejected, List<JiraIssue> completed) {
 		Map<String, Object> howerMap = new LinkedHashMap<>();
 		if (CollectionUtils.isNotEmpty(rejected)) {
 			howerMap.put(REJECTED, rejected.size());

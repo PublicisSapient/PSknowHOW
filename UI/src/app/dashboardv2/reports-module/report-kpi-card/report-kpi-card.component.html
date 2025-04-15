@@ -165,6 +165,14 @@
                                 [data]="currentChartData"></app-stacked-area-chart>
                         </ng-container>
                     </ng-container>
+
+                    <app-table *ngSwitchCase="'table'"
+                        [trendBoxColorObj]="kpiData?.trendColors"
+                        [data]="currentChartData?.data"
+                        [cols]="currentChartData?.columnHeaders"
+                        [showMarker]="'true'"
+                        [showMarkerColumnNumber]="0"></app-table>
+                    
                     <ng-container *ngSwitchCase="'old-table'">
                         <div class="p-d-flex p-justify-around p-align-center w-100 p-h-100">
                             <ng-container *ngFor="let item of currentChartData; let index=index">

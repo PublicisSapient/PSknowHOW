@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.bitbucket.service.BitBucketServiceR;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.MDC;
@@ -44,6 +43,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.publicissapient.kpidashboard.apis.bitbucket.service.BitBucketServiceR;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
@@ -127,26 +127,25 @@ public class KpiIntegrationServiceImpl {
 		setKpiRequest(kpiRequest);
 		sourceWiseKpiList.forEach((source, kpiList) -> {
 			try {
-				kpiRequest.setKpiList(sourceWiseKpiList.get(source).stream().map(this::mapKpiMasterToKpiElement)
-						.toList());
+				kpiRequest.setKpiList(sourceWiseKpiList.get(source).stream().map(this::mapKpiMasterToKpiElement).toList());
 				switch (source) {
-				case KPI_SOURCE_JIRA:
-					kpiElements.addAll(getJiraKpiMaturity(kpiRequest));
-					break;
-				case KPI_SOURCE_SONAR:
-					kpiElements.addAll(getSonarKpiMaturity(kpiRequest));
-					break;
-				case KPI_SOURCE_ZEPHYR:
-					kpiElements.addAll(getZephyrKpiMaturity(kpiRequest));
-					break;
-				case KPI_SOURCE_JENKINS:
-					kpiElements.addAll(getJenkinsKpiMaturity(kpiRequest));
-					break;
-				case KPI_SOURCE_DEVELOPER:
-					kpiElements.addAll(getDeveloperKpiMaturity(kpiRequest));
-					break;
-				default:
-					log.error("Invalid Kpi");
+					case KPI_SOURCE_JIRA :
+						kpiElements.addAll(getJiraKpiMaturity(kpiRequest));
+						break;
+					case KPI_SOURCE_SONAR :
+						kpiElements.addAll(getSonarKpiMaturity(kpiRequest));
+						break;
+					case KPI_SOURCE_ZEPHYR :
+						kpiElements.addAll(getZephyrKpiMaturity(kpiRequest));
+						break;
+					case KPI_SOURCE_JENKINS :
+						kpiElements.addAll(getJenkinsKpiMaturity(kpiRequest));
+						break;
+					case KPI_SOURCE_DEVELOPER :
+						kpiElements.addAll(getDeveloperKpiMaturity(kpiRequest));
+						break;
+					default :
+						log.error("Invalid Kpi");
 				}
 			} catch (Exception ex) {
 				log.error("Error while fetching kpi maturity data", ex);
@@ -196,7 +195,7 @@ public class KpiIntegrationServiceImpl {
 				hierarchyIdList = new String[]{
 						kpiRequest.getHierarchyName().concat(Constant.UNDERSCORE).concat(hierarchyLevel.getHierarchyLevelId())};
 			}
-			if(MapUtils.isEmpty(kpiRequest.getSelectedMap())) {
+			if (MapUtils.isEmpty(kpiRequest.getSelectedMap())) {
 				Map<String, List<String>> selectedMap = new HashMap<>();
 				selectedMap.put(hierarchyLevel.getHierarchyLevelId(), Arrays.stream(hierarchyIdList).toList());
 				kpiRequest.setSelectedMap(selectedMap);
@@ -301,10 +300,10 @@ public class KpiIntegrationServiceImpl {
 	 * get kpi data for source jenkins
 	 *
 	 * @param kpiRequest
-	 * 		kpiRequest to fetch kpi data
+	 *          kpiRequest to fetch kpi data
 	 * @return list of sonar KpiElement
 	 * @throws EntityNotFoundException
-	 * 		entity not found exception for jenkins service method
+	 *           entity not found exception for jenkins service method
 	 */
 	private List<KpiElement> getDeveloperKpiMaturity(KpiRequest kpiRequest) throws EntityNotFoundException {
 		MDC.put("DeveloperKpiRequest", kpiRequest.getRequestTrackerId());

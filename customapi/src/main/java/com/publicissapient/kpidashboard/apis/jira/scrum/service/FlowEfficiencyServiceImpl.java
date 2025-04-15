@@ -207,8 +207,8 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().toList());
 
-        List<JiraIssueCustomHistory> filteredProjectHistory = BacklogKpiHelper.filterProjectHistories(
-                getJiraIssuesCustomHistoryFromBaseClass(), uniqueProjectMap, startDate, endDate);
+		List<JiraIssueCustomHistory> filteredProjectHistory = BacklogKpiHelper
+				.filterProjectHistories(getJiraIssuesCustomHistoryFromBaseClass(), uniqueProjectMap, startDate, endDate);
 
 		resultListMap.put(HISTORY, filteredProjectHistory);
 		return resultListMap;

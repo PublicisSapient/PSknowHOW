@@ -30,7 +30,7 @@ import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 })
 export class KpiCardV2Component implements OnInit, OnChanges {
   isTooltip = false;
-  @Input() kpiData: any;
+  @Input() kpiData: any; // this object is kpiDetails
   @Input() kpiChartData: any;
   @Input() iSAdditionalFilterSelected: boolean;
   @Input() showChartView = 'chart';
@@ -1166,7 +1166,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       id: this.kpiData.kpiId,
       chartData: this.currentChartData?.chartData
         ? this.currentChartData?.chartData
-        : this.kpiChartData,
+        : { ...this.kpiChartData },
       metadata: metaDataObj,
     };
 

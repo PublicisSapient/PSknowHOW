@@ -182,15 +182,15 @@ public final class BacklogKpiHelper {
 
 	/**
 	 * Filter Project Issue History based on uniqueProjectMap and date Range
-	 * 
+	 *
 	 * @param projectHistories
-	 *            getJiraIssuesCustomHistoryFromBaseClass()
+	 *          getJiraIssuesCustomHistoryFromBaseClass()
 	 * @param uniqueProjectMap
-	 *            getUniqueProjectMap
+	 *          getUniqueProjectMap
 	 * @param startDate
-	 *            startDate
+	 *          startDate
 	 * @param endDate
-	 *            endDate
+	 *          endDate
 	 * @return filtered project histories
 	 */
 	@SuppressWarnings("unchecked")
@@ -211,14 +211,12 @@ public final class BacklogKpiHelper {
 				return false;
 			}
 			// Evaluate statusUpdationLog conditions
-			boolean changedToOk = !filters.containsKey(STATUS_UPDATION_LOG_STORY_CHANGED_TO)
-					|| history.getStatusUpdationLog().stream()
-							.anyMatch(log -> ((List<Pattern>) filters.get(STATUS_UPDATION_LOG_STORY_CHANGED_TO))
-									.stream().anyMatch(p -> p.matcher(log.getChangedTo()).matches()));
+			boolean changedToOk = !filters.containsKey(STATUS_UPDATION_LOG_STORY_CHANGED_TO) || history.getStatusUpdationLog()
+					.stream().anyMatch(log -> ((List<Pattern>) filters.get(STATUS_UPDATION_LOG_STORY_CHANGED_TO)).stream()
+							.anyMatch(p -> p.matcher(log.getChangedTo()).matches()));
 			boolean updatedOnOk = history.getStatusUpdationLog().stream()
 					.anyMatch(log -> DateUtil.isWithinDateTimeRange(log.getUpdatedOn(), startDateTime, endDateTime));
 			return changedToOk && updatedOnOk;
 		}).toList();
 	}
-
 }

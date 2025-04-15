@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +37,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cache.CacheManager;
 
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 
@@ -112,25 +111,31 @@ public class KpiDataCacheServiceImplTest {
 
 	@Test
 	public void fetchDIRData_shouldReturnCorrectData_whenValidInput() {
-		when(kpiDataProvider.fetchDefectInjectionRateDataFromDb(any(), any(), any())).thenReturn(new HashMap<>());
+		when(kpiDataProvider.fetchDefectInjectionRateDataFromDb(any(), any(), any()))
+				.thenReturn(new HashMap<>());
 		Map<String, Object> result =
-				kpiDataCacheService.fetchDefectInjectionRateData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi14");
+				kpiDataCacheService.fetchDefectInjectionRateData(
+						new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi14");
 		assertNotNull(result);
 	}
 
 	@Test
 	public void fetchDFTPRData_shouldReturnCorrectData_whenValidInput() {
-		when(kpiDataProvider.fetchFirstTimePassRateDataFromDb(any(), any(), any())).thenReturn(new HashMap<>());
+		when(kpiDataProvider.fetchFirstTimePassRateDataFromDb(any(), any(), any()))
+				.thenReturn(new HashMap<>());
 		Map<String, Object> result =
-				kpiDataCacheService.fetchFirstTimePassRateData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi14");
+				kpiDataCacheService.fetchFirstTimePassRateData(
+						new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi14");
 		assertNotNull(result);
 	}
 
 	@Test
 	public void fetchDDData_shouldReturnCorrectData_whenValidInput() {
-		when(kpiDataProvider.fetchDefectDensityDataFromDb(any(), any(), any())).thenReturn(new HashMap<>());
+		when(kpiDataProvider.fetchDefectDensityDataFromDb(any(), any(), any()))
+				.thenReturn(new HashMap<>());
 		Map<String, Object> result =
-				kpiDataCacheService.fetchDefectDensityData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi111");
+				kpiDataCacheService.fetchDefectDensityData(
+						new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi111");
 		assertNotNull(result);
 	}
 
@@ -196,8 +201,7 @@ public class KpiDataCacheServiceImplTest {
 
 	@Test
 	public void testFetchDRRData() {
-		when(kpiDataProvider.fetchDRRData(any(), any(), any()))
-				.thenReturn(new HashMap<>());
+		when(kpiDataProvider.fetchDRRData(any(), any(), any())).thenReturn(new HashMap<>());
 		assertNotNull(
 				kpiDataCacheService.fetchDRRData(
 						new KpiRequest(),
@@ -208,8 +212,7 @@ public class KpiDataCacheServiceImplTest {
 
 	@Test
 	public void testFetchDSRData() {
-		when(kpiDataProvider.fetchDSRData(any(), any(), any()))
-				.thenReturn(new HashMap<>());
+		when(kpiDataProvider.fetchDSRData(any(), any(), any())).thenReturn(new HashMap<>());
 		assertNotNull(
 				kpiDataCacheService.fetchDSRData(
 						new KpiRequest(),

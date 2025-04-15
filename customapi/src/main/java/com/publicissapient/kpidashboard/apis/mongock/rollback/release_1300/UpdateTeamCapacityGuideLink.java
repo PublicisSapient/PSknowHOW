@@ -46,5 +46,4 @@ public class UpdateTeamCapacityGuideLink {
 				new Document("$set", new Document("kpiInfo.details.1.kpiLinkDetail.link",
 						"https://speed.suite.publicissapient.com/wiki/spaces/PS/pages/43057154/Step+6A+-+Capacity+Data+Reporting")));
 	}
-
 }

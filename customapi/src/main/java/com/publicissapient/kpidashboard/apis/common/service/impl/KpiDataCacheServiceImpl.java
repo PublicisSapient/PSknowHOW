@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,6 +36,7 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -68,24 +68,21 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	@Override
 	public List<String> getKpiBasedOnSource(String source) {
 		Map<String, List<String>> kpiMap = new HashMap<>();
-		kpiMap.put(KPISource.JIRA.name(),
-				List.of(KPICode.ISSUE_COUNT.getKpiId(), KPICode.COMMITMENT_RELIABILITY.getKpiId(),
-						KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId(), KPICode.SCOPE_CHURN.getKpiId(),
-						KPICode.COST_OF_DELAY.getKpiId(), KPICode.SPRINT_PREDICTABILITY.getKpiId(),
-						KPICode.SPRINT_VELOCITY.getKpiId(), KPICode.PROJECT_RELEASES.getKpiId(),
-						KPICode.PI_PREDICTABILITY.getKpiId(), KPICode.CREATED_VS_RESOLVED_DEFECTS.getKpiId(),
-						KPICode.HAPPINESS_INDEX_RATE.getKpiId(), KPICode.DEFECT_INJECTION_RATE.getKpiId(),
-						KPICode.DEFECT_DENSITY.getKpiId(), KPICode.DEFECT_REJECTION_RATE.getKpiId(),
-						KPICode.DEFECT_REMOVAL_EFFICIENCY.getKpiId(), KPICode.DEFECT_COUNT_BY_RCA.getKpiId(),
-						KPICode.FIRST_TIME_PASS_RATE.getKpiId(), KPICode.DEFECT_SEEPAGE_RATE.getKpiId(),
-						KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId()));
+		kpiMap.put(KPISource.JIRA.name(), List.of(KPICode.ISSUE_COUNT.getKpiId(), KPICode.COMMITMENT_RELIABILITY.getKpiId(),
+				KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId(), KPICode.SCOPE_CHURN.getKpiId(),
+				KPICode.COST_OF_DELAY.getKpiId(), KPICode.SPRINT_PREDICTABILITY.getKpiId(), KPICode.SPRINT_VELOCITY.getKpiId(),
+				KPICode.PROJECT_RELEASES.getKpiId(), KPICode.PI_PREDICTABILITY.getKpiId(),
+				KPICode.CREATED_VS_RESOLVED_DEFECTS.getKpiId(), KPICode.HAPPINESS_INDEX_RATE.getKpiId(),
+				KPICode.DEFECT_INJECTION_RATE.getKpiId(), KPICode.DEFECT_DENSITY.getKpiId(),
+				KPICode.DEFECT_REJECTION_RATE.getKpiId(), KPICode.DEFECT_REMOVAL_EFFICIENCY.getKpiId(),
+				KPICode.DEFECT_COUNT_BY_RCA.getKpiId(), KPICode.FIRST_TIME_PASS_RATE.getKpiId(),
+				KPICode.DEFECT_SEEPAGE_RATE.getKpiId(), KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId()));
 		kpiMap.put(KPISource.JIRAKANBAN.name(),
 				List.of(KPICode.TEAM_CAPACITY.getKpiId(), KPICode.TICKET_VELOCITY.getKpiId(),
 						KPICode.LEAD_TIME_KANBAN.getKpiId(), KPICode.COST_OF_DELAY_KANBAN.getKpiId(),
 						KPICode.PROJECT_RELEASES_KANBAN.getKpiId(), KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS.getKpiId(),
 						KPICode.TICKET_COUNT_BY_PRIORITY.getKpiId(), KPICode.NET_OPEN_TICKET_COUNT_BY_RCA.getKpiId(),
-						KPICode.TICKET_OPEN_VS_CLOSE_BY_PRIORITY.getKpiId(),
-						KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE.getKpiId(),
+						KPICode.TICKET_OPEN_VS_CLOSE_BY_PRIORITY.getKpiId(), KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE.getKpiId(),
 						KPICode.OPEN_TICKET_AGING_BY_PRIORITY.getKpiId()));
 		kpiMap.put(KPISource.SONAR.name(),
 				List.of(KPICode.SONAR_CODE_QUALITY.getKpiId(), KPICode.SONAR_TECH_DEBT.getKpiId(),
@@ -95,10 +92,10 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 		kpiMap.put(KPISource.BITBUCKET.name(), new ArrayList<>());
 		kpiMap.put(KPISource.JENKINS.name(),
 				List.of(KPICode.BUILD_FREQUENCY.getKpiId(), KPICode.CODE_BUILD_TIME_KANBAN.getKpiId()));
-		kpiMap.put(KPISource.ZEPHYR.name(), List.of(KPICode.INSPRINT_AUTOMATION_COVERAGE.getKpiId(),
-				KPICode.REGRESSION_AUTOMATION_COVERAGE.getKpiId(),
-				KPICode.TEST_EXECUTION_AND_PASS_PERCENTAGE.getKpiId(),
-				KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE.getKpiId(), KPICode.TEST_EXECUTION_KANBAN.getKpiId()));
+		kpiMap.put(KPISource.ZEPHYR.name(),
+				List.of(KPICode.INSPRINT_AUTOMATION_COVERAGE.getKpiId(), KPICode.REGRESSION_AUTOMATION_COVERAGE.getKpiId(),
+						KPICode.TEST_EXECUTION_AND_PASS_PERCENTAGE.getKpiId(), KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE.getKpiId(),
+						KPICode.TEST_EXECUTION_KANBAN.getKpiId()));
 
 		List<String> allKpis = kpiMap.values().stream().flatMap(List::stream).toList();
 		kpiMap.put(CommonConstant.ALL_KPI, allKpis);
@@ -167,8 +164,8 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	@Override
 	public Map<String, Object> fetchSprintCapacityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList, String kpiId) {
-		log.info("Fetching Sprint Capacity Utilization KPI Data for Project {} and KPI {}",
-				basicProjectConfigId.toString(), kpiId);
+		log.info("Fetching Sprint Capacity Utilization KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(),
+				kpiId);
 		return kpiDataProvider.fetchSprintCapacityDataFromDb(kpiRequest, basicProjectConfigId, sprintList);
 	}
 
@@ -199,16 +196,14 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
 	@Override
 	public List<ProjectRelease> fetchProjectReleaseData(ObjectId basicProjectConfigId, String kpiId) {
-		log.info("Fetching Release Frequency KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(),
-				kpiId);
+		log.info("Fetching Release Frequency KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
 		return kpiDataProvider.fetchProjectReleaseData(basicProjectConfigId);
 	}
 
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
 	@Override
 	public List<JiraIssue> fetchPiPredictabilityData(ObjectId basicProjectConfigId, String kpiId) {
-		log.info("Fetching PI Predictability KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(),
-				kpiId);
+		log.info("Fetching PI Predictability KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
 		return kpiDataProvider.fetchPiPredictabilityData(basicProjectConfigId);
 	}
 
@@ -216,8 +211,7 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	@Override
 	public Map<String, Object> fetchCreatedVsResolvedData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList, String kpiId) {
-		log.info("Fetching Created vs Resolved KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(),
-				kpiId);
+		log.info("Fetching Created vs Resolved KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
 		return kpiDataProvider.fetchCreatedVsResolvedData(kpiRequest, basicProjectConfigId, sprintList);
 	}
 
@@ -225,23 +219,22 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	@Override
 	public Map<String, Object> fetchHappinessIndexData(ObjectId basicProjectConfigId, List<String> sprintList,
 			String kpiId) {
-		log.info("Fetching Happiness Index KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(),
-				kpiId);
+		log.info("Fetching Happiness Index KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
 		return kpiDataProvider.fetchHappinessIndexDataFromDb(sprintList);
 	}
 
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
 	@Override
-	public Map<String, Object> fetchDRRData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
-											List<String> sprintList, String kpiId) {
+	public Map<String, Object> fetchDRRData(KpiRequest kpiRequest, ObjectId basicProjectConfigId, List<String> sprintList,
+			String kpiId) {
 		log.info("Fetching DRR KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
 		return kpiDataProvider.fetchDRRData(kpiRequest, basicProjectConfigId, sprintList);
 	}
 
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
 	@Override
-	public Map<String, Object> fetchDSRData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
-											List<String> sprintList, String kpiId) {
+	public Map<String, Object> fetchDSRData(KpiRequest kpiRequest, ObjectId basicProjectConfigId, List<String> sprintList,
+			String kpiId) {
 		log.info("Fetching DSR KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
 		return kpiDataProvider.fetchDSRData(kpiRequest, basicProjectConfigId, sprintList);
 	}

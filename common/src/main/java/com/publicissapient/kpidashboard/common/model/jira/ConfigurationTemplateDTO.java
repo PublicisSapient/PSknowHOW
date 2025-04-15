@@ -1,7 +1,8 @@
 package com.publicissapient.kpidashboard.common.model.jira;
 
-import lombok.Data;
 import org.bson.types.ObjectId;
+
+import lombok.Data;
 
 @Data
 public class ConfigurationTemplateDTO {

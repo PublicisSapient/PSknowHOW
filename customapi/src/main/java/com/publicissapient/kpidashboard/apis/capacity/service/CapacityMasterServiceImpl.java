@@ -437,8 +437,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 
 			kanbanCapacityRepository.save(capacityData);
 			clearCache(CommonConstant.JIRAKANBAN_KPI_CACHE);
-			clearKpiCache(capacityMaster.getBasicProjectConfigId().toString(),
-					KPICode.TEAM_CAPACITY.getKpiId());
+			clearKpiCache(capacityMaster.getBasicProjectConfigId().toString(), KPICode.TEAM_CAPACITY.getKpiId());
 			processed = true;
 		}
 		return processed;

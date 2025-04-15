@@ -198,8 +198,8 @@ public class LeadTimeServiceImpl extends JiraBacklogKPIService<Long, List<Object
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-		List<JiraIssueCustomHistory> filteredProjectHistory = BacklogKpiHelper.filterProjectHistories(
-				getJiraIssuesCustomHistoryFromBaseClass(), uniqueProjectMap, startDate, endDate);
+		List<JiraIssueCustomHistory> filteredProjectHistory = BacklogKpiHelper
+				.filterProjectHistories(getJiraIssuesCustomHistoryFromBaseClass(), uniqueProjectMap, startDate, endDate);
 
 		resultListMap.put(STORY_HISTORY_DATA, filteredProjectHistory);
 		return resultListMap;

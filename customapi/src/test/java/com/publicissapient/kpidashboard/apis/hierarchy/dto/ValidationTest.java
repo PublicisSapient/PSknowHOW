@@ -46,7 +46,6 @@ public class ValidationTest {
 		assertEquals(2, hierarchyRequest.size());
 		assertFalse("Expected validation errors", updateRequest.isEmpty());
 		assertEquals(2, updateRequest.size());
-
 	}
 
 	@Test
@@ -59,7 +58,6 @@ public class ValidationTest {
 		UpdateHierarchyRequest updateHierarchyRequest = new UpdateHierarchyRequest();
 		updateHierarchyRequest.setDisplayName("");
 		Set<ConstraintViolation<UpdateHierarchyRequest>> updateRequest = validator.validate(updateHierarchyRequest);
-
 
 		assertFalse("Expected validation errors", violations.isEmpty());
 		assertEquals(1, violations.size());
@@ -74,5 +72,4 @@ public class ValidationTest {
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		return factory.getValidator();
 	}
-
 }

@@ -250,7 +250,8 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 								trendValueMap, node.getProjectFilter().getName(), rangeMonth));
 
 				// Populates data in Excel for validation for tickets created before
-				populateExcelDataObject(requestTrackerId, node.getProjectFilter().getName(), excelData, projectWiseJiraIssueList);
+				populateExcelDataObject(requestTrackerId, node.getProjectFilter().getName(), excelData,
+						projectWiseJiraIssueList);
 			}
 			mapTmp.get(node.getId()).setValue(trendValueMap);
 		});

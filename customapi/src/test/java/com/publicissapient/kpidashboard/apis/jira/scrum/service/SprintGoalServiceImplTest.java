@@ -116,7 +116,6 @@ public class SprintGoalServiceImplTest {
 		projectConfigList.forEach(projectConfigs -> {
 			projectConfigMap.put(projectConfigs.getProjectName(), projectConfigs);
 		});
-
 	}
 
 	@Test
@@ -129,8 +128,7 @@ public class SprintGoalServiceImplTest {
 		Map<String, Object> resultListMap = new HashMap<>();
 		resultListMap.put("sprintDetails", sprintDetailsList);
 
-		Map<String, Object> defectDataListMap = sprintGoalService.fetchKPIDataFromDb(leafNodeList, null, null,
-				kpiRequest);
+		Map<String, Object> defectDataListMap = sprintGoalService.fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
 		assertNotNull(defectDataListMap);
 	}
 
@@ -143,8 +141,7 @@ public class SprintGoalServiceImplTest {
 
 		Map<String, Object> resultListMap = new HashMap<>();
 		resultListMap.put("sprintDetails", new ArrayList<>());
-		Map<String, Object> defectDataListMap = sprintGoalService.fetchKPIDataFromDb(leafNodeList, null, null,
-				kpiRequest);
+		Map<String, Object> defectDataListMap = sprintGoalService.fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
 		assertNotNull(defectDataListMap);
 	}
 
@@ -190,5 +187,4 @@ public class SprintGoalServiceImplTest {
 		String type = sprintGoalService.getQualifierType();
 		assertThat("KPI NAME: ", type, equalTo(kpiName));
 	}
-
 }

@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.azure.adapter.helper;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -31,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.publicissapient.kpidashboard.azure.config.AzureProcessorConfig;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 
 import lombok.extern.slf4j.Slf4j;
 

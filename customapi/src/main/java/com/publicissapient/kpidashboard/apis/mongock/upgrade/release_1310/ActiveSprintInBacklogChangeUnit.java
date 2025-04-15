@@ -27,7 +27,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * Change unit to insert a new field mapping for including active sprint data in
  * backlog KPIs.
- * 
+ *
  * @author shunaray
  */
 @ChangeUnit(id = "active_sprint_filtration_backlog", order = "13101", author = "shunaray", systemVersion = "13.1.0")
@@ -45,8 +45,8 @@ public class ActiveSprintInBacklogChangeUnit {
 				.append("fieldLabel", "Backlog KPIs include active sprint data").append("fieldType", "toggle")
 				.append("toggleLabelLeft", "Exclude active sprint data")
 				.append("toggleLabelRight", "Include active sprint data").append("section", "WorkFlow Status Mapping")
-				.append("processorCommon", false).append("tooltip", new Document("definition",
-						"Enabled State Backlog KPIs will populate including the active sprint data."));
+				.append("processorCommon", false).append("tooltip",
+						new Document("definition", "Enabled State Backlog KPIs will populate including the active sprint data."));
 
 		mongoTemplate.getCollection("field_mapping_structure").insertOne(fieldMapping);
 	}

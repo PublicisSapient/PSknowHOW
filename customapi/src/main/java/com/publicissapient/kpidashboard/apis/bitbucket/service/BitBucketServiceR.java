@@ -249,11 +249,11 @@ public class BitBucketServiceR {
 	 * This method is called when the request for kpi is done from exposed API
 	 *
 	 * @param kpiRequest
-	 *            JIRA KPI request true if flow for precalculated, false for direct
-	 *            flow.
+	 *          JIRA KPI request true if flow for precalculated, false for direct
+	 *          flow.
 	 * @return List of KPI data
 	 * @throws EntityNotFoundException
-	 *             EntityNotFoundException
+	 *           EntityNotFoundException
 	 */
 	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {
 		boolean originalReferFromProjectCache = referFromProjectCache;

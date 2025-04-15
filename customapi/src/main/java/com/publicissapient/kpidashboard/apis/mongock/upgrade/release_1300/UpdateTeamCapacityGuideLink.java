@@ -17,11 +17,12 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1300;
 
+import org.bson.Document;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
-import org.bson.Document;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 @ChangeUnit(id = "update_team_capacity_guide_link", order = "13003", author = "kunkambl", systemVersion = "13.0.0")
 public class UpdateTeamCapacityGuideLink {
@@ -46,5 +47,4 @@ public class UpdateTeamCapacityGuideLink {
 				new Document("$set", new Document("kpiInfo.details.1.kpiLinkDetail.link",
 						"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/32473095/Capacity+Management")));
 	}
-
 }

@@ -85,7 +85,6 @@ public class DefectCountByTypeImplTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(issueList);
-
 	}
 
 	@Test

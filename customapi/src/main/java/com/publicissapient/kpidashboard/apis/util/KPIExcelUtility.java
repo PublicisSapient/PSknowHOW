@@ -215,7 +215,7 @@ public class KPIExcelUtility {
 	private static void setFTPRSpecificData(List<KPIExcelData> kpiExcelData, List<String> collectFTPIds) {
 		kpiExcelData.forEach(story -> {
 			boolean isFirstTimePass = true;
-			if(MapUtils.isNotEmpty(story.getStoryId())) {
+			if (MapUtils.isNotEmpty(story.getStoryId())) {
 				isFirstTimePass = story.getStoryId().keySet().stream().anyMatch(collectFTPIds::contains);
 			}
 			story.setFirstTimePass(isFirstTimePass ? Constant.EXCEL_YES : Constant.EMPTY_STRING);

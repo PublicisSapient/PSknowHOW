@@ -44,9 +44,7 @@ public class AuditHierarchyRollBack {
 	@Execution
 	public void execution() {
 		mongoTemplate.getCollection("organization_hierarchy").updateMany(new Document(), // Apply to all documents
-				new Document("$unset",
-						new Document(MODIFIED_DATE, "").append("createdBy", "").append("updatedBy", "")));
-
+				new Document("$unset", new Document(MODIFIED_DATE, "").append("createdBy", "").append("updatedBy", "")));
 	}
 
 	@RollbackExecution

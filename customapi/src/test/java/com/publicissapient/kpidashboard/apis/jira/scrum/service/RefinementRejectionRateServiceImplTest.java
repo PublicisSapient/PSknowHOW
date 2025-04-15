@@ -129,22 +129,23 @@ public class RefinementRejectionRateServiceImplTest {
 		jiraIssueList = JiraIssueDataFactory.newInstance().getJiraIssues();
 		unassignedJiraHistoryDataList = JiraIssueHistoryDataFactory.newInstance().getJiraIssueCustomHistory();
 
-/*
-		for (FieldMapping fieldMap : FieldMappingDataFactory.newInstance(null).getFieldMappings()) {
-			fieldMappingMap.put(fieldMap.getBasicProjectConfigId(), fieldMap);
-		}
-*/
+		/*
+		 * for (FieldMapping fieldMap :
+		 * FieldMappingDataFactory.newInstance(null).getFieldMappings()) {
+		 * fieldMappingMap.put(fieldMap.getBasicProjectConfigId(), fieldMap); }
+		 */
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 
 		unassignedJiraHistoryDataList = JiraIssueHistoryDataFactory.newInstance().getJiraIssueCustomHistory();
-        String formattedDateTime = LocalDateTime.now().minusDays(10).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS"));
-		jiraIssueList.stream().filter(j->j.getNumber().equalsIgnoreCase("TEST-19485")).toList().get(0).setUpdateDate(formattedDateTime);
+		String formattedDateTime = LocalDateTime.now().minusDays(10)
+				.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS"));
+		jiraIssueList.stream().filter(j -> j.getNumber().equalsIgnoreCase("TEST-19485")).toList().get(0)
+				.setUpdateDate(formattedDateTime);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssueList);
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(unassignedJiraHistoryDataList);
-
 	}
 
 	@SuppressWarnings("unchecked")

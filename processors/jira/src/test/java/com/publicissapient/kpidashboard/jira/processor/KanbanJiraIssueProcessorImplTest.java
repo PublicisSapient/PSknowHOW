@@ -526,7 +526,8 @@ public class KanbanJiraIssueProcessorImplTest {
 		when(fieldMapping.getEpicLink()).thenReturn("epicLinkField");
 
 		// Act
-		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked", FieldMapping.class, KanbanJiraIssue.class, Map.class);
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked", FieldMapping.class,
+				KanbanJiraIssue.class, Map.class);
 		method.setAccessible(true);
 		method.invoke(transformFetchedIssueToKanbanJiraIssue, fieldMapping, jiraIssue, fields);
 
@@ -604,7 +605,8 @@ public class KanbanJiraIssueProcessorImplTest {
 		when(fieldMapping.getEpicLink()).thenReturn("epicLinkField");
 
 		// Act
-		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked", FieldMapping.class, KanbanJiraIssue.class, Map.class);
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked", FieldMapping.class,
+				KanbanJiraIssue.class, Map.class);
 		method.setAccessible(true);
 		method.invoke(transformFetchedIssueToKanbanJiraIssue, fieldMapping, jiraIssue, fields);
 

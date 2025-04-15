@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.hierarchy.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
@@ -71,8 +70,7 @@ public class HierarchyOptionServiceImpl implements HierarchyOptionService {
 
 		// Find hierarchy level of parent
 		Optional<HierarchyLevel> parentHierarchyOpt = fullHierarchyLevel.stream()
-				.filter(a -> a.getHierarchyLevelId().equalsIgnoreCase(parentOrganization.getHierarchyLevelId()))
-				.findFirst();
+				.filter(a -> a.getHierarchyLevelId().equalsIgnoreCase(parentOrganization.getHierarchyLevelId())).findFirst();
 
 		if (parentHierarchyOpt.isEmpty()) {
 			return new ServiceResponse(false, "Hierarchy level for parent node not found", null);
@@ -93,9 +91,7 @@ public class HierarchyOptionServiceImpl implements HierarchyOptionService {
 		return new ServiceResponse(true, "Node created successfully under parentId: " + parentId, organizationHierarchy);
 	}
 
-	/**
-	 * Creates a root-level node when no parentId is provided.
-	 */
+	/** Creates a root-level node when no parentId is provided. */
 	private ServiceResponse createRootNode(CreateHierarchyRequest hierarchyRequest,
 			List<HierarchyLevel> fullHierarchyLevel) {
 		Optional<HierarchyLevel> topMostHierarchyOpt = fullHierarchyLevel.stream().filter(a -> a.getLevel() == 1)
@@ -121,5 +117,4 @@ public class HierarchyOptionServiceImpl implements HierarchyOptionService {
 		log.debug("Hierarchy Node create successfully: {}", CommonUtils.sanitize(save.getNodeId()));
 		return save;
 	}
-
 }

@@ -86,5 +86,4 @@ public class DefaultAuthenticationServiceImplTest {
 		// Assert
 		assertEquals(SystemUser.SYSTEM.getName(), loggedInUser);
 	}
-
 }

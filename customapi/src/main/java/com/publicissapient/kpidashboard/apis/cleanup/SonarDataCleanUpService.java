@@ -21,14 +21,14 @@ package com.publicissapient.kpidashboard.apis.cleanup;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorType;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
@@ -95,8 +95,7 @@ public class SonarDataCleanUpService implements ToolDataCleanUpService {
 			cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
 			cacheService.clearCache(CommonConstant.SONAR_KPI_CACHE);
 			List<String> kpiList = kpiDataCacheService.getKpiBasedOnSource(KPISource.SONAR.name());
-			kpiList.forEach(
-					kpiId -> kpiDataCacheService.clearCache(tool.getBasicProjectConfigId().toHexString(), kpiId));
+			kpiList.forEach(kpiId -> kpiDataCacheService.clearCache(tool.getBasicProjectConfigId().toHexString(), kpiId));
 		}
 	}
 }

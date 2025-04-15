@@ -17,6 +17,10 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1310;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
+
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -26,14 +30,9 @@ import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Date;
-import java.util.List;
-
 /**
  * add modified date, createdby and modifiedby
- * 
+ *
  * @author shi6
  */
 @ChangeUnit(id = "audit_hierarchy", order = "13104", author = "shi6", systemVersion = "13.1.0")
@@ -41,7 +40,6 @@ public class AuditHierarchy {
 	private static final String MODIFIED_DATE = "modifiedDate";
 
 	private final MongoTemplate mongoTemplate;
-
 
 	public AuditHierarchy(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
@@ -52,8 +50,7 @@ public class AuditHierarchy {
 		Date currentDate = Date.from(LocalDateTime.now().toInstant(ZoneOffset.UTC));
 		mongoTemplate.getCollection("organization_hierarchy").updateMany(
 				new Document(MODIFIED_DATE, new Document("$exists", false)), // Only update if "modifiedDate" is missing
-				new Document("$set", new Document("createdBy", SystemUser.SYSTEM)
-						.append("updatedBy", SystemUser.SYSTEM)
+				new Document("$set", new Document("createdBy", SystemUser.SYSTEM).append("updatedBy", SystemUser.SYSTEM)
 						.append(MODIFIED_DATE, currentDate)) // Manually set "modifiedDate"
 		);
 	}
@@ -61,7 +58,6 @@ public class AuditHierarchy {
 	@RollbackExecution
 	public void rollback() {
 		mongoTemplate.getCollection("organization_hierarchy").updateMany(new Document(), // Apply to all documents
-				new Document("$unset",
-						new Document(MODIFIED_DATE, "").append("createdBy", "").append("updatedBy", "")));
+				new Document("$unset", new Document(MODIFIED_DATE, "").append("createdBy", "").append("updatedBy", "")));
 	}
 }

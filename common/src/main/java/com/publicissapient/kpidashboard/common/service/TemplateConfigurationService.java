@@ -18,10 +18,10 @@
 
 package com.publicissapient.kpidashboard.common.service;
 
-import com.publicissapient.kpidashboard.common.model.jira.ConfigurationTemplateDocument;
-
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.jira.ConfigurationTemplateDocument;
+
 public interface TemplateConfigurationService {
-    List<ConfigurationTemplateDocument> getConfigurationTemplate();
+	List<ConfigurationTemplateDocument> getConfigurationTemplate();
 }

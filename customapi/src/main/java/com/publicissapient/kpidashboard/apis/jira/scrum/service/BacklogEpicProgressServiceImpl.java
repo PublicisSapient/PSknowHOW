@@ -143,10 +143,8 @@ public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Intege
 			resultListMap.put(TOTAL_ISSUES, totalJiraIssue);
 			// get Epics Linked to backlogStories stories
 			final List<String> epicKeyList = totalJiraIssue.stream().map(JiraIssue::getEpicLinked).toList();
-			Set<JiraIssue> epicJiraIssues = totalJiraIssue.stream()
-					.filter(j -> epicKeyList.contains(j.getNumber())
-							&& j.getTypeName().equalsIgnoreCase(NormalizedJira.ISSUE_TYPE.getValue()))
-					.collect(Collectors.toSet());
+			Set<JiraIssue> epicJiraIssues = totalJiraIssue.stream().filter(j -> epicKeyList.contains(j.getNumber()) &&
+					j.getTypeName().equalsIgnoreCase(NormalizedJira.ISSUE_TYPE.getValue())).collect(Collectors.toSet());
 			resultListMap.put(EPIC_LINKED, epicJiraIssues);
 			// get status category of the project
 			resultListMap.put(RELEASE_JIRA_ISSUE_STATUS, getJiraIssueReleaseStatus());

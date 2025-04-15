@@ -133,12 +133,10 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 			issueCountMap.put(AzureConstants.SCRUM_DATA, scrumIssueCount);
 			issueCountMap.put(AzureConstants.KANBAN_DATA, kanbanIssueCount);
 
-			onlineLineprojectConfigMap.values().stream().filter(x -> !x.isKanban() && x.getIssueCount() > 0)
-					.forEach(config -> projectIdMap.get(AzureConstants.SCRUM_DATA)
-							.add(config.getBasicProjectConfigId().toString()));
-			onlineLineprojectConfigMap.values().stream().filter(x -> x.isKanban() && x.getIssueCount() > 0)
-					.forEach(config -> projectIdMap.get(AzureConstants.KANBAN_DATA)
-							.add(config.getBasicProjectConfigId().toString()));
+			onlineLineprojectConfigMap.values().stream().filter(x -> !x.isKanban() && x.getIssueCount() > 0).forEach(
+					config -> projectIdMap.get(AzureConstants.SCRUM_DATA).add(config.getBasicProjectConfigId().toString()));
+			onlineLineprojectConfigMap.values().stream().filter(x -> x.isKanban() && x.getIssueCount() > 0).forEach(
+					config -> projectIdMap.get(AzureConstants.KANBAN_DATA).add(config.getBasicProjectConfigId().toString()));
 		} catch (InterruptedException ex) {
 			log.error("Error while executing an online azure project", ex);
 			Thread.currentThread().interrupt();

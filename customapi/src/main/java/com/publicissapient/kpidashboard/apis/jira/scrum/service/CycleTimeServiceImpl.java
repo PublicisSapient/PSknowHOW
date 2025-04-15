@@ -159,8 +159,8 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-		List<JiraIssueCustomHistory> filteredProjectHistory = BacklogKpiHelper.filterProjectHistories(
-				getJiraIssuesCustomHistoryFromBaseClass(), uniqueProjectMap, startDate, endDate);
+		List<JiraIssueCustomHistory> filteredProjectHistory = BacklogKpiHelper
+				.filterProjectHistories(getJiraIssuesCustomHistoryFromBaseClass(), uniqueProjectMap, startDate, endDate);
 
 		resultListMap.put(STORY_HISTORY_DATA, filteredProjectHistory);
 		return resultListMap;
@@ -238,8 +238,8 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 						cycleTimeValidationData.setIntakeDate(jiraIssueCustomHistory.getCreatedDate());
 						Map<String, DateTime> dodStatusDateMap = new HashMap<>();
 						List<String> liveStatus = Optional.ofNullable(fieldMapping.getJiraLiveStatusKPI171())
-								.orElse(Collections.emptyList()).stream().filter(Objects::nonNull)
-								.map(String::toLowerCase).collect(Collectors.toList());
+								.orElse(Collections.emptyList()).stream().filter(Objects::nonNull).map(String::toLowerCase)
+								.collect(Collectors.toList());
 						List<String> dodStatus = fieldMapping.getJiraDodKPI171().stream().filter(Objects::nonNull)
 								.map(String::toLowerCase).collect(Collectors.toList());
 						String storyFirstStatus = fieldMapping.getStoryFirstStatusKPI171();

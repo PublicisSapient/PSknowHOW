@@ -111,7 +111,6 @@ public class CycleTimeServiceImplTest {
 		totalJiraIssueHistoryList = jiraIssueHistoryDataFactory.getUniqueJiraIssueCustomHistory();
 		// when(customApiConfig.getCycleTimeRange()).thenReturn(xAxisRange);
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(totalJiraIssueHistoryList);
-
 	}
 
 	@Test

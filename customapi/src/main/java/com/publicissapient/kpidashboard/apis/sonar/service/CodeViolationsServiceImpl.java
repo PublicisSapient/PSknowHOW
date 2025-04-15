@@ -45,6 +45,7 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -110,10 +111,10 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
 			throws ApplicationException {
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
-		
+
 		Filters filter = Filters.getFilter(kpiRequest.getLabel());
-		
-//      in case if only projects or sprint filters are applied
+
+		// in case if only projects or sprint filters are applied
 		if (filter == Filters.SPRINT || filter == Filters.PROJECT) {
 			List<Node> leafNodes = treeAggregatorDetail.getMapOfListOfLeafNodes().entrySet().stream()
 					.filter(k -> Filters.getFilter(k.getKey()) == Filters.SPRINT).map(Map.Entry::getValue).findFirst()
@@ -209,15 +210,15 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 				prepareViolationsList(history, date, projectNodePair.getValue(), projectList, violations,
 						projectWiseDataMap, versionDate);
 
-				endDateTime = endDateTime.minusWeeks(1);
-			}
-			overAllJoblist.addAll(projectList);
-			tempMap.get(projectNodePair.getKey()).setValue(projectWiseDataMap);
-			if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-				KPIExcelUtility.populateSonarViolationsExcelData(
-						tempMap.get(projectNodePair.getKey()).getProjectFilter().getName(), projectList, violations,
-						versionDate, excelData, KPICode.CODE_VIOLATIONS.getKpiId());
-			}
+			endDateTime = endDateTime.minusWeeks(1);
+		}
+		overAllJoblist.addAll(projectList);
+		tempMap.get(projectNodePair.getKey()).setValue(projectWiseDataMap);
+		if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+			KPIExcelUtility.populateSonarViolationsExcelData(
+					tempMap.get(projectNodePair.getKey()).getProjectFilter().getName(), projectList, violations, versionDate,
+					excelData, KPICode.CODE_VIOLATIONS.getKpiId());
+		}
 	}
 
 	/**

@@ -391,11 +391,11 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 	 * Cleans the cache in the Custom API
 	 *
 	 * @param cacheEndPoint
-	 *            the cache endpoint
+	 *          the cache endpoint
 	 * @param param1
-	 *            parameter 1
+	 *          parameter 1
 	 * @param param2
-	 *            parameter 2
+	 *          parameter 2
 	 */
 	private void cacheRestClient(String cacheEndPoint, String param1, String param2) {
 		HttpHeaders headers = new HttpHeaders();
@@ -407,8 +407,7 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 		if (StringUtils.isNoneEmpty(param2)) {
 			cacheEndPoint = cacheEndPoint.replace(CommonConstant.PARAM2, param2);
 		}
-		UriComponentsBuilder uriBuilder = UriComponentsBuilder
-				.fromHttpUrl(zephyrConfig.getCustomApiBaseUrl());
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(zephyrConfig.getCustomApiBaseUrl());
 		uriBuilder.path("/");
 		uriBuilder.path(cacheEndPoint);
 

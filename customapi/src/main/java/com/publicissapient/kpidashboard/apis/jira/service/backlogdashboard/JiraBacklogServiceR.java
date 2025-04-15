@@ -247,8 +247,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 			excludeActiveSprintIssueIds = new HashSet<>();
 		} else {
 			excludeActiveSprintIssueIds = sprintRepository
-					.findByBasicProjectConfigIdAndStateIgnoreCaseOrderByStartDateASC(projectId,
-							SprintDetails.SPRINT_STATE_ACTIVE)
+					.findByBasicProjectConfigIdAndStateIgnoreCaseOrderByStartDateASC(projectId, SprintDetails.SPRINT_STATE_ACTIVE)
 					.stream().flatMap(sprint -> sprint.getTotalIssues().stream()).map(SprintIssue::getNumber)
 					.collect(Collectors.toSet());
 		}

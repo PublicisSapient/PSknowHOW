@@ -17,51 +17,50 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1310;
 
-import com.publicissapient.kpidashboard.apis.mongock.data.ConfigurationTemplateDataFactory;
-import com.publicissapient.kpidashboard.apis.util.MongockUtil;
-import com.publicissapient.kpidashboard.common.model.jira.ConfigurationTemplateDocument;
-import io.mongock.api.annotations.ChangeUnit;
-import io.mongock.api.annotations.Execution;
-import io.mongock.api.annotations.RollbackExecution;
-import org.bson.Document;
-import org.springframework.data.mongodb.core.MongoTemplate;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bson.Document;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
+import com.publicissapient.kpidashboard.apis.mongock.data.ConfigurationTemplateDataFactory;
+import com.publicissapient.kpidashboard.apis.util.MongockUtil;
+import com.publicissapient.kpidashboard.common.model.jira.ConfigurationTemplateDocument;
+
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
 
 @ChangeUnit(id = "r_configuration_template", order = "013103", author = "girpatha", systemVersion = "13.1.0")
 public class ConfigurationTemplateInsertion {
 
-    private final MongoTemplate mongoTemplate;
-    List<ConfigurationTemplateDocument> configurationTemplates;
-    private static final String TEMPLATE_CODE = "templateCode";
-    private static final String CONFIGURATION_TEMPLATE = "configuration_template";
-    public ConfigurationTemplateInsertion(MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
-        ConfigurationTemplateDataFactory configurationTemplateDataFactory = ConfigurationTemplateDataFactory.newInstance();
-        configurationTemplates = configurationTemplateDataFactory.getConfigurationTemplateList();
-    }
+	private final MongoTemplate mongoTemplate;
+	List<ConfigurationTemplateDocument> configurationTemplates;
+	private static final String TEMPLATE_CODE = "templateCode";
+	private static final String CONFIGURATION_TEMPLATE = "configuration_template";
 
-    @Execution
-    public boolean changeSet() {
-        MongockUtil.saveListToDB(configurationTemplates, CONFIGURATION_TEMPLATE, mongoTemplate);
-        return true;
-    }
+	public ConfigurationTemplateInsertion(MongoTemplate mongoTemplate) {
+		this.mongoTemplate = mongoTemplate;
+		ConfigurationTemplateDataFactory configurationTemplateDataFactory = ConfigurationTemplateDataFactory.newInstance();
+		configurationTemplates = configurationTemplateDataFactory.getConfigurationTemplateList();
+	}
 
-    @RollbackExecution
-    public void rollback() {
-        // Get all configuration templates that were inserted by this change unit
-        List<Document> insertedTemplates = mongoTemplate.getCollection(CONFIGURATION_TEMPLATE)
-                .find(new Document(TEMPLATE_CODE,
-                        new Document("$in", Arrays.asList("1", "2", "3"))))
-                .into(new ArrayList<>());
+	@Execution
+	public boolean changeSet() {
+		MongockUtil.saveListToDB(configurationTemplates, CONFIGURATION_TEMPLATE, mongoTemplate);
+		return true;
+	}
 
-        // Delete each inserted template
-        for (Document template : insertedTemplates) {
-            mongoTemplate.getCollection(CONFIGURATION_TEMPLATE)
-                    .deleteOne(new Document("_id", template.get("_id")));
-        }
-    }
+	@RollbackExecution
+	public void rollback() {
+		// Get all configuration templates that were inserted by this change unit
+		List<Document> insertedTemplates = mongoTemplate.getCollection(CONFIGURATION_TEMPLATE)
+				.find(new Document(TEMPLATE_CODE, new Document("$in", Arrays.asList("1", "2", "3")))).into(new ArrayList<>());
+
+		// Delete each inserted template
+		for (Document template : insertedTemplates) {
+			mongoTemplate.getCollection(CONFIGURATION_TEMPLATE).deleteOne(new Document("_id", template.get("_id")));
+		}
+	}
 }

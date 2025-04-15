@@ -132,7 +132,8 @@ public class AzureProcessorJobExecutor extends ProcessorJobExecutor<AzureProcess
 		if (!modeBasedProcessors.isEmpty()) {
 			try {
 				modeBasedProcessors.parallelStream().forEach(modeBasedProcessor -> {
-					Map<String, Integer> issueCountMap = modeBasedProcessor.validateAndCollectIssues(projectConfigList, projectIdMap);
+					Map<String, Integer> issueCountMap = modeBasedProcessor.validateAndCollectIssues(projectConfigList,
+							projectIdMap);
 					scrumIssueCount.updateAndGet(v -> v + issueCountMap.get(AzureConstants.SCRUM_DATA));
 					kanbanIssueCount.updateAndGet(v -> v + issueCountMap.get(AzureConstants.KANBAN_DATA));
 				});
@@ -168,10 +169,10 @@ public class AzureProcessorJobExecutor extends ProcessorJobExecutor<AzureProcess
 					CommonConstant.CACHE_PROJECT_HIERARCHY);
 			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRAKANBAN_KPI_CACHE);
 		}
-		projectIdMap.get(AzureConstants.SCRUM_DATA).forEach(projectId -> azureRestClientFactory.cacheRestClient(
-				CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, projectId, CommonConstant.JIRA_KPI));
-		projectIdMap.get(AzureConstants.KANBAN_DATA).forEach(projectId -> azureRestClientFactory.cacheRestClient(
-				CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, projectId, CommonConstant.JIRAKANBAN));
+		projectIdMap.get(AzureConstants.SCRUM_DATA).forEach(projectId -> azureRestClientFactory
+				.cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, projectId, CommonConstant.JIRA_KPI));
+		projectIdMap.get(AzureConstants.KANBAN_DATA).forEach(projectId -> azureRestClientFactory
+				.cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, projectId, CommonConstant.JIRAKANBAN));
 		return executionStatus;
 	}
 

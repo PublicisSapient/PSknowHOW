@@ -58,8 +58,8 @@ public class SprintGoalServiceImpl extends JiraKPIService<Double, List<Object>, 
 	private final ConfigHelperService configHelperService;
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 		Node root = treeAggregatorDetail.getRoot();
 
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
@@ -78,8 +78,8 @@ public class SprintGoalServiceImpl extends JiraKPIService<Double, List<Object>, 
 	@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
-		sprintLeafNodeList.sort((n1, n2) -> n2.getSprintFilter().getStartDate()
-				.compareTo(n1.getSprintFilter().getStartDate()));
+		sprintLeafNodeList
+				.sort((n1, n2) -> n2.getSprintFilter().getStartDate().compareTo(n1.getSprintFilter().getStartDate()));
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
 
@@ -116,15 +116,13 @@ public class SprintGoalServiceImpl extends JiraKPIService<Double, List<Object>, 
 			List<SprintDetails> sprints = projectWiseSprints.get(new ObjectId(projectId));
 			if (sprints != null) {
 				Set<ProjectSprintDetails.SprintDTO> sortedSprints = sprints.stream()
-						.sorted((s1, s2) -> s2.getStartDate().compareTo(s1.getStartDate()))
-						.map(sprint -> {
+						.sorted((s1, s2) -> s2.getStartDate().compareTo(s1.getStartDate())).map(sprint -> {
 							ProjectSprintDetails.SprintDTO sprintDetail = new ProjectSprintDetails.SprintDTO();
 							sprintDetail.setName(sprint.getSprintName());
 							sprintDetail.setSprintId(sprint.getSprintID());
 							sprintDetail.setGoal(sprint.getGoal());
 							return sprintDetail;
-						})
-						.collect(Collectors.toCollection(LinkedHashSet::new));
+						}).collect(Collectors.toCollection(LinkedHashSet::new));
 
 				projectSprintDetails.setSprintGoals(sortedSprints);
 			}
@@ -154,5 +152,4 @@ public class SprintGoalServiceImpl extends JiraKPIService<Double, List<Object>, 
 	public String getQualifierType() {
 		return KPICode.SPRINT_GOALS.name();
 	}
-
 }

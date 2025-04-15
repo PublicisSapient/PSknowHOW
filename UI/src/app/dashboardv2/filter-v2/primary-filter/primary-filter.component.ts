@@ -433,6 +433,8 @@ export class PrimaryFilterComponent implements OnChanges {
             this.selectedFilters[0]?.labelName?.toLowerCase() === 'project'
           ) {
             this.service.setSelectedTrends(this.selectedFilters);
+          } else {
+            this.service.setSelectedTrends(this.selectedFilters);
           }
         }
       }

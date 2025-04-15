@@ -28,7 +28,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import com.publicissapient.kpidashboard.apis.auth.model.SystemUser;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -52,6 +51,7 @@ import org.springframework.web.client.RestTemplate;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalException;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
+import com.publicissapient.kpidashboard.apis.auth.model.SystemUser;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.errors.APIKeyInvalidException;
@@ -321,7 +321,8 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	public String getLoggedInUser() {
 		org.springframework.security.core.Authentication authentication = SecurityContextHolder.getContext()
 				.getAuthentication();
-		if (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
+		if (authentication != null && authentication.isAuthenticated() &&
+				!authentication.getName().equals("anonymousUser")) {
 			return authentication.getPrincipal().toString();
 		}
 		// If running via Cron, return a default system user

@@ -28,8 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
@@ -82,7 +82,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	private static final String PROJFMAPPING = "projectFieldMapping";
 	public static final String STORY_LIST_WO_DROP = "storyList";
 
-    @Autowired
+	@Autowired
 	private FilterHelperService filterHelperService;
 	@Autowired
 	private CacheService cacheService;
@@ -156,7 +156,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			projectWiseSprints.putIfAbsent(basicProjectConfigId, new ArrayList<>());
 			projectWiseSprints.get(basicProjectConfigId).add(sprint);
 		});
-		
+
 		List<SprintWiseStory> sprintWiseStoryList = new ArrayList<>();
 		List<JiraIssue> remainingDefect = new ArrayList<>();
 		Map<String, FieldMapping> projFieldMapping = new HashMap<>();
@@ -178,7 +178,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					((Map<String, FieldMapping>) result.get(PROJFMAPPING)).get(basicProjectConfigId.toString()));
 			storyListWoDrop.addAll((List<JiraIssue>) result.getOrDefault(STORY_LIST_WO_DROP, new ArrayList<>()));
 		});
-		
+
 		resultListMap.put(SPRINTSTORIES, sprintWiseStoryList);
 		resultListMap.put(TOTALBUGKEY, remainingDefect);
 		resultListMap.put(PROJFMAPPING, projFieldMapping);
@@ -254,8 +254,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			List<SprintWiseStory> sprintWiseStories = sprintWiseMap.getOrDefault(currentNodeIdentifier, new ArrayList<>());
 			List<String> totalStoryIdList = new ArrayList<>(); // totalstories
-			sprintWiseStories.stream().map(SprintWiseStory::getStoryList).toList()
-					.forEach(totalStoryIdList::addAll);
+			sprintWiseStories.stream().map(SprintWiseStory::getStoryList).toList().forEach(totalStoryIdList::addAll);
 			List<JiraIssue> subCategoryWiseTotalBugList = totalDefects.stream()
 					.filter(f -> CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
 					.collect(Collectors.toList());
@@ -380,11 +379,10 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			} else {
 				testCaseList.stream()
-						.filter(f -> NormalizedJira.THIRD_PARTY_DEFECT_VALUE.getValue()
-								.equalsIgnoreCase(f.getDefectRaisedBy()))
+						.filter(f -> NormalizedJira.THIRD_PARTY_DEFECT_VALUE.getValue().equalsIgnoreCase(f.getDefectRaisedBy()))
 						.toList().stream().filter(issue -> CollectionUtils.isNotEmpty(issue.getUatDefectGroup()))
-						.forEach(issue -> issue.getUatDefectGroup().forEach(label -> uatMap
-								.computeIfAbsent(label.toLowerCase(), k -> new ArrayList<>()).add(issue)));
+						.forEach(issue -> issue.getUatDefectGroup()
+								.forEach(label -> uatMap.computeIfAbsent(label.toLowerCase(), k -> new ArrayList<>()).add(issue)));
 			}
 		}
 		// removing for overall filter

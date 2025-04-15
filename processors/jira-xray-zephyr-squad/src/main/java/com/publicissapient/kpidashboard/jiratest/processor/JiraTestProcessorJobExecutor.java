@@ -158,8 +158,7 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 					.filter(projectConfig -> null != projectConfig.getConnectionId()).collect(Collectors.toList());
 
 			if (CollectionUtils.isNotEmpty(processorToolConnectionList)) {
-				List<ProjectConfFieldMapping> onlineProjectConfigMap = createProjectConfigMap(
-						processorToolConnectionList);
+				List<ProjectConfFieldMapping> onlineProjectConfigMap = createProjectConfigMap(processorToolConnectionList);
 
 				onlineProjectConfigMap.forEach(projectConfigMap -> {
 					try {
@@ -169,7 +168,7 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 
 						if (StringUtils.isNotBlank(projectConfigMap.getProjectKey())) {
 							int count = collectTestCases(projectConfigMap, projectIdForCacheClean);
-							testCaseCount.updateAndGet(test -> test + count);							
+							testCaseCount.updateAndGet(test -> test + count);
 						}
 						processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 						processorExecutionTraceLog.setExecutionSuccess(true);
@@ -306,11 +305,11 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 	 * Cleans the cache in the Custom API
 	 *
 	 * @param cacheEndPoint
-	 *            the cache endpoint
+	 *          the cache endpoint
 	 * @param param1
-	 *            parameter 1
+	 *          parameter 1
 	 * @param param2
-	 *            parameter 2
+	 *          parameter 2
 	 */
 	private void cacheRestClient(String cacheEndPoint, String param1, String param2) {
 		HttpHeaders headers = new HttpHeaders();
@@ -322,8 +321,7 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 		if (StringUtils.isNoneEmpty(param2)) {
 			cacheEndPoint = cacheEndPoint.replace(CommonConstant.PARAM2, param2);
 		}
-		UriComponentsBuilder uriBuilder = UriComponentsBuilder
-				.fromHttpUrl(jiraTestProcessorConfig.getCustomApiBaseUrl());
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(jiraTestProcessorConfig.getCustomApiBaseUrl());
 		uriBuilder.path("/");
 		uriBuilder.path(cacheEndPoint);
 

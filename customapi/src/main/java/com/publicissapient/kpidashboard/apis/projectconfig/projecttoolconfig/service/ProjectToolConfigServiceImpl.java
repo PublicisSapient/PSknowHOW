@@ -27,8 +27,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -40,7 +38,9 @@ import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.cleanup.ToolDataCleanUpService;
 import com.publicissapient.kpidashboard.apis.cleanup.ToolDataCleanUpServiceFactory;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ToolNotFoundException;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
@@ -290,8 +290,8 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 				projectTool.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA_TEST)) {
 			cacheService.clearCache(CommonConstant.TESTING_KPI_CACHE);
 			List<String> kpiList = kpiDataCacheService.getKpiBasedOnSource(KPISource.ZEPHYR.name());
-			kpiList.forEach(kpiId -> kpiDataCacheService.clearCache(projectTool.getBasicProjectConfigId().toHexString(),
-					kpiId));
+			kpiList
+					.forEach(kpiId -> kpiDataCacheService.clearCache(projectTool.getBasicProjectConfigId().toHexString(), kpiId));
 		}
 		return new ServiceResponse(true, "updated the project_tools Successfully", projectTool);
 	}

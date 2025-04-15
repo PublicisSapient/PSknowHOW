@@ -253,9 +253,8 @@ public class JenkinsServiceR {
 		Integer projectLevel = filterHelperService.getHierarchyIdLevelMap(false)
 				.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 
-		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& projectLevel >= kpiRequest.getLevel()
-				&& !customApiConfig.getGroupIdsToExcludeFromCache().contains(groupId)) {
+		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) &&
+				projectLevel >= kpiRequest.getLevel() && !customApiConfig.getGroupIdsToExcludeFromCache().contains(groupId)) {
 
 			cacheService.setIntoApplicationCache(projectKeyCache, responseList, KPISource.JENKINS.name(), groupId,
 					kpiRequest.getSprintIncluded());

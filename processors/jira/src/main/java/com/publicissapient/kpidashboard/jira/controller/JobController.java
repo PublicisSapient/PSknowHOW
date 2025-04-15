@@ -24,8 +24,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.publicissapient.kpidashboard.common.model.jira.ConfigurationTemplateDocument;
-import com.publicissapient.kpidashboard.common.service.TemplateConfigurationService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.Job;
@@ -50,8 +48,10 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.jira.ConfigurationTemplateDocument;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.common.service.TemplateConfigurationService;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
@@ -363,10 +363,10 @@ public class JobController {
 			boolean useJql = useJqlOrBoard(projectToolConfigs);
 			if (projectBasicConfig.isKanban()) {
 				// Project is kanban
-				launchJobBasedOnQueryEnabledForKanban(basicProjectConfigId, params, projectToolConfigs,useJql);
+				launchJobBasedOnQueryEnabledForKanban(basicProjectConfigId, params, projectToolConfigs, useJql);
 			} else {
 				// Project is Scrum
-				launchJobBasedOnQueryEnabledForScrum(basicProjectConfigId, params, projectToolConfigs,useJql);
+				launchJobBasedOnQueryEnabledForScrum(basicProjectConfigId, params, projectToolConfigs, useJql);
 			}
 		}
 	}
@@ -376,12 +376,12 @@ public class JobController {
 		if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
 			ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
 			String jiraConfigurationType = projectToolConfig.getJiraConfigurationType();
-			Optional<ConfigurationTemplateDocument> matchingTemplate = templateConfigurationService.getConfigurationTemplate().stream()
-					.filter(template -> template != null
-							&& template.getTemplateCode() != null
-							&& template.getTemplateCode().equals(jiraConfigurationType))
+			Optional<ConfigurationTemplateDocument> matchingTemplate = templateConfigurationService
+					.getConfigurationTemplate().stream().filter(template -> template != null &&
+							template.getTemplateCode() != null && template.getTemplateCode().equals(jiraConfigurationType))
 					.findFirst();
-			if (matchingTemplate.isPresent() && (matchingTemplate.get().getTemplateCode().equals("2") || matchingTemplate.get().getTemplateCode().equals("3"))) {
+			if (matchingTemplate.isPresent() && (matchingTemplate.get().getTemplateCode().equals("2") ||
+					matchingTemplate.get().getTemplateCode().equals("3"))) {
 				useJql = true;
 			} else {
 				useJql = false;
@@ -391,8 +391,8 @@ public class JobController {
 	}
 
 	private void launchJobBasedOnQueryEnabledForScrum(String basicProjectConfigId, JobParameters params,
-			List<ProjectToolConfig> projectToolConfigs,boolean useJql) throws JobExecutionAlreadyRunningException, JobRestartException,
-			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+			List<ProjectToolConfig> projectToolConfigs, boolean useJql) throws JobExecutionAlreadyRunningException,
+			JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
 			if (useJql) {
 				// JQL is setup for the project
@@ -409,8 +409,8 @@ public class JobController {
 	}
 
 	private void launchJobBasedOnQueryEnabledForKanban(String basicProjectConfigId, JobParameters params,
-			List<ProjectToolConfig> projectToolConfigs,boolean useJql) throws JobExecutionAlreadyRunningException, JobRestartException,
-			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+			List<ProjectToolConfig> projectToolConfigs, boolean useJql) throws JobExecutionAlreadyRunningException,
+			JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
 			if (useJql) {
 				// JQL is setup for the project

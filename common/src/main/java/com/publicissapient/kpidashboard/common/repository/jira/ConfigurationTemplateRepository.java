@@ -18,9 +18,10 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import com.publicissapient.kpidashboard.common.model.jira.ConfigurationTemplateDocument;
 import org.bson.types.ObjectId;
 import org.springframework.data.repository.CrudRepository;
+
+import com.publicissapient.kpidashboard.common.model.jira.ConfigurationTemplateDocument;
 
 /**
  * The interface Configuration Template Repository.
