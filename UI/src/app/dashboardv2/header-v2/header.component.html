@@ -25,7 +25,7 @@
           aria-selected="{{ router.url.indexOf('Report') === -1 }}">Dashboard</button>
         </div>
         <div class="tab-button">
-          <button [disabled]="sharedService.getNoReports()" [ngClass]="{active: router.url.indexOf('Report') !== -1 }"  (click)="goToReports()" label="REPORTS"
+          <button [ngClass]="{active: router.url.indexOf('Report') !== -1 }"  (click)="goToReports()" label="REPORTS"
           tabindex="0" role="tab" aria-selected="{{ router.url.indexOf('Report') !== -1 }}">Reports</button>
         </div>
       </div>

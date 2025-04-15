@@ -38,6 +38,8 @@ public class CookieUtil {
 
 	public static final String USERNAME_COOKIE_NAME = "samlUsernameCookie";
 
+	public static final String GUEST_DISPLAY_NAME_COOKIE_NAME = "guestDisplayName";
+
 	private static final String SAME_SITE_ATTRIBUTE = "SameSite";
 
 	private static final String SAME_SITE_VALUE = "None";

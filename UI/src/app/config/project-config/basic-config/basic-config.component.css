@@ -127,3 +127,7 @@ button {
   color: #b4b4b4;
   pointer-events: none;
 }
+
+:host ::ng-deep .p-autocomplete-loader {
+  display: none;
+}
