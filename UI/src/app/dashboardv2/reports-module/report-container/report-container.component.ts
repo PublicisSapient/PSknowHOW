@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from 'src/app/services/http.service';
 import { MessageService } from 'primeng/api';
+import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 
 @Component({
   selector: 'app-report-container',
@@ -20,6 +21,7 @@ export class ReportContainerComponent implements OnInit {
   constructor(
     private http: HttpService,
     private messageService: MessageService,
+    private kpiHelperService: KpiHelperService,
   ) {}
 
   /**
@@ -69,7 +71,11 @@ export class ReportContainerComponent implements OnInit {
       behavior: 'smooth',
     });
     this.setSelectedReport(
-      this.getSelectedItem(this.reportsData, this.selectedReport, 'left'),
+      this.kpiHelperService.getSelectedItem(
+        this.reportsData,
+        this.selectedReport,
+        'left',
+      ),
     );
   }
 
@@ -79,7 +85,11 @@ export class ReportContainerComponent implements OnInit {
       behavior: 'smooth',
     });
     this.setSelectedReport(
-      this.getSelectedItem(this.reportsData, this.selectedReport, 'right'),
+      this.kpiHelperService.getSelectedItem(
+        this.reportsData,
+        this.selectedReport,
+        'right',
+      ),
     );
   }
 
@@ -196,23 +206,5 @@ export class ReportContainerComponent implements OnInit {
         });
       },
     );
-  }
-
-  getSelectedItem(items, currentSelected, direction) {
-    const currentIndex = items.indexOf(currentSelected);
-
-    if (currentIndex === -1) {
-      return items.length > 0 ? items[0] : null;
-    }
-
-    let nextIndex;
-    if (direction === 'right') {
-      nextIndex = (currentIndex + 1) % items.length;
-    } else if (direction === 'left') {
-      nextIndex = (currentIndex - 1 + items.length) % items.length;
-    } else {
-      return currentSelected;
-    }
-    return items[nextIndex];
   }
 }
