@@ -68,6 +68,9 @@ export class ReportContainerComponent implements OnInit {
       left: -200,
       behavior: 'smooth',
     });
+    this.setSelectedReport(
+      this.getSelectedItem(this.reportsData, this.selectedReport, 'left'),
+    );
   }
 
   scrollRight(): void {
@@ -75,6 +78,9 @@ export class ReportContainerComponent implements OnInit {
       left: 200,
       behavior: 'smooth',
     });
+    this.setSelectedReport(
+      this.getSelectedItem(this.reportsData, this.selectedReport, 'right'),
+    );
   }
 
   setSelectedReport(report) {
@@ -190,5 +196,23 @@ export class ReportContainerComponent implements OnInit {
         });
       },
     );
+  }
+
+  getSelectedItem(items, currentSelected, direction) {
+    const currentIndex = items.indexOf(currentSelected);
+
+    if (currentIndex === -1) {
+      return items.length > 0 ? items[0] : null;
+    }
+
+    let nextIndex;
+    if (direction === 'right') {
+      nextIndex = (currentIndex + 1) % items.length;
+    } else if (direction === 'left') {
+      nextIndex = (currentIndex - 1 + items.length) % items.length;
+    } else {
+      return currentSelected;
+    }
+    return items[nextIndex];
   }
 }
