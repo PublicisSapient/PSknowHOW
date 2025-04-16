@@ -155,7 +155,7 @@
               </div>
               <div class="p-text-right p-col-12">
                 <button pButton pRipple class="p-button-lg p-button-success p-button-raised p-mr-3" label="Back"
-                  icon="pi pi-angle-double-left" iconPos="left" (click)="backToProjectList()"
+                  icon="pi pi-angle-double-left" iconPos="left" (click)="closeProjectSetupPopup.emit()"
                   aria-label="Back to Project List"></button>
                 <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised"
                   icon="pi pi-save" iconPos="left" [label]="getButtonLabel()" [disabled]="!form.valid"
@@ -207,7 +207,7 @@
     <ng-template pTemplate="header">
       <h1 class="p-my-0" id="create-hierarchy-heading">Create Hierarchy</h1>
     </ng-template>
-    <form #newProjectNameForm="ngForm" (ngSubmit)="saveHierarchyDetails(newProjectNameForm)">
+    <form #newProjectNameForm="ngForm" (ngSubmit)="onSubmitModifyHierarchyForm(newProjectNameForm)">
       <div class="p-mb-3 p-mt-3 p-pl-1 form-container">
         <div class="p-mb-3 p-mt-3">
           <span class="p-float-label" tooltipPosition="bottom" tooltipEvent="hover">
