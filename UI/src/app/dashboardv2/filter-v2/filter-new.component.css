@@ -383,8 +383,3 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   position: relative;
   z-index: 1001;
 }
-
-.disabled {
-  background-color: #f3f3f3;
-  pointer-events: none;
-}

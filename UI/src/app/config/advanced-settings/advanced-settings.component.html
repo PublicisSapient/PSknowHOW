@@ -77,29 +77,29 @@
           </ng-template>
           <ng-template pTemplate="body" let-processor let-expanded="expanded" aria-describedby="processors-table-description">
             <tr>
-              <td class='custom-table-cell' scope="row" tabindex="0">
+              <td class='custom-table-cell' tabindex="0">
                 {{ processor.toolName === 'Azure' ? 'Azure Board' : processor.toolName }}
               </td>
-              <td class='custom-table-cell' scope="row" tabindex="0">
+              <td class='custom-table-cell' tabindex="0">
                 {{ getToolCategory(processor.toolName) }}
               </td>
 
-              <td class='custom-table-cell' scope="row" tabindex="0">
+              <td class='custom-table-cell' tabindex="0">
                 {{  processor.connectionName }}
               </td>
-              <td class='custom-table-cell' scope="row" tabindex="0">
+              <td class='custom-table-cell' tabindex="0">
                 <span
                   *ngIf="(!findTraceLogForTool(processor.toolName)?.executionOngoing && processor.toolName === 'Jira') || processor.toolName !== 'Jira'">{{
                   showExecutionDate(processor.toolName) }}</span>
               </td>
 
 
-              <td class="custom-table-cell" scope="row" tabindex="0">
+              <td class="custom-table-cell" tabindex="0">
                 <p-progressBar mode="indeterminate"
                   *ngIf="processor.toolName === 'Jira' && findTraceLogForTool(processor.toolName)?.executionOngoing === true "
                   [style]="{ height: '6px' }" aria-label="Loading Jira data"></p-progressBar>
               </td>
-              <td class='custom-table-cell' scope="row" tabindex="0">
+              <td class='custom-table-cell' tabindex="0">
                 <div class="p-d-flex p-align-center">
                   <div class="p-d-flex p-align-center" *ngIf="(!findTraceLogForTool(processor.toolName)?.executionOngoing && processor.toolName === 'Jira') || processor.toolName !== 'Jira'">
                     <div *ngIf="showProcessorLastState(processor.toolName) !== 'NA'" class="status-container"
@@ -198,9 +198,9 @@
         </ng-template>
         <ng-template pTemplate="body" let-item>
           <tr>
-            <td scope="row" tabindex="0">{{item.stepName}}</td>
-            <td scope="row" tabindex="0">{{endTimeConversion(item?.endTime)}}</td>
-            <td scope="row" tabindex="0">{{item.status}}</td>
+            <td tabindex="0">{{item.stepName}}</td>
+            <td tabindex="0">{{endTimeConversion(item?.endTime)}}</td>
+            <td tabindex="0">{{item.status}}</td>
           </tr>
         </ng-template>
       </p-table>
@@ -226,10 +226,10 @@
         </ng-template>
         <ng-template pTemplate="body" let-item>
           <tr>
-            <td scope="row" tabindex="0" style="word-break: break-all">{{item.url}}</td>
-            <td scope="row" tabindex="0">{{item.impact}}</td>
-            <td scope="row" tabindex="0">{{item.status}}</td>
-            <td scope="row" tabindex="0">{{item.error}}</td>
+            <td tabindex="0" style="word-break: break-all">{{item.url}}</td>
+            <td tabindex="0">{{item.impact}}</td>
+            <td tabindex="0">{{item.status}}</td>
+            <td tabindex="0">{{item.error}}</td>
           </tr>
         </ng-template>
       </p-table>
@@ -249,8 +249,8 @@
         </ng-template>
         <ng-template pTemplate="body" let-item>
           <tr>
-            <td scope="row" tabindex="0">{{item.iterationName}}</td>
-            <td scope="row" tabindex="0">{{ item.issuesTagged.join(', ') }}</td>
+            <td tabindex="0">{{item.iterationName}}</td>
+            <td tabindex="0">{{ item.issuesTagged.join(', ') }}</td>
           </tr>
         </ng-template>
       </p-table>
@@ -291,10 +291,10 @@
     </ng-template>
     <ng-template pTemplate="body" let-item>
       <tr>
-        <td scope="row" tabindex="0">{{item.sprintName}}</td>
-        <td scope="row" tabindex="0">{{item?.sprintStartDate | date : 'dd-MMM-yyyy'}} to {{item?.sprintEndDate | date : 'dd-MMM-yyyy'}}</td>
-        <td scope="row" tabindex="0">{{endTimeConversion(item?.refreshedOn)}}</td>
-        <td scope="row" tabindex="0">{{item.refreshBy}}</td>
+        <td tabindex="0">{{item.sprintName}}</td>
+        <td tabindex="0">{{item?.sprintStartDate | date : 'dd-MMM-yyyy'}} to {{item?.sprintEndDate | date : 'dd-MMM-yyyy'}}</td>
+        <td tabindex="0">{{endTimeConversion(item?.refreshedOn)}}</td>
+        <td tabindex="0">{{item.refreshBy}}</td>
       </tr>
     </ng-template>
   </p-table>
