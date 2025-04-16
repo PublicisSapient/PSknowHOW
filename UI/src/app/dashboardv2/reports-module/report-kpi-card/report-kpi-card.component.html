@@ -33,13 +33,14 @@
             </ul>
         </div>
 
+        <!-- removing this section as it is not used
         <div class="kpi-filter-container" *ngIf="selectedTab === 'developer'">
             <ul>
                 <li *ngFor="let key of objectKeys(kpiSelectedFilterObj); let i = index;">
                     <span>{{ kpiSelectedFilterObj[key].join('') }}</span>
                 </li>
             </ul>
-        </div>
+        </div> -->
 
 
         <div *ngIf="chartType === 'stacked-bar-chart' || chartType ===  'stacked-bar'"
