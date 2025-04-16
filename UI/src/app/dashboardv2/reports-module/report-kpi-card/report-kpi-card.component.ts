@@ -60,8 +60,12 @@ export class ReportKpiCardComponent {
     let result = {};
 
     for (let i = 0; i < this.kpiTrendsObj?.length; i++) {
-      result[this.kpiTrendsObj[i].hierarchyId] =
-        this.trendColors[this.kpiTrendsObj[i].hierarchyId];
+      result[
+        this.kpiTrendsObj[i].hierarchyId || this.kpiTrendsObj[i].hiearchyId
+      ] =
+        this.trendColors[
+          this.kpiTrendsObj[i].hierarchyId || this.kpiTrendsObj[i].hiearchyId
+        ];
     }
 
     this.trendColors = result;
