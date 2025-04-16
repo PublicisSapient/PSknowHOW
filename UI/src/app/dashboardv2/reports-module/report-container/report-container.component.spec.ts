@@ -8601,7 +8601,7 @@ describe('ReportContainerComponent', () => {
   let fixture: ComponentFixture<ReportContainerComponent>;
   let httpService;
   let messageService;
-  let kpi;
+  let kpiHelperService;
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ReportContainerComponent],
@@ -8619,6 +8619,7 @@ describe('ReportContainerComponent', () => {
     component = fixture.componentInstance;
     httpService = TestBed.inject(HttpService);
     messageService = TestBed.inject(MessageService);
+    kpiHelperService = TestBed.inject(KpiHelperService);
     httpService.setCurrentUserDetails({
       user_email: 'rishabh@mailinator.com',
       user_id: '67a9dc720edaa90655f684b6',
