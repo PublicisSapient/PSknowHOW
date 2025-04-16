@@ -70,8 +70,9 @@ export class BasicConfigComponent implements OnInit {
   clone: string = '';
   completeHierarchyData: any;
   hierarchyItem: string = '';
+  hierarchyItemFullDetails: any = {};
   addRenameHierarchyPopup: boolean = false;
-  isAddHierarchyOption: boolean;
+  isHierarchyAddtion: boolean = true;
   selectedHierarchyItemToUpdate: any;
 
   constructor(
@@ -561,16 +562,31 @@ export class BasicConfigComponent implements OnInit {
     return this.clone === 'true';
   }
 
-  updateHierarchy(field, type) {
+  openModifyHierarchyPopup(field, type) {
     this.selectedHierarchyItemToUpdate = field;
     this.addRenameHierarchyPopup = true;
     if (type === 'add') {
       this.hierarchyItem = '';
     } else {
+      this.isHierarchyAddtion = false;
+      this.hierarchyItemFullDetails =
+        this.form.value[this.selectedHierarchyItemToUpdate.hierarchyLevelId];
+      this.hierarchyItem = this.hierarchyItemFullDetails.nodeDisplayName;
     }
   }
 
-  saveHierarchyDetails(form) {
+  onSubmitModifyHierarchyForm(form) {
+    if (this.isHierarchyAddtion === true) {
+      this.addHierarchyLevel();
+    } else {
+      this.renameHierarchyLevel();
+    }
+    this.addRenameHierarchyPopup = false;
+    this.isHierarchyAddtion = true;
+    form.reset();
+  }
+
+  addHierarchyLevel() {
     const currentLevelID = this.selectedHierarchyItemToUpdate.level;
     const parentLevelDetails = this.formData.find(
       (hDetails) => hDetails.level === currentLevelID - 1,
@@ -580,7 +596,9 @@ export class BasicConfigComponent implements OnInit {
     this.http
       .addHierarchyOptions(
         currentLevelID === 1 ? '' : parentLevelFormDetails?.nodeId,
-        { name: this.hierarchyItem },
+        {
+          name: this.hierarchyItem,
+        },
       )
       .subscribe((res) => {
         if (res && res.success) {
@@ -590,11 +608,29 @@ export class BasicConfigComponent implements OnInit {
           });
           this.getHierarchy();
 
-          Object.keys(this.selectedItems).forEach((key) => {
-            if (this.selectedItems[key]?.level > currentLevelID) {
-              this.selectedItems[key] = undefined;
-            }
-          });
+          const transofrmDataForPopulation = {
+            level: currentLevelID,
+            hierarchyLevelName:
+              this.selectedHierarchyItemToUpdate.hierarchyLevelName,
+            id: res.data.id,
+            nodeId: res.data.nodeId,
+            nodeName: res.data.nodeName,
+            nodeDisplayName: res.data.nodeDisplayName,
+            hierarchyLevelId: res.data.hierarchyLevelId,
+            parentId: this.selectedHierarchyItemToUpdate.parentId
+              ? this.selectedHierarchyItemToUpdate.parentId
+              : '',
+            modifiedDate: res.data.modifiedDate,
+          };
+          this.form.controls[
+            this.selectedHierarchyItemToUpdate.hierarchyLevelId
+          ].setValue(transofrmDataForPopulation);
+          this.selectedItems[
+            this.selectedHierarchyItemToUpdate.hierarchyLevelId
+          ] = transofrmDataForPopulation;
+
+          // Clear child levels
+          this.clearChildLevels(currentLevelID);
         } else {
           this.messenger.add({
             severity: 'error',
@@ -602,8 +638,37 @@ export class BasicConfigComponent implements OnInit {
           });
         }
       });
+  }
 
-    this.addRenameHierarchyPopup = false;
+  renameHierarchyLevel() {
+    this.http
+      .renameHierarchyOptions(this.hierarchyItemFullDetails.nodeId, {
+        displayName: this.hierarchyItem,
+      })
+      .subscribe((res) => {
+        if (res && res.success) {
+          this.messenger.add({
+            severity: 'success',
+            summary: 'Hierarchy level name updated.',
+          });
+          this.getHierarchy();
+          const updatedLevelDetails = {
+            ...this.hierarchyItemFullDetails,
+            nodeDisplayName: res.data.nodeDisplayName,
+          };
+          this.form.controls[
+            this.selectedHierarchyItemToUpdate.hierarchyLevelId
+          ].setValue(updatedLevelDetails);
+          this.selectedItems[
+            this.selectedHierarchyItemToUpdate.hierarchyLevelId
+          ] = updatedLevelDetails;
+        } else {
+          this.messenger.add({
+            severity: 'error',
+            summary: res.message,
+          });
+        }
+      });
   }
 
   checkForDuplicacy() {
@@ -618,7 +683,15 @@ export class BasicConfigComponent implements OnInit {
     return false;
   }
 
-  checkIfHaveValueForAssociatedHierarchy(field) {
+  private clearChildLevels(parentLevel: number) {
+    Object.keys(this.selectedItems).forEach((key) => {
+      if (this.selectedItems[key]?.level > parentLevel) {
+        this.selectedItems[key] = undefined;
+      }
+    });
+  }
+
+  checkIfHaveValueForAssociatedParentHierarchy(field) {
     let result = true;
     const associatedValue = this.form.controls[field.hierarchyLevelId].value;
     if (
@@ -638,5 +711,28 @@ export class BasicConfigComponent implements OnInit {
     }
 
     return result;
+  }
+
+  checkIfHaveValueForAssociatedHierarchy(field) {
+    let result = true;
+    const associatedValue = this.form.controls[field.hierarchyLevelId].value;
+    if (associatedValue && Object.keys(associatedValue).length) {
+      result = false;
+    }
+    return result;
+  }
+
+  resetHierarchyDropdowns() {
+    Object.keys(this.selectedItems).forEach((key) => {
+      this.selectedItems[key] = undefined;
+    });
+    this.form.controls['projectName'].setValue('');
+    this.formData.forEach((control) => {
+      control.filteredSuggestions = [];
+    });
+  }
+
+  backToProjectList() {
+    this.closeProjectSetupPopup.emit();
   }
 }

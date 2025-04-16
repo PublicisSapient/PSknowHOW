@@ -89,8 +89,8 @@ public class HierarchyOptionServiceImpl implements HierarchyOptionService {
 		}
 
 		// Create child node
-		createOrganizationHierarchy(parentId, hierarchyRequest.getName(), currentLevelOpt.get().getHierarchyLevelId());
-		return new ServiceResponse(true, "Node created successfully under parentId: " + parentId, hierarchyRequest);
+		OrganizationHierarchy organizationHierarchy = createOrganizationHierarchy(parentId, hierarchyRequest.getName(), currentLevelOpt.get().getHierarchyLevelId());
+		return new ServiceResponse(true, "Node created successfully under parentId: " + parentId, organizationHierarchy);
 	}
 
 	/**
@@ -105,12 +105,11 @@ public class HierarchyOptionServiceImpl implements HierarchyOptionService {
 			return new ServiceResponse(false, "No top-level hierarchy found", null);
 		}
 
-		createOrganizationHierarchy(null, hierarchyRequest.getName(), topMostHierarchyOpt.get().getHierarchyLevelId());
-		return new ServiceResponse(true, "Node is created at root level.", hierarchyRequest);
+		OrganizationHierarchy organizationHierarchy = createOrganizationHierarchy(null, hierarchyRequest.getName(), topMostHierarchyOpt.get().getHierarchyLevelId());
+		return new ServiceResponse(true, "Node is created at root level.", organizationHierarchy);
 	}
 
-	public void createOrganizationHierarchy(String parentId, @NotBlank @NotNull @NotEmpty String hierarchyName,
-			String hierarchyLevelId) {
+	public OrganizationHierarchy createOrganizationHierarchy(String parentId, @NotBlank @NotNull @NotEmpty String hierarchyName, String hierarchyLevelId) {
 		OrganizationHierarchy save = new OrganizationHierarchy();
 		save.setNodeId(UUID.randomUUID().toString());
 		save.setHierarchyLevelId(hierarchyLevelId);
@@ -120,6 +119,7 @@ public class HierarchyOptionServiceImpl implements HierarchyOptionService {
 		organizationHierarchyService.save(save);
 		organizationHierarchyService.clearCache();
 		log.debug("Hierarchy Node create successfully: {}", CommonUtils.sanitize(save.getNodeId()));
+		return save;
 	}
 
 }

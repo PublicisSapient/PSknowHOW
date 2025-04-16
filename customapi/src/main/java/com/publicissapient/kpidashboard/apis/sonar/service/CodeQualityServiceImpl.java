@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.enums.Filters;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -126,17 +127,18 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 	 */
 	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement, List<Node> sprintLeafNodeList) {
 		List<KPIExcelData> excelData = new ArrayList<>();
+		Map<String, SprintDetails> sprintDetailsList = getSprintDetailsByIds(sprintLeafNodeList);
 
 		getSonarHistoryForAllProjects(pList,
 				getScrumCurrentDateToFetchFromDb(CommonConstant.MONTH, Long.valueOf(customApiConfig.getSonarMonthCount())))
 				.forEach((projectNodePair, projectData) -> {
 					if (CollectionUtils.isNotEmpty(projectData)) {
-						processProjectData(projectNodePair, projectData,
-								sprintLeafNodeList.stream()
-										.filter(node -> node.getProjectFilter().getId()
-												.equalsIgnoreCase(projectNodePair.getLeft()))
-										.toList(),
-								tempMap, excelData);
+						String projectId = projectNodePair.getKey();
+						SprintDetails sprintDetails = sprintDetailsList.get(projectId) != null
+								? sprintDetailsList.get(projectId)
+								: null;
+						processProjectData(projectNodePair, projectData, sprintDetails, tempMap,
+								excelData);
 					}
 				});
 
@@ -145,24 +147,27 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 	}
 
 	private void processProjectData(Pair<String, String> projectNodePair, List<SonarHistory> projectData,
-			List<Node> sprintLeafNodeList, Map<String, Node> tempMap, List<KPIExcelData> excelData) {
+			SprintDetails sprintDetails, Map<String, Node> tempMap, List<KPIExcelData> excelData) {
 		List<String> projectList = new ArrayList<>();
 		List<String> debtList = new ArrayList<>();
 		List<String> versionDate = new ArrayList<>();
 		Map<String, List<DataCount>> projectWiseDataMap = new HashMap<>();
 		// get previous month details as the start date
-		boolean isBacklogProject = CollectionUtils.isNotEmpty(sprintLeafNodeList)
-				&& sprintLeafNodeList.get(0).getProjectFilter().getName().equalsIgnoreCase(projectNodePair.getValue());
-		LocalDate endDateTime = isBacklogProject ? DateUtil.stringToLocalDate(
-				sprintLeafNodeList.get(0).getSprintFilter().getEndDate().replaceAll(DATE_TIME_FORMAT_REGEX, ""),
-				DateUtil.TIME_FORMAT) : LocalDate.now().minusMonths(1);
+		LocalDate endDateTime = LocalDate.now().minusWeeks(1);
+		if (sprintDetails != null) {
+			endDateTime = sprintDetails.getCompleteDate() != null
+					? DateUtil.stringToLocalDate(sprintDetails.getCompleteDate().replaceAll(DATE_TIME_FORMAT_REGEX, ""),
+							DateUtil.TIME_FORMAT)
+					: DateUtil.stringToLocalDate(sprintDetails.getEndDate().replaceAll(DATE_TIME_FORMAT_REGEX, ""),
+							DateUtil.TIME_FORMAT);
+		}
 
 		for (int i = 0; i < customApiConfig.getSonarMonthCount(); i++) {
 			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(endDateTime,
 					CommonConstant.MONTH);
 			LocalDate monthStartDate = dateRange.getStartDate();
 			LocalDate monthEndDate = dateRange.getEndDate();
-			if (isBacklogProject) {
+			if (sprintDetails != null) {
 				monthStartDate = endDateTime
 						.minusDays(YearMonth.of(endDateTime.getYear(), endDateTime.getMonth()).lengthOfMonth() - 1L);
 				monthEndDate = endDateTime;

@@ -220,7 +220,7 @@ export class HeaderComponent implements OnInit {
     if (this.sharedService.getNoReports()) {
       this.messageService.add({
         severity: 'info',
-        summary: 'No reports available',
+        summary: 'No Reports Available',
         detail: '',
       });
     } else {

@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -107,7 +108,7 @@ public class JenkinsServiceR {
 				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(), filterHelperService
 								.getHierarchyIdLevelMap(false).getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
-
+				updateTreeAggregatorDetail(kpiRequest, treeAggregatorDetail);
 				ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 				List<CompletableFuture<Void>> futures = new ArrayList<>();
@@ -258,6 +259,39 @@ public class JenkinsServiceR {
 
 			cacheService.setIntoApplicationCache(projectKeyCache, responseList, KPISource.JENKINS.name(), groupId,
 					kpiRequest.getSprintIncluded());
+		}
+	}
+
+	/**
+	 * updates the TreeAggregatorDetail object based on the KpiRequest. If the
+	 * selectedMap in the KpiRequest does not contain the HIERARCHY_LEVEL_ID_SPRINT,
+	 * filter out the sprint by sprintCountForKpiCalculation property
+	 *
+	 * @param kpiRequest
+	 *          KpiRequest object containing the selectedMap.
+	 * @param treeAggregatorDetail
+	 *          The TreeAggregatorDetail object to be updated.
+	 */
+	private void updateTreeAggregatorDetail(KpiRequest kpiRequest, TreeAggregatorDetail treeAggregatorDetail) {
+		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())
+				&& org.apache.commons.collections4.CollectionUtils
+						.isEmpty(kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))
+				&& MapUtils.isNotEmpty(treeAggregatorDetail.getMapOfListOfLeafNodes())) {
+			List<Node> sprintList = new ArrayList<>();
+			if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT).stream()
+						.collect(Collectors.groupingBy(Node::getParentId)).forEach((proj, sprints) -> {
+							if (sprints.size() > customApiConfig.getSprintCountForKpiCalculation()) {
+								sprintList.addAll(new ArrayList<>(
+										sprints.subList(0, customApiConfig.getSprintCountForKpiCalculation())));
+							} else {
+								sprintList.addAll(sprints);
+							}
+						});
+				treeAggregatorDetail.getMapOfListOfLeafNodes().put(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
+						sprintList);
+			}
 		}
 	}
 

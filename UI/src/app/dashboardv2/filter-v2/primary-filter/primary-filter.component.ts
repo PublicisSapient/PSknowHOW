@@ -429,9 +429,7 @@ export class PrimaryFilterComponent implements OnChanges {
               ),
             );
             // this.service.setSelectedTrends(this.selectedFilters);
-          } else if (
-            this.selectedFilters[0]?.labelName?.toLowerCase() === 'project'
-          ) {
+          } else {
             this.service.setSelectedTrends(this.selectedFilters);
           }
         }

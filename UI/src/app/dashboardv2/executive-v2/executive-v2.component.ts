@@ -336,6 +336,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
           this.iSAdditionalFilterSelected = sharedobject?.isAdditionalFilters;
           this.receiveSharedData(sharedobject);
+          this.getSprintGoalData();
           this.noTabAccess = false;
           this.handleMaturityTableLoader();
         }),
@@ -3987,31 +3988,36 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             );
             if (isNaN(Number(this.kpiChartData[kpiId][i]?.data))) {
               let selectedNode = this.filterData.filter(
-                (x) => x.nodeDisplayName === this.kpiChartData[kpiId][i]?.data,
+                (x) =>
+                  x.nodeDisplayName === this.kpiChartData[kpiId][i]?.data &&
+                  this.checkSelectedNodeId(x.nodeId),
               );
-              let selectedId = selectedNode[0].nodeId;
-              trendObj = {
-                hierarchyName: this.kpiChartData[kpiId][i]?.data,
-                hierarchyId: selectedId,
-                value: latest,
-                trend: trend,
-                maturity:
-                  kpiId != 'kpi3' && kpiId != 'kpi53'
-                    ? this.checkMaturity(this.kpiChartData[kpiId][i])
-                    : 'M' + this.kpiChartData[kpiId][i]?.maturity,
-                maturityValue: this.kpiChartData[kpiId][i]?.maturityValue,
-                kpiUnit: unit,
-              };
-            }
-            if (kpiId === 'kpi997') {
-              trendObj['value'] = 'NA';
-            }
-            if (
-              !this.kpiTrendsObj[kpiId]
-                .map((x) => x.hierarchyId)
-                .includes(trendObj['hierarchyId'])
-            ) {
-              this.kpiTrendsObj[kpiId]?.push(trendObj);
+              let selectedId = selectedNode.map((x) => x.nodeId);
+              for (let i = 0; i < selectedId?.length; i++) {
+                trendObj = {
+                  hierarchyName: this.kpiChartData[kpiId][i]?.data,
+                  hierarchyId: selectedId[i],
+                  value: latest,
+                  trend: trend,
+                  maturity:
+                    kpiId != 'kpi3' && kpiId != 'kpi53'
+                      ? this.checkMaturity(this.kpiChartData[kpiId][i])
+                      : 'M' + this.kpiChartData[kpiId][i]?.maturity,
+                  maturityValue: this.kpiChartData[kpiId][i]?.maturityValue,
+                  kpiUnit: unit,
+                };
+
+                if (kpiId === 'kpi997') {
+                  trendObj['value'] = 'NA';
+                }
+                if (
+                  !this.kpiTrendsObj[kpiId]
+                    .map((x) => x.hierarchyId)
+                    .includes(trendObj['hierarchyId'])
+                ) {
+                  this.kpiTrendsObj[kpiId]?.push(trendObj);
+                }
+              }
             }
           }
         }
@@ -4055,6 +4061,19 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     Object.keys(data).forEach((key) => {
       this.kpiStatusCodeArr[key] = data[key].responseCode;
     });
+  }
+
+  checkSelectedNodeId(nodeId) {
+    if (
+      this.service
+        .getSelectedTrends()
+        .map((x) => x.nodeId)
+        .includes(nodeId)
+    ) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   getKpiCommentsCount(kpiId?) {
@@ -4385,6 +4404,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         chartType: '',
       },
     ];
-    this.postJiraKpi(kpiJiraTest, 'jira');
+    if (
+      this.selectedtype === 'scrum' &&
+      ['my-knowhow', 'speed', 'quality'].includes(
+        this.selectedTab?.toLocaleLowerCase(),
+      )
+    ) {
+      this.postJiraKpi(kpiJiraTest, 'jira');
+    }
   }
 }
