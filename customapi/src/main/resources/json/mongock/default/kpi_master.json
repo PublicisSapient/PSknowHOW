@@ -4961,7 +4961,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://speed.suite.publicissapient.com/wiki/spaces/PS/pages/159154188/Late+Refinement"
+            "link" : "https://knowhow.suite.publicissapient.com/wiki/spaces/PS/pages/159154188/Late+Refinement"
           }
         }
       ]
@@ -4972,7 +4972,6 @@
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
     "kpiWidth" : 100 ,
-    "kpiFilter" : "radioButton" ,
     "boxType" : "chart" ,
     "calculateMaturity" : false
   }

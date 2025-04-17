@@ -22,6 +22,7 @@ import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.getAffecte
 import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.getFieldValue;
 import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.getLabelsList;
 
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,13 +85,12 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
- *
  */
 @Slf4j
 @Service
 public class JiraIssueProcessorImpl implements JiraIssueProcessor {
-	private static final String TEST_PHASE= "TestPhase";
-	private static final String UAT_PHASE= "UAT";
+	private static final String TEST_PHASE = "TestPhase";
+	private static final String UAT_PHASE = "UAT";
 
 	AssigneeDetails assigneeDetails;
 	@Autowired
@@ -204,7 +204,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			// ADD Production Incident field to feature
 			setProdIncidentIdentificationField(fieldMapping, issue, jiraIssue, fields);
 			setIssueTechStoryType(fieldMapping, issue, jiraIssue, fields);
-			setLateRefinement(fieldMapping,issue, jiraIssue, fields);
+			setLateRefinement187(fieldMapping, jiraIssue, fields, issue);
 			jiraIssue.setAffectedVersions(getAffectedVersions(issue));
 			setIssueEpics(issueEpics, epic, jiraIssue);
 			setJiraIssueValues(jiraIssue, issue, fieldMapping, fields);
@@ -999,10 +999,95 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		} catch (Exception e) {
 			log.error("Error while parsing Production Incident field", e);
 		}
-
 	}
 
-	private void setLateRefinement(FieldMapping fieldMapping, Issue issue, JiraIssue jiraIssue, Map<String, IssueField> fields) {
+	private void setLateRefinement187(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields,
+			Issue issue) {
+		if (null == fieldMapping.getJiraRefinementCriteriaKPI187()) {
+			return;
+		}
 
+		String refinementCriteria = fieldMapping.getJiraRefinementCriteriaKPI187().trim();
+		String refinementField = fieldMapping.getJiraRefinementByCustomFieldKPI187();
+
+		if (refinementField == null) {
+			return;
+		}
+
+		Object value = null;
+		if (refinementCriteria.equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)) {
+			// Handle custom field case
+			IssueField field = fields.get(refinementField.trim());
+			if (field != null) {
+				if (field.getValue() != null) {
+					value = field.getValue();
+				}
+			} else {
+				// Handle standard Issue field case
+				try {
+					// Try to get the value using reflection from Issue object
+					Method getter = Issue.class.getMethod("get" + StringUtils.capitalize(refinementField.trim()));
+					value = getter.invoke(issue);
+				} catch (Exception e) {
+					log.debug("Could not find or invoke getter for field: {}", refinementField, e);
+					return;
+				}
+			}
+		}
+
+		if (value == null) {
+			return;
+		}
+
+		List<String> customFieldValue = getCustomFieldValue(value);
+		Set<String> customFieldSet = Arrays.stream(
+						String.join(" ", customFieldValue).toLowerCase().split(" "))
+				.filter(s -> !s.isBlank())  // optional: remove blanks
+				.collect(Collectors.toSet());
+
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraRefinementMinLengthKPI187())) {
+			int minLength = Integer.parseInt(fieldMapping.getJiraRefinementMinLengthKPI187());
+			if (customFieldSet.size() >= minLength
+					&& CollectionUtils.isNotEmpty(fieldMapping.getJiraRefinementKeywordsKPI187())) {
+				Set<String> fieldMappingSet = fieldMapping.getJiraRefinementKeywordsKPI187().stream()
+						.map(String::toLowerCase).collect(Collectors.toSet());
+				jiraIssue.setRefinedStatus187(checkKeyWords(customFieldSet, fieldMappingSet));
+			}
+		}
 	}
+
+	private static boolean checkKeyWords(Set<String> stringSet, Set<String> fieldMappingSet) {
+
+		for (String keyword : fieldMappingSet) {
+			if (!stringSet.contains(keyword.toLowerCase())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private ArrayList<String> getCustomFieldValue(Object issueFieldValue) {
+		JSONParser parser = new JSONParser();
+		ArrayList<String> customValue = new ArrayList<>();
+		try {
+			if (issueFieldValue instanceof org.codehaus.jettison.json.JSONArray) {
+				JSONArray array = (JSONArray) parser.parse(issueFieldValue.toString());
+				for (Object o : array) {
+					org.json.simple.JSONObject jsonObject = (org.json.simple.JSONObject) parser.parse(o.toString());
+					customValue.add(jsonObject.get(JiraConstants.VALUE).toString());
+				}
+			} else if (issueFieldValue instanceof org.codehaus.jettison.json.JSONObject) {
+				String jsonObjectValue = ((org.codehaus.jettison.json.JSONObject) issueFieldValue)
+						.get(JiraConstants.VALUE).toString();
+				customValue.add(jsonObjectValue);
+			} else {
+				customValue.add(issueFieldValue.toString());
+			}
+
+		} catch (org.json.simple.parser.ParseException | JSONException e) {
+			log.error("JIRA Processor | Error while parsing custom field field {}", e);
+		}
+		return customValue;
+	}
+
 }

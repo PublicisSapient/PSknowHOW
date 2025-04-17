@@ -397,6 +397,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 				// ADD Production Incident field to feature
 				setProdIncidentIdentificationField(fieldMapping, issue, azureIssue, fieldsMap);
+				setLateRefinement187(fieldMapping, azureIssue, fieldsMap);
 
 				setIssueTechStoryType(fieldMapping, issue, azureIssue, fieldsMap);
 
@@ -1245,5 +1246,35 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
 	}
+
+
+	private void setLateRefinement187(FieldMapping fieldMapping, JiraIssue azureIssue, Map<String, Object> fieldsMap) {
+		if (null != fieldMapping.getJiraRefinementCriteriaKPI187()
+				&& fieldMapping.getJiraRefinementCriteriaKPI187().trim()
+				.equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
+				&& fieldsMap.get(fieldMapping.getJiraRefinementByCustomFieldKPI187().trim()) != null
+		) {
+			String azureValue = fieldsMap.get(fieldMapping.getJiraRefinementByCustomFieldKPI187().trim()).toString();
+			String[] string = azureValue.toLowerCase().split(" ");
+			if (StringUtils.isNotEmpty(fieldMapping.getJiraRefinementMinLengthKPI187())) {
+				int i = Integer.parseInt(fieldMapping.getJiraRefinementMinLengthKPI187());
+				if (string.length >= i && CollectionUtils.isNotEmpty(fieldMapping.getJiraRefinementKeywordsKPI187())) {
+					Set<String> fieldMappingSet = fieldMapping.getJiraRefinementKeywordsKPI187().stream().map(String::toLowerCase).collect(Collectors.toSet());
+					azureIssue.setRefinedStatus187(checkKeyWords(string, fieldMappingSet));
+				}
+			}
+		}
+	}
+
+	private static boolean checkKeyWords(String[] string, Set<String> fieldMappingSet) {
+		for (String word : string) {
+			if (!fieldMappingSet.contains(word)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
 
 }
