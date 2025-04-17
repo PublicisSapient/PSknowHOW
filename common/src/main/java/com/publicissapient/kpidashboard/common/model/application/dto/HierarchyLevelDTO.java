@@ -7,5 +7,5 @@ public class HierarchyLevelDTO {
 	private int level;
 	private String hierarchyLevelId;
 	private String hierarchyLevelName;
-	private String hierarchyLevelInfo;
+	private String hierarchyInfo;
 }
