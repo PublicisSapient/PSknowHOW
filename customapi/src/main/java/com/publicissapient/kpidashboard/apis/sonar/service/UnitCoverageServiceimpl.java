@@ -188,8 +188,8 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 		tempMap.get(projectNodePair.getLeft()).setValue(projectWiseDataMap);
 		if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			KPIExcelUtility.populateSonarKpisExcelData(
-					tempMap.get(projectNodePair.getKey()).getProjectFilter().getName(), projectList, versionDate,
-					versionDate, excelData, KPICode.SONAR_TECH_DEBT.getKpiId());
+					tempMap.get(projectNodePair.getKey()).getProjectFilter().getName(), projectList, coverageList,
+					versionDate, excelData, KPICode.UNIT_TEST_COVERAGE.getKpiId());
 		}
 	}
 
