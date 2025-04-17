@@ -108,7 +108,7 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 		if (filter == Filters.SPRINT || filter == Filters.PROJECT) {
 			List<Node> leafNodes = treeAggregatorDetail.getMapOfListOfLeafNodes().entrySet().stream()
 					.filter(k -> Filters.getFilter(k.getKey()) == Filters.SPRINT).map(Map.Entry::getValue).findFirst()
-					.orElse(Collections.emptyList());
+					.orElse(new ArrayList<>());
 			projectWiseLeafNodeValue(kpiElement, mapTmp, projectList, trendValueMap, leafNodes);
 
 		} else {
@@ -382,7 +382,7 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 					: DateUtil.stringToLocalDate(sprintDetails.getEndDate().replaceAll(DATE_TIME_FORMAT_REGEX, ""),
 					DateUtil.TIME_FORMAT);
 		}
-		return LocalDate.now().minusWeeks(1);
+		return LocalDate.now();
 	}
 
 	/**
