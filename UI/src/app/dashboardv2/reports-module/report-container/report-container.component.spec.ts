@@ -7,6 +7,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { APP_CONFIG, AppConfig } from '../../../services/app.config';
 import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
+import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 
 const reportsResponse = {
   message: 'Reports fetched successfully',
@@ -8600,6 +8601,7 @@ describe('ReportContainerComponent', () => {
   let fixture: ComponentFixture<ReportContainerComponent>;
   let httpService;
   let messageService;
+  let kpiHelperService;
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ReportContainerComponent],
@@ -8608,6 +8610,7 @@ describe('ReportContainerComponent', () => {
         { provide: APP_CONFIG, useValue: AppConfig },
         SharedService,
         MessageService,
+        KpiHelperService,
       ],
       imports: [RouterTestingModule, HttpClientTestingModule],
     }).compileComponents();
@@ -8616,6 +8619,7 @@ describe('ReportContainerComponent', () => {
     component = fixture.componentInstance;
     httpService = TestBed.inject(HttpService);
     messageService = TestBed.inject(MessageService);
+    kpiHelperService = TestBed.inject(KpiHelperService);
     httpService.setCurrentUserDetails({
       user_email: 'rishabh@mailinator.com',
       user_id: '67a9dc720edaa90655f684b6',
