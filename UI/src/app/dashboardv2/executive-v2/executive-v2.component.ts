@@ -3495,15 +3495,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       for (const key in this.colorObj) {
         if (arr[i].value?.length) {
           let selectedNode;
-          if (this.nonUniqueNames) {
-            selectedNode = this.filterData.filter(
-              (x) => this.appendParent(x) === arr[i].value[0].sprojectName,
-            );
-          } else {
-            selectedNode = this.filterData.filter(
-              (x) => x.nodeName === arr[i].value[0].sprojectName,
-            );
-          }
+          selectedNode = this.filterData.filter(
+            (x) => x.nodeName === arr[i].value[0].sprojectName,
+          );
           let selectedId = selectedNode.filter((x) => x.nodeId === key)[0]
             ?.nodeId;
 
@@ -4024,17 +4018,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             );
             if (isNaN(Number(this.kpiChartData[kpiId][i]?.data))) {
               let selectedNode;
-              if (this.nonUniqueNames) {
-                selectedNode = this.filterData.filter(
-                  (x) =>
-                    this.appendParent(x) === this.kpiChartData[kpiId][i]?.data,
-                );
-              } else {
-                selectedNode = this.filterData.filter(
-                  (x) =>
-                    x.nodeDisplayName === this.kpiChartData[kpiId][i]?.data,
-                );
-              }
+
+              selectedNode = this.filterData.filter(
+                (x) => x.nodeDisplayName === this.kpiChartData[kpiId][i]?.data,
+              );
+
               // let selectedId = selectedNode.map((x) => x.nodeId);
               if (selectedNode) {
                 trendObj = {
