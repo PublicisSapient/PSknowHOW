@@ -2695,6 +2695,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   createAllKpiArray(data) {
+    this.appendParentName(data);
     for (const key in data) {
       const idx = this.ifKpiExist(data[key]?.kpiId);
       if (idx !== -1) {
@@ -2743,6 +2744,160 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         );
       }
     }
+  }
+
+  appendParentName(data) {
+    // logic for same node Display Names ie... sProjectName in data
+    Object.keys(data).forEach((kpiId) => {
+      if (kpiId !== 'kpi187') {
+        if (data[kpiId].trendValueList?.length) {
+          const allProjectNames = data[kpiId].trendValueList?.flatMap((item) =>
+            item.value?.map((v) => v.sprojectName || v.data),
+          );
+          const uniqueProjectNames = [...new Set(allProjectNames)];
+          if (
+            uniqueProjectNames?.length !==
+            this.service.getSelectedTrends()?.length
+          ) {
+            this.nonUniqueNames = true;
+            if (uniqueProjectNames.map((x) => x).length) {
+              data[kpiId].trendValueList.forEach((dataItem) => {
+                let anyProject = '';
+
+                anyProject = dataItem.value.map(
+                  (valueItem) => valueItem.projectNames || [],
+                );
+                if (!anyProject?.length) {
+                  console.log(dataItem);
+                } else {
+                  anyProject = anyProject[0][0];
+                }
+
+                let completeHierarchyData = JSON.parse(
+                  localStorage.getItem('completeHierarchyData'),
+                )[this.selectedtype];
+
+                let projectLevel = completeHierarchyData.find(
+                  (x) => x.hierarchyLevelId.toLowerCase() === 'project',
+                ).level;
+
+                // anyProject
+                if (anyProject?.length) {
+                  let anyProjectNode;
+                  let parentName;
+                  anyProjectNode = this.completeFilterData[
+                    completeHierarchyData.find(
+                      (x) =>
+                        x.level ===
+                        this.service.getSelectedTrends()[0].level + 1,
+                    ).hierarchyLevelName
+                  ].filter((x) => {
+                    return (
+                      x.nodeName === anyProject ||
+                      x.nodeDisplayName === anyProject
+                    );
+                  });
+
+                  if (anyProjectNode?.length && anyProjectNode.length > 1) {
+                    anyProjectNode = anyProjectNode.filter((x) =>
+                      this.service
+                        .getSelectedTrends()
+                        .map((f) => f.nodeId)
+                        .includes(x.parentId),
+                    )[0];
+                  } else if (anyProject?.length) {
+                    anyProjectNode = anyProjectNode[0];
+                  }
+
+                  if (anyProjectNode && anyProjectNode['nodeId']) {
+                    for (
+                      let k = anyProjectNode['level'];
+                      k >= this.service.getSelectedTrends()[0].level;
+                      k--
+                    ) {
+                      parentName = this.completeFilterData[
+                        completeHierarchyData.find((x) => x.level === k)
+                          .hierarchyLevelName
+                      ].filter((x) => {
+                        return x.nodeId === anyProjectNode['nodeId'];
+                      })[0];
+                      anyProjectNode = this.completeFilterData[
+                        completeHierarchyData.find((x) => x.level === k - 1)
+                          .hierarchyLevelName
+                      ].find((x) => {
+                        return x.nodeId === parentName.parentId;
+                      });
+                    }
+                  } else {
+                    // this means project is coming instead of subsequent level
+                    let parentName;
+                    anyProjectNode = this.completeFilterData[
+                      completeHierarchyData.find(
+                        (x) => x.level === projectLevel,
+                      ).hierarchyLevelName
+                    ].filter((x) => {
+                      return (
+                        x.nodeName === anyProject ||
+                        x.nodeDisplayName === anyProject
+                      );
+                    });
+
+                    if (anyProjectNode?.length && anyProjectNode.length > 1) {
+                      anyProjectNode = anyProjectNode.filter((x) =>
+                        this.service
+                          .getSelectedTrends()
+                          .map((f) => f.nodeId)
+                          .includes(x.parentId),
+                      )[0];
+                    } else if (anyProject?.length) {
+                      anyProjectNode = anyProjectNode[0];
+                    }
+
+                    for (
+                      let k = anyProjectNode['level'];
+                      k >= this.service.getSelectedTrends()[0].level;
+                      k--
+                    ) {
+                      parentName = this.completeFilterData[
+                        completeHierarchyData.find((x) => x.level === k - 1)
+                          .hierarchyLevelName
+                      ].filter((x) => {
+                        return x.nodeId === anyProjectNode['parentId'];
+                      })[0];
+                      anyProjectNode = this.completeFilterData[
+                        completeHierarchyData.find((x) => x.level === k - 1)
+                          .hierarchyLevelName
+                      ].find((x) => {
+                        return x.nodeId === parentName.nodeId;
+                      });
+                    }
+                  }
+
+                  if (
+                    !this.service
+                      .getSelectedTrends()
+                      .map((x) => x.parentId)
+                      .includes(anyProjectNode['nodeId'])
+                  ) {
+                    console.log(anyProjectNode);
+                  }
+                  dataItem.data =
+                    dataItem.data + ' (' + anyProjectNode['nodeName'] + ')';
+                  dataItem.value.forEach((element) => {
+                    element.sprojectName =
+                      element.sprojectName +
+                      ' (' +
+                      anyProjectNode['nodeName'] +
+                      ')';
+                  });
+                  this.cdr.detectChanges();
+                }
+              });
+            }
+          }
+        }
+      }
+    });
   }
 
   createAllKpiArrayForBacklog(data) {
@@ -3483,7 +3638,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     }
   }
-
   generateColorObj(kpiId, arr) {
     // If the arr is empty, return an empty array
     if (!arr?.length) return [];
@@ -3495,9 +3649,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       for (const key in this.colorObj) {
         if (arr[i].value?.length) {
           let selectedNode;
-          selectedNode = this.filterData.filter(
-            (x) => x.nodeName === arr[i].value[0].sprojectName,
-          );
+          if (this.nonUniqueNames) {
+            selectedNode = this.filterData.filter(
+              (x) => this.appendParent(x) === arr[i].value[0].sprojectName,
+            );
+          } else {
+            selectedNode = this.filterData.filter(
+              (x) => x.nodeName === arr[i].value[0].sprojectName,
+            );
+          }
           let selectedId = selectedNode.filter((x) => x.nodeId === key)[0]
             ?.nodeId;
 
@@ -3999,11 +4159,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             );
             if (isNaN(Number(this.kpiChartData[kpiId][i]?.data))) {
               let selectedNode;
-
-              selectedNode = this.filterData.filter(
-                (x) => x.nodeDisplayName === this.kpiChartData[kpiId][i]?.data,
-              );
-
+              if (this.nonUniqueNames) {
+                selectedNode = this.filterData.filter(
+                  (x) =>
+                    this.appendParent(x) === this.kpiChartData[kpiId][i]?.data,
+                );
+              } else {
+                selectedNode = this.filterData.filter(
+                  (x) =>
+                    x.nodeDisplayName === this.kpiChartData[kpiId][i]?.data,
+                );
+              }
               // let selectedId = selectedNode.map((x) => x.nodeId);
               if (selectedNode) {
                 trendObj = {
@@ -4066,6 +4232,25 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
       let idx = this.allKpiArray.findIndex((x) => x.kpiId == kpiId);
       this.getTableData(kpiId, idx, enabledKpiObj);
+    }
+  }
+
+  appendParent(node) {
+    let completeHierarchyData = JSON.parse(
+      localStorage.getItem('completeHierarchyData'),
+    )[this.selectedtype];
+    let parent = this.completeFilterData[
+      completeHierarchyData.find((x) => x.level === node.level - 1)
+        .hierarchyLevelName
+    ].filter((x) => {
+      // console.log(x);
+      return x.nodeId === node['parentId'];
+    })[0];
+
+    if (parent) {
+      return node.nodeDisplayName + ' (' + parent.nodeDisplayName + ')';
+    } else {
+      return node.nodeDisplayName;
     }
   }
 
