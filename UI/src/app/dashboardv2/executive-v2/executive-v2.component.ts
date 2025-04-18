@@ -3516,25 +3516,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return finalArr;
   }
 
-  appendParent(node) {
-    let completeHierarchyData = JSON.parse(
-      localStorage.getItem('completeHierarchyData'),
-    )[this.selectedtype];
-    let parent = this.completeFilterData[
-      completeHierarchyData.find((x) => x.level === node.level - 1)
-        .hierarchyLevelName
-    ].filter((x) => {
-      // console.log(x);
-      return x.nodeId === node['parentId'];
-    })[0];
-
-    if (parent) {
-      return node.nodeDisplayName + ' (' + parent.nodeDisplayName + ')';
-    } else {
-      return node.nodeDisplayName;
-    }
-  }
-
   /** get array of the kpi level filter */
   getDropdownArray(kpiId) {
     const idx = this.ifKpiExist(kpiId);
