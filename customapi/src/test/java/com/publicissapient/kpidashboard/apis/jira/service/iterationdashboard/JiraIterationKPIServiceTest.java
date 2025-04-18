@@ -14,6 +14,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertNotNull;
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -200,4 +202,19 @@ public class JiraIterationKPIServiceTest {
 
 	}
 
+	@Test
+	public void testCreateIterationKpiDataToGetTheDelayedItemCount() {
+		String label = "Delayed Items";
+		Integer issueCount = 5;
+		List<IterationKpiModalValue> modalValues = new ArrayList<>();
+		IterationKpiModalValue modalValue = new IterationKpiModalValue();
+		modalValue.setIssueId("DTS-123");
+		modalValue.setIssueStatus("Delayed");
+		modalValues.add(modalValue);
+		IterationKpiData iterationKpiData = jiraKPIService.createIterationKpiDataToGetTheDelayedItemCount(label, issueCount, modalValues);
+		assertNotNull(iterationKpiData);
+		assertEquals(label, iterationKpiData.getLabel());
+		assertEquals(Double.valueOf(issueCount), iterationKpiData.getValue());
+		assertEquals(modalValues, iterationKpiData.getModalValues());
+	}
 }

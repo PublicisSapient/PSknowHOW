@@ -82,4 +82,13 @@ public class IterationKpiData implements Serializable {
 		this.expressions = expressions;
 	}
 
+	public IterationKpiData(String label,Double value, String labelInfo, String unit,
+							List<IterationKpiModalValue> modalValues) {
+		this.label = label;
+		this.value = value;
+		this.labelInfo = labelInfo;
+		this.unit = unit;
+		this.modalValues = modalValues;
+	}
+
 }
