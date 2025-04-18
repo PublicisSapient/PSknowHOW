@@ -1,4 +1,4 @@
-<div class="slider-wrapper">Select a Report</div>
+<div *ngIf="!createNewReportTemplate && existingReportData?.length" class="slider-wrapper">Select a Report</div>
 <!-- Existing Reports Slider-->
 <div class="slider-wrapper" *ngIf="!createNewReportTemplate && existingReportData?.length">
     <!-- Left Navigation Button -->

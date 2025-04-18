@@ -363,7 +363,7 @@ export class BasicConfigComponent implements OnInit {
             formValue[element.hierarchyLevelId]?.hierarchyLevelName,
         },
         orgHierarchyNodeId: formValue[element.hierarchyLevelId]?.nodeId,
-        value: formValue[element.hierarchyLevelId]?.nodeName,
+        value: formValue[element.hierarchyLevelId]?.nodeDisplayName,
       });
       gaObj['category' + (index + 1)] = element.hierarchyLevelId;
     });
@@ -611,15 +611,13 @@ export class BasicConfigComponent implements OnInit {
           const transofrmDataForPopulation = {
             level: currentLevelID,
             hierarchyLevelName:
-              this.selectedHierarchyItemToUpdate.hierarchyLevelName,
+              this.selectedHierarchyItemToUpdate.hierarchyLevelIdName,
             id: res.data.id,
             nodeId: res.data.nodeId,
             nodeName: res.data.nodeName,
             nodeDisplayName: res.data.nodeDisplayName,
             hierarchyLevelId: res.data.hierarchyLevelId,
-            parentId: this.selectedHierarchyItemToUpdate.parentId
-              ? this.selectedHierarchyItemToUpdate.parentId
-              : '',
+            parentId: res.data.parentId ? res.data.parentId : '',
             modifiedDate: res.data.modifiedDate,
           };
           this.form.controls[

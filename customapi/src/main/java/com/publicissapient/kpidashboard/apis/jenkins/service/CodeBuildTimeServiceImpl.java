@@ -27,7 +27,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -115,7 +114,7 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 		if (filter == Filters.SPRINT || filter == Filters.PROJECT) {
 			List<Node> leafNodes = treeAggregatorDetail.getMapOfListOfLeafNodes().entrySet().stream()
 					.filter(k -> Filters.getFilter(k.getKey()) == Filters.SPRINT).map(Map.Entry::getValue).findFirst()
-					.orElse(Collections.emptyList());
+					.orElse(new ArrayList<>());
 			projectWiseLeafNodeValue(kpiElement, mapTmp, projectList, trendValueMap, leafNodes);
 
 		} else {
@@ -315,7 +314,7 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 					: DateUtil.stringToLocalDate(sprintDetails.getEndDate().replaceAll(DATE_TIME_FORMAT_REGEX, ""),
 					DateUtil.TIME_FORMAT);
 		}
-		return LocalDate.now().minusWeeks(1);
+		return LocalDate.now();
 	}
 
 	/**
