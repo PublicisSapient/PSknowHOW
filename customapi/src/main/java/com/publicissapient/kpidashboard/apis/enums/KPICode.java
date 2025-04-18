@@ -536,6 +536,10 @@ public enum KPICode {
      * Late Refinement (Iteration)
      */
     LATE_REFINEMENT("kpi187", KPISource.JIRA.name()),
+    /**
+     * Future Late Refinement (Iteration)
+     */
+    FUTURE_LATE_REFINEMENT("kpi188", KPISource.JIRA.name()),
 
 
 

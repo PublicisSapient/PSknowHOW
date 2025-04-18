@@ -205,6 +205,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			setProdIncidentIdentificationField(fieldMapping, issue, jiraIssue, fields);
 			setIssueTechStoryType(fieldMapping, issue, jiraIssue, fields);
 			setLateRefinement187(fieldMapping, jiraIssue, fields, issue);
+			setLateRefinement188(fieldMapping, jiraIssue, fields, issue);
 			jiraIssue.setAffectedVersions(getAffectedVersions(issue));
 			setIssueEpics(issueEpics, epic, jiraIssue);
 			setJiraIssueValues(jiraIssue, issue, fieldMapping, fields);
@@ -1003,6 +1004,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 	private void setLateRefinement187(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields,
 			Issue issue) {
+		jiraIssue.setUnRefinedValue187(null);
 		if (null == fieldMapping.getJiraRefinementCriteriaKPI187()) {
 			return;
 		}
@@ -1051,7 +1053,69 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 					&& CollectionUtils.isNotEmpty(fieldMapping.getJiraRefinementKeywordsKPI187())) {
 				Set<String> fieldMappingSet = fieldMapping.getJiraRefinementKeywordsKPI187().stream()
 						.map(String::toLowerCase).collect(Collectors.toSet());
-				jiraIssue.setRefinedStatus187(checkKeyWords(customFieldSet, fieldMappingSet));
+					if(!checkKeyWords(customFieldSet, fieldMappingSet)){
+						//when fields are not matching then we will set values
+						jiraIssue.setUnRefinedValue187(customFieldSet);
+					}
+			}
+		}
+	}
+
+	private void setLateRefinement188(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields,
+									  Issue issue) {
+		jiraIssue.setUnRefinedValue188(null);
+		if (null == fieldMapping.getJiraRefinementCriteriaKPI188()) {
+			return;
+		}
+
+		String refinementCriteria = fieldMapping.getJiraRefinementCriteriaKPI188().trim();
+		String refinementField = fieldMapping.getJiraRefinementByCustomFieldKPI188();
+
+		if (refinementField == null) {
+			return;
+		}
+
+		Object value = null;
+		if (refinementCriteria.equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)) {
+			// Handle custom field case
+			IssueField field = fields.get(refinementField.trim());
+			if (field != null) {
+				if (field.getValue() != null) {
+					value = field.getValue();
+				}
+			} else {
+				// Handle standard Issue field case
+				try {
+					// Try to get the value using reflection from Issue object
+					Method getter = Issue.class.getMethod("get" + StringUtils.capitalize(refinementField.trim()));
+					value = getter.invoke(issue);
+				} catch (Exception e) {
+					log.debug("Could not find or invoke getter for field: {}", refinementField, e);
+					return;
+				}
+			}
+		}
+
+		if (value == null) {
+			return;
+		}
+
+		List<String> customFieldValue = getCustomFieldValue(value);
+		Set<String> customFieldSet = Arrays.stream(
+						String.join(" ", customFieldValue).toLowerCase().split(" "))
+				.filter(s -> !s.isBlank())  // optional: remove blanks
+				.collect(Collectors.toSet());
+
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraRefinementMinLengthKPI188())) {
+			int minLength = Integer.parseInt(fieldMapping.getJiraRefinementMinLengthKPI188());
+			if (customFieldSet.size() >= minLength
+					&& CollectionUtils.isNotEmpty(fieldMapping.getJiraRefinementKeywordsKPI188())) {
+				Set<String> fieldMappingSet = fieldMapping.getJiraRefinementKeywordsKPI188().stream()
+						.map(String::toLowerCase).collect(Collectors.toSet());
+				if(!checkKeyWords(customFieldSet, fieldMappingSet)){
+					//when fields are not matching then we will set values
+					jiraIssue.setUnRefinedValue188(customFieldSet);
+				}
 			}
 		}
 	}

@@ -258,8 +258,9 @@ public enum FieldMappingEnum {
 	KPI180("Revert Rate", KPISource.BITBUCKET.name(), Collections.singletonList("thresholdValueKPI180")),
 	KPI181("PR Decline Rate", KPISource.BITBUCKET.name(), Collections.singletonList("thresholdValueKPI181")),
     KPI187("Late Refinement", KPISource.JIRA.name(), Arrays.asList("jiraRefinementCriteriaKPI187", "jiraRefinementByCustomFieldKPI187", "jiraRefinementMinLengthKPI187",
-            "jiraRefinementKeywordsKPI187", "jiraIssueTypeNamesKPI187", "jiraStatusKPI187","jiraIterationCompletionStatusKPI187", "jiraIterationIssuetypeKPI187"));
-
+            "jiraRefinementKeywordsKPI187", "jiraIssueTypeNamesKPI187", "jiraStatusKPI187","jiraIterationCompletionStatusKPI187", "jiraIterationIssuetypeKPI187")),
+	KPI188("Future Late Refinement", KPISource.JIRA.name(), Arrays.asList("jiraRefinementCriteriaKPI188", "jiraRefinementByCustomFieldKPI188", "jiraRefinementMinLengthKPI188",
+																		   "jiraRefinementKeywordsKPI188", "jiraIssueTypeNamesKPI188","jiraIterationCompletionStatusKPI188", "jiraIterationIssuetypeKPI188"));
 	private List<String> fields;
 	private String kpiName;
 	private String kpiSource;

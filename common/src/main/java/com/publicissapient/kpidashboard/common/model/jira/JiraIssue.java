@@ -231,7 +231,8 @@ public class JiraIssue extends BasicModel implements Cloneable {
 	private List<String> escapedDefectGroup;
 	private List<String> uatDefectGroup;
 	private boolean productionIncident;
-	private boolean refinedStatus187;
+	private Set<String> unRefinedValue187;
+	private Set<String> unRefinedValue188;
 
 
 	private String boardId;

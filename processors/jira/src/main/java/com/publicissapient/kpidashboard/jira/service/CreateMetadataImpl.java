@@ -355,6 +355,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 				issueTypeMap.getOrDefault(CommonConstant.JIRASTORYIDENTIFICATIONKPI129, new ArrayList<>()));
 		fieldMapping.setJiraIssueTypeNamesKPI187(
 				issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+		fieldMapping.setJiraIssueTypeNamesKPI188(
+				issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 		fieldMapping.setJiraStoryIdentificationKPI166(
 				issueTypeMap.getOrDefault(CommonConstant.JIRASTORYIDENTIFICATIONKPI166, new ArrayList<>()));
 		fieldMapping.setJiraSprintVelocityIssueTypeKPI138(
@@ -665,6 +667,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 			fieldMapping.setJiraStoryIdentificationKPI129(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraIssueTypeNamesKPI187(
+					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI188(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentificationKPI166(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));

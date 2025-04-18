@@ -519,7 +519,16 @@ public class FieldMapping extends FieldMappingHistory {
 	private List<String> jiraRefinementKeywordsKPI187;
 	private List<String> jiraIterationCompletionStatusKPI187;
 	private List<String> jiraIterationIssuetypeKPI187;
-	private String[] refinedValue187; //not required in history, it is for jiraRefinementCriteriaKPI187 if someone has put
+
+
+	//Future Refinement
+	private List<String> jiraIssueTypeNamesKPI188;
+	private String jiraRefinementCriteriaKPI188;
+	private String jiraRefinementByCustomFieldKPI188;
+	private String jiraRefinementMinLengthKPI188;
+	private List<String> jiraRefinementKeywordsKPI188;
+	private List<String> jiraIterationCompletionStatusKPI188;
+	private List<String> jiraIterationIssuetypeKPI188;
 	/**
 	 * Get jira issue type names string [ ].
 	 *

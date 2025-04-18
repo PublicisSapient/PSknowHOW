@@ -398,6 +398,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 				// ADD Production Incident field to feature
 				setProdIncidentIdentificationField(fieldMapping, issue, azureIssue, fieldsMap);
 				setLateRefinement187(fieldMapping, azureIssue, fieldsMap);
+				setLateRefinement188(fieldMapping, azureIssue, fieldsMap);
 
 				setIssueTechStoryType(fieldMapping, issue, azureIssue, fieldsMap);
 
@@ -1249,26 +1250,54 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 
 	private void setLateRefinement187(FieldMapping fieldMapping, JiraIssue azureIssue, Map<String, Object> fieldsMap) {
+		azureIssue.setUnRefinedValue187(null);
 		if (null != fieldMapping.getJiraRefinementCriteriaKPI187()
-				&& fieldMapping.getJiraRefinementCriteriaKPI187().trim()
-				.equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
-				&& fieldsMap.get(fieldMapping.getJiraRefinementByCustomFieldKPI187().trim()) != null
-		) {
+				&& fieldMapping.getJiraRefinementCriteriaKPI187().trim().equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
+				&& fieldsMap.get(fieldMapping.getJiraRefinementByCustomFieldKPI187().trim()) != null) {
 			String azureValue = fieldsMap.get(fieldMapping.getJiraRefinementByCustomFieldKPI187().trim()).toString();
-			String[] string = azureValue.toLowerCase().split(" ");
+			Set<String> customFieldSet = Arrays.stream(azureValue.toLowerCase().split("\\s+"))
+					.collect(Collectors.toSet());
 			if (StringUtils.isNotEmpty(fieldMapping.getJiraRefinementMinLengthKPI187())) {
 				int i = Integer.parseInt(fieldMapping.getJiraRefinementMinLengthKPI187());
-				if (string.length >= i && CollectionUtils.isNotEmpty(fieldMapping.getJiraRefinementKeywordsKPI187())) {
-					Set<String> fieldMappingSet = fieldMapping.getJiraRefinementKeywordsKPI187().stream().map(String::toLowerCase).collect(Collectors.toSet());
-					azureIssue.setRefinedStatus187(checkKeyWords(string, fieldMappingSet));
+				if (customFieldSet.size() >= i
+						&& CollectionUtils.isNotEmpty(fieldMapping.getJiraRefinementKeywordsKPI187())) {
+					Set<String> fieldMappingSet = fieldMapping.getJiraRefinementKeywordsKPI187().stream()
+							.map(String::toLowerCase).collect(Collectors.toSet());
+					if (!checkKeyWords(customFieldSet, fieldMappingSet)) {
+						// when fields are not matching then we will set values
+						azureIssue.setUnRefinedValue187(customFieldSet);
+					}
 				}
 			}
 		}
 	}
 
-	private static boolean checkKeyWords(String[] string, Set<String> fieldMappingSet) {
-		for (String word : string) {
-			if (!fieldMappingSet.contains(word)) {
+	private void setLateRefinement188(FieldMapping fieldMapping, JiraIssue azureIssue, Map<String, Object> fieldsMap) {
+		azureIssue.setUnRefinedValue188(null);
+		if (null != fieldMapping.getJiraRefinementCriteriaKPI188()
+				&& fieldMapping.getJiraRefinementCriteriaKPI188().trim().equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
+				&& fieldsMap.get(fieldMapping.getJiraRefinementByCustomFieldKPI188().trim()) != null) {
+			String azureValue = fieldsMap.get(fieldMapping.getJiraRefinementByCustomFieldKPI188().trim()).toString();
+			Set<String> customFieldSet = Arrays.stream(azureValue.toLowerCase().split("\\s+"))
+					.collect(Collectors.toSet());
+			if (StringUtils.isNotEmpty(fieldMapping.getJiraRefinementMinLengthKPI188())) {
+				int i = Integer.parseInt(fieldMapping.getJiraRefinementMinLengthKPI188());
+				if (customFieldSet.size() >= i
+						&& CollectionUtils.isNotEmpty(fieldMapping.getJiraRefinementKeywordsKPI188())) {
+					Set<String> fieldMappingSet = fieldMapping.getJiraRefinementKeywordsKPI188().stream()
+							.map(String::toLowerCase).collect(Collectors.toSet());
+					if (!checkKeyWords(customFieldSet, fieldMappingSet)) {
+						// when fields are not matching then we will set values
+						azureIssue.setUnRefinedValue188(customFieldSet);
+					}
+				}
+			}
+		}
+	}
+
+	private static boolean checkKeyWords(Set<String> stringSet, Set<String> fieldMappingSet) {
+		for (String keyword : fieldMappingSet) {
+			if (!stringSet.contains(keyword.toLowerCase())) {
 				return false;
 			}
 		}
