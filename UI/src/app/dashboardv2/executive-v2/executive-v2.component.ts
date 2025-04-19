@@ -2776,6 +2776,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                     everyProjectHasData = false;
                   }
                   // break;
+                } else {
+                  if (
+                    [...new Set(allProjectNames)].length !==
+                    this.service.getSelectedTrends().length
+                  ) {
+                    if (everyProjectHasData) {
+                      everyProjectHasData = false;
+                    }
+                  }
                 }
               }
             }
