@@ -2760,6 +2760,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   appendParentName(data) {
     // logic for same node Display Names ie... sProjectName in data
     let anyProjectNodeArr = [];
+    let uniqueProjectNames;
     Object.keys(data).forEach((kpiId) => {
       if (kpiId !== 'kpi187') {
         // && kpiId !== 'kpi168') {
@@ -2804,11 +2805,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             }
           });
 
-          const uniqueProjectNames = [...new Set(allProjectNames)];
+          uniqueProjectNames = [...new Set(allProjectNames)];
           if (
             uniqueProjectNames?.length !==
-            this.service.getSelectedTrends()?.length
-            // everyProjectHasData
+              this.service.getSelectedTrends()?.length &&
+            everyProjectHasData
           ) {
             this.nonUniqueNames = true;
             if (uniqueProjectNames.map((x) => x).length) {
@@ -2897,7 +2898,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
       }
 
-      if (anyProjectNodeArr?.length) {
+      if (
+        anyProjectNodeArr?.length &&
+        uniqueProjectNames?.length !== this.service.getSelectedTrends()?.length
+      ) {
         if (kpiId !== 'kpi187' && kpiId !== 'kpi168') {
           data[kpiId].trendValueList = this.appendParentNameInActualData(
             data[kpiId].trendValueList,
