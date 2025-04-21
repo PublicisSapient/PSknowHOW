@@ -905,7 +905,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         if (childNode) {
           let immediateParent = this.filterDataArr[this.selectedType][
             parentLevelName
-          ].find((x) => x.nodeId === childNode.parentId);
+          ]?.find((x) => x.nodeId === childNode.parentId);
           return immediateParent?.nodeDisplayName + '-' + child?.nodeId;
         } else {
           return '';

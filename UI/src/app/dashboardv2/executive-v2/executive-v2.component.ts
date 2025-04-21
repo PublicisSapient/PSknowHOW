@@ -40,6 +40,7 @@ import { ExcelService } from 'src/app/services/excel.service';
 import { throwError } from 'rxjs';
 import { Location } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { clear } from 'console';
 
 @Component({
   selector: 'app-executive-v2',
@@ -2844,9 +2845,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                   anyProject = anyProject[0];
                 }
 
-                let completeHierarchyData = JSON.parse(
-                  localStorage.getItem('completeHierarchyData'),
-                )[this.selectedtype];
+                let completeHierarchyData =
+                  JSON.parse(localStorage.getItem('completeHierarchyData'))[
+                    this.selectedtype
+                  ] || [];
 
                 // anyProject
                 let anyProjectNode;
@@ -2967,14 +2969,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   findHigherLevelParentForProject(anyProject, completeHierarchyData) {
+    if (!Array.isArray(completeHierarchyData)) {
+      completeHierarchyData = [];
+    }
     let projectLevel = completeHierarchyData.find(
       (x) => x.hierarchyLevelId.toLowerCase() === 'project',
-    ).level;
+    )?.level;
     let parentName;
     let anyProjectNode = this.completeFilterData[
       completeHierarchyData.find((x) => x.level === projectLevel)
-        .hierarchyLevelName
-    ].filter((x) => {
+        ?.hieararchyLevelName
+    ]?.filter((x) => {
       return x.nodeName === anyProject || x.nodeDisplayName === anyProject;
     });
 
@@ -2990,8 +2995,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       let level = this.service.getSelectedTrends().map((x) => x.level)[0];
       anyProjectNode = this.completeFilterData[
-        completeHierarchyData.find((x) => x.level === level).hierarchyLevelName
-      ].find(
+        completeHierarchyData.find((x) => x.level === level)?.hierarchyLevelName
+      ]?.find(
         (x) =>
           x.nodeName ===
             (Array.isArray(anyProject) ? anyProject[0] : anyProject) ||
@@ -3030,18 +3035,21 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   findHigherLevelParentForOtherNode(anyProject, completeHierarchyData) {
+    if (!Array.isArray(completeHierarchyData)) {
+      completeHierarchyData = [];
+    }
     let anyProjectNode;
     let parentName;
-    let projectLevel = completeHierarchyData.find(
+    let projectLevel = completeHierarchyData?.find(
       (x) => x.hierarchyLevelId.toLowerCase() === 'project',
-    ).level;
+    )?.level;
     for (
       let k = projectLevel;
-      k >= this.service.getSelectedTrends()[0].level;
+      k >= this.service.getSelectedTrends()[0]?.level;
       k--
     ) {
       anyProjectNode = this.completeFilterData[
-        completeHierarchyData.find((x) => x.level === k + 1).hierarchyLevelName
+        completeHierarchyData?.find((x) => x.level === k + 1).hierarchyLevelName
       ].filter((x) => {
         return x.nodeName === anyProject || x.nodeDisplayName === anyProject;
       });

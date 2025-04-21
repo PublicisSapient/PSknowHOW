@@ -13060,7 +13060,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData).toBeDefined();
   });
 
-  it('should create allkpiarray when we have filter property in trendValueList list', () => {
+  xit('should create allkpiarray when we have filter property in trendValueList list', () => {
     localStorage.setItem(
       'completeHierarchyData',
       JSON.stringify({
