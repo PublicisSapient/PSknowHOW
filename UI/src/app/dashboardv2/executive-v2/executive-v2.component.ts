@@ -2809,7 +2809,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           if (
             uniqueProjectNames?.length !==
               this.service.getSelectedTrends()?.length &&
-            everyProjectHasData
+            // && everyProjectHasData
+            uniqueProjectNames.length !== allProjectNames?.length
           ) {
             this.nonUniqueNames = true;
             if (uniqueProjectNames.map((x) => x).length) {
