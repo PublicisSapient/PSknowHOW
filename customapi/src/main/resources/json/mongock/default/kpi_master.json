@@ -4942,7 +4942,7 @@
   },
   {
     "kpiId" : "kpi187" ,
-    "kpiName" : "Late Refinement" ,
+    "kpiName" : "Late Refinement (Current Sprint)" ,
     "kpiUnit" : "Count" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 10 ,
@@ -4973,6 +4973,39 @@
     "isAdditionalFilterSupport" : false ,
     "kpiWidth" : 100 ,
     "boxType" : "chart" ,
+    "calculateMaturity" : false
+  } ,
+
+  {
+    "kpiId" : "kpi188" ,
+    "kpiName" : "Late Refinement (Future Sprint)" ,
+    "maxValue" : "" ,
+    "isDeleted" : "False" ,
+    "defaultOrder" : 12 ,
+    "kpiCategory" : "Iteration" ,
+    "kpiSubCategory" : "Iteration Review" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
+    "groupId" : 19 ,
+    "thresholdValue" : "" ,
+    "kanban" : false ,
+    "chartType" : null ,
+    "kpiInfo" : {
+      "definition" : "Late Refinement metric flags backlog items that should be refined by now but aren't, either because they’re already in the current sprint and not meeting the Definition of Ready (DoR), or because they're slated for the next sprint but still lack necessary refinement details.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://knowhow.suite.publicissapient.com/wiki/spaces/PS/pages/159154188/Late+Refinement"
+          }
+        }
+      ]
+    } ,
+    "showTrend" : false ,
+    "isAdditionalFilterSupport" : false ,
+    "kpiFilter" : "multiSelectDropDown" ,
+    "boxType" : "3_column" ,
     "calculateMaturity" : false
   }
 ]

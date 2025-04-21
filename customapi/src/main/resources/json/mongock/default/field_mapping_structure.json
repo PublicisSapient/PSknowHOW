@@ -3816,77 +3816,19 @@
     }
   },
   {
-    "fieldName": "jiraRefinementCriteriaKPI187",
-    "fieldLabel": "Refinement criteria",
-    "fieldType": "radiobutton",
-    "section": "Custom Fields Mapping",
-    "fieldDisplayOrder": 1,
-    "sectionOrder": 3,
-    "tooltip": {
-      "definition": "Custom field to consider for a refined workitem."
-    },
-    "options": [
-      {
-        "label": "CustomField",
-        "value": "CustomField"
-      }
-    ],
-    "nestedFields": [
-      {
-        "fieldName": "jiraRefinementByCustomFieldKPI187",
-        "fieldLabel": "Custom field to identify refined workitem",
-        "placeHolderText": "Custom field to identify refined workitem",
-        "fieldType": "text",
-        "fieldCategory": "fields",
-        "filterGroup": [
-          "CustomField"
-        ],
-        "tooltip": {
-          "definition": "Provide field name to identify a refined workitem. <br> Example: customfield_13999<hr>"
-        }
-      },
-      {
-        "fieldName": "jiraRefinementMinLengthKPI187",
-        "fieldLabel": "Custom field value min length",
-        "placeHolderText": "Custom field value min length",
-        "fieldType": "number",
-        "filterGroup": [
-          "CustomField"
-        ],
-        "tooltip": {
-          "definition": "Provide number to match the character length"
-        }
-      },
-      {
-        "fieldName": "jiraRefinementKeywordsKPI187",
-        "fieldLabel": "Keywords to match",
-        "placeHolderText": "Keywords to match",
-        "fieldType": "chips",
-        "filterGroup": [
-          "CustomField"
-        ],
-        "tooltip": {
-          "definition": "Provide characters to match the value"
-        }
-      }
-    ],
-    "processorCommon": true
+  "fieldName": "jiraIssueTypeNamesKPI187",
+  "fieldLabel": "Issue types to be included",
+  "placeHolderText": "Issue types to be included",
+  "fieldDisplayOrder": 1,
+  "fieldType": "chips",
+  "fieldCategory": "Issue_Type",
+  "section": "Issue Types Mapping",
+  "sectionOrder": 1,
+  "tooltip": {
+    "definition": "All issue types used by your Jira project"
   },
-
-  {
-    "fieldName": "jiraIssueTypeNamesKPI187",
-    "fieldLabel": "Issue types to be included",
-    "placeHolderText": "Issue types to be included",
-    "fieldDisplayOrder": 1,
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "sectionOrder": 1,
-    "tooltip": {
-      "definition": "All issue types used by your Jira project"
-    },
-    "mandatory": true
-  },
+  "mandatory": true
+},
   {
     "fieldName": "jiraStatusKPI187",
     "fieldLabel": "Status/es before DoR",
@@ -3899,55 +3841,6 @@
       "definition": "Workflow statuses that does not belong to DOR, DOD and Live whilch indicate a work item has not yet been picked up in the sprint based on the Definition of Ready (DoR)"
     },
     "mandatory": true
-  },
-
-  {
-    "fieldName": "jiraIterationIssuetypeKPI187",
-    "fieldLabel": "Issue types filter for completed issues",
-    "fieldDisplayOrder": 2,
-    "sectionOrder": 2,
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-      "definition": "Completed issues of the specified issue types will be considered. If left blank, all issue types will be included by default."
-    }
-  },
-  {
-    "fieldName": "jiraIterationCompletionStatusKPI187",
-    "fieldLabel": "Status to identify completed issues",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "fieldDisplayOrder": 2,
-    "sectionOrder": 2,
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "All workflow statuses used to identify completed issues. If multiple statuses are specified, the first status an issue transitions to will be considered."
-    }
-  },
-  {
-    "fieldName": "jiraIterationIssuetypeKPI188",
-    "fieldLabel": "Issue types filter for completed issues",
-    "fieldDisplayOrder": 2,
-    "sectionOrder": 2,
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-      "definition": "Completed issues of the specified issue types will be considered. If left blank, all issue types will be included by default."
-    }
-  },
-  {
-    "fieldName": "jiraIterationCompletionStatusKPI188",
-    "fieldLabel": "Status to identify completed issues",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "fieldDisplayOrder": 2,
-    "sectionOrder": 2,
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "All workflow statuses used to identify completed issues. If multiple statuses are specified, the first status an issue transitions to will be considered."
-    }
   }
 ,
   {

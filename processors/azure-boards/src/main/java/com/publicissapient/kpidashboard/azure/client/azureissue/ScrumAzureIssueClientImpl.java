@@ -397,7 +397,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 				// ADD Production Incident field to feature
 				setProdIncidentIdentificationField(fieldMapping, issue, azureIssue, fieldsMap);
-				setLateRefinement187(fieldMapping, azureIssue, fieldsMap);
 				setLateRefinement188(fieldMapping, azureIssue, fieldsMap);
 
 				setIssueTechStoryType(fieldMapping, issue, azureIssue, fieldsMap);
@@ -1246,30 +1245,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		processorExecutionTraceLog.setLastEnableAssigneeToggleState(projectBasicConfig.isSaveAssigneeDetails());
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
-	}
-
-
-	private void setLateRefinement187(FieldMapping fieldMapping, JiraIssue azureIssue, Map<String, Object> fieldsMap) {
-		azureIssue.setUnRefinedValue187(null);
-		if (null != fieldMapping.getJiraRefinementCriteriaKPI187()
-				&& fieldMapping.getJiraRefinementCriteriaKPI187().trim().equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
-				&& fieldsMap.get(fieldMapping.getJiraRefinementByCustomFieldKPI187().trim()) != null) {
-			String azureValue = fieldsMap.get(fieldMapping.getJiraRefinementByCustomFieldKPI187().trim()).toString();
-			Set<String> customFieldSet = Arrays.stream(azureValue.toLowerCase().split("\\s+"))
-					.collect(Collectors.toSet());
-			if (StringUtils.isNotEmpty(fieldMapping.getJiraRefinementMinLengthKPI187())) {
-				int i = Integer.parseInt(fieldMapping.getJiraRefinementMinLengthKPI187());
-				if (customFieldSet.size() >= i
-						&& CollectionUtils.isNotEmpty(fieldMapping.getJiraRefinementKeywordsKPI187())) {
-					Set<String> fieldMappingSet = fieldMapping.getJiraRefinementKeywordsKPI187().stream()
-							.map(String::toLowerCase).collect(Collectors.toSet());
-					if (!checkKeyWords(customFieldSet, fieldMappingSet)) {
-						// when fields are not matching then we will set values
-						azureIssue.setUnRefinedValue187(customFieldSet);
-					}
-				}
-			}
-		}
 	}
 
 	private void setLateRefinement188(FieldMapping fieldMapping, JiraIssue azureIssue, Map<String, Object> fieldsMap) {

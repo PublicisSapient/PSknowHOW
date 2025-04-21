@@ -112,17 +112,17 @@ public class LateRefinementServiceImpl extends JiraIterationKPIService {
 		Map<String, Object> resultListMap = new HashMap<>();
 		if (null != leafNode) {
 			log.info("Late Refinement -> Requested sprint : {}", leafNode.getName());
-			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
-			SprintDetails sprintDetails;
-			if (null != dbSprintDetail) {
+			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
+			if (null != sprintDetails) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getAccountHierarchy().getBasicProjectConfigId());
 
 				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
 
-				// filter by typeName
-				if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueTypeNamesKPI187())) {
+				// filter by typeName and DOR statuses as these both are mandatory fields
+				if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueTypeNamesKPI187())
+						&& CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusKPI187())) {
 					Set<String> typeName = fieldMapping.getJiraIssueTypeNamesKPI187().stream()
 							.map(type -> type.trim().toLowerCase()).collect(Collectors.toSet());
 					totalJiraIssueList = totalJiraIssueList.stream()
@@ -133,15 +133,8 @@ public class LateRefinementServiceImpl extends JiraIterationKPIService {
 					totalHistoryList = totalHistoryList.stream()
 							.filter(history -> jiraIssueNumber.contains(history.getStoryID())).toList();
 
-					Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
-							.collect(Collectors.toSet());
-
-					// to modify sprintdetails on the basis of configuration for the project
-					sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
-							dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI187(),
-							fieldMapping.getJiraIterationCompletionStatusKPI187(),
-							leafNode.getAccountHierarchy().getBasicProjectConfigId());
-
+					// there is no need to modify sprintdetails, as there is no check for the
+					// completion status in the kpi
 					List<String> allIssues = new ArrayList<>();
 					List<String> notCompleted = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 							CommonConstant.NOT_COMPLETED_ISSUES);
@@ -220,21 +213,12 @@ public class LateRefinementServiceImpl extends JiraIterationKPIService {
 		if (jiraIssueList.isEmpty()) {
 			return;
 		}
-
-		JiraIssue jiraIssue = jiraIssueList.get(0);
-
 		// Handle refined status case
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusKPI187())) {
-			LocalDate maxDate = calculateMaxDateForRefinedStatus(statusUpdationLog, fieldMapping);
-			if (DateUtil.isWithinDateRange(maxDate, startDate, currentDate)) {
-				updateLateRefinedMap(startDate, maxDate, lateRefined, jiraIssueList);
-				return;
-			}
+		LocalDate maxDate = calculateMaxDateForRefinedStatus(statusUpdationLog, fieldMapping);
+		if (DateUtil.isWithinDateRange(maxDate, startDate, currentDate)) {
+			updateLateRefinedMap(startDate, maxDate, lateRefined, jiraIssueList);
 		}
 
-		if (CollectionUtils.isNotEmpty(jiraIssue.getUnRefinedValue187())) {
-			updateLateRefinedMap(startDate, currentDate, lateRefined, jiraIssueList);
-		}
 	}
 
 	/**
@@ -383,8 +367,6 @@ public class LateRefinementServiceImpl extends JiraIterationKPIService {
 
 			log.info("Late Refinement -> request id : {} total jira Issues : {}", requestTrackerId,
 					fullSprintIssuesMap.size());
-
-			// CALCULATION OF PCDS OF ALL ISSUES
 			LocalDate sprintStartDate = DateUtil.stringToLocalDate(sprintDetails.getStartDate(),
 					DateUtil.TIME_FORMAT_WITH_SEC);
 			LocalDate sprintEndDate = LocalDate.now().plusDays(1);
