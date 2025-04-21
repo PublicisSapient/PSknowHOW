@@ -32,7 +32,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.errors.DuplicateKpiException;
 import com.publicissapient.kpidashboard.apis.errors.DuplicateReportException;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.errors.ReportNotFoundException;
@@ -46,11 +45,6 @@ import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-
 /**
  * Service class for managing reports.
  *
@@ -61,8 +55,6 @@ import java.util.stream.Collectors;
 public class ReportService {
 
     private final ReportRepository reportRepository;
-    public static final String REPORTS_BY_ID = "reportsById";
-    public static final String REPORTS_CREATED_BY = "createdBy";
     private final AuthenticationService authenticationService;
 
     @Autowired
