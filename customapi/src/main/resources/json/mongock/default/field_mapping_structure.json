@@ -3814,5 +3814,14 @@
     "tooltip" : {
       "definition" : "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
     }
+  },
+  {
+    "fieldName": "jiraLabelsKPI120",
+    "fieldLabel": "Labels for Scope Change Identification",
+    "fieldType": "chips",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "Specify labels to detect and track scope changes effectively"
+    }
   }
 ]
