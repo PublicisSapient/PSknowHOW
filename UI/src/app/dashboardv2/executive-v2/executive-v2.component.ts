@@ -2921,7 +2921,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   appendParentNameInActualData(data, anyProjectNodeArr) {
     if (Array.isArray(data)) {
       data.forEach((dataBlock, index) => {
-        if (dataBlock.hasOwnProperty('data') && isNaN(dataBlock.data)) {
+        if (
+          dataBlock.hasOwnProperty('data') &&
+          isNaN(dataBlock.data) &&
+          anyProjectNodeArr[index] &&
+          anyProjectNodeArr[index]['nodeName']
+        ) {
           dataBlock.data =
             dataBlock.data + ' (' + anyProjectNodeArr[index]['nodeName'] + ')';
         }
