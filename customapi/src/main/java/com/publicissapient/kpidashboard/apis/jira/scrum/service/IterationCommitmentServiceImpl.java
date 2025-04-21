@@ -25,19 +25,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -50,9 +48,11 @@ import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -71,8 +71,9 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 	private static final String PUNTED_ISSUES = "puntedIssues";
 	private static final String ADDED_ISSUES = "addedIssues";
 	private static final String EXCLUDE_ADDED_ISSUES = "excludeAddedIssues";
-	private static final String SCOPE_ADDED = "Scope added";
-	private static final String SCOPE_REMOVED = "Scope removed";
+	private static final String SCOPE_ADDED = "Sprint scope added";
+	private static final String SCOPE_REMOVED = "Sprint scope removed";
+	private static final String SCOPE_CHANGE = "Scope Change";
 	private static final String INITIAL_COMMITMENT = "Initial Commitment";
 	private static final String OVERALL = "Overall";
 
@@ -196,6 +197,13 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 			totalIssues.removeAll(puntedIssues);
 		}
 
+		List<JiraIssue> scopeChangeIssues = Stream
+				.concat(Stream.concat(initialIssues.stream(), addedIssues.stream()),
+						Stream.concat(puntedIssues.stream(), totalIssues.stream()))
+				.filter(j -> Objects.nonNull(j.getLabels()) && Objects.nonNull(fieldMapping.getJiraLabelsKPI120())
+						&& j.getLabels().stream().anyMatch(fieldMapping.getJiraLabelsKPI120()::contains))
+				.distinct().collect(Collectors.toList());
+
 		if (CollectionUtils.isNotEmpty(totalIssues)) {
 			log.info("Scope Change -> request id : {} total jira Issues : {}", requestTrackerId, totalIssues.size());
 			List<Integer> overAllTotalIssueCount = Arrays.asList(0);
@@ -245,6 +253,18 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 			IterationKpiData overAllPuntedCount = setIterationKpiData(fieldMapping, overAllPunIssueCount,
 					overAllPunIssueSp, overAllOriginalEstimate, overAllRemovedmodalValues, SCOPE_REMOVED);
 			data.add(overAllPuntedCount);
+		}
+
+		if (CollectionUtils.isNotEmpty(scopeChangeIssues)) {
+			log.info("Scope Change -> request id : {} scope change labels jira Issues : {}", requestTrackerId, scopeChangeIssues.size());
+			List<Integer> overAllScopeChangeLabelsCount = Arrays.asList(0);
+			List<Double> overAllScopeChangeLabelsSp = Arrays.asList(0.0);
+			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
+			setScopeChange(issueTypes, statuses, scopeChangeIssues, iterationKpiValues, overAllScopeChangeLabelsCount,
+					overAllScopeChangeLabelsSp, overAllRemovedmodalValues, SCOPE_CHANGE, fieldMapping, overAllOriginalEstimate);
+			IterationKpiData overAllScopeChangeLabels = setIterationKpiData(fieldMapping, overAllScopeChangeLabelsCount,
+					overAllScopeChangeLabelsSp, overAllOriginalEstimate, overAllRemovedmodalValues, SCOPE_CHANGE);
+			data.add(overAllScopeChangeLabels);
 		}
 
 		if (CollectionUtils.isNotEmpty(data)) {

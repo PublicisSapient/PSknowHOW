@@ -139,7 +139,7 @@ public enum FieldMappingEnum {
 			"jiraIterationIssuetypeKPI125", "jiraStatusForInProgressKPI125")),
 
 	KPI120("Iteration Commitment", KPISource.JIRA.name(),
-			Arrays.asList("jiraIterationCompletionStatusKPI120", "jiraIterationIssuetypeKPI120")),
+			Arrays.asList("jiraIterationCompletionStatusKPI120", "jiraIterationIssuetypeKPI120", "jiraLabelsKPI120")),
 
 	KPI128("Planned Work Status", KPISource.JIRA.name(), Arrays.asList("jiraIterationCompletionStatusKPI128",
 			"jiraIterationIssuetypeKPI128", "jiraDevDoneStatusKPI128", "jiraStatusForInProgressKPI128")),
