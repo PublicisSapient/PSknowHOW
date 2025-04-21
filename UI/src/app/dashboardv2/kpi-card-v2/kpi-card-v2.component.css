@@ -4,8 +4,8 @@
   border-radius: 10px;
   opacity: 1;
   position: relative;
-  max-height: 500px;
-  height: 400px;
+  /* max-height: 500px;
+  height: 400px; */
 }
 
 :host .kpi-card-container-v2 {
@@ -71,7 +71,7 @@
 }
 
 :host .kpi-card-footer {
-  padding: 5px;
+  padding: 25px;
   color: #333333;
   width: auto;
   right: 0;

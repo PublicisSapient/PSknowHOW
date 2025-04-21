@@ -166,8 +166,7 @@
       </ng-container>
 
     </div>
-    <div class="kpi-card-body p-pr-5 p-pl-5" [ngStyle]="{'height': kpiSize === 12 ? '250px' : kpiData.kpiDetail.chartType === 'stacked-area' ? '270px' : '220px',
-  'min-height': !(showChartView === 'table')  ? '220px' : '100px'}" [ngClass]="{'smallChart':board == 'dora'}">
+    <div class="kpi-card-body p-pr-5 p-pl-5" [ngClass]="{'smallChart':board == 'dora'}">
       <!--place for chart to be rendered-->
       <ng-content
         *ngIf="!loader && !immediateLoader && (checkIfDataPresent(kpiDataStatusCode) || partialData) && (!iSAdditionalFilterSelected || (kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)); else noData"></ng-content>
@@ -380,8 +379,8 @@
     </div>
 
     <div style="border: 1px solid #cecece; padding:10px; border-radius: 10px;">
-      <app-add-to-report-pop-up [reportObj]="reportObj" 
-      [createNewReportTemplate]="createNewReportTemplate" 
+      <app-add-to-report-pop-up [reportObj]="reportObj"
+      [createNewReportTemplate]="createNewReportTemplate"
       [existingReportData]="existingReportData" [reportName]="reportName"></app-add-to-report-pop-up>
     </div>
   </ng-template>

@@ -38,7 +38,7 @@
                                 <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
                                     <div *ngIf="checkKPIPresence(kpi) && kpi.kpiId !== 'kpi154' && kpi.kpiId !== 'kpi121' && kpi.kpiId !== 'kpi187'"
                                         class="{{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}"
-                                        [ngStyle]="{'height': kpi.kpiDetail?.kpiHeight === 100 ? '414px' : (kpi.kpiDetail?.kpiHeight === 50 ? '257px' : '414px') }">
+                                        >
                                         <app-kpi-card-v2 [selectedTab]="selectedTab"
                                             [nodeId]="filterApplyData?.selectedMap?.['release']?.[0]"
                                             [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
@@ -432,7 +432,7 @@
 
 <app-export-excel #exportExcel></app-export-excel>
 
-<ng-container *ngIf="isRecommendationsEnabled && selectedtype?.toLowerCase() == 'scrum' && projectCount <=2 && this.filterApplyData?.label === 'project' && 
+<ng-container *ngIf="isRecommendationsEnabled && selectedtype?.toLowerCase() == 'scrum' && projectCount <=2 && this.filterApplyData?.label === 'project' &&
 !(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'developer')" >
     <app-recommendations [filterData]="filterApplyData" [kpiList]="kpiList"></app-recommendations>
 </ng-container>
