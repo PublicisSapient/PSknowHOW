@@ -1270,6 +1270,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   addToReportPost() {
+    if (this.reportName.trim() === '') {
+      return;
+    }
     let data = { ...this.reportObj };
     data.chartData = JSON.stringify(data.chartData);
     let submitData = {
@@ -1309,11 +1312,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     let data = { ...this.reportObj };
     data.chartData = JSON.stringify(data.chartData);
 
-    if (!existingKPIs.find((x) => x.id === data.id)) {
-      existingKPIs.push(data);
-    } else {
-      existingKPIs = this.replaceObjectById(existingKPIs, data);
-    }
+    // if (!existingKPIs.find((x) => x.id === data.id)) {
+    existingKPIs.push(data);
+    // } else {
+    //   existingKPIs = this.replaceObjectById(existingKPIs, data);
+    // }
 
     let submitData = {
       name: this.reportName,

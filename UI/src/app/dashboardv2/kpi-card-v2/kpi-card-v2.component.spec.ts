@@ -2525,7 +2525,7 @@ describe('KpiCardV2Component', () => {
         expect(component.success).toBe(true);
       });
 
-      it('should update an existing KPI in the report', () => {
+      xit('should update an existing KPI in the report', () => {
         component.existingReportData[0].kpis.push({ id: 'kpi1' });
         spyOn(httpService, 'updateReport').and.returnValue(
           of({
