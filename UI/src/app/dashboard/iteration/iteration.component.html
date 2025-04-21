@@ -140,7 +140,7 @@
                                               {{ x?.value != -99 ? x?.unit: ''}}
                                             </span>
                                             <span *ngIf="(x?.value1 !== '') && x?.value1 != -99 && x?.value1 != undefined"
-                                              [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
+                                              [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{(x?.label?.toLowerCase()==='delayed workitems'?'(':'/') +
                                               (((x?.value1 >= 0 || x?.value1 < 0) && x?.unit1) ? convertToHoursIfTime(x?.value1,x?.unit1) :
                                                 x?.value1)}}</span>
                                                 <span
@@ -149,6 +149,7 @@
                                                   *ngIf="x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours' && x?.unit1?.toLowerCase() !== 'day'">
                                                   {{ x?.value1 != -99 ? x?.unit1 : ''}}
                                                 </span>
+                                            {{x?.label?.toLowerCase()==='delayed workitems'?')':''}}
                                           </p>
                                         </div>
                                       </ng-container>

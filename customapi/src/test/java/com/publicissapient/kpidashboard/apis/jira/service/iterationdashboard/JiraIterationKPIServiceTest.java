@@ -206,15 +206,17 @@ public class JiraIterationKPIServiceTest {
 	public void testCreateIterationKpiDataToGetTheDelayedItemCount() {
 		String label = "Delayed Items";
 		Integer issueCount = 5;
+		Double individualDelayedPercentage = 20.0;
 		List<IterationKpiModalValue> modalValues = new ArrayList<>();
 		IterationKpiModalValue modalValue = new IterationKpiModalValue();
 		modalValue.setIssueId("DTS-123");
 		modalValue.setIssueStatus("Delayed");
 		modalValues.add(modalValue);
-		IterationKpiData iterationKpiData = jiraKPIService.createIterationKpiDataToGetTheDelayedItemCount(label, issueCount, modalValues);
+		IterationKpiData iterationKpiData = jiraKPIService.createIterationKpiDataToGetTheDelayedItemCount(label, issueCount, modalValues,individualDelayedPercentage);
 		assertNotNull(iterationKpiData);
 		assertEquals(label, iterationKpiData.getLabel());
 		assertEquals(Double.valueOf(issueCount), iterationKpiData.getValue());
 		assertEquals(modalValues, iterationKpiData.getModalValues());
+		assertEquals(individualDelayedPercentage, iterationKpiData.getValue1());
 	}
 }

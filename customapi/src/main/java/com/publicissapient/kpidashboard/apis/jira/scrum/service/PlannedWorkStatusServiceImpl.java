@@ -45,7 +45,6 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -326,9 +325,10 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 								storyPointPlanned, originalEstimatePlanned, modalValues);
 						issueCountsActual = createIterationKpiData(ACTUAL_COMPLETION, fieldMapping, issueCountActual,
 								storyPointActual, originalEstimateActual, null);
-						delayed = new IterationKpiData(DELAY, (double) (delay), null, null, CommonConstant.DAY, null);
+						delayed = new IterationKpiData(DELAY, (double) (delay), null, null, CommonConstant.DAY,"", null);
 						List<IterationKpiModalValue> individualDelayedModalValues = modalValues.stream().filter(ikmv -> !ikmv.getDelayInDays().equalsIgnoreCase(EMPTY_OR_DASH_PLACEHOLDER)).collect(Collectors.toList());
-						individualDelayedWorkItem = createIterationKpiDataToGetTheDelayedItemCount(DELAYED_WORKITEMS,individualDelayedModalValues.size(),individualDelayedModalValues);
+						double individualDelayedPercentage = calculateDelayedPercentage(issueCountPlanned,individualDelayedModalValues.size());
+						individualDelayedWorkItem = createIterationKpiDataToGetTheDelayedItemCount(DELAYED_WORKITEMS,individualDelayedModalValues.size(),individualDelayedModalValues,individualDelayedPercentage);
 						data.add(issueCountsPlanned);
 						data.add(issueCountsActual);
 						data.add(individualDelayedWorkItem);
@@ -348,10 +348,11 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 			overAllIssueCountsActual = createIterationKpiData(ACTUAL_COMPLETION, fieldMapping,
 					overAllIssueCountActual.get(0), overAllStoryPointsActual.get(0),
 					overAllOriginalEstimateActual.get(0), null);
-			overAllDelay = new IterationKpiData(DELAY, (double) (overallDelay.get(0)), null, null, CommonConstant.DAY,
+			overAllDelay = new IterationKpiData(DELAY, (double) (overallDelay.get(0)), null, null, CommonConstant.DAY,"",
 					null);
 			List<IterationKpiModalValue> overAllDelayedModalValues = overAllmodalValues.stream().filter(ikmv -> !ikmv.getDelayInDays().equalsIgnoreCase(EMPTY_OR_DASH_PLACEHOLDER)).collect(Collectors.toList());
-			overAllDelayedWorkItem = createIterationKpiDataToGetTheDelayedItemCount(DELAYED_WORKITEMS,overAllDelayedModalValues.size(),overAllDelayedModalValues);
+			double overAllDelayedPercentage = calculateDelayedPercentage(overAllIssueCountPlanned.get(0),overAllDelayedModalValues.size());
+			overAllDelayedWorkItem = createIterationKpiDataToGetTheDelayedItemCount(DELAYED_WORKITEMS,overAllDelayedModalValues.size(),overAllDelayedModalValues,overAllDelayedPercentage);
 			data.add(overAllIssueCountsPlanned);
 			data.add(overAllIssueCountsActual);
 			data.add(overAllDelayedWorkItem);
@@ -370,6 +371,10 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 			kpiElement.setExcelColumnInfo(KPIExcelColumn.PLANNED_WORK_STATUS.getKpiExcelColumnInfo());
 			kpiElement.setTrendValueList(trendValue);
 		}
+	}
+
+	private double calculateDelayedPercentage(int totalItemPlanned, int numberOfDelay) {
+		return Math.round(((double) numberOfDelay / totalItemPlanned) * 100);
 	}
 
 	/**
@@ -620,5 +625,4 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 		}
 		jiraIssueModalObject.setMarker(markerValue);
 	}
-
 }
