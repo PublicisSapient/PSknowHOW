@@ -124,6 +124,10 @@ public abstract class JiraIterationKPIService implements NonTrendKPIService {
 		return iterationKpiData;
 	}
 
+	public IterationKpiData createIterationKpiDataToGetTheDelayedItemCount(String label,Integer issueCount, List<IterationKpiModalValue> modalvalue,Double individualDelayedPercentage) {
+		return  new IterationKpiData(label,Double.valueOf(issueCount),individualDelayedPercentage,"","",Constant.PERCENTAGE,modalvalue);
+	}
+
 	public SprintDetails getSprintDetailsFromBaseClass() {
 		SprintDetails sprintDetails;
 		try {
