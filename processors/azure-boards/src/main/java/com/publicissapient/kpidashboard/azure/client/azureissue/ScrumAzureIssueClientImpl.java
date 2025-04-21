@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -1253,19 +1254,23 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 				&& fieldMapping.getJiraRefinementCriteriaKPI188().trim().equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
 				&& fieldsMap.get(fieldMapping.getJiraRefinementByCustomFieldKPI188().trim()) != null) {
 			String azureValue = fieldsMap.get(fieldMapping.getJiraRefinementByCustomFieldKPI188().trim()).toString();
-			Set<String> customFieldSet = Arrays.stream(azureValue.toLowerCase().split("\\s+"))
-					.collect(Collectors.toSet());
-			if (StringUtils.isNotEmpty(fieldMapping.getJiraRefinementMinLengthKPI188())) {
-				int i = Integer.parseInt(fieldMapping.getJiraRefinementMinLengthKPI188());
-				if (customFieldSet.size() >= i
-						&& CollectionUtils.isNotEmpty(fieldMapping.getJiraRefinementKeywordsKPI188())) {
-					Set<String> fieldMappingSet = fieldMapping.getJiraRefinementKeywordsKPI188().stream()
-							.map(String::toLowerCase).collect(Collectors.toSet());
-					if (!checkKeyWords(customFieldSet, fieldMappingSet)) {
-						// when fields are not matching then we will set values
-						azureIssue.setUnRefinedValue188(customFieldSet);
+			if(StringUtils.isNotEmpty(azureValue) && StringUtils.isNotBlank(azureValue)) {
+				Set<String> customFieldSet = Arrays.stream(azureValue.toLowerCase().split("\\s+"))
+						.collect(Collectors.toSet());
+				if (StringUtils.isNotEmpty(fieldMapping.getJiraRefinementMinLengthKPI188()) && CollectionUtils.isNotEmpty(customFieldSet)) {
+					int i = Integer.parseInt(fieldMapping.getJiraRefinementMinLengthKPI188());
+					if (customFieldSet.size() >= i
+							&& CollectionUtils.isNotEmpty(fieldMapping.getJiraRefinementKeywordsKPI188())) {
+						Set<String> fieldMappingSet = fieldMapping.getJiraRefinementKeywordsKPI188().stream()
+								.map(String::toLowerCase).collect(Collectors.toSet());
+						if (!checkKeyWords(customFieldSet, fieldMappingSet)) {
+							// when fields are not matching then we will set values
+							azureIssue.setUnRefinedValue188(customFieldSet);
+						}
 					}
 				}
+			}else{
+				azureIssue.setUnRefinedValue188(Collections.singleton("No Value"));
 			}
 		}
 	}

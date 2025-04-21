@@ -1037,6 +1037,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		}
 
 		if (value == null) {
+			jiraIssue.setUnRefinedValue188(Collections.singleton("No Value"));
 			return;
 		}
 
@@ -1046,7 +1047,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 				.filter(s -> !s.isBlank())  // optional: remove blanks
 				.collect(Collectors.toSet());
 
-		if (StringUtils.isNotEmpty(fieldMapping.getJiraRefinementMinLengthKPI188())) {
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraRefinementMinLengthKPI188()) && CollectionUtils.isNotEmpty( customFieldSet)) {
 			int minLength = Integer.parseInt(fieldMapping.getJiraRefinementMinLengthKPI188());
 			if (customFieldSet.size() >= minLength
 					&& CollectionUtils.isNotEmpty(fieldMapping.getJiraRefinementKeywordsKPI188())) {
@@ -1084,7 +1085,8 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 				String jsonObjectValue = ((org.codehaus.jettison.json.JSONObject) issueFieldValue)
 						.get(JiraConstants.VALUE).toString();
 				customValue.add(jsonObjectValue);
-			} else {
+			} else if (StringUtils.isNotEmpty(issueFieldValue.toString())
+					&& StringUtils.isNotBlank(issueFieldValue.toString())) {
 				customValue.add(issueFieldValue.toString());
 			}
 
