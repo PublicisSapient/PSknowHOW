@@ -1166,7 +1166,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       id: this.kpiData.kpiId,
       chartData: this.currentChartData?.chartData
         ? this.currentChartData?.chartData
-        : { ...this.kpiChartData },
+        : this.kpiChartData,
       metadata: metaDataObj,
     };
 

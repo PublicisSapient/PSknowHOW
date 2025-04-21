@@ -452,4 +452,22 @@ export class KpiHelperService {
     }
     return returnDataSet;
   }
+
+  getSelectedItem(items, currentSelected, direction) {
+    const currentIndex = items.indexOf(currentSelected);
+
+    if (currentIndex === -1) {
+      return items.length > 0 ? items[0] : null;
+    }
+
+    let nextIndex;
+    if (direction === 'right') {
+      nextIndex = (currentIndex + 1) % items.length;
+    } else if (direction === 'left') {
+      nextIndex = (currentIndex - 1 + items.length) % items.length;
+    } else {
+      return currentSelected;
+    }
+    return items[nextIndex];
+  }
 }
