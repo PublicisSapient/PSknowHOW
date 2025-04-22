@@ -4955,7 +4955,7 @@
     "kanban" : false ,
     "chartType" : "CumulativeMultilineChart" ,
     "kpiInfo" : {
-      "definition" : "Late Refinement metric flags backlog items that should be refined by now but aren't, either because they’re already in the current sprint and not meeting the Definition of Ready (DoR), or because they're slated for the next sprint but still lack necessary refinement details.",
+      "definition" : "Measures the number of work items that are not adequately refined in time for development planning. This includes: Work items in the current sprint that do not meet DoR (Definition of Ready).",
       "details" : [
         {
           "type" : "link" ,
@@ -4975,7 +4975,6 @@
     "boxType" : "chart" ,
     "calculateMaturity" : false
   } ,
-
   {
     "kpiId" : "kpi188" ,
     "kpiName" : "Late Refinement (Future Sprint)" ,
@@ -4991,7 +4990,7 @@
     "kanban" : false ,
     "chartType" : null ,
     "kpiInfo" : {
-      "definition" : "Late Refinement metric flags backlog items that should be refined by now but aren't, either because they’re already in the current sprint and not meeting the Definition of Ready (DoR), or because they're slated for the next sprint but still lack necessary refinement details.",
+      "definition" : "Measures the number of work items that are slated for the next sprint but still lack necessary refinement details. Work items tagged to the next sprint that lack sufficient refinement (e.g., missing description, acceptance criteria, etc).",
       "details" : [
         {
           "type" : "link" ,
