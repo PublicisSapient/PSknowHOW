@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -149,12 +148,7 @@ public class LateRefinementServiceImplTest {
         when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
                 .thenReturn(kpiRequestTrackerId);
         sprintDetails.setStartDate("2022-09-28T17:00:00.000Z");
-        when(sprintRepository
-                .findByBasicProjectConfigIdAndStateIgnoreCaseOrderByStartDateASC(any(ObjectId.class), any(String.class)))
-                .thenReturn(new ArrayList<>(List.of(sprintDetails)));
         when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-        when(jiraIssueRepository
-                .findIssueByNumberWithAdditionalFilter(any(), any())).thenReturn(storyList);
         when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistoryList);
         when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
         when(lateRefinementService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
