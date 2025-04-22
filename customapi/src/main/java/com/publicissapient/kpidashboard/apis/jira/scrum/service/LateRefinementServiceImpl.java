@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -167,7 +169,7 @@ public class LateRefinementServiceImpl extends JiraIterationKPIService {
 								List<JiraHistoryChangeLog> sprintUpdationLog = issueHistory.getSprintUpdationLog();
 								List<JiraHistoryChangeLog> statusUpdationLog = issueHistory.getStatusUpdationLog();
 								Collections.sort(sprintUpdationLog,
-										Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
+										Comparator.comparing(getGetUpdatedOn()));
 								Collections.sort(statusUpdationLog,
 										Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 								createAddedandRemovedIssueDateWiseMap(sprintDetails, totalIssueList, addedIssues,
@@ -188,6 +190,10 @@ public class LateRefinementServiceImpl extends JiraIterationKPIService {
 			}
 		}
 		return resultListMap;
+	}
+
+	private static Function<JiraHistoryChangeLog, LocalDateTime> getGetUpdatedOn() {
+		return JiraHistoryChangeLog::getUpdatedOn;
 	}
 
 	private Map<LocalDate, List<JiraIssue>> createLateRefinedMap(SprintDetails sprintDetails) {

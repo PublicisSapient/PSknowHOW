@@ -230,6 +230,23 @@
         "sprintComponentId": "38294_Scrum Project_6335363749794a18e8a4479b"
       }
     ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "KnowHOW | PI_21| ITR_1",
+        "updatedOn" : "2025-04-02T16:33:29.496"
+      },
+      {
+        "changedFrom" : "KnowHOW | PI_21| ITR_1",
+        "changedTo" : "KnowHOW | PI_20| ITR_5",
+        "updatedOn" : "2025-04-02T16:38:25.118"
+      },
+      {
+        "changedFrom" : "KnowHOW | PI_20| ITR_5",
+        "changedTo" : "KnowHOW | PI_21| ITR_1",
+        "updatedOn" : "2025-04-02T16:38:26.118"
+      }
+    ],
     "additionalFilters": [],
     "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
   },
