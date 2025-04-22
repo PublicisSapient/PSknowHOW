@@ -61,7 +61,6 @@ import com.publicissapient.kpidashboard.common.model.application.AccountHierarch
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
-import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyLevelDTO;
 import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyValueDTO;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
@@ -149,7 +148,7 @@ public class FilterHelperServiceImplTest {
 	}
 
 	private HierarchyValueDTO setHierrachyValue(int level, String levelId, String levelName, String value) {
-		HierarchyLevelDTO hierarchyLevelDTO = new HierarchyLevelDTO();
+		HierarchyLevel hierarchyLevelDTO = new HierarchyLevel();
 		hierarchyLevelDTO.setLevel(level);
 		hierarchyLevelDTO.setHierarchyLevelId(levelId);
 		hierarchyLevelDTO.setHierarchyLevelName(levelName);

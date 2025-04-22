@@ -1270,6 +1270,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   addToReportPost() {
+    if (this.reportName.trim() === '') {
+      return;
+    }
     let data = { ...this.reportObj };
     data.chartData = JSON.stringify(data.chartData);
     let submitData = {

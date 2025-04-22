@@ -9,6 +9,7 @@ import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import org.junit.jupiter.api.Test;
 
 public class HierarchyValueDTOTest {
@@ -24,7 +25,7 @@ public class HierarchyValueDTOTest {
 	public void testCanEqual2() {
 		HierarchyValueDTO hierarchyValueDTO = new HierarchyValueDTO();
 
-		HierarchyLevelDTO hierarchyLevelDTO = new HierarchyLevelDTO();
+		HierarchyLevel hierarchyLevelDTO = new HierarchyLevel();
 		hierarchyLevelDTO.setHierarchyLevelId("42");
 		hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
 		hierarchyLevelDTO.setLevel(3);
@@ -40,7 +41,7 @@ public class HierarchyValueDTOTest {
 	public void testCanEqual3() {
 		HierarchyValueDTO hierarchyValueDTO = new HierarchyValueDTO();
 
-		HierarchyLevelDTO hierarchyLevelDTO = new HierarchyLevelDTO();
+		HierarchyLevel hierarchyLevelDTO = new HierarchyLevel();
 		hierarchyLevelDTO.setHierarchyLevelId("42");
 		hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
 		hierarchyLevelDTO.setLevel(3);
@@ -56,7 +57,7 @@ public class HierarchyValueDTOTest {
 	 *
 	 * <ul>
 	 * <li>default or parameterless constructor of {@link HierarchyValueDTO}
-	 * <li>{@link HierarchyValueDTO#setHierarchyLevel(HierarchyLevelDTO)}
+	 * <li>{@link HierarchyValueDTO#setHierarchyLevel(HierarchyLevel)}
 	 * <li>{@link HierarchyValueDTO#setValue(String)}
 	 * <li>{@link HierarchyValueDTO#toString()}
 	 * <li>{@link HierarchyValueDTO#getHierarchyLevel()}
@@ -66,7 +67,7 @@ public class HierarchyValueDTOTest {
 	@Test
 	public void testConstructor() {
 		HierarchyValueDTO actualHierarchyValueDTO = new HierarchyValueDTO();
-		HierarchyLevelDTO hierarchyLevelDTO = new HierarchyLevelDTO();
+		HierarchyLevel hierarchyLevelDTO = new HierarchyLevel();
 		hierarchyLevelDTO.setHierarchyLevelId("42");
 		hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
 		hierarchyLevelDTO.setLevel(1);
@@ -77,7 +78,7 @@ public class HierarchyValueDTOTest {
 		assertSame(hierarchyLevelDTO, actualHierarchyValueDTO.getHierarchyLevel());
 		assertEquals("42", actualHierarchyValueDTO.getValue());
 		assertEquals(
-				"HierarchyValueDTO(hierarchyLevel=HierarchyLevelDTO(level=1, hierarchyLevelId=42, hierarchyLevelName=Hierarchy Level Name, hierarchyLevelInfo=null), orgHierarchyNodeId=orgNodeUniqueId, value=42)",
+				"HierarchyValueDTO(hierarchyLevel=HierarchyLevel(level=1, hierarchyLevelId=42, hierarchyLevelName=Hierarchy Level Name, hierarchyInfo=null), orgHierarchyNodeId=orgNodeUniqueId, value=42)",
 				actualToStringResult);
 	}
 
@@ -86,7 +87,7 @@ public class HierarchyValueDTOTest {
 	 *
 	 * <ul>
 	 * <li>default or parameterless constructor of {@link HierarchyValueDTO}
-	 * <li>{@link HierarchyValueDTO#setHierarchyLevel(HierarchyLevelDTO)}
+	 * <li>{@link HierarchyValueDTO#setHierarchyLevel(HierarchyLevel)}
 	 * <li>{@link HierarchyValueDTO#setValue(String)}
 	 * <li>{@link HierarchyValueDTO#toString()}
 	 * <li>{@link HierarchyValueDTO#getHierarchyLevel()}
@@ -96,7 +97,7 @@ public class HierarchyValueDTOTest {
 	@Test
 	public void testConstructor2() {
 		HierarchyValueDTO actualHierarchyValueDTO = new HierarchyValueDTO();
-		HierarchyLevelDTO hierarchyLevelDTO = new HierarchyLevelDTO();
+		HierarchyLevel hierarchyLevelDTO = new HierarchyLevel();
 		hierarchyLevelDTO.setHierarchyLevelId("42");
 		hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
 		hierarchyLevelDTO.setLevel(1);
@@ -107,14 +108,14 @@ public class HierarchyValueDTOTest {
 		assertSame(hierarchyLevelDTO, actualHierarchyValueDTO.getHierarchyLevel());
 		assertEquals("42", actualHierarchyValueDTO.getValue());
 		assertEquals(
-				"HierarchyValueDTO(hierarchyLevel=HierarchyLevelDTO(level=1, hierarchyLevelId=42, hierarchyLevelName=Hierarchy Level Name, hierarchyLevelInfo=null), orgHierarchyNodeId=orgNodeUniqueId, value=42)",
+				"HierarchyValueDTO(hierarchyLevel=HierarchyLevel(level=1, hierarchyLevelId=42, hierarchyLevelName=Hierarchy Level Name, hierarchyInfo=null), orgHierarchyNodeId=orgNodeUniqueId, value=42)",
 				actualToStringResult);
 	}
 
 	/** Method under test: {@link HierarchyValueDTO#equals(Object)} */
 	@Test
 	public void testEquals() {
-		HierarchyLevelDTO hierarchyLevelDTO = new HierarchyLevelDTO();
+		HierarchyLevel hierarchyLevelDTO = new HierarchyLevel();
 		hierarchyLevelDTO.setHierarchyLevelId("42");
 		hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
 		hierarchyLevelDTO.setLevel(1);
@@ -128,7 +129,7 @@ public class HierarchyValueDTOTest {
 	/** Method under test: {@link HierarchyValueDTO#equals(Object)} */
 	@Test
 	public void testEquals2() {
-		HierarchyLevelDTO hierarchyLevelDTO = new HierarchyLevelDTO();
+		HierarchyLevel hierarchyLevelDTO = new HierarchyLevel();
 		hierarchyLevelDTO.setHierarchyLevelId("42");
 		hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
 		hierarchyLevelDTO.setLevel(1);
@@ -149,7 +150,7 @@ public class HierarchyValueDTOTest {
 	 */
 	@Test
 	public void testEquals3() {
-		HierarchyLevelDTO hierarchyLevelDTO = new HierarchyLevelDTO();
+		HierarchyLevel hierarchyLevelDTO = new HierarchyLevel();
 		hierarchyLevelDTO.setHierarchyLevelId("42");
 		hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
 		hierarchyLevelDTO.setLevel(1);
@@ -172,7 +173,7 @@ public class HierarchyValueDTOTest {
 	 */
 	@Test
 	public void testEquals4() {
-		HierarchyLevelDTO hierarchyLevelDTO = new HierarchyLevelDTO();
+		HierarchyLevel hierarchyLevelDTO = new HierarchyLevel();
 		hierarchyLevelDTO.setHierarchyLevelId("42");
 		hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
 		hierarchyLevelDTO.setLevel(1);
@@ -181,7 +182,7 @@ public class HierarchyValueDTOTest {
 		hierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
 		hierarchyValueDTO.setValue("42");
 
-		HierarchyLevelDTO hierarchyLevelDTO1 = new HierarchyLevelDTO();
+		HierarchyLevel hierarchyLevelDTO1 = new HierarchyLevel();
 		hierarchyLevelDTO1.setHierarchyLevelId("42");
 		hierarchyLevelDTO1.setHierarchyLevelName("Hierarchy Level Name");
 		hierarchyLevelDTO1.setLevel(1);
@@ -197,7 +198,7 @@ public class HierarchyValueDTOTest {
 	/** Method under test: {@link HierarchyValueDTO#equals(Object)} */
 	@Test
 	public void testEquals5() {
-		HierarchyLevelDTO hierarchyLevelDTO = mock(HierarchyLevelDTO.class);
+		HierarchyLevel hierarchyLevelDTO = mock(HierarchyLevel.class);
 		doNothing().when(hierarchyLevelDTO).setHierarchyLevelId((String) any());
 		doNothing().when(hierarchyLevelDTO).setHierarchyLevelName((String) any());
 		doNothing().when(hierarchyLevelDTO).setLevel(anyInt());
@@ -209,7 +210,7 @@ public class HierarchyValueDTOTest {
 		hierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
 		hierarchyValueDTO.setValue("42");
 
-		HierarchyLevelDTO hierarchyLevelDTO1 = new HierarchyLevelDTO();
+		HierarchyLevel hierarchyLevelDTO1 = new HierarchyLevel();
 		hierarchyLevelDTO1.setHierarchyLevelId("42");
 		hierarchyLevelDTO1.setHierarchyLevelName("Hierarchy Level Name");
 		hierarchyLevelDTO1.setLevel(1);
@@ -223,7 +224,7 @@ public class HierarchyValueDTOTest {
 	/** Method under test: {@link HierarchyValueDTO#equals(Object)} */
 	@Test
 	public void testEquals6() {
-		HierarchyLevelDTO hierarchyLevelDTO = new HierarchyLevelDTO();
+		HierarchyLevel hierarchyLevelDTO = new HierarchyLevel();
 		hierarchyLevelDTO.setHierarchyLevelId("42");
 		hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
 		hierarchyLevelDTO.setLevel(1);
@@ -237,7 +238,7 @@ public class HierarchyValueDTOTest {
 	/** Method under test: {@link HierarchyValueDTO#equals(Object)} */
 	@Test
 	public void testEquals7() {
-		HierarchyLevelDTO hierarchyLevelDTO = new HierarchyLevelDTO();
+		HierarchyLevel hierarchyLevelDTO = new HierarchyLevel();
 		hierarchyLevelDTO.setHierarchyLevelId("42");
 		hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
 		hierarchyLevelDTO.setLevel(1);
@@ -258,7 +259,7 @@ public class HierarchyValueDTOTest {
 	 */
 	@Test
 	public void testEquals8() {
-		HierarchyLevelDTO hierarchyLevelDTO = new HierarchyLevelDTO();
+		HierarchyLevel hierarchyLevelDTO = new HierarchyLevel();
 		hierarchyLevelDTO.setHierarchyLevelId("42");
 		hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
 		hierarchyLevelDTO.setLevel(1);
@@ -281,7 +282,7 @@ public class HierarchyValueDTOTest {
 	 */
 	@Test
 	public void testEquals9() {
-		HierarchyLevelDTO hierarchyLevelDTO = new HierarchyLevelDTO();
+		HierarchyLevel hierarchyLevelDTO = new HierarchyLevel();
 		hierarchyLevelDTO.setHierarchyLevelId("42");
 		hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
 		hierarchyLevelDTO.setLevel(1);
@@ -290,7 +291,7 @@ public class HierarchyValueDTOTest {
 		hierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
 		hierarchyValueDTO.setValue("42");
 
-		HierarchyLevelDTO hierarchyLevelDTO1 = new HierarchyLevelDTO();
+		HierarchyLevel hierarchyLevelDTO1 = new HierarchyLevel();
 		hierarchyLevelDTO1.setHierarchyLevelId("42");
 		hierarchyLevelDTO1.setHierarchyLevelName("Hierarchy Level Name");
 		hierarchyLevelDTO1.setLevel(1);
@@ -306,7 +307,7 @@ public class HierarchyValueDTOTest {
 	/** Method under test: {@link HierarchyValueDTO#equals(Object)} */
 	@Test
 	public void testEquals10() {
-		HierarchyLevelDTO hierarchyLevelDTO = mock(HierarchyLevelDTO.class);
+		HierarchyLevel hierarchyLevelDTO = mock(HierarchyLevel.class);
 		doNothing().when(hierarchyLevelDTO).setHierarchyLevelId((String) any());
 		doNothing().when(hierarchyLevelDTO).setHierarchyLevelName((String) any());
 		doNothing().when(hierarchyLevelDTO).setLevel(anyInt());
@@ -318,7 +319,7 @@ public class HierarchyValueDTOTest {
 		hierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
 		hierarchyValueDTO.setValue("42");
 
-		HierarchyLevelDTO hierarchyLevelDTO1 = new HierarchyLevelDTO();
+		HierarchyLevel hierarchyLevelDTO1 = new HierarchyLevel();
 		hierarchyLevelDTO1.setHierarchyLevelId("42");
 		hierarchyLevelDTO1.setHierarchyLevelName("Hierarchy Level Name");
 		hierarchyLevelDTO1.setLevel(1);
