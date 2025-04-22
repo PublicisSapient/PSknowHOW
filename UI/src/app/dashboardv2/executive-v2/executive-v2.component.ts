@@ -2696,9 +2696,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   createAllKpiArray(data) {
-
     // data = this.appendParentName(data);
-
 
     for (const key in data) {
       const idx = this.ifKpiExist(data[key]?.kpiId);
