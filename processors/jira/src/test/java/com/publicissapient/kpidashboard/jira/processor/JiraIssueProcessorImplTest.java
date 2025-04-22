@@ -839,6 +839,5 @@ public class JiraIssueProcessorImplTest {
 		// Assert
 		assertNotNull(jiraIssue.getUnRefinedValue188());
 		assertTrue(jiraIssue.getUnRefinedValue188().contains("keyword3"));
-//		assertFalse(jiraIssue.getUnRefinedValue188().contains("keyword1"));
 	}
 }
