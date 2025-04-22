@@ -144,7 +144,7 @@ export class ReportContainerComponent implements OnInit {
         this.messageService.add({
           severity: 'success',
           summary:
-            'Metrics added successfully. View the report in the report section.',
+            'KPI deleted successfully.',
         });
       } else {
         this.messageService.add({
