@@ -143,8 +143,7 @@ export class ReportContainerComponent implements OnInit {
         selectedReport.kpis = data['data']['kpis'];
         this.messageService.add({
           severity: 'success',
-          summary:
-            'KPI deleted successfully.',
+          summary: 'KPI deleted successfully.',
         });
       } else {
         this.messageService.add({
