@@ -250,21 +250,23 @@ public class ProjectAccessManager {
 		}
 
 		// Check for existing pending request for same project
-		Optional<AccessRequest> existingPendingRequest = pendingRequests.stream().filter(pr -> pr.getAccessNode()
-				.getAccessItems().stream().map(AccessItem::getItemId).anyMatch(id -> accessRequest.getAccessNode()
-						.getAccessItems().stream().map(AccessItem::getItemId).anyMatch(reqId -> reqId.equals(id))))
-				.findFirst();
+		List<AccessRequest> existingPendingRequest = pendingRequests.stream()
+				.filter(pr -> pr.getAccessNode().getAccessItems().stream().map(AccessItem::getItemId)
+						.anyMatch(id -> accessRequest.getAccessNode().getAccessItems().stream()
+								.map(AccessItem::getItemId).anyMatch(reqId -> reqId.equals(id))))
+				.collect(Collectors.toList());
 
 		// If there's a pending request for same project with different role, update it
-		if (existingPendingRequest.isPresent()) {
-			AccessRequest pendingRequest = existingPendingRequest.get();
-			if (!pendingRequest.getRole().equals(accessRequest.getRole())) {
-				pendingRequest.setRole(accessRequest.getRole());
-				pendingRequest.setLastModifiedDate(new Date());
-				accessRequestsRepository.save(pendingRequest);
-				listenAccessRequestSuccess(listener, pendingRequest);
-			} else {
-				listenAccessRequestFailure(listener, "Already has a pending request with same role");
+		if (CollectionUtils.isNotEmpty(existingPendingRequest)) {
+			for (AccessRequest pendingRequest : existingPendingRequest) {
+				if (!pendingRequest.getRole().equals(accessRequest.getRole())) {
+					pendingRequest.setRole(accessRequest.getRole());
+					pendingRequest.setLastModifiedDate(new Date());
+					accessRequestsRepository.save(pendingRequest);
+					listenAccessRequestSuccess(listener, pendingRequest);
+				} else {
+					listenAccessRequestFailure(listener, "Already has a pending request with same role");
+				}
 			}
 			return;
 		}
