@@ -198,8 +198,10 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 		}
 
 		List<JiraIssue> scopeChangeIssues = Stream
-				.concat(Stream.concat(initialIssues.stream(), addedIssues.stream()),
-						Stream.concat(puntedIssues.stream(), totalIssues.stream()))
+				.concat(Stream.concat(CollectionUtils.emptyIfNull(initialIssues).stream(),
+						CollectionUtils.emptyIfNull(addedIssues).stream()),
+						Stream.concat(CollectionUtils.emptyIfNull(puntedIssues).stream(),
+								CollectionUtils.emptyIfNull(totalIssues).stream()))
 				.filter(j -> Objects.nonNull(j.getLabels()) && Objects.nonNull(fieldMapping.getJiraLabelsKPI120())
 						&& j.getLabels().stream().anyMatch(fieldMapping.getJiraLabelsKPI120()::contains))
 				.distinct().collect(Collectors.toList());
