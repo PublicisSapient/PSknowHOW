@@ -117,7 +117,8 @@ export class MultilineV2Component implements OnChanges {
 
     data.forEach(project => {
         const projectName = project.data.trim();
-        project.value.forEach((sprint, index) => {
+      project.value.forEach((sprint, index) => {
+        const xAxisLabelName = sprint;
             const sprintKey = index;
 
             if (!sprintMap.has(sprintKey)) {
@@ -132,9 +133,9 @@ export class MultilineV2Component implements OnChanges {
             const sprintData = sprintEntry.projects;
 
             // Add sprint name if not already present
-            const sprintName = sprint.sSprintName?.trim();
-            if (sprintName && !sprintEntry.sprints.includes(sprintName)) {
-                sprintEntry.sprints.push(sprintName);
+            const xAxisName = xAxisLabelName.sSprintName?.trim() || xAxisLabelName.date?.trim();
+            if (xAxisName && !sprintEntry.sprints.includes(xAxisName)) {
+                sprintEntry.sprints.push(xAxisName);
             }
 
             // Assign hoverValue data
@@ -148,7 +149,7 @@ export class MultilineV2Component implements OnChanges {
     return Array.from(sprintMap.values());
   }
 
-  renderSprintsLegend(data) {
+  renderSprintsLegend(data, xAxisCaption) {
     this.counter++;
     if (this.counter === 1) {
       console.log('renderSprintsLegend data:', data);
@@ -171,7 +172,7 @@ export class MultilineV2Component implements OnChanges {
 
       // Toggle Button
       const toggleButton = container.append("button")
-        .text("Show Sprint Legend")
+        .text("Show X-Axis Legend")
         .style("margin", "0 0 10px 0")
         .style("padding", "6px 12px")
         .style("cursor", "pointer")
@@ -179,7 +180,7 @@ export class MultilineV2Component implements OnChanges {
         .on("click", function () {
           const isVisible = legend.style("display") !== "none";
           legend.style("display", isVisible ? "none" : "block");
-          toggleButton.text(isVisible ? "Show Sprint Legend" : "Hide Sprint Legend");
+          toggleButton.text(isVisible ? "Show X-Axis Legend" : "Hide X-Axis Legend");
         });
 
       // Legend Box
@@ -193,7 +194,7 @@ export class MultilineV2Component implements OnChanges {
         .style("margin-top", "10px");
 
       legend.append("h3")
-        .text("Sprint Legend")
+        .text("X-Axis Legend")
         .style("margin", "0 0 10px 0")
         .style("color", "#222");
 
@@ -205,7 +206,7 @@ export class MultilineV2Component implements OnChanges {
         .style("margin-bottom", "8px");
 
       list.append("strong")
-        .text(d => `Sprint ${d.sprintNumber}: `)
+        .text(d => `${xAxisCaption} ${d.sprintNumber}: `)
         .style("color", "#333");
 
       list.append("span")
@@ -339,7 +340,6 @@ export class MultilineV2Component implements OnChanges {
       data?.forEach(function (d) {
         d.value?.forEach(function (dataObj: { value: number }) {
           dataObj.value = +dataObj.value;
-          console.log('dataObj.value ', dataObj.value);
         });
       });
 
@@ -360,7 +360,6 @@ export class MultilineV2Component implements OnChanges {
           .domain(
             data[maxObjectNo].value?.map(function (d, i) {
               let returnObj = '';
-              console.log('d', d);
               if (board == 'dora') {
                 returnObj = d.date;
               } else {
@@ -921,11 +920,8 @@ export class MultilineV2Component implements OnChanges {
       const content = this.elem.querySelector('#horizontalSVG');
       content.scrollLeft += width;
 
-      // ---------------------------
-      console.log('flattenData 926', this.flattenData(data));
-      // this.flattenData(data);
       // Render Sprint Legend
-      this.renderSprintsLegend(this.flattenData(data));
+      this.renderSprintsLegend(this.flattenData(data), this.xCaption);
     }
   }
 
