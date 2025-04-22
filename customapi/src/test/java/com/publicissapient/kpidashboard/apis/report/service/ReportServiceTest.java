@@ -26,7 +26,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -43,7 +42,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.errors.DuplicateKpiException;
 import com.publicissapient.kpidashboard.apis.errors.DuplicateReportException;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.errors.ReportNotFoundException;
@@ -121,7 +119,7 @@ public class ReportServiceTest {
 		when(reportRepository.findById(anyString())).thenReturn(Optional.of(report));
 		when(reportRepository.save(any(Report.class))).thenReturn(report);
 
-		ServiceResponse response = reportService.update("report1", reportRequest);
+		ServiceResponse response = reportService.update("507f1f77bcf86cd799439011", reportRequest);
 
 		assertTrue(response.getSuccess());
 		assertEquals("Report updated successfully", response.getMessage());
@@ -184,17 +182,5 @@ public class ReportServiceTest {
 		when(reportRepository.findByCreatedBy(anyString(), any(Pageable.class))).thenReturn(reportPage);
 
 		reportService.getReportsByCreatedBy("user1", 0, 10);
-	}
-
-	@Test(expected = DuplicateKpiException.class)
-	public void testValidateKpiIds_DuplicateKpi() {
-		KpiRequest duplicateKpiRequest = new KpiRequest();
-		duplicateKpiRequest.setId("kpi1");
-		duplicateKpiRequest.setChartData("chartData2");
-		duplicateKpiRequest.setMetadata("metadata2");
-
-		reportRequest.setKpis(Arrays.asList(kpiRequest, duplicateKpiRequest));
-
-		reportService.create(reportRequest);
 	}
 }

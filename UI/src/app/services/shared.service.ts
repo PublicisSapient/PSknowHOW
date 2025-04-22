@@ -333,6 +333,7 @@ export class SharedService {
     loading = false,
     dashConfigData = null,
     selectedType = null,
+    completeFilterData = {},
   ) {
     this.sharedObject = {};
     this.sharedObject.masterData = masterData;
@@ -344,6 +345,7 @@ export class SharedService {
     this.sharedObject.loading = loading;
     this.sharedObject.dashConfigData = dashConfigData;
     this.sharedObject.selectedType = selectedType;
+    this.sharedObject.completeFilterData = completeFilterData;
     if (configDetails) {
       this.sharedObject.configDetails = configDetails;
     }

@@ -40,6 +40,7 @@ import { ExcelService } from 'src/app/services/excel.service';
 import { throwError } from 'rxjs';
 import { Location } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { clear } from 'console';
 
 @Component({
   selector: 'app-executive-v2',
@@ -49,6 +50,7 @@ import { Subscription } from 'rxjs';
 export class ExecutiveV2Component implements OnInit, OnDestroy {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
   filterData = [];
+  completeFilterData = {};
   sonarKpiData = {};
   jenkinsKpiData = {};
   zypherKpiData = {};
@@ -143,6 +145,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   queryParamsSubscription!: Subscription;
   showSprintGoalsPanel: boolean = false;
   sprintGoalData: any = [];
+  nonUniqueNames: boolean;
 
   constructor(
     public service: SharedService,
@@ -315,11 +318,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             )
               return this.service.passDataToDashboard;
             for (const key in this.kpiChartData) {
-              this.kpiChartData[key] = this.generateColorObj(
-                key,
-                this.kpiChartData[key],
-              );
-              this.createTrendsData(key);
+              // this.kpiChartData[key] = this.generateColorObj(
+              //   key,
+              //   this.kpiChartData[key],
+              // );
+              // this.createTrendsData(key);
               this.handleMaturityTableLoader();
             }
             return this.service.passDataToDashboard;
@@ -606,6 +609,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       Object.keys($event.dashConfigData).length > 0
     ) {
       this.filterData = $event.filterData;
+      this.completeFilterData = $event.completeFilterData;
       this.filterApplyData = $event.filterApplyData;
       this.globalConfig = $event.dashConfigData;
       this.configGlobalData = $event.dashConfigData[
@@ -685,6 +689,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.noOfDataPoints =
         this.selectedTab.toLowerCase() !== 'developer' &&
         this.coundMaxNoOfSprintSelectedForProject($event);
+      this.nonUniqueNames = false;
       this.allKpiArray = [];
       this.kpiChartData = {};
       this.chartColorList = {};
@@ -2691,6 +2696,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   createAllKpiArray(data) {
+    // Object.keys(data).forEach((key) => {
+    //   if (key.indexOf('kpi') === -1) {
+    //     delete data[key];
+    //   }
+    // });
+    // if (data?.length) {
+    data = this.appendParentName(data);
+    // console.log(data);
+    // }
+
     for (const key in data) {
       const idx = this.ifKpiExist(data[key]?.kpiId);
       if (idx !== -1) {
@@ -2738,6 +2753,368 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           agType,
         );
       }
+    }
+    // console.log(this.allKpiArray);
+  }
+
+  appendParentName(data) {
+    // logic for same node Display Names ie... sProjectName in data
+    let anyProjectNodeArr = [];
+    let uniqueProjectNames;
+    Object.keys(data).forEach((kpiId) => {
+      if (kpiId !== 'kpi187') {
+        // && kpiId !== 'kpi168') {
+        // && kpiId !== 'kpi38') {
+        if (data[kpiId].trendValueList?.length) {
+          let allProjectNames = data[kpiId].trendValueList?.flatMap((item) =>
+            item.value?.map((v) => v.sprojectName || v.data),
+          );
+
+          let projectHasData = true;
+          let everyProjectHasData = true;
+          this.service.getSelectedTrends().forEach((element) => {
+            for (const curr of data[kpiId].trendValueList) {
+              projectHasData =
+                curr.value
+                  .map((v) => v.sProjectName || v.data)
+                  .includes(element.nodeName) ||
+                curr.value
+                  .map((v) => v.sProjectName || v.data)
+                  .includes(element.nodeDisplayName);
+              if (!projectHasData) {
+                if ([...new Set(allProjectNames)].length !== 1) {
+                  allProjectNames = allProjectNames.filter(
+                    (x) =>
+                      x !== element.nodeName && x !== element.nodeDisplayName,
+                  );
+                  if (everyProjectHasData) {
+                    everyProjectHasData = false;
+                  }
+                  // break;
+                } else {
+                  if (
+                    [...new Set(allProjectNames)].length !==
+                    this.service.getSelectedTrends().length
+                  ) {
+                    if (everyProjectHasData) {
+                      everyProjectHasData = false;
+                    }
+                  }
+                }
+              }
+            }
+          });
+
+          uniqueProjectNames = [...new Set(allProjectNames)];
+          if (
+            uniqueProjectNames?.length !==
+              this.service.getSelectedTrends()?.length &&
+            // && everyProjectHasData
+            uniqueProjectNames.length !== allProjectNames?.length
+          ) {
+            this.nonUniqueNames = true;
+            if (uniqueProjectNames.map((x) => x).length) {
+              data[kpiId].trendValueList.forEach((dataItem, dataIndex) => {
+                let anyProject;
+
+                anyProject = dataItem.value.map((valueItem) => {
+                  let result;
+                  result = valueItem.projectNames || [valueItem.sprojectName];
+                  if (result?.[0]) {
+                    return result;
+                  } else {
+                    result = valueItem.value.map(
+                      (val) => val.projectNames || [val.sprojectName],
+                    );
+                    return result;
+                  }
+                });
+                if (!anyProject?.length) {
+                  console.log(dataItem);
+                } else {
+                  if (
+                    Array.isArray(anyProject[0][0]) &&
+                    anyProject[0][0].length
+                  ) {
+                    anyProject = [...new Set(anyProject)];
+                    anyProject = anyProject.map((x) => x[0]).map((x) => x[0]);
+                  }
+                }
+
+                if (!Array.isArray(anyProject)) {
+                  anyProject = [anyProject];
+                } else if (Array.isArray(anyProject[0])) {
+                  anyProject = anyProject[0];
+                }
+
+                let completeHierarchyData =
+                  JSON.parse(localStorage.getItem('completeHierarchyData'))[
+                    this.selectedtype
+                  ] || [];
+
+                // anyProject
+                let anyProjectNode;
+
+                if (anyProject?.length) {
+                  anyProject?.forEach((anyProjectElem) => {
+                    anyProjectNode = this.findHigherLevelParentForOtherNode(
+                      anyProjectElem,
+                      completeHierarchyData,
+                    );
+
+                    if (!anyProjectNode) {
+                      // this means project is coming instead of subsequent level
+                      anyProjectNode = this.findHigherLevelParentForProject(
+                        anyProjectElem,
+                        completeHierarchyData,
+                      );
+                    }
+
+                    if (
+                      !anyProjectNode ||
+                      !anyProjectNode['nodeId'] ||
+                      !this.service
+                        .getSelectedTrends()
+                        .map((x) => x.parentId)
+                        .includes(anyProjectNode['nodeId'])
+                    ) {
+                      if (
+                        anyProjectNode &&
+                        anyProjectNode['labelName'] === 'project'
+                      ) {
+                        anyProjectNode = this.findHigherLevelParentForProject(
+                          anyProjectNode['nodeDisplayName'],
+                          completeHierarchyData,
+                        );
+                      }
+                    }
+
+                    anyProjectNodeArr.push(anyProjectNode);
+                    anyProjectNodeArr = [...new Set(anyProjectNodeArr)];
+                  });
+                }
+              });
+            }
+          }
+        }
+      }
+
+      if (
+        anyProjectNodeArr?.length &&
+        uniqueProjectNames?.length !== this.service.getSelectedTrends()?.length
+      ) {
+        if (kpiId !== 'kpi187' && kpiId !== 'kpi168') {
+          data[kpiId].trendValueList = this.appendParentNameInActualData(
+            data[kpiId].trendValueList,
+            anyProjectNodeArr,
+          );
+        }
+
+        // });
+        // this.cdr.detectChanges();
+        console.log(data);
+      }
+    });
+    return data;
+  }
+
+  appendParentNameInActualData(data, anyProjectNodeArr) {
+    if (Array.isArray(data)) {
+      data.forEach((dataBlock, index) => {
+        if (
+          dataBlock.hasOwnProperty('data') &&
+          isNaN(dataBlock.data) &&
+          anyProjectNodeArr[index] &&
+          anyProjectNodeArr[index]['nodeName']
+        ) {
+          dataBlock.data =
+            dataBlock.data + ' (' + anyProjectNodeArr[index]['nodeName'] + ')';
+        }
+        dataBlock.value.forEach((dataItem, subIndex) => {
+          let anyProjectNode = anyProjectNodeArr[index];
+          if (
+            dataItem.hasOwnProperty('data') &&
+            isNaN(dataItem.data) &&
+            anyProjectNode
+          ) {
+            dataItem.data =
+              dataItem.data + ' (' + anyProjectNode['nodeName'] + ')';
+          }
+
+          if (Array.isArray(dataItem.value) && anyProjectNodeArr[subIndex]) {
+            anyProjectNode = anyProjectNodeArr[subIndex];
+            dataItem.value?.forEach((element) => {
+              // if (element.hasOwnProperty('data')) {
+              //   element.data =
+              //     element.data + ' (' + anyProjectNode['nodeName'] + ')';
+              // }
+
+              if (element.hasOwnProperty('sprojectName')) {
+                element.sprojectName =
+                  element.sprojectName +
+                  ' (' +
+                  anyProjectNode['nodeName'] +
+                  ')';
+              }
+              // else if (element.value && Array.isArray(element.value)) {
+              //   element = this.appendParentNameInActualData(
+              //     element,
+              //     anyProjectNode,
+              //   );
+              // }
+            });
+          } else if (anyProjectNode) {
+            if (dataItem.hasOwnProperty('sprojectName')) {
+              dataItem.sprojectName =
+                dataItem.sprojectName + ' (' + anyProjectNode['nodeName'] + ')';
+            }
+          }
+        });
+      });
+    } else {
+      console.log(data);
+    }
+    console.log(data);
+    return data;
+  }
+
+  findHigherLevelParentForProject(anyProject, completeHierarchyData) {
+    if (!Array.isArray(completeHierarchyData)) {
+      completeHierarchyData = [];
+    }
+    let projectLevel = completeHierarchyData.find(
+      (x) => x.hierarchyLevelId.toLowerCase() === 'project',
+    )?.level;
+    let parentName;
+    let anyProjectNode = this.completeFilterData[
+      completeHierarchyData.find((x) => x.level === projectLevel)
+        ?.hieararchyLevelName
+    ]?.filter((x) => {
+      return x.nodeName === anyProject || x.nodeDisplayName === anyProject;
+    });
+
+    if (anyProjectNode?.length && anyProjectNode.length > 1) {
+      anyProjectNode = anyProjectNode.filter((x) =>
+        this.service
+          .getSelectedTrends()
+          .map((f) => f.nodeId)
+          .includes(x.parentId),
+      )[0];
+    } else if (anyProjectNode?.length) {
+      anyProjectNode = anyProjectNode[0];
+    } else {
+      let level = this.service.getSelectedTrends().map((x) => x.level)[0];
+      anyProjectNode = this.completeFilterData[
+        completeHierarchyData.find((x) => x.level === level)?.hierarchyLevelName
+      ]?.find(
+        (x) =>
+          x.nodeName ===
+            (Array.isArray(anyProject) ? anyProject[0] : anyProject) ||
+          x.nodeDisplayName ===
+            (Array.isArray(anyProject) ? anyProject[0] : anyProject),
+      );
+    }
+
+    if (anyProjectNode && anyProjectNode['level']) {
+      for (
+        let k = anyProjectNode['level'];
+        k >= this.service.getSelectedTrends()[0].level;
+        k--
+      ) {
+        parentName = this.completeFilterData[
+          completeHierarchyData.find((x) => x.level === k - 1)
+            .hierarchyLevelName
+        ].filter((x) => {
+          return x.nodeId === anyProjectNode['parentId'];
+        })[0];
+        anyProjectNode = this.completeFilterData[
+          completeHierarchyData.find((x) => x.level === k - 1)
+            .hierarchyLevelName
+        ].find((x) => {
+          return x.nodeId === parentName.nodeId;
+        });
+      }
+    } else {
+      // console.log(anyProject);
+      anyProjectNode = this.findHigherLevelParentForOtherNode(
+        anyProject,
+        completeHierarchyData,
+      );
+    }
+    return anyProjectNode;
+  }
+
+  findHigherLevelParentForOtherNode(anyProject, completeHierarchyData) {
+    if (!Array.isArray(completeHierarchyData)) {
+      completeHierarchyData = [];
+    }
+    let anyProjectNode;
+    let parentName;
+    let projectLevel = completeHierarchyData?.find(
+      (x) => x.hierarchyLevelId.toLowerCase() === 'project',
+    )?.level;
+    for (
+      let k = projectLevel;
+      k >= this.service.getSelectedTrends()[0]?.level;
+      k--
+    ) {
+      anyProjectNode = this.completeFilterData[
+        completeHierarchyData?.find((x) => x.level === k + 1).hierarchyLevelName
+      ].filter((x) => {
+        return x.nodeName === anyProject || x.nodeDisplayName === anyProject;
+      });
+      if (anyProjectNode?.length) {
+        break;
+      }
+    }
+    if (anyProjectNode?.length && anyProjectNode.length > 1) {
+      anyProjectNode = anyProjectNode.filter((x) =>
+        this.service
+          .getSelectedTrends()
+          .map((f) => f.nodeId)
+          .includes(x.parentId),
+      )[0];
+    } else if (anyProjectNode?.length) {
+      if (Array.isArray(anyProjectNode)) {
+        anyProjectNode = anyProjectNode[0];
+      } else if (typeof anyProject === 'string') {
+        let level = this.service.getSelectedTrends().map((x) => x.level)[0];
+        anyProjectNode = this.completeFilterData[
+          completeHierarchyData.find((x) => x.level === level)
+            .hierarchyLevelName
+        ].find((x) => {
+          return x.nodeName === anyProject || x.nodeDisplayName === anyProject;
+        });
+
+        if (!anyProjectNode) {
+          anyProjectNode = this.findHigherLevelParentForOtherNode(
+            anyProject,
+            completeHierarchyData,
+          );
+        }
+      }
+    }
+
+    if (anyProjectNode && anyProjectNode['nodeId']) {
+      for (
+        let k = anyProjectNode['level'];
+        k >= this.service.getSelectedTrends()[0].level;
+        k--
+      ) {
+        parentName = this.completeFilterData[
+          completeHierarchyData.find((x) => x.level === k).hierarchyLevelName
+        ].filter((x) => {
+          return x.nodeId === anyProjectNode['nodeId'];
+        })[0];
+        anyProjectNode = this.completeFilterData[
+          completeHierarchyData.find((x) => x.level === k - 1)
+            .hierarchyLevelName
+        ].find((x) => {
+          return x.nodeId === parentName.parentId;
+        });
+      }
+
+      return anyProjectNode;
     }
   }
 
@@ -3479,7 +3856,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     }
   }
-
   generateColorObj(kpiId, arr) {
     // If the arr is empty, return an empty array
     if (!arr?.length) return [];
@@ -3490,12 +3866,36 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     for (let i = 0; i < arr?.length; i++) {
       for (const key in this.colorObj) {
         if (arr[i].value?.length) {
-          let selectedNode = this.filterData.filter(
-            (x) => x.nodeDisplayName === arr[i].value[0].sprojectName,
-          );
-          let selectedId = selectedNode.filter((x) => x.nodeId === key)[0]
-            ?.nodeId;
+          let selectedNode;
+          if (this.nonUniqueNames) {
+            selectedNode = this.filterData.filter(
+              (x) => this.appendParent(x) === arr[i].value[0].sprojectName,
+            );
+          } else {
+            selectedNode = this.filterData.filter(
+              (x) => x.nodeName === arr[i].value[0].sprojectName,
+            );
+          }
+          let selectedId;
+          if (selectedNode?.length > 1) {
+            selectedId = selectedNode.filter((x) => x.nodeId === key)[0]
+              ?.nodeId;
+          } else {
+            selectedId = selectedNode[0]?.nodeId;
+            if (!selectedId) {
+              selectedNode = this.filterData.filter(
+                (x) => x.nodeName === arr[i].value[0].sprojectName,
+              );
+            }
+            if (selectedNode?.length > 1) {
+              selectedId = selectedNode.filter((x) => x.nodeId === key)[0]
+                ?.nodeId;
+            } else {
+              selectedId = selectedNode[0]?.nodeId;
+            }
+          }
 
+          // if (!this.chartColorList[kpiId].includes(this.colorObj[key]?.color)) {
           if (kpiId == 'kpi17' && this.colorObj[key]?.nodeId == selectedId) {
             this.chartColorList[kpiId].push(this.colorObj[key]?.color);
             finalArr.push(JSON.parse(JSON.stringify(arr[i])));
@@ -3503,6 +3903,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             this.chartColorList[kpiId].push(this.colorObj[key]?.color);
             finalArr.push(arr[i]);
           } else continue;
+          // } else continue;
         }
       }
     }
@@ -3880,12 +4281,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   checkMaturity(item) {
-    let maturity = item.maturity;
-    if (maturity == undefined) {
-      return 'NA';
+    if (item) {
+      let maturity = item.maturity;
+      if (maturity == undefined) {
+        return 'NA';
+      }
+      maturity = 'M' + maturity;
+      return maturity;
+    } else {
+      return '';
     }
-    maturity = 'M' + maturity;
-    return maturity;
   }
 
   checkLatestAndTrendValue(kpiData, item) {
@@ -3987,16 +4392,23 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               this.kpiChartData[kpiId][i],
             );
             if (isNaN(Number(this.kpiChartData[kpiId][i]?.data))) {
-              let selectedNode = this.filterData.filter(
-                (x) =>
-                  x.nodeDisplayName === this.kpiChartData[kpiId][i]?.data &&
-                  this.checkSelectedNodeId(x.nodeId),
-              );
-              let selectedId = selectedNode.map((x) => x.nodeId);
-              for (let i = 0; i < selectedId?.length; i++) {
+              let selectedNode;
+              if (this.nonUniqueNames) {
+                selectedNode = this.filterData.filter(
+                  (x) =>
+                    this.appendParent(x) === this.kpiChartData[kpiId][i]?.data,
+                );
+              } else {
+                selectedNode = this.filterData.filter(
+                  (x) =>
+                    x.nodeDisplayName === this.kpiChartData[kpiId][i]?.data,
+                );
+              }
+              // let selectedId = selectedNode.map((x) => x.nodeId);
+              if (selectedNode) {
                 trendObj = {
                   hierarchyName: this.kpiChartData[kpiId][i]?.data,
-                  hierarchyId: selectedId[i],
+                  hierarchyId: selectedNode[0]?.nodeId,
                   value: latest,
                   trend: trend,
                   maturity:
@@ -4054,6 +4466,25 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
       let idx = this.allKpiArray.findIndex((x) => x.kpiId == kpiId);
       this.getTableData(kpiId, idx, enabledKpiObj);
+    }
+  }
+
+  appendParent(node) {
+    let completeHierarchyData = JSON.parse(
+      localStorage.getItem('completeHierarchyData'),
+    )[this.selectedtype];
+    let parent = this.completeFilterData[
+      completeHierarchyData.find((x) => x.level === node.level - 1)
+        .hierarchyLevelName
+    ].filter((x) => {
+      // console.log(x);
+      return x.nodeId === node['parentId'];
+    })[0];
+
+    if (parent) {
+      return node.nodeDisplayName + ' (' + parent.nodeDisplayName + ')';
+    } else {
+      return node.nodeDisplayName;
     }
   }
 

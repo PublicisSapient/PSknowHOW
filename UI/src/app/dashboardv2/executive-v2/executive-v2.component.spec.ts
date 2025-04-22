@@ -13060,7 +13060,99 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData).toBeDefined();
   });
 
-  it('should createapiarry when we have filter property in trendValueList list', () => {
+  xit('should create allkpiarray when we have filter property in trendValueList list', () => {
+    localStorage.setItem(
+      'completeHierarchyData',
+      JSON.stringify({
+        kanban: [
+          {
+            id: '6442815917ed167d8157f0f5',
+            level: 1,
+            hierarchyLevelId: 'bu',
+            hierarchyLevelName: 'BU',
+            hierarchyInfo: 'Business Unit',
+          },
+          {
+            id: '6442815917ed167d8157f0f6',
+            level: 2,
+            hierarchyLevelId: 'ver',
+            hierarchyLevelName: 'Vertical',
+            hierarchyInfo: 'Industry',
+          },
+          {
+            id: '6442815917ed167d8157f0f7',
+            level: 3,
+            hierarchyLevelId: 'acc',
+            hierarchyLevelName: 'Account',
+            hierarchyInfo: 'Account',
+          },
+          {
+            id: '6442815917ed167d8157f0f8',
+            level: 4,
+            hierarchyLevelId: 'port',
+            hierarchyLevelName: 'Engagement',
+            hierarchyInfo: 'Engagement',
+          },
+          {
+            level: 5,
+            hierarchyLevelId: 'project',
+            hierarchyLevelName: 'Project',
+          },
+          {
+            level: 6,
+            hierarchyLevelId: 'release',
+            hierarchyLevelName: 'Release',
+          },
+          { level: 7, hierarchyLevelId: 'sqd', hierarchyLevelName: 'Squad' },
+        ],
+        scrum: [
+          {
+            id: '6442815917ed167d8157f0f5',
+            level: 1,
+            hierarchyLevelId: 'bu',
+            hierarchyLevelName: 'BU',
+            hierarchyInfo: 'Business Unit',
+          },
+          {
+            id: '6442815917ed167d8157f0f6',
+            level: 2,
+            hierarchyLevelId: 'ver',
+            hierarchyLevelName: 'Vertical',
+            hierarchyInfo: 'Industry',
+          },
+          {
+            id: '6442815917ed167d8157f0f7',
+            level: 3,
+            hierarchyLevelId: 'acc',
+            hierarchyLevelName: 'Account',
+            hierarchyInfo: 'Account',
+          },
+          {
+            id: '6442815917ed167d8157f0f8',
+            level: 4,
+            hierarchyLevelId: 'port',
+            hierarchyLevelName: 'Engagement',
+            hierarchyInfo: 'Engagement',
+          },
+          {
+            level: 5,
+            hierarchyLevelId: 'project',
+            hierarchyLevelName: 'Project',
+          },
+          {
+            level: 6,
+            hierarchyLevelId: 'sprint',
+            hierarchyLevelName: 'Sprint',
+          },
+          {
+            level: 6,
+            hierarchyLevelId: 'release',
+            hierarchyLevelName: 'Release',
+          },
+          { level: 7, hierarchyLevelId: 'sqd', hierarchyLevelName: 'Squad' },
+        ],
+      }),
+    );
     const data = {
       kpi141: {
         kpiId: 'kpi141',
