@@ -2696,15 +2696,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   createAllKpiArray(data) {
-    // Object.keys(data).forEach((key) => {
-    //   if (key.indexOf('kpi') === -1) {
-    //     delete data[key];
-    //   }
-    // });
-    // if (data?.length) {
-    data = this.appendParentName(data);
-    // console.log(data);
-    // }
+
+    // data = this.appendParentName(data);
+
 
     for (const key in data) {
       const idx = this.ifKpiExist(data[key]?.kpiId);
