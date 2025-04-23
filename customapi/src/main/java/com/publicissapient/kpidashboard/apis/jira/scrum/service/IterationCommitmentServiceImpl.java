@@ -183,6 +183,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 		List<IterationKpiModalValue> overAllRemovedmodalValues = new ArrayList<>();
 		List<IterationKpiModalValue> overAllInitialmodalValues = new ArrayList<>();
 		List<IterationKpiModalValue> overAllTotalmodalValues = new ArrayList<>();
+		List<IterationKpiModalValue> overAllScopeChangemodalValues = new ArrayList<>();
 
 		List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 		List<IterationKpiData> data = new ArrayList<>();
@@ -263,9 +264,9 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 			List<Double> overAllScopeChangeLabelsSp = Arrays.asList(0.0);
 			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
 			setScopeChange(issueTypes, statuses, scopeChangeIssues, iterationKpiValues, overAllScopeChangeLabelsCount,
-					overAllScopeChangeLabelsSp, overAllRemovedmodalValues, SCOPE_CHANGE, fieldMapping, overAllOriginalEstimate);
+					overAllScopeChangeLabelsSp, overAllScopeChangemodalValues, SCOPE_CHANGE, fieldMapping, overAllOriginalEstimate);
 			IterationKpiData overAllScopeChangeLabels = setIterationKpiData(fieldMapping, overAllScopeChangeLabelsCount,
-					overAllScopeChangeLabelsSp, overAllOriginalEstimate, overAllRemovedmodalValues, SCOPE_CHANGE);
+					overAllScopeChangeLabelsSp, overAllOriginalEstimate, overAllScopeChangemodalValues, SCOPE_CHANGE);
 			data.add(overAllScopeChangeLabels);
 		}
 
