@@ -3,15 +3,15 @@
         <div *ngIf="i < 2" class="p-grid p-ai-center data-item p-col-7">
             <div class="icon-container p-col-4">
                 <div class="icon">
-                    <img src="../../../assets/img/{{ item.icon }}" alt="KPI Icon" class="kpi-logo" />
+                    <img src="../../../assets/img/{{ item.icon }}" alt="KPI Icon" class="kpi-logo" aria-hidden="true" />
                 </div>
             </div>
             <div class="data p-col-8">
-                <p class="tabularKPI-column-header p-mb-0">{{ item.category }}</p>
-                <p class="tabularKPI-column-value p-mt-0">{{  item.value }}</p>
+                <p class="tabularKPI-column-header p-mb-0" tabindex="0">{{ item.category }}</p>
+                <p class="tabularKPI-column-value p-mt-0" tabindex="0">{{  item.value }}</p>
             </div>
         </div>
-        <div *ngIf="i === 2" class="donut-container p-d-flex p-flex-column p-col-4">
+        <div *ngIf="i === 2" class="donut-container p-d-flex p-flex-column p-col-4" aria-label="{{item.value}}" tabindex="0">
             <app-semi-circle-donut-chart [value]="item.value" [max]="item.totalIssues"></app-semi-circle-donut-chart>
         </div>
     </ng-container>

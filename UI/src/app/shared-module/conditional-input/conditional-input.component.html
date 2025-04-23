@@ -15,14 +15,14 @@
   ~    limitations under the License.
   -->
 
-  <p-multiSelect 
-  [id]="fieldConfig?.fieldName" 
-  [options]="fieldConfig?.options" 
-  placeholder="{{fieldConfig?.placeHolderText ? fieldConfig?.placeHolderText : fieldConfig?.fieldLabel}}"
-  styleClass="p-w-100" 
-  [showHeader]="false" 
-  [(ngModel)]="finalValue" 
-  optionLabel="labelValue" 
+  <p-multiSelect
+  [id]="fieldConfig?.fieldName"
+  [options]="fieldConfig?.options"
+  [placeholder]="fieldConfig?.placeHolderText || fieldConfig?.fieldLabel"
+  styleClass="p-w-100"
+  [showHeader]="false"
+  [(ngModel)]="finalValue"
+  optionLabel="labelValue"
   (onChange)="setValue($event)"
   role="listbox"
   [attr.aria-label]="fieldConfig?.fieldLabel + ' Multi-Select'"
@@ -30,69 +30,81 @@
   [attr.aria-required]="fieldConfig?.mandatory ? 'true' : 'false'"
   [attr.aria-describedby]="fieldConfig?.fieldName + '_description'"
   tabindex="0">
-  
+
+  <!-- Selected Items Template -->
   <ng-template let-value pTemplate="selectedItems">
-    <span 
-      class="country-item country-item-value" 
-      role="list" 
-      aria-label="Selected Items">
+    <span
+      class="country-item country-item-value"
+      role="list"
+      aria-label="Selected Items"
+      tabindex="0">
+      
       <ng-container *ngFor="let option of templateData; let i = index">
-        <span 
-          role="listitem" 
-          [attr.aria-label]="'Selected item ' + (i+1)">
+        <span
+          role="listitem"
+          [attr.aria-label]="'Selected item ' + (i + 1) + ': ' + option.labelValue"
+          tabindex="0">
+          
           <ng-container *ngIf="option.countValue">
-            {{option.labelValue + ' ' + option.operator + ' ' + option.countValue }}&nbsp;,&nbsp;
+            {{ option.labelValue + ' ' + option.operator + ' ' + option.countValue }}&nbsp;,&nbsp;
           </ng-container>
           <ng-container *ngIf="!option.countValue">
-            {{option.labelValue }}&nbsp;,&nbsp;
+            {{ option.labelValue }}&nbsp;,&nbsp;
           </ng-container>
         </span>
       </ng-container>
-      
-      <div 
-        *ngIf="!templateData || templateData.length === 0" 
+
+      <div
+        *ngIf="!templateData || templateData.length === 0"
         class="country-placeholder"
-        role="alert"
-        aria-live="polite">
-        {{fieldConfig?.placeHolderText ? fieldConfig?.placeHolderText : fieldConfig?.fieldLabel}}
+        role="status"
+        aria-live="polite"
+        tabindex="0">
+        {{ fieldConfig?.placeHolderText || fieldConfig?.fieldLabel }}
       </div>
     </span>
   </ng-template>
-  
+
+  <!-- Dropdown Item Template -->
   <ng-template let-option pTemplate="item">
-    <div 
-      class="country-item" 
-      role="option" 
-      [attr.aria-label]="option.labelValue + ' selection'">
+    <div
+      class="country-item"
+      role="option"
+      [attr.aria-label]="option.labelValue + ' selection'"
+      [attr.aria-selected]="finalValue?.includes(option)"
+      tabindex="0">
+
       <div>
-        {{option.labelValue}}
+        <span>{{ option.labelValue }}</span>
         <span class="p-ml-2">{{ option.operator }}</span>
-        
-        <p-inputNumber 
-          class="count-box" 
-          [(ngModel)]="option.countValue" 
-          [inputStyle]="{'width':'80px'}" 
+
+        <p-inputNumber
+          class="count-box"
+          [(ngModel)]="option.countValue"
+          [inputStyle]="{ 'width': '80px' }"
           [showButtons]="true"
-          buttonLayout="horizontal" 
+          buttonLayout="horizontal"
           spinnerMode="horizontal"
-          [disabled]="!templateLabels.includes(option.labelValue)" 
+          [disabled]="!templateLabels.includes(option.labelValue)"
           decrementButtonClass="p-button-danger"
-          incrementButtonClass="p-button-success" 
+          incrementButtonClass="p-button-success"
           incrementButtonIcon="pi pi-plus"
-          decrementButtonIcon="pi pi-minus" 
+          decrementButtonIcon="pi pi-minus"
           (click)="$event.stopPropagation(); $event.preventDefault();"
-          [min]="option.minValue" 
+          [min]="option.minValue"
           [max]="option.maxValue"
           (onInput)="setCounter($event, option)"
           (onFocus)="removeFocus($event)"
           role="spinbutton"
-          [attr.aria-label]="'Count for ' + option.labelValue"
+          [attr.aria-label]="'Count input for ' + option.labelValue"
           [attr.aria-valuemin]="option.minValue"
           [attr.aria-valuemax]="option.maxValue"
-          [attr.aria-valuenow]="option.countValue"></p-inputNumber>
-        
-        <span 
-          class="p-ml-2" 
+          [attr.aria-valuenow]="option.countValue"
+          tabindex="0">
+        </p-inputNumber>
+
+        <span
+          class="p-ml-2"
           [id]="fieldConfig?.fieldName + '_description'"
           aria-hidden="true">
           Min: {{ option.minValue }} , Max: {{ option.maxValue }}
@@ -101,3 +113,4 @@
     </div>
   </ng-template>
 </p-multiSelect>
+

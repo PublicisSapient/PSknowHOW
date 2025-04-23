@@ -16,83 +16,141 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<p-toast [style]="{marginTop: '80px'}"></p-toast>
-<div class="main">
-  <h1>Available Connections</h1>
-  <div class="toolsconfig-content">
-    <p-toolbar *ngIf="isConnectionAddEditAccess" styleClass="p-mb-5 bg-grey">
-      <ng-template pTemplate="left">
-        <p-dropdown [options]="groupedToolsGroup" class="connectionDdwn"
-            [(ngModel)]="selectedConnectionType" placeholder="Select a Connection" (onChange)="onChangeConnection()"
-            [group]="true">
-            <ng-template let-group pTemplate="group">
-                  <span>{{ group.label }}</span>
-            </ng-template>
-        </p-dropdown>
-        <button pButton pRipple label="New Connection" icon="pi pi-plus" class="p-button-success p-mr-2"
-          (click)="createConnection()" [disabled]="selectedConnectionType == ''"></button>
-      </ng-template>
+<!-- Accessible Toast Notification -->
+<p-toast [style]="{marginTop: '80px'}" aria-live="polite" role="status"></p-toast>
 
-      <ng-template pTemplate="right" style="display: none;">
-        <button style="display: none;" pButton pRipple label="Export" icon="pi pi-upload"
-          class="p-button-help"></button>
+<div class="main" role="main">
+  <h1 id="page-title">Available Connections</h1>
+
+  <div class="toolsconfig-content">
+    <p-toolbar *ngIf="isConnectionAddEditAccess" styleClass="p-mb-5 bg-grey" aria-label="Connection Toolbar">
+      <ng-template pTemplate="left">
+        <p-dropdown
+          [options]="groupedToolsGroup"
+          class="connectionDdwn"
+          [(ngModel)]="selectedConnectionType"
+          placeholder="Select a Connection"
+          (onChange)="onChangeConnection()"
+          [group]="true"
+          aria-label="Select a Connection"
+          tabindex="0">
+
+          <ng-template let-group pTemplate="group">
+            <span>{{ group.label }}</span>
+          </ng-template>
+        </p-dropdown>
+
+        <button
+          pButton
+          pRipple
+          label="New Connection"
+          icon="pi pi-plus"
+          class="p-button-success p-mr-2"
+          (click)="createConnection()"
+          [disabled]="selectedConnectionType == ''"
+          aria-label="Create new connection"
+          tabindex="0">
+        </button>
       </ng-template>
     </p-toolbar>
 
-    <p-accordion [expandIcon]="'pi pi-plus'" [collapseIcon]="'pi pi-minus'">
-      <p-accordionTab *ngFor="let eachConnection of connectionTypeCompleteList; let i = index"
-        [header]="eachConnection.label" [disabled]="connectionListAllType[eachConnection.value] &&
-              connectionListAllType[eachConnection.value].length == 0">
-        <p-toast></p-toast>
+    <p-accordion [expandIcon]="'pi pi-plus'" [collapseIcon]="'pi pi-minus'" aria-label="Connections Accordion">
+      <p-accordionTab
+        *ngFor="let eachConnection of connectionTypeCompleteList; let i = index"
+        [header]="eachConnection.label"
+        [disabled]="connectionListAllType[eachConnection.value] && connectionListAllType[eachConnection.value].length == 0"
+        [attr.aria-labelledby]="'accordion-tab-' + i">
 
-        <div class="card">
-          <p-table #dt [value]="connectionListAllType[eachConnection.value]" [rows]="5" [paginator]="true"
-            [globalFilterFields]="eachConnection.connectionTableCols" [(selection)]="selectedConnectionList"
-            [rowHover]="true" dataKey="id"
+        <div class="card" role="region" [attr.aria-labelledby]="'accordion-tab-' + i">
+          <p-table
+            #dt
+            [value]="connectionListAllType[eachConnection.value]"
+            [rows]="5"
+            [paginator]="true"
+            [globalFilterFields]="eachConnection.connectionTableCols"
+            [(selection)]="selectedConnectionList"
+            [rowHover]="true"
+            dataKey="id"
+            [showCurrentPageReport]="true"
+            [alwaysShowPaginator]="false"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            [showCurrentPageReport]="true" styleClass="p-datatable-striped" [alwaysShowPaginator]="false"
-            loadingIcon="loading-img">
+            styleClass="p-datatable-striped"
+            loadingIcon="loading-img"
+            aria-label="Connections Table"
+            tabindex="0">
+
             <ng-template pTemplate="caption">
               <div class="p-d-flex p-ai-center p-jc-between">
-                <h5 class="p-m-0">Connections</h5>
+                <h2 id="table-title-{{i}}" class="p-m-0">Connections</h2>
                 <span class="p-input-icon-left">
-                  <i class="pi pi-search"></i>
-                  <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
-                    placeholder="Search..." />
+                  <i class="pi pi-search" aria-hidden="true"></i>
+                  <input
+                    pInputText
+                    type="text"
+                    (input)="dt.filterGlobal($event.target.value, 'contains')"
+                    placeholder="Search..."
+                    aria-label="Search connections"
+                    tabindex="0" />
                 </span>
               </div>
             </ng-template>
+
             <ng-template pTemplate="header">
               <tr>
-                <th id="connectionHeader" style="width: 3rem; display: none;" scope="col">
-                  <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                <th style="display: none;" scope="col">
+                  <p-tableHeaderCheckbox aria-label="Select all rows"></p-tableHeaderCheckbox>
                 </th>
 
-
-                <th *ngFor="let connectionHeader of eachConnection.connectionTableCols"
-                  [pSortableColumn]="connectionHeader.field" scope="col">{{ connectionHeader.header }} <p-sortIcon
-                    [field]="connectionHeader.field"></p-sortIcon>
+                <th
+                  *ngFor="let connectionHeader of eachConnection.connectionTableCols"
+                  [pSortableColumn]="connectionHeader.field"
+                  scope="col"
+                  [attr.aria-label]="connectionHeader.header"
+                  tabindex="0">
+                  {{ connectionHeader.header }}
+                  <p-sortIcon [field]="connectionHeader.field"></p-sortIcon>
                 </th>
-                <th *ngIf="isConnectionAddEditAccess" pSortableColumn="editConnectionColumn" scope="col">Actions</th>
+
+                <th *ngIf="isConnectionAddEditAccess" scope="col" pSortableColumn="editConnectionColumn" tabindex="0">
+                  Actions
+                </th>
               </tr>
             </ng-template>
+
             <ng-template pTemplate="body" let-connection>
-              <tr [ngClass]="{'broken-conn-row': connection.brokenConnection}" tooltipPosition="top"
-                [pTooltip]="connection.brokenConnection ? connection.connectionErrorMsg : null">
+              <tr
+                [ngClass]="{'broken-conn-row': connection.brokenConnection}"
+                tooltipPosition="top"
+                [pTooltip]="connection.brokenConnection ? connection.connectionErrorMsg : null"
+                role="row"
+                tabindex="0">
+
                 <td style="display: none;">
-                  <p-tableCheckbox [value]="connection"></p-tableCheckbox>
+                  <p-tableCheckbox [value]="connection" aria-label="Select row"></p-tableCheckbox>
                 </td>
-                <td *ngFor="let connectionRow of eachConnection.connectionTableCols">
-                  {{connection[connectionRow.field]}}</td>
-                <td *ngIf="isConnectionAddEditAccess">
+
+                <td *ngFor="let connectionRow of eachConnection.connectionTableCols" tabindex="0">
+                  {{ connection[connectionRow.field] }}
+                </td>
+
+                <td *ngIf="isConnectionAddEditAccess" tabindex="0">
                   <div class="p-d-flex p-align-center">
-                    <div class="action-btns p-mr-5" (click)="editConnection(connection)"
-                      [ngClass]="{'not-allowed': isRoleViewer && connection['createdBy'] !== currentUser}">
+                    <button
+                      class="action-btns p-mr-2"
+                      (click)="editConnection(connection)"
+                      [disabled]="isRoleViewer && connection['createdBy'] !== currentUser"
+                      aria-label="Edit Connection"
+                      tabindex="0">
                       <i class="far fa-edit"></i>
-                    </div>
-                    <div class="action-btns" (click)="deleteConnection(connection)"
-                      [ngClass]="{'not-allowed': isRoleViewer && connection['createdBy'] !== currentUser}"><i
-                        class="far fa-trash-alt"></i></div>
+                    </button>
+                    <button
+                      class="action-btns"
+                      (click)="deleteConnection(connection)"
+                      [disabled]="isRoleViewer && connection['createdBy'] !== currentUser"
+                      aria-label="Delete Connection"
+                      tabindex="0">
+                      <i class="far fa-trash-alt"></i>
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -100,22 +158,19 @@
 
           </p-table>
         </div>
-
-
-
-
       </p-accordionTab>
     </p-accordion>
   </div>
 </div>
 
 <p-dialog [(visible)]="connectionDialog" [style]="{width: '450px'}"
-  [header]="selectedConnectionType + ' Connection Details'" [modal]="true" styleClass="p-fluid">
+  [header]="selectedConnectionType + ' Connection Details'" [modal]="true" styleClass="p-fluid" aria-labelledby="connectionDetailsHeader"
+  role="dialog" aria-modal="true">
 
   <ng-template pTemplate="content">
 
-
-    <form [formGroup]="basicConnectionForm" autocomplete="off">
+    <form [formGroup]="basicConnectionForm" autocomplete="off" aria-describedby="connectionFormDescription"
+    role="form">
       <span *ngFor="let connectionFieldLabels of addEditConnectionFieldsNlabels">
         <span *ngIf="connectionFieldLabels.connectionType.toLowerCase() === selectedConnectionType.toLowerCase()">
           <ng-container *ngFor="let connectionLabelFields of connectionFieldLabels.labels; let i = index">
@@ -123,7 +178,8 @@
             <div class="p-field"
               *ngIf="connectionFieldLabels.inputFields[i] === 'bearerToken' || connectionFieldLabels.inputFields[i] === 'vault' || connectionFieldLabels.inputFields[i] === 'cloudEnv' || connectionFieldLabels.inputFields[i] === 'isOAuth' || connectionFieldLabels.inputFields[i] === 'accessTokenEnabled' || connectionFieldLabels.inputFields[i] === 'isCloneable'">
 
-              <label for="connection_{{connectionFieldLabels.inputFields[i]}}">{{ connectionFieldLabels.inputFields[i]
+              <label for="connection_{{connectionFieldLabels.inputFields[i]}}"
+                [attr.aria-label]="connectionFieldLabels.inputFields[i] !== 'accessTokenEnabled' ? connectionLabelFields : connectionLabelFields[0]">{{ connectionFieldLabels.inputFields[i]
                 !== 'accessTokenEnabled' ? connectionLabelFields : connectionLabelFields[0]
                 }}</label>
 
@@ -131,7 +187,8 @@
                 formControlName="{{ connectionFieldLabels.inputFields[i] }}"
                 [(ngModel)]="connection[ connectionFieldLabels.inputFields[i] ]"
                 (onChange)="enableDisableSwitch($event, connectionFieldLabels.inputFields[i], connectionFieldLabels.connectionType.toLowerCase() )"
-                onLabel="true" offLabel="false" value="true" required class="p-ml-2 p-mr-2">
+                onLabel="true" offLabel="false" value="true" required class="p-ml-2 p-mr-2" tabindex="0"
+                aria-checked="{{ connection[connectionFieldLabels.inputFields[i]] }}">
               </p-inputSwitch>
 
               <label>{{ connectionFieldLabels.inputFields[i] === 'accessTokenEnabled' ? connectionLabelFields[1] :
@@ -147,14 +204,15 @@
 
               <input class="ml-2" type="checkbox" id="connection_{{connectionFieldLabels.inputFields[i]}}"
                 [(ngModel)]="connection[ connectionFieldLabels.inputFields[i] ]"
-                formControlName="{{ connectionFieldLabels.inputFields[i] }}">
+                formControlName="{{ connectionFieldLabels.inputFields[i] }}" tabindex="0"
+                aria-checked="{{ connection[connectionFieldLabels.inputFields[i]] }}">
             </div>
 
             <div class="p-field" *ngIf="connectionFieldLabels.inputFields[i] === 'repoToolProvider'">
               <label for="platformDdwn">Select Platform Type</label>
               <p-dropdown [options]="platformDdwn" id="platformDdwn" formControlName="repoToolProvider"
                 [(ngModel)]="connection[ connectionFieldLabels.inputFields[i] ]" optionValue="key" optionLabel="label"
-                (onChange)="enableDisableSwitch(connection[ connectionFieldLabels.inputFields[i] ],'apiEndPoint')">
+                (onChange)="enableDisableSwitch(connection[ connectionFieldLabels.inputFields[i] ],'apiEndPoint')" tabindex="0" aria-label="Select Platform Type">
               </p-dropdown>
             </div>
 
@@ -169,7 +227,10 @@
                 [(ngModel)]="connection[ connectionFieldLabels.inputFields[i] ]"
                 [placeholder]="connectionFieldLabels.placeholder ? connectionFieldLabels.placeholder[i] : ''"
                 [pTooltip]="showInfo(connectionFieldLabels.connectionType.toLowerCase(), connectionFieldLabels.inputFields[i])"
-                autofocus autocomplete="new-password" />
+                autofocus autocomplete="new-password"
+                tabindex="0"
+                aria-required="true"
+                [attr.aria-invalid]="submitted && !connection[connectionFieldLabels.inputFields[i]] ? 'true' : 'false'" />
               <small class="p-invalid"
                 *ngIf="submitted && !connection[ connectionFieldLabels.inputFields[i] ] && !inputFieldVar.disabled && !!basicConnectionForm.controls[ connectionFieldLabels.inputFields[i] ] && !!basicConnectionForm.controls[ connectionFieldLabels.inputFields[i] ].errors && basicConnectionForm.controls[ connectionFieldLabels.inputFields[i] ].errors.required">{{
                 connectionLabelFields }}
@@ -182,102 +243,105 @@
     </form>
     <button pButton pRipple label="Test Connection" icon="pi pi-question" class="p-button-warning p-mr-2"
       (click)="testConnection()"
-      [disabled]="basicConnectionForm.invalid || testingConnection || !emptyUrlInZephyr()"></button>
+      [disabled]="basicConnectionForm.invalid || testingConnection || !emptyUrlInZephyr()"
+      tabindex="0"
+      aria-label="Test the connection"></button>
     <label [ngClass]="{'p-invalid': !testConnectionValid, 'p-valid': testConnectionValid }"
-      *ngIf="testConnectionMsg.length">{{testConnectionMsg}}</label>
+      *ngIf="testConnectionMsg.length" tabindex="0" aria-live="polite" role="status">{{testConnectionMsg}}</label>
   </ng-template>
 
   <ng-template pTemplate="footer">
     <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-secondary p-button-text p-mr-2"
-      (click)="hideDialog()"></button>
+      (click)="hideDialog()" tabindex="0" aria-label="Cancel Connection form"></button>
     <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-success p-mr-2" (click)="saveConnection()"
-      [disabled]="!basicConnectionForm.valid || !emptyUrlInZephyr()"></button>
+      [disabled]="!basicConnectionForm.valid || !emptyUrlInZephyr()" tabindex="0" aria-label="Save Connection form"></button>
   </ng-template>
 </p-dialog>
 
 <p-dialog [(visible)]="jiraConnectionDialog" [style]="{width: '450px'}" header="Jira Connection Details" [modal]="true"
-  styleClass="p-fluid">
+  styleClass="p-fluid" aria-modal="true" role="dialog">
 
   <ng-template pTemplate="content">
-    <form [formGroup]="jiraForm" autocomplete="off">
+    <form [formGroup]="jiraForm" autocomplete="off" role="form" aria-labelledby="jiraConnectionFormHeader">
       <div class="p-field">
         <label for="cloudEnv">Jira Server</label>
-        <p-inputSwitch id="cloudEnv" formControlName="cloudEnv" class="p-ml-2 p-mr-2" (onChange)="updateForm()">
+        <p-inputSwitch id="cloudEnv" formControlName="cloudEnv" class="p-ml-2 p-mr-2" (onChange)="updateForm()"
+        aria-label="Toggle between Jira Server and Jira Cloud" tabindex="0">
         </p-inputSwitch>
         <label for="cloudEnv">Jira Cloud</label>
       </div>
       <div class="p-field">
         <label for="connectionName">Connection Name</label>
         <input class="ml-2" type="text" id="connectionName" pInputText (change)="updateForm()"
-          formControlName="connectionName">
+          formControlName="connectionName" aria-label="Connection Name">
       </div>
       <div class="p-field">
         <label for="baseUrl">Base Url</label>
         <input class="ml-2" type="text" id="baseUrl" pInputText formControlName="baseUrl"
-          placeholder="E.g. https://publicissapient.atlassian.net" (change)="updateForm()">
+          placeholder="E.g. https://publicissapient.atlassian.net" (change)="updateForm()" aria-label="Base URL">
       </div>
       <div class="p-field">
         <label for="apiEndPoint">API Endpoint</label>
         <input class="ml-2" type="text" id="apiEndPoint" pInputText formControlName="apiEndPoint"
-          (change)="updateForm()">
+          (change)="updateForm()" aria-label="API Endpoint">
       </div>
       <div class="p-field">
         <label for="jiraAuthDdwn">Select Authentication Type</label>
         <p-dropdown [options]="jiraAuthDdwn" id="jiraAuthDdwn" formControlName="jiraAuthType"
-          (onChange)="onChangeAuthType($event.value)" optionValue="key" optionLabel="label">
+          (onChange)="onChangeAuthType($event.value)" optionValue="key" optionLabel="label" aria-label="Select Authentication Type">
         </p-dropdown>
       </div>
       <div class="p-field">
         <label for="username">Username</label>
         <input class="ml-2" type="text" id="username" pInputText formControlName="username" (change)="updateForm()"
-          placeholder="Preferably, use a service account credentials">
+          placeholder="Preferably, use a service account credentials" aria-label="Username">
       </div>
       <div class="p-field"
         *ngIf="!jiraForm.controls['vault']?.value && !jiraForm.controls['bearerToken']?.value && !jiraForm.controls['jaasKrbAuth']?.value">
         <label for="password">Password</label>
         <p-password class="ml-2" type="password" id="password" [feedback]="false" formControlName="password"
-          (change)="updateForm()">
+          (change)="updateForm()" aria-label="Password">
         </p-password>
       </div>
       <div class="p-field" *ngIf="jiraForm.controls['bearerToken']?.value">
         <label for="patOAuthToken">PatOAuthToken</label>
         <p-password class="ml-2" type="password" id="patOAuthToken" [feedback]="false" formControlName="patOAuthToken"
-          (change)="updateForm()">
+          (change)="updateForm()" aria-label="PatOAuthToken">
         </p-password>
       </div>
       <div class="p-field" *ngIf="jiraForm.controls['isOAuth']?.value">
         <label for="privateKey">Private Key</label>
         <input class="ml-2" type="text" id="privateKey" pInputText formControlName="privateKey"
-          (change)="updateForm()" />
+          (change)="updateForm()" aria-label="Private Key" />
       </div>
       <div class="p-field" *ngIf="jiraForm.controls['isOAuth']?.value">
         <label for="consumerKey">Consumer Key</label>
         <input class="ml-2" type="text" id="consumerKey" pInputText formControlName="consumerKey"
-          (change)="updateForm()" />
+          (change)="updateForm()" aria-label="Consumer Key" />
       </div>
       <div class="p-field" *ngIf="jiraForm.controls['jaasKrbAuth']?.value">
         <label for="jaasConfigFilePath">Jaas Config File Path</label>
         <input class="ml-2" type="text" id="jaasConfigFilePath" pInputText formControlName="jaasConfigFilePath"
-          (change)="updateForm()" />
+          (change)="updateForm()" aria-label="Jaas Config File Path" />
       </div>
       <div class="p-field" *ngIf="jiraForm.controls['jaasKrbAuth']?.value">
         <label for="krb5ConfigFilePath">Krb 5 Config File Path</label>
         <input class="ml-2" type="text" id="krb5ConfigFilePath" pInputText formControlName="krb5ConfigFilePath"
-          (change)="updateForm()" />
+          (change)="updateForm()" aria-label="Krb 5 Config File Path" />
       </div>
       <div class="p-field" *ngIf="jiraForm.controls['jaasKrbAuth']?.value">
         <label for="jaasUser">Jaas User</label>
-        <input class="ml-2" type="text" id="jaasUser" pInputText formControlName="jaasUser" (change)="updateForm()" />
+        <input class="ml-2" type="text" id="jaasUser" pInputText formControlName="jaasUser" (change)="updateForm()" aria-label="Jaas User" />
       </div>
       <div class="p-field" *ngIf="jiraForm.controls['jaasKrbAuth']?.value">
         <label for="samlEndPoint">Saml EndPoint</label>
         <input class="ml-2" type="text" id="samlEndPoint" pInputText formControlName="samlEndPoint"
-          (change)="updateForm()" />
+          (change)="updateForm()" aria-label="Saml EndPoint" />
       </div>
       <div class="p-field">
         <label for="sharedConnection">Share connection with everyone</label>
         <input class="ml-2" type="checkbox" id="sharedConnection" formControlName="sharedConnection"
-          (change)="updateForm()" />
+          (change)="updateForm()" aria-label="Share connection with everyone" />
       </div>
     </form>
     <button pButton pRipple label="Test Connection" icon="pi pi-question" class="p-button-warning p-mr-2"
@@ -299,12 +363,12 @@
 
 <p-confirmDialog #cd key="cannotDeleteMessageDialog" [style]="{width: '50vw'}">
   <p-footer>
-    <button type="button" (click)="cd.accept()" pButton label="OK"></button>
+    <button type="button" (click)="cd.accept()" pButton label="OK" aria-label="Cannot Delete Dialog"></button>
   </p-footer>
 </p-confirmDialog>
 
 <p-confirmDialog #cs key="connectionStatus" [style]="{width: '50vw'}">
   <p-footer>
-    <button type="button" (click)="cs.accept()" pButton label="OK"></button>
+    <button type="button" (click)="cs.accept()" pButton label="OK" aria-label="Connection Status Dialog"></button>
   </p-footer>
 </p-confirmDialog>

@@ -62,7 +62,6 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     /* if token exists for user then redirect to dashboard route(Executive page)*/
-    // this.sharedService.setSelectedTab(null);
     this.submitted = false;
     this.route.queryParams.subscribe((params) => {
       this.sessionMsg = params['sessionExpire'];

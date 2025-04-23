@@ -26,7 +26,7 @@
                 <span class="p-mr-3 p-ml-3">
                     <p-dropdown [options]="userProjects" [(ngModel)]="selectedProject" optionLabel="name"
                         styleClass="drp" panelStyleClass="drp-pnl" [filter]="true" filterBy="name"
-                        [showClear]="false" (onChange)="updateProjectSelection($event)" [disabled]="noProjectsForSelectedCategory">
+                        [showClear]="false" (onChange)="updateProjectSelection($event)" [disabled]="noProjectsForSelectedCategory" aria-label="Select Project">
                         <ng-template pTemplate="selectedItem">
                             <div class="fnt-size-16" *ngIf="selectedProject">
                                 <div>{{selectedProject.name}}</div>
@@ -43,7 +43,7 @@
             </div>
         </div>
         <div>
-            <button (click)="save()" [disabled]="noProjectsForSelectedCategory" class="save-kpi save-icon fnt-size-16"><img src="../../../assets/img/save_icon.svg" alt="save" />Save</button>
+            <button (click)="save()" (keydown.enter)="save()" [disabled]="noProjectsForSelectedCategory" class="save-kpi save-icon fnt-size-16"><img src="../../../assets/img/save_icon.svg" alt="save" />Save</button>
         </div>
     </div>
     <p-tabView (onChange)="handleTabChange($event)" class="dashboard-config-tabs">
@@ -57,7 +57,7 @@
                             <div class="p-xl-6 p-md-12 p-pl-3 p-pr-3 p-text-left board-name">
                                 {{boardData.boardName}}
                                 <span formGroupName="kpiCategories">
-                                    <p-inputSwitch [formControlName]="boardData.boardName" (onChange)="handleKpiCategoryChange($event, boardData)">
+                                    <p-inputSwitch [formControlName]="boardData.boardName" (onChange)="handleKpiCategoryChange($event, boardData)" aria-label="Tab visibility">
                                     </p-inputSwitch>
                                     <span class="all-selection p-px-2">Tab Visibility</span>
                                 </span>
@@ -65,7 +65,7 @@
                         </div>
                         <div class="p-grid kpis-list  p-pl-2 p-pr-2 " formGroupName="kpis">
                             <div class="p-xl-3 p-md-12" *ngFor="let kpi of boardData.kpis">
-                                <p-inputSwitch *ngIf = "item === selectedTab" [formControlName]="kpi.kpiId" (onChange)="handleKpiChange($event, kpi, boardData.boardName, boardData.kpis)">
+                                <p-inputSwitch *ngIf = "item === selectedTab" [formControlName]="kpi.kpiId" (onChange)="handleKpiChange($event, kpi, boardData.boardName, boardData.kpis)" aria-label="{{kpi.kpiName}} visibility">
                                 </p-inputSwitch>
                                 <span class="kpi-name p-p-3">{{kpi.kpiName}}</span>
                             </div>

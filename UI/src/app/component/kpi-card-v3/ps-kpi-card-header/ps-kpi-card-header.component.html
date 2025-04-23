@@ -1,11 +1,13 @@
-<div class="kpi-card-header">
+<div class="kpi-card-header" role="region" aria-label="KPI Card Header">
   <div
     class="kpi-card-name-placeholder"
     (mouseleave)="showTooltip(false)"
     #kpiHeader
+    role="group"
+    aria-describedby="kpiHeaderTitle"
   >
     <div class="kpi-card-title-container">
-      <h3>{{ cardHeaderData?.kpiName }}</h3>
+      <h3 id="kpiHeaderTitle" tabindex="0">{{ cardHeaderData?.kpiName }}</h3>
       <span
         *ngIf="cardHeaderData?.kpiInfo"
         aria-hidden="true"
@@ -13,14 +15,22 @@
         (mouseover)="showTooltip(true)"
         (mouseleave)="showTooltip(false)"
         [style]="{ position: 'relative' }"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="showTooltip(true)"
+        aria-label="Show KPI Information"
+        aria-describedby="kpiInfoTooltip"
       >
-        <img alt="info" class="" src="../../../assets/img/Info.svg" />
+        <img alt="info" class="" src="../../../assets/img/Info.svg" aria-hidden="true"/>
         <app-tooltip-v2
           *ngIf="isTooltip"
+          id="kpiInfoTooltip"
           class="p-mt-3"
           [data]="cardHeaderData?.kpiInfo"
           (mouseleave)="showTooltip(false)"
           [kpiName]="cardHeaderData?.kpiName"
+          role="tooltip"
+          aria-live="polite"
         ></app-tooltip-v2>
       </span>
     </div>
@@ -30,12 +40,18 @@
       (mouseover)="showWarning(true)"
       (mouseleave)="showWarning(false)"
       [style]="{ position: 'relative' }"
+      role="alert"
+      aria-live="assertive"
+      tabindex="0"
+      aria-label="Show KPI Warning Information"
+      (keydown.enter)="showWarning(true)"
     >
       <img
         height="25px"
         style="display: block; margin-top: -3px; margin-left: 2px"
         alt="warning"
         src="../../../assets/img/Warning.svg"
+        aria-hidden="true"
       />
       <app-tooltip-v2
         *ngIf="warning"
@@ -45,13 +61,16 @@
         [showChartView]="showChartView"
         [kpiName]="cardHeaderData?.kpiName"
         [allText]="true"
+        role="tooltip"
+        aria-live="polite"
+        aria-describedby="kpiWarningTooltip"
       ></app-tooltip-v2>
     </span>
   </div>
-  <div class="kpi-menu-container" (click)="toggleMenu($event)">
+  <div class="kpi-menu-container" (click)="toggleMenu($event)" role="button" tabindex="0" aria-label="Show KPI Menu" (keydown.enter)="toggleMenu($event)">
     <i class="pi pi-ellipsis-v" style="font-size: 20px"></i>
   </div>
-  <p-menu #kpimenu id="menu-{{cardHeaderData?.kpiId}}" [popup]="true" [model]="menuItems">
+  <p-menu #kpimenu id="menu-{{cardHeaderData?.kpiId}}" [popup]="true" [model]="menuItems" aria-label="KPI Actions Menu">
     <ng-template pTemplate="item" let-item>
       <div>
         <i [class]="item.icon"></i>

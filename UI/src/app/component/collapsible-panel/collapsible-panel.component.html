@@ -1,42 +1,53 @@
-<div class="sprint-goals-container p-pb-3 p-pr-3 p-pl-3" #sprintGoalContainer>
-    <h3>Sprint Goals</h3>
-    <div class="p-d-flex p-jc-center">
+<div class="sprint-goals-container p-pb-3 p-pr-3 p-pl-3" #sprintGoalContainer role="region"  aria-label="Sprint Goals Configuration">
+    <h3 id="sprintGoalsHeader" tabindex="0">Sprint Goals</h3>
+    <div class="p-d-flex p-jc-center" role="group" aria-labelledby="sprintGoalsHeader">
             <span class="p-float-label p-mr-2">
                 <p-dropdown [options]="filterLevels" optionLabel="hierarchyLevelName" [(ngModel)]="selectedLevel"
                     filter="true" placeholder="parent filter"
                     [style]="{'width':'280px', 'max-width': '100%', 'height': '40px'}"
-                    (onChange)="onHierarchyDropdownChange($event)">
+                    (onChange)="onHierarchyDropdownChange($event)"
+                    aria-label="Select Hierarchy Level"
+                    id="hierarchyLevelDropdown"
+                    aria-describedby="hierarchyLevelLabel">
                 </p-dropdown>
-                <label class="floating-label" for="singleselectParentFilter">Select Organasation Level</label>
+                <label id="hierarchyLevelLabel" class="floating-label" for="singleselectParentFilter">Select Organasation Level</label>
             </span>
             <span class="p-float-label">
                 <p-multiSelect [options]="filters" [(ngModel)]="selectedFilters" optionLabel="nodeDisplayName"
                     [style]="{'width':'300px', 'max-width': '100%', 'height': '40px'}" [selectionLimit]="6"
                     [selectedItemsLabel]="'{0} selected'" defaultLabel="Select"
-                     (onChange)="onSelectionChange($event)">
+                    (onChange)="onSelectionChange($event)"
+                    aria-label="Select Project Filters"
+                    id="projectFiltersMultiSelect"
+                    aria-describedby="projectFiltersLabel">
                 </p-multiSelect>
-                <label class="floating-label" for="multiselectFilter">Select {{selectedLevel.hierarchyLevelName}}</label>
+                <label id="projectFiltersLabel" class="floating-label" for="multiselectFilter">Select {{selectedLevel.hierarchyLevelName}}</label>
             </span>
             <button *ngIf="accordionData.length" pButton pRipple [label]="isAllExpanded ? 'Collapse All' : 'Expand All'" class="p-button-success p-mb-3 p-ml-3"
-            (click)="toggleAll()"></button>
+            (click)="toggleAll()" (keydown.enter)="toggleAll()"
+            aria-live="polite"
+            aria-label="Toggle Expand/Collapse All Projects"
+            [attr.aria-expanded]="isAllExpanded"></button>
     </div>
    
     
-    <p-accordion *ngIf="accordionData.length; else noData" [activeIndex]="activeIndices" [multiple]="true">
+    <p-accordion *ngIf="accordionData.length; else noData" [activeIndex]="activeIndices" [multiple]="true"
+    role="region" aria-label="Sprint Goals Details">
         <ng-container *ngFor="let data of accordionData; let i = index">
             <p-accordionTab [header]="'Project: ' + data.name">
             <p-table [columns]="cols" [value]="data?.sprintGoals" styleClass="p-datatable-striped p-datatable-gridlines" [scrollable]="true" scrollHeight="40vh" 
-            [loading]="loader" loadingIcon="loading-img">
+            [loading]="loader" loadingIcon="loading-img"aria-label="Sprint Goals for {{data.name}}"
+            aria-describedby="sprintGoalsDescription">
                 <ng-template pTemplate="header" let-columns>
                     <tr>
-                        <th *ngFor="let col of columns" [ngStyle]="{'max-width': col.field == 'name' ? '20vw': ''}" scope="col">
+                        <th *ngFor="let col of columns" [ngStyle]="{'max-width': col.field == 'name' ? '20vw': ''}" scope="col" tabindex="0">
                             {{col.header}}
                         </th>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-rowData let-columns="columns">
                     <tr>
-                        <td *ngFor="let col of columns" [ngStyle]="{'max-width': col.field == 'name' ? '20vw': ''}">
+                        <td *ngFor="let col of columns" [ngStyle]="{'max-width': col.field == 'name' ? '20vw': ''}" tabindex="0">
                             {{ rowData[col.field] }}
                         </td>
                     </tr>
@@ -46,6 +57,6 @@
         </ng-container>
     </p-accordion>
     <ng-template #noData>
-        <h3 class="p-text-center">Sprint Goals are not Available.</h3>
+        <h3 class="p-text-center" role="alert" aria-live="assertive" tabindex="0">Sprint Goals are not Available.</h3>
     </ng-template>
 </div>

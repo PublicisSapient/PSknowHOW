@@ -1,17 +1,18 @@
-<div class="trend-table-container">
-    <table class="header-table">
+<div class="trend-table-container" role="region" aria-label="Trend Indicator Table">
+    <table class="header-table" aria-label="Trend Indicator Header">
         <tbody>
             <tr *ngFor="let item of headerObj">
-                <td>{{ item }}</td>
+                <td tabindex="0">{{ item }}</td>
             </tr>
         </tbody>
     </table>
-    <table>
+    <table aria-label="Trend Indicator Data">
         <tbody>
             <tr *ngFor="let item of dataObj; let i = index;">
-                <td class="p-text-center" width="80" *ngFor="let value of item | keyvalue">
-                    <div class="indicator" *ngIf="i === 0" [ngStyle]="{'background-color': value.value}"></div>
-                    <span *ngIf="i > 0" [ngStyle]="{'color': value.value.indexOf('--') === -1 && value.value.indexOf('+ve') >= 0 ? 'green' : value.value.indexOf('--') === -1 && value.value.indexOf('-ve') >= 0 ? 'red' : '#333333' }">{{ value.value }}</span>
+                <td class="p-text-center" width="80" *ngFor="let value of item | keyvalue" tabindex="0">
+                    <div class="indicator" *ngIf="i === 0" [ngStyle]="{'background-color': value.value}" aria-hidden="true"></div>
+                    <span *ngIf="i > 0" [ngStyle]="{'color': value.value.indexOf('--') === -1 && value.value.indexOf('+ve') >= 0 ? 'green' : value.value.indexOf('--') === -1 && value.value.indexOf('-ve') >= 0 ? 'red' : '#333333' }"
+                        [attr.aria-label]="getAccessibleTrendLabel(value.value)">{{ value.value }}</span>
                 </td>
             </tr>
         </tbody>

@@ -1,4 +1,4 @@
-<!-- <p-toast [style]="{marginTop: '80px'}"></p-toast> -->
+
 <div class="filter-container p-m-0 p-fluid">
   <div class="p-d-flex p-col-fixed p-pl-0 p-pr-0 scrum-kanban-switch">
     <div class="tabs">
@@ -116,7 +116,7 @@
 
       <div class="show-hide-container" *ngIf="isSprintGoalsHidden()" pTooltip="Sprint Goals" tooltipPosition="top" tooltipEvent="hover"
         tooltipStyleClass="tooltiptext">
-        <span [ngClass]="getBgClass()" class="icon-container p-d-inline-block p-mr-2" (click)="toggleSprintGoals()">
+        <span [ngClass]="getBgClass()" class="icon-container p-d-inline-block p-mr-2" (click)="toggleSprintGoals()" (keydown.enter)="toggleSprintGoals()" tabindex="0" aria-label="Toggle Sprint Goals">
           <i class="pi pi-list cursor-pointer" style="font-size: 1rem"></i>
         </span>
       </div>

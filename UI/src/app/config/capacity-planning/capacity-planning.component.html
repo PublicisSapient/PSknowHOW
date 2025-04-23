@@ -85,6 +85,7 @@
                       scope="col"
                       *ngFor="let col of columns"
                       class="upload_sprint_capacity"
+                      tabindex="0"
                     >
                       {{ col.header }}
                     </th>
@@ -109,6 +110,7 @@
                         'text-blue': (item[col.field] | typeof) === 'number'
                       }"
                       class="upload_sprint_capacity sprint p-pl-3"
+                      tabindex="0"
                     >
                       <button
                         *ngIf="i === 0 && isToggleEnableForSelectedProject"
@@ -127,6 +129,7 @@
                           col.field === 'startDate' || col.field === 'endDate';
                           else otherFieldsTemp
                         "
+                        tabindex="0"
                       >
                         {{ item[col.field] | isoDateFormat }}
                       </span>
@@ -163,6 +166,7 @@
                             ? jiraAssigneeLoader
                             : false
                         "
+                        tabindex="0"
                       ></button>
                     </td>
                   </tr>
@@ -173,13 +177,14 @@
                       colspan="5"
                       [style]="{ display: 'block' }"
                       class="p-pb-2"
+                      tabindex="0"
                     >
                       <div>
                         <div class="p-d-flex p-justify-between p-align-center">
                           <div class="p-d-flex p-align-center">
-                            <h3 class="color-grey">Added Users</h3>
+                            <h3 class="color-grey" tabindex="0">Added Users</h3>
                             &nbsp;&nbsp;
-                            <p>
+                            <p tabindex="0">
                               (*If the desired Domain name is not visible,
                               kindly contact us on
                               knowhowfeedback&#64;publicissapient.com)
@@ -221,6 +226,7 @@
                                 scope="col"
                                 pSortableColumn="userName"
                                 class="expanded-table-header-cell"
+                                tabindex="0"
                               >
                                 User Name
                                 <p-sortIcon field="userName"> </p-sortIcon>
@@ -230,8 +236,9 @@
                                 scope="col"
                                 pSortableColumn="email"
                                 class="expanded-table-header-cell"
+                                tabindex="0"
                               >
-                                <!--[style]="{'max-width':'170px'}"-->
+
                                 <div>
                                   <span
                                     [ngClass]="{
@@ -246,6 +253,7 @@
                                 scope="col"
                                 pSortableColumn="role"
                                 class="expanded-table-header-cell"
+                                tabindex="0"
                               >
                                 Domain
                                 <p-sortIcon field="role"></p-sortIcon>
@@ -256,6 +264,7 @@
                                 pSortableColumn="squad"
                                 class="expanded-table-header-cell"
                                 *ngIf="selectedSquad.length > 0"
+                                tabindex="0"
                               >
                                 Squad <p-sortIcon field="squad"></p-sortIcon>
                               </th>
@@ -264,6 +273,7 @@
                                 scope="col"
                                 pSortableColumn="plannedCapacity"
                                 class="expanded-table-header-cell"
+                                tabindex="0"
                               >
                                 Planned Capacity (in Hrs)
                                 <p-sortIcon
@@ -274,6 +284,7 @@
                                 scope="col"
                                 pSortableColumn="leaves"
                                 class="expanded-table-header-cell"
+                                tabindex="0"
                               >
                                 Leaves (in Hrs)
                                 <p-sortIcon field="leaves"> </p-sortIcon>
@@ -296,7 +307,7 @@
                             let-rowIndex="rowIndex"
                           >
                             <tr class="expanded-table-body-row">
-                              <td class="expanded-table-body-cell">
+                              <td class="expanded-table-body-cell" tabindex="0">
                                 {{
                                   assignee?.userName
                                     ? assignee?.userName
@@ -310,6 +321,7 @@
                                   'max-width': '170px',
                                   'word-wrap': 'break-word'
                                 }"
+                                tabindex="0"
                               >
                                 <p-multiSelect
                                   [options]="projectAssigneeEmailsCopy"
@@ -355,7 +367,7 @@
                                 }}</ng-template>
                               </td>
 
-                              <td class="expanded-table-body-cell">
+                              <td class="expanded-table-body-cell" tabindex="0">
                                 <p-dropdown
                                   placeholder="Select Domain"
                                   [options]="projectAssigneeRoles"
@@ -387,6 +399,7 @@
                               <td
                                 class="expanded-table-body-cell"
                                 *ngIf="selectedSquad.length > 0"
+                                tabindex="0"
                               >
                                 <p-dropdown
                                   placeholder="Select Squad"
@@ -416,7 +429,7 @@
                                   {{ getNodeName(assignee) }}
                                 </ng-template>
                               </td>
-                              <td class="expanded-table-body-cell">
+                              <td class="expanded-table-body-cell" tabindex="0">
                                 <input
                                   type="number"
                                   min="0"
@@ -450,6 +463,7 @@
                               <td
                                 class="expanded-table-body-cell"
                                 [style]="{ position: 'relative' }"
+                                tabindex="0"
                               >
                                 <input
                                   type="number"
@@ -497,7 +511,7 @@
                                                 -'
                                 }}</ng-template>
                               </td>
-                              <td class="expanded-table-body-cell">
+                              <td class="expanded-table-body-cell" tabindex="0">
                                 {{
                                   assignee?.availableCapacity
                                     ? assignee?.availableCapacity
@@ -511,6 +525,7 @@
                               <td
                                 colspan="5"
                                 class="expanded-table-body-cell no-assignee"
+                                tabindex="0"
                               >
                                 Click on Manage Users to add users.
                               </td>
@@ -593,10 +608,11 @@
                         scope="col"
                         *ngFor="let col of columns"
                         class="upload_sprint_capacity"
+                        tabindex="0"
                       >
                         {{ col.header }}
                       </th>
-                      <th scope="col" class="upload_sprint_capacity">Action</th>
+                      <th scope="col" class="upload_sprint_capacity" tabindex="0">Action</th>
                     </tr>
                   </ng-template>
                   <ng-template
@@ -617,6 +633,7 @@
                         [ngClass]="{
                           'text-blue': (item[col.field] | typeof) === 'number'
                         }"
+                        tabindex="0"
                       >
                         <button
                           *ngIf="i === 0 && isToggleEnableForSelectedProject"
@@ -661,6 +678,7 @@
                               ? jiraAssigneeLoader
                               : false
                           "
+                          tabindex="0"
                         ></button>
                       </td>
                     </tr>
@@ -725,12 +743,14 @@
                                     pSortableColumn="userName"
                                     class="expanded-table-header-cell"
                                     [style]="{ width: '25%' }"
+                                    
                                   >
                                     <div>
                                       <span
                                         [ngClass]="{
                                           editable: projectCapacityEditMode
                                         }"
+                                        tabindex="0"
                                         >User Name</span
                                       >
                                       <p-sortIcon field="userName"></p-sortIcon>
@@ -747,6 +767,7 @@
                                         [ngClass]="{
                                           editable: projectCapacityEditMode
                                         }"
+                                        tabindex="0"
                                         >Email Id</span
                                       >
                                     </div>
@@ -762,6 +783,7 @@
                                         [ngClass]="{
                                           editable: projectCapacityEditMode
                                         }"
+                                        tabindex="0"
                                         >Happiness Rating</span
                                       >
                                     </div>
@@ -777,6 +799,7 @@
                                         [ngClass]="{
                                           editable: projectCapacityEditMode
                                         }"
+                                        tabindex="0"
                                         >Domain</span
                                       >
                                       <p-sortIcon field="role"></p-sortIcon>
@@ -804,6 +827,7 @@
                                         [ngClass]="{
                                           editable: projectCapacityEditMode
                                         }"
+                                        tabindex="0"
                                         >Planned Capacity <br />(in Hrs)</span
                                       >
                                       <p-sortIcon
@@ -821,6 +845,7 @@
                                         [ngClass]="{
                                           editable: projectCapacityEditMode
                                         }"
+                                        tabindex="0"
                                         >Leaves<br />
                                         (in Hrs)</span
                                       >
@@ -837,6 +862,7 @@
                                         [ngClass]="{
                                           editable: projectCapacityEditMode
                                         }"
+                                        tabindex="0"
                                         >Available Capacity <br />
                                         (in Hrs)</span
                                       >
@@ -853,7 +879,7 @@
                                 let-rowIndex="rowIndex"
                               >
                                 <tr class="expanded-table-body-row">
-                                  <td class="expanded-table-body-cell">
+                                  <td class="expanded-table-body-cell" tabindex="0">
                                     {{
                                       assignee?.userName
                                         ? assignee?.userName
@@ -867,6 +893,7 @@
                                       'max-width': '170px',
                                       'word-wrap': 'break-word'
                                     }"
+                                    tabindex="0"
                                   >
                                     <p-multiSelect
                                       [options]="projectAssigneeEmailsCopy"
@@ -911,13 +938,13 @@
                                       assignee?.email ? assignee?.email : '- -'
                                     }}</ng-template>
                                   </td>
-                                  <td class="expanded-table-body-cell">
+                                  <td class="expanded-table-body-cell" tabindex="0">
                                     <app-rating
                                       [editable]="projectCapacityEditMode"
                                       [currentAssignee]="assignee"
                                     ></app-rating>
                                   </td>
-                                  <td class="expanded-table-body-cell">
+                                  <td class="expanded-table-body-cell" tabindex="0">
                                     <p-dropdown
                                       placeholder="Select Domain"
                                       [options]="projectAssigneeRoles"
@@ -954,6 +981,7 @@
                                   <td
                                     class="expanded-table-body-cell"
                                     *ngIf="selectedSquad.length > 0"
+                                    tabindex="0"
                                   >
                                     <p-dropdown
                                       placeholder="Select Squad"
@@ -983,7 +1011,7 @@
                                       {{ getNodeName(assignee) }}
                                     </ng-template>
                                   </td>
-                                  <td class="expanded-table-body-cell">
+                                  <td class="expanded-table-body-cell" tabindex="0">
                                     <input
                                       type="number"
                                       min="0"
@@ -1017,6 +1045,7 @@
                                   <td
                                     class="expanded-table-body-cell"
                                     [style]="{ position: 'relative' }"
+                                    tabindex="0"
                                   >
                                     <input
                                       type="number"
@@ -1065,7 +1094,7 @@
                                                 -'
                                     }}</ng-template>
                                   </td>
-                                  <td class="expanded-table-body-cell">
+                                  <td class="expanded-table-body-cell" tabindex="0">
                                     {{
                                       assignee?.availableCapacity
                                         ? assignee?.availableCapacity
