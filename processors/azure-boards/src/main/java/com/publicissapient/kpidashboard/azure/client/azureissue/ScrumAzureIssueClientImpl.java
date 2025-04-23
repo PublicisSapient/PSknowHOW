@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -397,6 +398,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 				// ADD Production Incident field to feature
 				setProdIncidentIdentificationField(fieldMapping, issue, azureIssue, fieldsMap);
+				setLateRefinement188(fieldMapping, azureIssue, fieldsMap);
 
 				setIssueTechStoryType(fieldMapping, issue, azureIssue, fieldsMap);
 
@@ -1245,5 +1247,43 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
 	}
+
+	private void setLateRefinement188(FieldMapping fieldMapping, JiraIssue azureIssue, Map<String, Object> fieldsMap) {
+		azureIssue.setUnRefinedValue188(null);
+		if (null != fieldMapping.getJiraRefinementCriteriaKPI188()
+				&& fieldMapping.getJiraRefinementCriteriaKPI188().trim().equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
+				&& fieldsMap.get(fieldMapping.getJiraRefinementByCustomFieldKPI188().trim()) != null) {
+			String azureValue = fieldsMap.get(fieldMapping.getJiraRefinementByCustomFieldKPI188().trim()).toString();
+			if(StringUtils.isNotEmpty(azureValue) && StringUtils.isNotBlank(azureValue)) {
+				Set<String> customFieldSet = Arrays.stream(azureValue.toLowerCase().split("\\s+"))
+						.collect(Collectors.toSet());
+				if (StringUtils.isNotEmpty(fieldMapping.getJiraRefinementMinLengthKPI188()) && CollectionUtils.isNotEmpty(customFieldSet)) {
+					int i = Integer.parseInt(fieldMapping.getJiraRefinementMinLengthKPI188());
+					if (customFieldSet.size() >= i
+							&& CollectionUtils.isNotEmpty(fieldMapping.getJiraRefinementKeywordsKPI188())) {
+						Set<String> fieldMappingSet = fieldMapping.getJiraRefinementKeywordsKPI188().stream()
+								.map(String::toLowerCase).collect(Collectors.toSet());
+						if (!checkKeyWords(customFieldSet, fieldMappingSet)) {
+							// when fields are not matching then we will set values
+							azureIssue.setUnRefinedValue188(customFieldSet);
+						}
+					}
+				}
+			}else{
+				azureIssue.setUnRefinedValue188(Collections.singleton("No Value"));
+			}
+		}
+	}
+
+	private static boolean checkKeyWords(Set<String> stringSet, Set<String> fieldMappingSet) {
+		for (String keyword : fieldMappingSet) {
+			if (!stringSet.contains(keyword.toLowerCase())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
 
 }

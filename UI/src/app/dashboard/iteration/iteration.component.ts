@@ -251,7 +251,7 @@ export class IterationComponent implements OnInit, OnDestroy {
                     kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi125');
                   break;
                 default:
-                  kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId !== 'kpi125' && kpiId !== 'kpi154');
+                  kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId !== 'kpi125' && kpiId !== 'kpi154' && kpiId !== 'kpi187');
                   break;
               }
               const selectedSprint = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['sprint'][0])[0];
@@ -330,7 +330,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     const groupIdSet = new Set();
     this.updatedConfigGlobalData.forEach((obj) => {
       // we should only call kpi154 on the click of Daily Standup tab, there is separate code for sending kpi154 request
-      if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira' && obj['kpiDetail'].kpiCategory == 'Iteration' && obj.kpiId !== 'kpi154' && obj.kpiId !== 'kpi125') {
+      if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira' && obj['kpiDetail'].kpiCategory == 'Iteration' && obj.kpiId !== 'kpi154' && obj.kpiId !== 'kpi125' && obj.kpiId !== 'kpi187' ) {
         groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
@@ -955,7 +955,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     let index = e.index;
     if (index === 1) {
       let kpi125Data = this.configGlobalData?.filter(kpi => kpi.kpiId === 'kpi125')[0];
-      this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, ['kpi125'], kpi125Data['groupId'], 'Iteration');
+      this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, ['kpi125','kpi187'], kpi125Data['kpiDetail']['groupId'], 'Iteration');
       this.postJiraKpi(this.kpiJira, 'jira');
     }
     if (index === 2) {

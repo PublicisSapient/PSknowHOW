@@ -3147,5 +3147,44 @@
       "isShown": true,
       "isDefault": false
     }]
+  },
+
+  {
+    "basicProjectConfigId": null,
+    "kpiId": "kpi188",
+    "kpiColumnDetails": [{
+      "columnName": "Issue Id",
+      "order": 0,
+      "isShown": true,
+      "isDefault": true
+    }, {
+      "columnName": "Issue Description",
+      "order": 1,
+      "isShown": true,
+      "isDefault": true
+    }, {
+      "columnName": "Sprint Name",
+      "order": 2,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Issue Status",
+      "order": 3,
+      "isShown": true,
+      "isDefault": false
+    },{
+      "columnName": "Issue Type",
+      "order": 4,
+      "isShown": true,
+      "isDefault": false
+    },
+      {
+        "columnName": "Un-Refined",
+        "order": 5,
+        "isShown": true,
+        "isDefault": false
+      }
+    ]
   }
+
 ]

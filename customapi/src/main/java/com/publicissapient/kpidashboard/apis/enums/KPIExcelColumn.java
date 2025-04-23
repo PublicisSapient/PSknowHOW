@@ -350,7 +350,11 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Added Lines", "Total Lines Changed",
 					"Innovation Rate")), DEFECT_RATE("kpi186",
 							Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Defect PR",
-									"No of Merge", "Defect Rate"));
+									"No of Merge", "Defect Rate")),
+	LATE_REFINEMENT("kpi150", Arrays.asList("Sprint Name", "Date", "Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)",
+			"Planned Completion Date (Due Date)", "Priority", "Assignee", "Issue Status", "Un-Refined" )),
+	FUTURE_SPRINT_LATE_REFINEMENT("kpi188",
+								   Arrays.asList("Issue Id", "Issue Description", "Sprint Name", "Issue Type", "Issue Status", "Un-Refined"));
 
 	// @formatter:on
 
