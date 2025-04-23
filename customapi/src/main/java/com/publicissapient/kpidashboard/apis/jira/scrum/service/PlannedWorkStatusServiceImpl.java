@@ -262,30 +262,8 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 								if (StringUtils.isNotEmpty(jiraIssue.getDevDueDate()) && DateUtil.stringToLocalDate(jiraIssue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 										.isBefore(LocalDate.now())) {
 									List<String> jiraDevDoneStatusKPI128 = fieldMapping.getJiraDevDoneStatusKPI128();
-									JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream()
-											.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equals(jiraIssue.getNumber()))
-											.findFirst().orElse(new JiraIssueCustomHistory());
-									List<JiraHistoryChangeLog> filterStatusUpdationLogs = new ArrayList<>();
-
-									LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
-									LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
-									// filtering statusUpdationLogs lies in between sprintStart and sprintEnd
-									filterStatusUpdationLogs = getFilterStatusUpdationLogs(issueCustomHistory, filterStatusUpdationLogs,
-											sprintStartDate, sprintEndDate);
-									// Check if any log entry's changedTo matches any target status (case-insensitive)
-									boolean hasMatchingStatus = filterStatusUpdationLogs.stream()
-											.anyMatch(log ->
-													jiraDevDoneStatusKPI128.stream()
-															.anyMatch(status ->
-																	status.equalsIgnoreCase(log.getChangedTo())
-															)
-											);
-									if (hasMatchingStatus) {
-										individualDelayCount++;
-										overallDelayCount.set(0, overallDelayCount.get(0) + 1);
-										KPIExcelUtility.populateIterationKPI(overAllDelayModalValues, individualDelayModalValues, jiraIssue,
-												fieldMapping, modalObjectMap);
-									}
+									if(jiraDevDoneStatusKPI128!=null)
+									individualDelayCount = getIndividualDelayCount(jiraIssue, allIssueHistories, sprintDetails, jiraDevDoneStatusKPI128, individualDelayCount, overallDelayCount, overAllDelayModalValues, individualDelayModalValues, fieldMapping, modalObjectMap);
 								}
 							} else {
 								// Checking if dueDate is <= sprint End Date for closed sprint
@@ -400,6 +378,34 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 			kpiElement.setExcelColumnInfo(KPIExcelColumn.PLANNED_WORK_STATUS.getKpiExcelColumnInfo());
 			kpiElement.setTrendValueList(trendValue);
 		}
+	}
+
+	private int getIndividualDelayCount(JiraIssue jiraIssue, List<JiraIssueCustomHistory> allIssueHistories, SprintDetails sprintDetails, List<String> jiraDevDoneStatusKPI128, int individualDelayCount, List<Integer> overallDelayCount, List<IterationKpiModalValue> overAllDelayModalValues, List<IterationKpiModalValue> individualDelayModalValues, FieldMapping fieldMapping, Map<String, IterationKpiModalValue> modalObjectMap) {
+		JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream()
+				.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equals(jiraIssue.getNumber()))
+				.findFirst().orElse(new JiraIssueCustomHistory());
+		List<JiraHistoryChangeLog> filterStatusUpdationLogs = new ArrayList<>();
+
+		LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		// filtering statusUpdationLogs lies in between sprintStart and sprintEnd
+		filterStatusUpdationLogs = getFilterStatusUpdationLogs(issueCustomHistory, filterStatusUpdationLogs,
+				sprintStartDate, sprintEndDate);
+		// Check if any log entry's changedTo matches any target status (case-insensitive)
+		boolean hasMatchingStatus = filterStatusUpdationLogs.stream()
+				.anyMatch(log ->
+						jiraDevDoneStatusKPI128.stream()
+								.anyMatch(status ->
+										status.equalsIgnoreCase(log.getChangedTo())
+								)
+				);
+		if (hasMatchingStatus) {
+			individualDelayCount++;
+			overallDelayCount.set(0, overallDelayCount.get(0) + 1);
+			KPIExcelUtility.populateIterationKPI(overAllDelayModalValues, individualDelayModalValues, jiraIssue,
+					fieldMapping, modalObjectMap);
+		}
+		return individualDelayCount;
 	}
 
 	private double calculateDelayedPercentage(int totalItemPlanned, int numberOfDelay) {
