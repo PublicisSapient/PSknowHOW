@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -55,9 +56,11 @@ import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -76,8 +79,9 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 	private static final String PUNTED_ISSUES = "puntedIssues";
 	private static final String ADDED_ISSUES = "addedIssues";
 	private static final String EXCLUDE_ADDED_ISSUES = "excludeAddedIssues";
-	private static final String SCOPE_ADDED = "Scope added";
-	private static final String SCOPE_REMOVED = "Scope removed";
+	private static final String SCOPE_ADDED = "Sprint scope added";
+	private static final String SCOPE_REMOVED = "Sprint scope removed";
+	private static final String SCOPE_CHANGE = "Scope Change";
 	private static final String INITIAL_COMMITMENT = "Initial Commitment";
 	private static final String OVERALL = "Overall";
 	private static final String JIRA_ISSUE_HISTORY = "jiraIssueHistory";
@@ -191,6 +195,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 		List<IterationKpiModalValue> overAllRemovedmodalValues = new ArrayList<>();
 		List<IterationKpiModalValue> overAllInitialmodalValues = new ArrayList<>();
 		List<IterationKpiModalValue> overAllTotalmodalValues = new ArrayList<>();
+		List<IterationKpiModalValue> overAllScopeChangemodalValues = new ArrayList<>();
 
 		List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 		List<IterationKpiData> data = new ArrayList<>();
@@ -206,6 +211,15 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 		if (CollectionUtils.isNotEmpty(puntedIssues)) {
 			totalIssues.removeAll(puntedIssues);
 		}
+
+		List<JiraIssue> scopeChangeIssues = Stream
+				.concat(Stream.concat(CollectionUtils.emptyIfNull(initialIssues).stream(),
+						CollectionUtils.emptyIfNull(addedIssues).stream()),
+						Stream.concat(CollectionUtils.emptyIfNull(puntedIssues).stream(),
+								CollectionUtils.emptyIfNull(totalIssues).stream()))
+				.filter(j -> Objects.nonNull(j.getLabels()) && Objects.nonNull(fieldMapping.getJiraLabelsKPI120())
+						&& j.getLabels().stream().anyMatch(fieldMapping.getJiraLabelsKPI120()::contains))
+				.distinct().collect(Collectors.toList());
 
 		Map<String, JiraIssueCustomHistory> issuesByNumber = issueHistory.stream()
 				.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, issue -> issue, (existing, replacement) -> existing));
@@ -235,7 +249,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 			List<Double> overAllInitialIssueSp = Arrays.asList(0.0);
 			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
 			Map<JiraIssue, JiraIssueCustomHistory> initialJiraIssueMap = new HashMap<>();
-			totalIssues.stream().filter(
+			initialIssues.stream().filter(
 							issue -> StringUtils.isNotEmpty(issue.getNumber()) && issuesByNumber.containsKey(issue.getNumber()))
 					.forEach(issue -> initialJiraIssueMap.put(issue, issuesByNumber.get(issue.getNumber())));
 
@@ -273,7 +287,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
 			Map<Long, Pair<Integer, Double>> dayWiseScopeUpdate = new HashMap<>();
 			Map<JiraIssue, JiraIssueCustomHistory> puntedJiraIssueMap = new HashMap<>();
-			totalIssues.stream().filter(
+			puntedIssues.stream().filter(
 							issue -> StringUtils.isNotEmpty(issue.getNumber()) && issuesByNumber.containsKey(issue.getNumber()))
 					.forEach(issue -> puntedJiraIssueMap.put(issue, issuesByNumber.get(issue.getNumber())));
 			setScopeChange(iterationKpiValues, overAllPunIssueCount,
@@ -282,6 +296,25 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 			IterationKpiData overAllPuntedCount = setIterationKpiData(fieldMapping, overAllPunIssueCount,
 					overAllPunIssueSp, overAllOriginalEstimate, overAllRemovedmodalValues, SCOPE_REMOVED, dayWiseScopeUpdate);
 			data.add(overAllPuntedCount);
+		}
+
+		if (CollectionUtils.isNotEmpty(scopeChangeIssues)) {
+			log.info("Scope Change -> request id : {} scope change labels jira Issues : {}", requestTrackerId, scopeChangeIssues.size());
+			List<Integer> overAllScopeChangeLabelsCount = Arrays.asList(0);
+			List<Double> overAllScopeChangeLabelsSp = Arrays.asList(0.0);
+			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
+			Map<Long, Pair<Integer, Double>> dayWiseScopeUpdate = new HashMap<>();
+			Map<JiraIssue, JiraIssueCustomHistory> scopeChangeJiraIssueMap = new HashMap<>();
+			scopeChangeIssues.stream().filter(
+					issue -> StringUtils.isNotEmpty(issue.getNumber()) && issuesByNumber.containsKey(issue.getNumber()))
+					.forEach(issue -> scopeChangeJiraIssueMap.put(issue, issuesByNumber.get(issue.getNumber())));
+			setScopeChange(iterationKpiValues, overAllScopeChangeLabelsCount, overAllScopeChangeLabelsSp,
+					overAllScopeChangemodalValues, SCOPE_CHANGE, fieldMapping, overAllOriginalEstimate,
+					scopeChangeJiraIssueMap, sprintDetails, dayWiseScopeUpdate);
+			IterationKpiData overAllScopeChangeLabels = setIterationKpiData(fieldMapping, overAllScopeChangeLabelsCount,
+					overAllScopeChangeLabelsSp, overAllOriginalEstimate, overAllScopeChangemodalValues, SCOPE_CHANGE,
+					dayWiseScopeUpdate);
+			data.add(overAllScopeChangeLabels);
 		}
 
 		if (CollectionUtils.isNotEmpty(data)) {
@@ -305,7 +338,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 			FieldMapping fieldMapping, List<Double> overAllOriginalEstimate,
 			Map<JiraIssue, JiraIssueCustomHistory> jiraIssueMap, SprintDetails sprintDetails,
 			Map<Long, Pair<Integer, Double>> overallDayWiseScopeUpdate) {
-		
+
 		List<JiraIssue> allIssues = new ArrayList<>(jiraIssueMap.keySet());
 		Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues = allIssues.stream()
 				.collect(Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getStatus)));
@@ -320,7 +353,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 			Map<Long, Pair<Integer, Double>> dayWiseScopeUpdate = new HashMap<>();
 			for (JiraIssue jiraIssue : issues) {
 				setDayWiseScopeChange(jiraIssue, jiraIssueMap.get(jiraIssue), sprintDetails, label,
-						dayWiseScopeUpdate);
+						dayWiseScopeUpdate, fieldMapping);
 				KPIExcelUtility.populateIterationKPI(overAllmodalValues, modalValues, jiraIssue, fieldMapping,
 						modalObjectMap);
 				issueCount = issueCount + 1;
@@ -375,44 +408,17 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 	 * @param label
 	 *            The label indicating whether the scope is being added or removed.
 	 *            Possible values: SCOPE_ADDED, SCOPE_REMOVED.
+     * @param fieldMapping
+ 	 *            field mapping configuration, used to determine the labels
 	 * @param dayWiseScopeUpdate
 	 *            A map where the key represents a time duration (in days) and the
 	 *            value is a pair containing the count of issues and the total story
 	 *            points for that duration.
 	 */
 	private void setDayWiseScopeChange(JiraIssue jiraIssue, JiraIssueCustomHistory issueCustomHistory,
-			SprintDetails sprintDetails, String label, Map<Long, Pair<Integer, Double>> dayWiseScopeUpdate) {
-		Optional<JiraHistoryChangeLog> sprintUpdationLog = Optional.empty();
-		if (label.equals(SCOPE_ADDED) && issueCustomHistory != null) {
-			sprintUpdationLog = issueCustomHistory.getSprintUpdationLog().stream()
-					.filter(updationLog -> updationLog.getChangedTo().equalsIgnoreCase(sprintDetails.getSprintName()))
-					.findFirst();
-		} else if (label.equals(SCOPE_REMOVED) && issueCustomHistory != null) {
-			sprintUpdationLog = issueCustomHistory.getSprintUpdationLog().stream()
-					.filter(updationLog -> updationLog.getChangedFrom().equalsIgnoreCase(sprintDetails.getSprintName()))
-					.findFirst();
-		}
-
-		if (sprintUpdationLog.isPresent()) {
-			LocalDate sprintDate = sprintUpdationLog.get().getUpdatedOn().toLocalDate();
-			Long timeKey = determineSprintTimeKey(sprintDate, sprintDetails);
-			if (timeKey != null) {
-				updateScopeCounts(dayWiseScopeUpdate, timeKey, jiraIssue.getStoryPoints());
-			}
-		}
-	}
-	
-	/**
-	 * Determines the time key for a sprint based on the given sprint date.
-	 *
-	 * @param sprintDate
-	 *            The date within the sprint to evaluate.
-	 * @param sprintDetails
-	 *            The details of the sprint, including start and end dates.
-	 * @return The time key corresponding to the segment of the sprint the date
-	 *         falls into
-	 */
-	private Long determineSprintTimeKey(LocalDate sprintDate, SprintDetails sprintDetails) {
+			SprintDetails sprintDetails, String label, Map<Long, Pair<Integer, Double>> dayWiseScopeUpdate,
+			FieldMapping fieldMapping) {
+		List<JiraHistoryChangeLog> sprintUpdationLog = new ArrayList<>();
 		LocalDate sprintStartDate = DateUtil.stringToLocalDate(sprintDetails.getStartDate(),
 				DateUtil.TIME_FORMAT_WITH_SEC_ZONE);
 		LocalDate sprintEndDate = DateUtil.stringToLocalDate(
@@ -422,34 +428,68 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 		long quarterSprint = (long) Math.ceil(0.25 * sprintDuration);
 		long halfSprint = (long) Math.ceil(0.5 * sprintDuration);
 		long threeQuarterSprint = (long) Math.ceil(0.75 * sprintDuration);
-
-		if (sprintDate.isAfter(sprintEndDate.minusDays(quarterSprint))) {
-			return quarterSprint;
-		} else if (sprintDate.isAfter(sprintEndDate.minusDays(halfSprint))) {
-			return halfSprint;
-		} else if (sprintDate.isAfter(sprintStartDate.plusDays(threeQuarterSprint))) {
-			return threeQuarterSprint;
+		if (issueCustomHistory != null) {
+			sprintUpdationLog = switch (label) {
+			case SCOPE_ADDED -> issueCustomHistory.getSprintUpdationLog().stream()
+					.filter(updationLog -> updationLog.getChangedTo().equalsIgnoreCase(sprintDetails.getSprintName()))
+					.toList();
+			case SCOPE_REMOVED -> issueCustomHistory.getSprintUpdationLog().stream()
+					.filter(updationLog -> updationLog.getChangedFrom().equalsIgnoreCase(sprintDetails.getSprintName()))
+					.toList();
+			case SCOPE_CHANGE -> issueCustomHistory.getLabelUpdationLog().stream()
+					.filter(updationLog -> fieldMapping.getJiraLabelsKPI120().contains(updationLog.getChangedTo()))
+					.toList();
+			default -> sprintUpdationLog;
+			};
 		}
 
-		return null;
+		if (CollectionUtils.isNotEmpty(sprintUpdationLog)) {
+			sprintUpdationLog.forEach(updationLog -> {
+				LocalDate sprintDate = updationLog.getUpdatedOn().toLocalDate();
+				if (sprintDate.isAfter(sprintEndDate.minusDays(quarterSprint)) && sprintDate.isBefore(sprintEndDate)) {
+					updateScopeCounts(dayWiseScopeUpdate, quarterSprint, jiraIssue, fieldMapping);
+				} else if (sprintDate.isAfter(sprintEndDate.minusDays(halfSprint))
+						&& sprintDate.isBefore(sprintEndDate)) {
+					updateScopeCounts(dayWiseScopeUpdate, halfSprint, jiraIssue, fieldMapping);
+				} else if (sprintDate.isAfter(sprintStartDate.plusDays(threeQuarterSprint))
+						&& sprintDate.isBefore(sprintEndDate)) {
+					updateScopeCounts(dayWiseScopeUpdate, threeQuarterSprint, jiraIssue, fieldMapping);
+				}
+			});
+		}
 	}
 
 	/**
-	 * Updates the scope counts map with the new issue data.
+	 * Updates the day-wise scope change map with the count of issues and total
+	 * story points.
 	 *
 	 * @param dayWiseScopeUpdate
-	 *            A map where the key represents a time duration
+	 *            A map where the key represents a time duration (in days) and the
+	 *            value is a pair containing the count of issues and the total story
+	 *            points for that duration.
 	 * @param timeKey
-	 *            The time duration key
-	 * @param storyPoints
-	 *            The story points of the issue being added
+	 *            The time key (in days) for which the scope counts are being
+	 *            updated.
+	 * @param jiraIssue
+	 *            The Jira issue containing the story points or original estimate
+	 * @param fieldMapping
+	 *            The field mapping configuration, used to determine the estimation
+	 *            criteria.
 	 */
 	private void updateScopeCounts(Map<Long, Pair<Integer, Double>> dayWiseScopeUpdate, Long timeKey,
-			Double storyPoints) {
+			JiraIssue jiraIssue, FieldMapping fieldMapping) {
 
 		Pair<Integer, Double> currentValue = dayWiseScopeUpdate.getOrDefault(timeKey, Pair.of(0, 0.0));
+		double storyPoint = 0.0d;
+		if(StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			storyPoint = jiraIssue.getStoryPoints() != null ? jiraIssue.getStoryPoints() : storyPoint;
+		} else {
+			storyPoint = jiraIssue.getOriginalEstimateMinutes() != null ? jiraIssue.getOriginalEstimateMinutes()
+					: storyPoint;
+		}
 		int updatedCount = currentValue.getLeft() + 1;
-		double updatedPoints = currentValue.getRight() + (storyPoints != null ? storyPoints : 0.0);
+		double updatedPoints = currentValue.getRight() + storyPoint;
 		dayWiseScopeUpdate.put(timeKey, Pair.of(updatedCount, updatedPoints));
 	}
 

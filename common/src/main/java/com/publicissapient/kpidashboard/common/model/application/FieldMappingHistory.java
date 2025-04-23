@@ -485,4 +485,6 @@ public class FieldMappingHistory extends BasicModel {
 
 	private List<ConfigurationHistoryChangeLog> historyjiraIssueTypeExcludeKPI124;
 	private List<ConfigurationHistoryChangeLog> historyjiraIssueTypeExcludeKPI75;
+
+	private List<ConfigurationHistoryChangeLog> historyjiraLabelsKPI120;
 }
