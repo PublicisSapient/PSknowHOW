@@ -460,6 +460,9 @@ public class KPIExcelData {
 	@JsonProperty("Closed PR")
 	private Long closedPRs;
 
+	@JsonProperty("Un-Refined")
+	private String unRefined;
+
 
 
 }

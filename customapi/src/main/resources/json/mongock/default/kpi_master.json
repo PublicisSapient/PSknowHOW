@@ -4939,5 +4939,72 @@
       }
     ],
     "combinedKpiSource" : "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"
+  },
+  {
+    "kpiId" : "kpi187" ,
+    "kpiName" : "Late Refinement (Current Sprint)" ,
+    "kpiUnit" : "Count" ,
+    "isDeleted" : "False" ,
+    "defaultOrder" : 10 ,
+    "kpiCategory" : "Iteration" ,
+    "kpiSubCategory" : "Iteration Progress" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
+    "groupId" : 20 ,
+    "thresholdValue" : "" ,
+    "kanban" : false ,
+    "chartType" : "CumulativeMultilineChart" ,
+    "kpiInfo" : {
+      "definition" : "Measures the number of work items that are not adequately refined in time for development planning. This includes: Work items in the current sprint that do not meet DoR (Definition of Ready).",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://knowhow.suite.publicissapient.com/wiki/spaces/PS/pages/159154188/Late+Refinement"
+          }
+        }
+      ]
+    } ,
+    "xaxisLabel" : "Days" ,
+    "yaxisLabel" : "Count" ,
+    "isPositiveTrend" : true ,
+    "showTrend" : false ,
+    "isAdditionalFilterSupport" : false ,
+    "kpiWidth" : 100 ,
+    "boxType" : "chart" ,
+    "calculateMaturity" : false
+  } ,
+  {
+    "kpiId" : "kpi188" ,
+    "kpiName" : "Late Refinement (Future Sprint)" ,
+    "maxValue" : "" ,
+    "isDeleted" : "False" ,
+    "defaultOrder" : 12 ,
+    "kpiCategory" : "Iteration" ,
+    "kpiSubCategory" : "Iteration Review" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
+    "groupId" : 19 ,
+    "thresholdValue" : "" ,
+    "kanban" : false ,
+    "chartType" : null ,
+    "kpiInfo" : {
+      "definition" : "Measures the number of work items that are slated for the next sprint but still lack necessary refinement details. Work items tagged to the next sprint that lack sufficient refinement (e.g., missing description, acceptance criteria, etc).",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://knowhow.suite.publicissapient.com/wiki/spaces/PS/pages/159154188/Late+Refinement"
+          }
+        }
+      ]
+    } ,
+    "showTrend" : false ,
+    "isAdditionalFilterSupport" : false ,
+    "kpiFilter" : "multiSelectDropDown" ,
+    "boxType" : "3_column" ,
+    "calculateMaturity" : false
   }
 ]

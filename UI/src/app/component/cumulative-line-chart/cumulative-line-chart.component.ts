@@ -29,6 +29,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
 
   draw() {
     const elem = this.elem;
+    d3.select(elem).select(".chart-container").select('svg').remove();
     d3.select(elem).select("#chart").select('svg').remove();
     d3.select('.yaxis-container').select('svg').remove();
     const margin = { top: 30, right: 22, bottom: 20, left: 10 };
@@ -211,6 +212,15 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
           hideTooltip();
         });
 
+    // Define the div for circle tooltip only
+      const circleToolTipContainer = d3
+      .select(this.elem)
+      .select('#container')
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('display', 'none')
+      .style('opacity', 0);
+
       const circlegroup = svg
         .append('g')
         .attr('class', 'circle-group')
@@ -225,22 +235,61 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
         .style('stroke-width', 5)
         .attr('stroke', 'transparent')
         .attr('fill', color(kpiGroup))
-        .on('mouseover', function (event) {
-          d3.select(this)
+        .on('mouseover', function (event,d) {
+          // This hover will triger for the circle only i.e. if data have hovervalue then it will appear for same otherwise on circle hover it will show the all joint line data. 
+          if(d && d.hoverValue){
+            d3.select(this)
+            .transition()
+            .duration(500)
+            .style('cursor', 'pointer')
+            .attr('r', 3)
+            .style('stroke-width', 10);
+            circleToolTipContainer
+            .transition()
+            .duration(200)
+            .style('display', 'block')
+            .style('position', 'fixed')
+            .style('opacity', 0.9);
+
+        
+        const circle = event.target;
+          const { top: yPosition, left: xPosition } =
+            circle.getBoundingClientRect();
+
+          let htmlString = '';
+          Object.keys(d.hoverValue).forEach((key) => {
+            htmlString += `<div class="tooltip-content"><span>${key}:</span> <span>${d.hoverValue[key]}</span></div>`;
+          });
+
+          circleToolTipContainer.html(htmlString)
+          .style('left', (xPosition) + 'px')
+          .style('top', yPosition + 20 + 'px');
+          }else{
+            d3.select(this)
             .transition()
             .duration(500)
             .style('cursor', 'pointer')
             .attr('r', 3)
             .style('stroke-width', 10);
           showTooltip(lineData);
+          }
+         
         })
         .on('mouseout', function (event, d) {
-          d3.select(this)
+          if(d && d.hoverValue){
+            circleToolTipContainer
+            .transition()
+            .duration(500)
+            .style('display', 'none')
+            .style('opacity', 0);
+          }else{
+            d3.select(this)
             .transition()
             .duration(500)
             .attr('r', 3)
             .style('stroke-width', 5);
           hideTooltip();
+          }
         });
     }
     //Add xCaption

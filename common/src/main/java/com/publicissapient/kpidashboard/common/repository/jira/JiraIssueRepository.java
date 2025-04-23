@@ -211,4 +211,13 @@ public interface JiraIssueRepository
 
 	@Query(value = "{ 'basicProjectConfigId' : ?0, 'typeName' : { $ne : ?1 } }", count = true)
 	long countByBasicProjectConfigIdAndExcludeTypeName(String basicProjectConfigId, String typeName);
+
+	/**
+	 * Find all issues associated with a specific sprint ID
+	 *
+	 * @param sprintId the sprint ID to search for
+	 * @return list of JiraIssues in the sprint
+	 */
+	@Query("{'sprintID': ?0}")
+	List<JiraIssue> findBySprintID(String sprintId);
 }

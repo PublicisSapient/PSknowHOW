@@ -511,15 +511,20 @@ public class FieldMapping extends FieldMappingHistory {
 	private List<String> jiraIssueTypeExcludeKPI124;
 	private List<String> jiraIssueTypeExcludeKPI75;
 
-	private List<String> issueTypesToConsiderKpi113;
-	private List<String> closedIssueStatusToConsiderKpi113;
+	private List<String> jiraLabelsKPI120;
+	//LateRefinement
+	private List<String> jiraStatusKPI187;
+	private List<String> jiraIssueTypeNamesKPI187;
 
-	// production defect ageing status to consider
-	private List<String> jiraStatusToConsiderKPI127;
-    private List<String> jiraLabelsKPI120;
+	//Future Refinement
+	private List<String> jiraIssueTypeNamesKPI188;
+	private String jiraRefinementCriteriaKPI188;
+	private String jiraRefinementByCustomFieldKPI188;
+	private String jiraRefinementMinLengthKPI188;
+	private List<String> jiraRefinementKeywordsKPI188;
+
     private boolean includeActiveSprintInBacklogKPI;
-
-    /**
+	/**
 	 * Get jira issue type names string [ ].
 	 *
 	 * @return the string [ ]

@@ -275,8 +275,10 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setStoryFirstStatusKPI171(firstStatusList.get(0));
 			fieldMapping.setStoryFirstStatusKPI148(firstStatusList.get(0));
 			fieldMapping.setJiraDefectCreatedStatusKPI14(firstStatusList.get(0));
+			fieldMapping.setJiraStatusKPI187(firstStatusList);
 		} else {
 			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
+			fieldMapping.setJiraStatusKPI187(firstStatusList);
 			fieldMapping.setStoryFirstStatusKPI171(CommonConstant.OPEN);
 			fieldMapping.setStoryFirstStatusKPI148(CommonConstant.OPEN);
 			fieldMapping.setJiraDefectCreatedStatusKPI14(CommonConstant.OPEN);
