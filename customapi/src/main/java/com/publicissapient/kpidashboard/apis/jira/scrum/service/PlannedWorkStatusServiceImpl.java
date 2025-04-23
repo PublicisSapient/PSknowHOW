@@ -95,6 +95,7 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 	private static final String SPRINT_DETAILS = "sprintDetails";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	private static final String DELAYED_WORKITEMS = "Delayed Workitems";
+	@Autowired
 	private ConfigHelperService configHelperService;
 
 	@Override
@@ -259,7 +260,7 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 											actualCompletionData);
 								}
 								if (StringUtils.isNotEmpty(jiraIssue.getDevDueDate()) && DateUtil.stringToLocalDate(jiraIssue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
-										.isAfter(LocalDate.now())) {
+										.isBefore(LocalDate.now())) {
 									List<String> jiraDevDoneStatusKPI128 = fieldMapping.getJiraDevDoneStatusKPI128();
 									JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream()
 											.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equals(jiraIssue.getNumber()))
@@ -280,7 +281,7 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 															)
 											);
 									if (hasMatchingStatus) {
-										individualDelayCount += individualDelayCount;
+										individualDelayCount++;
 										overallDelayCount.set(0, overallDelayCount.get(0) + 1);
 										KPIExcelUtility.populateIterationKPI(overAllDelayModalValues, individualDelayModalValues, jiraIssue,
 												fieldMapping, modalObjectMap);
