@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1022;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1100;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +29,7 @@ import io.mongock.api.annotations.RollbackExecution;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ChangeUnit(id = "late_refinement", order = "10209", author = "shi6", systemVersion = "10.2.2")
+@ChangeUnit(id = "late_refinement", order = "11001", author = "shi6", systemVersion = "11.0.0")
 public class LateRefinement {
 	private static final String KPI_MASTER = "kpi_master";
 	private static final String KPI_EXCEL_COLUMN_CONFIG = "kpi_column_configs";
