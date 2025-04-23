@@ -21,17 +21,24 @@ File contains code for daily scrum component.
 @author bhagyashree, rishabh
 *******************************/
 
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { SortEvent } from 'primeng/api';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-daily-scrum',
   templateUrl: './daily-scrum.component.html',
-  styleUrls: ['./daily-scrum.component.css']
+  styleUrls: ['./daily-scrum.component.css'],
 })
 export class DailyScrumComponent implements OnInit, OnChanges {
-
   @Input() filterData = [];
   @Input() assigneeList = [];
   @Input() columns = [];
@@ -59,11 +66,13 @@ export class DailyScrumComponent implements OnInit, OnChanges {
   @Output() closeModal = new EventEmitter<any>();
   @Input() loader;
 
-  constructor(private service: SharedService) { }
+  constructor(private service: SharedService) {}
 
   ngOnInit(): void {
-    this.filterData?.forEach(filter => {
-      this.filters[filter.filterKey] = this.filters[filter.filterKey] ? this.filters[filter.filterKey] : null;
+    this.filterData?.forEach((filter) => {
+      this.filters[filter.filterKey] = this.filters[filter.filterKey]
+        ? this.filters[filter.filterKey]
+        : null;
     });
   }
 
@@ -77,11 +86,15 @@ export class DailyScrumComponent implements OnInit, OnChanges {
     if (Object.keys(this.filters).length > 0) {
       for (const key in this.filters) {
         if (this.filters[key]) {
-          this.assigneeList = this.allAssignee?.filter(assignee => assignee[key] === this.filters[key]);
+          this.assigneeList = this.allAssignee?.filter(
+            (assignee) => assignee[key] === this.filters[key],
+          );
         }
       }
     }
-    this.selectedUserInfo = this.assigneeList?.find(assignee => assignee.assigneeId === this.selectedUser);
+    this.selectedUserInfo = this.assigneeList?.find(
+      (assignee) => assignee.assigneeId === this.selectedUser,
+    );
     this.calculateTotal();
     this.getCurrentAssigneeIssueData(this.selectedUserInfo?.assigneeName);
   }
@@ -96,7 +109,9 @@ export class DailyScrumComponent implements OnInit, OnChanges {
     }
     this.service.setIssueData(null);
     if (assigneeId) {
-      this.selectedUserInfo = this.assigneeList.find(assignee => assignee.assigneeId === assigneeId);
+      this.selectedUserInfo = this.assigneeList.find(
+        (assignee) => assignee.assigneeId === assigneeId,
+      );
       this.onSelectedUserChange.emit(assigneeId);
       this.getCurrentAssigneeIssueData(assigneeName);
     } else {
@@ -117,7 +132,9 @@ export class DailyScrumComponent implements OnInit, OnChanges {
   handleSingleSelectChange(e, filterKey) {
     if (this.allAssignee?.length) {
       if (e?.value) {
-        this.assigneeList = this.allAssignee.filter(assignee => assignee[filterKey] === e.value);
+        this.assigneeList = this.allAssignee.filter(
+          (assignee) => assignee[filterKey] === e.value,
+        );
       } else {
         this.assigneeList = this.allAssignee;
       }
@@ -128,7 +145,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
 
   calculateTotal() {
     this.totals['Team Member'] = this.assigneeList?.length + ' Members';
-    this.columns?.forEach(col => {
+    this.columns?.forEach((col) => {
       this.totals[col] = { ...this.assigneeList[0]?.cardDetails[col] };
       if ('value' in this.totals[col]) {
         this.totals[col].value = 0;
@@ -139,19 +156,26 @@ export class DailyScrumComponent implements OnInit, OnChanges {
     });
 
     this.assigneeList?.forEach((assignee) => {
-      this.columns?.forEach(col => {
-        this.totals[col].value += isNaN(assignee.cardDetails[col].value) ? 0 : +assignee.cardDetails[col].value;
+      this.columns?.forEach((col) => {
+        this.totals[col].value += isNaN(assignee.cardDetails[col].value)
+          ? 0
+          : +assignee.cardDetails[col].value;
         if ('value1' in this.totals[col]) {
-          this.totals[col].value1 += isNaN(assignee.cardDetails[col].value1) ? 0 : +assignee.cardDetails[col].value1;
+          this.totals[col].value1 += isNaN(assignee.cardDetails[col].value1)
+            ? 0
+            : +assignee.cardDetails[col].value1;
         } else {
           this.totals[col].value1 = 0;
         }
       });
     });
 
-    this.columns?.forEach(col => {
+    this.columns?.forEach((col) => {
       if (this.totals[col]?.unit === 'day') {
-        this.totals[col].value = this.convertToHoursIfTime(this.totals[col].value, this.totals[col].unit);
+        this.totals[col].value = this.convertToHoursIfTime(
+          this.totals[col].value,
+          this.totals[col].unit,
+        );
       } else {
         if (this.totals[col].value) {
           this.totals[col].value = this.totals[col].value.toFixed();
@@ -159,11 +183,13 @@ export class DailyScrumComponent implements OnInit, OnChanges {
       }
 
       if (this.totals[col]?.unit1 === 'day') {
-        this.totals[col].value1 = this.convertToHoursIfTime(this.totals[col].value1, this.totals[col].unit1);
+        this.totals[col].value1 = this.convertToHoursIfTime(
+          this.totals[col].value1,
+          this.totals[col].unit1,
+        );
       } else {
         this.totals[col].value1 = this.totals[col].value1?.toFixed(2);
       }
-      console.log(JSON.stringify(this.totals));
     });
   }
 
@@ -173,7 +199,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
     }
     const isLessThanZero = val < 0;
     val = Math.abs(val);
-    const hours = (val / 60);
+    const hours = val / 60;
     const rhours = Math.floor(hours);
     const minutes = (hours - rhours) * 60;
     const rminutes = Math.round(minutes);
@@ -188,7 +214,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
       val = '-' + val;
     }
     if (val === '') {
-      val = '0d'
+      val = '0d';
     }
     return val;
   }
@@ -201,23 +227,37 @@ export class DailyScrumComponent implements OnInit, OnChanges {
     const days = rhours / 8;
     const rdays = Math.floor(days);
     rhours = (days - rdays) * 8;
-    return `${(rdays !== 0) ? rdays + 'd ' : ''}${(rhours !== 0) ? rhours + 'h ' : ''}`;
+    return `${rdays !== 0 ? rdays + 'd ' : ''}${
+      rhours !== 0 ? rhours + 'h ' : ''
+    }`;
   }
 
   customSort(event: SortEvent) {
     if (event.field === 'Team Member') {
-      this.assigneeList.sort((a, b) => event.order > 0 ? a.assigneeName.localeCompare(b.assigneeName) : b.assigneeName.localeCompare(a.assigneeName));
+      this.assigneeList.sort((a, b) =>
+        event.order > 0
+          ? a.assigneeName.localeCompare(b.assigneeName)
+          : b.assigneeName.localeCompare(a.assigneeName),
+      );
     } else {
       this.assigneeList.sort((a, b) => {
-        const value1 = a.cardDetails[event.field].value === '-' ? '' : a.cardDetails[event.field].value;
-        const value2 = b.cardDetails[event.field].value === '-' ? '' : b.cardDetails[event.field].value;
-        return event.order > 0 ? value1.localeCompare(value2) : value2.localeCompare(value1);
+        const value1 =
+          a.cardDetails[event.field].value === '-'
+            ? ''
+            : a.cardDetails[event.field].value;
+        const value2 =
+          b.cardDetails[event.field].value === '-'
+            ? ''
+            : b.cardDetails[event.field].value;
+        return event.order > 0
+          ? value1.localeCompare(value2)
+          : value2.localeCompare(value1);
       });
     }
   }
 
   getNameInitials(name) {
-    const initials = name.split(' ').map(d => d[0]);
+    const initials = name.split(' ').map((d) => d[0]);
     if (initials.length > 2) {
       return initials.slice(0, 2).join('').toUpperCase();
     }
@@ -225,8 +265,10 @@ export class DailyScrumComponent implements OnInit, OnChanges {
   }
 
   getCurrentAssigneeIssueData(assigneeName) {
-    this.currentAssigneeissueData = this.issueData?.filter(issue => issue['Assignee'] === assigneeName);
-    this.currentAssigneeissueData?.forEach(issue => {
+    this.currentAssigneeissueData = this.issueData?.filter(
+      (issue) => issue['Assignee'] === assigneeName,
+    );
+    this.currentAssigneeissueData?.forEach((issue) => {
       if ('subTask' in issue && typeof issue['subTask'][0] === 'string') {
         issue['subTask'] = this.getSubTaskIssueDetails(issue['subTask']);
       }
@@ -234,7 +276,9 @@ export class DailyScrumComponent implements OnInit, OnChanges {
   }
 
   getSubTaskIssueDetails(subTaskList) {
-    return this.issueData.filter(issue => subTaskList.includes(issue['Issue Id']));
+    return this.issueData.filter((issue) =>
+      subTaskList.includes(issue['Issue Id']),
+    );
   }
 
   /** Reload KPI once field mappoing updated */

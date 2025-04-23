@@ -1,17 +1,17 @@
 .trend-table-container {
-    display: flex;
-    justify-content: left;
-    font-size: 10px;
+  display: flex;
+  justify-content: left;
+  font-size: 10px;
 }
 
 .indicator {
-    display: inline-block;
-    border-radius: 50%;
-    height: 10px;
-    width: 10px;
+  display: inline-block;
+  border-radius: 50%;
+  height: 10px;
+  width: 10px;
 }
 
 .header-table {
-    font-weight: bold;
-    font-family: Poppins_Medium, sans-serif;
+  font-weight: bold;
+  font-family: Poppins_Medium, sans-serif;
 }

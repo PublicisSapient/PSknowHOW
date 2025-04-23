@@ -34,6 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.jira.service.SprintDetailsServiceImpl;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -89,6 +91,8 @@ public class UnitCoverageServiceImplTest {
 	private CustomApiConfig customApiConfig;
 	@Mock
 	private CommonService commonService;
+	@Mock
+	private SprintDetailsServiceImpl sprintDetailsService;
 	private List<AccountHierarchyData> ahdList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
@@ -153,6 +157,10 @@ public class UnitCoverageServiceImplTest {
 		trendValueMap.put("Overall", trendValues);
 		trendValueMap.put("BRANCH1->PR_10304", trendValues);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
+		SprintDetails sprintDetails = new SprintDetails();
+		sprintDetails.setCompleteDate("2025-04-01T13:44:44.421Z");
+		sprintDetails.setSprintID("40345_Scrum Project_6335363749794a18e8a4479b");
+		when(sprintDetailsService.getSprintDetailsByIds(anyList())).thenReturn(Arrays.asList(sprintDetails));
 
 		setToolMap();
 	}
@@ -323,6 +331,7 @@ public class UnitCoverageServiceImplTest {
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONAR.name()))
 				.thenReturn(kpiRequestTrackerId);
+
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put(KPICode.CODE_VIOLATIONS.name(),
 				Arrays.asList("-390", "390-309", "309-221", "221-140", "140-"));
@@ -336,10 +345,11 @@ public class UnitCoverageServiceImplTest {
 	}
 
 	@Test
-	public void testGetUnitCoverage6() throws Exception {
+	public void testGetUnitCoverageDateWise() throws Exception {
 		setToolMap();
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		kpiRequest.setLabel("PORT");
 		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))

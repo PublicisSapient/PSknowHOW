@@ -33,6 +33,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.jira.service.SprintDetailsServiceImpl;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -79,12 +82,16 @@ public class SonarViolationsServiceImplTest {
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
 	ConfigHelperService configHelperService;
+	@Mock
+	private CommonService commonService;
 	@InjectMocks
 	CodeViolationsServiceImpl svServiceImpl;
 	@Mock
 	SonarHistoryRepository sonarHistoryRepository;
 	@Mock
 	private CustomApiConfig customApiConfig;
+	@Mock
+	private SprintDetailsServiceImpl sprintDetailsService;
 	@Mock
 	CacheService cacheService;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
@@ -361,10 +368,15 @@ public class SonarViolationsServiceImplTest {
 		setToolMap();
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		SprintDetails sprintDetails = new SprintDetails();
+		sprintDetails.setCompleteDate("2025-04-01T13:44:44.421Z");
+		sprintDetails.setSprintID("40345_Scrum Project_6335363749794a18e8a4479b");
+		when(sprintDetailsService.getSprintDetailsByIds(anyList())).thenReturn(Arrays.asList(sprintDetails));
 		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
+
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put(KPICode.CODE_VIOLATIONS.name(),
 				Arrays.asList("-390", "390-309", "309-221", "221-140", "140-"));
@@ -389,12 +401,13 @@ public class SonarViolationsServiceImplTest {
 
 	@Test
 	public void getSonarKpiDataTest() throws ApplicationException {
-
+		SprintDetails sprintDetails = new SprintDetails();
+		sprintDetails.setCompleteDate("2025-04-01T13:44:44.421Z");
+		sprintDetails.setSprintID("40345_Scrum Project_6335363749794a18e8a4479b");
+		when(sprintDetailsService.getSprintDetailsByIds(anyList())).thenReturn(Arrays.asList(sprintDetails));
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
-
-		svServiceImpl.getSonarKpiData(projectList, treeAggregatorDetail.getMapTmp(), kpiElement);
+		svServiceImpl.getKpiData(kpiRequest, kpiElement, treeAggregatorDetail);
 	}
 }

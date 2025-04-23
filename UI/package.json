@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng serve --configuration=local --proxy-config proxy.conf.json",
+    "start": "concurrently \"node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng serve --configuration=local --proxy-config proxy.conf.json\" \"onchange 'src/**/*.{ts,css}' -- prettier --write --ignore-unknown {{changed}}\"",
     "build": "ng build --configuration=docker --aot --output-hashing=all",
     "build:production": "ng build --configuration=production --aot --output-hashing=all",
     "build:dev": "ng build --configuration=dev --aot --output-hashing=all",
@@ -13,7 +13,7 @@
     "e2e": "ng e2e",
     "sonar": "sonar-scanner",
     "postinstall": "ngcc",
-    "prettier": "prettier --write src/**/*.{js,css}"
+    "prettier": "prettier src/**/*.{ts,css} --write"
   },
   "husky": {
     "hooks": {
@@ -22,7 +22,7 @@
   },
   "lint-staged": {
     "linters": {
-      "src/**/*.{js,css}": [
+      "src/**/*.{ts,css}": [
         "prettier --write",
         "git add"
       ]
@@ -63,7 +63,6 @@
     "primeng": "14.1.2",
     "rxjs": "^6.6.3",
     "uuid": "^9.0.0",
-
     "zone.js": "^0.11.2"
   },
   "devDependencies": {
@@ -82,6 +81,7 @@
     "@typescript-eslint/eslint-plugin": "4.28.2",
     "@typescript-eslint/parser": "4.28.2",
     "codelyzer": "^6.0.2",
+    "concurrently": "^9.1.2",
     "core-js": "^3.25.5",
     "eslint": "^7.26.0",
     "eslint-plugin-import": "latest",
@@ -98,6 +98,7 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
     "lint-staged": "^12.2.2",
+    "onchange": "^7.1.0",
     "prettier": "^2.5.1",
     "sonar-scanner": "^3.1.0",
     "ts-node": "~10.4.0",

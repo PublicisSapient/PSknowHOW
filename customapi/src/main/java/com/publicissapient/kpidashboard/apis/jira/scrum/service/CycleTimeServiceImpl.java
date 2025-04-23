@@ -135,10 +135,10 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 
 		basicProjectConfigIds.add(basicProjectConfigId.toString());
 
-		if (Optional.ofNullable(fieldMapping.getJiraIssueTypeKPI3()).isPresent()) {
+		if (Optional.ofNullable(fieldMapping.getJiraIssueTypeKPI171()).isPresent()) {
 
 			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(),
-					fieldMapping.getJiraIssueTypeKPI3(), JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
+					fieldMapping.getJiraIssueTypeKPI171(), JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		}
 		List<String> status = new ArrayList<>();
@@ -159,9 +159,10 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-		resultListMap.put(STORY_HISTORY_DATA, jiraIssueCustomHistoryRepository
-				.findByFilterAndFromStatusMapWithDateFilter(mapOfFilters, uniqueProjectMap, startDate, endDate));
+		List<JiraIssueCustomHistory> filteredProjectHistory = BacklogKpiHelper.filterProjectHistories(
+				getJiraIssuesCustomHistoryFromBaseClass(), uniqueProjectMap, startDate, endDate);
 
+		resultListMap.put(STORY_HISTORY_DATA, filteredProjectHistory);
 		return resultListMap;
 	}
 
@@ -236,7 +237,8 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 						cycleTime.setIntakeTime(jiraIssueCustomHistory.getCreatedDate());
 						cycleTimeValidationData.setIntakeDate(jiraIssueCustomHistory.getCreatedDate());
 						Map<String, DateTime> dodStatusDateMap = new HashMap<>();
-						List<String> liveStatus = fieldMapping.getJiraLiveStatusKPI171().stream().filter(Objects::nonNull)
+						List<String> liveStatus = Optional.ofNullable(fieldMapping.getJiraLiveStatusKPI171())
+								.orElse(Collections.emptyList()).stream().filter(Objects::nonNull)
 								.map(String::toLowerCase).collect(Collectors.toList());
 						List<String> dodStatus = fieldMapping.getJiraDodKPI171().stream().filter(Objects::nonNull)
 								.map(String::toLowerCase).collect(Collectors.toList());

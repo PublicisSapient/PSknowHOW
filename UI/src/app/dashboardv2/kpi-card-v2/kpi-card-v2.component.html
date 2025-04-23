@@ -1,7 +1,7 @@
 <ng-container *ngIf="selectedTab === 'iteration'; else cardWithOutRawJsonTemplate">
   <div class="kpi-card-container-v2">
     <app-ps-kpi-card-header [cardHeaderData]="kpiHeaderData"
-      (actionTriggered)="handleAction($event)"></app-ps-kpi-card-header>
+      (actionTriggered)="handleAction($event)" [currentChartData]="currentChartData"></app-ps-kpi-card-header>
 
     <div class="kpi-card-body">
       <ng-container
@@ -130,16 +130,14 @@
             [maxSelectedLabels]="3" selectedItemsLabel="{0} items selected"
             (onChange)="handleChange('multi', $event, k)" (onClear)="handleClearAll('filter'+(k+1))" [filter]="false"
             [showHeader]="false" [showClear]="true" [style]="{'height': '32px', 'margin-left': '5px'}"
-            defaultLabel="{{filter?.filterType}}" [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }"
-            [attr.aria-label]="filter?.filterType + ' multi-select'" role="listbox" [tabindex]="0">
+            defaultLabel="{{filter?.filterType}}" [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
           </p-multiSelect>
         </ng-container>
       </div>
       <ng-container *ngSwitchCase="'radiobutton'">
         <ng-container *ngIf="dropdownArr && dropdownArr.length && dropdownArr[0]?.options?.length">
           <p-selectButton [options]="dropdownArr[0]?.options" [(ngModel)]="radioOption"
-            (onChange)="handleChange('radio', $event)" [attr.aria-label]="'Select option'" role="radiogroup"
-            [tabindex]="0" (keydown.enter)="handleKeyboardSelect($event)"></p-selectButton>
+            (onChange)="handleChange('radio', $event)"></p-selectButton>
         </ng-container>
       </ng-container>
 
@@ -149,8 +147,7 @@
             <ng-container *ngIf="filter.filterType?.toLowerCase() === 'radiobtn'; else dropdown">
               <ng-container *ngIf="filter?.options && filter?.options.length ">
                 <p-selectButton [options]="filter?.options" [(ngModel)]="radioOption"
-                  (onChange)="handleChange('radio', $event,k)" [attr.aria-label]="'Select option'" role="radiogroup"
-                  [tabindex]="0" (keydown.enter)="handleKeyboardSelect($event)"></p-selectButton>
+                  (onChange)="handleChange('radio', $event,k)"></p-selectButton>
               </ng-container>
             </ng-container>
             <ng-template #dropdown>
@@ -160,7 +157,7 @@
                   selectedItemsLabel="{0} items selected" (onChange)="handleChange('multi', $event, k)"
                   (onClear)="handleClearAll('filter'+(k+1))" [filter]="false" [showHeader]="false" [showClear]="true"
                   [style]="{'height': '32px', 'margin-left': '5px'}" defaultLabel="{{filter?.filterType}}"
-                  [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }" [attr.aria-label]="filter?.filterType + ' multi-select'" role="listbox" [tabindex]="0">
+                  [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
                 </p-multiSelect>
               </div>
             </ng-template>
@@ -176,22 +173,18 @@
         *ngIf="!loader && !immediateLoader && (checkIfDataPresent(kpiDataStatusCode) || partialData) && (!iSAdditionalFilterSelected || (kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)); else noData"></ng-content>
       <ng-template #noData>
         <div class="min-ht"
-          *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && kpiData?.kpiDetail?.isAdditionalFilterSupport"
-          role="region" aria-label="KPI Data Status">
-          <div class="p-w-100  p-d-flex p-justify-center" role="img" aria-label="No Data Found">
-            <img alt="no-data" src="../../../assets/img/NoDataFound.svg" aria-hidden="true" />
+          *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && kpiData?.kpiDetail?.isAdditionalFilterSupport">
+          <div class="p-w-100  p-d-flex p-justify-center">
+            <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
           </div>
-          <div class="p-w-100" [ngSwitch]="kpiDataStatusCode" role="region" aria-label="KPI Data Details">
-            <h4 *ngSwitchCase="'400'" class="p-text-center" tabindex="0" role="alert">KPI Analysis failed. Contact your
-              administrator.</h4>
-            <h4 *ngSwitchCase="'202'" class="p-text-center" tabindex="0" role="alert">Please check the required tool
-              configuration and run
+          <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
+            <h4 *ngSwitchCase="'400'" class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
+            <h4 *ngSwitchCase="'202'" class="p-text-center">Please check the required tool configuration and run
               processor.</h4>
-            <h4 *ngSwitchCase="'201'" class="p-text-center" tabindex="0" role="alert">Mandatory Field Mapping not
-              configured. Contact your
+            <h4 *ngSwitchCase="'201'" class="p-text-center">Mandatory Field Mapping not configured. Contact your
               administrator.</h4>
-            <h4 *ngSwitchCase="'200'" class="p-text-center" tabindex="0" role="alert">No Data Available.</h4>
-            <div *ngSwitchCase="'500'" tabindex="0" role="alert" class="p-text-center">
+            <h4 *ngSwitchCase="'200'" class="p-text-center">No Data Available.</h4>
+            <div *ngSwitchCase="'500'" class="p-text-center">
               <span>
                 <h4 class="p-text-center p-m-0">An error has occurred. Please retry or contact administrator.</h4>
                 <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded  p-mt-3"
@@ -201,27 +194,22 @@
           </div>
         </div>
         <div class="min-ht"
-          *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && !kpiData?.kpiDetail?.isAdditionalFilterSupport && !iSAdditionalFilterSelected"
-          role="region" aria-label="KPI Data Status">
-          <div class="p-w-100  p-d-flex p-justify-center" role="img" aria-label="No Data Found">
-            <img alt="no-data" src="../../../assets/img/NoDataFound.svg" aria-hidden="true" />
+          *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && !kpiData?.kpiDetail?.isAdditionalFilterSupport && !iSAdditionalFilterSelected">
+          <div class="p-w-100  p-d-flex p-justify-center">
+            <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
           </div>
           <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
-            <h4 *ngSwitchCase="'400'" class="p-text-center" tabindex="0" role="alert">KPI Analysis failed. Contact your
-              administrator.</h4>
-            <h4 *ngSwitchCase="'202'" class="p-text-center" tabindex="0" role="alert">Please check the required tool
-              configuration and run
+            <h4 *ngSwitchCase="'400'" class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
+            <h4 *ngSwitchCase="'202'" class="p-text-center">Please check the required tool configuration and run
               processor.</h4>
-            <h4 *ngSwitchCase="'201'" class="p-text-center" tabindex="0" role="alert">Mandatory Field Mapping not
-              configured. Contact your
+            <h4 *ngSwitchCase="'201'" class="p-text-center">Mandatory Field Mapping not configured. Contact your
               administrator.</h4>
-            <h4 *ngSwitchCase="'200'" class="p-text-center" tabindex="0" role="alert">No Data Available.</h4>
+            <h4 *ngSwitchCase="'200'" class="p-text-center">No Data Available.</h4>
             <div *ngSwitchCase="'500'" class="p-text-center">
               <span>
-                <h4 class="p-text-center p-m-0" tabindex="0" role="alert">An error has occurred. Please retry or contact
-                  administrator.</h4>
+                <h4 class="p-text-center p-m-0">An error has occurred. Please retry or contact administrator.</h4>
                 <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded p-mt-3"
-                  (click)="reloadKPI()" tabindex="0" role="button" (keydown.enter)="reloadKPI()"></button>
+                  (click)="reloadKPI()"></button>
               </span>
 
             </div>
@@ -366,3 +354,43 @@
     <div class="loading-img"></div>
   </div>
 </ng-template>
+
+<p-dialog [(visible)]="displayAddToReportsModal" [dismissableMask]="true" [modal]="true" [autoZIndex]="true"
+  styleClass="add-to-reports-overlay">
+  <ng-template pTemplate="header">
+    <div class="p-d-flex p-jc-between p-align-center p-col-12">
+      <h2 class="white-space-nowrap p-m-0">Include in Report</h2>
+      <p-button label="Create New Report" styleClass="add-to-reports-btn" aria-label="Create New Report"
+        (onClick)="toggleCreateNewReportTemplate($event)"></p-button>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="content">
+    <div class="p-d-flex p-jc-between p-align-center p-col-12 p-p-0" *ngIf="createNewReportTemplate">
+      <div class="p-col-8 p-mb-3 p-p-0">
+        <label for="reportName">Enter Report Name : &nbsp;</label>
+        <input pInputText id="reportName" [(ngModel)]="reportName" [style]="{'width': '100%'}"
+          (keydown.enter)="createNewReport()" />
+
+      </div>
+      <div class="p-col-4 p-ml-2 p-pt-3 p-align-center">
+        <p-button label="Create & Add KPI" styleClass="add-to-reports-btn" aria-label="Create New Report"
+          [disabled]="!reportName || !reportName.length" (onClick)="addToReportPost()"></p-button>
+      </div>
+    </div>
+
+    <div style="border: 1px solid #cecece; padding:10px; border-radius: 10px;">
+      <app-add-to-report-pop-up [reportObj]="reportObj" 
+      [createNewReportTemplate]="createNewReportTemplate" 
+      [existingReportData]="existingReportData" [reportName]="reportName"></app-add-to-report-pop-up>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <div class="p-d-flex p-jc-center p-align-center p-col-12 p-p-0">
+      <p-button label="{{ createNewReportTemplate ? 'Cancel' :  'Close' }}" styleClass="add-to-reports-btn" aria-label="Cancel"
+        (onClick)="closeAddToReportsModal()"></p-button>
+      <p-button label="Include in Report" styleClass="add-to-reports-btn" aria-label="Include in Report"
+        (onClick)="addToReportPut()" [disabled]="createNewReportTemplate || success"></p-button>
+    </div>
+  </ng-template>
+</p-dialog>

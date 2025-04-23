@@ -16,13 +16,21 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 import { ToolMenuComponent } from './tool-menu.component';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { Confirmation, ConfirmationService, MessageService } from 'primeng/api';
 import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
@@ -56,7 +64,7 @@ describe('ToolMenuComponent', () => {
     type: 'Scrum',
     hierarchyLevelOne: 'Sample One',
     hierarchyLevelTwo: 'Sample Two',
-    hierarchyLevelThree: 'Sample Three'
+    hierarchyLevelThree: 'Sample Three',
   };
 
   beforeEach(async () => {
@@ -66,13 +74,22 @@ describe('ToolMenuComponent', () => {
       declarations: [ToolMenuComponent, ProjectListComponent],
       imports: [
         RouterTestingModule.withRoutes([
-          { path: 'dashboard/Config/ProjectList', component: ProjectListComponent },
-          { path: 'dashboard/Config/ConfigSettings/:id', component: ConfigSettingsComponent },
-          { path: 'dashboard/Config/AdvancedSettings', component: AdvancedSettingsComponent }
+          {
+            path: 'dashboard/Config/ProjectList',
+            component: ProjectListComponent,
+          },
+          {
+            path: 'dashboard/Config/ConfigSettings/:id',
+            component: ConfigSettingsComponent,
+          },
+          {
+            path: 'dashboard/Config/AdvancedSettings',
+            component: AdvancedSettingsComponent,
+          },
         ]),
         HttpClientTestingModule,
         DataViewModule,
-        CommonModule
+        CommonModule,
       ],
       providers: [
         // { provide: HttpService, useValue: httpSpy },
@@ -82,18 +99,23 @@ describe('ToolMenuComponent', () => {
         MessageService,
         ConfirmationService,
         GoogleAnalyticsService,
-        { provide: APP_CONFIG, useValue: AppConfig }
-      ]
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
     }).compileComponents();
 
     httpService = TestBed.inject(HttpService) as jasmine.SpyObj<HttpService>;
-    sharedService = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
+    sharedService = TestBed.inject(
+      SharedService,
+    ) as jasmine.SpyObj<SharedService>;
     // Spy on setSelectedToolConfig explicitly
     spyOn(sharedService, 'setSelectedToolConfig');
     // Spy on setSelectedFieldMapping explicitly
     spyOn(sharedService, 'setSelectedFieldMapping');
 
-    localStorage.setItem('completeHierarchyData', JSON.stringify(fakeCompleteHiearchyData));
+    localStorage.setItem(
+      'completeHierarchyData',
+      JSON.stringify(fakeCompleteHiearchyData),
+    );
   });
 
   beforeEach(() => {
@@ -111,19 +133,25 @@ describe('ToolMenuComponent', () => {
     component.tools = [
       { toolName: 'Other' },
       { toolName: 'Azure' },
-      { toolName: 'Jira' }
+      { toolName: 'Jira' },
     ];
     component.uniqueTools = [
-      { toolName: 'Azure', connectionName: 'Azure Connection', updatedAt: '2022-01-01' },
-      { toolName: 'Jira', connectionName: 'Jira Connection', updatedAt: '2022-01-01' }
+      {
+        toolName: 'Azure',
+        connectionName: 'Azure Connection',
+        updatedAt: '2022-01-01',
+      },
+      {
+        toolName: 'Jira',
+        connectionName: 'Jira Connection',
+        updatedAt: '2022-01-01',
+      },
     ];
-
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
 
   it('should set selected tools and call setGaData', () => {
     spyOn(component, 'setGaData');
@@ -132,8 +160,8 @@ describe('ToolMenuComponent', () => {
       success: true,
       data: [
         { toolName: 'Jira', id: '1', releaseEndDate: '2023-01-01' },
-        { toolName: 'Azure', id: '2', releaseEndDate: '2023-01-02' }
-      ]
+        { toolName: 'Azure', id: '2', releaseEndDate: '2023-01-02' },
+      ],
     };
 
     // httpService.getAllToolConfigs.and.returnValue(of(response));
@@ -142,7 +170,9 @@ describe('ToolMenuComponent', () => {
     component.getToolsConfigured();
 
     expect(httpService.getAllToolConfigs).toHaveBeenCalledWith(1);
-    expect(sharedService.setSelectedToolConfig).toHaveBeenCalledWith(response.data);
+    expect(sharedService.setSelectedToolConfig).toHaveBeenCalledWith(
+      response.data,
+    );
     // expect(component.selectedTools).toEqual(response.data);
     expect(component.setGaData).toHaveBeenCalled();
   });
@@ -241,10 +271,22 @@ describe('ToolMenuComponent', () => {
     const mockResponse = {
       success: true,
       data: [
-        { toolName: 'Jira', connectionName: 'JiraConn', updatedAt: '2023-01-01' },
-        { toolName: 'GitHub', connectionName: 'GitHubConn', updatedAt: '2023-01-02' },
-        { toolName: 'GitLab', connectionName: 'GitLabConn', updatedAt: '2023-01-03' }
-      ]
+        {
+          toolName: 'Jira',
+          connectionName: 'JiraConn',
+          updatedAt: '2023-01-01',
+        },
+        {
+          toolName: 'GitHub',
+          connectionName: 'GitHubConn',
+          updatedAt: '2023-01-02',
+        },
+        {
+          toolName: 'GitLab',
+          connectionName: 'GitLabConn',
+          updatedAt: '2023-01-03',
+        },
+      ],
     };
     component.selectedProject = { id: '123', type: 'Scrum' };
 
@@ -253,7 +295,9 @@ describe('ToolMenuComponent', () => {
     component.getToolsConfigured();
 
     expect(httpService.getAllToolConfigs).toHaveBeenCalledWith('123');
-    expect(sharedService.setSelectedToolConfig).toHaveBeenCalledWith(mockResponse.data);
+    expect(sharedService.setSelectedToolConfig).toHaveBeenCalledWith(
+      mockResponse.data,
+    );
     expect(component.selectedTools).toEqual(mockResponse.data);
     expect(component.uniqueTools.length).toEqual(3);
     expect(component.dataLoading).toBeFalse();
@@ -263,19 +307,31 @@ describe('ToolMenuComponent', () => {
     const mockResponse = {
       success: true,
       data: [
-        { toolName: 'Jira', connectionName: 'JiraConn', updatedAt: '2023-01-01' },
-        { toolName: 'GitHub', connectionName: 'GitHubConn', updatedAt: '2023-01-02' }
-      ]
+        {
+          toolName: 'Jira',
+          connectionName: 'JiraConn',
+          updatedAt: '2023-01-01',
+        },
+        {
+          toolName: 'GitHub',
+          connectionName: 'GitHubConn',
+          updatedAt: '2023-01-02',
+        },
+      ],
     };
     component.selectedProject = { id: '123', type: 'Scrum' };
 
     spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(mockResponse));
-    spyOnProperty(router, 'url', 'get').and.returnValue('/dashboard/Config/ConfigSettings?tab=2');
+    spyOnProperty(router, 'url', 'get').and.returnValue(
+      '/dashboard/Config/ConfigSettings?tab=2',
+    );
 
     component.getToolsConfigured();
 
     expect(component.buttonText).toBe('Set Up');
-    expect(component.tools).toContain(jasmine.objectContaining({ toolName: 'Jira' }));
+    expect(component.tools).toContain(
+      jasmine.objectContaining({ toolName: 'Jira' }),
+    );
   });
 
   it('should handle empty or unsuccessful response correctly', () => {
@@ -294,35 +350,41 @@ describe('ToolMenuComponent', () => {
   it('should call getFieldMappingsWithHistory when Jira or Azure tools are present', () => {
     const mockResponse = {
       success: true,
-      data: [
-        { toolName: 'Jira', id: 'tool123' }
-      ]
+      data: [{ toolName: 'Jira', id: 'tool123' }],
     };
     const mockMappingResponse = { success: true, data: 'Mapping Data' };
 
     component.selectedProject = { id: '123', type: 'Kanban' };
     spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(mockResponse));
-    spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(of(mockMappingResponse));
+    spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(
+      of(mockMappingResponse),
+    );
 
     component.getToolsConfigured();
 
-    expect(httpService.getFieldMappingsWithHistory).toHaveBeenCalledWith('tool123', 'kpi1', { releaseNodeId: null });
-    expect(sharedService.setSelectedFieldMapping).toHaveBeenCalledWith(mockMappingResponse.data);
+    expect(httpService.getFieldMappingsWithHistory).toHaveBeenCalledWith(
+      'tool123',
+      'kpi1',
+      { releaseNodeId: null },
+    );
+    expect(sharedService.setSelectedFieldMapping).toHaveBeenCalledWith(
+      mockMappingResponse.data,
+    );
     expect(component.disableSwitch).toBeTrue();
   });
 
   it('should handle failed field mappings gracefully', () => {
     const mockResponse = {
       success: true,
-      data: [
-        { toolName: 'Azure', id: 'tool456' }
-      ]
+      data: [{ toolName: 'Azure', id: 'tool456' }],
     };
     const mockMappingResponse = { success: false };
 
     component.selectedProject = { id: '123', type: 'Scrum' };
     spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(mockResponse));
-    spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(of(mockMappingResponse));
+    spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(
+      of(mockMappingResponse),
+    );
 
     component.getToolsConfigured();
 
@@ -337,17 +399,17 @@ describe('ToolMenuComponent', () => {
 
     const response = {
       success: true,
-      data: [
-        { toolName: 'Jira', id: '1', releaseEndDate: '2023-01-01' }
-      ]
+      data: [{ toolName: 'Jira', id: '1', releaseEndDate: '2023-01-01' }],
     };
 
     spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(response));
     component.uniqueTools = [
-      { toolName: 'Jira', id: '1', releaseEndDate: '2023-01-01' }
+      { toolName: 'Jira', id: '1', releaseEndDate: '2023-01-01' },
     ];
 
-    spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(of({ success: true, data: [] }));
+    spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(
+      of({ success: true, data: [] }),
+    );
 
     component.getToolsConfigured();
 
@@ -363,15 +425,15 @@ describe('ToolMenuComponent', () => {
 
     const response = {
       success: true,
-      data: [
-        { toolName: 'Jira', id: '1', releaseEndDate: '2023-01-01' }
-      ]
+      data: [{ toolName: 'Jira', id: '1', releaseEndDate: '2023-01-01' }],
     };
 
     spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(response));
     // spyOn(httpService, 'getAllToolConfigs').and.callThrough();
 
-    spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(of({ success: false }));
+    spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(
+      of({ success: false }),
+    );
 
     component.getToolsConfigured();
     // spyOn(sharedService, 'setSelectedFieldMapping');
@@ -383,144 +445,146 @@ describe('ToolMenuComponent', () => {
   it('should set tool data for ga event', () => {
     component.selectedTools = [
       {
-        "id": "6361050e3fa9e175755f0730",
-        "toolName": "Jira",
+        id: '6361050e3fa9e175755f0730',
+        toolName: 'Jira',
       },
       {
-        "id": "63615320c7a36b1d53797532",
-        "toolName": "Jenkins",
+        id: '63615320c7a36b1d53797532',
+        toolName: 'Jenkins',
       },
       {
-        "id": "63615554c7a36b1d53797537",
-        "toolName": "GitHub",
+        id: '63615554c7a36b1d53797537',
+        toolName: 'GitHub',
       },
       {
-        "id": "6361ff31f6f1c850816cedfe",
-        "toolName": "Zephyr",
+        id: '6361ff31f6f1c850816cedfe',
+        toolName: 'Zephyr',
       },
       {
-        "id": "6390106ab3c061d8f778b1d2",
-        "toolName": "JiraTest",
+        id: '6390106ab3c061d8f778b1d2',
+        toolName: 'JiraTest',
       },
       {
-        "id": "6486f2796803f300a9fd2c14",
-        "toolName": "Sonar",
+        id: '6486f2796803f300a9fd2c14',
+        toolName: 'Sonar',
       },
       {
-        "id": "64c780f25fec906dbc18f1d7",
-        "toolName": "GitHubAction",
+        id: '64c780f25fec906dbc18f1d7',
+        toolName: 'GitHubAction',
       },
       {
-        "id": "64c780f25fsvr46h46j57n3e",
-        "toolName": "ArgoCD",
+        id: '64c780f25fsvr46h46j57n3e',
+        toolName: 'ArgoCD',
       },
-    ]
+    ];
     component.selectedProject = {
-      "Project": "KnowHOW",
-      "Type": "Scrum",
-      "BU": "Internal",
-      "Vertical": "PS Internal",
-      "Account": "Methods and Tools",
-      "Portfolio": "DTS",
-      "id": "6360fefc3fa9e175755f0728",
-      "saveAssigneeDetails": true
+      Project: 'KnowHOW',
+      Type: 'Scrum',
+      BU: 'Internal',
+      Vertical: 'PS Internal',
+      Account: 'Methods and Tools',
+      Portfolio: 'DTS',
+      id: '6360fefc3fa9e175755f0728',
+      saveAssigneeDetails: true,
     };
     const gaSpy = spyOn(ga, 'setProjectToolsData').and.callThrough();
     component.setGaData();
     expect(gaSpy).toHaveBeenCalled();
-  })
+  });
 
   xit('should navigate back to Projects List if no selected project is there', () => {
     sharedService.setSelectedProject(null);
     component.selectedProject = {
-      saveAssigneeDetails: true
-    }
+      saveAssigneeDetails: true,
+    };
     const navigateSpy = spyOn(router, 'navigate');
     component.ngOnInit();
     if (!component.selectedProject) {
-      expect(navigateSpy).toHaveBeenCalledWith(['./dashboard/Config/ProjectList']);
+      expect(navigateSpy).toHaveBeenCalledWith([
+        './dashboard/Config/ProjectList',
+      ]);
     }
   });
 
   it('should check if project is configured when tool selected is AzurePipeline', () => {
     component.selectedTools = [
       {
-        "toolName": "Jira",
+        toolName: 'Jira',
       },
       {
-        "toolName": "AzurePipeline",
+        toolName: 'AzurePipeline',
       },
       {
-        "toolName": "AzureRepository",
+        toolName: 'AzureRepository',
       },
       {
-        "toolName": "GitHubAction",
+        toolName: 'GitHubAction',
       },
     ];
     expect(component.isProjectConfigured('Azure Pipeline')).toBeTruthy();
-  })
+  });
 
   it('should check if project is configured when tool selected is AzureRepository', () => {
     component.selectedTools = [
       {
-        "toolName": "Jira",
+        toolName: 'Jira',
       },
       {
-        "toolName": "AzurePipeline",
+        toolName: 'AzurePipeline',
       },
       {
-        "toolName": "AzureRepository",
+        toolName: 'AzureRepository',
       },
       {
-        "toolName": "GitHubAction",
+        toolName: 'GitHubAction',
       },
     ];
     expect(component.isProjectConfigured('Azure Repo')).toBeTruthy();
-  })
+  });
 
   it('should check if project is configured when tool selected is GitHub Action', () => {
     component.selectedTools = [
       {
-        "toolName": "Jira",
+        toolName: 'Jira',
       },
       {
-        "toolName": "AzurePipeline",
+        toolName: 'AzurePipeline',
       },
       {
-        "toolName": "AzureRepository",
+        toolName: 'AzureRepository',
       },
       {
-        "toolName": "GitHubAction",
+        toolName: 'GitHubAction',
       },
     ];
     expect(component.isProjectConfigured('GitHub Action')).toBeTruthy();
-  })
+  });
 
   it('should filter tools based on repo tool config', () => {
     component.tools = [
       {
-        "id": "6361050e3fa9",
-        "toolName": 'jira'
-      }
+        id: '6361050e3fa9',
+        toolName: 'jira',
+      },
     ];
     component.repoToolsEnabled = true;
-    component.repoTools = ["jira", "bitbucket"];
+    component.repoTools = ['jira', 'bitbucket'];
     component.ngOnInit();
     expect(component.tools.length).toEqual(1);
-  })
+  });
 
   it('should filter tools based on repo tool config', () => {
     component.tools = [
       {
-        "id": "6361050e3fa9",
-        "toolName": 'jira'
-      }
+        id: '6361050e3fa9',
+        toolName: 'jira',
+      },
     ];
     component.repoToolsEnabled = true;
-    component.repoTools = ["bitbucket"];
+    component.repoTools = ['bitbucket'];
     component.ngOnInit();
     expect(component.tools.length).toEqual(1);
-  })
+  });
 
   // -> updateProjectSelection
   it('should call setSelectedProject when updateProjectSelection is invoked', () => {
@@ -535,7 +599,10 @@ describe('ToolMenuComponent', () => {
     component.selectedProject = { id: 1, type: 'test' };
     component.updateProjectSelection();
     expect(router.navigate).toHaveBeenCalledTimes(1);
-    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Config/ConfigSettings/1'], { queryParams: { type: 'test', tab: 2 } });
+    expect(router.navigate).toHaveBeenCalledWith(
+      ['/dashboard/Config/ConfigSettings/1'],
+      { queryParams: { type: 'test', tab: 2 } },
+    );
   });
 
   it('should call getToolsConfigured after navigating to new route', () => {
@@ -556,7 +623,10 @@ describe('ToolMenuComponent', () => {
     component.selectedProject = { id: '123' };
     spyOn(router, 'navigate');
     component.gotoProcessor();
-    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Config/AdvancedSettings'], { queryParams: { pid: '123' } });
+    expect(router.navigate).toHaveBeenCalledWith(
+      ['/dashboard/Config/AdvancedSettings'],
+      { queryParams: { pid: '123' } },
+    );
   });
 
   xit('should not navigate to AdvancedSettings with invalid project ID (null)', () => {
@@ -603,25 +673,44 @@ describe('ToolMenuComponent', () => {
   });
   // -> end of setSelectedProject
 
-
   describe('ToolMenuComponent.ngOnInit() ngOnInit method', () => {
     beforeEach(() => {
-      localStorage.setItem('completeHierarchyData', '{"kanban":[{"id":"6707baa3aad99a5897b55a23","level":1,"hierarchyLevelId":"hierarchyLevelOne","hierarchyLevelName":"Organization"},{"id":"6707baa3aad99a5897b55a24","level":2,"hierarchyLevelId":"hierarchyLevelTwo","hierarchyLevelName":"Business Unit"},{"id":"6707baa3aad99a5897b55a25","level":3,"hierarchyLevelId":"hierarchyLevelThree","hierarchyLevelName":"Portfolio"},{"level":4,"hierarchyLevelId":"project","hierarchyLevelName":"Project"},{"level":5,"hierarchyLevelId":"release","hierarchyLevelName":"Release"},{"level":6,"hierarchyLevelId":"afOne","hierarchyLevelName":"Teams"}],"scrum":[{"id":"6707baa3aad99a5897b55a23","level":1,"hierarchyLevelId":"hierarchyLevelOne","hierarchyLevelName":"Organization"},{"id":"6707baa3aad99a5897b55a24","level":2,"hierarchyLevelId":"hierarchyLevelTwo","hierarchyLevelName":"Business Unit"},{"id":"6707baa3aad99a5897b55a25","level":3,"hierarchyLevelId":"hierarchyLevelThree","hierarchyLevelName":"Portfolio"},{"level":4,"hierarchyLevelId":"project","hierarchyLevelName":"Project"},{"level":5,"hierarchyLevelId":"sprint","hierarchyLevelName":"Sprint"},{"level":5,"hierarchyLevelId":"release","hierarchyLevelName":"Release"},{"level":6,"hierarchyLevelId":"afOne","hierarchyLevelName":"Teams"}]}')
-    })
+      localStorage.setItem(
+        'completeHierarchyData',
+        '{"kanban":[{"id":"6707baa3aad99a5897b55a23","level":1,"hierarchyLevelId":"hierarchyLevelOne","hierarchyLevelName":"Organization"},{"id":"6707baa3aad99a5897b55a24","level":2,"hierarchyLevelId":"hierarchyLevelTwo","hierarchyLevelName":"Business Unit"},{"id":"6707baa3aad99a5897b55a25","level":3,"hierarchyLevelId":"hierarchyLevelThree","hierarchyLevelName":"Portfolio"},{"level":4,"hierarchyLevelId":"project","hierarchyLevelName":"Project"},{"level":5,"hierarchyLevelId":"release","hierarchyLevelName":"Release"},{"level":6,"hierarchyLevelId":"afOne","hierarchyLevelName":"Teams"}],"scrum":[{"id":"6707baa3aad99a5897b55a23","level":1,"hierarchyLevelId":"hierarchyLevelOne","hierarchyLevelName":"Organization"},{"id":"6707baa3aad99a5897b55a24","level":2,"hierarchyLevelId":"hierarchyLevelTwo","hierarchyLevelName":"Business Unit"},{"id":"6707baa3aad99a5897b55a25","level":3,"hierarchyLevelId":"hierarchyLevelThree","hierarchyLevelName":"Portfolio"},{"level":4,"hierarchyLevelId":"project","hierarchyLevelName":"Project"},{"level":5,"hierarchyLevelId":"sprint","hierarchyLevelName":"Sprint"},{"level":5,"hierarchyLevelId":"release","hierarchyLevelName":"Release"},{"level":6,"hierarchyLevelId":"afOne","hierarchyLevelName":"Teams"}]}',
+      );
+    });
     describe('Happy Path', () => {
-
       it('should initialize selectedProject from sharedService', () => {
-        spyOn(sharedService, 'getSelectedProject').and.returnValue({ id: 1, type: 'scrum' });
-        spyOn(sharedService, 'getGlobalConfigData').and.returnValue({ repoToolFlag: true });
-        spyOn(sharedService, 'getProjectList').and.returnValue([{ id: 1, type: 'scrum', name: 'Project 1' }]);
+        spyOn(sharedService, 'getSelectedProject').and.returnValue({
+          id: 1,
+          type: 'scrum',
+        });
+        spyOn(sharedService, 'getGlobalConfigData').and.returnValue({
+          repoToolFlag: true,
+        });
+        spyOn(sharedService, 'getProjectList').and.returnValue([
+          { id: 1, type: 'scrum', name: 'Project 1' },
+        ]);
         component.ngOnInit();
-        expect(component.selectedProject).toEqual({ id: 1, type: 'scrum', name: 'Project 1' });
+        expect(component.selectedProject).toEqual({
+          id: 1,
+          type: 'scrum',
+          name: 'Project 1',
+        });
       });
 
       it('should set projectTypeOptions correctly', () => {
-        spyOn(sharedService, 'getSelectedProject').and.returnValue({ id: 1, type: 'scrum' });
-        spyOn(sharedService, 'getGlobalConfigData').and.returnValue({ repoToolFlag: true });
-        spyOn(sharedService, 'getProjectList').and.returnValue([{ id: 1, name: 'Project 1' }]);
+        spyOn(sharedService, 'getSelectedProject').and.returnValue({
+          id: 1,
+          type: 'scrum',
+        });
+        spyOn(sharedService, 'getGlobalConfigData').and.returnValue({
+          repoToolFlag: true,
+        });
+        spyOn(sharedService, 'getProjectList').and.returnValue([
+          { id: 1, name: 'Project 1' },
+        ]);
         component.ngOnInit();
         expect(component.projectTypeOptions).toEqual([
           { name: 'Jira', value: false },
@@ -630,17 +719,31 @@ describe('ToolMenuComponent', () => {
       });
 
       it('should set repoToolsEnabled based on global config', () => {
-        spyOn(sharedService, 'getSelectedProject').and.returnValue({ id: 1, type: 'scrum' });
-        spyOn(sharedService, 'getGlobalConfigData').and.returnValue({ repoToolFlag: true });
-        spyOn(sharedService, 'getProjectList').and.returnValue([{ id: 1, name: 'Project 1' }]);
+        spyOn(sharedService, 'getSelectedProject').and.returnValue({
+          id: 1,
+          type: 'scrum',
+        });
+        spyOn(sharedService, 'getGlobalConfigData').and.returnValue({
+          repoToolFlag: true,
+        });
+        spyOn(sharedService, 'getProjectList').and.returnValue([
+          { id: 1, name: 'Project 1' },
+        ]);
         component.ngOnInit();
         expect(component.repoToolsEnabled).toBe(true);
       });
 
       it('should call getProjects and set userProjects', () => {
-        spyOn(sharedService, 'getSelectedProject').and.returnValue({ id: 1, type: 'scrum' });
-        spyOn(sharedService, 'getGlobalConfigData').and.returnValue({ repoToolFlag: true });
-        spyOn(sharedService, 'getProjectList').and.returnValue([{ id: 1, name: 'Project 1' }]);
+        spyOn(sharedService, 'getSelectedProject').and.returnValue({
+          id: 1,
+          type: 'scrum',
+        });
+        spyOn(sharedService, 'getGlobalConfigData').and.returnValue({
+          repoToolFlag: true,
+        });
+        spyOn(sharedService, 'getProjectList').and.returnValue([
+          { id: 1, name: 'Project 1' },
+        ]);
         component.ngOnInit();
         expect(component.userProjects).toEqual([{ id: 1, name: 'Project 1' }]);
       });

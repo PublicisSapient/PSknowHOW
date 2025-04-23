@@ -5,7 +5,7 @@
 }
 
 :host ::ng-deep .p-selectbutton.p-buttonset.p-component {
-  background-color: #EAEDF0 !important;
+  background-color: #eaedf0 !important;
   border-radius: 8px !important;
 }
 
@@ -19,7 +19,7 @@
   gap: 10px;
 }
 
-.filterSection>ng-container {
+.filterSection > ng-container {
   margin-left: 10px;
   /* Optional: Add spacing between dropdowns */
 }

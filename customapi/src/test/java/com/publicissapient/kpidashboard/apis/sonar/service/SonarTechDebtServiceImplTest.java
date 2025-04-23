@@ -34,6 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.jira.service.SprintDetailsServiceImpl;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -90,6 +92,8 @@ public class SonarTechDebtServiceImplTest {
 	CacheService cacheService;
 	@Mock
 	private CommonService commonService;
+	@Mock
+	private SprintDetailsServiceImpl sprintDetailsService;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
 	private Map<ObjectId, Map<String, List<Tool>>> toolMap = new HashMap<>();
@@ -159,6 +163,10 @@ public class SonarTechDebtServiceImplTest {
 		trendValueMap.put("BRANCH1->PR_10304", trendValues);
 
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
+		SprintDetails sprintDetails = new SprintDetails();
+		sprintDetails.setCompleteDate("2025-04-01T13:44:44.421Z");
+		sprintDetails.setSprintID("40345_Scrum Project_6335363749794a18e8a4479b");
+		when(sprintDetailsService.getSprintDetailsByIds(anyList())).thenReturn(Arrays.asList(sprintDetails));
 	}
 
 	private void setToolMap() {
@@ -386,7 +394,7 @@ public class SonarTechDebtServiceImplTest {
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put(KPICode.SONAR_TECH_DEBT.name(), Arrays.asList("-80", "80-60", "60-40", "40-20", "20-"));
 		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
-		// when(configHelperService.calculateMaturity()).thenReturn(toolMap);
+		kpiRequest.setLabel("PORT");
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);

@@ -53,7 +53,7 @@ export class HttpService {
   private downloadAllKpiReportUrl = this.baseUrl + '/api/v1/kpi';
   private downloadKpiWiseReportUrl = this.baseUrl + '/api/v1/kpi';
   private logoutUrl = this.baseUrl + '/api/userlogout';
-  private centralUserLogoutUrl = this.baseUrl + '/api/centralUserlogout'
+  private centralUserLogoutUrl = this.baseUrl + '/api/centralUserlogout';
   private configDetailsUrl = this.baseUrl + '/api/configDetails';
   private enginneringMaturityUrl = this.baseUrl + '/api/v1/enggMaturity';
   private enginneringMaturityTableUrl = this.baseUrl + '/api/emm/tableview';
@@ -83,7 +83,8 @@ export class HttpService {
   private getRolesUrl = this.baseUrl + '/api/roles';
   private raiseAccessRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getAccessRequestsUrl = this.baseUrl + '/api/accessrequests/status';
-  private getAccessRequestNotificationsUrl = this.baseUrl + '/api/accessrequests/Pending/notification';
+  private getAccessRequestNotificationsUrl =
+    this.baseUrl + '/api/accessrequests/Pending/notification';
   private updateRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getUserAccessRequestsUrl = this.baseUrl + '/api/accessrequests/user';
   private getScenariosUrl = this.baseUrl + '/api/scenario';
@@ -100,7 +101,8 @@ export class HttpService {
   private getAllUsersUrl = this.baseUrl + '/api/userinfo';
   private updateAccessUrl = this.baseUrl + '/api/userinfo/updateUserRole';
   private deleteAccessUrl = this.baseUrl + '/api/userinfo/deleteUser';
-  private notificationPreferencesUrl = this.baseUrl + '/api/userinfo/notificationPreferences';
+  private notificationPreferencesUrl =
+    this.baseUrl + '/api/userinfo/notificationPreferences';
   private getKPIConfigMetadataUrl =
     this.baseUrl + '/api/editConfig/jira/editKpi/';
   /** KnowHOW Lite */
@@ -131,14 +133,14 @@ export class HttpService {
     this.baseUrl + `/api/landingpage/dojo/projectsummary`;
   private usersCountUrl = this.baseUrl + '/api/landingpage/userscount';
   private autoApproveUrl = this.baseUrl + '/api/autoapprove';
-  private saveShowHideKpiUrl = this.baseUrl + '/api/user-board-config/saveAdmin';
+  private saveShowHideKpiUrl =
+    this.baseUrl + '/api/user-board-config/saveAdmin';
   private newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals';
   private sonarVersionURL = this.baseUrl + '/api/sonar/version';
   private projectKeyRequestUrl = this.baseUrl + '/api/sonar/project';
   private branchListRequestUrl = this.baseUrl + '/api/sonar/branch';
   private processorTraceLogsUrl = this.baseUrl + '/api/processor/tracelog';
-  private zephyrCloudUrl =
-    this.baseUrl + '/api/testconnection/zephyrcloudurl';
+  private zephyrCloudUrl = this.baseUrl + '/api/testconnection/zephyrcloudurl';
   private bambooPlanUrl = this.baseUrl + '/api/bamboo/plans';
   private bambooBranchUrl = this.baseUrl + '/api/bamboo/branches';
   private bambooDeploymentProjectsUrl = this.baseUrl + '/api/bamboo/deploy';
@@ -155,11 +157,13 @@ export class HttpService {
   private getCommentCountUrl = this.baseUrl + '/api/comments/getCommentCount';
   private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
   private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
-  private getAssingeeEmailsUrl = this.baseUrl + '/api/repotool/assignees/email/';
+  private getAssingeeEmailsUrl =
+    this.baseUrl + '/api/repotool/assignees/email/';
   private saveAssigneeForProjectUrl = this.baseUrl + '/api/capacity/assignee';
   private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
   private commentsSummaryUrl = this.baseUrl + '/api/comments/commentsSummary';
   private jiraTemplateUrl = this.baseUrl + '/api/templates';
+  private jiraConfigurationUrl = this.baseUrl + '/api/configuration';
   private currentUserDetailsURL = this.baseUrl + '/api/userinfo/userData';
   private getKpiColumnsUrl = this.baseUrl + '/api/kpi-column-config';
   private postKpiColumnsConfigUrl =
@@ -171,45 +175,53 @@ export class HttpService {
   userName: string;
   userEmail: string;
   private activeIterationUrl = this.baseUrl + '/api/processor/fetchSprint';
-  private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
+  private activeIterationfetchStatusUrl =
+    this.baseUrl + '/api/activeIteration/fetchStatus';
   private fetchUserDetailsUrl = this.baseUrl + '/api/fetchUserDetails';
   private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
-  private getShowHideKpiNewUIUrl = this.baseUrl + '/api/user-board-config/getBoardConfig';
+  private getShowHideKpiNewUIUrl =
+    this.baseUrl + '/api/user-board-config/getBoardConfig';
   private recommendationsUrl = this.baseUrl + '/api/kpiRecommendation';
   private urlShortener = this.baseUrl + '/api/stringShortener/shorten';
   private urlRestore = this.baseUrl + '/api/stringShortener/longString';
+  private createReportUrl = this.baseUrl + '/api/reports';
+  private fetchReportsUrl = this.baseUrl + '/api/reports?createdBy=';
 
   currentUserDetails = null;
   private saveMetaDataStepURL = this.baseUrl + '/api/processor/metadata/step/';
 
-  private organizationHierarchy = this.baseUrl + '/api/organizationHierarchy';
+  private organizationHierarchy = this.baseUrl + '/api/hierarchy';
+  private updateHierarchyOptionsUrl = this.baseUrl + '/api/hierarchy';
+
   constructor(
     private router: Router,
     private http: HttpClient,
     @Inject(APP_CONFIG) private config: IAppConfig,
     private sharedService: SharedService,
-  ) {
-  }
-
+  ) {}
 
   setCurrentUserDetails(details) {
-    if (!this.currentUserDetails || !details || Object.keys(details).length === 0) {
+    if (
+      !this.currentUserDetails ||
+      !details ||
+      Object.keys(details).length === 0
+    ) {
       this.currentUserDetails = details;
     } else {
       this.currentUserDetails = { ...this.currentUserDetails, ...details };
     }
     this.userName = this.currentUserDetails['user_name'];
     this.userEmail = this.currentUserDetails['user_email'];
-    localStorage.setItem('currentUserDetails', JSON.stringify(this.currentUserDetails));
+    localStorage.setItem(
+      'currentUserDetails',
+      JSON.stringify(this.currentUserDetails),
+    );
   }
-
-
 
   /** getFilterData from the server */
   getFilterData(filterRequestData): Observable<object> {
     return this.http.post<object>(this.filterDataUrl, filterRequestData);
   }
-
 
   getAssigneeEmails(basicConfigId): Observable<any> {
     return this.http.get(this.getAssingeeEmailsUrl + basicConfigId);
@@ -371,7 +383,7 @@ export class HttpService {
     const postData = { email };
     return this.http
       .post(this.forgotPasswordEmailUrl, postData)
-      .pipe(tap((res) => { }));
+      .pipe(tap((res) => {}));
   }
 
   /** POST: Change the password for loggedin user*/
@@ -387,7 +399,7 @@ export class HttpService {
     }
     return this.http
       .post(this.changePasswordUrl, postData)
-      .pipe(tap((res) => { }));
+      .pipe(tap((res) => {}));
   }
 
   /**POST update password */
@@ -395,7 +407,7 @@ export class HttpService {
     const postData = { password, resetToken };
     return this.http
       .post(this.resetPasswordUrl, postData)
-      .pipe(tap((res) => { }));
+      .pipe(tap((res) => {}));
   }
 
   /** POST: This make kpi call of scrum */
@@ -437,7 +449,7 @@ export class HttpService {
     /*send request*/
     return this.http
       .post<object>(this.uploadUrl, fileFormData)
-      .pipe(tap((res) => { }));
+      .pipe(tap((res) => {}));
   }
   /** get uploaded image file */
   getUploadedImage(): Observable<object> {
@@ -446,12 +458,12 @@ export class HttpService {
 
     return this.http
       .get(this.uploadedImageUrl, { headers })
-      .pipe(tap((res) => { }));
+      .pipe(tap((res) => {}));
   }
 
   /** get uploaded image file */
   deleteImage(): Observable<object> {
-    return this.http.get(this.deleteImageUrl).pipe(tap((res) => { }));
+    return this.http.get(this.deleteImageUrl).pipe(tap((res) => {}));
   }
 
   /** GET getVersionData from the server */
@@ -568,7 +580,10 @@ export class HttpService {
 
   /** Change Notification Preferences toggle  */
   notificationEmailToggleChange(notificationEmailObj): Observable<any> {
-    return this.http.post<any>(this.notificationPreferencesUrl, notificationEmailObj);
+    return this.http.post<any>(
+      this.notificationPreferencesUrl,
+      notificationEmailObj,
+    );
   }
 
   /** get all requests for access (RBAC) */
@@ -581,7 +596,8 @@ export class HttpService {
   /** get pending request notifications */
   getAccessRequestsNotifications() {
     if (environment?.['AUTHENTICATION_SERVICE']) {
-      this.getAccessRequestNotificationsUrl = this.baseUrl + '/api/accessrequests/Pending/notification/central';
+      this.getAccessRequestNotificationsUrl =
+        this.baseUrl + '/api/accessrequests/Pending/notification/central';
     }
     return this.http
       .get<NotificationResponseDTO>(this.getAccessRequestNotificationsUrl)
@@ -674,7 +690,9 @@ export class HttpService {
 
   /** Get KPI Config metadata */
   getKPIConfigMetadata(basicConfigID, kpiid): Observable<any> {
-    return this.http.get<any>(this.getKPIConfigMetadataUrl + basicConfigID + '/' + kpiid);
+    return this.http.get<any>(
+      this.getKPIConfigMetadataUrl + basicConfigID + '/' + kpiid,
+    );
   }
 
   /** KnowHow Lite */
@@ -791,7 +809,8 @@ export class HttpService {
   /** Get all Field Mappings with history */
   getFieldMappingsWithHistory(toolId, kpiId, data): Observable<any> {
     return this.http.post(
-      this.fieldMappingsUrl + '/fieldMapping/' + toolId + '/' + kpiId, data
+      this.fieldMappingsUrl + '/fieldMapping/' + toolId + '/' + kpiId,
+      data,
     );
   }
 
@@ -974,7 +993,10 @@ export class HttpService {
     return this.http.get<any>(this.getShowHideKpiUrl + '/' + projectID);
   }
   submitShowHideKpiData(data, projectID): Observable<any> {
-    return this.http.post<object>(this.saveShowHideKpiUrl + '/' + projectID, data);
+    return this.http.post<object>(
+      this.saveShowHideKpiUrl + '/' + projectID,
+      data,
+    );
   }
 
   /** show-Hide for other nav, filter component */
@@ -993,7 +1015,8 @@ export class HttpService {
 
   getNewUserAccessRequestFromAPI() {
     if (environment?.['AUTHENTICATION_SERVICE']) {
-      this.newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals/central';
+      this.newUserAccessRequestUrl =
+        this.baseUrl + '/api/userapprovals/central';
     }
     return this.http.get<UserAccessApprovalResponseDTO>(
       this.newUserAccessRequestUrl,
@@ -1002,12 +1025,10 @@ export class HttpService {
 
   updateNewUserAccessRequest(reqBody: UserAccessReqPayload) {
     if (environment?.['AUTHENTICATION_SERVICE']) {
-      this.newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals/central';
+      this.newUserAccessRequestUrl =
+        this.baseUrl + '/api/userapprovals/central';
     }
-    return this.http.put<any>(
-      `${this.newUserAccessRequestUrl}`,
-      reqBody,
-    );
+    return this.http.put<any>(`${this.newUserAccessRequestUrl}`, reqBody);
   }
 
   getProcessorsTraceLogsForProject(basicProjectConfigId) {
@@ -1127,6 +1148,10 @@ export class HttpService {
     return this.http.get<any>(`${this.jiraTemplateUrl}/${projectId}`);
   }
 
+  getJiraConfigurationTypeOptions() {
+    return this.http.get<any>(`${this.jiraConfigurationUrl}`);
+  }
+
   getMappingTemplateFlag(toolID, data) {
     return this.http.post(
       `${this.fieldMappingsUrl}/${toolID}/saveMapping`,
@@ -1147,7 +1172,10 @@ export class HttpService {
   }
 
   getActiveIterationStatus(postData) {
-    return this.http.post(this.activeIterationUrl + '/' + postData.sprintId, {});
+    return this.http.post(
+      this.activeIterationUrl + '/' + postData.sprintId,
+      {},
+    );
   }
 
   getactiveIterationfetchStatus(sprintId) {
@@ -1159,7 +1187,9 @@ export class HttpService {
 
   /** This method is responsible for getting field mapping configuration for specfic KPI and processor */
   getKPIFieldMappingConfig(KPIID) {
-    return this.http.get<any>(`${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`);
+    return this.http.get<any>(
+      `${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`,
+    );
   }
 
   getUserDetailsForCentral() {
@@ -1167,15 +1197,21 @@ export class HttpService {
   }
 
   getFeatureFlags() {
-    return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`).toPromise();
+    return this.http
+      .get<any>(`${this.baseUrl}/api/actuator/togglz`)
+      .toPromise();
   }
 
   getAzureTeams(connectionId) {
-    return this.http.get<any>(`${this.baseUrl}/api/azure/teams/${connectionId}`);
+    return this.http.get<any>(
+      `${this.baseUrl}/api/azure/teams/${connectionId}`,
+    );
   }
 
   getProgressStatusOfProcessors(data) {
-    return this.http.get<any>(`${this.processorTraceLogsUrl}?processorName=${data.processor}&basicProjectConfigId=${data.projects[0]}`);
+    return this.http.get<any>(
+      `${this.processorTraceLogsUrl}?processorName=${data.processor}&basicProjectConfigId=${data.projects[0]}`,
+    );
   }
 
   getRecommendations(data) {
@@ -1186,7 +1222,7 @@ export class HttpService {
     return this.http.get<any>(this.organizationHierarchy);
   }
 
-  fetchJiramappingBE(basicConfigID){
+  fetchJiramappingBE(basicConfigID) {
     return this.http.post<object>(this.saveMetaDataStepURL + basicConfigID, {});
   }
 
@@ -1195,6 +1231,44 @@ export class HttpService {
   }
 
   handleRestoreUrl(stateFilterData, kpiFilterData) {
-    return this.http.get<any>(`${this.urlRestore}?stateFilters=${stateFilterData}&kpiFilters=${kpiFilterData}`);
+    return this.http.get<any>(
+      `${this.urlRestore}?stateFilters=${stateFilterData}&kpiFilters=${kpiFilterData}`,
+    );
+  }
+
+  createReport(payload: any): Observable<object> {
+    return this.http.post<any>(this.createReportUrl, payload);
+  }
+
+  updateReport(id: string, payload: any): Observable<object> {
+    return this.http.put<any>(this.createReportUrl + '/' + id, payload);
+  }
+
+  fetchReports(): Observable<object> {
+    let userId = this.currentUserDetails['user_name'];
+    //Pagination to be handled
+    return this.http.get<object>(
+      this.fetchReportsUrl + userId + '&page=0&limit=9999',
+    );
+  }
+
+  deleteReport(id: string): Observable<any> {
+    return this.http.delete<any>(this.createReportUrl + '/' + id);
+  }
+
+  addHierarchyOptions(parentID, hierarchyOptions) {
+    return this.http.post<any>(
+      parentID
+        ? `${this.updateHierarchyOptionsUrl}/${parentID}`
+        : this.updateHierarchyOptionsUrl,
+      hierarchyOptions,
+    );
+  }
+
+  renameHierarchyOptions(levelId, dispalyName) {
+    return this.http.put<any>(
+      `${this.updateHierarchyOptionsUrl}/${levelId}`,
+      dispalyName,
+    );
   }
 }

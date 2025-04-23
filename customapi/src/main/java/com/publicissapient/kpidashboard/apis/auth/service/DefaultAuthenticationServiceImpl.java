@@ -28,6 +28,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import com.publicissapient.kpidashboard.apis.auth.model.SystemUser;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -320,7 +321,11 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	public String getLoggedInUser() {
 		org.springframework.security.core.Authentication authentication = SecurityContextHolder.getContext()
 				.getAuthentication();
-		return authentication.getPrincipal().toString();
+		if (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
+			return authentication.getPrincipal().toString();
+		}
+		// If running via Cron, return a default system user
+		return SystemUser.SYSTEM.getName();
 	}
 
 	@Override

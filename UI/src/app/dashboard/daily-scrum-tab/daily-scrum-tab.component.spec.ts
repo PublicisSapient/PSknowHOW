@@ -9,19 +9,18 @@ describe('DailyScrumTabComponent', () => {
   let fixture: ComponentFixture<DailyScrumTabComponent>;
   let sharedService: SharedService;
   const routerMock = {
-    navigate: jasmine.createSpy('navigate')
+    navigate: jasmine.createSpy('navigate'),
   };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DailyScrumTabComponent, DailyScrumComponent ],
+      declarations: [DailyScrumTabComponent, DailyScrumComponent],
       providers: [
         SharedService,
         { provide: ActivatedRoute, useValue: { snapshot: { params: {} } } },
-        { provide: Router, useValue: routerMock }
+        { provide: Router, useValue: routerMock },
       ],
-    })
-    .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -99,5 +98,4 @@ describe('DailyScrumTabComponent', () => {
     component.reloadKPI(event);
     expect(component.reloadKPITab.emit).toHaveBeenCalledWith(event);
   });
-
 });

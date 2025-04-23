@@ -18,10 +18,13 @@ import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
@@ -31,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
@@ -51,6 +55,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -71,6 +76,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 
 	private final ThreadLocal<List<JiraIssue>> threadLocalJiraIssues = ThreadLocal.withInitial(ArrayList::new);
 	private final ThreadLocal<List<JiraIssueCustomHistory>> threadLocalHistory = ThreadLocal.withInitial(ArrayList::new);
+	private final ThreadLocal<Set<String>> threadLocalExcludeActiveSprint = ThreadLocal.withInitial(HashSet::new);
 	JiraIssueReleaseStatus jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
 	@Autowired
 	private KpiHelperService kpiHelperService;
@@ -88,9 +94,12 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private ConfigHelperService configHelperService;
 	private List<SprintDetails> futureSprintDetails;
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
+	private Set<String> excludeActiveSprintIssueIds;
 	private boolean referFromProjectCache = true;
 
 	/**
@@ -172,6 +181,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 		} finally {
 			threadLocalJiraIssues.remove();
 			threadLocalHistory.remove();
+			threadLocalExcludeActiveSprint.remove();
 		}
 
 		return responseList;
@@ -207,6 +217,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 	private void updateJiraIssueList(List<AccountHierarchyData> filteredAccountDataList) {
 		futureProjectWiseSprintDetails(filteredAccountDataList.get(0).getBasicProjectConfigId(),
 				SprintDetails.SPRINT_STATE_FUTURE);
+		fetchActiveSprintIssues(filteredAccountDataList.get(0).getBasicProjectConfigId());
 		fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
 		fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
 		fetchJiraIssueReleaseForProject(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
@@ -222,11 +233,25 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 	}
 
 	public void fetchJiraIssues(String basicProjectConfigId) {
-		jiraIssueList = jiraIssueRepository.findByBasicProjectConfigIdIn(basicProjectConfigId);
+		jiraIssueList = jiraIssueRepository.findByBasicProjectConfigIdAndNumberNotIn(basicProjectConfigId,
+				excludeActiveSprintIssueIds);
 	}
 
 	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId) {
-		jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByBasicProjectConfigIdIn(basicProjectConfigId);
+		jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
+				.findByBasicProjectConfigIdAndStoryIDNotIn(basicProjectConfigId, excludeActiveSprintIssueIds);
+	}
+
+	public void fetchActiveSprintIssues(ObjectId projectId) {
+		if (configHelperService.getFieldMapping(projectId).isIncludeActiveSprintInBacklogKPI()) {
+			excludeActiveSprintIssueIds = new HashSet<>();
+		} else {
+			excludeActiveSprintIssueIds = sprintRepository
+					.findByBasicProjectConfigIdAndStateIgnoreCaseOrderByStartDateASC(projectId,
+							SprintDetails.SPRINT_STATE_ACTIVE)
+					.stream().flatMap(sprint -> sprint.getTotalIssues().stream()).map(SprintIssue::getNumber)
+					.collect(Collectors.toSet());
+		}
 	}
 
 	public void fetchJiraIssueReleaseForProject(String basicProjectConfigId) {
@@ -243,6 +268,10 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 
 	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentSprint() {
 		return threadLocalHistory.get();
+	}
+
+	public Set<String> getIssuesOfActiveSprint() {
+		return threadLocalExcludeActiveSprint.get();
 	}
 
 	/**
@@ -297,6 +326,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 
 			threadLocalJiraIssues.set(jiraIssueList);
 			threadLocalHistory.set(jiraIssueCustomHistoryList);
+			threadLocalExcludeActiveSprint.set(excludeActiveSprintIssueIds);
 			responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, filteredAccountData));
 		}
 

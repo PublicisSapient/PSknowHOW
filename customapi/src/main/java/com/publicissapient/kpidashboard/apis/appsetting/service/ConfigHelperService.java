@@ -122,11 +122,7 @@ public class ConfigHelperService {
 		List<HierarchyLevel> hierarchyLevels = hierarchyLevelRepository.findAllByOrderByLevel();
 
 		projectList.forEach(projectConfig -> {
-			// AN: This is to make sure UI doesn't break, to be removed after migration
-			if (CollectionUtils.isEmpty(projectConfig.getHierarchy())) {
-				projectConfig
-						.setHierarchy(projectBasicConfigService.getHierarchy(hierarchyLevels, projectConfig.getProjectNodeId()));
-			}
+			projectConfig.setHierarchy(projectBasicConfigService.getHierarchy(hierarchyLevels, projectConfig.getProjectNodeId()));
 			projectConfigMap.put(projectConfig.getId().toString(), projectConfig);
 			FieldMapping mapping = fieldMappingList.stream()
 					.filter(x -> null != x.getBasicProjectConfigId() && x.getBasicProjectConfigId().equals(projectConfig.getId()))

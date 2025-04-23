@@ -64,8 +64,10 @@ public class ProjectHierarchy extends OrganizationHierarchy implements Serializa
 	}
 
 	public ProjectHierarchy(String nodeId, String nodeName, String nodeDisplayName, String hierarchyLevelId,
-			String parentId, LocalDateTime createdDate, LocalDateTime modifiedDate, ObjectId basicProjectConfigId) {
-		super(nodeId, nodeName, nodeDisplayName, hierarchyLevelId, parentId, createdDate, modifiedDate);
+			String parentId, LocalDateTime createdDate, LocalDateTime modifiedDate, ObjectId basicProjectConfigId,
+			String createdBy, String updatedBy) {
+		super(nodeId, nodeName, nodeDisplayName, hierarchyLevelId, parentId, createdDate, modifiedDate, createdBy,
+				updatedBy);
 		this.basicProjectConfigId = basicProjectConfigId;
 	}
 }

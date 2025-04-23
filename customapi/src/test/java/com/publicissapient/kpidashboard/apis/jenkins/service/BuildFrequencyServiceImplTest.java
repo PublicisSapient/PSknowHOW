@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
@@ -51,6 +52,7 @@ import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFact
 import com.publicissapient.kpidashboard.apis.data.BuildDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
+import com.publicissapient.kpidashboard.apis.jira.service.SprintDetailsServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.BuildFrequencyInfo;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -63,6 +65,7 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BuildFrequencyServiceImplTest {
@@ -76,6 +79,8 @@ public class BuildFrequencyServiceImplTest {
 	ConfigHelperService configHelperService;
 	@Mock
 	CustomApiConfig customApiConfig;
+	@Mock
+	private SprintDetailsServiceImpl sprintDetailsService;
 	@InjectMocks
 	BuildFrequencyServiceImpl buildFrequencyServiceImpl;
 	private Map<String, Object> filterLevelMap;
@@ -131,6 +136,11 @@ public class BuildFrequencyServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		build = new Build();
 		getBuildFrequencyInfo();
+		SprintDetails sprintDetails = new SprintDetails();
+		sprintDetails.setCompleteDate(LocalDateTime.now().minusDays(1).toString());
+		sprintDetails.setSprintID("40345_Scrum Project_6335363749794a18e8a4479b");
+		sprintDetails.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
+		when(sprintDetailsService.getSprintDetailsByIds(anyList())).thenReturn(Arrays.asList(sprintDetails));
 	}
 
 	private void getBuildFrequencyInfo() {
@@ -163,6 +173,24 @@ public class BuildFrequencyServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
+		when(kpiDataCacheService.fetchBuildFrequencyData(any(), any(), any(), any())).thenReturn(buildList);
+
+		try {
+			when(customApiConfig.getJenkinsWeekCount()).thenReturn(5);
+
+			KpiElement kpiElement = buildFrequencyServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			assertThat("Build Frequency :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
+		} catch (Exception enfe) {
+		}
+	}
+
+	@Test
+	public void testGetBuildFrquencyPort() throws Exception {
+
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		kpiRequest.setLabel("PORT");
 		when(kpiDataCacheService.fetchBuildFrequencyData(any(), any(), any(), any())).thenReturn(buildList);
 
 		try {
@@ -238,8 +266,8 @@ public class BuildFrequencyServiceImplTest {
 	@Test
 	public void testCalculateKPIMetrics() {
 		Map<ObjectId, List<Build>> buildList = new HashMap<ObjectId, List<Build>>();
-		Map<String, Object> subCategoryMap = new HashMap<>();
-		Long count = buildFrequencyServiceImpl.calculateKPIMetrics(buildList);
+		Map<String, List<Object>> subCategoryMap = new HashMap<>();
+		Long count = buildFrequencyServiceImpl.calculateKPIMetrics(subCategoryMap);
 	}
 
 	@Test

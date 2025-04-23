@@ -25,13 +25,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.Filters;
+import com.publicissapient.kpidashboard.apis.jira.service.SprintDetailsServiceImpl;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,12 +57,10 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -72,15 +72,20 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
-public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Object>, Map<ObjectId, List<Build>>> {
+public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Object>, Map<String, List<Object>>> {
 
 	private static final long DAYS_IN_WEEKS = 7;
-	@Autowired
-	private BuildRepository buildRepository;
+	private static final String DATE_TIME_FORMAT_REGEX = "Z|\\.\\d+";
+	private static final String SPRINT = "sprint";
+	private static final String PROJECT = "project";
+	private static final String BUILDS = "Builds";
+
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
 	private KpiDataCacheService kpiDataCacheService;
+	@Autowired
+	private SprintDetailsServiceImpl sprintDetailsService;
 
 	@Override
 	public String getQualifierType() {
@@ -96,7 +101,18 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
-		projectWiseLeafNodeValue(kpiElement, mapTmp, projectList, trendValueMap);
+		Filters filter = Filters.getFilter(kpiRequest.getLabel());
+
+//      in case if only projects or sprint filters are applied
+		if (filter == Filters.SPRINT || filter == Filters.PROJECT) {
+			List<Node> leafNodes = treeAggregatorDetail.getMapOfListOfLeafNodes().entrySet().stream()
+					.filter(k -> Filters.getFilter(k.getKey()) == Filters.SPRINT).map(Map.Entry::getValue).findFirst()
+					.orElse(new ArrayList<>());
+			projectWiseLeafNodeValue(kpiElement, mapTmp, projectList, trendValueMap, leafNodes);
+
+		} else {
+			projectWiseLeafNodeValue(kpiElement, mapTmp, projectList, trendValueMap, new ArrayList<>());
+		}
 
 		log.debug("[CODE-BUILD-TIME-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
@@ -128,32 +144,50 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	}
 
 	@Override
-	public Long calculateKPIMetrics(Map<ObjectId, List<Build>> builds) {
+	public Long calculateKPIMetrics(Map<String, List<Object>> builds) {
 		return null;
 	}
 
 	@Override
-	public Map<ObjectId, List<Build>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, List<Object>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-
-		Set<ObjectId> projectBasicConfigIds = new HashSet<>();
-		List<String> statusList = new ArrayList<>();
-		Map<String, List<String>> mapOfFilters = new HashMap<>();
-		leafNodeList.forEach(node -> {
+		Map<String, List<Object>> resultMap = new HashMap<>();
+		List<Object> buildList = new ArrayList<>();
+		List<Node> sprintNodes = leafNodeList.stream().filter(node -> node.getGroupName().equalsIgnoreCase(SPRINT))
+				.toList();
+		List<String> backlogProjectsIds = new ArrayList<>();
+		leafNodeList.stream().filter(node -> node.getGroupName().equalsIgnoreCase(PROJECT)).forEach(node -> {
 			ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
-			projectBasicConfigIds.add(basicProjectConfigId);
+			Optional<Node> firstSprintNode = sprintNodes.stream()
+					.filter(sprintNode -> sprintNode.getProjectFilter().getId().equalsIgnoreCase(node.getId()))
+					.findFirst();
+			String localStartDate = startDate;
+
+			if (firstSprintNode.isPresent()) {
+				backlogProjectsIds.add(firstSprintNode.get().getId());
+				LocalDateTime endDateTime = DateUtil.stringToLocalDateTime(
+						firstSprintNode.get().getSprintFilter().getEndDate().replaceAll(DATE_TIME_FORMAT_REGEX, ""),
+						DateUtil.TIME_FORMAT);
+				localStartDate = endDateTime.minusDays((customApiConfig.getJenkinsWeekCount()) * DAYS_IN_WEEKS)
+						.toString();
+			}
+
+			// get cached build info from BuildFrequency db kpi cache
+			buildList.addAll(kpiDataCacheService.fetchBuildFrequencyData(basicProjectConfigId, localStartDate, endDate,
+					KPICode.BUILD_FREQUENCY.getKpiId()));
 		});
+		resultMap.put(BUILDS, buildList);
+		if (CollectionUtils.isNotEmpty(backlogProjectsIds)) {
+			List<SprintDetails> sprintDetailsList = sprintDetailsService.getSprintDetailsByIds(backlogProjectsIds);
 
-		statusList.add(BuildStatus.SUCCESS.name());
-		mapOfFilters.put("buildStatus", statusList);
-		List<Build> buildList = new ArrayList<>();
-		projectBasicConfigIds.forEach(projectBasicConfigId -> buildList.addAll(kpiDataCacheService
-				.fetchBuildFrequencyData(projectBasicConfigId, startDate, endDate, KPICode.BUILD_FREQUENCY.getKpiId())));
+			Map<ObjectId, List<SprintDetails>> groupedDetails = sprintDetailsList.stream()
+					.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId, Collectors.toList()));
 
-		if (CollectionUtils.isEmpty(buildList)) {
-			return new HashMap<>();
+			groupedDetails.forEach((objectId, details) -> resultMap.put(objectId.toString(), new ArrayList<>(details)));
 		}
-		return buildList.stream().collect(Collectors.groupingBy(Build::getBasicProjectConfigId, Collectors.toList()));
+
+
+		return resultMap;
 	}
 
 	/**
@@ -167,7 +201,7 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	 *          trendValueMap
 	 */
 	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp, List<Node> projectLeafNodeList,
-			Map<String, List<DataCount>> trendValueMap) {
+			Map<String, List<DataCount>> trendValueMap, List<Node> sprintLeafNodeList) {
 
 		String requestTrackerId = getRequestTrackerId();
 		LocalDateTime localStartDate = LocalDateTime.now().minusDays(customApiConfig.getJenkinsWeekCount() * DAYS_IN_WEEKS);
@@ -176,7 +210,10 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 		String startDate = localStartDate.format(formatter);
 		String endDate = localEndDate.format(formatter);
 
-		Map<ObjectId, List<Build>> buildGroup = fetchKPIDataFromDb(projectLeafNodeList, startDate, endDate, null);
+		sprintLeafNodeList.addAll(projectLeafNodeList);
+		Map<String, List<Object>> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, null);
+		Map<ObjectId, List<Build>> buildGroup = resultMap.get(BUILDS).stream().filter(Build.class::isInstance)
+				.map(Build.class::cast).collect(Collectors.groupingBy(Build::getBasicProjectConfigId));
 
 		if (MapUtils.isEmpty(buildGroup)) {
 			return;
@@ -186,7 +223,11 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 		projectLeafNodeList.forEach(node -> {
 			String trendLineName = node.getProjectFilter().getName();
 			BuildFrequencyInfo buildFrequencyInfo = new BuildFrequencyInfo();
-			LocalDateTime end = localEndDate;
+			SprintDetails sprintDetails = resultMap
+					.get(node.getProjectFilter().getBasicProjectConfigId().toString()) != null
+					? (SprintDetails) resultMap
+					.get(node.getProjectFilter().getBasicProjectConfigId().toString()).get(0)
+					: null;
 			ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
 			List<Build> buildListProjectWise = buildGroup.get(basicProjectConfigId);
 
@@ -205,7 +246,7 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 					List<Build> buildList = entry.getValue();
 					jobName = getJobName(trendLineName, entry, buildList);
 					aggBuildList.addAll(buildList);
-					prepareInfoForBuild(null, end, buildList, trendLineName, trendValueMap, jobName, aggDataMap);
+					prepareInfoForBuild(null, sprintDetails, buildList, trendLineName, trendValueMap, jobName, aggDataMap);
 				}
 			}
 
@@ -213,7 +254,7 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 				mapTmp.get(node.getId()).setValue(null);
 				return;
 			}
-			prepareInfoForBuild(buildFrequencyInfo, end, aggBuildList, trendLineName, trendValueMap,
+			prepareInfoForBuild(buildFrequencyInfo, sprintDetails, aggBuildList, trendLineName, trendValueMap,
 					Constant.AGGREGATED_VALUE, aggDataMap);
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 
@@ -274,7 +315,7 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	/**
 	 * @param buildFrequencyInfo
 	 *          buildFrequencyInfo
-	 * @param endTime
+	 * @param sprintDetails
 	 *          endTime
 	 * @param buildList
 	 *          buildList
@@ -287,21 +328,17 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	 * @param aggDataMap
 	 *          aggDataMap
 	 */
-	private void prepareInfoForBuild(BuildFrequencyInfo buildFrequencyInfo, LocalDateTime endTime, List<Build> buildList,
+	private void prepareInfoForBuild(BuildFrequencyInfo buildFrequencyInfo, SprintDetails sprintDetails, List<Build> buildList,
 			String trendLineName, Map<String, List<DataCount>> trendValueMap, String jobName,
 			Map<String, List<DataCount>> aggDataMap) {
-		LocalDate endDateTime = endTime.toLocalDate();
+		LocalDate endDateTime = getEndDate(sprintDetails);
 		Map<String, Integer> weekRange = new LinkedHashMap<>();
 		for (int i = 0; i < customApiConfig.getJenkinsWeekCount(); i++) {
 			List<Long> durationList = new ArrayList<>();
-			LocalDate monday = endDateTime;
-			while (monday.getDayOfWeek() != DayOfWeek.MONDAY) {
-				monday = monday.minusDays(1);
-			}
-			LocalDate sunday = endDateTime;
-			while (sunday.getDayOfWeek() != DayOfWeek.SUNDAY) {
-				sunday = sunday.plusDays(1);
-			}
+			Pair<LocalDate, LocalDate> dateRange = getDateRange(endDateTime, sprintDetails);
+			LocalDate monday = dateRange.getLeft();
+			LocalDate sunday = dateRange.getRight();
+
 			String date = DateUtil.localDateTimeConverter(monday) + " to " + DateUtil.localDateTimeConverter(sunday);
 			for (Build build : buildList) {
 				if (checkDateIsInWeeks(monday, sunday, build)) {
@@ -324,6 +361,52 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 			aggDataMap.get(jobName).add(dataCount);
 			trendValueMap.get(jobName).add(dataCount);
 		});
+	}
+
+	/**
+	 * Determines the end date for a sprint based on the provided SprintDetails
+	 * object.
+	 *
+	 * @param sprintDetails
+	 *            The SprintDetails object containing information about the sprint.
+	 *            Can be null.
+	 * @return The calculated end date as a LocalDate. If sprintDetails is null, it
+	 *         returns the current date minus one week.
+	 */
+	protected LocalDate getEndDate(SprintDetails sprintDetails) {
+		if (sprintDetails != null) {
+			return sprintDetails.getCompleteDate() != null
+					? DateUtil.stringToLocalDate(sprintDetails.getCompleteDate().replaceAll(DATE_TIME_FORMAT_REGEX, ""),
+					DateUtil.TIME_FORMAT)
+					: DateUtil.stringToLocalDate(sprintDetails.getEndDate().replaceAll(DATE_TIME_FORMAT_REGEX, ""),
+					DateUtil.TIME_FORMAT);
+		}
+		return LocalDate.now();
+	}
+
+	/**
+	 * Calculates the start (Monday) and end (Sunday) dates of a week.
+	 *
+	 * @param endDateTime The reference end date
+	 * @param sprintDetails Sprint details if available, can be null
+	 * @return A pair containing Monday (start) and Sunday (end) dates
+	 */
+	private Pair<LocalDate, LocalDate> getDateRange(LocalDate endDateTime, SprintDetails sprintDetails) {
+		LocalDate monday = endDateTime;
+		LocalDate sunday = endDateTime;
+
+		if(sprintDetails != null) {
+			monday = endDateTime.minusDays(6);
+		} else {
+			while (monday.getDayOfWeek() != DayOfWeek.MONDAY) {
+				monday = monday.minusDays(1);
+			}
+			while (sunday.getDayOfWeek() != DayOfWeek.SUNDAY) {
+				sunday = sunday.plusDays(1);
+			}
+		}
+
+		return Pair.of(monday, sunday);
 	}
 
 	/**

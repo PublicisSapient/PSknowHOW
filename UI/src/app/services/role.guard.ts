@@ -17,25 +17,35 @@
  ******************************************************************************/
 
 import { Injectable } from '@angular/core';
-import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import {
+  Router,
+  CanActivate,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+} from '@angular/router';
 import { GetAuthorizationService } from './get-authorization.service';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
+  constructor(
+    private router: Router,
+    private getAuthorization: GetAuthorizationService,
+  ) {}
 
-    constructor(private router: Router, private getAuthorization: GetAuthorizationService) { }
-
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        if(route.url[0].path === 'GrantRequests'  && this.getAuthorization.checkIfProjectAdmin()) {
-            return true;
-        }
-        if (this.getAuthorization.checkIfSuperUser()) {
-            // logged in as SuperUser so return true
-            return true;
-        } else {
-            // not logged in so redirect to raise request
-            this.router.navigate(['./dashboard/Config/Profile/RaiseRequest']);
-            return false;
-        }
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    if (
+      route.url[0].path === 'GrantRequests' &&
+      this.getAuthorization.checkIfProjectAdmin()
+    ) {
+      return true;
     }
+    if (this.getAuthorization.checkIfSuperUser()) {
+      // logged in as SuperUser so return true
+      return true;
+    } else {
+      // not logged in so redirect to raise request
+      this.router.navigate(['./dashboard/Config/Profile/RaiseRequest']);
+      return false;
+    }
+  }
 }

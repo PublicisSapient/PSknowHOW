@@ -31,13 +31,13 @@ export class KpiHelperService {
     'Issue with missing worklogs': 'Warning.svg',
     'Unlinked Defects': 'Warning.svg',
     'Story Linked Defects': 'Check.svg',
-    'DIR': 'Watch.svg',
+    DIR: 'Watch.svg',
     'Story Point': 'PieChart.svg',
     'Original Estimate': 'PieChart.svg',
     'Defect Density': 'visibility_on.svg',
-    'Percentage': 'Check.svg',
-    'Risks': 'Warning.svg',
-    'Dependencies': 'Warning.svg',
+    Percentage: 'Check.svg',
+    Risks: 'Warning.svg',
+    Dependencies: 'Warning.svg',
     '': 'Check.svg',
     'First Time Pass Stories': 'Warning.svg',
     'Total Stories': 'Warning.svg',
@@ -71,7 +71,11 @@ export class KpiHelperService {
 
       chartData.push({
         category: category.categoryName,
-        value: (key ? filteredIssues.reduce((sum, issue) => sum + (issue[key]), 0) : filteredIssues.length) * (category.categoryValue === '+' ? 1 : -1),
+        value:
+          (key
+            ? filteredIssues.reduce((sum, issue) => sum + issue[key], 0)
+            : filteredIssues.length) *
+          (category.categoryValue === '+' ? 1 : -1),
         color: color[index % color.length],
       });
     });
@@ -83,7 +87,7 @@ export class KpiHelperService {
     if (!unit || !unit.length) {
       chartData.sort((a, b) => a.value - b.value);
     } else if (unit === 'day') {
-      chartData.forEach((d) => d.value = d.value / (60 * 8));
+      chartData.forEach((d) => (d.value = d.value / (60 * 8)));
       chartData.sort((a, b) => a.value - b.value);
       totalCount = this.convertToHoursIfTime(totalCount, unit);
     } else {
@@ -159,21 +163,26 @@ export class KpiHelperService {
         if (unit && unit === 'day') {
           sum = sum / (60 * 8); // converting to 8hr days
         }
-        chartData.push({ category: name, value: sum, color: color[groupKey], unit: unit }); // Default color if not specified
+        chartData.push({
+          category: name,
+          value: sum,
+          color: color[groupKey],
+          unit: unit,
+        }); // Default color if not specified
       }
     }
 
     const modifiedDataSet = chartData.map((item: any) => {
       return {
         ...item,
-        tooltipValue: item.value,//this.convertToHoursIfTime(item.value, json.unit),
+        tooltipValue: item.value, //this.convertToHoursIfTime(item.value, json.unit),
       };
     });
 
     return { chartData: modifiedDataSet };
   }
 
-  groupedBarChartData(json, color,filter) {
+  groupedBarChartData(json, color, filter) {
     let chartData = {};
     chartData['data'] = [];
     const issueData = json.issueData || [];
@@ -182,15 +191,19 @@ export class KpiHelperService {
     const categoryKey = json.categoryData?.categoryKey;
     const categoryKey2 = json.categoryData?.categoryKey2;
     let issueDataCopy;
-    const issueDataFiltered = issueData.filter(issue => issue[categoryKey].includes(filter));
-    categoryGroup?.forEach(categoryElem => {
+    const issueDataFiltered = issueData.filter((issue) =>
+      issue[categoryKey].includes(filter),
+    );
+    categoryGroup?.forEach((categoryElem) => {
       let categoryValue = categoryElem.categoryName;
       let i = 0;
       let value = 0;
       let test = {};
       test['category'] = categoryValue;
-      issueDataCopy = issueDataFiltered.filter(issue => issue[categoryKey2][filter].includes(categoryValue));
-      dataGroup.forEach(dataGroupElem => {
+      issueDataCopy = issueDataFiltered.filter((issue) =>
+        issue[categoryKey2][filter].includes(categoryValue),
+      );
+      dataGroup.forEach((dataGroupElem) => {
         let dataColor = color[i];
         i = i + 1;
         if (dataGroupElem.aggregation === 'count') {
@@ -209,25 +222,28 @@ export class KpiHelperService {
       });
       test['color'] = color;
       if (filter === 'Unplanned') {
-        test['summaryValue'] = 'NA'
+        test['summaryValue'] = 'NA';
       } else {
         const data2 = json.dataGroup.dataGroup2[0];
 
-        test['summaryValue'] = issueDataCopy.reduce((acc: number, issue: any) => {
-          if (issue.hasOwnProperty(data2.key)) {
-            let value2 = issue[data2.key];
-            if (data2.multipleValue) {
-              value2 = issue[data2.key][filter];
-            }
-//             if (value2 > 0) {
+        test['summaryValue'] =
+          issueDataCopy.reduce((acc: number, issue: any) => {
+            if (issue.hasOwnProperty(data2.key)) {
+              let value2 = issue[data2.key];
+              if (data2.multipleValue) {
+                value2 = issue[data2.key][filter];
+              }
+              //             if (value2 > 0) {
               return acc + value2 / (60 * 8);
-//             } else {
-//               return acc - value2 / (60 * 8);
-//             }
-          } else {
-            return acc;
-          }
-        }, 0) + ' ' + data2.unit;
+              //             } else {
+              //               return acc - value2 / (60 * 8);
+              //             }
+            } else {
+              return acc;
+            }
+          }, 0) +
+          ' ' +
+          data2.unit;
       }
       chartData['data'].push(test);
     });
@@ -249,14 +265,16 @@ export class KpiHelperService {
       chartData: chartData,
       filterGroup: filterGroup,
       category: categoryGroup,
-      modalHeads: inputData?.modalHeads
-    }
+      modalHeads: inputData?.modalHeads,
+    };
     return { chartData: modifiedDataSet };
   }
 
   filterLessKPI(inputData) {
     let result = [];
-    result = inputData?.filter(kpiData => kpiData.filter1.toLowerCase() === 'overall');
+    result = inputData?.filter(
+      (kpiData) => kpiData.filter1.toLowerCase() === 'overall',
+    );
     return { chartData: result };
   }
 
@@ -265,59 +283,68 @@ export class KpiHelperService {
     const issueData = inputData.issueData;
     const chartData: any = [];
     dataGroup1?.forEach((group: any, index) => {
-        let filteredIssues;
-        let aggregateVal = 0;
-        let filteredVal = 0;
-        if (!group.key1 || group.key1 !== 'Category') {} else {
-            filteredIssues = issueData.filter((issue: any) => issue[group.key1].includes(group.value1));
-            if (group.aggregation === 'count') {
-                if (filteredIssues?.length) {
-                    filteredVal = filteredIssues.length;
-                }
-            } else if (group.aggregation === 'sum') {
-                if (filteredIssues?.length) {
-                    filteredVal = this.convertToHoursIfTime(filteredIssues.reduce((sum: any, issue: any) => {
-                        return sum + (issue[group.key] || 0); // Sum up the values for the key
-                    }, 0), group.unit);
-                }
-            }
-        }
+      let filteredIssues;
+      let aggregateVal = 0;
+      let filteredVal = 0;
+      if (!group.key1 || group.key1 !== 'Category') {
+      } else {
+        filteredIssues = issueData.filter((issue: any) =>
+          issue[group.key1].includes(group.value1),
+        );
         if (group.aggregation === 'count') {
-            aggregateVal = issueData.length;
+          if (filteredIssues?.length) {
+            filteredVal = filteredIssues.length;
+          }
         } else if (group.aggregation === 'sum') {
-            aggregateVal = this.convertToHoursIfTime(issueData.reduce((sum: any, issue: any) => {
+          if (filteredIssues?.length) {
+            filteredVal = this.convertToHoursIfTime(
+              filteredIssues.reduce((sum: any, issue: any) => {
                 return sum + (issue[group.key] || 0); // Sum up the values for the key
-            }, 0), group.unit);
+              }, 0),
+              group.unit,
+            );
+          }
         }
-        if (group.key1) {
-            if (group.showDenominator) {
-                chartData.push({
-                    category: group.name,
-                    value: filteredVal + '/' + aggregateVal,
-                    icon: this.iconObj[group.name],
-                    color: color[index]
-                });
-            } else {
-                chartData.push({
-                    category: group.name,
-                    value: filteredVal,
-                    icon: this.iconObj[group.name],
-                    color: color[index]
-                });
-            }
+      }
+      if (group.aggregation === 'count') {
+        aggregateVal = issueData.length;
+      } else if (group.aggregation === 'sum') {
+        aggregateVal = this.convertToHoursIfTime(
+          issueData.reduce((sum: any, issue: any) => {
+            return sum + (issue[group.key] || 0); // Sum up the values for the key
+          }, 0),
+          group.unit,
+        );
+      }
+      if (group.key1) {
+        if (group.showDenominator) {
+          chartData.push({
+            category: group.name,
+            value: filteredVal + '/' + aggregateVal,
+            icon: this.iconObj[group.name],
+            color: color[index],
+          });
         } else {
-            chartData.push({
-                category: group.name,
-                value: aggregateVal,
-                icon: this.iconObj[group.name],
-                color: color[index]
-            });
+          chartData.push({
+            category: group.name,
+            value: filteredVal,
+            icon: this.iconObj[group.name],
+            color: color[index],
+          });
         }
+      } else {
+        chartData.push({
+          category: group.name,
+          value: aggregateVal,
+          icon: this.iconObj[group.name],
+          color: color[index],
+        });
+      }
     });
     return {
-        chartData: chartData
+      chartData: chartData,
     };
-}
+  }
 
   tabularKPINonRawData(inputData, issueData = []) {
     const chartData: any = [];
@@ -325,10 +352,14 @@ export class KpiHelperService {
     inputData?.forEach((group: any, index) => {
       chartData.push({
         category: group.name,
-        value: group.unit && (group.unit === 'day' || group.unit === 'SP') ?
-          this.convertToHoursIfTime(group.kpiValue, group.unit) : !isNaN(group.kpiValue1) ? group.kpiValue1 + '/' + group.kpiValue : group.kpiValue,
+        value:
+          group.unit && (group.unit === 'day' || group.unit === 'SP')
+            ? this.convertToHoursIfTime(group.kpiValue, group.unit)
+            : !isNaN(group.kpiValue1)
+            ? group.kpiValue1 + '/' + group.kpiValue
+            : group.kpiValue,
         icon: this.iconObj[group.name],
-        totalIssues: 100
+        totalIssues: 100,
       });
     });
 
@@ -372,8 +403,9 @@ export class KpiHelperService {
     const days = rhours / 8;
     const rdays = Math.floor(days);
     rhours = (days - rdays) * 8;
-    return `${rdays !== 0 ? rdays + 'd ' : ''}${rhours !== 0 ? rhours + 'h ' : ''
-      }${rminutes !== 0 ? rminutes + 'm' : ''}`;
+    return `${rdays !== 0 ? rdays + 'd ' : ''}${
+      rhours !== 0 ? rhours + 'h ' : ''
+    }${rminutes !== 0 ? rminutes + 'm' : ''}`;
   }
 
   getChartDataSet(inputData, chartType, color, key?: any) {
@@ -401,17 +433,41 @@ export class KpiHelperService {
         returnDataSet = this.tabularKPI(inputData, color);
         break;
       case 'tableNonRawData':
-        returnDataSet = this.tabularKPINonRawData(inputData.dataGroup?.dataGroup1, inputData?.issueData);
+        returnDataSet = this.tabularKPINonRawData(
+          inputData.dataGroup?.dataGroup1,
+          inputData?.issueData,
+        );
         break;
       case 'grouped-bar-chart':
-        returnDataSet = this.groupedBarChartData(inputData, color,key);
+        returnDataSet = this.groupedBarChartData(inputData, color, key);
         break;
       case 'tabular-with-donut-chart':
-        returnDataSet = this.tabularKPINonRawData(inputData.dataGroup?.dataGroup1, inputData?.issueData);
+        returnDataSet = this.tabularKPINonRawData(
+          inputData.dataGroup?.dataGroup1,
+          inputData?.issueData,
+        );
         break;
       default:
         break;
     }
     return returnDataSet;
+  }
+
+  getSelectedItem(items, currentSelected, direction) {
+    const currentIndex = items.indexOf(currentSelected);
+
+    if (currentIndex === -1) {
+      return items.length > 0 ? items[0] : null;
+    }
+
+    let nextIndex;
+    if (direction === 'right') {
+      nextIndex = (currentIndex + 1) % items.length;
+    } else if (direction === 'left') {
+      nextIndex = (currentIndex - 1 + items.length) % items.length;
+    } else {
+      return currentSelected;
+    }
+    return items[nextIndex];
   }
 }

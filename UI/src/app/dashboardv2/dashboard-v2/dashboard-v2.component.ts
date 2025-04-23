@@ -16,11 +16,7 @@
  *
  ******************************************************************************/
 
-import {
-  Component,
-  ChangeDetectorRef,
-  AfterContentInit,
-} from '@angular/core';
+import { Component, ChangeDetectorRef, AfterContentInit } from '@angular/core';
 import { GetAuthService } from '../../services/getauth.service';
 import { Router } from '@angular/router';
 import { SharedService } from 'src/app/services/shared.service';
@@ -39,7 +35,8 @@ export class DashboardV2Component implements AfterContentInit {
   displayModal = false;
   modalDetails = {
     header: 'User Request Approved',
-    content: 'Click on "Continue" to reflect the changes happened from requested Role change.'
+    content:
+      'Click on "Continue" to reflect the changes happened from requested Role change.',
   };
 
   authorized = true;
@@ -55,9 +52,9 @@ export class DashboardV2Component implements AfterContentInit {
     public router: Router,
     private getAuth: GetAuthService,
     public service: SharedService,
-    public httpService: HttpService
+    public httpService: HttpService,
   ) {
-    this.sideNavStyle = { 'toggled': this.isApply };
+    this.sideNavStyle = { toggled: this.isApply };
     this.authorized = this.getAuth.checkAuth();
 
     this.service.onTabSwitch.subscribe((data) => {
@@ -67,16 +64,22 @@ export class DashboardV2Component implements AfterContentInit {
     });
 
     // this.service.setSelectedBoard('iteration');
-    this.httpService.getAllProjects().subscribe(projectsData => {
-      if (projectsData[0] !== 'error' && !projectsData.error && projectsData?.data) {
-        localStorage.setItem('projectWithHierarchy', JSON.stringify(projectsData?.data));
+    this.httpService.getAllProjects().subscribe((projectsData) => {
+      if (
+        projectsData[0] !== 'error' &&
+        !projectsData.error &&
+        projectsData?.data
+      ) {
+        localStorage.setItem(
+          'projectWithHierarchy',
+          JSON.stringify(projectsData?.data),
+        );
       }
     });
   }
 
   ngAfterContentInit() {
     this.cdRef.detectChanges();
-
   }
 
   ngOnDestroy() {

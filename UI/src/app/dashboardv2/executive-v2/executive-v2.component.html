@@ -16,7 +16,7 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-  <div *ngIf="showSprintGoalsPanel" class="p-col-12 p-p-3">
+  <div *ngIf="showSprintGoalsPanel && sprintGoalData.length>0" class="p-col-12 p-p-3">
     <app-collapsible-panel [rawData]="sprintGoalData" ></app-collapsible-panel>
   </div>
 <ng-container *ngIf="(!noProjects[selectedtype]); else noProjectsTemplate">
@@ -58,8 +58,12 @@
                                             [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                                             (getCommentCountByKpi)="getKpiCommentsCount($event)"
                                             (reloadKPITab)="reloadKPI($event)" [kpiSize]="kpi.kpiDetail?.kpiSize"
-                                            [kpiChartData]="kpiChartData" [immediateLoader]='immediateLoader'
-                                            [partialData]="checkIfPartialDataPresent(kpi)">
+                                            [kpiHeight]="kpi.kpiDetail?.kpiHeight"
+                                            [kpiChartData]="kpiChartData[kpi?.kpiId]" [immediateLoader]='immediateLoader'
+                                            [partialData]="checkIfPartialDataPresent(kpi)" [filterApplyData]="filterApplyData"
+                                            [chartColorList]="chartColorList[kpi?.kpiId]" [kpiSelectedFilterObj]="kpiSelectedFilterObj[kpi?.kpiId]"
+                                            [yAxis]="checkYAxis(kpi)" [kpiThresholdObj]="kpiThresholdObj[kpi?.kpiId]"
+                                            [releaseEndDate]="releaseEndDate" [hieararchy]="selectedTab === 'iteration' || selectedTab === 'release' || selectedTab === 'backlog' || selectedTab === 'developer' ? hieararchy : null">
                                             <ng-container *ngIf="!noTabAccess else noDataAccess">
                                                 <ng-container *ngIf="kpi?.kpiDetail?.chartType; else showTable">
 

@@ -71,14 +71,20 @@ import { GroupedColumnPlusLineChartV2Component } from '../component/grouped-colu
 import { HorizontalPercentBarChartv2Component } from '../component/horizontal-percent-bar-chartv2/horizontal-percent-bar-chartv2.component';
 import { MultilineStyleV2Component } from '../component/multiline-style-v2/multiline-style-v2.component';
 import { MultilineV2Component } from '../component/multiline-v2/multiline-v2.component';
+import { GroupstackchartComponentv2 } from '../component/groupedstackchart-v2/groupstackchart-v2.component';
+import { PiechartComponent } from '../component/piechart/piechart.component';
+import { StackedAreaChartComponent } from '../component/stacked-area-chart/stacked-area-chart.component';
 import { TooltipV2Component } from '../component/tooltip-v2/tooltip-v2.component';
 import { TrendIndicatorV2Component } from '../dashboardv2/trend-indicator-v2/trend-indicator-v2.component';
-
+import { BarWithYAxisGroupComponent } from '../component/bar-with-y-axis-group/bar-with-y-axis-group.component';
+import { GroupBarChartComponent } from '../component/group-bar-chart/group-bar-chart.component';
 import { HeaderComponent } from '../dashboardv2/header-v2/header.component';
 
 import { RecentCommentsComponent } from '../component/recent-comments/recent-comments.component';
 import { CumulativeLineChartComponent } from '../component/cumulative-line-chart/cumulative-line-chart.component';
-
+import { ReportKpiCardComponent } from '../dashboardv2/reports-module/report-kpi-card/report-kpi-card.component';
+import { CollapsiblePanelComponent } from '../component/collapsible-panel/collapsible-panel.component';
+import { TableComponent } from '../component/table/table.component';
 
 @NgModule({
   imports: [
@@ -89,7 +95,6 @@ import { CumulativeLineChartComponent } from '../component/cumulative-line-chart
     MultiSelectModule,
     DropdownModule,
     DialogModule,
-    ToastModule,
     ConfirmDialogModule,
     AccordionModule,
     ReactiveFormsModule,
@@ -106,7 +111,8 @@ import { CumulativeLineChartComponent } from '../component/cumulative-line-chart
     SelectButtonModule,
     MenuModule,
     TabMenuModule,
-    TableModule
+    TableModule,
+    ToastModule,
   ],
   exports: [
     NgSelectModule,
@@ -133,6 +139,11 @@ import { CumulativeLineChartComponent } from '../component/cumulative-line-chart
     BarchartComponent,
     MultilineComponent,
     MultilineV2Component,
+    GroupstackchartComponentv2,
+    GroupBarChartComponent,
+    ToastModule,
+    StackedAreaChartComponent,
+    PiechartComponent,
     TrendIndicatorV2Component,
     GroupedColumnPlusLineChartV2Component,
     MultilineStyleV2Component,
@@ -141,7 +152,11 @@ import { CumulativeLineChartComponent } from '../component/cumulative-line-chart
     ChartWithFiltersComponent,
     HeaderComponent,
     RecentCommentsComponent,
-    CumulativeLineChartComponent
+    CumulativeLineChartComponent,
+    ReportKpiCardComponent,
+    BarWithYAxisGroupComponent,
+    CollapsiblePanelComponent,
+    TableComponent,
   ],
   declarations: [
     ProjectFilterComponent,
@@ -169,6 +184,10 @@ import { CumulativeLineChartComponent } from '../component/cumulative-line-chart
     KpiAdditionalFilterComponent,
     MultilineComponent,
     MultilineV2Component,
+    StackedAreaChartComponent,
+    GroupstackchartComponentv2,
+    GroupBarChartComponent,
+    PiechartComponent,
     TrendIndicatorV2Component,
     GroupedColumnPlusLineChartV2Component,
     MultilineStyleV2Component,
@@ -176,9 +195,12 @@ import { CumulativeLineChartComponent } from '../component/cumulative-line-chart
     HorizontalPercentBarChartv2Component,
     HeaderComponent,
     RecentCommentsComponent,
-    CumulativeLineChartComponent
-
+    CumulativeLineChartComponent,
+    ReportKpiCardComponent,
+    BarWithYAxisGroupComponent,
+    CollapsiblePanelComponent,
+    TableComponent,
   ],
-  providers: [ConfirmationService, KpiHelperService]
+  providers: [ConfirmationService, KpiHelperService],
 })
-export class SharedModuleModule { }
+export class SharedModuleModule {}

@@ -19,101 +19,134 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { Router } from '@angular/router';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MessageService } from 'primeng/api';
 @Component({
-    selector: 'app-register',
-    templateUrl: './register.component.html',
-    styleUrls: ['../login/login.component.css']
+  selector: 'app-register',
+  templateUrl: './register.component.html',
+  styleUrls: ['../login/login.component.css'],
 })
 export class RegisterComponent implements OnInit, OnDestroy {
+  registorForm: UntypedFormGroup;
+  private destroy$ = new Subject<void>();
+  loading = false;
+  submitted = false;
+  error = '';
+  success = '';
+  constructor(
+    private formBuilder: UntypedFormBuilder,
+    private router: Router,
+    private httpService: HttpService,
+  ) {}
+  ngOnInit() {
+    // Set validation for registration-form elements
+    this.registorForm = this.formBuilder.group(
+      {
+        username: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(4),
+            Validators.maxLength(30),
+            Validators.pattern('^$|^[A-Za-z0-9]+'),
+          ],
+        ],
+        password: [
+          '',
+          [
+            Validators.required,
+            Validators.pattern(
+              '(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-zd$@$!%*?&].{7,}',
+            ),
+            Validators.maxLength(30),
+          ],
+        ],
+        confirmpassword: ['', Validators.required],
+        email: [
+          '',
+          [
+            Validators.required,
+            Validators.maxLength(200),
+            Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,3}$'),
+          ],
+        ],
+      },
+      { validator: this.checkPasswords },
+    );
+  }
 
-    registorForm: UntypedFormGroup;
-    private destroy$ = new Subject<void>(); 
-    loading = false;
-    submitted = false;
-    error = '';
-    success = '';
-    constructor(
-        private formBuilder: UntypedFormBuilder,
-        private router: Router,
-        private httpService: HttpService,
-    ) { }
-    ngOnInit() {
-        // Set validation for registration-form elements
-        this.registorForm = this.formBuilder.group({
-            username: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(30), Validators.pattern('^$|^[A-Za-z0-9]+')]],
-            password: ['', [
-                Validators.required,
-                Validators.pattern('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&].{7,}'),
-                Validators.maxLength(30)
-            ]],
-            confirmpassword: ['', Validators.required],
-            email: ['', [Validators.required, Validators.maxLength(200), Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]]
-        }, { validator: this.checkPasswords });
+  // Validation for confirm-password
+  checkPasswords(group: UntypedFormGroup) {
+    const pass = group.controls.password.value;
+    const confirmPass = group.controls.confirmpassword.value;
+    return pass === confirmPass ? null : { notSame: true };
+  }
+
+  // convenience getter for easy access to form fields
+  get f() {
+    return this.registorForm.controls;
+  }
+
+  onSubmit() {
+    this.submitted = true;
+    // stop here if form is invalid
+    if (this.registorForm.invalid) {
+      return;
     }
 
-    // Validation for confirm-password
-    checkPasswords(group: UntypedFormGroup) {
-        const pass = group.controls.password.value;
-        const confirmPass = group.controls.confirmpassword.value;
-        return pass === confirmPass ? null : { notSame: true };
-    }
+    // start spinner
+    this.loading = true;
+    this.error = '';
+    this.success = '';
 
-    // convenience getter for easy access to form fields
-    get f() {
- return this.registorForm.controls;
-}
+    // this.messageService.add({
+    //     severity: 'success',
+    //     summary: 'Your access request has been sent for approval',
+    //   });
+    // call registration service
+    this.httpService
+      .register(
+        this.f.username.value,
+        this.f.password.value,
+        this.f.email.value,
+      )
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (data: any) => {
+          // stop spinner
+          this.loading = false;
+          if (data.success) {
+            // After successfully registration redirect form to dashboard router(Executive page)
 
-    onSubmit() {
-        this.submitted = true;
-        // stop here if form is invalid
-        if (this.registorForm.invalid) {
-            return;
-        }
+            this.success = data.message;
+          } else {
+            this.error = data.message;
+          }
+        },
+        (error) => {
+          this.loading = false; // stop spinner
+          // check 422 status if user already exist else mail is already registered
+          if (error.status === 422) {
+            this.error =
+              'Cannot complete the registration process, Try with different username/email';
+          } else if (error.status === 0) {
+            // in case of connection timeout
+            this.error = 'Could not register user, connection timed out!';
+          }
 
-        // start spinner
-        this.loading = true;
-        this.error = '';
-        this.success =  '';
+          this.router.navigate([this.router.url]);
+        },
+      );
+  }
 
-        // this.messageService.add({
-        //     severity: 'success',
-        //     summary: 'Your access request has been sent for approval',
-        //   });
-        // call registration service
-        this.httpService.register(this.f.username.value, this.f.password.value, this.f.email.value)
-        .pipe(takeUntil(this.destroy$))
-            .subscribe(
-                (data: any) => {
-                    // stop spinner
-                    this.loading = false;
-                    if(data.success) {
-                        // After successfully registration redirect form to dashboard router(Executive page)
-
-                        this.success = data.message;
-                    } else {
-                        this.error = data.message;
-                    }
-                },
-                error => {
-                    this.loading = false; // stop spinner
-                    // check 422 status if user already exist else mail is already registered
-                    if (error.status === 422) {
-                        this.error = 'Cannot complete the registration process, Try with different username/email';
-                    } else if (error.status === 0) {// in case of connection timeout
-                        this.error = 'Could not register user, connection timed out!';
-                    }
-
-                    this.router.navigate([this.router.url]);
-                }
-            );
-    }
-
-    ngOnDestroy() {
-        this.destroy$.next();  
-        this.destroy$.complete();
-      }
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

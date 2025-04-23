@@ -1,11 +1,126 @@
-<div class="p-grid justify-content-start p-pl-2 p-pr-2 p-m-0">
-    <ng-container *ngFor="let kpi of chartData; let i = index;">
-        <div class="{{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}"
-            [ngStyle]="{'height': kpi.kpiDetail?.kpiHeight === 100 ? '414px' : (kpi.kpiDetail?.kpiHeight === 50 ? '257px' : '414px') }">
+<p-toast [style]="{marginTop: '80px'}"></p-toast>
+<!-- Existing Reports Slider-->
+<div class="slider-div" *ngIf="reportsData?.length">
+    <!-- Center-aligned container for report selection -->
+    <div class="center-container">
+        <div class="p-px-5 p-pt-4 p-pb-1">Select a report</div>
+        <div class="slider-wrapper">
+            <!-- Left Navigation Button -->
+            <button class="nav-button left" (click)="scrollLeft()">
+                <i class="pi pi-chevron-left"></i>
+            </button>
 
-            <app-report-kpi-card [currentChartData]="kpi.chartData" [kpiDataStatusCode]="kpi.kpiDataStatusCode"
-                [kpiData]="kpi.kpiDetail" [chartType]="kpi.chartType" [colors]="kpi.colors">
-            </app-report-kpi-card>
+            <!-- Scrollable container for report buttons -->
+            <div class="slider-container" #sliderContainer>
+                <p-button *ngFor="let report of reportsData" class="slider-item"
+                [ngClass]="{active: selectedReport.name === report.name}" (onClick)="setSelectedReport(report)">
+                
+                <ng-template pTemplate="content">
+                    <div class="button-content">
+                        {{ report.name }}
+                        <span class="close-icon" (click)="removeReport(report, $event)">×</span>
+                    </div>
+                </ng-template>
+                </p-button>
+            </div>
+
+            <!-- Right Navigation Button -->
+            <button class="nav-button right" (click)="scrollRight()">
+                <i class="pi pi-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Right-aligned Print Report button -->
+    <div class="print-button-container">
+        <p-button label="Print Report" styleClass="" aria-label="Print Report"
+            (onClick)="printReport()"></p-button>
+    </div>
+</div>
+<!-- Existing Reports Slider End-->
+
+<div class="print-header">
+    <h1>{{selectedReport?.name}}</h1>
+</div>
+
+
+<div *ngIf="selectedReport" class="kpi-container p-grid justify-content-start p-pl-2 p-pr-2 p-m-0 p-w-100">
+    <ng-container *ngFor="let kpi of selectedReport?.kpis; let i = index;">
+        <div class="kpi-div p-p-3 p-m-2 p-w-100">
+            <div class="p-d-flex p-jc-end">
+                <p-button label="Delete KPI" styleClass="delete-kpi-btn" aria-label="Delete KPI"
+                    (onClick)="deleteKPIFromReport(selectedReport, kpi)"
+                    [disabled]="selectedReport?.kpis?.length === 1"></p-button>
+            </div>
+
+            <div class="selected-filter-container p-d-flex p-jc-between p-p-3"
+                *ngIf="objectKeys(kpi.metadata.hieararchy)?.length">
+                <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
+                    <div class="p-col-4" *ngFor="let superKey of objectKeys(kpi.metadata.hieararchy)">
+                        <strong>{{ superKey }}&nbsp;:&nbsp;</strong> <span>{{
+                            kpi.metadata.hieararchy[superKey].nodeDisplayName }}</span>
+                    </div>
+                    <div class="p-d-flex p-jc-between" *ngFor="let superKey of objectValues(kpi.metadata.trendColors)">
+                        <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
+                            <div *ngFor="let key of objectKeys(superKey['tooltip']); let i = index;" class="p-col-4">
+                                <strong>{{ key }}&nbsp;:&nbsp;</strong> <span>{{ superKey['tooltip'][key] }}</span>
+                            </div>
+                            <div class="p-col-12">
+                                <strong>{{superKey['labelName'] | titlecase }}:&nbsp;</strong>
+                                <div class="align-list-marker" [ngStyle]="{'background-color':superKey?.color}"></div>
+                                <span>{{ superKey['nodeDisplayName'] }}</span>
+                            </div>
+                        </div>
+                        <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
+                            <div *ngFor="let key of objectKeys(kpi.metadata.additional_filters); let i = index;"
+                                class="p-col-12">
+                                <strong>{{ key }}&nbsp;:&nbsp;</strong> <span>{{
+                                    segregateSprints(kpi.metadata.additional_filters, key, superKey) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <ng-container *ngIf="!objectKeys(kpi.metadata.hieararchy)?.length">
+                <div class="selected-filter-container p-d-flex p-p-3"
+                    *ngFor="let superKey of objectValues(kpi.metadata.trendColors)">
+                    <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
+                        <div *ngFor="let key of objectKeys(superKey['tooltip']); let i = index;" class="p-col-4">
+                            <strong>{{ key }}&nbsp;:&nbsp;</strong> <span>{{ superKey['tooltip'][key] }}</span>
+                        </div>
+                        <div class="p-col-4">
+                            <strong>{{superKey['labelName'] | titlecase }}:&nbsp;</strong>
+                            <div class="align-list-marker" [ngStyle]="{'background-color':superKey?.color}"></div>
+                            <span>{{
+                                superKey['nodeDisplayName'] }}</span>
+                        </div>
+                    </div>
+                    <div class="tooltip-items p-m-0 p-pl-0 p-grid p-w-100">
+                        <div *ngFor="let key of objectKeys(kpi.metadata.additional_filters); let i = index;"
+                            class="p-col-12">
+                            <strong>{{ key }}&nbsp;:&nbsp;</strong> <span>{{
+                                segregateSprints(kpi.metadata.additional_filters, key, superKey) }}</span>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+            <div class="report-kpi-card-container {{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}">
+
+                <app-report-kpi-card [currentChartData]="kpi.chartData"
+                    [kpiDataStatusCode]="kpi.metadata.kpiDataStatusCode" [kpiData]="kpi.metadata"
+                    [chartType]="kpi.metadata.chartType" [kpiTrendsObj]="kpi.metadata.trend"
+                    [trendColors]="kpi.metadata.trendColors" [kpiFilters]="kpi.metadata.selectedKPIFilters"
+                    [selectedButtonValue]="kpi.metadata.selectedButtonValue" [cardData]="kpi.metadata.cardData"
+                    [kpiFilterData]="kpi.metadata?.kpiFilterData" [selectedTab]="kpi.metadata.selectedTab"
+                    [iterationKPIFilterValues]="kpi.metadata.iterationKPIFilterValues"
+                    [filterApplyData]="kpi.metadata.filterApplyData"
+                    [kpiSelectedFilterObj]="kpi.metadata.kpiSelectedFilterObj"
+                    [chartColorList]="kpi.metadata.chartColorList" [yAxis]="kpi.metadata.yAxis"
+                    [capturedAt]="kpi.metadata.capturedAt" [kpiHeight]="kpi.metadata.kpiHeight"
+                    [releaseEndDate]="kpi.metadata.releaseEndDate" [hieararchy]="kpi.metadata.hieararchy"
+                    [additional_filters]="kpi.metadata.additional_filters" [copyCardData]="kpi.metadata.copyCardData">
+                </app-report-kpi-card>
+            </div>
         </div>
     </ng-container>
 </div>

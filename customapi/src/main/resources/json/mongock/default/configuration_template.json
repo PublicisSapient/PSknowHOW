@@ -1,0 +1,23 @@
+[
+  {
+    "templateName": "Use Boards",
+    "templateCode": "1",
+    "disabled": false,
+    "tool": "Jira",
+    "kanban": false
+  },
+  {
+    "templateName": "Use JQL Query",
+    "templateCode": "2",
+    "disabled": false,
+    "tool": "Jira",
+    "kanban": false
+  },
+  {
+    "templateName": "None",
+    "templateCode": "3",
+    "disabled": false,
+    "tool": "Jira",
+    "kanban": false
+  }
+]

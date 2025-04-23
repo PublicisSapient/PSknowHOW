@@ -26,7 +26,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.jira.service.SprintDetailsServiceImpl;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -49,7 +53,6 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
-import com.publicissapient.kpidashboard.common.repository.sonar.SonarDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.sonar.SonarHistoryRepository;
 
 /**
@@ -65,6 +68,7 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 
 	public static final String WEEK_SEPERATOR = " to ";
 	DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	private static final String DATE_TIME_FORMAT_REGEX = "Z|\\.\\d+";
 
 	@Autowired
 	private CacheService cacheService;
@@ -73,7 +77,7 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 	private ConfigHelperService configHelperService;
 
 	@Autowired
-	private SonarDetailsRepository sonarDetailsRepository;
+	private SprintDetailsServiceImpl sprintDetailsService;
 
 	@Autowired
 	private SonarHistoryRepository sonarHistoryRepository;
@@ -295,4 +299,57 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 		}
 		return null;
 	}
+
+	/**
+	 * Fetches KPI data from the database for the given list of leaf nodes.
+	 *
+	 * @param leafNodeList
+	 *            A list of leaf nodes for which KPI data needs to be fetched.
+	 * @return A map where the key is the project ID and the value is a list of
+	 *         objects (SprintDetails) associated with that project.
+	 */
+	protected Map<String, SprintDetails> getSprintDetailsByIds(List<Node> leafNodeList) {
+		Map<String, SprintDetails> resultMap = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(leafNodeList)) {
+			Map<String, String> processedProjectIds = new HashMap<>();
+			leafNodeList.forEach(sprintNode -> {
+				String projectId = sprintNode.getProjectFilter().getId();
+				if (!processedProjectIds.containsKey(projectId)) {
+					processedProjectIds.put(projectId, sprintNode.getId());
+				}
+			});
+			List<SprintDetails> sprintDetailsList = sprintDetailsService
+					.getSprintDetailsByIds(processedProjectIds.values().stream().toList());
+			processedProjectIds.forEach((key, value) -> {
+				Optional<SprintDetails> filtered = sprintDetailsList
+						.stream()
+						.filter(sprintDetails -> sprintDetails.getSprintID().equals(value))
+						.findFirst();
+				filtered.ifPresent(sprintDetails -> resultMap.put(key, sprintDetails));
+			});
+		}
+		return resultMap;
+	}
+
+	/**
+	 * Determines the end date for a sprint based on the provided SprintDetails
+	 * object.
+	 *
+	 * @param sprintDetails
+	 *            The SprintDetails object containing information about the sprint.
+	 *            Can be null.
+	 * @return The calculated end date as a LocalDate. If sprintDetails is null, it
+	 *         returns the current date minus one week.
+	 */
+	protected LocalDate getEndDate(SprintDetails sprintDetails) {
+		if (sprintDetails != null) {
+			return sprintDetails.getCompleteDate() != null
+					? DateUtil.stringToLocalDate(sprintDetails.getCompleteDate().replaceAll(DATE_TIME_FORMAT_REGEX, ""),
+					DateUtil.TIME_FORMAT)
+					: DateUtil.stringToLocalDate(sprintDetails.getEndDate().replaceAll(DATE_TIME_FORMAT_REGEX, ""),
+					DateUtil.TIME_FORMAT);
+		}
+		return LocalDate.now().minusWeeks(1);
+	}
+
 }

@@ -1,5 +1,4 @@
-import { TypeofPipe } from "./type-of.pipe";
-
+import { TypeofPipe } from './type-of.pipe';
 
 describe('TypeofPipe', () => {
   let pipe: TypeofPipe;

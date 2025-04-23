@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 @Component({
   selector: 'app-kpi-additional-filter',
   templateUrl: './kpi-additional-filter.component.html',
-  styleUrls: ['./kpi-additional-filter.component.css']
+  styleUrls: ['./kpi-additional-filter.component.css'],
 })
 export class KpiAdditionalFilterComponent implements OnInit {
   @Input() data;
@@ -13,31 +13,37 @@ export class KpiAdditionalFilterComponent implements OnInit {
   @Input() selectedMainFilter;
   @Input() filters;
   @Output() modifiedDataResult = new EventEmitter();
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   applyAdditionalFilters() {
-    this.selectedFilter2.forEach(element => {
+    this.selectedFilter2.forEach((element) => {
       if (element.selectedValue) {
         if (element.filterType === 'Single') {
-          this.dataCopy = this.dataCopy.filter((d) => d[element.filterKey] === element.selectedValue);
+          this.dataCopy = this.dataCopy.filter(
+            (d) => d[element.filterKey] === element.selectedValue,
+          );
         } else {
-
           this.dataCopy = this.dataCopy.filter((d) => {
             let dataProperty = new Set(d[element.filterKey]);
-            return element.selectedValue.filter(item => dataProperty.has(item)).length > 0;
+            return (
+              element.selectedValue.filter((item) => dataProperty.has(item))
+                .length > 0
+            );
           });
         }
       }
     });
-    this.modifiedData = this.groupData(this.dataCopy, this.selectedMainFilter.filterKey);
+    this.modifiedData = this.groupData(
+      this.dataCopy,
+      this.selectedMainFilter.filterKey,
+    );
     let resultObj = {};
     resultObj['dataCopy'] = this.dataCopy;
     resultObj['modifiedData'] = this.modifiedData;
+    resultObj['selectedFilter2'] = this.selectedFilter2;
     this.modifiedDataResult.emit(resultObj);
-
   }
 
   groupData(arr, property) {
@@ -46,7 +52,7 @@ export class KpiAdditionalFilterComponent implements OnInit {
       const groupedCounts = {};
 
       // Iterate through the array
-      arr.forEach(item => {
+      arr.forEach((item) => {
         // Get the value of the specified property
         const propValue = item[property];
 
@@ -60,8 +66,8 @@ export class KpiAdditionalFilterComponent implements OnInit {
       });
 
       // Convert the groupedCounts object to an array of objects
-      const result = Object.keys(groupedCounts).map(key => ({
-        [key]: groupedCounts[key]
+      const result = Object.keys(groupedCounts).map((key) => ({
+        [key]: groupedCounts[key],
       }));
 
       return result;
@@ -72,14 +78,18 @@ export class KpiAdditionalFilterComponent implements OnInit {
 
   clearAdditionalFilters() {
     this.dataCopy = Object.assign([], this.data);
-    this.modifiedData = this.groupData(this.data, this.selectedMainFilter.filterKey);
-    this.selectedFilter2.forEach(filter => {
+    this.modifiedData = this.groupData(
+      this.data,
+      this.selectedMainFilter.filterKey,
+    );
+    this.selectedFilter2.forEach((filter) => {
       filter.selectedValue = null;
     });
     this.selectedFilter2 = null;
     let resultObj = {};
     resultObj['dataCopy'] = this.dataCopy;
     resultObj['modifiedData'] = this.modifiedData;
+    resultObj['selectedFilter2'] = this.selectedFilter2;
     this.modifiedDataResult.emit(resultObj);
   }
 
@@ -92,5 +102,4 @@ export class KpiAdditionalFilterComponent implements OnInit {
   additionalFilterChanged() {
     this.dataCopy = Object.assign([], this.data);
   }
-
 }

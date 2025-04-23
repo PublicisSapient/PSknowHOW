@@ -40,7 +40,12 @@ import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogKPIService;
-import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.apis.model.EpicMetaData;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.apis.util.ReleaseKpiHelper;
@@ -133,13 +138,16 @@ public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Intege
 		Map<String, Object> resultListMap = new HashMap<>();
 		if (null != leafNode) {
 			log.info("Backlog Epic Progress -> Requested sprint : {}", leafNode.getName());
-			List<JiraIssue> totalJiraIssue = getBackLogJiraIssuesFromBaseClass();
+			List<JiraIssue> totalJiraIssue = jiraIssueRepository
+					.findByBasicProjectConfigId(leafNode.getProjectFilter().getBasicProjectConfigId().toString());
 			resultListMap.put(TOTAL_ISSUES, totalJiraIssue);
 			// get Epics Linked to backlogStories stories
-			resultListMap.put(EPIC_LINKED,
-					jiraIssueRepository.findNumberInAndBasicProjectConfigIdAndTypeName(
-							totalJiraIssue.stream().map(JiraIssue::getEpicLinked).toList(),
-							leafNode.getProjectFilter().getBasicProjectConfigId().toString(), NormalizedJira.ISSUE_TYPE.getValue()));
+			final List<String> epicKeyList = totalJiraIssue.stream().map(JiraIssue::getEpicLinked).toList();
+			Set<JiraIssue> epicJiraIssues = totalJiraIssue.stream()
+					.filter(j -> epicKeyList.contains(j.getNumber())
+							&& j.getTypeName().equalsIgnoreCase(NormalizedJira.ISSUE_TYPE.getValue()))
+					.collect(Collectors.toSet());
+			resultListMap.put(EPIC_LINKED, epicJiraIssues);
 			// get status category of the project
 			resultListMap.put(RELEASE_JIRA_ISSUE_STATUS, getJiraIssueReleaseStatus());
 		}

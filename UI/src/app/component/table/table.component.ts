@@ -1,25 +1,30 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
-  styleUrls: ['./table.component.css']
+  styleUrls: ['./table.component.css'],
 })
 export class TableComponent implements OnInit, OnChanges {
-
   @Input() cols;
   @Input() data;
   @Input() showMarker = false;
   @Input() showMarkerColumnNumber;
   @Input() trendBoxColorObj;
-  constructor() { }
+  constructor() {}
 
   ngOnChanges(changes: SimpleChanges) {
     // only run when property "data" changed
     if (changes['data']) {
       this.data = this.sortAlphabetically(this.data);
     }
-}
+  }
 
   ngOnInit(): void {
     this.data = this.sortAlphabetically(this.data);
@@ -33,9 +38,8 @@ export class TableComponent implements OnInit, OnChanges {
   getColorForRow(rowName: string): string {
     if (!this.trendBoxColorObj) return '';
     const matchingKey = Object.keys(this.trendBoxColorObj).find(
-        key => this.trendBoxColorObj[key].nodeName === rowName
+      (key) => this.trendBoxColorObj[key].nodeName === rowName,
     );
     return matchingKey ? this.trendBoxColorObj[matchingKey].color : '';
   }
-
 }

@@ -8,9 +8,8 @@ describe('SemiCircleDonutChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SemiCircleDonutChartComponent ]
-    })
-    .compileComponents();
+      declarations: [SemiCircleDonutChartComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SemiCircleDonutChartComponent);
     component = fixture.componentInstance;

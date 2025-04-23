@@ -1,0 +1,347 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001
+      labels: 0.0.0
+      author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: users
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: serial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: username
+                  type: varchar(250)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: saml_email
+                  type: varchar(250)
+              - column:
+                  name: password
+                  type: varchar(250)
+              - column:
+                  name: first_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(100)
+              - column:
+                  name: display_name
+                  type: varchar(250)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(250)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: approved
+                  type: boolean
+                  defaultValue: false
+              - column:
+                  name: user_verified
+                  type: boolean
+                  defaultValue: false
+              - column:
+                  name: auth_type
+                  type: varchar(100)
+              - column:
+                  name: last_unsuccessful_login_time
+                  type: timestamp
+              - column:
+                  name: failed_login_attempt_count
+                  type: integer
+                  defaultValue: 0
+              - column:
+                  name: created_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modified_date
+                  type: date
+
+  - changeSet:
+      id: 002
+      labels: 0.0.0
+      author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: resource
+      changes:
+        - createTable:
+            tableName: resource
+            columns:
+              - column:
+                  name: id
+                  type: serial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: integer
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_resource_users
+                    references: users(id)
+              - column:
+                  name: created_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modified_by
+                  type: integer
+                  constraints:
+                    foreignKeyName: fk_resource_users_modified
+                    references: users(id)
+              - column:
+                  name: modified_date
+                  type: date
+
+  - changeSet:
+      id: 003
+      labels: 0.0.0
+      author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: role
+      changes:
+        - createTable:
+            tableName: role
+            columns:
+              - column:
+                  name: id
+                  type: serial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(250)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(250)
+              - column:
+                  name: root_user
+                  type: boolean
+                  defaultValue: false
+              - column:
+                  name: default_role
+                  type: boolean
+                  defaultValue: false
+              - column:
+                  name: resource_id
+                  type: integer
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_role_resource
+                    references: resource(id)
+              - column:
+                  name: created_by
+                  type: integer
+                  constraints:
+                    foreignKeyName: fk_role_users
+                    references: users(id)
+              - column:
+                  name: created_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modified_by
+                  type: integer
+                  constraints:
+                    foreignKeyName: fk_role_users_modified
+                    references: users(id)
+              - column:
+                  name: modified_date
+                  type: date
+
+  - changeSet:
+      id: 004
+      labels: 0.0.0
+      author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: user_role
+      changes:
+        - createTable:
+            tableName: user_role
+            columns:
+              - column:
+                  name: id
+                  type: serial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: role_id
+                  type: integer
+                  constraints:
+                    foreignKeyName: fk_user_role_role
+                    references: role(id)
+              - column:
+                  name: username
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: integer
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_role_users
+                    references: users(id)
+              - column:
+                  name: created_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modified_by
+                  type: integer
+                  constraints:
+                    foreignKeyName: fk_user_role_users_modified
+                    references: users(id)
+              - column:
+                  name: modified_date
+                  type: date
+
+  - changeSet:
+      id: 005
+      labels: 0.0.0
+      author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: global_config
+      changes:
+        - createTable:
+            tableName: global_config
+            columns:
+              - column:
+                  name: id
+                  type: serial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: env
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: email_host
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email_port
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: from_email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 006
+      labels: 0.0.0
+      author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: forgot_password_token
+      changes:
+        - createTable:
+            tableName: forgot_password_token
+            columns:
+              - column:
+                  name: id
+                  type: serial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: token
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expiry_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 007
+      labels: 0.0.0
+      author: kunkambl
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: user_verification_token
+      changes:
+        - createTable:
+            tableName: user_verification_token
+            columns:
+              - column:
+                  name: id
+                  type: serial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: token
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expiry_date
+                  type: timestamp
+              - column:
+                  name: username
+                  type: varchar(255)
+              - column:
+                  name: email
+                  type: varchar(255)

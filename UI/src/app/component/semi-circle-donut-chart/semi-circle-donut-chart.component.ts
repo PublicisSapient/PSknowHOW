@@ -1,13 +1,18 @@
-import { Component, Input, OnInit, ElementRef, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  ElementRef,
+  SimpleChanges,
+} from '@angular/core';
 import * as d3 from 'd3';
 
 @Component({
   selector: 'app-semi-circle-donut-chart',
   templateUrl: './semi-circle-donut-chart.component.html',
-  styleUrls: ['./semi-circle-donut-chart.component.css']
+  styleUrls: ['./semi-circle-donut-chart.component.css'],
 })
 export class SemiCircleDonutChartComponent implements OnInit {
-
   @Input() value: number = 0; // Value for the chart (e.g., 86 for 86%)
   @Input() max: number = 100; // Maximum value for the chart
   @Input() width: number = 200; // Width of the chart
@@ -16,7 +21,7 @@ export class SemiCircleDonutChartComponent implements OnInit {
   @Input() totalIssues: number = 0;
   @Input() color;
 
-  constructor(private elementRef: ElementRef) { }
+  constructor(private elementRef: ElementRef) {}
 
   ngOnInit(): void {
     this.createDonutChart();
@@ -26,14 +31,14 @@ export class SemiCircleDonutChartComponent implements OnInit {
     // Check if the value input has changed
     if (changes.value) {
       this.value = parseInt(this.value + '');
-      this.totalIssues = parseInt(this.totalIssues+'')
+      this.totalIssues = parseInt(this.totalIssues + '');
       this.createDonutChart();
     }
   }
 
   private createDonutChart(): void {
-    const chartWidth = (this.width === undefined) ? 100 : this.width;; // Width of the chart
-    const chartHeight = (this.height === undefined) ? 200 : this.height;; // Height of the chart
+    const chartWidth = this.width === undefined ? 100 : this.width; // Width of the chart
+    const chartHeight = this.height === undefined ? 200 : this.height; // Height of the chart
     const radius = Math.min(chartWidth, chartHeight) / 2; // Radius of the donut
     const thickness = Math.floor(radius / 3); // Thickness of the donut ring
     // Clear existing SVG content
@@ -49,70 +54,80 @@ export class SemiCircleDonutChartComponent implements OnInit {
       .attr('transform', `translate(${chartWidth / 2}, ${chartHeight / 2})`); // Center the chart
 
     // Create arc generator
-    const roundedArc = d3.arc()
+    const roundedArc = d3
+      .arc()
       .innerRadius(radius - thickness)
-      .outerRadius(radius)
-      // .cornerRadius(thickness / 2); // rounded ends
+      .outerRadius(radius);
+    // .cornerRadius(thickness / 2); // rounded ends
 
     // Create arc generator
-    const arc = d3.arc()
+    const arc = d3
+      .arc()
       .innerRadius(radius - thickness)
       .outerRadius(radius);
 
     // Create pie generator
-    const pie = d3.pie()
+    const pie = d3
+      .pie()
       .sort(null)
-      .value(d => d.value);
+      .value((d) => d.value);
 
     // Define the data (completed and remaining)
     const data = [
-      { value: this.calculatePercentage(+this.value,+this.totalIssues), color: this.color?.length ? this.color : '#627AD0' }, // Blue color for completed
-      { value: this.max - this.calculatePercentage(+this.value,+this.totalIssues), color: '#E5EAF2' } // Gray color for remaining
+      {
+        value: this.calculatePercentage(+this.value, +this.totalIssues),
+        color: this.color?.length ? this.color : '#627AD0',
+      }, // Blue color for completed
+      {
+        value:
+          this.max - this.calculatePercentage(+this.value, +this.totalIssues),
+        color: '#E5EAF2',
+      }, // Gray color for remaining
     ];
 
     // Append the arcs
-    const path = svg.selectAll('path')
+    const path = svg
+      .selectAll('path')
       .data(pie(data))
       .enter()
       .append('path')
       .attr('d', roundedArc)
-      .attr('fill', d => d.data.color);
+      .attr('fill', (d) => d.data.color);
 
     // Add central text
     if (this.kpiId !== 'kpi124') {
+      svg
+        .append('text')
+        .attr('text-anchor', 'middle')
+        .attr('dy', '-0.5em') // Adjust text position
+        //.style('font-size', '18px')
+        .style('font-weight', 'bold')
+        .style('fill', '#627AD0')
+        .text(this.value);
 
-      svg.append('text')
-      .attr('text-anchor', 'middle')
-      .attr('dy', '-0.5em') // Adjust text position
-      //.style('font-size', '18px')
-      .style('font-weight', 'bold')
-      .style('fill', '#627AD0')
-      .text(this.value);
-      
-      svg.append('text')
+      svg
+        .append('text')
         .attr('text-anchor', 'middle')
         .attr('dy', '1em') // Adjust text position
         .style('font-size', '14px')
         .style('fill', '#627AD0')
         .text('%');
-
-
     } else {
-      svg.append('text')
-      .attr('text-anchor', 'middle')
-      .attr('dy', '0.5em') // Adjust text position
-      //.style('font-size', '18px')
-      .style('font-weight', 'bold')
-      .style('fill', '#627AD0')
-      .text(this.value + '/' + this.totalIssues);
+      svg
+        .append('text')
+        .attr('text-anchor', 'middle')
+        .attr('dy', '0.5em') // Adjust text position
+        //.style('font-size', '18px')
+        .style('font-weight', 'bold')
+        .style('fill', '#627AD0')
+        .text(this.value + '/' + this.totalIssues);
     }
   }
 
   calculatePercentage(value, total) {
     if (total === 0) {
-        return value;
+      return value;
     }
     return (value / total) * 100;
-}
-
+  }
 }

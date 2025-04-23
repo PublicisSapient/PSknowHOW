@@ -18,7 +18,7 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule,FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ChipsModule } from 'primeng/chips';
 import { ButtonModule } from 'primeng/button';
@@ -27,7 +27,7 @@ import { AccordionModule } from 'primeng/accordion';
 import { DropdownModule } from 'primeng/dropdown';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { ToastModule } from 'primeng/toast';
-import { MessageService,ConfirmationService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { DataViewModule } from 'primeng/dataview';
 import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
@@ -42,7 +42,7 @@ import { MessagesModule } from 'primeng/messages';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageModule } from 'primeng/message';
 import { InputTextareaModule } from 'primeng/inputtextarea';
-import {InputNumberModule} from 'primeng/inputnumber';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ProjectConfigComponent } from './project-config.component';
 import { BasicConfigComponent } from './basic-config/basic-config.component';
@@ -53,7 +53,7 @@ import { ProjectListComponent } from './project-list/project-list.component';
 import { FieldMappingComponent } from './field-mapping/field-mapping.component';
 import { ConnectionListComponent } from './connection-list/connection-list.component';
 import { ConfigSettingsComponent } from './config-settings/config-settings.component';
-import { ProjectSettingsComponent } from './project-settings/project-settings.component'
+import { ProjectSettingsComponent } from './project-settings/project-settings.component';
 import { JiraConfigComponent } from './jira-config/jira-config.component';
 import { BlockUIModule } from 'primeng/blockui';
 import { PanelModule } from 'primeng/panel';
@@ -61,11 +61,12 @@ import { SharedModuleModule } from 'src/app/shared-module/shared-module.module';
 import { BadgeModule } from 'primeng/badge';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { PasswordModule } from 'primeng/password';
-import {StepsModule} from 'primeng/steps';
+import { StepsModule } from 'primeng/steps';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { MenuModule } from 'primeng/menu';
 @NgModule({
-  declarations: [ProjectConfigComponent,
+  declarations: [
+    ProjectConfigComponent,
     BasicConfigComponent,
     ToolMenuComponent,
     ProjectListComponent,
@@ -74,7 +75,8 @@ import { MenuModule } from 'primeng/menu';
     ConfigSettingsComponent,
     ProjectSettingsComponent,
     FieldMappingComponent,
-    JiraConfigComponent],
+    JiraConfigComponent,
+  ],
   imports: [
     ProjectConfigRoutingModule,
     CommonModule,
@@ -113,8 +115,8 @@ import { MenuModule } from 'primeng/menu';
     PasswordModule,
     SplitButtonModule,
     TabViewModule,
-    MenuModule
+    MenuModule,
   ],
-  providers: [MessageService, ConfirmationService]
+  providers: [MessageService, ConfirmationService],
 })
-export class ProjectConfigModule { }
+export class ProjectConfigModule {}

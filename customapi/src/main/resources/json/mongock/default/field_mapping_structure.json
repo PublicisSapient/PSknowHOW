@@ -1634,7 +1634,7 @@
     "tooltip": {
       "definition": "All workflow statuses used to reject defects"
     },
-    "mandatory": true
+    "mandatory": false
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI135",
@@ -4334,6 +4334,17 @@
     },
     "mandatory": false,
     "nodeSpecific": false
+  },
+  {
+    "fieldName": "includeActiveSprintInBacklogKPI",
+    "fieldLabel": "Backlog KPIs include active sprint data",
+    "fieldType": "toggle",
+    "toggleLabelLeft": "Exclude active sprint data",
+    "toggleLabelRight": "Include active sprint data",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Enabled State Backlog KPIs will populate including the active sprint data."
+    }
   }
-
 ]

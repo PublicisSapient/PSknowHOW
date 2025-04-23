@@ -16,12 +16,21 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+  waitForAsync,
+} from '@angular/core/testing';
 import { ToastModule } from 'primeng/toast';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { APP_CONFIG, AppConfig } from '../../../services/app.config';
@@ -46,46 +55,62 @@ describe('RequestStatusComponent', () => {
   const fakeRequestsData = {
     message: 'Found access_requests under username testUser',
     success: true,
-    data: [{
-      _id: '5da46ff3e645ca33dc927b83',
-      username: 'testUser',
-      status: 'Pending',
-      reviewComments: '',
-      projects: [{
-        projectName: 'Test1',
-        projectId: 'Test1_68500_Test1'
-      }],
-      roles: [{
-        _id: '5da46000e645ca33dc927b4a',
-        roleName: 'ROLE_PROJECT_VIEWER'
-      }]
-    }, {
-      _id: '5da47bdde645ca33dc927ba8',
-      username: 'testUser',
-      status: 'Pending',
-      reviewComments: '',
-      projects: [{
-        projectName: 'Test1',
-        projectId: 'Test1_68500_Test1'
-      }],
-      roles: [{
-        _id: '5da03f242afa421ae416cad7',
-        roleName: 'ROLE_PROJECT_VIEWER'
-      }]
-    }, {
-      _id: '5da47c2ae645ca33dc927bb3',
-      username: 'testUser',
-      status: 'Pending',
-      reviewComments: '',
-      projects: [{
-        projectName: 'Test2',
-        projectId: 'Test2_63102_Test2'
-      }],
-      roles: [{
-        _id: '5da03f242afa421ae416cad7',
-        roleName: 'ROLE_PROJECT_VIEWER'
-      }]
-    }]
+    data: [
+      {
+        _id: '5da46ff3e645ca33dc927b83',
+        username: 'testUser',
+        status: 'Pending',
+        reviewComments: '',
+        projects: [
+          {
+            projectName: 'Test1',
+            projectId: 'Test1_68500_Test1',
+          },
+        ],
+        roles: [
+          {
+            _id: '5da46000e645ca33dc927b4a',
+            roleName: 'ROLE_PROJECT_VIEWER',
+          },
+        ],
+      },
+      {
+        _id: '5da47bdde645ca33dc927ba8',
+        username: 'testUser',
+        status: 'Pending',
+        reviewComments: '',
+        projects: [
+          {
+            projectName: 'Test1',
+            projectId: 'Test1_68500_Test1',
+          },
+        ],
+        roles: [
+          {
+            _id: '5da03f242afa421ae416cad7',
+            roleName: 'ROLE_PROJECT_VIEWER',
+          },
+        ],
+      },
+      {
+        _id: '5da47c2ae645ca33dc927bb3',
+        username: 'testUser',
+        status: 'Pending',
+        reviewComments: '',
+        projects: [
+          {
+            projectName: 'Test2',
+            projectId: 'Test2_63102_Test2',
+          },
+        ],
+        roles: [
+          {
+            _id: '5da03f242afa421ae416cad7',
+            roleName: 'ROLE_PROJECT_VIEWER',
+          },
+        ],
+      },
+    ],
   };
 
   beforeEach(waitForAsync(() => {
@@ -98,12 +123,16 @@ describe('RequestStatusComponent', () => {
         HttpClientTestingModule,
         BrowserAnimationsModule,
         TableModule,
-        ToastModule
+        ToastModule,
       ],
-      providers: [HttpService, MessageService, ConfirmationService, SharedService
-        , { provide: APP_CONFIG, useValue: AppConfig }]
-    })
-      .compileComponents();
+      providers: [
+        HttpService,
+        MessageService,
+        ConfirmationService,
+        SharedService,
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -112,7 +141,7 @@ describe('RequestStatusComponent', () => {
     httpService = TestBed.get(HttpService);
     httpMock = TestBed.get(HttpTestingController);
     messageService = TestBed.get(MessageService);
-    sharedService= TestBed.inject(SharedService);
+    sharedService = TestBed.inject(SharedService);
     confirmationService = TestBed.inject(ConfirmationService);
     fixture.detectChanges();
   });
@@ -128,13 +157,17 @@ describe('RequestStatusComponent', () => {
 
   it('should load pending requests on load', () => {
     component.userName = 'testUser';
-    const fakeUserDetails = {user_name: 'testUser'}
-    localStorage.setItem('currentUserDetails',JSON.stringify(fakeUserDetails))
+    const fakeUserDetails = { user_name: 'testUser' };
+    localStorage.setItem('currentUserDetails', JSON.stringify(fakeUserDetails));
     fixture.detectChanges();
     component.ngOnInit();
-    httpMock.match(baseUrl + '/api/accessrequests/user/' + component.userName)[0].flush(fakeRequestsData);
+    httpMock
+      .match(baseUrl + '/api/accessrequests/user/' + component.userName)[0]
+      .flush(fakeRequestsData);
     if (component.requestStatusData['success']) {
-      expect(Object.keys(component.requestStatusList).length).toEqual(Object.keys(fakeRequestsData.data).length);
+      expect(Object.keys(component.requestStatusList).length).toEqual(
+        Object.keys(fakeRequestsData.data).length,
+      );
     }
   });
 
@@ -144,24 +177,32 @@ describe('RequestStatusComponent', () => {
     const errorResponse = {
       message: 'Error in fetching requests. Please try after some time.',
       success: false,
-      data: []
-    }
+      data: [],
+    };
     component.requestStatusList = [];
-    spyOn(httpService, 'getUserAccessRequests').and.returnValue(of(errorResponse))
+    spyOn(httpService, 'getUserAccessRequests').and.returnValue(
+      of(errorResponse),
+    );
     const spy = spyOn(messageService, 'add');
     component.getRequests();
     expect(Object.keys(component.requestStatusList).length).toEqual(0);
     expect(spy).toHaveBeenCalled();
-  });  
+  });
 
   it('should delete request', () => {
     const requestId = '6063052eab1d4700013e5aff';
     const fakeEvent = { isTrusted: true };
-    const recallResponse = { message: 'Sucessfully deleted.', success: true, data: '6063052eab1d4700013e5aff' };
-    
+    const recallResponse = {
+      message: 'Sucessfully deleted.',
+      success: true,
+      data: '6063052eab1d4700013e5aff',
+    };
+
     spyOn<any>(confirmationService, 'confirm').and.callFake((params: any) => {
       params.accept();
-      httpMock.expectOne(baseUrl + '/api/accessrequests/6063052eab1d4700013e5aff').flush(recallResponse);
+      httpMock
+        .expectOne(baseUrl + '/api/accessrequests/6063052eab1d4700013e5aff')
+        .flush(recallResponse);
     });
     component.recallRequest(requestId, fakeEvent);
     fixture.detectChanges();
@@ -171,14 +212,19 @@ describe('RequestStatusComponent', () => {
     component.dataLoading = true;
     const requestId = '6063052eab1d4700013e5aff';
     const fakeEvent = { isTrusted: true };
-    const recallResponse = { message: 'Error in recalling request. Please try after some time.', success: false };
+    const recallResponse = {
+      message: 'Error in recalling request. Please try after some time.',
+      success: false,
+    };
     const spy = spyOn(messageService, 'add');
     spyOn<any>(confirmationService, 'confirm').and.callFake((params: any) => {
       params.accept();
-      httpMock.expectOne(baseUrl + '/api/accessrequests/6063052eab1d4700013e5aff').flush(recallResponse);
+      httpMock
+        .expectOne(baseUrl + '/api/accessrequests/6063052eab1d4700013e5aff')
+        .flush(recallResponse);
     });
     component.recallRequest(requestId, fakeEvent);
     tick();
     expect(spy).toHaveBeenCalled();
-  }))
+  }));
 });
