@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +52,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -109,8 +109,6 @@ public class DefectReopenRateServiceImplTest {
 				.newInstance("/json/default/iteration/jira_issue_custom_history.json");
 		totalJiraIssueList = jiraIssueDataFactory.getJiraIssues();
 		totalJiraIssueHistoryList = jiraIssueHistoryDataFactory.getUniqueJiraIssueCustomHistory();
-		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(totalJiraIssueList);
-		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(totalJiraIssueHistoryList);
 	}
 
 	@SuppressWarnings("unchecked")

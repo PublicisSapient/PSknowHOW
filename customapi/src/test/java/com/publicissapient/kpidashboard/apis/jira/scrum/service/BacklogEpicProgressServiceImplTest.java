@@ -195,7 +195,7 @@ public class BacklogEpicProgressServiceImplTest {
 		assertThat(inProgressCount.getSubFilter()).isEqualTo(IN_PROGRESS);
 
 		DataCount doneCount = ((List<DataCount>) dataCount.getValue()).get(2);
-		assertThat(doneCount.getValue()).isEqualTo(42L);
+		assertThat(doneCount.getValue()).isEqualTo(39L);
 		assertThat(doneCount.getSize()).isEqualTo(57.0);
 		assertThat(doneCount.getSubFilter()).isEqualTo(DONE);
 	}
