@@ -15,11 +15,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.IssueKpiModalValue;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -45,6 +42,7 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -286,36 +284,32 @@ public class DefectReopenRateServiceImpl extends JiraBacklogKPIService<Double, L
 			defectTypeList.addAll(fieldMapping.getJiradefecttype());
 		}
 		defectTypeList.add(NormalizedJira.DEFECT_TYPE.getValue());
-		List<String> defectList = defectTypeList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList());
-		final List<Pattern> defectPatterns = CommonUtils.convertToPatternList(defectList);
+		List<String> defectList = defectTypeList.stream().filter(Objects::nonNull).distinct()
+				.collect(Collectors.toList());
 		mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-				defectPatterns);
+				CommonUtils.convertToPatternList(defectList));
 		uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				Collections.singletonList(basicProjectConfigId.toString()));
-		List<JiraIssue> jiraIssues = getBackLogJiraIssuesFromBaseClass().stream().filter(jiraIssue -> defectPatterns
-				.stream().anyMatch(pattern -> pattern.matcher(jiraIssue.getTypeName()).matches())).toList();
+		List<JiraIssue> jiraIssues = jiraIssueRepository.findIssuesByFilterAndProjectMapFilter(mapOfFilters,
+				uniqueProjectMap);
+
 		List<String> jiraDefectID = jiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
 		Map<String, Object> mapOfProjectFiltersForClosedStatus = new LinkedHashMap<>();
 		List<String> closedStatusList = (List<String>) CollectionUtils
 				.emptyIfNull(fieldMapping.getJiraDefectClosedStatusKPI137());
 		closedStatusListBasicConfigMap.put(basicProjectConfigId.toString(), closedStatusList);
-		final List<Pattern> closedStatusPatterns = CommonUtils.convertToPatternList(closedStatusList);
 		mapOfProjectFiltersForClosedStatus.put("statusUpdationLog.story.changedTo",
-				closedStatusPatterns);
+				CommonUtils.convertToPatternList(closedStatusList));
 		uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFiltersForClosedStatus);
 		mapOfFiltersForHistory.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				Collections.singletonList(basicProjectConfigId.toString()));
 		mapOfFiltersForHistory.put(JiraFeatureHistory.STORY_ID.getFieldValueInFeature(), jiraDefectID);
 		// we get all the data that are once closed
-		List<JiraIssueCustomHistory> jiraReopenIssueCustomHistories = getJiraIssuesCustomHistoryFromBaseClass().stream()
-				.filter(history -> jiraDefectID.contains(history.getStoryID())
-						&& history.getStatusUpdationLog().stream()
-								.anyMatch(log -> closedStatusPatterns.stream()
-										.anyMatch(pattern -> pattern.matcher(log.getChangedTo()).matches())))
-				.collect(Collectors.toList());
-		List<String> jiraHistoryDefectID = jiraReopenIssueCustomHistories.stream().map(JiraIssueCustomHistory::getStoryID)
-				.collect(Collectors.toList());
+		List<JiraIssueCustomHistory> jiraReopenIssueCustomHistories = jiraIssueCustomHistoryRepository
+				.findByFilterAndFromStatusMap(mapOfFiltersForHistory, uniqueProjectMap);
+		List<String> jiraHistoryDefectID = jiraReopenIssueCustomHistories.stream()
+				.map(JiraIssueCustomHistory::getStoryID).collect(Collectors.toList());
 		List<JiraIssue> totalJiraDefect = jiraIssues.stream()
 				.filter(jiraIssue -> jiraHistoryDefectID.contains(jiraIssue.getNumber())).collect(Collectors.toList());
 		resultMap.put(TOTAL_JIRA_DEFECTS, totalJiraDefect);
