@@ -95,8 +95,6 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 	private static final String SPRINT_DETAILS = "sprintDetails";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	private static final String DELAYED_WORKITEMS = "Delayed Workitems";
-	private static final String EMPTY_OR_DASH_PLACEHOLDER = " - ";
-	@Autowired
 	private ConfigHelperService configHelperService;
 
 	@Override
@@ -210,6 +208,8 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 			List<Double> overAllStoryPointsPlanned = Arrays.asList(0.0);
 			List<Double> overAllOriginalEstimatePlanned = Arrays.asList(0.0);
 			List<Integer> overallDelay = Arrays.asList(0);
+			List<Integer> overallDelayCount = Arrays.asList(0);
+			List<IterationKpiModalValue> overAllDelayModalValues = new ArrayList<>();
 			List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
 			// For markerInfo
 			Map<String, String> markerInfo = new HashMap<>();
@@ -226,6 +226,8 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 						Double storyPointPlanned = 0.0;
 						Double originalEstimatePlanned = 0.0;
 						int delay = 0;
+						int individualDelayCount = 0;
+						List<IterationKpiModalValue> individualDelayModalValues = new ArrayList<>();
 						for (JiraIssue jiraIssue : issues) {
 							if (SprintDetails.SPRINT_STATE_ACTIVE.equalsIgnoreCase(sprintDetails.getState())) {
 								// Checking if dueDate is < today date for active sprint
@@ -255,6 +257,34 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 											fieldMapping, modalObjectMap);
 									setKpiSpecificData(modalObjectMap, issueWiseDelay, jiraIssue, jiraIssueData,
 											actualCompletionData);
+								}
+								if (StringUtils.isNotEmpty(jiraIssue.getDevDueDate()) && DateUtil.stringToLocalDate(jiraIssue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+										.isAfter(LocalDate.now())) {
+									List<String> jiraDevDoneStatusKPI128 = fieldMapping.getJiraDevDoneStatusKPI128();
+									JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream()
+											.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equals(jiraIssue.getNumber()))
+											.findFirst().orElse(new JiraIssueCustomHistory());
+									List<JiraHistoryChangeLog> filterStatusUpdationLogs = new ArrayList<>();
+
+									LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
+									LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+									// filtering statusUpdationLogs lies in between sprintStart and sprintEnd
+									filterStatusUpdationLogs = getFilterStatusUpdationLogs(issueCustomHistory, filterStatusUpdationLogs,
+											sprintStartDate, sprintEndDate);
+									// Check if any log entry's changedTo matches any target status (case-insensitive)
+									boolean hasMatchingStatus = filterStatusUpdationLogs.stream()
+											.anyMatch(log ->
+													jiraDevDoneStatusKPI128.stream()
+															.anyMatch(status ->
+																	status.equalsIgnoreCase(log.getChangedTo())
+															)
+											);
+									if (hasMatchingStatus) {
+										individualDelayCount += individualDelayCount;
+										overallDelayCount.set(0, overallDelayCount.get(0) + 1);
+										KPIExcelUtility.populateIterationKPI(overAllDelayModalValues, individualDelayModalValues, jiraIssue,
+												fieldMapping, modalObjectMap);
+									}
 								}
 							} else {
 								// Checking if dueDate is <= sprint End Date for closed sprint
@@ -326,9 +356,8 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 						issueCountsActual = createIterationKpiData(ACTUAL_COMPLETION, fieldMapping, issueCountActual,
 								storyPointActual, originalEstimateActual, null);
 						delayed = new IterationKpiData(DELAY, (double) (delay), null, null, CommonConstant.DAY,"", null);
-						List<IterationKpiModalValue> individualDelayedModalValues = modalValues.stream().filter(ikmv -> !ikmv.getDelayInDays().equalsIgnoreCase(EMPTY_OR_DASH_PLACEHOLDER)).collect(Collectors.toList());
-						double individualDelayedPercentage = calculateDelayedPercentage(issueCountPlanned,individualDelayedModalValues.size());
-						individualDelayedWorkItem = createIterationKpiDataToGetTheDelayedItemCount(DELAYED_WORKITEMS,individualDelayedModalValues.size(),individualDelayedModalValues,individualDelayedPercentage);
+						double individualDelayedPercentage = calculateDelayedPercentage(issueCountPlanned,individualDelayCount);
+						individualDelayedWorkItem = createIterationKpiDataToGetTheDelayedItemCount(DELAYED_WORKITEMS,individualDelayCount,individualDelayModalValues,individualDelayedPercentage);
 						data.add(issueCountsPlanned);
 						data.add(issueCountsActual);
 						data.add(individualDelayedWorkItem);
@@ -350,9 +379,8 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 					overAllOriginalEstimateActual.get(0), null);
 			overAllDelay = new IterationKpiData(DELAY, (double) (overallDelay.get(0)), null, null, CommonConstant.DAY,"",
 					null);
-			List<IterationKpiModalValue> overAllDelayedModalValues = overAllmodalValues.stream().filter(ikmv -> !ikmv.getDelayInDays().equalsIgnoreCase(EMPTY_OR_DASH_PLACEHOLDER)).collect(Collectors.toList());
-			double overAllDelayedPercentage = calculateDelayedPercentage(overAllIssueCountPlanned.get(0),overAllDelayedModalValues.size());
-			overAllDelayedWorkItem = createIterationKpiDataToGetTheDelayedItemCount(DELAYED_WORKITEMS,overAllDelayedModalValues.size(),overAllDelayedModalValues,overAllDelayedPercentage);
+			double overAllDelayedPercentage = calculateDelayedPercentage(overAllIssueCountPlanned.get(0),overallDelayCount.get(0));
+			overAllDelayedWorkItem = createIterationKpiDataToGetTheDelayedItemCount(DELAYED_WORKITEMS,overallDelayCount.get(0),overAllDelayModalValues,overAllDelayedPercentage);
 			data.add(overAllIssueCountsPlanned);
 			data.add(overAllIssueCountsActual);
 			data.add(overAllDelayedWorkItem);
@@ -374,7 +402,7 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 	}
 
 	private double calculateDelayedPercentage(int totalItemPlanned, int numberOfDelay) {
-		return Math.round(((double) numberOfDelay / totalItemPlanned) * 100);
+		return numberOfDelay != 0 ? Math.round(((double) numberOfDelay / totalItemPlanned) * 100) : 0.0;
 	}
 
 	/**
