@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -56,11 +55,9 @@ import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -219,7 +216,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 								CollectionUtils.emptyIfNull(totalIssues).stream()))
 				.filter(j -> Objects.nonNull(j.getLabels()) && Objects.nonNull(fieldMapping.getJiraLabelsKPI120())
 						&& j.getLabels().stream().anyMatch(fieldMapping.getJiraLabelsKPI120()::contains))
-				.distinct().collect(Collectors.toList());
+				.distinct().toList();
 
 		Map<String, JiraIssueCustomHistory> issuesByNumber = issueHistory.stream()
 				.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, issue -> issue, (existing, replacement) -> existing));
@@ -370,7 +367,8 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 			}
 			List<IterationKpiData> data = new ArrayList<>();
 			IterationKpiData issueCounts;
-			List<String> additionalInfo = getKpiDataExpressions(overallDayWiseScopeUpdate, dayWiseScopeUpdate, fieldMapping);
+			List<String> additionalInfo = getKpiDataExpressions(overallDayWiseScopeUpdate, dayWiseScopeUpdate,
+					fieldMapping);
 
 			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
@@ -529,7 +527,8 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 
 	private IterationKpiData setIterationKpiData(FieldMapping fieldMapping, List<Integer> overAllIssueCount,
 			List<Double> overAllIssueSp, List<Double> overAllOriginalEstimate,
-			List<IterationKpiModalValue> overAllModalValues, String kpiLabel, Map<Long, Pair<Integer, Double>> dayWiseScopeUpdate) {
+			List<IterationKpiModalValue> overAllModalValues, String kpiLabel,
+			Map<Long, Pair<Integer, Double>> dayWiseScopeUpdate) {
 		List<String> additionalInfo = new ArrayList<>();
 		if (dayWiseScopeUpdate != null) {
 			dayWiseScopeUpdate.forEach((duration, countPair) -> {
