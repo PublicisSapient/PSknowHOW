@@ -15,7 +15,7 @@
  *    limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1310;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1100;
 
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -30,7 +30,7 @@ import io.mongock.api.annotations.RollbackExecution;
  * 
  * @author shunaray
  */
-@ChangeUnit(id = "active_sprint_filtration_backlog", order = "13101", author = "shunaray", systemVersion = "13.1.0")
+@ChangeUnit(id = "active_sprint_filtration_backlog", order = "11002", author = "shunaray", systemVersion = "11.0.0")
 public class ActiveSprintInBacklogChangeUnit {
 
 	private final MongoTemplate mongoTemplate;
