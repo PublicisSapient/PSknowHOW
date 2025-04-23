@@ -3816,6 +3816,15 @@
     }
   },
   {
+    "fieldName": "jiraLabelsKPI120",
+    "fieldLabel": "Labels for Scope Change Identification",
+    "fieldType": "chips",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "Specify labels to detect and track scope changes effectively"
+    }
+  },
+  {
   "fieldName": "jiraIssueTypeNamesKPI187",
   "fieldLabel": "Issue types to be included",
   "placeHolderText": "Issue types to be included",

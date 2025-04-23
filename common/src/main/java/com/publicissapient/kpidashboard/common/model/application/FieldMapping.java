@@ -510,6 +510,8 @@ public class FieldMapping extends FieldMappingHistory {
 
 	private List<String> jiraIssueTypeExcludeKPI124;
 	private List<String> jiraIssueTypeExcludeKPI75;
+
+	private List<String> jiraLabelsKPI120;
 	//LateRefinement
 	private List<String> jiraStatusKPI187;
 	private List<String> jiraIssueTypeNamesKPI187;
