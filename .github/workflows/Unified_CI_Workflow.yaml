@@ -61,6 +61,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+      
+      - name: Checking Code Format
+        run: |
+          cd UI
+          npm cache clean --force
+          npm install
+          npx prettier "**/*.{ts,css}" --check
 
       - name: Install Dependencies & Build UI
         run: |
