@@ -42,7 +42,7 @@
                                 (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                                 <ng-container *ngIf="!noTabAccess else noDataAccess">
                                   <div *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
-                                  <div class="p-d-flex p-justify-around p-align-center w-100"
+                                  <div class="p-d-flex p-justify-around w-100"
                                     *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
                                     <ng-container *ngFor="let item of kpiChartData[kpi?.kpiId]; let index=index">
                                       <div *ngFor="let x of item.data; let i = index" class="p-3 p-text-center"
@@ -76,6 +76,11 @@
                                                 {{ x?.value1 != -99 ? x?.unit1 : ''}}
                                               </span>
                                         </p>
+                                        <ng-container  *ngIf="x?.expressions && x?.expressions?.length">
+                                          <ng-container *ngFor="let item of x.expressions">
+                                            <p>{{item}}</p>
+                                          </ng-container>
+                                        </ng-container>
                                       </div>
                                     </ng-container>
                                   </div>
