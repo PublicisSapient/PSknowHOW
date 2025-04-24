@@ -45,7 +45,7 @@ public class LateRefinementRollback {
 	private static final String ISSUE_TYPES_SECTION = "Issue Types Mapping";
 	private static final String WORKFLOW_STATUS_SECTION = "WorkFlow Status Mapping";
 	private static final String CUSTOM_FIELDS_SECTION = "Custom Fields Mapping";
-	private static final String DOR_STATUS_TOOLTIP = "Workflow statuses that does not belong to DOR, DOD and Live whilch indicate a work item has not yet been picked up in the sprint based on the Definition of Ready (DoR)";
+	private static final String DOR_STATUS_TOOLTIP = "Workflow statuses that does not belong to DOR, DOD and Live which indicate a work item has not yet been picked up in the sprint based on the Definition of Ready (DoR)";
 	private static final String REFINED_WORKITEM_TOOLTIP = "Provide field name to identify a refined workitem. Example: customfield_13999<hr>";
 	private static final String MATCH_LENGTH_TOOLTIP = "Provide number to match the character length";
 	private static final String MATCH_VALUE_TOOLTIP = "Provide characters to match the value";

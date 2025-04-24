@@ -3847,7 +3847,7 @@
     "section": "WorkFlow Status Mapping",
     "sectionOrder": 2,
     "tooltip": {
-      "definition": "Workflow statuses that does not belong to DOR, DOD and Live whilch indicate a work item has not yet been picked up in the sprint based on the Definition of Ready (DoR)"
+      "definition": "Workflow statuses that does not belong to DOR, DOD and Live which indicate a work item has not yet been picked up in the sprint based on the Definition of Ready (DoR)"
     },
     "mandatory": true
   }
