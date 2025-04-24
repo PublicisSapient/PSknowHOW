@@ -51,6 +51,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
   resizeObserver = new ResizeObserver((entries) => {
     this.draw();
   });
+  counter: number = 0;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -738,6 +739,8 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
 
     const content = this.elem.querySelector('#horizontalSVG');
     content.scrollLeft += width;
+
+    this.renderSprintsLegend(this.flattenData(this.data), this.xCaption);
   }
 
   ngAfterViewInit() {
@@ -755,4 +758,107 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
     this.data = [];
     this.resizeObserver.unobserve(this.elem);
   }
+
+  flattenData(data) {
+    let sprintMap = new Map();
+    let sprintCounter = 1;
+
+    data.forEach(project => {
+        const projectName = project.data.trim();
+      project.value.forEach((sprint, index) => {
+        const xAxisLabelName = sprint;
+            const sprintKey = index;
+
+            if (!sprintMap.has(sprintKey)) {
+                sprintMap.set(sprintKey, {
+                    sprintNumber: sprintCounter++,
+                    projects: {},
+                    sprints: [],
+                });
+            }
+
+            const sprintEntry = sprintMap.get(sprintKey);
+            const sprintData = sprintEntry.projects;
+
+            // Add sprint name if not already present
+            const xAxisName = xAxisLabelName.sSprintName?.trim() || xAxisLabelName.date?.trim();
+            if (xAxisName && !sprintEntry.sprints.includes(xAxisName)) {
+                sprintEntry.sprints.push(xAxisName);
+            }
+
+            // Assign hoverValue data
+            sprintData[projectName] = Object.keys(sprint.hoverValue || {}).reduce((acc, key) => {
+                acc[key] = sprint.hoverValue[key] || 0;
+                return acc;
+            }, {});
+        });
+    });
+
+    return Array.from(sprintMap.values());
+  }
+
+  renderSprintsLegend(data, xAxisCaption) {
+      this.counter++;
+      if (this.counter === 1) {
+        const legendData = data.map(item => {
+          return {
+            sprintNumber: item.sprintNumber,
+            sprintLabel: item.sprints.join(", ")
+          };
+        });
+
+        // Select the body and insert the legend container at the top
+        const body = d3.select(this.elem);
+
+        const container = body.insert("div") // Insert at top of body
+          .attr("class", "sprint-legend-container")
+          .style("margin", "20px 0 0 0")
+          .style("font-family", "Arial, sans-serif")
+          .style("font-size", "14px")
+          .style("max-width", "100%");
+
+        // Toggle Button
+        const toggleButton = container.append("button")
+          .text("Show X-Axis Legend")
+          .style("margin", "0 0 10px 0")
+          .style("padding", "6px 12px")
+          .style("cursor", "pointer")
+          .style("font-size", "14px")
+          .on("click", function () {
+            const isVisible = legend.style("display") !== "none";
+            legend.style("display", isVisible ? "none" : "block");
+            toggleButton.text(isVisible ? "Show X-Axis Legend" : "Hide X-Axis Legend");
+          });
+
+        // Legend Box
+        const legend = container.append("div")
+          .attr("class", "sprint-legend")
+          .style("display", "none") // Initially hidden
+          .style("background", "#f9f9f9")
+          .style("padding", "15px")
+          .style("border", "1px solid #ddd")
+          .style("border-radius", "6px")
+          .style("margin-top", "10px");
+
+        legend.append("h3")
+          .text("X-Axis Legend")
+          .style("margin", "0 0 10px 0")
+          .style("color", "#222");
+
+        const list = legend.selectAll("div.sprint-item")
+          .data(legendData)
+          .enter()
+          .append("div")
+          .attr("class", "sprint-item")
+          .style("margin-bottom", "8px");
+
+        list.append("strong")
+          .text(d => `${xAxisCaption} ${d.sprintNumber}: `)
+          .style("color", "#333");
+
+        list.append("span")
+          .text(d => d.sprintLabel)
+          .style("color", "#666");
+      }
+    }
 }

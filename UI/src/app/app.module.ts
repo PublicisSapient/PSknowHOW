@@ -128,8 +128,6 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { AddToReportPopUpComponent } from './component/add-to-report-pop-up/add-to-report-pop-up.component';
 import { PanelModule } from 'primeng/panel';
 
-import { BarplotStackedComponent } from './component/barplot-stacked/barplot-stacked.component';
-
 /******************************************************/
 export function initializeApp(appInitializerService: AppInitializerService) {
   return (): Promise<any> => {
@@ -189,7 +187,6 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     RecommendationsComponent,
     StickyHeaderV2Component,
     AddToReportPopUpComponent,
-    BarplotStackedComponent,
   ],
   imports: [
     SharedModuleModule,

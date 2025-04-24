@@ -111,7 +111,6 @@ export class MultilineV2Component implements OnChanges {
   }
 
   flattenData(data) {
-    console.log('flattenData ', data);
     let sprintMap = new Map();
     let sprintCounter = 1;
 
@@ -152,7 +151,6 @@ export class MultilineV2Component implements OnChanges {
   renderSprintsLegend(data, xAxisCaption) {
     this.counter++;
     if (this.counter === 1) {
-      console.log('renderSprintsLegend data:', data);
       const legendData = data.map(item => {
         return {
           sprintNumber: item.sprintNumber,
