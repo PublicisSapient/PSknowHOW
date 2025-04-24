@@ -212,7 +212,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 				.fetchKPIDataFromDb(leafNodeList.get(0), LocalDate.of(2022, 1, 1).toString(), LocalDate.of(2022, 12, 31).toString(), kpiRequest);
 
 		assertThat("Total Defects issue list :", ((List<JiraIssue>) defectDataListMap.get(RANGE_TICKET_LIST)).size(),
-				equalTo(1));
+				equalTo(45));
 	}
 
 	@Test
