@@ -384,6 +384,9 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
     }
 
     private double calculateDelayedPercentage(int totalItemPlanned, int numberOfDelay) {
+        if( totalItemPlanned == 0) {
+            return 0;
+        }
         return Math.round((numberOfDelay * 100) / totalItemPlanned);
     }
 
