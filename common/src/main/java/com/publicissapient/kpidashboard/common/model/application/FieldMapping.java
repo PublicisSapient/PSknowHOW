@@ -522,6 +522,8 @@ public class FieldMapping extends FieldMappingHistory {
 	private String jiraRefinementByCustomFieldKPI188;
 	private String jiraRefinementMinLengthKPI188;
 	private List<String> jiraRefinementKeywordsKPI188;
+
+    private boolean includeActiveSprintInBacklogKPI;
 	/**
 	 * Get jira issue type names string [ ].
 	 *

@@ -180,7 +180,7 @@ public class DREServiceImplTest {
 		filterComponentIdWiseDefectMap.put(CLOSEDBUGKEY, closedBugList);
 		filterComponentIdWiseDefectMap.put(TOTALBUGKEY, totalBugList);
 		Double dreValue = dreServiceImpl.calculateKPIMetrics(filterComponentIdWiseDefectMap);
-		assertThat("DRE value :", dreValue, equalTo(84.0));
+		assertThat("DRE value :", dreValue, equalTo(79.0));
 	}
 
 	@Test

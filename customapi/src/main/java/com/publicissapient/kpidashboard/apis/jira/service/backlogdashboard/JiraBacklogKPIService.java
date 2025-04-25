@@ -16,6 +16,7 @@ package com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -77,6 +78,10 @@ public abstract class JiraBacklogKPIService<R, S> extends ToolsKPIService<R, S> 
 
 	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryFromBaseClass() {
 		return jiraService.getJiraIssuesCustomHistoryForCurrentSprint();
+	}
+
+	public Set<String> getActiveSprintJiraIssuesFromBaseClass() {
+		return jiraService.getIssuesOfActiveSprint();
 	}
 
 	public void populateIterationDataForTestWithoutStory(List<IterationKpiModalValue> overAllModalValues,

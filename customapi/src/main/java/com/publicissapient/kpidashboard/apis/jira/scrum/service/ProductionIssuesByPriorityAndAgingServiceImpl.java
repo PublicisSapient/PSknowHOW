@@ -106,9 +106,11 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl extends JiraBacklogKP
 
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-		resultListMap.put(RANGE_TICKET_LIST, jiraIssueRepository.findIssuesByDateAndTypeAndStatus(mapOfFilters,
-				uniqueProjectMap, startDate, endDate, RANGE, NIN, true));
-
+		final List<JiraIssue> filteredJiraIssue = jiraIssueRepository.findIssuesByDateAndTypeAndStatus(mapOfFilters,
+				uniqueProjectMap, startDate, endDate, RANGE, NIN, true);
+		Set<String> activeSprintTickets = getActiveSprintJiraIssuesFromBaseClass();
+		filteredJiraIssue.removeIf(jiraIssue -> activeSprintTickets.contains(jiraIssue.getNumber()));
+		resultListMap.put(RANGE_TICKET_LIST, filteredJiraIssue);
 		return resultListMap;
 	}
 

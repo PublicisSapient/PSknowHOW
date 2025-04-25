@@ -22,15 +22,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,7 +73,8 @@ public class FlowEfficiencyServiceImplTest {
 
 	@Mock
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-
+	@Mock
+    JiraBacklogServiceR jiraService;
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -127,6 +129,8 @@ public class FlowEfficiencyServiceImplTest {
 		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
 
 		issueBacklogHistoryDataList = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
+		issueBacklogHistoryDataList.get(0).getStatusUpdationLog().get(0).setUpdatedOn(LocalDateTime.now().minusMonths(1));
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(issueBacklogHistoryDataList);
 
 	}
 
@@ -136,20 +140,22 @@ public class FlowEfficiencyServiceImplTest {
 	}
 
 	@Test
-    public void getKpiDataTest() throws ApplicationException {
-        when(customApiConfig.getFlowEfficiencyXAxisRange()).thenReturn(xAxisRange);
-        String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
-        when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
-                .thenReturn(kpiRequestTrackerId);
-        when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(any(), any(), any(), any()))
-                .thenReturn(issueBacklogHistoryDataList);
-        List<JiraIssueCustomHistory> expectedResult = new ArrayList<>();
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put(HISTORY, issueBacklogHistoryDataList);
-        List<Map<String, Object>> typeCountMap = new ArrayList<>();
-        when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-        KpiElement responseKpiElement = flowEfficiencyService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-                treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
+	public void getKpiDataTest() throws ApplicationException {
+		when(customApiConfig.getFlowEfficiencyXAxisRange()).thenReturn(xAxisRange);
+		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
+		when(cacheService.getFromApplicationCache(
+						Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		List<JiraIssueCustomHistory> expectedResult = new ArrayList<>();
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put(HISTORY, issueBacklogHistoryDataList);
+		List<Map<String, Object>> typeCountMap = new ArrayList<>();
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		KpiElement responseKpiElement =
+				flowEfficiencyService.getKpiData(
+						kpiRequest,
+						kpiRequest.getKpiList().get(0),
+						treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 
         assertNotNull(responseKpiElement);
         assertEquals(responseKpiElement.getKpiId(), kpiRequest.getKpiList().get(0).getKpiId());
