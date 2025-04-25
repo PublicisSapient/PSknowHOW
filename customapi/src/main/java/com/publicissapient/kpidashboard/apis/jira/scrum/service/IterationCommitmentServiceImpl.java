@@ -425,7 +425,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 				DateUtil.TIME_FORMAT_WITH_SEC_ZONE);
 		LocalDate sprintEndDate = DateUtil.stringToLocalDate(sprintDetails.getEndDate(),
 				DateUtil.TIME_FORMAT_WITH_SEC_ZONE);
-		long sprintDuration = ChronoUnit.DAYS.between(sprintStartDate, sprintEndDate);
+		long sprintDuration = ChronoUnit.DAYS.between(sprintStartDate, sprintEndDate) + 1;
 		long quarterSprint = (long) Math.ceil(0.25 * sprintDuration);
 		long halfSprint = (long) Math.ceil(0.5 * sprintDuration);
 		long threeQuarterSprint = (long) Math.ceil(0.75 * sprintDuration);
