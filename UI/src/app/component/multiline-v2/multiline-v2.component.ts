@@ -151,6 +151,7 @@ export class MultilineV2Component implements OnChanges {
   renderSprintsLegend(data, xAxisCaption) {
     this.counter++;
     if (this.counter === 1) {
+      console.log('renderSprintsLegend data:', data);
       const legendData = data.map(item => {
         return {
           sprintNumber: item.sprintNumber,
@@ -175,15 +176,20 @@ export class MultilineV2Component implements OnChanges {
         .style("padding", "6px 12px")
         .style("cursor", "pointer")
         .style("font-size", "14px")
+        .style("outline", "auto")
+        .attr("class", "p-element p-ripple p-button-success p-ml-2 p-button p-component")
         .on("click", function () {
           const isVisible = legend.style("display") !== "none";
           legend.style("display", isVisible ? "none" : "block");
+          legend.style("aria-hidden", isVisible ? "true" : "false");
+          legend.style("tabindex", isVisible ? "-1" : "0");
           toggleButton.text(isVisible ? "Show X-Axis Legend" : "Hide X-Axis Legend");
         });
 
       // Legend Box
       const legend = container.append("div")
         .attr("class", "sprint-legend")
+        .attr("aria-hidden", "true")
         .style("display", "none") // Initially hidden
         .style("background", "#f9f9f9")
         .style("padding", "15px")
@@ -918,8 +924,21 @@ export class MultilineV2Component implements OnChanges {
       const content = this.elem.querySelector('#horizontalSVG');
       content.scrollLeft += width;
 
-      // Render Sprint Legend
-      this.renderSprintsLegend(this.flattenData(data), this.xCaption);
+      if (
+        kpiId !== 'kpi166' &&
+        kpiId !== 'kpi156' &&
+        kpiId !== 'kpi116' &&
+        kpiId !== 'kpi118' &&
+        kpiId !== 'kpi13' &&
+        kpiId !== 'kpi170' &&
+        kpiId !== 'KPI127' &&
+        kpiId !== 'kpi997' &&
+        kpiId !== 'kpi184'
+      ) {
+        // Render Sprint Legend
+        this.renderSprintsLegend(this.flattenData(data), this.xCaption);
+      }
+
     }
   }
 

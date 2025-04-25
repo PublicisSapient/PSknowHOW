@@ -162,7 +162,7 @@
                                                                             [viewType]="showChart"
                                                                             [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG"
                                                                             [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG"
-                                                                            [board]="selectedTab">
+                                                                            [board]="selectedTab" [kpiId]="kpi?.kpiId">
                                                                         </app-grouped-column-plus-line-chart-v2>
                                                                     </ng-container>
                                                                     <ng-container *ngIf="!checkIfZeroData(kpi)">
@@ -188,7 +188,7 @@
                                                                             [viewType]="showChart"
                                                                             [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG"
                                                                             [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG"
-                                                                            [yAxisOrder]="kpi?.kpiDetail?.yaxisOrder">
+                                                                            [yAxisOrder]="kpi?.kpiDetail?.yaxisOrder" [kpiId]="kpi?.kpiId">
                                                                         </app-bar-with-y-axis-group>
                                                                     </ng-container>
                                                                     <ng-container *ngIf="!checkIfZeroData(kpi)">

@@ -39,6 +39,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
   @Input() xCaption: string;
   @Input() unit: string;
   @Input() selectedtype: string;
+  @Input() kpiId: string; // id of the kpi
   elem: any;
   dataPoints: any;
   sprintList: Array<any> = [];
@@ -153,6 +154,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
       unit: 'unit',
     };
     let sprintList = [];
+    const kpiId = this.kpiId;
     const viewType = this.viewType;
     const selectedProjectCount = this.service.getSelectedTrends().length;
     const showUnit = this.unit?.toLowerCase() !== 'number' ? this.unit : '';
@@ -425,7 +427,19 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
       )
       .attr('class', 'bar');
 
-    this.renderSprintsLegend(this.flattenData(this.data), this.xCaption);
+    if (
+      kpiId !== 'kpi166' &&
+      kpiId !== 'kpi156' &&
+      kpiId !== 'kpi116' &&
+      kpiId !== 'kpi118' &&
+      kpiId !== 'kpi13' &&
+      kpiId !== 'kpi170' &&
+      kpiId !== 'KPI127' &&
+      kpiId !== 'kpi997' &&
+      kpiId !== 'kpi184'
+    ) {
+      this.renderSprintsLegend(this.flattenData(this.data), this.xCaption);
+    }
   }
 
   wrap(text, width) {
@@ -527,15 +541,19 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
             .style("padding", "6px 12px")
             .style("cursor", "pointer")
             .style("font-size", "14px")
+            .attr("class", "p-element p-ripple p-button-success p-ml-2 p-button p-component")
             .on("click", function () {
               const isVisible = legend.style("display") !== "none";
               legend.style("display", isVisible ? "none" : "block");
+              legend.style("aria-hidden", isVisible ? "true" : "false");
+              legend.style("tabindex", isVisible ? "-1" : "0");
               toggleButton.text(isVisible ? "Show X-Axis Legend" : "Hide X-Axis Legend");
             });
 
           // Legend Box
           const legend = container.append("div")
             .attr("class", "sprint-legend")
+            .attr("aria-hidden", "true")
             .style("display", "none") // Initially hidden
             .style("background", "#f9f9f9")
             .style("padding", "15px")
