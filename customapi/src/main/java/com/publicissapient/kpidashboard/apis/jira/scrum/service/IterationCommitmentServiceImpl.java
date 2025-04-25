@@ -83,6 +83,8 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 	private static final String OVERALL = "Overall";
 	private static final String JIRA_ISSUE_HISTORY = "jiraIssueHistory";
 	private static final String SPRINT_DETAILS = "sprintDetails";
+	private static final String STORY_POINT_OUTPUT_STRING_FORMAT = "Last %d days: %d/%,.1f SP";
+	private static final String ESTIMATION_POINT_OUTPUT_STRING_FORMAT = "Last %d days: %d/%,.1f days";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -349,8 +351,10 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 			Double originalEstimate = 0.0;
 			Map<Long, Pair<Integer, Double>> dayWiseScopeUpdate = new HashMap<>();
 			for (JiraIssue jiraIssue : issues) {
-				setDayWiseScopeChange(jiraIssue, jiraIssueMap.get(jiraIssue), sprintDetails, label,
-						dayWiseScopeUpdate, fieldMapping);
+				if (!sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED)) {
+					setDayWiseScopeChange(jiraIssue, jiraIssueMap.get(jiraIssue), sprintDetails, label,
+							dayWiseScopeUpdate, fieldMapping);
+				}
 				KPIExcelUtility.populateIterationKPI(overAllmodalValues, modalValues, jiraIssue, fieldMapping,
 						modalObjectMap);
 				issueCount = issueCount + 1;
@@ -419,8 +423,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 		List<JiraHistoryChangeLog> sprintUpdationLog = new ArrayList<>();
 		LocalDate sprintStartDate = DateUtil.stringToLocalDate(sprintDetails.getStartDate(),
 				DateUtil.TIME_FORMAT_WITH_SEC_ZONE);
-		LocalDate sprintEndDate = DateUtil.stringToLocalDate(
-				sprintDetails.getCompleteDate() != null ? sprintDetails.getCompleteDate() : sprintDetails.getEndDate(),
+		LocalDate sprintEndDate = DateUtil.stringToLocalDate(sprintDetails.getEndDate(),
 				DateUtil.TIME_FORMAT_WITH_SEC_ZONE);
 		long sprintDuration = ChronoUnit.DAYS.between(sprintStartDate, sprintEndDate);
 		long quarterSprint = (long) Math.ceil(0.25 * sprintDuration);
@@ -442,15 +445,19 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 		}
 
 		if (CollectionUtils.isNotEmpty(sprintUpdationLog)) {
+			LocalDate today = LocalDate.now();
+			long durationFromSprintStart = ChronoUnit.DAYS.between(sprintStartDate, today);
 			sprintUpdationLog.forEach(updationLog -> {
 				LocalDate sprintDate = updationLog.getUpdatedOn().toLocalDate();
-				if (sprintDate.isAfter(sprintEndDate.minusDays(quarterSprint)) && sprintDate.isBefore(sprintEndDate)) {
+				if (durationFromSprintStart >= quarterSprint
+						&& sprintDate.isAfter(today.minusDays(quarterSprint + 1))) {
 					updateScopeCounts(dayWiseScopeUpdate, quarterSprint, jiraIssue, fieldMapping);
-				} else if (sprintDate.isAfter(sprintEndDate.minusDays(halfSprint))
-						&& sprintDate.isBefore(sprintEndDate)) {
+				}
+				if (durationFromSprintStart >= halfSprint && sprintDate.isAfter(today.minusDays(halfSprint + 1))) {
 					updateScopeCounts(dayWiseScopeUpdate, halfSprint, jiraIssue, fieldMapping);
-				} else if (sprintDate.isAfter(sprintStartDate.plusDays(threeQuarterSprint))
-						&& sprintDate.isBefore(sprintEndDate)) {
+				}
+				if (durationFromSprintStart >= threeQuarterSprint
+						&& sprintDate.isAfter(today.minusDays(threeQuarterSprint + 1))) {
 					updateScopeCounts(dayWiseScopeUpdate, threeQuarterSprint, jiraIssue, fieldMapping);
 				}
 			});
@@ -517,8 +524,8 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 						overallValue.getRight() + countPair.getRight()));
 				String format = StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)
-								? "Last %d days: %d/%,.1f SP"
-								: "Last %d days: %d/%,.1f days";
+								? STORY_POINT_OUTPUT_STRING_FORMAT
+								: ESTIMATION_POINT_OUTPUT_STRING_FORMAT;
 				additionalInfo.add(String.format(format, duration, countPair.getLeft(), countPair.getRight()));
 			});
 		}
@@ -534,8 +541,8 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 			dayWiseScopeUpdate.forEach((duration, countPair) -> {
 				String format = StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)
-						? "Last %d days: %d/%,.1f SP"
-						: "Last %d days: %d/%,.1f days";
+						? STORY_POINT_OUTPUT_STRING_FORMAT
+						: ESTIMATION_POINT_OUTPUT_STRING_FORMAT;
 				additionalInfo.add(String.format(format, duration, countPair.getLeft(), countPair.getRight()));
 			});
 		}
