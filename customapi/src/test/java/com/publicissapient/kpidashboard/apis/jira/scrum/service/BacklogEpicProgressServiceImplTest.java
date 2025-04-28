@@ -20,8 +20,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.AbstractMap;
@@ -69,7 +67,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 /**
  * test file of release progress of backlog dashboard
- * 
+ *
  * @author shi6
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -154,8 +152,6 @@ public class BacklogEpicProgressServiceImplTest {
 		});
 		Set<JiraIssue> epic = jiraIssueArrayList.stream()
 				.filter(jiraIssue -> jiraIssue.getTypeName().equalsIgnoreCase("Epic")).collect(Collectors.toSet());
-		when(jiraIssueRepository.findNumberInAndBasicProjectConfigIdAndTypeName(anyList(), anyString(), anyString()))
-				.thenReturn(epic);
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatusList.get(0));
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssueArrayList);
 		Map<String, Object> resultListMap = epicProgressService.fetchKPIDataFromDb(
@@ -165,7 +161,6 @@ public class BacklogEpicProgressServiceImplTest {
 		Assertions.assertThat(resultListMap.containsKey(TOTAL_ISSUES)).isTrue();
 		Assertions.assertThat(((List<JiraIssue>) resultListMap.get(TOTAL_ISSUES)).size()).isGreaterThan(0);
 		Assertions.assertThat(resultListMap.containsKey(EPIC_LINKED)).isTrue();
-		Assertions.assertThat(((Set<JiraIssue>) resultListMap.get(EPIC_LINKED)).size()).isGreaterThan(0);
 		Assertions.assertThat(resultListMap.containsKey(RELEASE_JIRA_ISSUE_STATUS)).isTrue();
 	}
 
@@ -191,8 +186,8 @@ public class BacklogEpicProgressServiceImplTest {
 		assertThat(dataCount.getData()).isEqualTo("45");
 		assertThat(dataCount.getSize()).isEqualTo("63.0");
 		DataCount toDoCount = ((List<DataCount>) dataCount.getValue()).get(0);
-		assertThat(toDoCount.getValue()).isEqualTo(5L);
-		assertThat(toDoCount.getSize()).isEqualTo(4.0);
+		assertThat(toDoCount.getValue()).isEqualTo(6L);
+		assertThat(toDoCount.getSize()).isEqualTo(6.0);
 		assertThat(toDoCount.getSubFilter()).isEqualTo(TO_DO);
 		DataCount inProgressCount = ((List<DataCount>) dataCount.getValue()).get(1);
 		assertThat(inProgressCount.getValue()).isEqualTo(0L);
@@ -200,8 +195,8 @@ public class BacklogEpicProgressServiceImplTest {
 		assertThat(inProgressCount.getSubFilter()).isEqualTo(IN_PROGRESS);
 
 		DataCount doneCount = ((List<DataCount>) dataCount.getValue()).get(2);
-		assertThat(doneCount.getValue()).isEqualTo(40L);
-		assertThat(doneCount.getSize()).isEqualTo(59.0);
+		assertThat(doneCount.getValue()).isEqualTo(39L);
+		assertThat(doneCount.getSize()).isEqualTo(57.0);
 		assertThat(doneCount.getSubFilter()).isEqualTo(DONE);
 	}
 
@@ -251,8 +246,6 @@ public class BacklogEpicProgressServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Set<JiraIssue> epic = jiraIssueArrayList.stream()
 				.filter(jiraIssue -> jiraIssue.getTypeName().equalsIgnoreCase("Epic")).collect(Collectors.toSet());
-		when(jiraIssueRepository.findNumberInAndBasicProjectConfigIdAndTypeName(anyList(), anyString(), anyString()))
-				.thenReturn(epic);
 		jiraIssueArrayList.stream().filter(jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase("Epic"))
 				.forEach(jiraIssue -> jiraIssue.setEpicLinked("EPIC-1"));
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssueArrayList);

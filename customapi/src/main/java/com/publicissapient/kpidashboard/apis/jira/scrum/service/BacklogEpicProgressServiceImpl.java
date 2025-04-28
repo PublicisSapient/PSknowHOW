@@ -34,7 +34,6 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -59,7 +58,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Epic Progress kpi to get release issues on the basis of epic
- * 
+ *
  * @author shi6
  */
 @Slf4j
@@ -93,7 +92,7 @@ public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Intege
 
 	/**
 	 * project wise processing
-	 * 
+	 *
 	 * @param leafNode
 	 *            leafNode
 	 * @param kpiElement
@@ -209,7 +208,7 @@ public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Intege
 	}
 
 	/**
-	 * 
+	 *
 	 * @param jiraIssueList
 	 *            jiraIssueList
 	 * @param jiraIssueReleaseStatus
@@ -266,7 +265,7 @@ public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Intege
 
 	/**
 	 * create drill down
-	 * 
+	 *
 	 * @param issueCountStatusMap
 	 *            issueCountStatusMap
 	 * @param releaseStatus
@@ -293,7 +292,7 @@ public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Intege
 	/**
 	 * sort in reverse order on the basis of those epic whose to do and in progress
 	 * issues are more should appear first
-	 * 
+	 *
 	 * @param dataCountList
 	 */
 	void sorting(List<DataCount> dataCountList) {

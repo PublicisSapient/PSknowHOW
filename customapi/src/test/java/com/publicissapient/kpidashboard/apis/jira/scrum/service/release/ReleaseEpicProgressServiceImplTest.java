@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +52,7 @@ import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -193,8 +192,8 @@ public class ReleaseEpicProgressServiceImplTest {
 		assertThat(dataCount.getData()).isEqualTo("45");
 		assertThat(dataCount.getSize()).isEqualTo("63.0");
 		DataCount toDoCount = ((List<DataCount>) dataCount.getValue()).get(0);
-		assertThat(toDoCount.getValue()).isEqualTo(5L);
-		assertThat(toDoCount.getSize()).isEqualTo(4.0);
+		assertThat(toDoCount.getValue()).isEqualTo(6L);
+		assertThat(toDoCount.getSize()).isEqualTo(6.0);
 		assertThat(toDoCount.getSubFilter()).isEqualTo(TO_DO);
 		DataCount inProgressCount = ((List<DataCount>) dataCount.getValue()).get(1);
 		assertThat(inProgressCount.getValue()).isEqualTo(0L);
@@ -202,8 +201,8 @@ public class ReleaseEpicProgressServiceImplTest {
 		assertThat(inProgressCount.getSubFilter()).isEqualTo(IN_PROGRESS);
 
 		DataCount doneCount = ((List<DataCount>) dataCount.getValue()).get(2);
-		assertThat(doneCount.getValue()).isEqualTo(40L);
-		assertThat(doneCount.getSize()).isEqualTo(59.0);
+		assertThat(doneCount.getValue()).isEqualTo(39L);
+		assertThat(doneCount.getSize()).isEqualTo(57.0);
 		assertThat(doneCount.getSubFilter()).isEqualTo(DONE);
 	}
 

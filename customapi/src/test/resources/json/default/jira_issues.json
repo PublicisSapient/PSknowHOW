@@ -984,7 +984,7 @@
     "name": "Invesco | While fetching the project keys if the sonar server is not reachable, the whole application is breaking and not accessible.",
     "typeId": "1",
     "typeName": "Bug",
-    "status": "Closed",
+    "status": "Open",
     "state": "Closed",
     "estimate": "2.0",
     "storyPoints": "2",
@@ -1064,7 +1064,7 @@
     "assigneeId": "testUser2",
     "assigneeName": "testUser2",
     "defectRaisedBy": "",
-    "jiraStatus": "Closed",
+    "jiraStatus": "Open, Ready For Testing",
     "defectStoryID": [],
     "timeSpentInMinutes": 0,
     "basicProjectConfigId": "6335363749794a18e8a4479b",
@@ -1092,7 +1092,7 @@
     "isDeleted": "False",
     "priority": "P3 - Major",
     "labels": [],
-    "createdDate": "2022-09-19T08:54:47.0000000",
+    "createdDate": "2024-09-19T08:54:47.0000000",
     "rootCauseList": [
       "None"
     ],
@@ -1144,7 +1144,7 @@
     "assigneeId": "testUser2",
     "assigneeName": "testUser2",
     "defectRaisedBy": "",
-    "jiraStatus": "Closed",
+    "jiraStatus": "Open, Ready For Testing",
     "defectStoryID": [
       "TEST-18557"
     ],
@@ -1164,7 +1164,7 @@
     ],
     "defectRaisedByQA": false,
     "remainingEstimateMinutes": 0,
-    "productionDefect": false,
+    "productionDefect": true,
     "updateDate": "2022-09-27T04:01:14.0000000",
     "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
   },

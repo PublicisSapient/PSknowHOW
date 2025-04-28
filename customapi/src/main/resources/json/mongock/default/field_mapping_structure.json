@@ -3925,5 +3925,17 @@
       "definition": "All issue types used by your Jira project"
     },
     "mandatory": true
+  },
+  {
+    "fieldName": "includeActiveSprintInBacklogKPI",
+    "fieldLabel": "Backlog KPIs include active sprint data",
+    "fieldType": "toggle",
+    "toggleLabelLeft": "Exclude active sprint data",
+    "toggleLabelRight": "Include active sprint data",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Enabled State Backlog KPIs will populate including the active sprint data."
+    }
   }
 ]

@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -71,13 +72,13 @@ public class IterationKpiData implements Serializable {
 		this.modalValues = modalValues;
 	}
 
-	public IterationKpiData(String label, Double value, Double value1, String labelInfo, String unit,
-			List<IterationKpiModalValue> modalValues, List<String> expressions) {
+	public IterationKpiData(String label, Double value, Double value1, String unit, String unit1,
+							List<IterationKpiModalValue> modalValues, List<String> expressions) {
 		this.label = label;
 		this.value = value;
 		this.value1 = value1;
-		this.labelInfo = labelInfo;
 		this.unit = unit;
+		this.unit1 = unit1;
 		this.modalValues = modalValues;
 		this.expressions = expressions;
 	}
