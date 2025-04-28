@@ -40,6 +40,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
   @Input() unit: string;
   @Input() selectedtype: string;
   @Input() kpiId: string; // id of the kpi
+  @Input() source: string;
   elem: any;
   dataPoints: any;
   sprintList: Array<any> = [];
@@ -536,49 +537,112 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
 
           // Toggle Button
           const toggleButton = container.append("button")
-            .text("Show X-Axis Legend")
             .style("margin", "0 0 10px 0")
-            .style("padding", "6px 12px")
+            .style("padding", "0")
             .style("cursor", "pointer")
             .style("font-size", "14px")
-            .attr("class", "p-element p-ripple p-button-success p-ml-2 p-button p-component")
-            .on("click", function () {
+            .style("background", "none")
+            .style("border", "none")
+            .style("color", "#0b4bc8")
+            .style("text-decoration", "underline")
+            .style("text-underline-offset", "5px")
+            .attr("class", "p-element p-component")
+          .on("click", function () {
               const isVisible = legend.style("display") !== "none";
               legend.style("display", isVisible ? "none" : "block");
               legend.style("aria-hidden", isVisible ? "true" : "false");
               legend.style("tabindex", isVisible ? "-1" : "0");
               toggleButton.text(isVisible ? "Show X-Axis Legend" : "Hide X-Axis Legend");
-            });
+          });
 
           // Legend Box
           const legend = container.append("div")
             .attr("class", "sprint-legend")
-            .attr("aria-hidden", "true")
-            .style("display", "none") // Initially hidden
-            .style("background", "#f9f9f9")
-            .style("padding", "15px")
+            .style("padding", "0")
             .style("border", "1px solid #ddd")
             .style("border-radius", "6px")
-            .style("margin-top", "10px");
+            .style("margin-top", "10px")
+            .attr("role", "region")
+            .attr("aria-labelledby", "legend-title");
 
-          legend.append("h3")
-            .text("X-Axis Legend")
-            .style("margin", "0 0 10px 0")
-            .style("color", "#222");
+          if (this.source === 'fromReport') {
+            legend.style("display", "block"); // Hide the legend by default
+            toggleButton.text("Hide X-Axis Legend");
+            legend.attr("aria-hidden", "false")
+          } else {
+            legend.style("display", "none"); // Show the legend by default
+            legend.attr("aria-hidden", "true")
+            toggleButton.text("Show X-Axis Legend");
+          }
 
-          const list = legend.selectAll("div.sprint-item")
+          // Wrap the table in a scrollable container
+          const scrollContainer = legend.append("div")
+            .style("overflow-x", "auto")  // Make horizontally scrollable on small screens
+            .style("max-width", "100%");
+
+          // Create the table inside scroll container
+          const table = scrollContainer.append("table")
+            .attr("role", "table")
+            .style("width", "100%")
+            .style("border-collapse", "collapse")
+            .style("min-width", "400px"); // Minimum width to enable scrolling if needed
+
+          // Table Header
+          const thead = table.append("thead")
+            .attr("role", "rowgroup");
+
+          const headerRow = thead.append("tr")
+            .attr("role", "row");
+
+          headerRow.append("th")
+            .attr("role", "columnheader")
+            .attr("scope", "col")
+            .text("X-Axis")
+            .style("text-align", "left")
+            .style("padding", "12px 10px")
+            .style("border-bottom", "2px solid #ccc")
+            .style("background-color", "#f0f0f0")
+            .style("color", "#222")
+            .style("width", "10%")
+            .style("font-weight", "600");
+
+          headerRow.append("th")
+            .attr("role", "columnheader")
+            .attr("scope", "col")
+            .text("Legend")
+            .style("text-align", "left")
+            .style("padding", "12px 10px")
+            .style("border-bottom", "2px solid #ccc")
+            .style("background-color", "#f0f0f0")
+            .style("color", "#222")
+            .style("font-weight", "600");
+
+          // Table Body
+          const tbody = table.append("tbody")
+            .attr("role", "rowgroup");
+
+          const rows = tbody.selectAll("tr")
             .data(legendData)
             .enter()
-            .append("div")
-            .attr("class", "sprint-item")
-            .style("margin-bottom", "8px");
+            .append("tr")
+            .attr("role", "row")
+            .style("background", (d, i) => i % 2 === 0 ? "#fff" : "#fafafa") // Zebra striping
 
-          list.append("strong")
-            .text(d => `${xAxisCaption} ${d.sprintNumber}: `)
+          // Table Cells
+          rows.append("td")
+            .attr("role", "cell")
+            .text(d => `${xAxisCaption} ${d.sprintNumber}:`)
+            .style("padding", "10px 10px")
+            .style("border-bottom", "1px solid #eee")
+            .style("width", "10%")
             .style("color", "#333");
 
-          list.append("span")
+          rows.append("td")
+            .attr("role", "cell")
             .text(d => d.sprintLabel)
+            .style("padding", "10px 10px")
+            .style("border-bottom", "1px solid #eee")
+            .style("word-break", "break-word")
             .style("color", "#666");
         }
       }

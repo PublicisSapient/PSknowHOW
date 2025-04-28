@@ -15,6 +15,7 @@ export class ReportKpiCardComponent {
   @Input() kpiTrendsObj: any;
   @Input() trendColors: any;
   colors: any;
+  fromReport: string = 'fromReport';
   @Input() kpiFilters: any;
   @Input() selectedButtonValue: any;
   @Input() cardData: any;
