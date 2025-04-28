@@ -23,6 +23,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -446,7 +447,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 
 		if (CollectionUtils.isNotEmpty(sprintUpdationLog)) {
 			LocalDate today = LocalDate.now();
-			long durationFromSprintStart = ChronoUnit.DAYS.between(sprintStartDate, today);
+			long durationFromSprintStart = ChronoUnit.DAYS.between(sprintStartDate, today) + 1L;
 			sprintUpdationLog.forEach(updationLog -> {
 				LocalDate sprintDate = updationLog.getUpdatedOn().toLocalDate();
 				if (durationFromSprintStart >= quarterSprint
@@ -538,13 +539,16 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 			Map<Long, Pair<Integer, Double>> dayWiseScopeUpdate) {
 		List<String> additionalInfo = new ArrayList<>();
 		if (dayWiseScopeUpdate != null) {
-			dayWiseScopeUpdate.forEach((duration, countPair) -> {
+			List<Long> sortedKeys = new ArrayList<>(dayWiseScopeUpdate.keySet());
+			Collections.sort(sortedKeys);
+			for (Long duration : sortedKeys) {
+				Pair<Integer, Double> countPair = dayWiseScopeUpdate.get(duration);
 				String format = StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)
 						? STORY_POINT_OUTPUT_STRING_FORMAT
 						: ESTIMATION_POINT_OUTPUT_STRING_FORMAT;
 				additionalInfo.add(String.format(format, duration, countPair.getLeft(), countPair.getRight()));
-			});
+			}
 		}
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
