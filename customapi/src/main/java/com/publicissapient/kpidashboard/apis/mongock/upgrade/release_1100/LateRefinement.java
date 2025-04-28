@@ -91,8 +91,8 @@ public class LateRefinement {
 	private static final String KEY_TYPE = "type";
 	private static final String KEY_KPI_LINK_DETAIL = "kpiLinkDetail";
 	private static final String KEY_LINK = "link";
-	private static final String KEY_XAXIS_LABEL = "xaxisLabel";
-	private static final String KEY_YAXIS_LABEL = "yaxisLabel";
+	private static final String KEY_XAXIS_LABEL = "xAxisLabel";
+	private static final String KEY_YAXIS_LABEL = "yAxisLabel";
 	private static final String KEY_IS_POSITIVE_TREND = "isPositiveTrend";
 	private static final String KEY_SHOW_TREND = "showTrend";
 	private static final String KEY_IS_ADDITIONAL_FILTER = "isAdditionalFilterSupport";
@@ -137,6 +137,7 @@ public class LateRefinement {
 				.append(KEY_FIELD_LABEL, "Refinement criteria").append(KEY_FIELD_TYPE, "radiobutton")
 				.append(KEY_SECTION, CUSTOM_FIELDS_SECTION).append(KEY_FIELD_DISPLAY_ORDER, 1)
 				.append(KEY_SECTION_ORDER, 3)
+				.append(KEY_MANDATORY, true)
 				.append(KEY_TOOLTIP,
 						new Document(KEY_DEFINITION, "Custom field to consider for a refined workitem."))
 				.append(KEY_OPTIONS, Arrays.asList(new Document(KEY_LABEL,
@@ -153,12 +154,14 @@ public class LateRefinement {
 										.append(KEY_FIELD_LABEL, "Custom field value min length")
 										.append(KEY_PLACE_HOLDER, "Custom field value min length")
 										.append(KEY_FIELD_TYPE, "number")
+										.append(KEY_MANDATORY, true)
 										.append(KEY_FILTER_GROUP, Arrays.asList(CUSTOM_FIELD))
 										.append(KEY_TOOLTIP, new Document(KEY_DEFINITION, MATCH_LENGTH_TOOLTIP)),
 								new Document().append(KEY_FIELD_NAME, "jiraRefinementKeywordsKPI188")
 										.append(KEY_FIELD_LABEL, "Keywords to match")
 										.append(KEY_PLACE_HOLDER, "Keywords to match")
 										.append(KEY_FIELD_TYPE, CHIPS_TYPE)
+										.append(KEY_MANDATORY, true)
 										.append(KEY_FILTER_GROUP, Arrays.asList(CUSTOM_FIELD))
 										.append(KEY_TOOLTIP, new Document(KEY_DEFINITION, MATCH_VALUE_TOOLTIP))))
 				.append(KEY_PROCESSOR_COMMON, true);
@@ -190,12 +193,12 @@ public class LateRefinement {
 								Arrays.asList(new Document().append(KEY_TYPE, "link").append(KEY_KPI_LINK_DETAIL,
 										new Document().append(KEY_LABEL, DETAILED_INFO).append(KEY_LINK,
 												LATE_REFINEMENT_LINK)))))
-				.append(KEY_XAXIS_LABEL, "Days").append(KEY_YAXIS_LABEL, "Count").append(KEY_IS_POSITIVE_TREND, true)
+				.append(KEY_YAXIS_LABEL, "Percentage").append(KEY_IS_POSITIVE_TREND, true)
 				.append(KEY_SHOW_TREND, false).append(KEY_IS_ADDITIONAL_FILTER, false).append(KEY_KPI_WIDTH, 100)
 				.append(KEY_BOX_TYPE, "chart").append(KEY_CALCULATE_MATURITY, false);
 
 		Document kpi188 = new Document().append(KEY_KPI_ID, KPI188)
-				.append(KEY_KPI_NAME, "Late Refinement (Future Sprint)").append(KEY_MAX_VALUE, "")
+				.append(KEY_KPI_NAME, "Late Refinement (Next Sprint)").append(KEY_MAX_VALUE, "")
 				.append(KEY_IS_DELETED, "False").append(KEY_DEFAULT_ORDER, 12).append(KEY_KPI_CATEGORY, "Iteration")
 				.append(KEY_KPI_SUB_CATEGORY, "Iteration Review").append(KEY_KPI_SOURCE, "Jira")
 				.append(KEY_COMBINED_SOURCE, "Jira/Azure").append(KEY_GROUP_ID, 19).append(KEY_THRESHOLD_VALUE, "")

@@ -1269,6 +1269,9 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 						}
 					}
 				}
+				else{
+					azureIssue.setUnRefinedValue188(customFieldSet);
+				}
 			}else{
 				azureIssue.setUnRefinedValue188(Collections.singleton("No Value"));
 			}

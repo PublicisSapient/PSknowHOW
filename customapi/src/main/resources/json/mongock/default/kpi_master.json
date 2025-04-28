@@ -4966,8 +4966,7 @@
         }
       ]
     } ,
-    "xaxisLabel" : "Days" ,
-    "yaxisLabel" : "Count" ,
+    "yAxisLabel" : "Percentage" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -4977,7 +4976,7 @@
   } ,
   {
     "kpiId" : "kpi188" ,
-    "kpiName" : "Late Refinement (Future Sprint)" ,
+    "kpiName" : "Late Refinement (Next Sprint)" ,
     "maxValue" : "" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 12 ,

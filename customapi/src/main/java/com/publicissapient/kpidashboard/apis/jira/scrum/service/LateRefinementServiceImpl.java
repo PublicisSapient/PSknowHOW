@@ -33,7 +33,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,8 +127,12 @@ public class LateRefinementServiceImpl extends JiraIterationKPIService {
 				// filter by typeName and DOR statuses as these both are mandatory fields
 				if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueTypeNamesKPI187())
 						&& CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusKPI187())) {
-					Set<String> typeName = fieldMapping.getJiraIssueTypeNamesKPI187().stream()
-							.map(type -> type.trim().toLowerCase()).collect(Collectors.toSet());
+					Set<String> typeName = fieldMapping.getJiraIssueTypeNamesKPI187()
+							.stream()
+							.flatMap(name -> "Defect".equalsIgnoreCase(name)
+									? Stream.of("defect", NormalizedJira.DEFECT_TYPE.getValue().toLowerCase())
+									: Stream.of(name.trim().toLowerCase()))
+							.collect(Collectors.toSet());
 					totalJiraIssueList = totalJiraIssueList.stream()
 							.filter(jiraIssue -> typeName.contains(jiraIssue.getTypeName().trim().toLowerCase()))
 							.toList();

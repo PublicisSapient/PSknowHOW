@@ -3859,6 +3859,7 @@
     "section": "Custom Fields Mapping",
     "fieldDisplayOrder": 1,
     "sectionOrder": 3,
+    "mandatory": true,
     "tooltip": {
       "definition": "Custom field to consider for a refined workitem."
     },
@@ -3887,6 +3888,7 @@
         "fieldLabel": "Custom field value min length",
         "placeHolderText": "Custom field value min length",
         "fieldType": "number",
+        "mandatory": true,
         "filterGroup": [
           "CustomField"
         ],
@@ -3899,6 +3901,7 @@
         "fieldLabel": "Keywords to match",
         "placeHolderText": "Keywords to match",
         "fieldType": "chips",
+        "mandatory": true,
         "filterGroup": [
           "CustomField"
         ],
