@@ -1426,10 +1426,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           ? 'sprintEndDate'
           : 'releaseEndDate';
     const startDateFormatted = this.formatDate(
-      event[0][startDatePropName]?.split('T')[0],
+      event[0][startDatePropName],
     );
     const endDateFormatted = this.formatDate(
-      event[0][endDatePropName]?.split('T')[0]?.split('T')[0],
+      event[0][endDatePropName],
     );
     this.combinedDate = `${startDateFormatted} - ${endDateFormatted}`;
     if (JSON.stringify(event[0]) !== '{}') {
