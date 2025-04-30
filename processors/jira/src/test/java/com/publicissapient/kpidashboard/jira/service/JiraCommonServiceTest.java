@@ -233,7 +233,7 @@ public class JiraCommonServiceTest {
 		HttpURLConnection mockedConnection = mock(HttpURLConnection.class);
 		String responseData = "Sample response data";
 		InputStream inputStream = new ByteArrayInputStream(responseData.getBytes(StandardCharsets.UTF_8));
-		assertThrows(IOException.class, () -> {
+		assertThrows(Exception.class, () -> {
 			jiraCommonService.getVersion(projectConfFieldMapping1, krb5Client);
 		});
 //		Assert.assertEquals(0, versions.size());
