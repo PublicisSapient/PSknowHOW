@@ -47,6 +47,7 @@ import { FeatureFlagDirective } from './custom-directives/feature-flag.directive
 import { ConditionalInputComponent } from './conditional-input/conditional-input.component';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { UtcToLocalUserPipe } from './utc-to-local-user/utc-to-local-user.pipe';
 
 @NgModule({
   imports: [
@@ -83,7 +84,8 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
     FieldMappingFormComponent,
     FeatureFlagDirective,
     CarouselModule,
-    ConditionalInputComponent
+    ConditionalInputComponent,
+    UtcToLocalUserPipe
   ],
   declarations: [
     ProjectFilterComponent,
@@ -95,7 +97,8 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
     FieldMappingFieldComponent,
     AdditionalFilterFieldComponent,
     FeatureFlagDirective,
-    ConditionalInputComponent
+    ConditionalInputComponent,
+    UtcToLocalUserPipe
   ],
   providers: [ConfirmationService]
 })
