@@ -19,7 +19,6 @@ import static com.publicissapient.kpidashboard.apis.util.ReleaseKpiHelper.getSto
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
@@ -615,7 +614,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 		if (avgStoryPoint != 0) {
 			timeRequiredForSp = (long) Math.ceil(remainingSp / avgStoryPoint);
 		}
-		return CommonUtils.getWorkingDayAfterAdditionofDays(DateUtil.todaysTime(),
+		return CommonUtils.getWorkingDayAfterAdditionofDays(DateUtil.getTodayTime(),
 				(int) Math.max(timeRequiredForSp, timeRequiredForIssueCount)).toLocalDate();
 	}
 

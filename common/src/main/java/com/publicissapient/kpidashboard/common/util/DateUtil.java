@@ -428,11 +428,11 @@ public class DateUtil {
         return utcTime;
     }
 
-    public static LocalDateTime todaysTime(){
+    public static LocalDateTime getTodayTime(){
         return DateUtil.localDateTimeToUTC(LocalDateTime.now());
     }
 
-    public static LocalDate todaysDate(){
+    public static LocalDate getTodayDate(){
         return DateUtil.localDateTimeToUTC(LocalDateTime.now()).toLocalDate();
     }
 

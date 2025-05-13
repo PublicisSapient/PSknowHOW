@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -177,7 +176,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraIterationKPIService {
 				Double originalEstimate = 0.0;
 				for (JiraIssue jiraIssue : issues) {
 					if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && 	DateUtil.stringToLocalDateTime(issueWiseDelay.get(jiraIssue.getNumber())
-							.getPredictedCompletedDate(),DateUtil.TIME_FORMAT_WITH_SEC_DATE).toLocalDate().equals(DateUtil.todaysDate())) {
+							.getPredictedCompletedDate(),DateUtil.TIME_FORMAT_WITH_SEC_DATE).toLocalDate().equals(DateUtil.getTodayDate())) {
 						KPIExcelUtility.populateIterationKPI(overAllmodalValues, modalValues, jiraIssue, fieldMapping,
 								modalObjectMap);
 						issueCount = issueCount + 1;

@@ -464,8 +464,8 @@ public class WastageServiceImpl extends JiraIterationKPIService {
 		if (entryActivityDate.isAfter(sprintStartDate)) {
 			if (entryActivityDate.isBefore(sprintEndDate)) {
 				if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
-					hours = (ChronoUnit.HOURS.between(entryActivityDate, DateUtil.todaysTime())
-							- minusHoursOfWeekEndDays(entryActivityDate, DateUtil.todaysTime()));
+					hours = (ChronoUnit.HOURS.between(entryActivityDate, DateUtil.getTodayTime())
+							- minusHoursOfWeekEndDays(entryActivityDate, DateUtil.getTodayTime()));
 				} else {
 
 					hours = (ChronoUnit.HOURS.between(entryActivityDate, sprintEndDate)
@@ -474,7 +474,7 @@ public class WastageServiceImpl extends JiraIterationKPIService {
 			}
 		} else {
 			if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
-				LocalDateTime currDate = DateUtil.todaysTime();
+				LocalDateTime currDate = DateUtil.getTodayTime();
 				hours = (ChronoUnit.HOURS.between(sprintStartDate, currDate)
 						- minusHoursOfWeekEndDays(sprintStartDate, currDate));
 			} else {
