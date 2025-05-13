@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -422,10 +423,8 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 			SprintDetails sprintDetails, String label, Map<Long, Pair<Integer, Double>> dayWiseScopeUpdate,
 			FieldMapping fieldMapping) {
 		List<JiraHistoryChangeLog> sprintUpdationLog = new ArrayList<>();
-		LocalDate sprintStartDate = DateUtil.stringToLocalDate(sprintDetails.getStartDate(),
-				DateUtil.TIME_FORMAT_WITH_SEC_ZONE);
-		LocalDate sprintEndDate = DateUtil.stringToLocalDate(sprintDetails.getEndDate(),
-				DateUtil.TIME_FORMAT_WITH_SEC_ZONE);
+		LocalDateTime sprintStartDate = DateUtil.stringToLocalDateTime(sprintDetails.getStartDate(),DateUtil.TIME_FORMAT_WITH_SEC);
+		LocalDateTime sprintEndDate = DateUtil.stringToLocalDateTime(sprintDetails.getEndDate(),DateUtil.TIME_FORMAT_WITH_SEC);
 		long sprintDuration = ChronoUnit.DAYS.between(sprintStartDate, sprintEndDate) + 1;
 		long quarterSprint = (long) Math.ceil(0.25 * sprintDuration);
 		long halfSprint = (long) Math.ceil(0.5 * sprintDuration);
@@ -446,10 +445,10 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 		}
 
 		if (CollectionUtils.isNotEmpty(sprintUpdationLog)) {
-			LocalDate today = LocalDate.now();
+            LocalDateTime today = DateUtil.todaysTime();
 			long durationFromSprintStart = ChronoUnit.DAYS.between(sprintStartDate, today) + 1L;
 			sprintUpdationLog.forEach(updationLog -> {
-				LocalDate sprintDate = updationLog.getUpdatedOn().toLocalDate();
+				LocalDateTime sprintDate = updationLog.getUpdatedOn();
 				if (durationFromSprintStart >= quarterSprint
 						&& sprintDate.isAfter(today.minusDays(quarterSprint + 1))) {
 					updateScopeCounts(dayWiseScopeUpdate, quarterSprint, jiraIssue, fieldMapping);

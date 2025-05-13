@@ -437,10 +437,10 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 
 	private void calculateRemainingCapacity(SprintDetails sprintDetails, CapacityKpiData capacityKpiData,
 			Map<String, String> userWiseRole, Map<String, StandUpViewKpiData> userWiseRemainingCapacity) {
-		LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0], DATE_FORMATTER);
-		LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("T")[0], DATE_FORMATTER);
-		int daysBetween = checkWorkingDays(sprintStartDate, sprintEndDate);
-		int daysLeft = checkWorkingDays(LocalDate.now(), sprintEndDate);
+		LocalDateTime sprintStartDate = DateUtil.stringToLocalDateTime(sprintDetails.getStartDate(),DateUtil.TIME_FORMAT_WITH_SEC);
+		LocalDateTime sprintEndDate = DateUtil.stringToLocalDateTime(sprintDetails.getEndDate(),DateUtil.TIME_FORMAT_WITH_SEC);
+		int daysBetween = checkWorkingDays(sprintStartDate.toLocalDate(), sprintEndDate.toLocalDate());
+		int daysLeft = checkWorkingDays(DateUtil.todaysDate(),sprintEndDate.toLocalDate());
 
 		if (capacityKpiData != null && CollectionUtils.isNotEmpty(capacityKpiData.getAssigneeCapacity())) {
 			capacityKpiData.getAssigneeCapacity().forEach(assignee -> {
@@ -488,10 +488,12 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		Set<String> closedStatus = (Set<String>) resultMap.get(CLOSE_STATUS);
 
 		if (CollectionUtils.isNotEmpty(totalHistoryList)) {
-			LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0], DATE_FORMATTER);
-			LocalDateTime sprintStartDateTime = LocalDateTime.parse(sprintDetails.getStartDate().split("\\.")[0],
-					DATE_TIME_FORMATTER);
-			LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("T")[0], DATE_FORMATTER);
+			LocalDate sprintStartDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getStartDate(),
+					DateUtil.TIME_FORMAT).toLocalDate();
+			LocalDateTime sprintStartDateTime = DateUtil.convertingStringToLocalDateTime(sprintDetails.getStartDate(),
+					DateUtil.TIME_FORMAT);
+			LocalDate sprintEndDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getStartDate(),
+					DateUtil.TIME_FORMAT).toLocalDate();
 
 			for (JiraIssue jiraIssue : jiraIssueList) {
 				KPIExcelUtility.populateIterationKPI(null, null, jiraIssue, fieldMapping, mapOfModalObject);
@@ -509,8 +511,8 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 
 				IterationKpiModalValue iterationKpiModalValue = mapOfModalObject.get(jiraIssue.getNumber());
 				// getDevCompletion Date
-				iterationKpiModalValue.setDevCompletionDateInTime(
-						getDevCompletionDateInTime(issueHistory, fieldMapping.getJiraDevDoneStatusKPI154()));
+				iterationKpiModalValue.setDevCompletionDateInTime(DateUtil.tranformUTCLocalDateTimeStringToZFormat(
+						getDevCompletionDateInTime(issueHistory, fieldMapping.getJiraDevDoneStatusKPI154())));
 
 				if (CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList()) && jiraIssue.getSprintIdList().size() > 1)
 					iterationKpiModalValue.setSpill(true);
@@ -593,7 +595,7 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		for (JiraHistoryChangeLog statusUpdationLog : filterStatusUpdationLogs) {
 			LocalDateTime activityLocalDate = statusUpdationLog.getUpdatedOn();
 			if (!isStartDateFound && startOfDevelopment.contains(statusUpdationLog.getChangedTo())) {
-				iterationKpiModalValue.setActualStartDateInTime(activityLocalDate.toString());
+				iterationKpiModalValue.setActualStartDateInTime(DateUtil.tranformUTCLocalTimeToZFormat(activityLocalDate));
 				isStartDateFound = true;
 			}
 			if (closedStatus.contains(jiraIssue.getStatus())) {
@@ -607,10 +609,10 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 			iterationKpiModalValue.setActualStartDateInTime(sprintStartDateInTime);
 
 		// Getting the max date of closed and test status.
-		iterationKpiModalValue.setActualCompletionDateInTime(closedStatusDateMap.values().stream()
-				.filter(Objects::nonNull).max(LocalDateTime::compareTo).map(LocalDateTime::toString).orElse(null));
-		iterationKpiModalValue.setTestCompletedInTime(testClosedStatusMap.values().stream().filter(Objects::nonNull)
-				.max(LocalDateTime::compareTo).map(LocalDateTime::toString).orElse(null));
+        iterationKpiModalValue.setActualCompletionDateInTime(DateUtil.tranformUTCLocalDateTimeStringToZFormat(closedStatusDateMap.values().stream().filter(Objects::nonNull)
+                .max(LocalDateTime::compareTo).map(LocalDateTime::toString).orElse(null)));
+        iterationKpiModalValue.setTestCompletedInTime(DateUtil.tranformUTCLocalDateTimeStringToZFormat(testClosedStatusMap.values().stream().filter(Objects::nonNull)
+                .max(LocalDateTime::compareTo).map(LocalDateTime::toString).orElse(null)));
 	}
 
 	/*
@@ -631,13 +633,10 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
 			jiraIssueModalObject.setPotentialDelay(iterationPotentialDelay.getPotentialDelay() + "d");
-			jiraIssueModalObject.setPredictedCompletionDate(
-					DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),
-							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
-
+            jiraIssueModalObject.setPredictedCompletionDate(DateUtil.stringToLocalDateTime(iterationPotentialDelay.getPredictedCompletedDate(),DateUtil.TIME_FORMAT_WITH_SEC_DATE).toString());
 		} else {
 			jiraIssueModalObject.setPotentialOverallDelay("-");
-			jiraIssueModalObject.setPredictedCompletionDate("-");
+			jiraIssueModalObject.setPredictedCompletionDate(Constant.BLANK);
 		}
 	}
 
@@ -648,7 +647,7 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		Map<String, List<String>> dateWiseLogMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(historyLog)) {
 			for (JiraHistoryChangeLog log : historyLog) {
-				String changedOn = log.getUpdatedOn().toLocalDate().toString();
+				String changedOn = DateUtil.tranformUTCLocalTimeToZFormat(log.getUpdatedOn());
 				dateWiseLogMap.computeIfPresent(changedOn, (date, logs) -> {
 					logs.add(log.getChangedTo());
 					return logs;
@@ -670,12 +669,12 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 	private Map<String, List<String>> createDateWiseLogs(List<JiraHistoryChangeLog> historyLog,
 			String actualStartDateInTime, String actualCompletionTime) {
 		if (StringUtils.isNotEmpty(actualCompletionTime)) {
-			LocalDateTime endLocalTime = LocalDateTime.parse(actualCompletionTime);
+			LocalDateTime endLocalTime = DateUtil.stringToLocalDateTime(actualCompletionTime, DateUtil.TIME_FORMAT_WITH_SEC_DATE);
 			historyLog = historyLog.stream().filter(log -> DateUtil.equalAndBeforTime(log.getUpdatedOn(), endLocalTime))
 					.toList();
 		}
 		if (StringUtils.isNotEmpty(actualStartDateInTime)) {
-			LocalDateTime startLocalTime = LocalDateTime.parse(actualStartDateInTime);
+			LocalDateTime startLocalTime = DateUtil.stringToLocalDateTime(actualStartDateInTime, DateUtil.TIME_FORMAT_WITH_SEC_DATE);
 			historyLog = historyLog.stream()
 					.filter(log -> DateUtil.equalAndAfterTime(log.getUpdatedOn(), startLocalTime)).toList();
 		}
@@ -694,10 +693,10 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 			if (CollectionUtils.isNotEmpty(inSprintHistoryLogs)) {
 				inSprintHistoryLogs.sort(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn).reversed());
 				lastTimeInString = CommonUtils.convertSecondsToDays((int) Duration
-						.between(inSprintHistoryLogs.get(0).getUpdatedOn(), LocalDateTime.now()).getSeconds());
+						.between(inSprintHistoryLogs.get(0).getUpdatedOn(), DateUtil.todaysTime()).getSeconds());
 			} else if (CollectionUtils.isNotEmpty(allLogs)) {
 				lastTimeInString = CommonUtils.convertSecondsToDays(
-						(int) Duration.between(sprintStartDateTime, LocalDateTime.now()).getSeconds());
+						(int) Duration.between(sprintStartDateTime,  DateUtil.todaysTime()).getSeconds());
 			}
 
 		} else

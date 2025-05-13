@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.util;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -460,9 +461,8 @@ public final class CommonUtils {
 		return value.replaceAll(Constant.ROUND_OPEN_BRACKET, Constant.BACKWARD_SLASH_OPEN);
 	}
 
-	public static java.time.LocalDate getWorkingDayAfterAdditionofDays(java.time.LocalDate startDate,
-			int timeToAddInDays) {
-		java.time.LocalDate localDate = null;
+	public static LocalDateTime getWorkingDayAfterAdditionofDays(LocalDateTime startDate, int timeToAddInDays) {
+		LocalDateTime localDate = null;
 		int dayToAdd = 0;
 		if (startDate != null) {
 			localDate = startDate;

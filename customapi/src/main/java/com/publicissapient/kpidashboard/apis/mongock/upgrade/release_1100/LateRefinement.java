@@ -91,7 +91,6 @@ public class LateRefinement {
 	private static final String KEY_TYPE = "type";
 	private static final String KEY_KPI_LINK_DETAIL = "kpiLinkDetail";
 	private static final String KEY_LINK = "link";
-	private static final String KEY_XAXIS_LABEL = "xAxisLabel";
 	private static final String KEY_YAXIS_LABEL = "yAxisLabel";
 	private static final String KEY_IS_POSITIVE_TREND = "isPositiveTrend";
 	private static final String KEY_SHOW_TREND = "showTrend";
@@ -250,7 +249,6 @@ public class LateRefinement {
 								new Document(KEY_FIELD_NAME, "jiraRefinementCriteriaKPI188"),
 								new Document(KEY_FIELD_NAME, "jiraIssueTypeNamesKPI188"))));
 
-		// Remove KPI 187 and 188 from master
 		mongoTemplate.getCollection(KPI_MASTER).deleteMany(new Document("$or",
 				Arrays.asList(new Document(KEY_KPI_ID, "kpi187"), new Document(KEY_KPI_ID, KPI188))));
 

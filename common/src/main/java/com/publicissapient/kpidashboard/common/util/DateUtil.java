@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -34,7 +35,9 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
 import java.util.stream.Stream;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.format.DateTimeFormat;
@@ -175,6 +178,12 @@ public class DateUtil {
 		}
 	}
 
+	/**
+	 * already a UTC Time "2023-10-02T03:51:00.000Z", in format DateUtil.TIME_FORMAT_WITH_SEC
+	 * @param time
+	 * @param format
+	 * @return
+	 */
 	public static LocalDateTime stringToLocalDateTime(String time, String format) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
 		return LocalDateTime.parse(time, formatter);
@@ -388,5 +397,50 @@ public class DateUtil {
 				.filter(date -> !(date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY))
 				.count();
 	}
+
+
+    public static LocalDateTime localDateTimeToUTC(LocalDateTime localDateTime) {
+        return localDateTime.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
+    }
+
+    public static String localDateTimeToUTC(String time) {
+        LocalDateTime localDateTime = LocalDateTime.parse(time);
+        return localDateTimeToUTC(localDateTime).toString();
+    }
+
+    public static String tranformUTCLocalTimeToZFormat(LocalDateTime ldt) {
+        ldt = ldt.truncatedTo(ChronoUnit.SECONDS);
+        Instant instant = ldt.toInstant(ZoneOffset.UTC);
+        return DateTimeFormatter.ISO_INSTANT.format(instant);
+    }
+
+    public static String tranformUTCLocalDateTimeStringToZFormat(String utcTime) {
+        if(StringUtils.isEmpty(utcTime)){
+            return CommonConstant.BLANK;
+        }
+        if(utcTime.equalsIgnoreCase("-")){
+            return "-";
+        }
+        if (StringUtils.isNotEmpty(utcTime)) {
+            LocalDateTime ldt = LocalDateTime.parse(utcTime);
+            return tranformUTCLocalTimeToZFormat(ldt);
+        }
+        return utcTime;
+    }
+
+    public static LocalDateTime todaysTime(){
+        return DateUtil.localDateTimeToUTC(LocalDateTime.now());
+    }
+
+    public static LocalDate todaysDate(){
+        return DateUtil.localDateTimeToUTC(LocalDateTime.now()).toLocalDate();
+    }
+
+	public static LocalDateTime convertJodaDateTimeToLocalDateTime(DateTime dateTime) {
+		Instant instant = Instant.ofEpochMilli(dateTime.getMillis());
+		return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+	}
+
+
 
 }

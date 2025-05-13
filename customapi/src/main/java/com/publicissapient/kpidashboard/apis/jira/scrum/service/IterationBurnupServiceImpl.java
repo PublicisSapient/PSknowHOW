@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -142,8 +143,7 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 						fieldMapping.getJiraIterationCompletionStatusKPI125(),
 						leafNode.getAccountHierarchy().getBasicProjectConfigId());
 
-				LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0],
-						DATE_TIME_FORMATTER);
+                LocalDateTime sprintStartDate = DateUtil.stringToLocalDateTime(sprintDetails.getStartDate(), DateUtil.TIME_FORMAT_WITH_SEC);
 
 				List<String> allIssues = new ArrayList<>();
 				List<String> notCompleted = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
@@ -210,43 +210,44 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 			Map<LocalDate, List<JiraIssue>> addedIssuesMap, Map<LocalDate, List<JiraIssue>> removedIssues,
 			Map<LocalDate, List<JiraIssue>> fullSprintMap, JiraIssueCustomHistory issueHistory,
 			List<JiraHistoryChangeLog> sprintUpdationLog) {
-		LocalDate startDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0], DATE_TIME_FORMATTER);
-		LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("T")[0], DATE_TIME_FORMATTER);
+		LocalDateTime startDate = DateUtil.stringToLocalDateTime(sprintDetails.getStartDate(), DateUtil.TIME_FORMAT_WITH_SEC);
+		LocalDateTime sprintEndDate = DateUtil.stringToLocalDateTime(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC);
 		List<JiraIssue> jiraIssueList = new ArrayList<>(getRespectiveJiraIssue(totalIssueList, issueHistory));
 		int lastIndex = sprintUpdationLog.size() - 1;
 		sprintUpdationLog.stream()
 				.filter(updateLogs -> updateLogs.getChangedTo().equalsIgnoreCase(sprintDetails.getSprintName())
 						|| (updateLogs.getChangedFrom().equalsIgnoreCase(sprintDetails.getSprintName()) && DateUtil
-								.isWithinDateRange(updateLogs.getUpdatedOn().toLocalDate(), startDate, sprintEndDate)))
+								.isWithinDateTimeRange(updateLogs.getUpdatedOn(), startDate, sprintEndDate)))
 				.forEach(updateLogs -> {
+					LocalDate utcDtartDate= startDate.toLocalDate();
 					if (updateLogs.getChangedTo().equalsIgnoreCase(sprintDetails.getSprintName())) {
-						if (sprintUpdationLog.get(lastIndex).getUpdatedOn().toLocalDate()
+						if (sprintUpdationLog.get(lastIndex).getUpdatedOn()
 								.isBefore(startDate.plusDays(1))) {
-							fullSprintMap.computeIfPresent(startDate, (k, v) -> {
+							fullSprintMap.computeIfPresent(utcDtartDate, (k, v) -> {
 								v.addAll(jiraIssueList);
 								return v;
 							});
-							fullSprintMap.putIfAbsent(startDate, jiraIssueList);
+							fullSprintMap.putIfAbsent(utcDtartDate, jiraIssueList);
 						}
-						LocalDate updatedLog = updateLogs.getUpdatedOn().toLocalDate().isBefore(startDate.plusDays(1))
+						LocalDateTime updatedLog = updateLogs.getUpdatedOn().isBefore(startDate.plusDays(1))
 								? startDate
-								: limitDateInSprint(updateLogs.getUpdatedOn().toLocalDate(), sprintEndDate);
-						addedIssuesMap.computeIfPresent(updatedLog, (k, v) -> {
+								: limitDateInSprint(updateLogs.getUpdatedOn(), sprintEndDate);
+						addedIssuesMap.computeIfPresent(updatedLog.toLocalDate(), (k, v) -> {
 							v.addAll(jiraIssueList);
 							return v;
 						});
-						addedIssuesMap.putIfAbsent(updatedLog, jiraIssueList);
+						addedIssuesMap.putIfAbsent(updatedLog.toLocalDate(), jiraIssueList);
 					}
 
 					if (updateLogs.getChangedFrom().equalsIgnoreCase(sprintDetails.getSprintName()) && DateUtil
-							.isWithinDateRange(updateLogs.getUpdatedOn().toLocalDate(), startDate, sprintEndDate)) {
+							.isWithinDateTimeRange(updateLogs.getUpdatedOn(), startDate, sprintEndDate)) {
 						List<JiraIssue> removeJiraIssueLIst = new ArrayList<>(jiraIssueList);
-						LocalDate updatedLog = updateLogs.getUpdatedOn().toLocalDate();
-						removedIssues.computeIfPresent(updatedLog, (k, v) -> {
+						LocalDateTime updatedLog = updateLogs.getUpdatedOn();
+						removedIssues.computeIfPresent(updatedLog.toLocalDate(), (k, v) -> {
 							v.addAll(removeJiraIssueLIst);
 							return v;
 						});
-						removedIssues.putIfAbsent(updatedLog, removeJiraIssueLIst);
+						removedIssues.putIfAbsent(updatedLog.toLocalDate(), removeJiraIssueLIst);
 					}
 				});
 	}
@@ -259,28 +260,27 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 
 	private void createCompletedIssuesDateWiseMap(SprintDetails sprintDetails, Set<JiraIssue> totalIssueList,
 			Map<LocalDate, List<JiraIssue>> completedIssues, Map<LocalDate, List<JiraIssue>> removedCompletedIssues,
-			JiraIssueCustomHistory issueHistory, LocalDate sprintStartDate) {
-		LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("T")[0], DATE_TIME_FORMATTER);
-		LocalDate endDate = sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED)
-				? LocalDate.parse(sprintDetails.getCompleteDate().split("T")[0], DATE_TIME_FORMATTER)
+			JiraIssueCustomHistory issueHistory, LocalDateTime sprintStartDate) {
+		LocalDateTime sprintEndDate = DateUtil.stringToLocalDateTime(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC);
+		LocalDateTime endDate = sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED)
+				? DateUtil.stringToLocalDateTime(sprintDetails.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 				: sprintEndDate;
 		List<JiraHistoryChangeLog> statusUpdationLog = issueHistory.getStatusUpdationLog();
 		statusUpdationLog = statusUpdationLog.stream()
-				.filter(log -> DateUtil.isWithinDateRange(
-						LocalDate.parse(log.getUpdatedOn().toString().split("T")[0], DATE_TIME_FORMATTER),
+				.filter(log -> DateUtil.isWithinDateTimeRange(
+						log.getUpdatedOn(),
 						sprintStartDate, endDate))
 				.collect(Collectors.toList());
 		Collections.sort(statusUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 		if (CollectionUtils.isNotEmpty(statusUpdationLog)) {
-			Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
-			LocalDate removedDate = null;
+			Map<String, LocalDateTime> closedStatusDateMap = new HashMap<>();
+			LocalDateTime removedDate = null;
 			Set<String> closedStatus = sprintDetails.getCompletedIssues().stream().map(SprintIssue::getStatus)
 					.collect(Collectors.toSet());
 			int lastIndex = statusUpdationLog.size() - 1;
 			boolean lastOpenState = !closedStatus.contains(statusUpdationLog.get(lastIndex).getChangedTo());
 			for (JiraHistoryChangeLog jiraHistoryChangeLog : statusUpdationLog) {
-				LocalDate activityDate = LocalDate.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
-						DATE_TIME_FORMATTER);
+				LocalDateTime activityDate = jiraHistoryChangeLog.getUpdatedOn();
 				if (closedStatus.contains(jiraHistoryChangeLog.getChangedTo())) {
 					if (closedStatusDateMap.containsKey(jiraHistoryChangeLog.getChangedTo())) {
 						closedStatusDateMap.clear();
@@ -291,20 +291,26 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 						jiraHistoryChangeLog, sprintEndDate);
 			}
 			// Getting the min date of closed status.
-			LocalDate updatedLog = closedStatusDateMap.values().stream().filter(Objects::nonNull)
-					.min(LocalDate::compareTo).orElse(null);
+			LocalDateTime updatedLog = closedStatusDateMap.values().stream().filter(Objects::nonNull)
+					.min(LocalDateTime::compareTo).orElse(null);
 			updatedLog = limitDateInSprint(updatedLog, sprintEndDate);
+			if (updatedLog==null) {
+				return;
+			}
 			List<JiraIssue> jiraIssueList = new ArrayList<>(getRespectiveJiraIssue(totalIssueList, issueHistory));
-			LocalDate finalUpdatedLog = updatedLog;
+			LocalDateTime finalUpdatedLog = updatedLog;
 			jiraIssueList.forEach(issue -> issue.setUpdateDate(ObjectUtils.isEmpty(finalUpdatedLog)
-					? LocalDate.parse(issue.getUpdateDate().split("T")[0], DATE_TIME_FORMATTER).toString()
+					? issue.getUpdateDate()
 					: finalUpdatedLog.toString()));
-			completedIssues.computeIfPresent(updatedLog, (k, v) -> {
+			completedIssues.computeIfPresent(updatedLog.toLocalDate(), (k, v) -> {
 				v.addAll(jiraIssueList);
 				return v;
 			});
-			completedIssues.putIfAbsent(updatedLog, jiraIssueList);
-			createRemovedFromClosedIssuesMap(removedCompletedIssues, limitDateInSprint(removedDate, sprintEndDate),
+			completedIssues.putIfAbsent(updatedLog.toLocalDate(), jiraIssueList);
+			if (removedDate==null) {
+				return;
+			}
+			createRemovedFromClosedIssuesMap(removedCompletedIssues, limitDateInSprint(removedDate, sprintEndDate).toLocalDate(),
 					totalIssueList, issueHistory);
 		}
 	}
@@ -314,7 +320,7 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 	 * would be counted under the last day of sprint
 	 */
 
-	private LocalDate limitDateInSprint(LocalDate updatedLog, LocalDate sprintEndDate) {
+	private LocalDateTime limitDateInSprint(LocalDateTime updatedLog, LocalDateTime sprintEndDate) {
 		if (Objects.nonNull(updatedLog) && updatedLog.isAfter(sprintEndDate.minusDays(1))) {
 			return sprintEndDate;
 		} else {
@@ -328,21 +334,19 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 	private void createRemovedFromClosedIssuesMap(Map<LocalDate, List<JiraIssue>> removedCompletedIssues,
 			LocalDate removedDate, Set<JiraIssue> totalIssueList, JiraIssueCustomHistory issueHistory) {
 		List<JiraIssue> jiraIssueList = new ArrayList<>(getRespectiveJiraIssue(totalIssueList, issueHistory));
-		if (ObjectUtils.isNotEmpty(removedDate)) {
 			removedCompletedIssues.computeIfPresent(removedDate, (k, v) -> {
 				v.addAll(jiraIssueList);
 				return v;
 			});
 			removedCompletedIssues.putIfAbsent(removedDate, jiraIssueList);
-		}
 	}
 
 	/**
 	 * if an issue within sprint changed from closed to open state and remain open
 	 * till the sprint end then it should be removed from closed map
 	 */
-	private LocalDate statusChangeFromClosedToOpen(LocalDate removedDate, Set<String> closedStatus, boolean openStatus,
-			JiraHistoryChangeLog jiraHistoryChangeLog, LocalDate sprintEndDate) {
+	private LocalDateTime statusChangeFromClosedToOpen(LocalDateTime removedDate, Set<String> closedStatus, boolean openStatus,
+			JiraHistoryChangeLog jiraHistoryChangeLog, LocalDateTime sprintEndDate) {
 		if (openStatus && closedStatus.contains(jiraHistoryChangeLog.getChangedFrom())) {
 			removedDate = sprintEndDate;
 		}
@@ -398,15 +402,15 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 					.filter(i -> issueWiseDelay.containsKey(i.getNumber())).collect(Collectors.toSet());
 			Map<LocalDate, List<JiraIssue>> potentialDelay = allPotentialDelayIssue.stream()
 					.filter(f -> StringUtils.isNotBlank(issueWiseDelay.get(f.getNumber()).getPredictedCompletedDate()))
-					.collect(Collectors.groupingBy(
-							f -> LocalDate.parse(issueWiseDelay.get(f.getNumber()).getPredictedCompletedDate())));
+					.collect(Collectors
+                            .groupingBy(f ->  DateUtil.stringToLocalDate(issueWiseDelay.get(f.getNumber()).getPredictedCompletedDate(), DateUtil.TIME_FORMAT_WITH_SEC_DATE)) );
 
-			LocalDate sprintStartDate = DateUtil.stringToLocalDate(sprintDetails.getStartDate(),
+			LocalDateTime sprintStartDate = DateUtil.stringToLocalDateTime(sprintDetails.getStartDate(),
 					DateUtil.TIME_FORMAT_WITH_SEC);
-			LocalDate sprintEndDate = DateUtil
-					.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC).plusDays(1);
+            LocalDateTime sprintEndDate = DateUtil.stringToLocalDateTime(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+                    .plusDays(1);
 
-			Map<String, LocalDate> maxCompleteAndMinPCDDate = getMaxCompleteAndMinPCDDate(completedIssueMap,
+            Map<String, LocalDate> maxCompleteAndMinPCDDate = getMaxCompleteAndMinPCDDate(completedIssueMap,
 					potentialDelay, removedIssuesMap);
 			LocalDate maxCompletionDate = maxCompleteAndMinPCDDate.getOrDefault(MAX_COMPLETION, null);
 			LocalDate minimumpredicateddate = maxCompleteAndMinPCDDate.getOrDefault(MIN_PREDICTED, null);
@@ -418,7 +422,7 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 			List<JiraIssue> processCompletedIssues = new ArrayList<>();
 			List<JiraIssue> pcdIssues = new ArrayList<>();
 
-			for (LocalDate date = sprintStartDate; date.isBefore(sprintEndDate); date = date.plusDays(1)) {
+			for (LocalDateTime date = sprintStartDate; date.isBefore(sprintEndDate); date = date.plusDays(1)) {
 				DataCountGroup dataCountGroup = new DataCountGroup();
 				List<DataCount> dataCountList = new ArrayList<>();
 				Long dueDateWiseTypeCountMap = calculateOverallScopeDayWise(fullSprintIssuesMap, removedIssuesMap,
@@ -428,25 +432,25 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 				dataCountList.add(getDataCountObject(dueDateWiseTypeCountMap, sprintID, OVERALL_SCOPE));
 				dataCountList.add(getDataCountObject(plannedDateWiseTypeCount, sprintID, PLANNED_COMPLETION));
 				if (ObjectUtils.isNotEmpty(maxCompletionDate)
-						&& (date.isBefore(maxCompletionDate) || date.isEqual(maxCompletionDate))) {
-					List<JiraIssue> completedIssues = completedIssueMap.getOrDefault(date, new ArrayList<>());
+						&& (date.isBefore(maxCompletionDate.atStartOfDay()) || date.isEqual(maxCompletionDate.atStartOfDay()))) {
+					List<JiraIssue> completedIssues = completedIssueMap.getOrDefault(date.toLocalDate(), new ArrayList<>());
 					completedIssues.addAll(processCompletedIssues);
 					completedIssues.retainAll(processedAllIssues);
 					removeExtraTransitionOnSprintEndDate(sprintDetails, maxCompletionDate, completedIssues,
 							sprintDetails.getNotCompletedIssues().stream().map(SprintIssue::getNumber)
 									.collect(Collectors.toList()));
-					completedIssues.removeAll(removedFromClosed.getOrDefault(date, new HashSet<>()));
+					completedIssues.removeAll(removedFromClosed.getOrDefault(date.toLocalDate(), new HashSet<>()));
 					Long closedDateWiseCount = processFieldWiseeIssues(completedIssues, date, processCompletedIssues,
 							UPDATE_DATE);
 					dataCountList.add(getDataCountObject(closedDateWiseCount, sprintID, ACTUAL_COMPLETION));
 				}
 				if (ObjectUtils.isNotEmpty(minimumpredicateddate)
-						&& (date.isEqual(minimumpredicateddate) || date.isAfter(minimumpredicateddate))) {
+						&& (date.isEqual(minimumpredicateddate.atStartOfDay()) || date.isAfter(minimumpredicateddate.atStartOfDay()))) {
 					pcdIssues.addAll(potentialDelay.getOrDefault(date, new ArrayList<>()));
 					dataCountList.add(getDataCountObject((long) pcdIssues.size(), sprintID, PREDICTED_COMPLETION));
 				}
 
-				dataCountGroup.setFilter(date.toString());
+				dataCountGroup.setFilter(DateUtil.tranformUTCLocalTimeToZFormat(date));
 				dataCountGroup.setValue(dataCountList);
 				dataCountGroups.add(dataCountGroup);
 			}
@@ -461,18 +465,18 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 		}
 	}
 
-	private Long processFieldWiseeIssues(List<JiraIssue> processedAllIssues, LocalDate date,
+	private Long processFieldWiseeIssues(List<JiraIssue> processedAllIssues, LocalDateTime date,
 			List<JiraIssue> processedPlannedIssues, String keyCheck) {
 		if (keyCheck.equalsIgnoreCase(DUE_DATE)) {
 			processedPlannedIssues.addAll(processedAllIssues.stream()
 					.filter(f -> StringUtils.isNotBlank(f.getDueDate())
-							&& DateUtil.stringToLocalDate(f.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).isEqual(date))
+							&& DateUtil.stringToLocalDate(f.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).isEqual(date.toLocalDate()))
 					.distinct().collect(Collectors.toList()));
 			return (long) processedPlannedIssues.size();
 
 		} else if (keyCheck.equalsIgnoreCase(UPDATE_DATE)) {
-			processedPlannedIssues.addAll(processedAllIssues.stream().filter(
-					f -> StringUtils.isNotBlank(f.getUpdateDate()) && LocalDate.parse(f.getUpdateDate()).isEqual(date))
+			processedPlannedIssues.addAll(processedAllIssues.stream()
+					.filter(f -> StringUtils.isNotBlank(f.getUpdateDate()) && LocalDateTime.parse(f.getUpdateDate()).toLocalDate().isEqual(date.toLocalDate()))
 					.distinct().collect(Collectors.toList()));
 			return (long) processedAllIssues.size();
 		}
@@ -481,8 +485,9 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 
 	private Long calculateOverallScopeDayWise(Map<LocalDate, List<JiraIssue>> allIssues,
 			Map<LocalDate, List<JiraIssue>> removedIssues, Map<LocalDate, List<JiraIssue>> addedIssues,
-			List<JiraIssue> processedIssues, LocalDate date, SprintDetails sprintDetails,
+			List<JiraIssue> processedIssues, LocalDateTime utcLocalDateTime, SprintDetails sprintDetails,
 			LocalDate maximumRemovalDate) {
+        LocalDate date = utcLocalDateTime.toLocalDate();
 		List<JiraIssue> allIssuesOrDefault = allIssues.getOrDefault(date, new ArrayList<>());
 		List<JiraIssue> removedJiraIssues = removedIssues.getOrDefault(date, new ArrayList<>());
 		List<JiraIssue> addedJiraIssues = addedIssues.getOrDefault(date, new ArrayList<>());

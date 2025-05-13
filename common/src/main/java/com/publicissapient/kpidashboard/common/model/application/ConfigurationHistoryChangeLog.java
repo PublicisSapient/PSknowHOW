@@ -19,6 +19,7 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -55,6 +56,11 @@ public class ConfigurationHistoryChangeLog {
 		this.changedBy = changedBy;
 		this.updatedOn = updatedOn;
 	}
+
+
+    public String getUpdatedOn() {
+        return DateUtil.localDateTimeToUTC(updatedOn);
+    }
 
 
 

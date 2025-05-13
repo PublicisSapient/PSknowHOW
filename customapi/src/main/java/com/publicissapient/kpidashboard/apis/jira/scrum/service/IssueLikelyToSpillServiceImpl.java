@@ -20,7 +20,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -180,8 +180,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraIterationKPIService {
 			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
 			List<Integer> overAllriskIssueCount = Arrays.asList(0);
 			String sprintState = sprintDetails.getState();
-			LocalDate sprintEndDate = DateUtil.stringToLocalDate(sprintDetails.getEndDate(),
-					DateUtil.TIME_FORMAT_WITH_SEC);
+            LocalDateTime sprintEndDate = DateUtil.stringToLocalDateTime(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC);
 			List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
 			typeAndPriorityWiseIssues
 					.forEach((issueType, priorityWiseIssue) -> priorityWiseIssue.forEach((priority, issues) -> {
@@ -198,7 +197,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraIterationKPIService {
 							if (SPRINT_STATE_ACTIVE.equals(sprintState)) {
 								if (isIssueAtRisk(jiraIssue, issueWiseDelay, sprintEndDate)
 										|| (jiraIssue.getDueDate() != null)
-												&& DateUtil.stringToLocalDate(jiraIssue.getDueDate(),
+												&& DateUtil.stringToLocalDateTime(jiraIssue.getDueDate(),
 														DateUtil.TIME_FORMAT_WITH_SEC).isAfter(sprintEndDate)) {
 									riskIssueCount = riskIssueCount + 1;
 									overAllriskIssueCount.set(0, overAllriskIssueCount.get(0) + 1);
@@ -315,9 +314,10 @@ public class IssueLikelyToSpillServiceImpl extends JiraIterationKPIService {
 	}
 
 	private boolean isIssueAtRisk(JiraIssue jiraIssue, Map<String, IterationPotentialDelay> issueWiseDelay,
-			LocalDate sprintEndDate) {
-		return issueWiseDelay.containsKey(jiraIssue.getNumber()) && LocalDate
-				.parse(issueWiseDelay.get(jiraIssue.getNumber()).getPredictedCompletedDate()).isAfter(sprintEndDate);
+			LocalDateTime sprintEndDate) {
+		return issueWiseDelay.containsKey(jiraIssue.getNumber())
+				&& DateUtil.stringToLocalDateTime(issueWiseDelay.get(jiraIssue.getNumber()).getPredictedCompletedDate(),
+						DateUtil.TIME_FORMAT_WITH_SEC_DATE).isAfter(sprintEndDate);
 	}
 
 	private void setKpiSpecificData(Map<String, IterationKpiModalValue> modalObjectMap,
@@ -325,10 +325,8 @@ public class IssueLikelyToSpillServiceImpl extends JiraIterationKPIService {
 		IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber())) {
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
-			jiraIssueModalObject.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
-			jiraIssueModalObject.setPredictedCompletionDate(
-					DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),
-							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+            jiraIssueModalObject.setPotentialDelay(iterationPotentialDelay.getPotentialDelay() + "d");
+            jiraIssueModalObject.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
 
 		} else {
 			jiraIssueModalObject.setPotentialDelay("-");
