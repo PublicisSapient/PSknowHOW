@@ -583,6 +583,25 @@
                         <ng-template pTemplate="selectedItems">
                           <i class="pi pi-filter-icon pi-filter" style="font-size: 0.8rem"></i>
                         </ng-template>
+                        <ng-template let-option pTemplate="item">
+                          <div class="filter-item">
+                              <div>
+                                <span *ngIf="!item?.toLowerCase()?.includes('date')">{{option.name}}</span>
+                                  <span *ngIf="item?.toLowerCase()?.includes('date')">{{option.name | UtcToLocalUserTimeZone}}</span>
+                              </div>
+                          </div>
+                      </ng-template>
+                      <ng-template let-option pTemplate="item">
+                        <div class="filter-item">
+                            <div>
+                              <ng-container [ngSwitch]="item?.toLowerCase()?.includes('date')? 'date' : item?.toLowerCase()?.includes('month') ? 'month' : 'others'">
+                                <ng-container *ngSwitchCase="'date'">{{option.name | UtcToLocalUserTimeZone}}</ng-container>
+                                <ng-container *ngSwitchCase="'month'">{{option.name | UtcToLocalUserTimeZone : 'MMM yyyy'}}</ng-container>
+                                <ng-container *ngSwitchDefault>{{option.name}}</ng-container>
+                              </ng-container>
+                            </div>
+                        </div>
+                    </ng-template>
                       </p-multiSelect>
                     </ng-template>
                   </p-columnFilter>
@@ -614,7 +633,13 @@
                 </ng-container>
               </td>
               <ng-template #elseBlock>
-                <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width" *ngIf="x[item];">{{x[item]}}</td>
+                <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width" *ngIf="x[item];">
+                  <ng-container [ngSwitch]="item?.toLowerCase()?.includes('date')? 'date' : item?.toLowerCase()?.includes('month') ? 'month' : 'others'">
+                    <ng-container *ngSwitchCase="'date'">{{x[item] | UtcToLocalUserTimeZone}}</ng-container>
+                    <ng-container *ngSwitchCase="'month'">{{x[item] | UtcToLocalUserTimeZone : 'MMM yyyy' }}</ng-container>
+                    <ng-container *ngSwitchDefault>{{x[item]}}</ng-container>
+                  </ng-container>
+                </td>
                 <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width" *ngIf="!x[item];">-</td>
               </ng-template>
             </ng-container>

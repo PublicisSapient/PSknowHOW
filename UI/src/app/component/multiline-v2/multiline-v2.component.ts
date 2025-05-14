@@ -387,11 +387,13 @@ export class MultilineV2Component implements OnChanges {
       if (this.xCaption) {
         XCaption.text(this.xCaption);
       } else {
+        this.xCaption = 'Sprints'
         XCaption.text('Sprints');
       }
 
       if (kpiId === 'kpi114' || kpiId === 'kpi74' || kpiId === 'kpi997') {
-        XCaption.text('Months');
+        this.xCaption = 'Months'
+        XCaption.text(this.xCaption);
       }
 
       // this is used for adding horizontal lines in graph
