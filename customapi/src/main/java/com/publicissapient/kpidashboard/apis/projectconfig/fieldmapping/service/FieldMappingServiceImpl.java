@@ -217,9 +217,11 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				List<ConfigurationHistoryChangeLog> changeLogs = FieldMappingHelper.getFieldMappingHistory(fieldMapping,
 						field, releaseNodeId, nodeSpecifFields.contains(field));
 				if (CollectionUtils.isNotEmpty(changeLogs)) {
-					mappingResponse.setHistory(changeLogs.stream()
+					List<ConfigurationHistoryChangeLog> changeHistory = changeLogs.stream()
 							.sorted(Comparator.comparing(ConfigurationHistoryChangeLog::getUpdatedOn).reversed())
-							.limit(5).toList());
+							.limit(5).toList();
+					changeHistory.forEach(changeLog -> changeLog.setUpdatedOn(DateUtil.tranformUTCLocalDateTimeStringToZFormat(changeLog.getUpdatedOn())));
+					mappingResponse.setHistory(changeHistory);
 				}
 				fieldMappingResponses.add(mappingResponse);
 			}
