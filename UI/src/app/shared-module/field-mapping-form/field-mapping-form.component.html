@@ -129,7 +129,7 @@
         <h5 class="p-m-0 dateAndName">Change Log</h5>
         <div *ngFor="let history of individualFieldHistory">
             <div class="p-p-2">
-                <div class="dateAndName">{{history['Changed At'] | date:'MM.dd.yyyy - hh:mmaaa'}} {{history['Changed By']}}</div>
+                <div class="dateAndName">{{history['Changed At'] | UtcToLocalUserTimeZone :'MM.dd.yyyy - hh:mmaaa'}} {{history['Changed By']}}</div>
                 <div class="dateAndName">{{history?.['Changed From'] | json}} <i class="pi pi-arrow-right" style="color: #fff"></i>
                     <label> {{history?.['Changed To'] | json}}</label> </div>
             </div>
