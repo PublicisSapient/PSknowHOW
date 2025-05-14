@@ -29,7 +29,7 @@ import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 
-@ChangeUnit(id = "r_label_change", order = "11004", author = "shi6", systemVersion = "11.0.0")
+@ChangeUnit(id = "r_label_change", order = "011004", author = "shi6", systemVersion = "11.0.0")
 public class LabelChangeRollback {
 	private final MongoTemplate mongoTemplate;
 
@@ -39,23 +39,22 @@ public class LabelChangeRollback {
 
 	@Execution
 	public void execution() {
-
 		MongoCollection<Document> collection = mongoTemplate.getCollection("kpi_master");
-		updateLabel(collection, Arrays.asList("kpi73", "kpi74"), null, null);
-		updateLabel(collection, Arrays.asList("kpi153"), null, null);
-		updateLabel(collection, Arrays.asList("kpi113"), null, null);
+		updateLabel(collection, "kpi73", null, null);
+		updateLabel(collection, "kpi153", null, null);
+		updateLabel(collection, "kpi113", null, null);
 
 	}
 
 	@RollbackExecution
 	public void rollback() {
 		MongoCollection<Document> collection = mongoTemplate.getCollection("kpi_master");
-		updateLabel(collection, Arrays.asList("kpi73", "kpi74"), "Months", "Count");
-		updateLabel(collection, Arrays.asList("kpi153"), "PIs", "Business Value");
-		updateLabel(collection, Arrays.asList("kpi113"), "Months", "Cost of Delay");
+		updateLabel(collection, "kpi73", "Months", "Count");
+		updateLabel(collection, "kpi153", "PIs", "Business Value");
+		updateLabel(collection, "kpi113", "Months", "Cost of Delay");
 	}
 
-	public void updateLabel(MongoCollection<Document> kpiMaster, List<String> kpiIds, String xAxisLabel,
+	public void updateLabel(MongoCollection<Document> kpiMaster, String kpiIds, String xAxisLabel,
 			String yAxisLabel) {
 		kpiMaster.updateMany(new Document("kpiId", new Document("$in", kpiIds)),
 				new Document("$set", new Document("xAxisLabel", xAxisLabel).append("yAxisLabel", yAxisLabel)));

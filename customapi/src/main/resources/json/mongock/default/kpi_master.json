@@ -2128,9 +2128,7 @@
       ]
     } ,
     "xaxisLabel" : "Months" ,
-    "xAxisLabel" : "Months" ,
     "yaxisLabel" : "Count" ,
-    "yAxisLabel" : "Count" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "aggregationCriteria" : "sum" ,

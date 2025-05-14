@@ -18,12 +18,14 @@
 
 package com.publicissapient.kpidashboard.apis.jira.kanban.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,25 +134,27 @@ public class ProjectVersionKanbanServiceImpl extends JiraKPIService<Double, List
 			if (projectRelease != null) {
 				String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 				Map<String, Double> dateCount = getLastNMonth(customApiConfig.getJiraXaxisMonthCount());
+				Map<String, String> formatDate= new HashMap<>();
 				List<DataCount> dc = new ArrayList<>();
 				List<ProjectVersion> projectVersionList = Lists.newArrayList();
 				// Filter to include only released versions
 				List<ProjectVersion> releasedVersions = projectRelease.getListProjectVersion().stream()
 						.filter(ProjectVersion::isReleased).toList();
 				for (ProjectVersion pv : releasedVersions) {
-					if (pv.getReleaseDate() != null && dateCount.keySet().contains(
-							pv.getReleaseDate().getYear() + Constant.DASH + pv.getReleaseDate().getMonthOfYear())) {
-						String yearMonth = pv.getReleaseDate().getYear() + Constant.DASH
-								+ pv.getReleaseDate().getMonthOfYear();
 
-						projectVersionList.add(pv);
-						dateCount.put(yearMonth, dateCount.get(yearMonth) + 1);
-
+					if (pv.getReleaseDate() != null) {
+						LocalDateTime localDateTime = DateUtil.convertJodaDateTimeToLocalDateTime(pv.getReleaseDate());
+						String yearMonth = (localDateTime.getYear()) + String.valueOf(localDateTime.getMonth());
+						if (dateCount.keySet().contains(yearMonth)) {
+							projectVersionList.add(pv);
+							dateCount.put(yearMonth, dateCount.get(yearMonth) + 1);
+							formatDate.put(yearMonth, DateUtil.tranformUTCLocalTimeToZFormat(localDateTime)); //formatDate
+						}
 					}
 				}
 				dateCount.forEach((k, v) -> {
 					DataCount dataCount = new DataCount();
-					dataCount.setDate(k);
+					dataCount.setDate(formatDate.get(k));
 					dataCount.setValue(v);
 					dataCount.setData(v.toString());
 					dataCount.setHoverValue(new HashMap<>());
