@@ -18,12 +18,15 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +34,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -149,7 +151,7 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 	/**
 	 * Gets the KPI value for project node.
 	 *
-	 * @param kpiElement
+	 *
 	 * @param projectRelease
 	 * @param trendValueList
 	 * @param projectName
@@ -158,6 +160,7 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 	private void setProjectNodeValue(Map<String, Node> mapTmp, Node node, ProjectRelease projectRelease,
 			List<DataCount> trendValueList, String projectName, String requestTrackerId, List<KPIExcelData> excelData) {
 		Map<String, Double> dateCount = getLastNMonth(customApiConfig.getSprintCountForFilters());
+		Map<String, String> timeFormatMap = new HashMap<>();
 		List<ProjectVersion> projectVersionList = Lists.newArrayList();
 		List<String> dateList = Lists.newArrayList();
 		// Filter to include only released versions
@@ -165,16 +168,18 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 				.filter(ProjectVersion::isReleased).toList();
 		for (ProjectVersion pv : releasedVersions) {
 			if (pv.getReleaseDate() != null) {
-				String yearMonth = pv.getReleaseDate().getYear() + Constant.DASH + pv.getReleaseDate().getMonthOfYear();
+				LocalDateTime localDateTime = DateUtil.convertJodaDateTimeToLocalDateTime(pv.getReleaseDate());
+				String yearMonth = (localDateTime.getYear()) + String.valueOf(localDateTime.getMonth());
 				if (dateCount.keySet().contains(yearMonth)) {
 					projectVersionList.add(pv);
 					dateList.add(yearMonth);
 					dateCount.put(yearMonth, dateCount.get(yearMonth) + 1);
+					timeFormatMap.put(yearMonth, DateUtil.tranformUTCLocalTimeToZFormat(localDateTime));
 				}
 			}
 		}
 		List<DataCount> dcList = new ArrayList<>();
-		dateCount.forEach((k, v) -> setDataCount(trendValueList, projectName, dcList, k, v));
+		dateCount.forEach((k, v) -> setDataCount(trendValueList, projectName, dcList, timeFormatMap.get(k), v));
 		mapTmp.get(node.getId()).setValue(dcList);
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
@@ -191,7 +196,7 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 	 * @param v
 	 */
 	private void setDataCount(List<DataCount> trendValueList, String projectName, List<DataCount> dcList, String k,
-			Double v) {
+							  Double v) {
 		DataCount dataCount = new DataCount();
 		dataCount.setDate(k);
 		dataCount.setValue(v);

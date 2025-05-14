@@ -438,7 +438,7 @@ public class DateUtil {
 
 	public static LocalDateTime convertJodaDateTimeToLocalDateTime(DateTime dateTime) {
 		Instant instant = Instant.ofEpochMilli(dateTime.getMillis());
-		return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+		return LocalDateTime.ofInstant(instant,ZoneOffset.UTC);
 	}
 
 

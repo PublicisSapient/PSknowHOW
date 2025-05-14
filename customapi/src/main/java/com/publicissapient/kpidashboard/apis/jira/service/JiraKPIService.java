@@ -27,9 +27,11 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -95,13 +97,13 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 
 	public Map<String, Double> getLastNMonth(int count) {
 		Map<String, Double> lastNMonth = new LinkedHashMap<>();
-		DateTime currentDate = DateTime.now();
-		String currentDateStr = currentDate.getYear() + Constant.DASH + currentDate.getMonthOfYear();
+		LocalDateTime currentDate = DateUtil.getTodayTime();
+		String currentDateStr = currentDate.getYear() + String.valueOf(currentDate.getMonth());
 		lastNMonth.put(currentDateStr, 0.0);
-		DateTime lastMonth = DateTime.now();
+		LocalDateTime lastMonth = DateUtil.getTodayTime();
 		for (int i = 1; i < count; i++) {
 			lastMonth = lastMonth.minusMonths(1);
-			String lastMonthStr = lastMonth.getYear() + Constant.DASH + lastMonth.getMonthOfYear();
+			String lastMonthStr = lastMonth.getYear() + String.valueOf(lastMonth.getMonth());
 			lastNMonth.put(lastMonthStr, 0.0);
 
 		}

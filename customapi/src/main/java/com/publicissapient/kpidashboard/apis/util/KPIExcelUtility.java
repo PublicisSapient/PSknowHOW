@@ -852,10 +852,6 @@ public class KPIExcelUtility {
 					String month = Constant.EMPTY_STRING;
 					String epicEndDate = Constant.EMPTY_STRING;
 					if (epic.getChangeDate() != null) {
-						DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
-								.optionalStart().appendPattern(".")
-								.appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false).optionalEnd().toFormatter();
-
 						month = DateUtil.tranformUTCLocalDateTimeStringToZFormat(epic.getChangeDate());
 						epicEndDate = DateUtil.tranformUTCLocalDateTimeStringToZFormat(epic.getChangeDate());
 
