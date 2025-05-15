@@ -417,7 +417,8 @@
                     </td>
                     <ng-container *ngFor="let item of modalDetails['tableHeadings']; let i = index;">
                         <td *ngIf="i!=0">
-                            {{x[item]}}
+                            <span *ngIf="!item?.toLowerCase()?.includes('date')">{{x[item]}}</span>
+                            <span *ngIf="item?.toLowerCase()?.includes('date')">{{x[item] | UtcToLocalUserTimeZone}}</span>     
                         </td>
                     </ng-container>
                 </tr>
