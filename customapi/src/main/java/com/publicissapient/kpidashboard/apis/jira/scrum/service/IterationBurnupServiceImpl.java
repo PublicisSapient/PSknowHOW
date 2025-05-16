@@ -432,7 +432,7 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 				dataCountList.add(getDataCountObject(dueDateWiseTypeCountMap, sprintID, OVERALL_SCOPE));
 				dataCountList.add(getDataCountObject(plannedDateWiseTypeCount, sprintID, PLANNED_COMPLETION));
 				if (ObjectUtils.isNotEmpty(maxCompletionDate)
-						&& (date.isBefore(maxCompletionDate.atStartOfDay()) || date.isEqual(maxCompletionDate.atStartOfDay()))) {
+						&& (date.isBefore(maxCompletionDate.atStartOfDay()) || date.toLocalDate().isEqual(maxCompletionDate))) {
 					List<JiraIssue> completedIssues = completedIssueMap.getOrDefault(date.toLocalDate(), new ArrayList<>());
 					completedIssues.addAll(processCompletedIssues);
 					completedIssues.retainAll(processedAllIssues);
@@ -445,7 +445,7 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 					dataCountList.add(getDataCountObject(closedDateWiseCount, sprintID, ACTUAL_COMPLETION));
 				}
 				if (ObjectUtils.isNotEmpty(minimumpredicateddate)
-						&& (date.isEqual(minimumpredicateddate.atStartOfDay()) || date.isAfter(minimumpredicateddate.atStartOfDay()))) {
+						&& (date.toLocalDate().isEqual(minimumpredicateddate) || date.isAfter(minimumpredicateddate.atStartOfDay()))) {
 					pcdIssues.addAll(potentialDelay.getOrDefault(date, new ArrayList<>()));
 					dataCountList.add(getDataCountObject((long) pcdIssues.size(), sprintID, PREDICTED_COMPLETION));
 				}

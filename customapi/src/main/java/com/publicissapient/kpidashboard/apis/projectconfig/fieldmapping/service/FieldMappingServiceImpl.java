@@ -220,7 +220,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					List<ConfigurationHistoryChangeLog> changeHistory = changeLogs.stream()
 							.sorted(Comparator.comparing(ConfigurationHistoryChangeLog::getUpdatedOn).reversed())
 							.limit(5).toList();
-					changeHistory.forEach(changeLog -> changeLog.setUpdatedOn(DateUtil.tranformUTCLocalDateTimeStringToZFormat(changeLog.getUpdatedOn())));
+					changeHistory.forEach(changeLog -> changeLog.setUpdatedOn(DateUtil.tranformUTCLocalDateTimeStringToZFormat(DateUtil.localDateTimeToUTC(changeLog.getUpdatedOn()))));
 					mappingResponse.setHistory(changeHistory);
 				}
 				fieldMappingResponses.add(mappingResponse);

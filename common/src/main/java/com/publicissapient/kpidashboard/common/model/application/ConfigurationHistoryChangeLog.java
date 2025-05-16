@@ -58,10 +58,5 @@ public class ConfigurationHistoryChangeLog {
 	}
 
 
-    public String getUpdatedOn() {
-        return DateUtil.localDateTimeToUTC(updatedOn);
-    }
-
-
 
 }
