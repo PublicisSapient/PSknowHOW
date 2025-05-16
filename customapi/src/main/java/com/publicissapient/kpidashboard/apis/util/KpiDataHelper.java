@@ -1120,8 +1120,8 @@ public final class KpiDataHelper {
 		if (CollectionUtils.isNotEmpty(worklogHistory)) {
 			filterStatusUpdationLogs = worklogHistory.stream()
 					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(jiraIssueSprint.getUpdatedOn().toLocalDate(),
-							LocalDate.parse(sprintStartDate.split("T")[0], DATE_FORMATTER),
-							LocalDate.parse(sprintEndDate.split("T")[0], DATE_FORMATTER)))
+							DateUtil.stringToLocalDateTime(sprintStartDate,DateUtil.TIME_FORMAT_WITH_SEC).toLocalDate(),
+							DateUtil.stringToLocalDateTime(sprintEndDate,DateUtil.TIME_FORMAT_WITH_SEC).toLocalDate()))
 					.collect(Collectors.toList());
 		}
 
