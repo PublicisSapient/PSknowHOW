@@ -24,6 +24,7 @@ import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.getF
 import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.transformIterSprintdetail;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -331,16 +332,14 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 	private void setKpiSpecificData(SprintDetails sprintDetails, Map<String, IterationKpiModalValue> modalObjectMap,
 			Map<String, IterationPotentialDelay> issueWiseDelay, JiraIssue jiraIssue, String devCompletionDate) {
 		IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());
-		jiraIssueModalObject.setDevCompletionDate(DateUtil.dateTimeConverter(
-				devCompletionDate, DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+        jiraIssueModalObject.setDevCompletionDate(devCompletionDate);
 		String markerValue = Constant.BLANK;
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
 			jiraIssueModalObject.setPotentialDelay(iterationPotentialDelay.getPotentialDelay() + "d");
-			final LocalDate sprintEndDate = DateUtil.stringToLocalDate(sprintDetails.getEndDate(),
-					DateUtil.TIME_FORMAT_WITH_SEC);
-			final LocalDate predictCompletionDate = LocalDate
-					.parse(iterationPotentialDelay.getPredictedCompletedDate());
+			final LocalDateTime sprintEndDate = DateUtil.stringToLocalDateTime(sprintDetails.getEndDate(),
+                    DateUtil.TIME_FORMAT_WITH_SEC);
+            final LocalDateTime predictCompletionDate =DateUtil.stringToLocalDateTime(iterationPotentialDelay.getPredictedCompletedDate(), DateUtil.TIME_FORMAT_WITH_SEC_DATE);
 			if (!sprintEndDate.isBefore(predictCompletionDate)) {
 				if (ChronoUnit.DAYS.between(predictCompletionDate, sprintEndDate) < 2) {
 					markerValue = Constant.AMBER;
@@ -348,9 +347,7 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 			} else {
 				markerValue = Constant.RED;
 			}
-			jiraIssueModalObject.setPredictedCompletionDate(
-					DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),
-							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+            jiraIssueModalObject.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
 
 		} else {
 			jiraIssueModalObject.setPotentialOverallDelay("-");

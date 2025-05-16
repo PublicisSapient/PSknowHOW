@@ -182,20 +182,20 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 	private void setProjectNodeValue(Map<String, Node> mapTmp, Node node, List<JiraIssue> jiraIssues,
 			List<DataCount> trendValueList, String requestTrackerId, List<KPIExcelData> excelData) {
 		Map<String, Double> lastNMonthMap = getLastNMonth(customApiConfig.getJiraXaxisMonthCount());
+		Map<String, String> timeFormatMap = new HashMap<>();
 		String projectName = node.getProjectFilter().getName();
 		List<JiraIssue> epicList = new ArrayList<>();
 		Map<String, Map<String, Integer>> howerMap = new HashMap<>();
 
 		for (JiraIssue js : jiraIssues) {
 			String number = js.getNumber();
-			String dateTime = js.getChangeDate() == null ? js.getUpdateDate() : js.getChangeDate();
-			if (dateTime != null) {
-				DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
-						.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false)
-						.optionalEnd().toFormatter();
-				LocalDateTime dateValue = LocalDateTime.parse(dateTime, formatter);
-				String date = dateValue.getYear() + Constant.DASH + dateValue.getMonthValue();
+
+			//String date = js.getChangeDate() == null ? DateUtil.tranformUTCLocalDateTimeStringToZFormat(js.getUpdateDate()) : DateUtil.tranformUTCLocalDateTimeStringToZFormat(js.getChangeDate());
+			LocalDateTime formatDate = js.getChangeDate() == null ? LocalDateTime.parse(js.getUpdateDate()) : LocalDateTime.parse(js.getChangeDate());
+			String date = (formatDate.getYear()) + String.valueOf(formatDate.getMonth());
+			if (date != null) {
 				lastNMonthMap.computeIfPresent(date, (key, value) -> {
+					timeFormatMap.put(key, DateUtil.tranformUTCLocalTimeToZFormat(formatDate));
 					epicList.add(js);
 					Integer costOfDelay = (int) js.getCostOfDelay();
 					Map<String, Integer> epicWiseCost = new HashMap<>();
@@ -216,7 +216,7 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 		List<DataCount> dcList = new ArrayList<>();
 		lastNMonthMap.forEach((k, v) -> {
 			DataCount dataCount = new DataCount();
-			dataCount.setDate(k);
+			dataCount.setDate(timeFormatMap.get(k));
 			dataCount.setValue(v);
 			dataCount.setData(v.toString());
 			dataCount.setSProjectName(projectName);

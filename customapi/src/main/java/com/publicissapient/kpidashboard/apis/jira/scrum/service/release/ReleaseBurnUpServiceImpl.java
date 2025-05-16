@@ -614,8 +614,8 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 		if (avgStoryPoint != 0) {
 			timeRequiredForSp = (long) Math.ceil(remainingSp / avgStoryPoint);
 		}
-		return CommonUtils.getWorkingDayAfterAdditionofDays(LocalDate.now(),
-				(int) Math.max(timeRequiredForSp, timeRequiredForIssueCount));
+		return CommonUtils.getWorkingDayAfterAdditionofDays(DateUtil.getTodayTime(),
+				(int) Math.max(timeRequiredForSp, timeRequiredForIssueCount)).toLocalDate();
 	}
 
 	/**

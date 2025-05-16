@@ -78,6 +78,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() immediateLoader: boolean = true;
   @Input() partialData: boolean = false;
   warning = '';
+  @Input() xCaption: string;
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
     private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService,

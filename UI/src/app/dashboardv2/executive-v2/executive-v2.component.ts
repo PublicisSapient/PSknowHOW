@@ -26,11 +26,13 @@ import { ActivatedRoute } from '@angular/router';
 import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { ExcelService } from 'src/app/services/excel.service';
+import { UtcToLocalUserPipe } from 'src/app/shared-module/utc-to-local-user/utc-to-local-user.pipe';
 
 @Component({
   selector: 'app-executive-v2',
   templateUrl: './executive-v2.component.html',
-  styleUrls: ['./executive-v2.component.css']
+  styleUrls: ['./executive-v2.component.css'],
+  providers : [UtcToLocalUserPipe]
 })
 export class ExecutiveV2Component implements OnInit, OnDestroy {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
@@ -123,7 +125,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
-     private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef) {
+     private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef,
+    private utcToLocalUserPipe : UtcToLocalUserPipe) {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
 
@@ -1411,8 +1414,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           let item = chosenItem?.value[i];
           const trendDataKpiUnit = (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '');
           if (item) {
-            obj['hoverText']?.push((i + 1) + ' - ' + (item?.['sprintNames']?.length > 0
-              ? item['sprintNames'].join(',') : item?.['sSprintName'] ? item['sSprintName'] : item?.['date']));
+            obj['hoverText']?.push((i + 1) + ' - ' + this.utcToLocalUser((item?.['sprintNames']?.length > 0
+              ? item['sprintNames'].join(',') : item?.['sSprintName'] ? item['sSprintName'] : item?.['date']),obj['frequency']));
             let val = item?.lineValue >= 0 ? item?.lineValue : item?.value;
             obj[i + 1] = val > 0 ? ((Math.round(val * 10) / 10) + trendDataKpiUnit) : (val + trendDataKpiUnit || '-');
             if (kpiId === 'kpi153') {
@@ -1464,6 +1467,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (!this.maturityTableKpiList.includes(kpiId)) {
       this.maturityTableKpiList.push(kpiId);
     }
+  }
+
+  utcToLocalUser(data, xAxis) {
+    if (data && data?.length && xAxis?.toLowerCase()?.includes('month')) {
+      return this.utcToLocalUserPipe.transform(data, 'MMM YYYY');
+    }
+    return data
   }
   sortingRowsInTable(hierarchyName) {
     this.kpiTableDataObj[hierarchyName]?.sort((a, b) => a.order - b.order);

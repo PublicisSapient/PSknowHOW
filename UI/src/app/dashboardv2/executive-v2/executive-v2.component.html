@@ -56,7 +56,8 @@
                                             (getCommentCountByKpi)="getKpiCommentsCount($event)"
                                             (reloadKPITab)="reloadKPI($event)" [kpiSize]="kpi.kpiDetail.kpiSize"
                                             [kpiChartData]="kpiChartData" [immediateLoader]='immediateLoader'
-                                            [partialData]="checkIfPartialDataPresent(kpi)">
+                                            [partialData]="checkIfPartialDataPresent(kpi)"
+                                            [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel">
                                             <ng-container *ngIf="!noTabAccess else noDataAccess">
                                                 <ng-container *ngIf="kpi?.kpiDetail?.chartType; else showTable">
 
@@ -416,7 +417,8 @@
                     </td>
                     <ng-container *ngFor="let item of modalDetails['tableHeadings']; let i = index;">
                         <td *ngIf="i!=0">
-                            {{x[item]}}
+                            <span *ngIf="!item?.toLowerCase()?.includes('date')">{{x[item]}}</span>
+                            <span *ngIf="item?.toLowerCase()?.includes('date')">{{x[item] | UtcToLocalUserTimeZone}}</span>     
                         </td>
                     </ng-container>
                 </tr>
