@@ -22,11 +22,9 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import java.text.DecimalFormat;
 import java.time.DayOfWeek;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -744,15 +742,15 @@ public final class KpiDataHelper {
 			Map<String, List<LocalDateTime>> stringListMap = issueWiseMinimumDates.get(projectId);
 			if (MapUtils.isNotEmpty(stringListMap)) {
 				LocalDateTime endLocalDate = sprintDetail.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
-						? LocalDateTime.now()
-						: LocalDateTime.ofInstant(Instant.parse(sprintDetail.getCompleteDate()),
-								ZoneId.systemDefault());
+						? DateUtil.getTodayTime()
+						: DateUtil.stringToLocalDateTime(sprintDetail.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC);
 				return completedIssues.stream().filter(completedIssue -> {
 					List<LocalDateTime> issueDateMap = stringListMap.get(completedIssue.getNumber());
 					if (CollectionUtils.isNotEmpty(issueDateMap)) {
 						return issueDateMap.stream()
-								.anyMatch(dateTime -> DateUtil.isWithinDateTimeRange(dateTime, LocalDateTime
-										.ofInstant(Instant.parse(sprintDetail.getStartDate()), ZoneId.systemDefault()),
+								.anyMatch(dateTime -> DateUtil.isWithinDateTimeRange(dateTime,
+										DateUtil.stringToLocalDateTime(sprintDetail.getStartDate(),
+												DateUtil.TIME_FORMAT_WITH_SEC),
 										endLocalDate));
 					} else {
 						return false; // Don't save completedIssue if issueDateMap is empty
