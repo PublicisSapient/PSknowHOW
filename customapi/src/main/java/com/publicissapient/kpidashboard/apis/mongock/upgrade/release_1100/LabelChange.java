@@ -17,9 +17,6 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1100;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -53,9 +50,9 @@ public class LabelChange {
 		updateLabel(collection, "kpi113", null, null);
 	}
 
-	public void updateLabel(MongoCollection<Document> kpiMaster, String kpiIds, String xAxisLabel,
+	public void updateLabel(MongoCollection<Document> kpiMaster, String kpiId, String xAxisLabel,
 			String yAxisLabel) {
-		kpiMaster.updateMany(new Document("kpiId", new Document("$in", kpiIds)),
+		kpiMaster.updateOne(new Document("kpiId", kpiId),
 				new Document("$set", new Document("xAxisLabel", xAxisLabel).append("yAxisLabel", yAxisLabel)));
 	}
 
