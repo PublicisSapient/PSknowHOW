@@ -34,6 +34,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -220,13 +221,29 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					List<ConfigurationHistoryChangeLog> changeHistory = changeLogs.stream()
 							.sorted(Comparator.comparing(ConfigurationHistoryChangeLog::getUpdatedOn).reversed())
 							.limit(5).toList();
-					changeHistory.forEach(changeLog -> changeLog.setUpdatedOn(DateUtil.tranformUTCLocalDateTimeStringToZFormat(DateUtil.localDateTimeToUTC(changeLog.getUpdatedOn()))));
+					changeLogs.forEach(changeLog -> changeLog.setUpdatedOn(transformToUTCZFormat(changeLog.getUpdatedOn())));
 					mappingResponse.setHistory(changeHistory);
 				}
 				fieldMappingResponses.add(mappingResponse);
 			}
 		}
 		return fieldMappingResponses;
+	}
+
+	/**
+	 * Converts the given date string to UTC 'Z' format if not already in UTC.
+	 * Prevents parsing errors for cached data that may already be in UTC format.
+	 *
+	 * @param updatedOn
+	 *            the date string to transform
+	 * @return the transformed date string in UTC 'Z' format or the original string
+	 *         if no transformation is needed
+	 */
+	private String transformToUTCZFormat(String updatedOn) {
+		if (StringUtils.isNotEmpty(updatedOn) && !updatedOn.endsWith("Z")) {
+			return DateUtil.tranformUTCLocalDateTimeStringToZFormat(DateUtil.localDateTimeToUTC(updatedOn));
+		}
+		return updatedOn;
 	}
 
 	/**
