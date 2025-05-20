@@ -59,7 +59,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
@@ -137,18 +136,9 @@ public class FutureSprintLateRefinementServiceImpl extends JiraIterationKPIServi
 
 				List<JiraIssue> totalJiraIssueList = jiraIssueRepository
 						.findIssueByNumberWithAdditionalFilter(totalIssues, uniqueProjectMap);
-				// no need to transform sprintdetails as it already has a fieldmapping to filter
-				// out the issues
-				List<String> completeAndIncompleteIssues = KpiDataHelper
-						.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails, CommonConstant.TOTAL_ISSUES);
 
-				if (CollectionUtils.isNotEmpty(completeAndIncompleteIssues)) {
-					List<JiraIssue> filteredJiraIssue = IterationKpiHelper
-							.getFilteredJiraIssue(new ArrayList<>(completeAndIncompleteIssues), totalJiraIssueList);
-					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails, new HashSet<>(),
-									filteredJiraIssue);
-					resultListMap.put(INCLUDED_ISSUES, new ArrayList<>(filtersIssuesList));
+				if (CollectionUtils.isNotEmpty(totalJiraIssueList)) {
+					resultListMap.put(INCLUDED_ISSUES, new ArrayList<>(totalJiraIssueList));
 				}
 			}
 		}

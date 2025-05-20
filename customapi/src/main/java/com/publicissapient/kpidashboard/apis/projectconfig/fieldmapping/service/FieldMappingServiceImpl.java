@@ -221,7 +221,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					List<ConfigurationHistoryChangeLog> changeHistory = changeLogs.stream()
 							.sorted(Comparator.comparing(ConfigurationHistoryChangeLog::getUpdatedOn).reversed())
 							.limit(5).toList();
-					changeLogs.forEach(changeLog -> changeLog.setUpdatedOn(transformToUTCZFormat(changeLog.getUpdatedOn())));
+					changeHistory.forEach(changeLog -> changeLog.setUpdatedOn(transformToUTCZFormat(changeLog.getUpdatedOn())));
 					mappingResponse.setHistory(changeHistory);
 				}
 				fieldMappingResponses.add(mappingResponse);
