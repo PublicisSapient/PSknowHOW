@@ -259,8 +259,8 @@ export class IterationComponent implements OnInit, OnDestroy {
                 this.selectedProjectId = selectedSprint.nodeId?.substring(selectedSprint.nodeId.lastIndexOf('_') + 1, selectedSprint.nodeId.length);
                 this.checkForAssigneeDataAndSetupTabs();
 
-                const today = new Date();
-                const endDate = new Date(selectedSprint?.sprintEndDate);
+                const today = this.stripTime(new Date());
+                const endDate = this.stripTime(new Date(selectedSprint?.sprintEndDate));
                 this.timeRemaining = this.calcBusinessDays(today, endDate);
 
                 this.groupJiraKpi(kpiIdsForCurrentBoard);
@@ -702,6 +702,10 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
 
   }
+
+  stripTime(date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
 
   calcBusinessDays(dDate1, dDate2) { // input given as Date objects
     let iWeeks; let iDateDiff; let iAdjust = 0;
