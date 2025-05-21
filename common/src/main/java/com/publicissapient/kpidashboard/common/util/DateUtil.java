@@ -35,7 +35,6 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
 import java.util.stream.Stream;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -43,6 +42,7 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.Week;
 
 import lombok.extern.slf4j.Slf4j;
@@ -441,6 +441,15 @@ public class DateUtil {
 		return LocalDateTime.ofInstant(instant,ZoneOffset.UTC);
 	}
 
-
-
+	/**
+	 * Convert a string time to UTC LocalDateTime
+	 * 
+	 * @param time
+	 *            2024-10-17T23:08:15.6740000
+	 * @return LocalDateTime
+	 */
+	public static LocalDateTime convertToUTCLocalDateTime(String time) {
+		String truncatedTime = time.split("\\.")[0];
+		return localDateTimeToUTC(LocalDateTime.parse(truncatedTime, DateTimeFormatter.ofPattern(TIME_FORMAT)));
+	}
 }
