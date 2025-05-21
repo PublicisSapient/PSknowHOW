@@ -259,8 +259,8 @@ export class IterationComponent implements OnInit, OnDestroy {
                 this.selectedProjectId = selectedSprint.nodeId?.substring(selectedSprint.nodeId.lastIndexOf('_') + 1, selectedSprint.nodeId.length);
                 this.checkForAssigneeDataAndSetupTabs();
 
-                const today = new Date().toISOString().split('T')[0];
-                const endDate = new Date(selectedSprint?.sprintEndDate).toISOString().split('T')[0];
+                const today = new Date().toLocaleDateString();
+                const endDate = new Date(selectedSprint?.sprintEndDate).toLocaleDateString();
                 this.timeRemaining = this.calcBusinessDays(today, endDate);
 
                 this.groupJiraKpi(kpiIdsForCurrentBoard);
@@ -729,7 +729,8 @@ export class IterationComponent implements OnInit, OnDestroy {
     }
 
     iDateDiff -= iAdjust; // take into account both days on weekend
-    return (iDateDiff + 1); // add 1 because dates are inclusive
+    const total = iDateDiff + 1 // add 1 because dates are inclusive (counting today date)
+    return Math.max(0, total - 2) // need to exlcude today date and last date
   }
 
   convertToHoursIfTime(val, unit) {
