@@ -1090,8 +1090,9 @@ public final class KpiDataHelper {
 							? sprintUpdate.getChangedTo().equalsIgnoreCase(sprint)
 							: changeType.equals(CommonConstant.REMOVED)
 									&& sprintUpdate.getChangedFrom().equalsIgnoreCase(sprint))
-					.forEach(sprintUpdate -> issueDateMap.put(issueKey,
-							DateUtil.localDateTimeToUTC(sprintUpdate.getUpdatedOn().toString())));
+					.forEach(
+							sprintUpdate -> issueDateMap.put(issueKey, DateUtil.tranformUTCLocalDateTimeStringToZFormat(
+									DateUtil.localDateTimeToUTC(sprintUpdate.getUpdatedOn().toString()))));
 		});
 
 		return issueDateMap;
