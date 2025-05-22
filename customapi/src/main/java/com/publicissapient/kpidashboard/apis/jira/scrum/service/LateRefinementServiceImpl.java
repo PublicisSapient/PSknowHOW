@@ -510,7 +510,7 @@ public class LateRefinementServiceImpl extends JiraIterationKPIService {
 		dataCount.setValue(value);
 		Map<String, Object> hoverMap = new LinkedHashMap<>();
 		hoverMap.put("Date", date);
-		hoverMap.put("No. of Unrefined Items", lateIssues.size());
+		hoverMap.put("Number of Unrefined Items", lateIssues.size());
 		hoverMap.put("Size of Unrefined Items", getTotalSum(lateIssues));
 		hoverMap.put("Total Items", totalIssues.size());
 		hoverMap.put("Size of Total Items", getTotalSum(totalIssues));
