@@ -440,4 +440,15 @@ public class DateUtil {
 		Instant instant = Instant.ofEpochMilli(dateTime.getMillis());
 		return LocalDateTime.ofInstant(instant,ZoneOffset.UTC);
 	}
+	/**
+	 * Convert a string time to UTC LocalDateTime
+	 *
+	 * @param time
+	 *            2024-10-17T23:08:15.6740000
+	 * @return LocalDateTime
+	 */
+	public static LocalDateTime convertToUTCLocalDateTime(String time) {
+		String truncatedTime = time.split("\\.")[0];
+		return localDateTimeToUTC(LocalDateTime.parse(truncatedTime, DateTimeFormatter.ofPattern(TIME_FORMAT)));
+	}
 }
