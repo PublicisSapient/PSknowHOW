@@ -18,6 +18,10 @@
 
 package com.publicissapient.kpidashboard.apis.model;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+
 import java.io.Serializable;
 
 /**
@@ -49,8 +53,9 @@ public class ReleaseFilter implements Serializable {
 		super();
 		this.id = sprintId;
 		this.name = sprintName;
-		this.startDate = sprintStartDate;
-		this.endDate = sprintEndDate;
+		this.startDate = StringUtils.isNotEmpty(sprintStartDate)? DateUtil.convertJodaDateTimeToLocalDateTime(DateTime.parse(sprintStartDate)).toString(): sprintStartDate;
+		this.endDate = StringUtils.isNotEmpty(sprintEndDate)? DateUtil.convertJodaDateTimeToLocalDateTime(DateTime.parse(sprintEndDate)).toString(): sprintEndDate;
+
 	}
 
 	/**

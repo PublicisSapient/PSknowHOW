@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -115,8 +116,19 @@ public class AccountHierarchyServiceImpl
 			if (acc.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)) {
 				data = AccountFilteredData.builder().nodeId(acc.getNodeId()).nodeName(acc.getNodeName())
 						.labelName(acc.getLabelName()).parentId(acc.getParentId()).path(acc.getPath())
-						.releaseState(acc.getReleaseState()).releaseStartDate(acc.getBeginDate())
-						.releaseEndDate(acc.getEndDate()).level(level).build();
+						.releaseState(
+								acc.getReleaseState())
+						.releaseStartDate(StringUtils.isNotEmpty(acc.getBeginDate())
+								? DateUtil.tranformUTCLocalDateTimeStringToZFormat(
+										DateUtil.convertJodaDateTimeToLocalDateTime(DateTime.parse(acc.getBeginDate()))
+												.toString())
+								: acc.getBeginDate())
+						.releaseEndDate(StringUtils.isNotEmpty(acc.getEndDate())
+								? DateUtil.tranformUTCLocalDateTimeStringToZFormat(
+										DateUtil.convertJodaDateTimeToLocalDateTime(DateTime.parse(acc.getEndDate()))
+												.toString())
+								: acc.getEndDate())
+						.level(level).build();
 			} else {
 				data = AccountFilteredData.builder().nodeId(acc.getNodeId()).nodeName(acc.getNodeName())
 						.labelName(acc.getLabelName()).parentId(acc.getParentId()).path(acc.getPath())
