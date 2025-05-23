@@ -21,6 +21,7 @@ import static com.publicissapient.kpidashboard.apis.util.ReleaseKpiHelper.getSto
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
@@ -32,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.model.JiraIssueReferTime;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -93,7 +95,7 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
 	private ConfigHelperService configHelperService;
-	private LocalDate tempStartDate = null;
+	private LocalDateTime tempStartDate = null;
 
 	@Override
 	public String getQualifierType() {
@@ -128,17 +130,17 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestRelease, null, null, kpiRequest);
 		List<JiraIssue> releaseIssues = (List<JiraIssue>) resultMap.get(TOTAL_ISSUES);
-		Map<LocalDate, List<JiraIssue>> addedIssuesMap = (Map<LocalDate, List<JiraIssue>>) resultMap
+		Map<LocalDate, List<JiraIssueReferTime>> addedIssuesReferMap = (Map<LocalDate, List<JiraIssueReferTime>>) resultMap
 				.get(ADDED_TO_RELEASE);
-		Map<LocalDate, List<JiraIssue>> fullReleaseIssueMap = (Map<LocalDate, List<JiraIssue>>) resultMap
+		Map<LocalDate, List<JiraIssueReferTime>> fullReleaseIssueReferMap = (Map<LocalDate, List<JiraIssueReferTime>>) resultMap
 				.get(FULL_RELEASE);
-		Map<LocalDate, List<JiraIssue>> removeIssueMap = (Map<LocalDate, List<JiraIssue>>) resultMap
+		Map<LocalDate, List<JiraIssueReferTime>> removeIssueReferMap = (Map<LocalDate, List<JiraIssueReferTime>>) resultMap
 				.get(REMOVED_FROM_RELEASE);
 
 		List<IterationKpiValue> iterationKpiValueList = new ArrayList<>();
 		long range;
 		String duration;
-		if (CollectionUtils.isNotEmpty(releaseIssues) && MapUtils.isNotEmpty(fullReleaseIssueMap)) {
+		if (CollectionUtils.isNotEmpty(releaseIssues) && MapUtils.isNotEmpty(fullReleaseIssueReferMap)) {
 			Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			/*
@@ -147,18 +149,23 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 			 * absent then it means that issue is unreleased, so till today we can consider
 			 * as end date
 			 */
-			LocalDate startLocalDate = StringUtils.isEmpty(startDate) ? fullReleaseIssueMap.keySet().stream()
-					.filter(Objects::nonNull).min(LocalDate::compareTo).orElse(null)
-					: LocalDate.parse(startDate.split("T")[0], DATE_TIME_FORMATTER);
-			LocalDate endLocalDate = StringUtils.isEmpty(endDate) ? LocalDate.now()
-					: LocalDate.parse(endDate.split("T")[0], DATE_TIME_FORMATTER);
+			LocalDateTime startLocalDate = StringUtils.isEmpty(startDate) ? fullReleaseIssueReferMap.keySet().stream()
+					.filter(Objects::nonNull).map(LocalDate::atStartOfDay).min(LocalDateTime::compareTo).orElse(null)
+					: LocalDateTime.parse(startDate);
+			LocalDateTime endLocalDate = StringUtils.isEmpty(endDate) ? DateUtil.getTodayTime()
+					: LocalDateTime.parse(endDate);
 			Map<String, Long> durationRangeMap = getDurationRangeMap(startLocalDate, endLocalDate);
 			duration = durationRangeMap.keySet().stream().findFirst().orElse("");
 			range = durationRangeMap.values().stream().findFirst().orElse(0L);
-			fullReleaseIssueMap = prepareIssueBeforeStartDate(fullReleaseIssueMap, startLocalDate);
+			fullReleaseIssueReferMap = prepareIssueBeforeStartDate(fullReleaseIssueReferMap, startLocalDate);
+
+			Map<LocalDate,List<JiraIssue>> addedIssuesMap= convertReferMapToJiraIssue(addedIssuesReferMap);
+			Map<LocalDate,List<JiraIssue>> removeIssueMap= convertReferMapToJiraIssue(removeIssueReferMap);
+			Map<LocalDate,List<JiraIssue>> fullReleaseIssueMap= convertReferMapToJiraIssue(fullReleaseIssueReferMap);
+
 
 			assert startLocalDate != null;
-			tempStartDate = LocalDate.parse(startLocalDate.toString());
+			tempStartDate = startLocalDate;
 			allReleaseTaggedIssue.clear();
 			fullReleaseIssueMap.forEach((k, v) -> allReleaseTaggedIssue.addAll(v));
 			List<JiraIssue> overallIssues = new ArrayList<>();
@@ -168,7 +175,7 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 			for (int i = 0; i < range && !startLocalDate.isAfter(endLocalDate); i++) {
 				DataCountGroup issueCount = new DataCountGroup();
 				DataCountGroup issueSize = new DataCountGroup();
-				CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(startLocalDate, duration);
+				CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateTimeForDataFiltering(startLocalDate, duration);
 				Map<String, List<JiraIssue>> filterWiseGroupedMap = createFilterWiseGroupedMap(dateRange,
 						addedIssuesMap, removeIssueMap, fullReleaseIssueMap, overallIssues);
 				String date = getRange(dateRange, duration);
@@ -178,16 +185,16 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 				issueSizeCountDataGroup.add(issueSize);
 			}
 			releaseIssues.retainAll(allReleaseTaggedIssue);
-			LocalDate maxPlannedDueDate = releaseIssues.stream().map(JiraIssue::getDueDate).filter(Objects::nonNull)
+			LocalDateTime maxPlannedDueDate = releaseIssues.stream().map(JiraIssue::getDueDate).filter(Objects::nonNull)
 					.filter(dueDate -> !dueDate.isBlank())
-					.map(dueDate -> LocalDate.parse(dueDate.split("T")[0], DATE_TIME_FORMATTER))
+					.map(date->DateUtil.stringToLocalDateTime(date, DateUtil.TIME_FORMAT_WITH_SEC))
 					.max(Comparator.naturalOrder()).orElse(null);
 
 			populateExcelDataObject(requestTrackerId, excelData, releaseIssues, fieldMapping);
 			if (CollectionUtils.isNotEmpty(issueCountDataGroup)) {
 				Map<String, Object> additionalInfoMap = new HashMap<>();
 				additionalInfoMap.put("isXaxisGapRequired", true);
-				additionalInfoMap.put("plannedDueDate", String.valueOf(maxPlannedDueDate));
+				additionalInfoMap.put("plannedDueDate", DateUtil.tranformUTCLocalDateTimeStringToZFormat(String.valueOf(maxPlannedDueDate)));
 
 				IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
 				kpiValueIssueCount.setDataGroup(issueCountDataGroup);
@@ -212,6 +219,17 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 		kpiElement.setTrendValueList(iterationKpiValueList);
 	}
 
+	private Map<LocalDate, List<JiraIssue>> convertReferMapToJiraIssue(Map<LocalDate, List<JiraIssueReferTime>> addedIssuesReferMap) {
+		Map<LocalDate, List<JiraIssue>> mpp= new HashMap<>();
+		addedIssuesReferMap.forEach((key, value) -> {
+			List<JiraIssue> jiraIssues = new ArrayList<>();
+			for (JiraIssueReferTime jiraIssueReferTime : value) {
+				jiraIssues.add(jiraIssueReferTime.getJiraIssue());
+			}
+			mpp.put(key, jiraIssues);
+		});
+		return mpp;
+	}
 	/**
 	 * {@inheritDoc}
 	 */
@@ -230,9 +248,9 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 						allIssuesHistory.stream().map(JiraIssueCustomHistory::getStoryID).collect(Collectors.toList()),
 						basicProjConfigId);
 
-				Map<LocalDate, List<JiraIssue>> addedIssuesMap = new HashMap<>();
-				Map<LocalDate, List<JiraIssue>> removeIssueMap = new HashMap<>();
-				Map<LocalDate, List<JiraIssue>> fullReleaseMap = new HashMap<>();
+				Map<LocalDate, List<JiraIssueReferTime>> addedIssuesMap = new HashMap<>();
+				Map<LocalDate, List<JiraIssueReferTime>> removeIssueMap = new HashMap<>();
+				Map<LocalDate, List<JiraIssueReferTime>> fullReleaseMap = new HashMap<>();
 				dateWiseLogs(allIssuesHistory, releaseList.stream().findFirst().orElse(null), releaseIssues,
 						addedIssuesMap, removeIssueMap, fullReleaseMap);
 				resultListMap.put(FULL_RELEASE, fullReleaseMap);
@@ -262,8 +280,8 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 	 *            Map<LocalDate, List<JiraIssue>>
 	 */
 	private void dateWiseLogs(List<JiraIssueCustomHistory> allIssuesHistory, String releaseName, // NOSONAR
-			List<JiraIssue> releaseIssue, Map<LocalDate, List<JiraIssue>> addedIssuesMap,
-			Map<LocalDate, List<JiraIssue>> removeIssueMap, Map<LocalDate, List<JiraIssue>> fullReleaseMap) {
+			List<JiraIssue> releaseIssue, Map<LocalDate, List<JiraIssueReferTime>> addedIssuesMap,
+			Map<LocalDate, List<JiraIssueReferTime>> removeIssueMap, Map<LocalDate, List<JiraIssueReferTime>> fullReleaseMap) {
 
 		releaseName = releaseName != null ? releaseName : "";
 		String finalReleaseName = releaseName.toLowerCase();
@@ -282,33 +300,42 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 									.contains(finalReleaseName)) {
 								updatedLog = fixVersionUpdateLog.get(lastIndex).getUpdatedOn().toLocalDate();
 								List<JiraIssue> cloneList = new ArrayList<>(jiraIssueList);
+								List<JiraIssueReferTime> jiraIssueReferTime = createJiraIssueReferTime(fixVersionUpdateLog.get(lastIndex).getUpdatedOn(), cloneList);
 								fullReleaseMap.computeIfPresent(updatedLog, (k, v) -> {
-									v.addAll(cloneList);
-									return v;
+									List<JiraIssueReferTime> jiraIssueReferTimes = new ArrayList<>(v);
+									jiraIssueReferTimes.addAll(jiraIssueReferTime);
+									return jiraIssueReferTimes;
 								});
-								fullReleaseMap.putIfAbsent(updatedLog, cloneList);
+								fullReleaseMap.putIfAbsent(updatedLog, jiraIssueReferTime);
 							}
 							updatedLog = updateLogs.getUpdatedOn().toLocalDate();
+							List<JiraIssueReferTime> jiraIssueReferTime = createJiraIssueReferTime(updateLogs.getUpdatedOn(), jiraIssueList);
 							addedIssuesMap.computeIfPresent(updatedLog, (k, v) -> {
-								v.addAll(jiraIssueList);
-								return v;
+								List<JiraIssueReferTime> jiraIssueReferTimes = new ArrayList<>(v);
+								jiraIssueReferTimes.addAll(jiraIssueReferTime);
+								return jiraIssueReferTimes;
 							});
-							addedIssuesMap.putIfAbsent(updatedLog, jiraIssueList);
+							addedIssuesMap.putIfAbsent(updatedLog, jiraIssueReferTime);
 						}
 						if (updateLogs.getChangedFrom().toLowerCase().contains(finalReleaseName)) {
 							List<JiraIssue> removeJiraIssueLIst = new ArrayList<>(jiraIssueList);
 							updatedLog = updateLogs.getUpdatedOn().toLocalDate();
+							List<JiraIssueReferTime> jiraIssueReferTime = createJiraIssueReferTime(updateLogs.getUpdatedOn(), removeJiraIssueLIst);
 							removeIssueMap.computeIfPresent(updatedLog, (k, v) -> {
-								v.addAll(removeJiraIssueLIst);
-								return v;
+								List<JiraIssueReferTime> jiraIssueReferTimes = new ArrayList<>(v);
+								jiraIssueReferTimes.addAll(jiraIssueReferTime);
+								return jiraIssueReferTimes;
 							});
-							removeIssueMap.putIfAbsent(updatedLog, removeJiraIssueLIst);
+							removeIssueMap.putIfAbsent(updatedLog, jiraIssueReferTime);
 						}
 
 					});
 		});
 	}
 
+	private List<JiraIssueReferTime> createJiraIssueReferTime(LocalDateTime updatedOn, List<JiraIssue> jiraIssueList) {
+		return jiraIssueList.stream().map(jiraIssue -> new JiraIssueReferTime(jiraIssue, updatedOn)).toList();
+	}
 	/**
 	 * Get JiraIssue for respective CustomHistory
 	 *
@@ -334,7 +361,7 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 	 *            endDate
 	 * @return Map<String, Long>
 	 */
-	private Map<String, Long> getDurationRangeMap(LocalDate startLocalDate, LocalDate endLocalDate) {
+	private Map<String, Long> getDurationRangeMap(LocalDateTime startLocalDate, LocalDateTime endLocalDate) {
 		Map<String, Long> map = new HashMap<>();
 		long range;
 		String duration;
@@ -361,16 +388,17 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 	 * in selected release then issues to be present on the first day of release
 	 * start date
 	 */
-	private Map<LocalDate, List<JiraIssue>> prepareIssueBeforeStartDate(
-			Map<LocalDate, List<JiraIssue>> completedReleaseMap, LocalDate startLocalDate) {
-		Map<LocalDate, List<JiraIssue>> rangedCompletedMap = new HashMap<>();
+	private Map<LocalDate, List<JiraIssueReferTime>> prepareIssueBeforeStartDate(
+			Map<LocalDate, List<JiraIssueReferTime>> completedReleaseMap, LocalDateTime startLocalDate) {
+		Map<LocalDate, List<JiraIssueReferTime>> rangedCompletedMap = new HashMap<>();
 		completedReleaseMap.forEach((date, issues) -> {
-			if (!date.isAfter(startLocalDate)) {
-				rangedCompletedMap.computeIfPresent(startLocalDate, (key, value) -> {
-					value.addAll(issues);
-					return value;
+			if (!date.atStartOfDay().isAfter(startLocalDate)) {
+				rangedCompletedMap.computeIfPresent(startLocalDate.toLocalDate(), (key, value) -> {
+					List<JiraIssueReferTime> jiraIssueReferTimes = new ArrayList<>(value);
+					jiraIssueReferTimes.addAll(issues);
+					return jiraIssueReferTimes;
 				});
-				rangedCompletedMap.putIfAbsent(startLocalDate, issues);
+				rangedCompletedMap.putIfAbsent(startLocalDate.toLocalDate(), issues);
 			} else {
 				rangedCompletedMap.put(date, issues);
 			}
@@ -403,7 +431,7 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 
 		for (LocalDate currentDate = dateRange.getStartDate(); DateUtil.isWithinDateRange(currentDate,
 				dateRange.getStartDate(), dateRange.getEndDate()); currentDate = currentDate.plusDays(1)) {
-			if (currentDate.isEqual(tempStartDate)) {
+			if (currentDate.isEqual(tempStartDate.toLocalDate())) {
 				defaultIssues.addAll(addedIssuesMap.getOrDefault(currentDate, new ArrayList<>()));
 				defaultIssues.removeAll(removeIssueMap.getOrDefault(currentDate, new ArrayList<>()));
 				defaultIssues.addAll(fullReleaseIssueMap.getOrDefault(currentDate, new ArrayList<>()));// defaultMap
@@ -515,21 +543,19 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 	 * @return x-axis representation value
 	 */
 	private String getRange(CustomDateRange dateRange, String range) {
-		String date;
+		String date = null;
 		if (range.equalsIgnoreCase(CommonConstant.MONTH)) {
-			LocalDate dateValue = dateRange.getStartDate();
-			date = dateValue.getYear() + Constant.DASH + dateValue.getMonthValue();
+			date = DateUtil.tranformUTCLocalTimeToZFormat(dateRange.getStartDateTime());
 		} else if (range.equalsIgnoreCase(CommonConstant.WEEK)) {
-			LocalDate endDate = dateRange.getEndDate();
+			LocalDateTime endDate = dateRange.getEndDateTime();
 			while (!endDate.getDayOfWeek().equals(DayOfWeek.FRIDAY)) {
 				endDate = endDate.minusDays(1);
 			}
-			date = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
-					DateUtil.DISPLAY_DATE_FORMAT) + " to "
-					+ DateUtil.dateTimeConverter(endDate.toString(), DateUtil.DATE_FORMAT,
-							DateUtil.DISPLAY_DATE_FORMAT);
+			date = DateUtil.tranformUTCLocalTimeToZFormat(dateRange.getStartDateTime()) + " to "
+					+ DateUtil.tranformUTCLocalTimeToZFormat(endDate);
+
 		} else {
-			date = dateRange.getStartDate().toString();
+			date = DateUtil.tranformUTCLocalTimeToZFormat(dateRange.getStartDateTime());
 		}
 		return date;
 	}
@@ -543,11 +569,11 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 	 *            currDate
 	 * @return LocalDate
 	 */
-	private LocalDate getNextRangeDate(String duration, LocalDate currentDate, LocalDate endLocalDate) {
+	private LocalDateTime getNextRangeDate(String duration, LocalDateTime currentDate, LocalDateTime endLocalDate) {
 		if (duration.equalsIgnoreCase(CommonConstant.MONTH)) {
 			currentDate = currentDate.plusMonths(1);
 		} else if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
-			LocalDate monday = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+			LocalDateTime monday = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 			currentDate = monday.plusWeeks(1);
 			if (currentDate.isAfter(endLocalDate)) {
 				currentDate = endLocalDate;

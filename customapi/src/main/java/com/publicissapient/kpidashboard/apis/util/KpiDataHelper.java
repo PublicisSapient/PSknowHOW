@@ -25,6 +25,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -313,6 +314,36 @@ public final class KpiDataHelper {
 		}
 		dateRange.setStartDate(startDate);
 		dateRange.setEndDate(endDate);
+		return dateRange;
+	}
+
+	public static CustomDateRange getStartAndEndDateTimeForDataFiltering(LocalDateTime date, String period) {
+		CustomDateRange dateRange = new CustomDateRange();
+		LocalDateTime startDate = null;
+		LocalDateTime endDate = null;
+		if (period.equalsIgnoreCase(CommonConstant.WEEK)) {
+			LocalDateTime monday = date;
+			while (monday.getDayOfWeek() != DayOfWeek.MONDAY) {
+				monday = monday.minusDays(1);
+			}
+			startDate = monday;
+			LocalDateTime sunday = date;
+			while (sunday.getDayOfWeek() != DayOfWeek.SUNDAY) {
+				sunday = sunday.plusDays(1);
+			}
+			endDate = sunday;
+		} else if (period.equalsIgnoreCase(CommonConstant.MONTH)) {
+			YearMonth month = YearMonth.from(date);
+			startDate = month.atDay(1).atStartOfDay(ZoneId.systemDefault()).toLocalDateTime();
+			endDate = month.atEndOfMonth().atStartOfDay(ZoneId.systemDefault()).toLocalDateTime();
+		} else {
+			startDate = date;
+			endDate = date;
+		}
+		dateRange.setStartDate(startDate.toLocalDate());
+		dateRange.setEndDate(endDate.toLocalDate());
+		dateRange.setStartDateTime(startDate);
+		dateRange.setEndDateTime(endDate);
 		return dateRange;
 	}
 

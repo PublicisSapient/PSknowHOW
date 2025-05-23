@@ -2092,8 +2092,8 @@ public class KPIExcelUtility {
 	 *            fieldMapping
 	 */
 	public static void populateReleaseBurnUpExcelData(List<JiraIssue> jiraIssues,
-			Map<String, LocalDate> issueWiseReleaseTagDateMap, Map<String, LocalDate> completeDateIssueMap,
-			Map<String, LocalDate> devCompleteDateIssueMap, List<KPIExcelData> kpiExcelData,
+			Map<String, LocalDateTime> issueWiseReleaseTagDateMap, Map<String, LocalDateTime> completeDateIssueMap,
+			Map<String, LocalDateTime> devCompleteDateIssueMap, List<KPIExcelData> kpiExcelData,
 			FieldMapping fieldMapping) {
 		if (CollectionUtils.isNotEmpty(jiraIssues)) {
 			jiraIssues.forEach(jiraIssue -> {
@@ -2117,15 +2117,18 @@ public class KPIExcelUtility {
 							roundingOff(totalOriginalEstimate / fieldMapping.getStoryPointToHourMapping()) + "/"
 									+ roundingOff(totalOriginalEstimate) + " hrs");
 				}
-				excelData.setLatestReleaseTagDate(DateUtil.dateTimeConverter(
-						String.valueOf(issueWiseReleaseTagDateMap.get(jiraIssue.getNumber())), DateUtil.DATE_FORMAT,
-						DateUtil.DISPLAY_DATE_FORMAT));
-				excelData.setDevCompleteDate(
-						DateUtil.dateTimeConverter(String.valueOf(devCompleteDateIssueMap.get(jiraIssue.getNumber())),
-								DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
-				excelData.setCompletionDate(
-						DateUtil.dateTimeConverter(String.valueOf(completeDateIssueMap.get(jiraIssue.getNumber())),
-								DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+				excelData.setLatestReleaseTagDate("-");
+				excelData.setDevCompleteDate("-");
+				excelData.setCompletionDate("-");
+				if(issueWiseReleaseTagDateMap.containsKey(jiraIssue.getNumber())){
+					excelData.setLatestReleaseTagDate(DateUtil.tranformUTCLocalDateTimeStringToZFormat(issueWiseReleaseTagDateMap.get(jiraIssue.getNumber()).toString()));
+				}
+				if(devCompleteDateIssueMap.containsKey(jiraIssue.getNumber())){
+					excelData.setDevCompleteDate(DateUtil.tranformUTCLocalDateTimeStringToZFormat(devCompleteDateIssueMap.get(jiraIssue.getNumber()).toString()));
+				}
+				if(completeDateIssueMap.containsKey(jiraIssue.getNumber())){
+					excelData.setCompletionDate(DateUtil.tranformUTCLocalDateTimeStringToZFormat(completeDateIssueMap.get(jiraIssue.getNumber()).toString()));
+				}
 				kpiExcelData.add(excelData);
 			});
 		}

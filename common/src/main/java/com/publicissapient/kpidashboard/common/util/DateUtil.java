@@ -33,6 +33,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -418,8 +419,9 @@ public class DateUtil {
         if(StringUtils.isEmpty(utcTime)){
             return CommonConstant.BLANK;
         }
-        if(utcTime.equalsIgnoreCase("-")){
-            return "-";
+		List<String> nullValue = List.of("-", "null");
+		if(nullValue.contains(utcTime)){
+            return utcTime;
         }
         if (StringUtils.isNotEmpty(utcTime)) {
             LocalDateTime ldt = LocalDateTime.parse(utcTime);
