@@ -190,7 +190,6 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 		for (JiraIssue js : jiraIssues) {
 			String number = js.getNumber();
 
-			//String date = js.getChangeDate() == null ? DateUtil.tranformUTCLocalDateTimeStringToZFormat(js.getUpdateDate()) : DateUtil.tranformUTCLocalDateTimeStringToZFormat(js.getChangeDate());
 			LocalDateTime formatDate = js.getChangeDate() == null ? LocalDateTime.parse(js.getUpdateDate()) : LocalDateTime.parse(js.getChangeDate());
 			String date = (formatDate.getYear()) + String.valueOf(formatDate.getMonth());
 			if (date != null) {
