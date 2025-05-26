@@ -179,7 +179,7 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 		String requestTrackerId = getRequestTrackerId();
 		Map<String, Object> durationFilter = KpiDataHelper.getDurationFilter(kpiElement);
 		LocalDateTime localStartDate = (LocalDateTime) durationFilter.get(Constant.DATE);
-		LocalDateTime localEndDate = LocalDateTime.now();
+		LocalDateTime localEndDate = DateUtil.getTodayTime();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
 		String startDate = localStartDate.format(formatter);
 		String endDate = localEndDate.format(formatter);

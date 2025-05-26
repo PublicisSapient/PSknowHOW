@@ -146,7 +146,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 		String requestTrackerId = getRequestTrackerId();
 		Map<String, Object> durationFilter = KpiDataHelper.getDurationFilter(kpiElement);
 		LocalDateTime localStartDate = (LocalDateTime) durationFilter.get(Constant.DATE);
-		LocalDateTime localEndDate = LocalDateTime.now();
+		LocalDateTime localEndDate = DateUtil.getTodayTime();
 		DateTimeFormatter formatterMonth = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
 		String startDate = localStartDate.format(formatterMonth);
 		String endDate = localEndDate.format(formatterMonth);

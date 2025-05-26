@@ -34,10 +34,12 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.format.DateTimeFormat;
@@ -333,6 +335,18 @@ public class DateUtil {
 		return formattedMonday + " - " + formattedSunday;
 	}
 
+	public static Pair<String,String> getWeekRangeUsingDateTime(LocalDateTime currentDateTime) {
+		// Set to start of day to mimic original DateTime behavior
+		LocalDateTime monday = currentDateTime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atStartOfDay();
+		LocalDateTime sunday = currentDateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atStartOfDay();
+
+		String formattedMonday = tranformUTCLocalTimeToZFormat(monday);
+		String formattedSunday = tranformUTCLocalTimeToZFormat(sunday);
+
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DD_MM);
+		return Pair.of(monday.format(dateTimeFormatter) + " - " + sunday.format(dateTimeFormatter),
+				formattedMonday + " to " + formattedSunday);
+	}
 	public static String getWeekRangeUsingDateTime(DateTime currentDate) {
 		DateTime monday = currentDate.withDayOfWeek(DateTimeConstants.MONDAY);
 		DateTime sunday = currentDate.withDayOfWeek(DateTimeConstants.SUNDAY);

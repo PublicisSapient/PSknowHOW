@@ -22,6 +22,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import java.text.DecimalFormat;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -49,7 +50,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-import org.joda.time.Duration;
 import org.joda.time.Hours;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -901,18 +901,17 @@ public final class KpiDataHelper {
 	 * @param endDateTime
 	 * @return
 	 */
+	public static double calWeekDaysExcludingWeekends(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+		if (startDateTime != null && endDateTime != null && !startDateTime.isAfter(endDateTime)) {
 
-	public static double calWeekDaysExcludingWeekends(DateTime startDateTime, DateTime endDateTime) {
-		if (startDateTime != null && endDateTime != null) {
-			Duration duration = new Duration(startDateTime, endDateTime);
-			long leadTimeChangeInMin = duration.getStandardMinutes();
-			double leadTimeChangeInFullDay = (double) leadTimeChangeInMin / 60 / 24;
-			if (leadTimeChangeInFullDay > 0) {
-				String formattedValue = df.format(leadTimeChangeInFullDay);
-				double leadTimeChangeIncluded = Double.parseDouble(formattedValue);
-				int weekendsCount = countSaturdaysAndSundays(startDateTime, endDateTime);
-				return leadTimeChangeIncluded - weekendsCount;
-			}
+			long totalMinutes = Duration.between(startDateTime, endDateTime).toMinutes();
+			double totalDays = (double) totalMinutes / 60 / 24;
+
+			int weekendDays = countSaturdaysAndSundays(startDateTime, endDateTime);
+
+			String formattedValue = df.format(totalDays);
+			double leadTimeIncluded = Double.parseDouble(formattedValue);
+			return leadTimeIncluded - weekendDays;
 		}
 		return 0.0d;
 	}
@@ -934,6 +933,17 @@ public final class KpiDataHelper {
 		return timeInMin;
 	}
 
+	private static int countSaturdaysAndSundays(LocalDateTime startDate, LocalDateTime endDate) {
+		int count = 0;
+		while (!startDate.isAfter(endDate)) {
+			DayOfWeek day = startDate.getDayOfWeek();
+			if (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) {
+				count++;
+			}
+			startDate = startDate.plusDays(1);
+		}
+		return count;
+	}
 	public static int countSaturdaysAndSundays(DateTime startDateTime, DateTime endDateTime) {
 		int count = 0;
 		DateTime current = startDateTime;
@@ -1040,9 +1050,9 @@ public final class KpiDataHelper {
 		}
 
 		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
-			startDateTime = LocalDateTime.now().minusWeeks(value);
+			startDateTime = DateUtil.getTodayTime().minusWeeks(value);
 		} else if (duration.equalsIgnoreCase(CommonConstant.MONTH)) {
-			startDateTime = LocalDateTime.now().minusMonths(value);
+			startDateTime =DateUtil.getTodayTime().minusMonths(value);
 		}
 
 		Map<String, Object> resultMap = new HashMap<>();
