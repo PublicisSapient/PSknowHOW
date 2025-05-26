@@ -37,9 +37,10 @@
                         <ng-template let-option pTemplate="item">
                           <div class="filter-item">
                               <div>
-                                <ng-container [ngSwitch]="item?.toLowerCase()?.includes('date')? 'date' : item?.toLowerCase()?.includes('month') ? 'month' : 'others'">
+                                <ng-container [ngSwitch]="item?.toLowerCase()?.includes('date')? 'date' : item?.toLowerCase()?.includes('month') ? 'month' : (item?.toLowerCase()?.includes('week') && option?.name?.includes(' to ')) ? 'week' : 'others'">
                                   <ng-container *ngSwitchCase="'date'">{{option.name | UtcToLocalUserTimeZone}}</ng-container>
                                   <ng-container *ngSwitchCase="'month'">{{option.name | UtcToLocalUserTimeZone : 'MMM yyyy'}}</ng-container>
+                                  <ng-container *ngSwitchCase="'week'">{{getFormatedWeek(option.name)}}</ng-container>
                                   <ng-container *ngSwitchDefault>{{option.name}}</ng-container>
                                 </ng-container>
                               </div>

@@ -27,8 +27,7 @@ import {
 
 import * as d3 from 'd3';
 import { SharedService } from 'src/app/services/shared.service';
-import { UtcToLocalUserPipe } from 'src/app/shared-module/utc-to-local-user/utc-to-local-user.pipe';
-
+import { HelperService } from 'src/app/services/helper.service';
 /*************
 This file is used to create multiseries line chart
 using d3.js in v4.
@@ -39,7 +38,6 @@ using d3.js in v4.
   selector: 'app-multiline-v2',
   templateUrl: './multiline-v2.component.html',
   styleUrls: ['./multiline-v2.component.css'],
-  providers : [UtcToLocalUserPipe]
 })
 export class MultilineV2Component implements OnChanges {
   @Input() data: any; // json data
@@ -67,7 +65,7 @@ export class MultilineV2Component implements OnChanges {
   constructor(
     private viewContainerRef: ViewContainerRef,
     private service: SharedService,
-    private utcToLocalUserPipe : UtcToLocalUserPipe
+    private helper : HelperService
   ) {
     // used to make chart independent from previous made chart
     this.elem = this.viewContainerRef.element.nativeElement;
@@ -362,7 +360,9 @@ export class MultilineV2Component implements OnChanges {
         .style('opacity', 0);
 
       /* Add Axis into SVG */
-      const xAxis = d3.axisBottom(xScale);
+      const xAxis = d3.axisBottom(xScale).tickFormat(function (tickval) {
+        return (board == 'dora')? self.getFormatedDateBasedOnType(tickval,self.xCaption) : tickval;
+      });
       /*var xAxis = d3.axisBottom(xScale).ticks(7);
        */
       const yAxis = d3.axisLeft(yScale).ticks(5).tickFormat(function (tickval) {
@@ -611,7 +611,7 @@ export class MultilineV2Component implements OnChanges {
 
             div
               .html(
-                `${self.xCaption?.toLowerCase()?.includes('month') ? self.utcToLocal(d.date || d.sSprintName) : (d.date || d.sSprintName)}`  +
+                `${self.getFormatedDateBasedOnType((d.date || d.sSprintName),self.xCaption)}`  +
                 ' : ' +
                 "<span class='toolTipValue'> " +
                 `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
@@ -768,8 +768,9 @@ export class MultilineV2Component implements OnChanges {
     })
   }
 
-  utcToLocal(date){
-   return this.utcToLocalUserPipe.transform(date,'MMM YYYY')
+  getFormatedDateBasedOnType(date,xCaptionType){
+    const xCaption = xCaptionType?.toLowerCase();
+    return this.helper.getFormatedDateBasedOnType(date,xCaption)
   }
 
   ngOnDestroy() {

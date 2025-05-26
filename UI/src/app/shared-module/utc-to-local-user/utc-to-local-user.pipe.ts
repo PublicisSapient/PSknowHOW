@@ -1,9 +1,10 @@
 import { DatePipe } from '@angular/common';
-import { Pipe, PipeTransform } from '@angular/core';
+import { Injectable, Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'UtcToLocalUserTimeZone',
 })
+@Injectable({ providedIn: 'root' })
 export class UtcToLocalUserPipe implements PipeTransform {
   transform(
     utcDate: string | Date,
