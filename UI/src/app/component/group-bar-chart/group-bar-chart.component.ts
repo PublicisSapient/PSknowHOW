@@ -586,7 +586,7 @@ export class GroupBarChartComponent implements OnChanges {
         if (isCurrentMonth) {
           this.currentDayIndex = d['group'];
         }
-        d['group'] = d['group'];
+        d['group'] = this.getFormatedDateBasedOnType(d['group'],this.xCaption);
         return d;
       }
     });
@@ -631,5 +631,10 @@ export class GroupBarChartComponent implements OnChanges {
         }
       }
     })
+  }
+
+  getFormatedDateBasedOnType(date,xCaptionType){
+    const xCaption = xCaptionType?.toLowerCase();
+    return this.helper.getFormatedDateBasedOnType(date,xCaption)
   }
 }
