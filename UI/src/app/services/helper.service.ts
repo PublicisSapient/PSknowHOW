@@ -27,6 +27,7 @@ import { SharedService } from './shared.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
+import { UtcToLocalUserPipe } from '../shared-module/utc-to-local-user/utc-to-local-user.pipe';
 @Injectable()
 export class HelperService {
     isKanban = false;
@@ -35,7 +36,9 @@ export class HelperService {
     selectedFilterArray: any = [];
     selectedFilters: any = {}
 
-    constructor(private httpService: HttpService, private excelService: ExcelService, private sharedService: SharedService, private router: Router) {
+    constructor(private httpService: HttpService, private excelService: ExcelService, private sharedService: SharedService, private router: Router,
+        private utcToLocalUserPipe : UtcToLocalUserPipe
+    ) {
         this.passMaturityToFilter = new EventEmitter();
     }
 
@@ -910,4 +913,22 @@ export class HelperService {
 
         return true;
     }
+
+    getFormatedDateBasedOnType(date,type){
+        const xCaption = type?.toLowerCase();
+        if(xCaption?.includes("date")){
+          return this.utcToLocal(date);
+        }else if(xCaption?.includes("month")){
+          return this.utcToLocal(date,'MMM YYYY');
+        }else if(xCaption?.includes('week') && date && date?.includes(' to ')){
+          const dates = date.split(' to ');
+          return `${this.utcToLocal(dates[0],'dd/MM')} - ${this.utcToLocal(dates[1],'dd/MM')}`;
+        }else{
+          return date;
+        }
+      }
+
+    utcToLocal(utcDate, format?){
+        return this.utcToLocalUserPipe.transform(utcDate,format)
+      }
 }

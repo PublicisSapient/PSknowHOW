@@ -117,7 +117,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   additionalFiltersArr = {};
   isRecommendationsEnabled: boolean = false;
   kpiList: Array<string> = [];
-  releaseEndDate: string = '';
+  releaseEndDate: any = '';
   timeRemaining = 0;
   immediateLoader = true;
   projectCount: number = 0;
@@ -296,9 +296,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.globalConfig = $event.dashConfigData;
       this.configGlobalData = $event.dashConfigData[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis
       const selectedRelease = this.filterData?.filter(x => x.nodeId === this.filterApplyData?.selectedMap?.release?.[0] && x.labelName?.toLowerCase() === 'release')[0];
-      const endDate = selectedRelease !== undefined ? new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0] : undefined;
+      const endDate = selectedRelease !== undefined ? this.stripTime(new Date(selectedRelease?.releaseEndDate)) : undefined;
       this.releaseEndDate = endDate;
-      const today = new Date().toISOString().split('T')[0];
+      const today = this.stripTime(new Date());
       this.timeRemaining = this.calcBusinessDays(today, endDate);
       this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
       if (!this.configGlobalData?.length && $event.dashConfigData) {
@@ -2459,6 +2459,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
 
     iDateDiff -= iAdjust; // take into account both days on weekend
-    return (iDateDiff + 1); // add 1 because dates are inclusive
+    const total = iDateDiff + 1 // add 1 because dates are inclusive (counting today date)
+    return Math.max(0, total - 2) // need to exlcude today date and last date
   }
+
+  stripTime(date) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  }
+  
 }

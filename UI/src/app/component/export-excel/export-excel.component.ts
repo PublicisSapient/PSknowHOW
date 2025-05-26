@@ -40,7 +40,7 @@ export class ExportExcelComponent implements OnInit {
     private excelService: ExcelService,
     private helperService: HelperService,
     private sharedService: SharedService,
-    private httpService: HttpService
+    private httpService: HttpService,
   ) { }
 
   ngOnInit(): void { }
@@ -232,5 +232,9 @@ export class ExportExcelComponent implements OnInit {
       }
       return event.order * result;
     });
+  }
+
+  getFormatedWeek(week){
+   return this.helperService.getFormatedDateBasedOnType(week,'week')
   }
 }

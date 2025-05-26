@@ -16,17 +16,17 @@
  *
  ******************************************************************************/
 
-import { Injectable } from '@angular/core';
+import { Injectable,Injector } from '@angular/core';
 import * as Excel from 'exceljs';
 import * as fs from 'file-saver';
-import { DatePipe } from '../../../node_modules/@angular/common';
+import { HelperService } from './helper.service';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class ExcelService {
-  constructor(private datePipe: DatePipe) {
+  constructor(private injector : Injector) {
   }
 
   generateExcelModalData(kpiData) {
@@ -78,6 +78,14 @@ export class ExcelService {
   }
 
   generateExcel(kpiData, kpiName) {
+    //UTC to local timezpone conversion
+      const helper = this.injector.get(HelperService) // on demand creating the dependency
+    kpiData.excelData.forEach(element => {
+      Object.keys(element).forEach(colName=>{
+        element[colName] = helper.getFormatedDateBasedOnType(element[colName],colName)
+      })
+    });
+
     const workbook = new Excel.Workbook();
     const worksheet = workbook.addWorksheet('kpi Data');
     let filename = '';

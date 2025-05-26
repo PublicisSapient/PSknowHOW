@@ -23,7 +23,7 @@
       <div *ngIf="dataLoaded; else loader" class="comment-list-container">
         <ng-container *ngIf="commentsList?.length; else noComments">
           <div *ngFor="let comment of commentsList" class="comment-combo p-mr-1">
-            <div class="commented-by">@{{comment?.commentBy}} commented - {{comment?.commentOn}}
+            <div class="commented-by">@{{comment?.commentBy}} commented - {{comment?.commentOn | UtcToLocalUserTimeZone : 'MM-dd-yyyy - hh:mm'}}
               <span class="icon-delete">
                 <i *ngIf="!showConfirmBtn[comment.commentId] && !showLoader[comment.commentId]" class="far fa-trash-alt"
                   (click)="handleConfirmDelete(comment.commentId)"></i>

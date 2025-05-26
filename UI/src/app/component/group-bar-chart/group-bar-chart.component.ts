@@ -4,6 +4,7 @@ import { ThisReceiver } from '@angular/compiler';
 import { Component, Input, ViewContainerRef, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import * as d3 from 'd3';
 import { SharedService } from 'src/app/services/shared.service';
+import { HelperService } from 'src/app/services/helper.service';
 
 @Component({
   selector: 'app-group-bar-chart',
@@ -40,7 +41,7 @@ export class GroupBarChartComponent implements OnChanges {
   lineColor: string = '';
   totalAvgVelocity: string = '';
 
-  constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
+  constructor(private viewContainerRef: ViewContainerRef, private service: SharedService, private helper : HelperService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (this.selectedtype?.toLowerCase() === 'kanban') {
