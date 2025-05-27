@@ -733,6 +733,7 @@
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
     "xaxisLabel" : "Weeks" ,
+    "xAxisLabel" : "Weeks" ,
     "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
@@ -4245,6 +4246,7 @@
       "maturityLevels": []
     },
     "xaxisLabel": "Weeks",
+    "xAxisLabel" : "Weeks" ,
     "yaxisLabel": "Hours",
     "isPositiveTrend": false,
     "upperThresholdBG" : "red" ,
