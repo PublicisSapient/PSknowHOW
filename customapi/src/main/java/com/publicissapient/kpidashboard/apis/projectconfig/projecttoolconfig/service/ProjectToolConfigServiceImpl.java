@@ -199,9 +199,9 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		}
 
 		log.info("Successfully pushed project_tools into db");
-		projectToolConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), TIME_FORMAT));
+		projectToolConfig.setCreatedAt(DateUtil.getTodayTime().toString());
 		projectToolConfig.setCreatedBy(authenticationService.getLoggedInUser());
-		projectToolConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), TIME_FORMAT));
+		projectToolConfig.setUpdatedAt(DateUtil.getTodayTime().toString());
 		toolRepository.save(projectToolConfig);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
@@ -251,7 +251,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectTool.setApiVersion(projectToolConfig.getApiVersion());
 		projectTool.setRepoSlug(projectToolConfig.getRepoSlug());
 		projectTool.setBitbucketProjKey(projectToolConfig.getBitbucketProjKey());
-		projectTool.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), TIME_FORMAT));
+		projectTool.setUpdatedAt(DateUtil.getTodayTime().toString());
 		projectTool.setBoardQuery(projectToolConfig.getBoardQuery());
 		projectTool.setBoards(projectToolConfig.getBoards());
 		projectTool.setQueryEnabled(projectToolConfig.isQueryEnabled());
@@ -284,7 +284,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectTool.setTeam(projectToolConfig.getTeam());
 		log.info("Successfully update project_tools  into db");
 		toolRepository.save(projectTool);
-		projectTool.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
+		projectTool.setUpdatedAt(DateUtil.getTodayTime().toString());
 		projectTool.setUpdatedBy(authenticationService.getLoggedInUser());
 		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
@@ -420,8 +420,8 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setRepositoryName(e.getRepositoryName());
 			projectConfToolDto.setGitFullUrl(e.getGitFullUrl());
 			projectConfToolDto.setBitbucketProjKey(e.getBitbucketProjKey());
-			projectConfToolDto.setCreatedAt(e.getCreatedAt());
-			projectConfToolDto.setUpdatedAt(e.getUpdatedAt());
+			projectConfToolDto.setCreatedAt(DateUtil.tranformUTCLocalDateTimeStringToZFormat(e.getCreatedAt()));
+			projectConfToolDto.setUpdatedAt(DateUtil.tranformUTCLocalDateTimeStringToZFormat(e.getUpdatedAt()));
 			projectConfToolDto.setQueryEnabled(e.isQueryEnabled());
 			projectConfToolDto.setBoardQuery(e.getBoardQuery());
 			projectConfToolDto.setBoards(e.getBoards());
