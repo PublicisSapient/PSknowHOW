@@ -68,11 +68,12 @@
                 </ng-container>
                 <ng-template #showOtherData>
 
-                  <ng-container [ngSwitch]="column?.toLowerCase()?.includes('date')? 'date' : column?.toLowerCase()?.includes('month') ? 'month' : 'others'">
+                  <ng-container [ngSwitch]="column?.toLowerCase()?.includes('date')? 'date' : column?.toLowerCase()?.includes('month') ? 'month' : (item?.toLowerCase()?.includes('week') && option?.name?.includes(' to ')) ? 'week' : 'others'">
                     <ng-container *ngSwitchCase="'date'">{{rowData[column] | UtcToLocalUserTimeZone}}</ng-container>
                     <ng-container *ngSwitchCase="'month'">{{rowData[column] | UtcToLocalUserTimeZone : 'MMM yyyy' }}</ng-container>
                     <ng-container *ngSwitchDefault>{{rowData[column]?.length > 60 ? (rowData[column].slice(0,60)+'...') :
                       rowData[column]}}</ng-container>
+                      <ng-container *ngSwitchCase="'week'">{{getFormatedWeek(rowData[column])}}</ng-container>
                   </ng-container>
                 </ng-template>
               </ng-template>

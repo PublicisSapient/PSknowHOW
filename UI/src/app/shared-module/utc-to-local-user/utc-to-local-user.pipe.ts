@@ -7,7 +7,7 @@ import { Injectable, Pipe, PipeTransform } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class UtcToLocalUserPipe implements PipeTransform {
   transform(
-    utcDate: string | Date,
+    utcDate: string,
     formatOptions?: string,
   ): string {
     if (!utcDate) {
@@ -16,6 +16,11 @@ export class UtcToLocalUserPipe implements PipeTransform {
 
     if (utcDate === '-') {
       return '-';
+    }
+
+    const regex = /^\d{4}-\d{2}-\d{2}T\d{2}/;
+    if(!regex.test(utcDate)){
+       return utcDate;
     }
 
     try {

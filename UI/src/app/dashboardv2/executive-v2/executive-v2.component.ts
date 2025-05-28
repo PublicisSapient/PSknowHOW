@@ -1470,8 +1470,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   utcToLocalUser(data, xAxis) {
-    if (data && data?.length && xAxis?.toLowerCase()?.includes('month')) {
-      return this.utcToLocalUserPipe.transform(data, 'MMM YYYY');
+    if (data && data?.length) {
+      return this.helperService.getFormatedDateBasedOnType(data, xAxis);
     }
     return data
   }
