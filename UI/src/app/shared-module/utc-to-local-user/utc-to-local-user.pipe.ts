@@ -18,7 +18,7 @@ export class UtcToLocalUserPipe implements PipeTransform {
       return '-';
     }
 
-    const regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?::\d{2,6})?Z$/;
+    const regex = /^\d{4}-\d{2}-\d{2}T\d{2}/;
     if(!regex.test(utcDate)){
        return utcDate;
     }
