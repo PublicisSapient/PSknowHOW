@@ -152,8 +152,7 @@
                 <ng-container *ngFor="let col of columns">
                   <td *ngIf="hasData(col.field)"
                     class="p-overflowlabel" [ngClass]="{'kpi-value-center': col.field ==='value'}">
-                    <span *ngIf="!xCaption?.toLowerCase()?.includes('month')">{{col.field == 'value' || col.field.includes('value') ? rowData[col.field]+rowData['unit'] : rowData[col.field]}}</span>
-                    <span *ngIf="xCaption?.toLowerCase()?.includes('month')">{{col.field == 'value' || col.field.includes('value') ? rowData[col.field]+rowData['unit'] : rowData[col.field] | UtcToLocalUserTimeZone : 'MMM yyyy' }}</span>
+                    <span>{{utcToLocalUser((col.field == 'value' || col.field.includes('value') ? rowData[col.field]+rowData['unit'] : rowData[col.field]),xCaption)}}</span>
                   </td>
                 </ng-container>
               </tr>

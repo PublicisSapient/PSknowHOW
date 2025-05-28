@@ -462,4 +462,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     });
     this.displaySprintDetailsModal = true;
   }
+
+  utcToLocalUser(data, xAxis) {
+      return this.helperService.getFormatedDateBasedOnType(data, xAxis);
+  }
 }
