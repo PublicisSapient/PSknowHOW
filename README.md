@@ -1,3 +1,21 @@
+# 📦 This Repository Has Moved
+
+🚨 **Notice:** This repository is no longer maintained here.
+
+🔄 The project was previously a **monorepo**, but it has now been **split into separate repositories** for better modularity and maintainability.
+
+### 🔀 New Repository Structure:
+
+- 👉 [knowhow-ui](https://your-url.com/knowhow-ui)
+- 👉 [knowhow-api](https://your-url.com/knowhow-api)
+- 👉 [knowhow-processor](https://your-url.com/knowhow-processor)
+
+Please use the appropriate repository based on the component you're working on.
+
+> This repository will remain archived for reference only. No further updates will be made here.
+
+Thank you!
+
 # PSknowHOW
 
 > PSknowHOW started its life as an addition of bespoke features on top of Hygieia and embarked its own journey to support the digital transformation of Publicis Sapient clients.A dedicated team of engineers crafted it into a product which stands on its own. 
