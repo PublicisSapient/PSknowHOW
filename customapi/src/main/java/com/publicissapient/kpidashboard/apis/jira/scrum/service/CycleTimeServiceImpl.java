@@ -1,6 +1,5 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -99,16 +98,16 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 		int value = 2; // Default value for 'value'
 		String duration = CommonConstant.WEEK; // Default value for 'duration'
 		String startDate = null;
-		String endDate = LocalDate.now().toString();
+		String endDate = DateUtil.getTodayDate().toString();
 
 		if (filterDuration != null) {
 			value = (int) filterDuration.getOrDefault("value", 6);
 			duration = (String) filterDuration.getOrDefault("duration", CommonConstant.MONTH);
 		}
 		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
-			startDate = LocalDate.now().minusWeeks(value).toString();
+			startDate = DateUtil.getTodayDate().minusWeeks(value).toString();
 		} else if (duration.equalsIgnoreCase(CommonConstant.MONTH)) {
-			startDate = LocalDate.now().minusMonths(value).toString();
+			startDate = DateUtil.getTodayDate().minusMonths(value).toString();
 		}
 		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNode, startDate, endDate, kpiRequest);
 

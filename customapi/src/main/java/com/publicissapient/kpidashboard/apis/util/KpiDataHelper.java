@@ -387,7 +387,7 @@ public final class KpiDataHelper {
 	public static CustomDateRange getMonthsForPastDataHistory(int pastMonthsCount) {
 		CustomDateRange cdr = new CustomDateRange();
 		int dataPoint = (int) ObjectUtils.defaultIfNull(pastMonthsCount, 15) - 1;
-		LocalDate endDate = LocalDate.now();
+		LocalDate endDate = DateUtil.getTodayTime().toLocalDate();
 		YearMonth month = YearMonth.from(endDate.minusMonths(dataPoint));
 		LocalDate startDate = month.atDay(1);
 		cdr.setStartDate(startDate);
@@ -397,7 +397,7 @@ public final class KpiDataHelper {
 
 	public static CustomDateRange getDayForPastDataHistory(int pastDayCount) {
 		CustomDateRange cdr = new CustomDateRange();
-		LocalDate endDate = LocalDate.now().plusDays(1);
+		LocalDate endDate = DateUtil.getTodayTime().toLocalDate().plusDays(1);
 		LocalDate startDate = endDate.minusDays(pastDayCount);
 		cdr.setStartDate(startDate);
 		cdr.setEndDate(endDate);
@@ -852,17 +852,15 @@ public final class KpiDataHelper {
 				if (isNotEmpty(cycleTimeValidationData.getIntakeTime())) {
 					iterationKpiModalValue.setIntakeToDOR(
 							CommonUtils.convertIntoDays(Math.toIntExact(cycleTimeValidationData.getIntakeTime())));
-					iterationKpiModalValue.setDorDate(
-							DateUtil.dateTimeConverter(cycleTimeValidationData.getDorDate().toString().split("T")[0],
-									DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+					iterationKpiModalValue.setDorDate(DateUtil.tranformUTCLocalTimeToZFormat(
+							DateUtil.convertJodaDateTimeToLocalDateTime(cycleTimeValidationData.getDorDate())));
 				} else {
 					iterationKpiModalValue.setIntakeToDOR(Constant.NOT_AVAILABLE);
 					iterationKpiModalValue.setDorDate(Constant.NOT_AVAILABLE);
 				}
 				if (isNotEmpty(cycleTimeValidationData.getDorTime())) {
-					iterationKpiModalValue.setDodDate(
-							DateUtil.dateTimeConverter(cycleTimeValidationData.getDodDate().toString().split("T")[0],
-									DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+					iterationKpiModalValue.setDodDate(DateUtil.tranformUTCLocalTimeToZFormat(
+							DateUtil.convertJodaDateTimeToLocalDateTime(cycleTimeValidationData.getDodDate())));
 					iterationKpiModalValue.setDorToDod(
 							CommonUtils.convertIntoDays(Math.toIntExact(cycleTimeValidationData.getDorTime())));
 				} else {
@@ -870,9 +868,8 @@ public final class KpiDataHelper {
 					iterationKpiModalValue.setDorToDod(Constant.NOT_AVAILABLE);
 				}
 				if (isNotEmpty(cycleTimeValidationData.getDodTime())) {
-					iterationKpiModalValue.setLiveDate(
-							DateUtil.dateTimeConverter(cycleTimeValidationData.getLiveDate().toString().split("T")[0],
-									DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+					iterationKpiModalValue.setLiveDate(DateUtil.tranformUTCLocalTimeToZFormat(
+							DateUtil.convertJodaDateTimeToLocalDateTime(cycleTimeValidationData.getLiveDate())));
 					iterationKpiModalValue.setDodToLive(
 							CommonUtils.convertIntoDays(Math.toIntExact(cycleTimeValidationData.getDodTime())));
 				} else {

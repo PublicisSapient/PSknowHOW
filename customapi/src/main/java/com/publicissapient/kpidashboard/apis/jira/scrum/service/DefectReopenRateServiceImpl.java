@@ -233,8 +233,10 @@ public class DefectReopenRateServiceImpl extends JiraBacklogKPIService<Double, L
 		iterationKpiModalValue.setDescription(issue.getName());
 		iterationKpiModalValue.setPriority(issue.getPriority());
 		iterationKpiModalValue.setIssueStatus(issue.getStatus());
-		iterationKpiModalValue.setClosedDate(DateUtil.dateTimeConverter(closedHistory, TIME_FORMAT_WITH_SEC));
-		iterationKpiModalValue.setReopenDate(DateUtil.dateTimeConverter(reopenHistory, TIME_FORMAT_WITH_SEC));
+		iterationKpiModalValue.setClosedDate(
+				DateUtil.tranformUTCLocalTimeToZFormat(DateUtil.convertJodaDateTimeToLocalDateTime(closedHistory)));
+		iterationKpiModalValue.setReopenDate(
+				DateUtil.tranformUTCLocalTimeToZFormat(DateUtil.convertJodaDateTimeToLocalDateTime(reopenHistory)));
 		iterationKpiModalValue.setDurationToReopen(duration + "Hrs");
 		return iterationKpiModalValue;
 

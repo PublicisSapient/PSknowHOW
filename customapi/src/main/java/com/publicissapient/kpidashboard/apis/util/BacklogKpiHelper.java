@@ -203,8 +203,8 @@ public final class BacklogKpiHelper {
 	public static List<JiraIssueCustomHistory> filterProjectHistories(List<JiraIssueCustomHistory> projectHistories,
 			Map<String, Map<String, Object>> uniqueProjectMap, String startDate, String endDate) {
 
-		LocalDateTime startDateTime = java.time.LocalDate.parse(startDate).atStartOfDay();
-		LocalDateTime endDateTime = java.time.LocalDate.parse(endDate).atTime(23, 59, 59);
+		LocalDateTime startDateTime = DateUtil.localDateTimeToUTC(java.time.LocalDate.parse(startDate).atStartOfDay());
+		LocalDateTime endDateTime = DateUtil.localDateTimeToUTC(java.time.LocalDate.parse(endDate).atTime(23, 59, 59));
 
 		return projectHistories.stream().filter(history -> {
 			Map<String, Object> filters = uniqueProjectMap.get(history.getBasicProjectConfigId());

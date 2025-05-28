@@ -260,7 +260,7 @@ public class RefinementRejectionRateServiceImpl extends JiraBacklogKPIService<Do
 			JiraIssueCustomHistory hist) {
 		String status = "";
 		String fromStatus = "";
-		LocalDateTime changeDate = LocalDateTime.now();
+		LocalDateTime changeDate = DateUtil.getTodayTime();
 		int count = 0;
 		for (JiraHistoryChangeLog story : hist.getStatusUpdationLog()) {
 			if (count == 0) {
@@ -478,13 +478,15 @@ public class RefinementRejectionRateServiceImpl extends JiraBacklogKPIService<Do
 	}
 
 	public List<JiraIssue> filterProjectJiraIssues(List<JiraIssue> projectJiraIssue, String startDate, String endDate) {
-        LocalDateTime startDateTime = DateUtil.stringToLocalDate(startDate, DateUtil.DATE_FORMAT).atStartOfDay();
-
-        LocalDateTime endDateTime = DateUtil.stringToLocalDate(endDate, DateUtil.DATE_FORMAT).atStartOfDay();
+		LocalDateTime startDateTime = DateUtil
+				.localDateTimeToUTC(DateUtil.stringToLocalDate(startDate, DateUtil.DATE_FORMAT).atStartOfDay());
+		LocalDateTime endDateTime = DateUtil
+				.localDateTimeToUTC(DateUtil.stringToLocalDate(endDate, DateUtil.DATE_FORMAT).atStartOfDay());
 		return projectJiraIssue.stream()
 				.filter(issue -> {
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
-					LocalDateTime updateDate = LocalDateTime.parse(issue.getUpdateDate(), formatter);
+					LocalDateTime updateDate = DateUtil
+							.localDateTimeToUTC(LocalDateTime.parse(issue.getUpdateDate(), formatter));
 					return DateUtil.isWithinDateTimeRange(updateDate, startDateTime, endDateTime);
 				})
 				.filter(issue -> issue.getSprintAssetState() == null || issue.getSprintAssetState().isEmpty()

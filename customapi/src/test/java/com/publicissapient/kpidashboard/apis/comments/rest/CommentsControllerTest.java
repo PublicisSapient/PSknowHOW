@@ -86,6 +86,7 @@ public class CommentsControllerTest {
 		CommentsInfo commentInfo = new CommentsInfo();
 		commentInfo.setCommentBy("Mahesh");
 		commentInfo.setComment("More Data Required");
+		commentInfo.setCommentOn("2024-03-25T11:14:00Z");
 		commentsInfo.add(commentInfo);
 		comment.setCommentsInfo(commentsInfo);
 

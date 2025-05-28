@@ -34,7 +34,6 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -82,7 +81,7 @@ public class DateUtil {
 	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
 	public static final String NOT_APPLICABLE = "NA";
 	public static final String DD_MM = "dd/MM";
-
+	public static final String ZERO_TIME_FORMAT = "T00:00:00";
 	private DateUtil() {
 		// to prevent creation on object
 	}
