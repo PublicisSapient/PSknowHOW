@@ -1,10 +1,10 @@
-# 📦 This Repository Has Moved
+# This Repository Has Moved
 
-🚨 **Notice:** This repository is no longer maintained here.
+**Notice:** This repository is no longer maintained here.
 
-🔄 The project was previously a **monorepo**, but it has now been **split into separate repositories** for better modularity and maintainability.
+The project was previously a **monorepo**, but it has now been **split into separate repositories** for better modularity and maintainability.
 
-### 🔀 New Repository Structure:
+###  New Repository Structure:
 
 - 👉 [knowhow-ui](https://your-url.com/knowhow-ui)
 - 👉 [knowhow-api](https://your-url.com/knowhow-api)
