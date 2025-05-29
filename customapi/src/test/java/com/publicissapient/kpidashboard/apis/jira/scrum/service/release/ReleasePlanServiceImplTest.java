@@ -99,9 +99,9 @@ public class ReleasePlanServiceImplTest {
         JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory
                 .newInstance("/json/default/iteration/jira_issues_new_structure.json");
         jiraIssues = jiraIssueDataFactory.getJiraIssues();
-        jiraIssues.stream().forEach(jiraIssue -> jiraIssue.setDueDate("2023-05-25T05:12:22.0000000"));
+        jiraIssues.stream().forEach(jiraIssue -> jiraIssue.setDueDate("2023-05-25T00:00:00.000Z"));
         jiraIssues2 = jiraIssueDataFactory.getJiraIssues();
-        jiraIssues2.stream().forEach(jiraIssue -> jiraIssue.setDueDate("2023-05-25T05::00.0000000"));
+        jiraIssues2.stream().forEach(jiraIssue -> jiraIssue.setDueDate("2023-05-25T00:00:00.000Z"));
         JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory
                 .newInstance("/json/default/iteration/jira_issue_custom_history_new_structure.json");
         jiraIssuesCustomHistory = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
