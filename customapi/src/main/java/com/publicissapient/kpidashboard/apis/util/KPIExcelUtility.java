@@ -1963,7 +1963,7 @@ public class KPIExcelUtility {
 				leadTimeListCurrentTime.stream().forEach(leadTimeChangeData -> {
 					KPIExcelData excelData = new KPIExcelData();
 					excelData.setProjectName(projectName);
-					excelData.setDate(leadTimeChangeData.getDate());
+					excelData.setWeeks(leadTimeChangeData.getDate());
 					if (CommonConstant.REPO.equals(leadTimeConfigRepoTool)) {
 						excelData.setMergeDate(leadTimeChangeData.getClosedDate());
 						excelData.setMergeRequestId(leadTimeChangeData.getMergeID());
@@ -2038,7 +2038,7 @@ public class KPIExcelUtility {
 					meanRecoverListCurrentTime) -> meanRecoverListCurrentTime.forEach(meanTimeRecoverData -> {
 						KPIExcelData excelData = new KPIExcelData();
 						excelData.setProjectName(projectName);
-						excelData.setDate(meanTimeRecoverData.getDate());
+						excelData.setWeeks(meanTimeRecoverData.getDate());
 						Map<String, String> issueDetails = new HashMap<>();
 						issueDetails.put(meanTimeRecoverData.getStoryID(),
 								StringUtils.isEmpty(meanTimeRecoverData.getUrl()) ? Constant.EMPTY_STRING

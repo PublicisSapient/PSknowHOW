@@ -297,7 +297,7 @@ public enum KPIExcelColumn {
 	//DTS-26123 end
 	SCOPE_CHURN("kpi164", Arrays.asList("Sprint Name","Issue ID", "Issue Type", "Issue Description", "Squad", "Size(story point/hours)","Scope Change Date","Scope Change (Added/Removed)","Issue Status")),
 
-	LEAD_TIME_FOR_CHANGE("Kpi156", Arrays.asList("Project Name", "Date", "Story ID", "Lead Time (In Days)",
+	LEAD_TIME_FOR_CHANGE("Kpi156", Arrays.asList("Project Name", "Weeks", "Story ID", "Lead Time (In Days)",
 			"Completion Date", "Merge Date", "Release Date", "Merge Request Id", "Branch")),
 
 	RELEASE_DEFECT_BY_TEST_PHASE("kpi163", Arrays.asList("Issue ID", "Issue Description", "Issue Type", "Priority",
@@ -316,7 +316,7 @@ public enum KPIExcelColumn {
 	BACKLOG_EPIC_PROGRESS("kpi169", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status",
 			"To Do(Value/Percentage)", "In Progress(Value/Percentage)", "Done(Value/Percentage)")),
 
-    MEAN_TIME_TO_RECOVER("kpi166", Arrays.asList("Project Name", "Date", "Story ID", "Issue Type", "Issue Description",
+    MEAN_TIME_TO_RECOVER("kpi166", Arrays.asList("Project Name", "Weeks", "Story ID", "Issue Type", "Issue Description",
             "Created Date", "Completion Date", "Time to Recover (In Hours)")),
 
 	CODE_QUALITY("kpi168", Arrays.asList("Project", "Job Name", "Code Quality", "Month")),
