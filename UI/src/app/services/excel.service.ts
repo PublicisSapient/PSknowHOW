@@ -32,6 +32,7 @@ export class ExcelService {
   generateExcelModalData(kpiData) {
     const headerNames = [];
     const excelData = [];
+    const helper = this.injector.get(HelperService) // on demand creating the dependency
 
     if (kpiData['excelData'] && kpiData['columns']) {
       for (const column of kpiData['columns']) {
@@ -68,6 +69,7 @@ export class ExcelService {
             }
 
           }
+          rowData[key] = helper.getFormatedDateBasedOnType(rowData[key],key)
         }
         excelData.push(rowData);
       }

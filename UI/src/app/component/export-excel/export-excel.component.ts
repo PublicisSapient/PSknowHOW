@@ -177,7 +177,7 @@ export class ExportExcelComponent implements OnInit {
             }
             return { name: colData.text, value: colData.text }
           } else {
-            return { name: colData, value: colData }
+            return { name: this.getFormatedWeek(colData,colName), value: this.getFormatedWeek(colData,colName) }
           }
         });
         this.tableColumnForm[colName] = [];
@@ -234,7 +234,7 @@ export class ExportExcelComponent implements OnInit {
     });
   }
 
-  getFormatedWeek(week){
-   return this.helperService.getFormatedDateBasedOnType(week,'week')
+  getFormatedWeek(date,type){
+   return this.helperService.getFormatedDateBasedOnType(date,type)
   }
 }
