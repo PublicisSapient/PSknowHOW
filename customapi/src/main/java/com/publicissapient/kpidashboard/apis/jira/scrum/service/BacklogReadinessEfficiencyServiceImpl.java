@@ -72,6 +72,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -327,7 +328,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraBacklogKPIService
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
 			List<SprintDetails> sprintForStregthCalculation = sprintDetails.stream()
 					.filter(sprintDetail -> null != sprintDetail.getEndDate()
-							&& DateTime.parse(sprintDetail.getEndDate()).isBefore(DateTime.now()))
+							&& DateUtil.stringToLocalDateTime(sprintDetail.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+									.isBefore(DateUtil.getTodayTime()))
 					.limit(sprintCountForBackLogStrength).toList();
 
 			if (CollectionUtils.isNotEmpty(sprintForStregthCalculation)) {

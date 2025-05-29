@@ -1,5 +1,7 @@
 package com.publicissapient.kpidashboard.common.model.comments;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,4 +22,9 @@ public class CommentsInfo {
 	private String commentOn;
 	private String comment;
 	private boolean isDeleted; //soft delete on comment history
+
+	public String getCommentOn() {
+		return DateUtil.tranformUTCLocalDateTimeStringToZFormat(
+				DateUtil.dateTimeConverter(commentOn, "dd-MMM-yyyy HH:mm", DateUtil.TIME_FORMAT));
+	}
 }

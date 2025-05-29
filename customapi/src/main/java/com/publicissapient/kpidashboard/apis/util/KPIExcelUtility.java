@@ -746,10 +746,10 @@ public class KPIExcelUtility {
 			excelData.setIssueID(storyId);
 			excelData.setIssueDesc(leadTimeData.getIssueDesc());
 			excelData.setIssueType(leadTimeData.getIssueType());
-			excelData.setCreatedDate(DateUtil.dateTimeConverter(leadTimeData.getIntakeDate().toString().split("T")[0],
-					DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
-			excelData.setCloseDate(DateUtil.dateTimeConverter(leadTimeData.getLiveDate().toString().split("T")[0],
-					DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+			excelData.setCreatedDate(DateUtil.tranformUTCLocalTimeToZFormat(
+					DateUtil.convertJodaDateTimeToLocalDateTime(leadTimeData.getIntakeDate())));
+			excelData.setCloseDate(DateUtil.tranformUTCLocalTimeToZFormat(
+					DateUtil.convertJodaDateTimeToLocalDateTime(leadTimeData.getLiveDate())));
 			excelData.setLeadTime(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getLeadTime())));
 			excelDataList.add(excelData);
 		}
@@ -1674,10 +1674,9 @@ public class KPIExcelUtility {
 				KPIExcelData excelData = new KPIExcelData();
 				Map<String, String> epicLink = new HashMap<>();
 				epicLink.put(e.getNumber(), checkEmptyURL(e));
-				excelData.setChangeDate(DateUtil.localDateTimeConverter(LocalDate.parse(
+				excelData.setChangeDate(DateUtil.tranformUTCLocalTimeToZFormat(DateUtil.convertToUTCLocalDateTime(
 						jiraDateMap.entrySet().stream().filter(f -> f.getKey().equalsIgnoreCase(e.getNumber()))
-								.findFirst().get().getValue().toString().split("\\.")[0],
-						DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT))));
+								.findFirst().get().getValue().toString().split("\\.")[0])));
 
 				excelData.setIssueID(epicLink);
 				excelData.setPriority(e.getPriority());
@@ -1782,8 +1781,8 @@ public class KPIExcelUtility {
 			Map<String, Integer> typeCountMap = entry.getValue();
 			KPIExcelData kpiExcelData = new KPIExcelData();
 			if (MapUtils.isNotEmpty(typeCountMap)) {
-				kpiExcelData
-						.setDate(DateUtil.dateTimeConverter(date, DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+				kpiExcelData.setDate(
+						DateUtil.tranformUTCLocalTimeToZFormat(LocalDateTime.parse(date + DateUtil.ZERO_TIME_FORMAT)));
 				kpiExcelData.setCount(typeCountMap);
 				excelData.add(kpiExcelData);
 			}
@@ -1946,8 +1945,8 @@ public class KPIExcelUtility {
 				}
 				String date = Constant.EMPTY_STRING;
 				if (!jiraIssue.getSprintBeginDate().isEmpty()) {
-					date = DateUtil.dateTimeConverter(jiraIssue.getSprintBeginDate(), ITERATION_DATE_FORMAT,
-							DateUtil.DISPLAY_DATE_FORMAT);
+					date = DateUtil.tranformUTCLocalTimeToZFormat(
+							DateUtil.convertToUTCLocalDateTime(jiraIssue.getSprintBeginDate()));
 				}
 				excelData.setSprintStartDate(date);
 				kpiExcelData.add(excelData);
@@ -2145,14 +2144,13 @@ public class KPIExcelUtility {
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
 		if (ObjectUtils.isNotEmpty(jiraCustomHistory.getCreatedDate()))
-			iterationKpiModalValue.setCreatedDate(DateUtil
-					.dateTimeFormatter(jiraCustomHistory.getCreatedDate().toDate(), DateUtil.DISPLAY_DATE_FORMAT));
+			iterationKpiModalValue.setCreatedDate(DateUtil.tranformUTCLocalTimeToZFormat(
+					DateUtil.convertJodaDateTimeToLocalDateTime(jiraCustomHistory.getCreatedDate())));
 		Optional<JiraHistoryChangeLog> sprint = jiraCustomHistory.getStatusUpdationLog().stream().filter(
 				sprintDetails -> CollectionUtils.isNotEmpty(status) && status.contains(sprintDetails.getChangedTo()))
 				.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn)).findFirst();
 		if (sprint.isPresent()) {
-			iterationKpiModalValue
-					.setDorDate(DateUtil.dateTimeFormatter(sprint.get().getUpdatedOn(), DateUtil.DISPLAY_DATE_FORMAT));
+			iterationKpiModalValue.setDorDate(DateUtil.tranformUTCLocalTimeToZFormat(sprint.get().getUpdatedOn()));
 		}
 		iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
 		overAllmodalValues.add(iterationKpiModalValue);

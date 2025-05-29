@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,6 +52,7 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -141,7 +143,9 @@ public class FlowDistributionServiceImpl extends JiraBacklogKPIService<Double, L
 		if (CollectionUtils.isNotEmpty(jiraIssueCustomHistories)) {
 
 			Map<String, Map<String, Integer>> groupByDateAndTypeCount = jiraIssueCustomHistories.stream()
-					.collect(Collectors.groupingBy(issue -> issue.getCreatedDate().toString().split("T")[0],
+					.collect(Collectors.groupingBy(
+							issue -> DateUtil.convertJodaDateTimeToLocalDateTime(issue.getCreatedDate()).toLocalDate()
+									.toString(),
 							Collectors.groupingBy(issue -> combineType(issue.getStoryType()),
 									Collectors.summingInt(issue -> 1))));
 
@@ -183,7 +187,7 @@ public class FlowDistributionServiceImpl extends JiraBacklogKPIService<Double, L
 			String date = entry.getKey();
 			Map<String, Integer> typeCountMap = entry.getValue();
 			DataCount dc = new DataCount();
-			dc.setDate(date);
+			dc.setDate(DateUtil.tranformUTCLocalTimeToZFormat(LocalDateTime.parse(date + DateUtil.ZERO_TIME_FORMAT)));
 			dc.setValue(typeCountMap);
 			dataList.add(dc);
 		}
